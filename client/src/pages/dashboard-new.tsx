@@ -262,8 +262,8 @@ export default function Dashboard() {
     : sectors[0];
 
   // Fetch real section inspection data from database
-  const { data: sectionData = [] } = useQuery<any[]>({
-    queryKey: ["/api/uploads", currentUpload?.id, "sections"],
+  const { data: sectionData = [], isLoading: sectionsLoading } = useQuery<any[]>({
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
   });
 
