@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { 
   Shield, 
   Upload, 
@@ -15,7 +17,8 @@ import {
   HardHat,
   Gift,
   Check,
-  Waves
+  Waves,
+  TestTube
 } from "lucide-react";
 import LoginModal from "@/components/login-modal";
 import RegistrationModal from "@/components/registration-modal";
@@ -26,6 +29,37 @@ export default function Home() {
   const [showRegistration, setShowRegistration] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const [isYearlyPricing, setIsYearlyPricing] = useState(false);
+  const { toast } = useToast();
+
+  const handleTestAccess = async () => {
+    try {
+      const response = await apiRequest("POST", "/api/admin/make-me-test-user");
+      const data = await response.json();
+      toast({
+        title: "Test Access Activated!",
+        description: "You now have unlimited access to test all features. Redirecting to dashboard...",
+      });
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
+    } catch (error: any) {
+      if (error.message.includes("401")) {
+        toast({
+          title: "Please Sign In First",
+          description: "You need to be logged in to get test access.",
+          variant: "destructive",
+        });
+        setShowLogin(true);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to activate test access. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   const features = [
     {
@@ -171,6 +205,14 @@ export default function Home() {
               <a href="#standards" className="text-slate-600 hover:text-slate-900 px-3 py-2 text-sm font-medium">
                 Standards
               </a>
+              <Button 
+                variant="ghost" 
+                onClick={handleTestAccess}
+                className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+              >
+                <TestTube className="mr-2 h-4 w-4" />
+                Test Access
+              </Button>
               <Button 
                 variant="outline" 
                 onClick={() => setShowLogin(true)}
