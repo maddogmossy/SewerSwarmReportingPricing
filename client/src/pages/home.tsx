@@ -33,18 +33,12 @@ export default function Home() {
 
   const handleTestAccess = async () => {
     try {
-      console.log("Attempting to get test access...");
-      const response = await fetch("/api/admin/make-me-test-user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      // First check if user is logged in
+      const authCheck = await fetch("/api/auth/user", {
         credentials: "include",
       });
 
-      console.log("Response status:", response.status);
-      
-      if (response.status === 401) {
+      if (authCheck.status === 401) {
         toast({
           title: "Please Sign In First",
           description: "You need to be logged in to get test access.",
@@ -54,9 +48,19 @@ export default function Home() {
         return;
       }
 
-      if (response.ok) {
+      // Now try to get test access
+      const response = await fetch("/api/admin/make-me-test-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      const contentType = response.headers.get("content-type");
+      
+      if (response.ok && contentType?.includes("application/json")) {
         const data = await response.json();
-        console.log("Success data:", data);
         toast({
           title: "Test Access Activated!",
           description: "You now have unlimited access to test all features. Redirecting to dashboard...",
@@ -66,21 +70,22 @@ export default function Home() {
           window.location.href = "/";
         }, 2000);
       } else {
-        const errorText = await response.text();
-        console.error("Error response:", errorText);
+        // If we get HTML instead of JSON, likely need to sign in
         toast({
-          title: "Error",
-          description: `Failed to activate test access: ${errorText}`,
+          title: "Please Sign In First",
+          description: "You need to be logged in to get test access.",
           variant: "destructive",
         });
+        setShowLogin(true);
       }
     } catch (error: any) {
       console.error("Test access error:", error);
       toast({
-        title: "Error",
-        description: error.message || "Failed to activate test access. Please try again.",
+        title: "Please Sign In First",
+        description: "You need to be logged in to get test access.",
         variant: "destructive",
       });
+      setShowLogin(true);
     }
   };
 
