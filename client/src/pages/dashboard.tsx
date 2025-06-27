@@ -597,6 +597,144 @@ export default function Dashboard() {
                             <strong>File Format:</strong> Coded to WRc/WTI OS19/20x MSCC5R standards
                           </p>
                         </div>
+
+                        <Separator className="my-4" />
+
+                        {/* Section Inspection Header Information */}
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-sm">Section Inspection Details</h4>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            {/* Inspection Information */}
+                            <div className="space-y-2">
+                              <h5 className="font-semibold text-xs text-slate-700">Inspection Information</h5>
+                              <div className="bg-slate-50 p-3 rounded space-y-1">
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Item No:</span>
+                                  <span className="font-mono">1</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Insp No:</span>
+                                  <span className="font-mono">1</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Date:</span>
+                                  <span>{new Date().toLocaleDateString()}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Weather:</span>
+                                  <span>No Rain Or Snow</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Pre-Cleaned:</span>
+                                  <span>Not Specified</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Location Information */}
+                            <div className="space-y-2">
+                              <h5 className="font-semibold text-xs text-slate-700">Location Information</h5>
+                              <div className="bg-slate-50 p-3 rounded space-y-1">
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Town/Village:</span>
+                                  <span>Bury St Edmunds</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Road:</span>
+                                  <span>40 Hollow Road</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Use:</span>
+                                  <span>Surface water</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Pipe Type:</span>
+                                  <span>Gravity drain/sewer</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Flow Control:</span>
+                                  <span>No flow control</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Pipe Specifications */}
+                            <div className="space-y-2">
+                              <h5 className="font-semibold text-xs text-slate-700">Pipe Specifications</h5>
+                              <div className="bg-slate-50 p-3 rounded space-y-1">
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Pipe Shape:</span>
+                                  <span>Circular</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Diameter:</span>
+                                  <span>150 mm</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Material:</span>
+                                  <span>Polyvinyl chloride</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Lining Type:</span>
+                                  <span>No Lining</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Year Constructed:</span>
+                                  <span>Not Specified</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Inspection Details */}
+                            <div className="space-y-2">
+                              <h5 className="font-semibold text-xs text-slate-700">Inspection Details</h5>
+                              <div className="bg-slate-50 p-3 rounded space-y-1">
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Direction:</span>
+                                  <span>Upstream</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Inspected Length:</span>
+                                  <span>15.56 m</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Total Length:</span>
+                                  <span>15.56 m</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Upstream Node:</span>
+                                  <span className="font-mono">SW01</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-slate-600">Downstream Node:</span>
+                                  <span className="font-mono">SW02</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Summary Grades */}
+                          <div className="mt-4">
+                            <h5 className="font-semibold text-xs text-slate-700 mb-2">Summary Grades</h5>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded">
+                                <div className="text-center">
+                                  <div className="text-lg font-bold text-emerald-800">1.0</div>
+                                  <div className="text-xs text-emerald-600">Structural Grade</div>
+                                  <div className="text-xs text-emerald-600 mt-1">No Defects</div>
+                                </div>
+                              </div>
+                              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded">
+                                <div className="text-center">
+                                  <div className="text-lg font-bold text-emerald-800">1.0</div>
+                                  <div className="text-xs text-emerald-600">Service Grade</div>
+                                  <div className="text-xs text-emerald-600 mt-1">No Issues</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     );
                   })}
