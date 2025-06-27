@@ -186,8 +186,8 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // Generate multiple sections for demonstration (3 sections per report)
-  const sectionData = [1, 2, 3].map(itemNumber => generateSectionData(itemNumber, currentSector));
+  // Generate multiple sections for demonstration (1-24 sections per report)
+  const sectionData = Array.from({ length: 24 }, (_, index) => generateSectionData(index + 1, currentSector));
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -249,54 +249,6 @@ export default function Dashboard() {
           </Card>
         ) : (
           <div className="space-y-8">
-            {/* Analysis Standards Applied */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Analysis Standards Applied - {currentSector.name} Sector</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-medium text-sm mb-3">Standards Documentation</h4>
-                    <div className="space-y-2">
-                      {currentSector.standards.map((standard, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded">
-                          <span className="text-sm font-medium">{standard.name}</span>
-                          <a 
-                            href={standard.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-primary hover:text-primary/80 text-xs"
-                          >
-                            View Documentation
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium text-sm mb-3">Output Columns</h4>
-                    <div className="space-y-1">
-                      {currentSector.outputColumns.map((column, index) => (
-                        <div key={index} className="text-sm p-1 bg-slate-50 rounded px-2">
-                          {column}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-                  <p className="text-sm text-blue-800">
-                    <strong>File Format:</strong> Coded to WRc/WTI OS19/20x MSCC5R standards
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Separator />
-
             {/* Section Inspection Data Table */}
             <Card>
               <CardHeader>
@@ -307,11 +259,10 @@ export default function Dashboard() {
                   <table className="w-full text-xs border-collapse border border-slate-300">
                     <thead>
                       <tr className="bg-slate-100">
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Item No</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Project No - Item No</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Inspec. No</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Date</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Time</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Project Number</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Start MH</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Finish MH</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Pipe Size</th>
@@ -329,11 +280,10 @@ export default function Dashboard() {
                     <tbody>
                       {sectionData.map((section, index) => (
                         <tr key={index} className="hover:bg-slate-50">
-                          <td className="border border-slate-300 px-2 py-1">{section.itemNo}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.projectNumber} - {section.itemNo}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.inspectionNo}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.date}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.time}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.projectNumber}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.startMH}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.finishMH}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.pipeSize}</td>
@@ -415,6 +365,54 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            <Separator className="my-8" />
+
+            {/* Analysis Standards Applied */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Analysis Standards Applied - {currentSector.name} Sector</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium text-sm mb-3">Standards Documentation</h4>
+                    <div className="space-y-2">
+                      {currentSector.standards.map((standard, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                          <span className="text-sm font-medium">{standard.name}</span>
+                          <a 
+                            href={standard.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-primary hover:text-primary/80 text-xs"
+                          >
+                            View Documentation
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-sm mb-3">Output Columns</h4>
+                    <div className="space-y-1">
+                      {currentSector.outputColumns.map((column, index) => (
+                        <div key={index} className="text-sm p-1 bg-slate-50 rounded px-2">
+                          {column}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+                  <p className="text-sm text-blue-800">
+                    <strong>File Format:</strong> Coded to WRc/WTI OS19/20x MSCC5R standards
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>
