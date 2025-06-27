@@ -427,6 +427,45 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Sector Selection Modal */}
+      <Dialog open={showSectorModal} onOpenChange={setShowSectorModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Select Applicable Sector</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Please choose which sector standards to apply to your file:
+            </p>
+            <div className="grid gap-2">
+              {sectors.map((sector) => (
+                <Button
+                  key={sector.id}
+                  variant="outline"
+                  className="h-auto p-4 justify-start"
+                  onClick={() => {
+                    setSelectedSector(sector.id);
+                    if (pendingFile) {
+                      setUploadedFile(pendingFile);
+                      setPendingFile(null);
+                    }
+                    setShowSectorModal(false);
+                  }}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="text-left">
+                      <div className="font-semibold">{sector.name}</div>
+                      <div className="text-sm opacity-70">{sector.description}</div>
+                    </div>
+                    <sector.icon className={`h-5 w-5 ${sector.color}`} />
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
