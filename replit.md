@@ -124,6 +124,7 @@ Changelog:
 - June 27, 2025. Fixed 403 upload errors by setting test user access and resolved section header display issues with proper typing
 - June 27, 2025. Restructured app: moved upload to separate page, redesigned dashboard for section inspection data analysis across full width with multiple item number support
 - June 27, 2025. Added report viewing and deletion functionality: Users can click eye icon to view specific reports in dashboard with URL parameters, and delete reports using trash icon with secure backend validation
+- June 27, 2025. Enhanced dashboard layout: Project number now displays before item number, supports 1-24 sections per report, and moved analysis standards below section inspection data for better information hierarchy
 ```
 
 ## User Preferences
