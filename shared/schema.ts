@@ -105,6 +105,8 @@ export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type FileUpload = typeof fileUploads.$inferSelect;
 export type InsertFileUpload = typeof fileUploads.$inferInsert;
+export type SectionInspection = typeof sectionInspections.$inferSelect;
+export type InsertSectionInspection = typeof sectionInspections.$inferInsert;
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type ReportPricing = typeof reportPricing.$inferSelect;
 

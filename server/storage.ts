@@ -1,12 +1,15 @@
 import {
   users,
   fileUploads,
+  sectionInspections,
   subscriptionPlans,
   reportPricing,
   type User,
   type UpsertUser,
   type FileUpload,
   type InsertFileUpload,
+  type SectionInspection,
+  type InsertSectionInspection,
   type SubscriptionPlan,
   type ReportPricing,
 } from "@shared/schema";
@@ -27,6 +30,11 @@ export interface IStorage {
   getFileUploadsByUser(userId: string): Promise<FileUpload[]>;
   updateFileUploadStatus(id: number, status: string, reportUrl?: string): Promise<FileUpload>;
   deleteFileUpload(id: number): Promise<void>;
+  
+  // Section inspection operations
+  createSectionInspections(inspections: InsertSectionInspection[]): Promise<SectionInspection[]>;
+  getSectionInspectionsByFileUpload(fileUploadId: number): Promise<SectionInspection[]>;
+  deleteSectionInspectionsByFileUpload(fileUploadId: number): Promise<void>;
   
   // Subscription operations
   getSubscriptionPlans(): Promise<SubscriptionPlan[]>;
@@ -175,6 +183,28 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return user;
+  }
+
+  // Section inspection operations
+  async createSectionInspections(inspections: InsertSectionInspection[]): Promise<SectionInspection[]> {
+    return await db
+      .insert(sectionInspections)
+      .values(inspections)
+      .returning();
+  }
+
+  async getSectionInspectionsByFileUpload(fileUploadId: number): Promise<SectionInspection[]> {
+    return await db
+      .select()
+      .from(sectionInspections)
+      .where(eq(sectionInspections.fileUploadId, fileUploadId))
+      .orderBy(sectionInspections.itemNo);
+  }
+
+  async deleteSectionInspectionsByFileUpload(fileUploadId: number): Promise<void> {
+    await db
+      .delete(sectionInspections)
+      .where(eq(sectionInspections.fileUploadId, fileUploadId));
   }
 }
 
