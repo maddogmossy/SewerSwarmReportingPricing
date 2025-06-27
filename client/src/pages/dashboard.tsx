@@ -375,16 +375,46 @@ export default function Dashboard() {
             {/* Recent Reports */}
             <Card className="enterprise-card">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Recent Reports</CardTitle>
+                <CardTitle>Recent Reports</CardTitle>
+                <div className="flex gap-2 mt-4">
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/uploads"] })}
-                    className="text-slate-600 hover:text-slate-900"
-                    title="Refresh reports"
+                    className="flex items-center gap-2"
                   >
                     <RefreshCw className="h-4 w-4" />
+                    Refresh Reports
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                    onClick={() => {
+                      // Export to Excel functionality
+                      toast({
+                        title: "Export to Excel",
+                        description: "Excel export feature coming soon!",
+                      });
+                    }}
+                  >
+                    <Download className="h-4 w-4" />
+                    Export Excel
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                    onClick={() => {
+                      // Export to DB functionality
+                      toast({
+                        title: "Export to DB",
+                        description: "Database export feature coming soon!",
+                      });
+                    }}
+                  >
+                    <Download className="h-4 w-4" />
+                    Export DB
                   </Button>
                 </div>
               </CardHeader>
