@@ -131,6 +131,7 @@ Changelog:
 - June 27, 2025. Updated Start MH and Finish MH extraction: Now pulls actual manhole references from section inspection data (e.g., Item 1: SW02→SW03) instead of using placeholder values
 - June 27, 2025. Implemented complete section inspection data extraction: Pipe Size, Pipe Material, Total Length, and Length Surveyed now pull authentic values from actual inspection data for all 24 sections
 - June 27, 2025. Transitioned from mock data to real database storage: Section inspection data now stored in database table with proper API endpoints for dashboard display, supporting authentic manhole references and pipe specifications
+- June 27, 2025. Fixed field mapping issue between database and frontend: Dashboard now correctly displays all real section inspection data including MH references (SW02→SW03), pipe specifications (150mm PVC, 225mm Concrete), and authentic measurements with proper camelCase field handling from Drizzle ORM
 ```
 
 ## User Preferences
