@@ -128,6 +128,8 @@ Changelog:
 - June 27, 2025. Restored separate Item No column: Added back dedicated Item No column (1,2,3,4,5...) from Section inspection data, with separate Inspec. No column (defaults to '1' unless multiple surveys of same section)
 - June 27, 2025. Fixed Inspec. No column: Corrected to show all '1' values for single survey report (would increment to '2', '3' only for repeat surveys of same sections)
 - June 27, 2025. Implemented default values for no-defect sections: Items 1,2,4,5,9,11,12,16,17,18,24 now show standard "No action required" text with Grade 0 and Adoptable Yes for all reports
+- June 27, 2025. Updated Start MH and Finish MH extraction: Now pulls actual manhole references from section inspection data (e.g., Item 1: SW02→SW03) instead of using placeholder values
+- June 27, 2025. Implemented complete section inspection data extraction: Pipe Size, Pipe Material, Total Length, and Length Surveyed now pull authentic values from actual inspection data for all 24 sections
 ```
 
 ## User Preferences

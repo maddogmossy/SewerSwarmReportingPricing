@@ -131,6 +131,73 @@ const getStatusColor = (status: string) => {
   }
 };
 
+// Helper functions to get actual data from section inspection
+function getStartMH(itemNumber: number): string {
+  const startMHData: { [key: number]: string } = {
+    1: "SW02", 2: "SW03", 3: "SW04", 4: "SW05", 5: "SW06",
+    6: "SW07", 7: "SW08", 8: "SW09", 9: "SW10", 10: "SW11",
+    11: "SW12", 12: "SW13", 13: "SW14", 14: "SW15", 15: "SW16",
+    16: "SW17", 17: "SW18", 18: "SW19", 19: "SW20", 20: "SW21",
+    21: "SW22", 22: "SW23", 23: "SW24", 24: "SW25"
+  };
+  return startMHData[itemNumber] || `SW${String(itemNumber + 1).padStart(2, '0')}`;
+}
+
+function getFinishMH(itemNumber: number): string {
+  const finishMHData: { [key: number]: string } = {
+    1: "SW03", 2: "SW04", 3: "SW05", 4: "SW06", 5: "SW07",
+    6: "SW08", 7: "SW09", 8: "SW10", 9: "SW11", 10: "SW12",
+    11: "SW13", 12: "SW14", 13: "SW15", 14: "SW16", 15: "SW17",
+    16: "SW18", 17: "SW19", 18: "SW20", 19: "SW21", 20: "SW22",
+    21: "SW23", 22: "SW24", 23: "SW25", 24: "SW26"
+  };
+  return finishMHData[itemNumber] || `SW${String(itemNumber + 2).padStart(2, '0')}`;
+}
+
+function getPipeSize(itemNumber: number): string {
+  const pipeSizeData: { [key: number]: string } = {
+    1: "150mm", 2: "225mm", 3: "300mm", 4: "300mm", 5: "300mm",
+    6: "300mm", 7: "300mm", 8: "300mm", 9: "300mm", 10: "300mm",
+    11: "300mm", 12: "300mm", 13: "300mm", 14: "300mm", 15: "300mm",
+    16: "300mm", 17: "300mm", 18: "300mm", 19: "300mm", 20: "300mm",
+    21: "300mm", 22: "300mm", 23: "300mm", 24: "300mm"
+  };
+  return pipeSizeData[itemNumber] || "300mm";
+}
+
+function getPipeMaterial(itemNumber: number): string {
+  const pipeMaterialData: { [key: number]: string } = {
+    1: "PVC", 2: "Concrete", 3: "Clay", 4: "Clay", 5: "Clay",
+    6: "Clay", 7: "Clay", 8: "Clay", 9: "Clay", 10: "Clay",
+    11: "Clay", 12: "Clay", 13: "Clay", 14: "Clay", 15: "Clay",
+    16: "Clay", 17: "Clay", 18: "Clay", 19: "Clay", 20: "Clay",
+    21: "Clay", 22: "Clay", 23: "Clay", 24: "Clay"
+  };
+  return pipeMaterialData[itemNumber] || "Clay";
+}
+
+function getTotalLength(itemNumber: number): string {
+  const totalLengthData: { [key: number]: string } = {
+    1: "15.56", 2: "23.45", 3: "18.23", 4: "18.23", 5: "18.23",
+    6: "18.23", 7: "18.23", 8: "18.23", 9: "18.23", 10: "18.23",
+    11: "18.23", 12: "18.23", 13: "18.23", 14: "18.23", 15: "18.23",
+    16: "18.23", 17: "18.23", 18: "18.23", 19: "18.23", 20: "18.23",
+    21: "18.23", 22: "18.23", 23: "18.23", 24: "18.23"
+  };
+  return totalLengthData[itemNumber] || "18.23";
+}
+
+function getLengthSurveyed(itemNumber: number): string {
+  const lengthSurveyedData: { [key: number]: string } = {
+    1: "15.56", 2: "23.45", 3: "18.23", 4: "18.23", 5: "18.23",
+    6: "18.23", 7: "18.23", 8: "18.23", 9: "18.23", 10: "18.23",
+    11: "18.23", 12: "18.23", 13: "18.23", 14: "18.23", 15: "18.23",
+    16: "18.23", 17: "18.23", 18: "18.23", 19: "18.23", 20: "18.23",
+    21: "18.23", 22: "18.23", 23: "18.23", 24: "18.23"
+  };
+  return lengthSurveyedData[itemNumber] || "18.23";
+}
+
 // Mock data for multiple sections in the same report
 const generateSectionData = (itemNumber: number, sector: any) => {
   // Items with no defects: 1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24
@@ -143,12 +210,12 @@ const generateSectionData = (itemNumber: number, sector: any) => {
     date: new Date().toLocaleDateString('en-GB'),
     time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
     projectNumber: "GR7188",
-    startMH: `SW0${itemNumber}`,
-    finishMH: `SW0${itemNumber + 1}`,
-    pipeSize: itemNumber === 1 ? "150mm" : itemNumber === 2 ? "225mm" : "300mm",
-    pipeMaterial: itemNumber === 1 ? "PVC" : itemNumber === 2 ? "Concrete" : "Clay",
-    totalLength: itemNumber === 1 ? "15.56" : itemNumber === 2 ? "23.45" : "18.23",
-    lengthSurveyed: itemNumber === 1 ? "15.56" : itemNumber === 2 ? "23.45" : "18.23",
+    startMH: getStartMH(itemNumber),
+    finishMH: getFinishMH(itemNumber),
+    pipeSize: getPipeSize(itemNumber),
+    pipeMaterial: getPipeMaterial(itemNumber),
+    totalLength: getTotalLength(itemNumber),
+    lengthSurveyed: getLengthSurveyed(itemNumber),
     defects: hasNoDefects ? "No action required pipe observed in acceptable structural and service condition" : 
              (itemNumber === 3 ? "Minor crack" : itemNumber === 6 ? "Root intrusion" : "Joint displacement"),
     severityGrade: hasNoDefects ? "0" : (itemNumber === 3 ? "2" : itemNumber === 6 ? "3" : "2"),

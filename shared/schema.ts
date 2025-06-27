@@ -54,6 +54,29 @@ export const fileUploads = pgTable("file_uploads", {
   sector: varchar("sector").notNull(), // utilities, adoption, highways, domestic, insurance, construction
   status: varchar("status").default("pending"), // pending, processing, completed, failed
   reportUrl: varchar("report_url"),
+  projectNumber: varchar("project_number"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Section inspection data table
+export const sectionInspections = pgTable("section_inspections", {
+  id: serial("id").primaryKey(),
+  fileUploadId: integer("file_upload_id").notNull().references(() => fileUploads.id),
+  itemNo: integer("item_no").notNull(),
+  inspectionNo: integer("inspection_no").default(1),
+  date: varchar("date"),
+  time: varchar("time"),
+  startMH: varchar("start_mh"),
+  finishMH: varchar("finish_mh"),
+  pipeSize: varchar("pipe_size"),
+  pipeMaterial: varchar("pipe_material"),
+  totalLength: varchar("total_length"),
+  lengthSurveyed: varchar("length_surveyed"),
+  defects: text("defects"),
+  severityGrade: varchar("severity_grade"),
+  recommendations: text("recommendations"),
+  adoptable: varchar("adoptable"),
+  cost: varchar("cost"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
