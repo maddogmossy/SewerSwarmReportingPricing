@@ -281,7 +281,6 @@ export default function Dashboard() {
                   requiresSector={true}
                   selectedSector={selectedSector}
                   onFileSelectedWithoutSector={(file) => {
-                    console.log('Setting pending file and showing modal:', file.name);
                     setPendingFile(file);
                     setShowSectorModal(true);
                   }}
