@@ -275,6 +275,15 @@ export default function Dashboard() {
                   selectedFile={uploadedFile}
                   accept=".pdf,.db"
                   maxSize={50 * 1024 * 1024} // 50MB
+                  requiresSector={true}
+                  selectedSector={selectedSector}
+                  onSectorPrompt={() => {
+                    toast({
+                      title: "Select a Sector First",
+                      description: "Please choose which sector standards to apply before uploading your file.",
+                      variant: "destructive",
+                    });
+                  }}
                 />
 
                 {/* Sector Selection */}

@@ -9,6 +9,9 @@ interface FileUploadProps {
   accept?: string;
   maxSize?: number;
   className?: string;
+  requiresSector?: boolean;
+  selectedSector?: string;
+  onSectorPrompt?: () => void;
 }
 
 export default function FileUpload({ 
@@ -16,7 +19,10 @@ export default function FileUpload({
   selectedFile, 
   accept = ".pdf,.db",
   maxSize = 50 * 1024 * 1024, // 50MB default
-  className = ""
+  className = "",
+  requiresSector = false,
+  selectedSector = "",
+  onSectorPrompt
 }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,20 +41,42 @@ export default function FileUpload({
     e.preventDefault();
     setIsDragOver(false);
     
+    // Check if sector is required but not selected
+    if (requiresSector && !selectedSector) {
+      alert('Please select a sector first before choosing a file.');
+      if (onSectorPrompt) {
+        onSectorPrompt();
+      }
+      return;
+    }
+    
     const files = Array.from(e.dataTransfer.files);
     const file = files[0];
     
     if (file && validateFile(file)) {
       onFileSelect(file);
     }
-  }, [onFileSelect, maxSize]);
+  }, [onFileSelect, maxSize, requiresSector, selectedSector, onSectorPrompt]);
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    
+    // Check if sector is required but not selected
+    if (requiresSector && !selectedSector) {
+      alert('Please select a sector first before choosing a file.');
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      if (onSectorPrompt) {
+        onSectorPrompt();
+      }
+      return;
+    }
+    
     if (file && validateFile(file)) {
       onFileSelect(file);
     }
-  }, [onFileSelect, maxSize]);
+  }, [onFileSelect, maxSize, requiresSector, selectedSector, onSectorPrompt]);
 
   const validateFile = (file: File): boolean => {
     // Check file size
