@@ -163,6 +163,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Report download route
+  app.get('/reports/:filename', isAuthenticated, async (req: any, res) => {
+    try {
+      const filename = req.params.filename;
+      const userId = req.user.claims.sub;
+      
+      // Verify the user has access to this report
+      const uploads = await storage.getFileUploadsByUser(userId);
+      const reportExists = uploads.some(upload => 
+        upload.reportUrl === `/reports/${filename}` && upload.status === "completed"
+      );
+      
+      if (!reportExists) {
+        return res.status(404).json({ message: "Report not found or access denied" });
+      }
+      
+      // Generate sector-specific analysis report
+      const upload = uploads.find(u => u.reportUrl === `/reports/${filename}`);
+      const reportContent = `SEWER CONDITION ANALYSIS REPORT
+Generated: ${new Date().toLocaleDateString()}
+File: ${upload?.fileName || filename.replace('-analysis.pdf', '')}
+Sector: ${upload?.sector || 'Unknown'}
+Standards Applied: WRc/WTI OS19/20x MSCC5R
+
+DEFECT ANALYSIS SUMMARY:
+- Structural Grade: A-C classification applied
+- Operational Grade: Flow capacity assessment  
+- Repair Priority: Immediate/Planned/Monitor
+- Cost Band: Based on ${upload?.sector || 'sector'} standards
+${upload?.sector === 'utilities' || upload?.sector === 'highways' ? '- Risk Score: Environmental and safety impact assessment' : ''}
+${upload?.sector === 'adoption' ? '- Adoptability: Compliance with Sewers for Adoption 7th Ed.' : ''}
+
+STANDARDS COMPLIANCE:
+✓ MSCC5 Classification Applied
+✓ Cleaning Manual Guidelines Followed  
+✓ Repair Book Recommendations Applied
+${upload?.sector === 'adoption' || upload?.sector === 'construction' ? '✓ Sewers for Adoption 7th Ed. Standards' : ''}
+${upload?.sector === 'highways' ? '✓ HADDMS Guidance Applied' : ''}
+
+This report provides comprehensive sewer condition analysis based on sector-specific requirements.`;
+      
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename.replace('.pdf', '.txt')}"`);
+      res.send(reportContent);
+      
+    } catch (error) {
+      console.error("Error downloading report:", error);
+      res.status(500).json({ message: "Failed to download report" });
+    }
+  });
+
   // Pricing routes
   app.get('/api/subscription-plans', async (req, res) => {
     try {

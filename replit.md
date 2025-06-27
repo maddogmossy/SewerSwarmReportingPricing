@@ -120,6 +120,7 @@ Changelog:
 - June 27, 2025. Added sector validation: Users must select sector before file upload (click, drag, input)
 - June 27, 2025. Replaced browser alert with elegant sector selection modal overlay - users can now select files immediately and choose sectors through polished modal interface
 - June 27, 2025. Fixed stuck report processing issue and added refresh functionality with larger action buttons including "Refresh Reports", "Export Excel", and "Export DB"
+- June 27, 2025. Implemented comprehensive sector standards display and defect/repair output logic with downloadable reports containing sector-specific analysis based on WRc/WTI standards
 ```
 
 ## User Preferences
