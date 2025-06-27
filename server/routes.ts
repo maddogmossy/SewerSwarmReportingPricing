@@ -510,6 +510,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reprocess upload with new data extraction
+  app.post('/api/reprocess-upload/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      const uploads = await storage.getFileUploadsByUser(userId);
+      const upload = uploads.find(u => u.id === uploadId);
+      
+      if (!upload) {
+        return res.status(404).json({ message: "Upload not found" });
+      }
+      
+      console.log(`Reprocessing upload ${uploadId}: ${upload.fileName}`);
+      
+      // Delete existing sections and reset to processing
+      await storage.deleteSectionInspectionsByFileUpload(uploadId);
+      await storage.updateFileUploadStatus(uploadId, "processing");
+      
+      // Reprocess with real data extraction
+      setTimeout(async () => {
+        try {
+          const filePath = `uploads/${upload.fileName}`;
+          const extractedData = await parseInspectionFile(filePath, upload.fileName.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream');
+          
+          if (extractedData && extractedData.length > 0) {
+            const sectionsWithFileId = extractedData.map(section => ({
+              ...section,
+              fileUploadId: uploadId
+            }));
+            
+            await storage.createSectionInspections(sectionsWithFileId);
+            await storage.updateFileUploadStatus(uploadId, "completed", `/reports/${uploadId}-analysis.pdf`);
+            console.log(`Reprocessing completed for upload ${uploadId}`);
+          } else {
+            console.error("Failed to extract data during reprocessing");
+            await storage.updateFileUploadStatus(uploadId, "failed", null);
+          }
+        } catch (error) {
+          console.error("Error during reprocessing:", error);
+          await storage.updateFileUploadStatus(uploadId, "failed");
+        }
+      }, 2000);
+      
+      res.json({ message: "Reprocessing started", uploadId });
+    } catch (error) {
+      console.error("Error reprocessing upload:", error);
+      res.status(500).json({ message: "Failed to reprocess upload" });
+    }
+  });
+
   // Manual completion endpoint for stuck reports
   app.post('/api/complete-report/:id', isAuthenticated, async (req: any, res) => {
     try {
