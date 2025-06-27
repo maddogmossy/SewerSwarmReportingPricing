@@ -36,42 +36,82 @@ const sectors = [
     name: "Utilities",
     description: "MSCC5, Cleaning Manual, Repair Book",
     icon: Building,
-    color: "text-primary"
+    color: "text-primary",
+    standards: [
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" }
+    ],
+    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band", "Risk Score"]
   },
   {
     id: "adoption", 
     name: "Adoption",
     description: "Utilities + Sewers for Adoption 7th Ed.",
     icon: HomeIcon,
-    color: "text-emerald-600"
+    color: "text-emerald-600",
+    standards: [
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "Sewers for Adoption 7th Ed.", url: "https://wrcknowledgestore.co.uk/collections/all/products/sewers-for-adoption-7th-edition-a-design-construction-guide-for-developer" }
+    ],
+    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band", "Adoptability"]
   },
   {
     id: "highways",
     name: "Highways", 
     description: "Core WRc docs + HADDMS guidance",
     icon: Car,
-    color: "text-amber-600"
+    color: "text-amber-600",
+    standards: [
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "HADDMS Guidance", url: "#" }
+    ],
+    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band", "Risk Score"]
   },
   {
     id: "domestic",
     name: "Domestic",
     description: "MSCC5, Cleaning, Repair standards", 
     icon: Users,
-    color: "text-blue-600"
+    color: "text-blue-600",
+    standards: [
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" }
+    ],
+    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band"]
   },
   {
     id: "insurance",
     name: "Insurance",
     description: "Standard + insurer requirements",
     icon: ShieldCheck,
-    color: "text-red-600"
+    color: "text-red-600",
+    standards: [
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "Current Insurer Technical Standard", url: "#" }
+    ],
+    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band"]
   },
   {
     id: "construction",
     name: "Construction",
     description: "Core standards + adoption guidance",
     icon: HardHat,
-    color: "text-orange-600"
+    color: "text-orange-600",
+    standards: [
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "Sewers for Adoption 7th Ed. (guidance only)", url: "https://wrcknowledgestore.co.uk/collections/all/products/sewers-for-adoption-7th-edition-a-design-construction-guide-for-developer" }
+    ],
+    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band"]
   }
 ];
 
@@ -493,6 +533,73 @@ export default function Dashboard() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Report Analysis Details */}
+            {uploads.some((upload: any) => upload.status === "completed") && (
+              <Card className="enterprise-card">
+                <CardHeader>
+                  <CardTitle>Analysis Standards Applied</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {uploads.filter((upload: any) => upload.status === "completed").slice(0, 1).map((upload: any) => {
+                    const sector = sectors.find(s => s.id === upload.sector);
+                    if (!sector) return null;
+                    
+                    return (
+                      <div key={upload.id} className="space-y-4">
+                        <div className="flex items-center gap-3 mb-4">
+                          <sector.icon className={`h-6 w-6 ${sector.color}`} />
+                          <div>
+                            <h3 className="font-semibold">{sector.name} Sector</h3>
+                            <p className="text-sm text-slate-600">Standards applied to: {upload.fileName}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <h4 className="font-medium text-sm">Applied Standards:</h4>
+                          <div className="space-y-2">
+                            {sector.standards.map((standard, idx) => (
+                              <div key={idx} className="flex items-center justify-between text-sm">
+                                <span>{standard.name}</span>
+                                {standard.url !== "#" && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => window.open(standard.url, '_blank')}
+                                    className="text-xs h-6 px-2"
+                                  >
+                                    View
+                                  </Button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="space-y-3">
+                          <h4 className="font-medium text-sm">Report Output Columns:</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {sector.outputColumns.map((column, idx) => (
+                              <Badge key={idx} variant="secondary" className="text-xs">
+                                {column}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+                          <p className="text-sm text-blue-800">
+                            <strong>File Format:</strong> Coded to WRc/WTI OS19/20x MSCC5R standards
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
