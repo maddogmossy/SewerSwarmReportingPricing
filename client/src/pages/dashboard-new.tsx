@@ -265,9 +265,6 @@ export default function Dashboard() {
   const { data: sectionData = [], isLoading: sectionsLoading } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
-    onSuccess: (data) => {
-      console.log("Section data received:", data.length > 0 ? data[0] : "No data");
-    }
   });
 
   return (
@@ -363,25 +360,25 @@ export default function Dashboard() {
                       {sectionData.map((section, index) => (
                         <tr key={index} className="hover:bg-slate-50">
                           <td className="border border-slate-300 px-2 py-1">GR7188</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.itemNo}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.inspectionNo}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.itemNo || section.item_no}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.inspectionNo || section.inspection_no}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.date}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.time}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.startMH}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.finishMH}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.pipeSize}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.pipeMaterial}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.totalLength}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.lengthSurveyed}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.startMH || section.start_mh}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.finishMH || section.finish_mh}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.pipeSize || section.pipe_size}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.pipeMaterial || section.pipe_material}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.totalLength || section.total_length}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.lengthSurveyed || section.length_surveyed}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.defects}</td>
                           <td className="border border-slate-300 px-2 py-1">
                             <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
-                              section.severityGrade === "0" ? 'bg-green-100 text-green-800' :
-                              section.severityGrade === "1" ? 'bg-emerald-100 text-emerald-800' :
-                              section.severityGrade === "2" ? 'bg-amber-100 text-amber-800' :
+                              (section.severityGrade || section.severity_grade) === "0" ? 'bg-green-100 text-green-800' :
+                              (section.severityGrade || section.severity_grade) === "1" ? 'bg-emerald-100 text-emerald-800' :
+                              (section.severityGrade || section.severity_grade) === "2" ? 'bg-amber-100 text-amber-800' :
                               'bg-red-100 text-red-800'
                             }`}>
-                              {section.severityGrade}
+                              {section.severityGrade || section.severity_grade}
                             </span>
                           </td>
                           <td className="border border-slate-300 px-2 py-1">
