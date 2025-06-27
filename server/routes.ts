@@ -295,6 +295,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ received: true });
   });
 
+  // Admin endpoint to set current user as test user
+  app.post('/api/admin/make-me-test-user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const updatedUser = await storage.setTestUser(userId, true);
+      res.json({ 
+        message: "You now have test access with unlimited uploads!",
+        user: updatedUser 
+      });
+    } catch (error) {
+      console.error("Error setting test user:", error);
+      res.status(500).json({ message: "Failed to set test user" });
+    }
+  });
+
+  // Admin endpoint to set test users by ID
+  app.post('/api/admin/set-test-user', isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId, isTestUser = true } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      const updatedUser = await storage.setTestUser(userId, isTestUser);
+      res.json({ 
+        message: `User ${isTestUser ? 'granted' : 'removed'} test access`,
+        user: updatedUser 
+      });
+    } catch (error) {
+      console.error("Error setting test user:", error);
+      res.status(500).json({ message: "Failed to set test user" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

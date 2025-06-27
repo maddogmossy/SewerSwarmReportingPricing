@@ -115,6 +115,7 @@ This is a full-stack TypeScript application built with React frontend and Expres
 ```
 Changelog:
 - June 27, 2025. Initial setup
+- June 27, 2025. Added test user access system for unlimited testing without payment
 ```
 
 ## User Preferences

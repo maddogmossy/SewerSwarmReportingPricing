@@ -209,6 +209,36 @@ export default function Dashboard() {
               <span className="text-sm text-slate-600">
                 Welcome back, {user.firstName} {user.lastName}
               </span>
+              {!user.isTestUser && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    try {
+                      const response = await apiRequest("POST", "/api/admin/make-me-test-user");
+                      const data = await response.json();
+                      toast({
+                        title: "Test Access Granted!",
+                        description: "You now have unlimited access to test the platform.",
+                      });
+                      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to activate test access.",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                >
+                  Get Test Access
+                </Button>
+              )}
+              {user.isTestUser && (
+                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                  Test User
+                </span>
+              )}
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-semibold">
                   {user.firstName?.[0]}{user.lastName?.[0]}
