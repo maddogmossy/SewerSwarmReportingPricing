@@ -34,6 +34,9 @@ export interface IStorage {
   // Trial and subscription management
   incrementTrialReports(userId: string): Promise<User>;
   canUseTrialReport(userId: string): Promise<boolean>;
+  
+  // Test user management
+  setTestUser(userId: string, isTestUser?: boolean): Promise<User>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -146,7 +149,22 @@ export class DatabaseStorage implements IStorage {
 
   async canUseTrialReport(userId: string): Promise<boolean> {
     const user = await this.getUser(userId);
-    return user ? (user.trialReportsUsed || 0) < 1 : false;
+    if (!user) return false;
+    // Test users have unlimited access
+    if (user.isTestUser) return true;
+    return (user.trialReportsUsed || 0) < 1;
+  }
+
+  async setTestUser(userId: string, isTestUser: boolean = true): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ 
+        isTestUser,
+        updatedAt: new Date() 
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
   }
 }
 

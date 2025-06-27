@@ -38,6 +38,7 @@ export const users = pgTable("users", {
   stripeSubscriptionId: varchar("stripe_subscription_id"),
   subscriptionStatus: varchar("subscription_status").default("none"), // none, trial, active, cancelled
   trialReportsUsed: integer("trial_reports_used").default(0),
+  isTestUser: boolean("is_test_user").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

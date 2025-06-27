@@ -78,7 +78,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Sector is required" });
       }
 
-      // Check if user can upload (trial or subscription)
+      // Check if user can upload (trial, subscription, or test user)
       const user = await storage.getUser(userId);
       const canUseTrial = await storage.canUseTrialReport(userId);
       
@@ -86,7 +86,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      if (user.subscriptionStatus !== "active" && !canUseTrial) {
+      if (user.subscriptionStatus !== "active" && !canUseTrial && !user.isTestUser) {
         return res.status(403).json({ message: "No active subscription or trial reports available" });
       }
 
@@ -99,8 +99,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sector,
       });
 
-      // If using trial, increment counter
-      if (user.subscriptionStatus !== "active" && canUseTrial) {
+      // If using trial, increment counter (but not for test users)
+      if (user.subscriptionStatus !== "active" && canUseTrial && !user.isTestUser) {
         await storage.incrementTrialReports(userId);
       }
 
