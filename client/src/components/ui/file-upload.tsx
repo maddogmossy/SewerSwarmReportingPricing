@@ -12,6 +12,7 @@ interface FileUploadProps {
   requiresSector?: boolean;
   selectedSector?: string;
   onSectorPrompt?: () => void;
+  onFileSelectedWithoutSector?: (file: File) => void;
 }
 
 export default function FileUpload({ 
@@ -22,7 +23,8 @@ export default function FileUpload({
   className = "",
   requiresSector = false,
   selectedSector = "",
-  onSectorPrompt
+  onSectorPrompt,
+  onFileSelectedWithoutSector
 }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -41,42 +43,37 @@ export default function FileUpload({
     e.preventDefault();
     setIsDragOver(false);
     
-    // Check if sector is required but not selected
-    if (requiresSector && !selectedSector) {
-      alert('Please select a sector first before choosing a file.');
-      if (onSectorPrompt) {
-        onSectorPrompt();
-      }
-      return;
-    }
-    
     const files = Array.from(e.dataTransfer.files);
     const file = files[0];
     
     if (file && validateFile(file)) {
+      // Check if sector is required but not selected
+      if (requiresSector && !selectedSector) {
+        if (onFileSelectedWithoutSector) {
+          onFileSelectedWithoutSector(file);
+        }
+        return;
+      }
+      
       onFileSelect(file);
     }
-  }, [onFileSelect, maxSize, requiresSector, selectedSector, onSectorPrompt]);
+  }, [onFileSelect, maxSize, requiresSector, selectedSector, onFileSelectedWithoutSector]);
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     
-    // Check if sector is required but not selected
-    if (requiresSector && !selectedSector) {
-      alert('Please select a sector first before choosing a file.');
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      if (onSectorPrompt) {
-        onSectorPrompt();
-      }
-      return;
-    }
-    
     if (file && validateFile(file)) {
+      // Check if sector is required but not selected
+      if (requiresSector && !selectedSector) {
+        if (onFileSelectedWithoutSector) {
+          onFileSelectedWithoutSector(file);
+        }
+        return;
+      }
+      
       onFileSelect(file);
     }
-  }, [onFileSelect, maxSize, requiresSector, selectedSector, onSectorPrompt]);
+  }, [onFileSelect, maxSize, requiresSector, selectedSector, onFileSelectedWithoutSector]);
 
   const validateFile = (file: File): boolean => {
     // Check file size
@@ -134,17 +131,7 @@ export default function FileUpload({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          onClick={() => {
-            // Check if sector is required but not selected
-            if (requiresSector && !selectedSector) {
-              alert('Please select a sector first before choosing a file.');
-              if (onSectorPrompt) {
-                onSectorPrompt();
-              }
-              return;
-            }
-            fileInputRef.current?.click();
-          }}
+          onClick={() => fileInputRef.current?.click()}
         >
           <CardContent className="p-12 text-center">
             <div className="mb-4">

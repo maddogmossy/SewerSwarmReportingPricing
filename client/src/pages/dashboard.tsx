@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
@@ -102,6 +103,8 @@ const getStatusColor = (status: string) => {
 export default function Dashboard() {
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [showSectorModal, setShowSectorModal] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -277,12 +280,9 @@ export default function Dashboard() {
                   maxSize={50 * 1024 * 1024} // 50MB
                   requiresSector={true}
                   selectedSector={selectedSector}
-                  onSectorPrompt={() => {
-                    toast({
-                      title: "Select a Sector First",
-                      description: "Please choose which sector standards to apply before uploading your file.",
-                      variant: "destructive",
-                    });
+                  onFileSelectedWithoutSector={(file) => {
+                    setPendingFile(file);
+                    setShowSectorModal(true);
                   }}
                 />
 
