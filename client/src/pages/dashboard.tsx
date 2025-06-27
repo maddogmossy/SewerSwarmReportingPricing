@@ -251,9 +251,9 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-slate-600">
-                Welcome back, {user.firstName} {user.lastName}
+                Welcome back, {(user as any)?.firstName} {(user as any)?.lastName}
               </span>
-              {!user.isTestUser && (
+              {!(user as any)?.isTestUser && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -278,14 +278,14 @@ export default function Dashboard() {
                   Get Test Access
                 </Button>
               )}
-              {user.isTestUser && (
+              {(user as any)?.isTestUser && (
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
                   Test User
                 </span>
               )}
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-semibold">
-                  {user.firstName?.[0]}{user.lastName?.[0]}
+                  {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
                 </span>
               </div>
               <Button
@@ -386,16 +386,16 @@ export default function Dashboard() {
                 <div className="flex justify-between">
                   <span className="text-slate-600">Current Plan:</span>
                   <Badge variant="outline" className="text-primary border-primary">
-                    {user.subscriptionStatus === "active" ? "Pro" : "Trial"}
+                    {(user as any)?.subscriptionStatus === "active" ? "Pro" : "Trial"}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-600">Trial Reports Used:</span>
                   <span className="font-semibold">
-                    {user.trialReportsUsed || 0} / 1
+                    {(user as any)?.trialReportsUsed || 0} / 1
                   </span>
                 </div>
-                {user.subscriptionStatus !== "active" && (
+                {(user as any)?.subscriptionStatus !== "active" && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Status:</span>
                     <span className="font-semibold text-amber-600">Trial</span>
@@ -407,7 +407,7 @@ export default function Dashboard() {
                   className="w-full"
                   onClick={() => window.location.href = "/checkout"}
                 >
-                  {user.subscriptionStatus === "active" ? "Manage Subscription" : "Upgrade Plan"}
+                  {(user as any)?.subscriptionStatus === "active" ? "Manage Subscription" : "Upgrade Plan"}
                 </Button>
               </CardContent>
             </Card>
@@ -512,7 +512,7 @@ export default function Dashboard() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => window.open(upload.reportUrl, '_blank')}
+                              onClick={() => window.open(upload.reportUrl || '#', '_blank')}
                             >
                               <Download className="h-4 w-4" />
                             </Button>
