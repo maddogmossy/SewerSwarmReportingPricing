@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import multer from "multer";
@@ -183,9 +184,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
         
         if (subscription.status === 'active') {
+          const latestInvoice = subscription.latest_invoice;
+          const clientSecret = latestInvoice && typeof latestInvoice === 'object' 
+            ? (latestInvoice.payment_intent as any)?.client_secret 
+            : null;
+            
           return res.json({
             subscriptionId: subscription.id,
-            clientSecret: subscription.latest_invoice?.payment_intent?.client_secret,
+            clientSecret,
             status: subscription.status,
           });
         }
@@ -215,9 +221,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update user with subscription info
       await storage.updateUserStripeInfo(userId, customerId, subscription.id);
 
+      const latestInvoice = subscription.latest_invoice;
+      const clientSecret = latestInvoice && typeof latestInvoice === 'object' 
+        ? (latestInvoice.payment_intent as any)?.client_secret 
+        : null;
+
       res.json({
         subscriptionId: subscription.id,
-        clientSecret: subscription.latest_invoice?.payment_intent?.client_secret,
+        clientSecret,
         status: subscription.status,
       });
     } catch (error: any) {
@@ -249,11 +260,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         break;
       
       case 'invoice.payment_succeeded':
-        const invoice = event.data.object;
+        const invoice = event.data.object as any;
         if (invoice.subscription) {
           // Update user subscription status
           const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
-          const userId = subscription.metadata.userId;
+          const userId = subscription.metadata?.userId;
           if (userId) {
             await storage.updateUserProfile(userId, { 
               subscriptionStatus: 'active',
@@ -264,10 +275,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         break;
       
       case 'invoice.payment_failed':
-        const failedInvoice = event.data.object;
+        const failedInvoice = event.data.object as any;
         if (failedInvoice.subscription) {
           const subscription = await stripe.subscriptions.retrieve(failedInvoice.subscription as string);
-          const userId = subscription.metadata.userId;
+          const userId = subscription.metadata?.userId;
           if (userId) {
             await storage.updateUserProfile(userId, { 
               subscriptionStatus: 'past_due',

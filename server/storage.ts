@@ -130,10 +130,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async incrementTrialReports(userId: string): Promise<User> {
+    const currentUser = await this.getUser(userId);
+    const currentCount = currentUser?.trialReportsUsed || 0;
+    
     const [user] = await db
       .update(users)
       .set({ 
-        trialReportsUsed: db.$count(users.trialReportsUsed) + 1,
+        trialReportsUsed: currentCount + 1,
         updatedAt: new Date() 
       })
       .where(eq(users.id, userId))
