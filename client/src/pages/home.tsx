@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { 
   Shield, 
@@ -18,8 +19,11 @@ import {
   Gift,
   Check,
   Waves,
-  TestTube
+  TestTube,
+  BarChart3,
+  Settings
 } from "lucide-react";
+import { Link } from "wouter";
 import LoginModal from "@/components/login-modal";
 import RegistrationModal from "@/components/registration-modal";
 import PricingModal from "@/components/pricing-modal";
