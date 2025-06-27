@@ -123,6 +123,7 @@ Changelog:
 - June 27, 2025. Implemented comprehensive sector standards display and defect/repair output logic with downloadable reports containing sector-specific analysis based on WRc/WTI standards
 - June 27, 2025. Fixed 403 upload errors by setting test user access and resolved section header display issues with proper typing
 - June 27, 2025. Restructured app: moved upload to separate page, redesigned dashboard for section inspection data analysis across full width with multiple item number support
+- June 27, 2025. Added report viewing and deletion functionality: Users can click eye icon to view specific reports in dashboard with URL parameters, and delete reports using trash icon with secure backend validation
 ```
 
 ## User Preferences

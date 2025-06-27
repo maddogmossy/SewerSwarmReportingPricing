@@ -19,7 +19,7 @@ import {
   Clock,
   AlertCircle
 } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
 
 const sectors = [
@@ -154,6 +154,9 @@ const generateSectionData = (itemNumber: number, sector: any) => ({
 
 export default function Dashboard() {
   const { toast } = useToast();
+  const search = useSearch();
+  const urlParams = new URLSearchParams(search);
+  const reportId = urlParams.get('reportId');
 
   // Fetch user uploads
   const { data: uploads = [] } = useQuery<FileUploadType[]>({
@@ -174,9 +177,13 @@ export default function Dashboard() {
   // Get completed uploads for analysis
   const completedUploads = uploads.filter(upload => upload.status === 'completed');
   
-  // Find the sector for the first completed upload (for demo purposes)
-  const currentSector = completedUploads.length > 0 
-    ? sectors.find(s => s.id === completedUploads[0].sector) || sectors[0]
+  // Find specific report if reportId is provided, otherwise use first completed upload
+  const currentUpload = reportId 
+    ? completedUploads.find(upload => upload.id === parseInt(reportId))
+    : completedUploads[0];
+    
+  const currentSector = currentUpload 
+    ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
   // Generate multiple sections for demonstration (3 sections per report)
@@ -217,7 +224,10 @@ export default function Dashboard() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Section Inspection Data & Analysis</h1>
           <p className="text-slate-600">
-            Comprehensive analysis results across all uploaded reports with sector-specific compliance checking
+            {currentUpload 
+              ? `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector`
+              : "Comprehensive analysis results across all uploaded reports with sector-specific compliance checking"
+            }
           </p>
         </div>
 

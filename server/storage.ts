@@ -124,6 +124,10 @@ export class DatabaseStorage implements IStorage {
     return fileUpload;
   }
 
+  async deleteFileUpload(id: number): Promise<void> {
+    await db.delete(fileUploads).where(eq(fileUploads.id, id));
+  }
+
   async getSubscriptionPlans(): Promise<SubscriptionPlan[]> {
     return await db
       .select()
