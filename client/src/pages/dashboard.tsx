@@ -600,139 +600,65 @@ export default function Dashboard() {
 
                         <Separator className="my-4" />
 
-                        {/* Section Inspection Header Information */}
+                        {/* Section Inspection Table */}
                         <div className="space-y-4">
-                          <h4 className="font-medium text-sm">Section Inspection Details</h4>
+                          <h4 className="font-medium text-sm">Section Inspection Data</h4>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                            {/* Inspection Information */}
-                            <div className="space-y-2">
-                              <h5 className="font-semibold text-xs text-slate-700">Inspection Information</h5>
-                              <div className="bg-slate-50 p-3 rounded space-y-1">
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Item No:</span>
-                                  <span className="font-mono">1</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Insp No:</span>
-                                  <span className="font-mono">1</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Date:</span>
-                                  <span>{new Date().toLocaleDateString()}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Weather:</span>
-                                  <span>No Rain Or Snow</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Pre-Cleaned:</span>
-                                  <span>Not Specified</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Location Information */}
-                            <div className="space-y-2">
-                              <h5 className="font-semibold text-xs text-slate-700">Location Information</h5>
-                              <div className="bg-slate-50 p-3 rounded space-y-1">
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Town/Village:</span>
-                                  <span>Bury St Edmunds</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Road:</span>
-                                  <span>40 Hollow Road</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Use:</span>
-                                  <span>Surface water</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Pipe Type:</span>
-                                  <span>Gravity drain/sewer</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Flow Control:</span>
-                                  <span>No flow control</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Pipe Specifications */}
-                            <div className="space-y-2">
-                              <h5 className="font-semibold text-xs text-slate-700">Pipe Specifications</h5>
-                              <div className="bg-slate-50 p-3 rounded space-y-1">
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Pipe Shape:</span>
-                                  <span>Circular</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Diameter:</span>
-                                  <span>150 mm</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Material:</span>
-                                  <span>Polyvinyl chloride</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Lining Type:</span>
-                                  <span>No Lining</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Year Constructed:</span>
-                                  <span>Not Specified</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Inspection Details */}
-                            <div className="space-y-2">
-                              <h5 className="font-semibold text-xs text-slate-700">Inspection Details</h5>
-                              <div className="bg-slate-50 p-3 rounded space-y-1">
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Direction:</span>
-                                  <span>Upstream</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Inspected Length:</span>
-                                  <span>15.56 m</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Total Length:</span>
-                                  <span>15.56 m</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Upstream Node:</span>
-                                  <span className="font-mono">SW01</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Downstream Node:</span>
-                                  <span className="font-mono">SW02</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Summary Grades */}
-                          <div className="mt-4">
-                            <h5 className="font-semibold text-xs text-slate-700 mb-2">Summary Grades</h5>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded">
-                                <div className="text-center">
-                                  <div className="text-lg font-bold text-emerald-800">1.0</div>
-                                  <div className="text-xs text-emerald-600">Structural Grade</div>
-                                  <div className="text-xs text-emerald-600 mt-1">No Defects</div>
-                                </div>
-                              </div>
-                              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded">
-                                <div className="text-center">
-                                  <div className="text-lg font-bold text-emerald-800">1.0</div>
-                                  <div className="text-xs text-emerald-600">Service Grade</div>
-                                  <div className="text-xs text-emerald-600 mt-1">No Issues</div>
-                                </div>
-                              </div>
-                            </div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-xs border-collapse border border-slate-300">
+                              <thead>
+                                <tr className="bg-slate-100">
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Item No</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Inspec. No</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Date</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Time</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Project Number</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Start MH</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Finish MH</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Pipe Size</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Pipe Material</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Total Length (m)</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Length Surveyed (m)</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Defects</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Severity Grade</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Sector Type</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Recommenda- tions</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Adoptable</th>
+                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Cost (£)</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr className="hover:bg-slate-50">
+                                  <td className="border border-slate-300 px-2 py-1">1</td>
+                                  <td className="border border-slate-300 px-2 py-1">1</td>
+                                  <td className="border border-slate-300 px-2 py-1">{new Date().toLocaleDateString('en-GB')}</td>
+                                  <td className="border border-slate-300 px-2 py-1">{new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</td>
+                                  <td className="border border-slate-300 px-2 py-1">GR7188</td>
+                                  <td className="border border-slate-300 px-2 py-1">SW01</td>
+                                  <td className="border border-slate-300 px-2 py-1">SW02</td>
+                                  <td className="border border-slate-300 px-2 py-1">150mm</td>
+                                  <td className="border border-slate-300 px-2 py-1">PVC</td>
+                                  <td className="border border-slate-300 px-2 py-1">15.56</td>
+                                  <td className="border border-slate-300 px-2 py-1">15.56</td>
+                                  <td className="border border-slate-300 px-2 py-1">None</td>
+                                  <td className="border border-slate-300 px-2 py-1">
+                                    <span className="bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded text-xs font-semibold">1</span>
+                                  </td>
+                                  <td className="border border-slate-300 px-2 py-1">
+                                    <span className="capitalize text-primary font-medium">{sector.name}</span>
+                                  </td>
+                                  <td className="border border-slate-300 px-2 py-1">Monitor</td>
+                                  <td className="border border-slate-300 px-2 py-1">
+                                    {sector.id === 'adoption' ? (
+                                      <span className="bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded text-xs">Yes</span>
+                                    ) : (
+                                      <span className="text-slate-500">N/A</span>
+                                    )}
+                                  </td>
+                                  <td className="border border-slate-300 px-2 py-1">£0</td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </div>
                         </div>
                       </div>
