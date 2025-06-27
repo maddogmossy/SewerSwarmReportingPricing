@@ -259,7 +259,8 @@ export default function Dashboard() {
                   <table className="w-full text-xs border-collapse border border-slate-300">
                     <thead>
                       <tr className="bg-slate-100">
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Project No - Item No</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Project No</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Item No</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Inspec. No</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Date</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Time</th>
@@ -280,7 +281,8 @@ export default function Dashboard() {
                     <tbody>
                       {sectionData.map((section, index) => (
                         <tr key={index} className="hover:bg-slate-50">
-                          <td className="border border-slate-300 px-2 py-1">{section.projectNumber} - {section.itemNo}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.projectNumber}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.itemNo}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.inspectionNo}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.date}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.time}</td>
