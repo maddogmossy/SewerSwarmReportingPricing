@@ -61,10 +61,12 @@ export default function FileUpload({
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log('File selected:', file?.name, 'requiresSector:', requiresSector, 'selectedSector:', selectedSector);
     
     if (file && validateFile(file)) {
       // Check if sector is required but not selected
       if (requiresSector && !selectedSector) {
+        console.log('Triggering sector modal for file:', file.name);
         if (onFileSelectedWithoutSector) {
           onFileSelectedWithoutSector(file);
         }
