@@ -19,6 +19,7 @@ import {
   Building,
   Home as HomeIcon,
   Car,
+  RefreshCw,
   Users,
   ShieldCheck,
   HardHat,
@@ -374,7 +375,18 @@ export default function Dashboard() {
             {/* Recent Reports */}
             <Card className="enterprise-card">
               <CardHeader>
-                <CardTitle>Recent Reports</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Recent Reports</CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/uploads"] })}
+                    className="text-slate-600 hover:text-slate-900"
+                    title="Refresh reports"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 {uploads.length === 0 ? (
