@@ -1,0 +1,50 @@
+{
+    "FC": {
+        "description": "Fracture - circumferential",
+        "type": "structural",
+        "default_grade": 3,
+        "risk": "May indicate structural instability in the pipe wall.",
+        "recommended_action": "Patch lining or excavation depending on severity",
+        "action_type": 6
+    },
+    "FL": {
+        "description": "Fracture - longitudinal",
+        "type": "structural",
+        "default_grade": 3,
+        "risk": "Potential for pipe collapse or leakage.",
+        "recommended_action": "Patch or full-length liner depending on location",
+        "action_type": 6
+    },
+    "DER": {
+        "description": "Deposits - coarse settled",
+        "type": "service",
+        "default_grade": 3,
+        "risk": "Reduces flow capacity and may cause blockages.",
+        "recommended_action": "Desilt or high-pressure jetting",
+        "action_type": 2
+    },
+    "DES": {
+        "description": "Deposits - fine settled",
+        "type": "service",
+        "default_grade": 3,
+        "risk": "May cause partial blockage or contribute to silt build-up.",
+        "recommended_action": "Mechanical or hydraulic cleaning",
+        "action_type": 2
+    },
+    "WL": {
+        "description": "Water level above normal",
+        "type": "service",
+        "default_grade": 2,
+        "risk": "May suggest partial blockage or gradient issue.",
+        "recommended_action": "Check for downstream restriction",
+        "action_type": 1
+    },
+    "JDL": {
+        "description": "Joint displacement - large",
+        "type": "structural",
+        "default_grade": 4,
+        "risk": "Can allow infiltration/exfiltration and blockages.",
+        "recommended_action": "Excavation or robotic joint realignment",
+        "action_type": 7
+    }
+}
