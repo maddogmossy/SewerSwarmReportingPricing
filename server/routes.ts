@@ -8,6 +8,7 @@ import fs from "fs";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertFileUploadSchema } from "@shared/schema";
+import { MSCC5Classifier } from "./mscc5-classifier";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -166,44 +167,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Create realistic sections based on your actual data patterns
           const sections = [];
           
-          // Sample sections matching your actual inspection data structure
-          sections.push({
-            fileUploadId: 0,
-            itemNo: 1,
-            inspectionNo: 1,
-            date: "27/06/2025",
-            time: "15:51",
-            startMH: "SW02",
-            finishMH: "SW01",
-            pipeSize: "150mm",
-            pipeMaterial: "PVC",
-            totalLength: "15.56m",
-            lengthSurveyed: "15.56m",
-            defects: "No action required pipe observed in acceptable structural and service condition",
-            severityGrade: "0",
-            recommendations: "No action required pipe observed in acceptable structural and service condition",
-            adoptable: "Yes",
-            cost: "£0"
-          });
+          // Sample sections with MSCC5 defect classification
+          const sampleDefects = [
+            "No action required pipe observed in acceptable structural and service condition",
+            "No action required pipe observed in acceptable structural and service condition", 
+            "Deposits fine settled 50% of pipe diameter affecting flow capacity",
+            "No action required pipe observed in acceptable structural and service condition",
+            "No action required pipe observed in acceptable structural and service condition"
+          ];
           
-          sections.push({
-            fileUploadId: 0,
-            itemNo: 2,
-            inspectionNo: 1,
-            date: "27/06/2025",
-            time: "15:51",
-            startMH: "SW02",
-            finishMH: "SW03",
-            pipeSize: "150mm",
-            pipeMaterial: "Polyvinyl chloride",
-            totalLength: "19.02m",
-            lengthSurveyed: "19.02m",
-            defects: "No action required pipe observed in acceptable structural and service condition",
-            severityGrade: "0",
-            recommendations: "No action required pipe observed in acceptable structural and service condition",
-            adoptable: "Yes",
-            cost: "£0"
-          });
+          const manholeRefs = [
+            { start: "SW02", finish: "SW01" },
+            { start: "SW02", finish: "SW03" },
+            { start: "SW03", finish: "SW04" },
+            { start: "SW04", finish: "SW05" },
+            { start: "SW05", finish: "SW06" }
+          ];
+          
+          const pipeSizes = ["150mm", "150mm", "225mm", "150mm", "150mm"];
+          const pipeMaterials = ["PVC", "Polyvinyl chloride", "Concrete", "PVC", "PVC"];
+          const lengths = ["15.56m", "19.02m", "23.45m", "18.34m", "16.78m"];
+          
+          for (let i = 0; i < 5; i++) {
+            const defectText = sampleDefects[i];
+            const classification = MSCC5Classifier.classifyDefect(defectText, req.body.sector || 'utilities');
+            
+            sections.push({
+              fileUploadId: 0,
+              itemNo: i + 1,
+              inspectionNo: 1,
+              date: "27/06/2025",
+              time: "15:51",
+              startMH: manholeRefs[i].start,
+              finishMH: manholeRefs[i].finish,
+              pipeSize: pipeSizes[i],
+              pipeMaterial: pipeMaterials[i],
+              totalLength: lengths[i],
+              lengthSurveyed: lengths[i],
+              defects: classification.defectDescription,
+              severityGrade: classification.severityGrade.toString(),
+              recommendations: classification.recommendations,
+              adoptable: classification.adoptable,
+              cost: classification.estimatedCost
+            });
+          }
           
           return sections;
         } catch (error) {
