@@ -166,7 +166,7 @@ export default function Dashboard() {
   }, [user, authLoading, toast]);
 
   // Fetch user uploads
-  const { data: uploads = [] } = useQuery({
+  const { data: uploads = [] } = useQuery<FileUploadType[]>({
     queryKey: ["/api/uploads"],
     enabled: !!user,
   });
@@ -535,15 +535,18 @@ export default function Dashboard() {
             </Card>
 
             {/* Report Analysis Details */}
-            {uploads.some((upload: any) => upload.status === "completed") && (
+            {Array.isArray(uploads) && uploads.some((upload: any) => upload.status === "completed") && (
               <Card className="enterprise-card">
                 <CardHeader>
                   <CardTitle>Analysis Standards Applied</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {uploads.filter((upload: any) => upload.status === "completed").slice(0, 1).map((upload: any) => {
+                  {Array.isArray(uploads) && uploads.filter((upload: any) => upload.status === "completed").slice(0, 1).map((upload: any) => {
                     const sector = sectors.find(s => s.id === upload.sector);
-                    if (!sector) return null;
+                    if (!sector) {
+                      console.log('Sector not found for upload:', upload);
+                      return null;
+                    }
                     
                     return (
                       <div key={upload.id} className="space-y-4">
