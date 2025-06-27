@@ -34,6 +34,7 @@ export default function Home() {
   const [showPricing, setShowPricing] = useState(false);
   const [isYearlyPricing, setIsYearlyPricing] = useState(false);
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
 
   const handleTestAccess = async () => {
     try {
@@ -214,6 +215,143 @@ export default function Home() {
       onClick: () => setShowRegistration(true)
     }
   ];
+
+  // Show authenticated user dashboard if logged in
+  if (isAuthenticated && user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-slate-900 mb-4">
+              Welcome to Sewer Swarm AI
+            </h1>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Professional sewer condition analysis and reporting with AI-powered insights
+            </p>
+          </div>
+
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Welcome back, {user.firstName || user.email}!</CardTitle>
+                  <CardDescription>
+                    Choose your next action to manage your sewer inspection reports
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <Link to="/upload">
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <CardHeader className="text-center">
+                    <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                      <Upload className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <CardTitle className="text-lg">Upload Report</CardTitle>
+                    <CardDescription>
+                      Upload CCTV inspection files and select applicable sector for analysis
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              <Link to="/dashboard">
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <CardHeader className="text-center">
+                    <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                      <BarChart3 className="h-6 w-6 text-emerald-600" />
+                    </div>
+                    <CardTitle className="text-lg">Dashboard</CardTitle>
+                    <CardDescription>
+                      View section inspection data and analysis results across all reports
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              <Link to="/checkout">
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <CardHeader className="text-center">
+                    <div className="mx-auto w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                      <Settings className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <CardTitle className="text-lg">Upgrade Plan</CardTitle>
+                    <CardDescription>
+                      Access premium features and unlimited report processing
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Supported Sectors</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Utilities</span>
+                      <span className="text-slate-500">WRc SRM standards</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Adoption</span>
+                      <span className="text-slate-500">SfA8 compliance</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Highways</span>
+                      <span className="text-slate-500">DMRB standards</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Trading Standards</span>
+                      <span className="text-slate-500">Regulatory compliance</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Insurance</span>
+                      <span className="text-slate-500">ABI guidelines</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Construction</span>
+                      <span className="text-slate-500">Building regs</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">File Formats</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>PDF Reports</span>
+                      <span className="text-slate-500">Up to 50MB</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Database Files (.db)</span>
+                      <span className="text-slate-500">Up to 50MB</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Standards</span>
+                      <span className="text-slate-500">WRc/WTI OS19/20x</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Output Format</span>
+                      <span className="text-slate-500">MSCC5R compliant</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">

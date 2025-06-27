@@ -122,6 +122,7 @@ Changelog:
 - June 27, 2025. Fixed stuck report processing issue and added refresh functionality with larger action buttons including "Refresh Reports", "Export Excel", and "Export DB"
 - June 27, 2025. Implemented comprehensive sector standards display and defect/repair output logic with downloadable reports containing sector-specific analysis based on WRc/WTI standards
 - June 27, 2025. Fixed 403 upload errors by setting test user access and resolved section header display issues with proper typing
+- June 27, 2025. Restructured app: moved upload to separate page, redesigned dashboard for section inspection data analysis across full width with multiple item number support
 ```
 
 ## User Preferences

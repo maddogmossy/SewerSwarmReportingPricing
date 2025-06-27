@@ -1,19 +1,11 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
-import { apiRequest } from "@/lib/queryClient";
-import { isUnauthorizedError } from "@/lib/authUtils";
-import FileUpload from "@/components/ui/file-upload";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { 
-  Waves,
-  LogOut,
-  Settings,
   Download,
   Upload,
   Building,
@@ -25,10 +17,10 @@ import {
   HardHat,
   CheckCircle,
   Clock,
-  XCircle,
   AlertCircle
 } from "lucide-react";
-import type { User, FileUpload as FileUploadType } from "@shared/schema";
+import { Link } from "wouter";
+import type { FileUpload as FileUploadType } from "@shared/schema";
 
 const sectors = [
   {
@@ -142,28 +134,7 @@ const getStatusColor = (status: string) => {
 };
 
 export default function Dashboard() {
-  const [selectedSector, setSelectedSector] = useState<string>("");
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [showSectorModal, setShowSectorModal] = useState(false);
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
-  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!authLoading && !user) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [user, authLoading, toast]);
 
   // Fetch user uploads
   const { data: uploads = [] } = useQuery<FileUploadType[]>({
