@@ -265,6 +265,9 @@ export default function Dashboard() {
   const { data: sectionData = [], isLoading: sectionsLoading } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
+    onSuccess: (data) => {
+      console.log("Section data received:", data.length > 0 ? data[0] : "No data");
+    }
   });
 
   return (
