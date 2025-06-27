@@ -150,10 +150,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (upload.status === "processing") {
-        await storage.updateFileUploadStatus(uploadId, "completed", `/reports/${uploadId}-analysis.pdf`);
-        res.json({ message: "Report completed successfully" });
+        console.log(`Updating upload ${uploadId} from processing to completed`);
+        const updatedUpload = await storage.updateFileUploadStatus(uploadId, "completed", `/reports/${uploadId}-analysis.pdf`);
+        console.log(`Upload updated:`, updatedUpload);
+        res.json({ message: "Report completed successfully", upload: updatedUpload });
       } else {
-        res.json({ message: "Report is not in processing state" });
+        res.json({ message: "Report is not in processing state", currentStatus: upload.status });
       }
     } catch (error) {
       console.error("Error completing report:", error);

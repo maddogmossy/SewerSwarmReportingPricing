@@ -119,6 +119,7 @@ Changelog:
 - June 27, 2025. Fixed file upload issue: Updated apiRequest to properly handle FormData uploads
 - June 27, 2025. Added sector validation: Users must select sector before file upload (click, drag, input)
 - June 27, 2025. Replaced browser alert with elegant sector selection modal overlay - users can now select files immediately and choose sectors through polished modal interface
+- June 27, 2025. Fixed stuck report processing issue and added refresh functionality with larger action buttons including "Refresh Reports", "Export Excel", and "Export DB"
 ```
 
 ## User Preferences

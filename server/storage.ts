@@ -105,16 +105,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateFileUploadStatus(id: number, status: string, reportUrl?: string): Promise<FileUpload> {
-    const updateData: Partial<FileUpload> = { status };
+    const updateData: any = { 
+      status,
+      updatedAt: new Date()
+    };
     if (reportUrl) {
       updateData.reportUrl = reportUrl;
     }
 
+    console.log(`Updating file upload ${id} with:`, updateData);
     const [fileUpload] = await db
       .update(fileUploads)
       .set(updateData)
       .where(eq(fileUploads.id, id))
       .returning();
+    console.log(`Database returned:`, fileUpload);
     return fileUpload;
   }
 
