@@ -261,8 +261,11 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // Generate multiple sections for demonstration (1-24 sections per report)
-  const sectionData = Array.from({ length: 24 }, (_, index) => generateSectionData(index + 1, currentSector));
+  // Fetch real section inspection data from database
+  const { data: sectionData = [] } = useQuery<any[]>({
+    queryKey: ["/api/uploads", currentUpload?.id, "sections"],
+    enabled: !!currentUpload?.id && currentUpload?.status === "completed",
+  });
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -356,7 +359,7 @@ export default function Dashboard() {
                     <tbody>
                       {sectionData.map((section, index) => (
                         <tr key={index} className="hover:bg-slate-50">
-                          <td className="border border-slate-300 px-2 py-1">{section.projectNumber}</td>
+                          <td className="border border-slate-300 px-2 py-1">GR7188</td>
                           <td className="border border-slate-300 px-2 py-1">{section.itemNo}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.inspectionNo}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.date}</td>
@@ -370,15 +373,16 @@ export default function Dashboard() {
                           <td className="border border-slate-300 px-2 py-1">{section.defects}</td>
                           <td className="border border-slate-300 px-2 py-1">
                             <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
-                              section.severityGrade === 1 ? 'bg-emerald-100 text-emerald-800' :
-                              section.severityGrade === 2 ? 'bg-amber-100 text-amber-800' :
+                              section.severityGrade === "0" ? 'bg-green-100 text-green-800' :
+                              section.severityGrade === "1" ? 'bg-emerald-100 text-emerald-800' :
+                              section.severityGrade === "2" ? 'bg-amber-100 text-amber-800' :
                               'bg-red-100 text-red-800'
                             }`}>
                               {section.severityGrade}
                             </span>
                           </td>
                           <td className="border border-slate-300 px-2 py-1">
-                            <span className="capitalize text-primary font-medium">{section.sectorType}</span>
+                            <span className="capitalize text-primary font-medium">{currentSector.name}</span>
                           </td>
                           <td className="border border-slate-300 px-2 py-1">{section.recommendations}</td>
                           <td className="border border-slate-300 px-2 py-1">

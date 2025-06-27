@@ -239,6 +239,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/uploads/:id/sections', isAuthenticated, async (req: any, res) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      // Verify the upload belongs to the user
+      const uploads = await storage.getFileUploadsByUser(userId);
+      const upload = uploads.find(u => u.id === uploadId);
+      
+      if (!upload) {
+        return res.status(404).json({ message: "Upload not found" });
+      }
+
+      // Get section inspection data for this upload
+      const sections = await storage.getSectionInspectionsByFileUpload(uploadId);
+      res.json(sections);
+    } catch (error) {
+      console.error("Error fetching section data:", error);
+      res.status(500).json({ message: "Failed to fetch section data" });
+    }
+  });
+
   app.delete('/api/uploads/:id', isAuthenticated, async (req: any, res) => {
     try {
       const uploadId = parseInt(req.params.id);
@@ -252,6 +274,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Upload not found" });
       }
 
+      // Delete section inspection data first
+      await storage.deleteSectionInspectionsByFileUpload(uploadId);
+      
+      // Delete the file upload
       await storage.deleteFileUpload(uploadId);
       res.json({ message: "Upload deleted successfully" });
     } catch (error) {
