@@ -117,6 +117,7 @@ Changelog:
 - June 27, 2025. Initial setup
 - June 27, 2025. Added test user access system for unlimited testing without payment
 - June 27, 2025. Fixed file upload issue: Updated apiRequest to properly handle FormData uploads
+- June 27, 2025. Added sector validation: Users must select sector before file upload (click, drag, input)
 ```
 
 ## User Preferences

@@ -134,7 +134,17 @@ export default function FileUpload({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => {
+            // Check if sector is required but not selected
+            if (requiresSector && !selectedSector) {
+              alert('Please select a sector first before choosing a file.');
+              if (onSectorPrompt) {
+                onSectorPrompt();
+              }
+              return;
+            }
+            fileInputRef.current?.click();
+          }}
         >
           <CardContent className="p-12 text-center">
             <div className="mb-4">
