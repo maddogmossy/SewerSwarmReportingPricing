@@ -117,12 +117,119 @@ export interface DefectClassificationResult {
 
 export class MSCC5Classifier {
   /**
-   * Classify defects based on MSCC5 standards
+   * Parse multiple defects from inspection text with meterage and percentages
+   */
+  static parseMultipleDefects(defectText: string): Array<{meterage: string, defectCode: string, description: string, percentage: string}> {
+    const defects = [];
+    const normalizedText = defectText.toLowerCase();
+    
+    // Pattern to match defect entries like "DER 0.76m: Settled deposits, coarse, 5% cross-sectional area loss"
+    const defectPattern = /(\w+)\s+(\d+\.?\d*m?):\s*([^;]+?)(?:;\s*|$)/g;
+    let match;
+    
+    while ((match = defectPattern.exec(defectText)) !== null) {
+      const [, code, meterage, description] = match;
+      
+      // Extract percentage if present
+      const percentageMatch = description.match(/(\d+(?:-\d+)?%)/);
+      const percentage = percentageMatch ? percentageMatch[1] : '';
+      
+      defects.push({
+        meterage,
+        defectCode: code.toUpperCase(),
+        description: description.trim(),
+        percentage
+      });
+    }
+    
+    return defects;
+  }
+
+  /**
+   * Classify defects based on MSCC5 standards with detailed parsing
    */
   static classifyDefect(defectText: string, sector: string = 'utilities'): DefectClassificationResult {
     const normalizedText = defectText.toLowerCase();
     
-    // Detect specific defect types based on keywords
+    // Check if it's a no-defect condition first
+    if (normalizedText.includes('no action required') || normalizedText.includes('acceptable condition')) {
+      return {
+        defectCode: 'N/A',
+        defectDescription: 'No action required pipe observed in acceptable structural and service condition',
+        severityGrade: 0,
+        defectType: 'service',
+        recommendations: 'No action required pipe observed in acceptable structural and service condition',
+        riskAssessment: 'Pipe in acceptable condition',
+        adoptable: 'Yes',
+        estimatedCost: '£0'
+      };
+    }
+    
+    // Parse multiple defects with meterage
+    const parsedDefects = this.parseMultipleDefects(defectText);
+    
+    if (parsedDefects.length > 0) {
+      // Process multiple defects and determine overall severity
+      let highestGrade = 0;
+      let combinedDescription = '';
+      let mainDefectType: 'structural' | 'service' = 'service';
+      let combinedRecommendations = '';
+      
+      parsedDefects.forEach((defect, index) => {
+        const mscc5Defect = MSCC5_DEFECTS[defect.defectCode];
+        if (mscc5Defect) {
+          const grade = this.calculateGradeFromPercentage(mscc5Defect.default_grade, defect.percentage);
+          if (grade > highestGrade) {
+            highestGrade = grade;
+            mainDefectType = mscc5Defect.type;
+          }
+          
+          const defectDesc = `${defect.meterage}: ${defect.description}`;
+          combinedDescription += (index > 0 ? '; ' : '') + defectDesc;
+          
+          if (combinedRecommendations && !combinedRecommendations.includes(mscc5Defect.recommended_action)) {
+            combinedRecommendations += '; ' + mscc5Defect.recommended_action;
+          } else if (!combinedRecommendations) {
+            combinedRecommendations = mscc5Defect.recommended_action;
+          }
+        }
+      });
+      
+      // Sector-specific adjustments
+      if (sector === 'adoption' && mainDefectType === 'structural') {
+        highestGrade = Math.max(highestGrade, 3);
+      }
+      
+      // Determine adoptability
+      let adoptable: 'Yes' | 'No' | 'Conditional' = 'Yes';
+      if (highestGrade >= 4) {
+        adoptable = 'No';
+      } else if (highestGrade === 3 && (sector === 'adoption' || mainDefectType === 'structural')) {
+        adoptable = 'Conditional';
+      }
+      
+      const costBands = {
+        0: '£0',
+        1: '£0-500',
+        2: '£500-2,000',
+        3: '£2,000-10,000',
+        4: '£10,000-50,000',
+        5: '£50,000+'
+      };
+      
+      return {
+        defectCode: parsedDefects.map(d => d.defectCode).join(','),
+        defectDescription: combinedDescription,
+        severityGrade: highestGrade,
+        defectType: mainDefectType,
+        recommendations: combinedRecommendations,
+        riskAssessment: `Multiple defects requiring attention. Highest severity: Grade ${highestGrade}`,
+        adoptable,
+        estimatedCost: costBands[highestGrade as keyof typeof costBands] || '£TBC'
+      };
+    }
+    
+    // Fallback to single defect detection
     let detectedDefect: MSCC5Defect | null = null;
     let defectCode = '';
     
@@ -162,7 +269,6 @@ export class MSCC5Classifier {
       defectCode = 'OB';
     }
     
-    // If no specific defect detected, assume acceptable condition
     if (!detectedDefect) {
       return {
         defectCode: 'N/A',
@@ -176,15 +282,12 @@ export class MSCC5Classifier {
       };
     }
     
-    // Calculate severity grade based on context and sector
     let adjustedGrade = detectedDefect.default_grade;
     
-    // Sector-specific adjustments
     if (sector === 'adoption' && detectedDefect.type === 'structural') {
-      adjustedGrade = Math.max(adjustedGrade, 3); // Stricter for adoption
+      adjustedGrade = Math.max(adjustedGrade, 3);
     }
     
-    // Determine adoptability based on grade and sector
     let adoptable: 'Yes' | 'No' | 'Conditional' = 'Yes';
     if (adjustedGrade >= 4) {
       adoptable = 'No';
@@ -192,7 +295,6 @@ export class MSCC5Classifier {
       adoptable = 'Conditional';
     }
     
-    // Estimate cost based on grade and defect type
     const costBands = {
       0: '£0',
       1: '£0-500',
@@ -212,6 +314,29 @@ export class MSCC5Classifier {
       adoptable,
       estimatedCost: costBands[adjustedGrade as keyof typeof costBands] || '£TBC'
     };
+  }
+  
+  /**
+   * Calculate severity grade based on percentage of blockage/damage
+   */
+  static calculateGradeFromPercentage(baseGrade: number, percentage: string): number {
+    if (!percentage) return baseGrade;
+    
+    const numMatch = percentage.match(/(\d+)/);
+    if (!numMatch) return baseGrade;
+    
+    const percent = parseInt(numMatch[1]);
+    
+    // Adjust grade based on percentage
+    if (percent >= 50) {
+      return Math.min(baseGrade + 2, 5);
+    } else if (percent >= 30) {
+      return Math.min(baseGrade + 1, 5);
+    } else if (percent >= 10) {
+      return baseGrade;
+    } else {
+      return Math.max(baseGrade - 1, 1);
+    }
   }
   
   /**
