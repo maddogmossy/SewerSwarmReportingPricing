@@ -442,15 +442,42 @@ export default function Dashboard() {
                             <span className="capitalize">{upload.sector}</span>
                           </div>
                         </div>
-                        {upload.reportUrl && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => window.open(upload.reportUrl, '_blank')}
-                          >
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        )}
+                        <div className="flex gap-1">
+                          {upload.status === "processing" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                try {
+                                  await apiRequest("POST", `/api/complete-report/${upload.id}`);
+                                  queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+                                  toast({
+                                    title: "Report Completed",
+                                    description: "Your report has been marked as completed!",
+                                  });
+                                } catch (error) {
+                                  toast({
+                                    title: "Error",
+                                    description: "Failed to complete report",
+                                    variant: "destructive",
+                                  });
+                                }
+                              }}
+                              title="Complete stuck report"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {upload.reportUrl && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(upload.reportUrl, '_blank')}
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

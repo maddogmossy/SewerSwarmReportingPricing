@@ -104,9 +104,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.incrementTrialReports(userId);
       }
 
-      // TODO: Trigger actual file processing here
-      // For now, we'll just mark it as processing
+      // Simulate file processing with a delay, then mark as completed
       await storage.updateFileUploadStatus(fileUpload.id, "processing");
+      
+      // Simulate processing time (in a real app this would be actual analysis)
+      setTimeout(async () => {
+        try {
+          await storage.updateFileUploadStatus(fileUpload.id, "completed", `/reports/${fileUpload.id}-analysis.pdf`);
+        } catch (error) {
+          console.error("Error updating file status:", error);
+          await storage.updateFileUploadStatus(fileUpload.id, "failed");
+        }
+      }, 10000); // 10 seconds processing time
 
       res.json({ fileUpload, message: "File uploaded successfully" });
     } catch (error) {
@@ -123,6 +132,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching uploads:", error);
       res.status(500).json({ message: "Failed to fetch uploads" });
+    }
+  });
+
+  // Manual completion endpoint for stuck reports
+  app.post('/api/complete-report/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      // Verify the upload belongs to the user
+      const uploads = await storage.getFileUploadsByUser(userId);
+      const upload = uploads.find(u => u.id === uploadId);
+      
+      if (!upload) {
+        return res.status(404).json({ message: "Upload not found" });
+      }
+      
+      if (upload.status === "processing") {
+        await storage.updateFileUploadStatus(uploadId, "completed", `/reports/${uploadId}-analysis.pdf`);
+        res.json({ message: "Report completed successfully" });
+      } else {
+        res.json({ message: "Report is not in processing state" });
+      }
+    } catch (error) {
+      console.error("Error completing report:", error);
+      res.status(500).json({ message: "Failed to complete report" });
     }
   });
 
