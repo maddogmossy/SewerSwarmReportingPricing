@@ -135,6 +135,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/uploads/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      // Verify the upload belongs to the user
+      const uploads = await storage.getFileUploadsByUser(userId);
+      const upload = uploads.find(u => u.id === uploadId);
+      
+      if (!upload) {
+        return res.status(404).json({ message: "Upload not found" });
+      }
+
+      await storage.deleteFileUpload(uploadId);
+      res.json({ message: "Upload deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting upload:", error);
+      res.status(500).json({ message: "Failed to delete upload" });
+    }
+  });
+
   // Manual completion endpoint for stuck reports
   app.post('/api/complete-report/:id', isAuthenticated, async (req: any, res) => {
     try {

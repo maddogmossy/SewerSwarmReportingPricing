@@ -8,8 +8,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/ui/file-upload";
 import { FileUpload as FileUploadType } from "@shared/schema";
-import { Download, FileText, Clock, CheckCircle, AlertCircle, Home } from "lucide-react";
-import { Link } from "wouter";
+import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye } from "lucide-react";
+import { Link, useLocation } from "wouter";
 
 const sectors = [
   {
@@ -96,6 +96,7 @@ export default function Upload() {
   const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedSector, setSelectedSector] = useState<string>("");
+  const [, setLocation] = useLocation();
 
   const { data: uploads = [], refetch } = useQuery<FileUploadType[]>({
     queryKey: ["/api/uploads"],
@@ -149,6 +150,30 @@ export default function Upload() {
       });
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (uploadId: number) => {
+      return apiRequest("DELETE", `/api/uploads/${uploadId}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Report Deleted",
+        description: "The report has been successfully deleted.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Delete Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleViewReport = (uploadId: number) => {
+    setLocation(`/dashboard?reportId=${uploadId}`);
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -308,15 +333,36 @@ export default function Upload() {
                       <Badge className={getStatusColor(upload.status || 'pending')}>
                         {upload.status || 'pending'}
                       </Badge>
+                      {upload.status === 'completed' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewReport(upload.id)}
+                          title="View Report in Dashboard"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      )}
                       {upload.reportUrl && (
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => window.open(upload.reportUrl || '#', '_blank')}
+                          title="Download Report"
                         >
                           <Download className="h-4 w-4" />
                         </Button>
                       )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteMutation.mutate(upload.id)}
+                        disabled={deleteMutation.isPending}
+                        title="Delete Report"
+                        className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 ))}

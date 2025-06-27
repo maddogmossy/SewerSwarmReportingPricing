@@ -26,6 +26,7 @@ export interface IStorage {
   createFileUpload(upload: InsertFileUpload): Promise<FileUpload>;
   getFileUploadsByUser(userId: string): Promise<FileUpload[]>;
   updateFileUploadStatus(id: number, status: string, reportUrl?: string): Promise<FileUpload>;
+  deleteFileUpload(id: number): Promise<void>;
   
   // Subscription operations
   getSubscriptionPlans(): Promise<SubscriptionPlan[]>;
