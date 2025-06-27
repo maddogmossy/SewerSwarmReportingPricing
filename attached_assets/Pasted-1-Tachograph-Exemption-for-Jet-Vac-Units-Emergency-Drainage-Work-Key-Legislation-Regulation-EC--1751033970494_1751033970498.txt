@@ -1,0 +1,61 @@
+1. Tachograph Exemption for Jet-Vac Units – Emergency Drainage Work
+Key Legislation:
+Regulation (EC) No 561/2006 – governs driver hours and tachographs across EU and retained in UK post-Brexit.
+
+UK Guidance: Department for Transport’s “EU drivers’ hours and tachograph rules for goods vehicles in the UK and Europe”
+
+✅ Tachograph Exemption Clause:
+Under Article 3(d) of EC 561/2006, vehicles are exempt where they are:
+
+“used in emergencies or rescue operations.”
+
+🔧 Interpretation for Jet-Vac Units:
+If your jet vacs are used for:
+
+Flood response
+
+Pollution clearance
+
+Emergency sewer unblocking
+
+Gully emptying that prevents immediate road or property risk
+
+Then you can legitimately rely on the emergency exemption.
+
+However, for routine or scheduled maintenance (non-urgent gully sucking or planned sewer cleaning), the exemption does not apply. The intent and urgency matter.
+
+✅ 2. Not Transporting Goods for Hire or Reward
+Jet-vac units are not used for:
+
+Delivering goods
+
+Haulage for profit
+
+Movement of products
+
+So, they are not caught under the "carriage of goods for hire or reward" definitions that usually trigger tachograph and HGV compliance.
+
+✅ 3. Driving on a Car Licence (Category B)
+Jet-vac units may also be exempt from full HGV entitlement in limited cases.
+
+✅ Exemption Reference:
+If a vehicle is:
+
+“classified as a special-purpose vehicle such as engineering plant, road construction, or agricultural machine (e.g. like a tractor),”
+then Category B or even Category C1 (if 3.5t–7.5t) may suffice.
+
+But — this only applies if:
+
+The jet vac is registered as a "plant" vehicle, and
+
+It’s used on roads only incidentally (e.g. to get between sites), not for commercial freight transport.
+
+Many gully tankers or vacuum units fall under the engineering plant exemption – but this must be backed by how it’s registered and taxed (e.g. DVLA ‘plant’ class).
+
+✅ Summary for Jane / HR / Insurers
+Tachograph Exemption: Yes, for emergency drainage or flood work under EC 561/2006 Art 3(d). Not for routine maintenance.
+
+Not transporting goods for sale: Correct – jet vacs carry waste/sludge, not saleable cargo.
+
+Driving licence: Category B may suffice if the vehicle is taxed/registered as plant or engineering machinery, and weighs under 3.5t (or C1 for up to 7.5t). Anything heavier or used on-road commercially may require C1/C.
+

@@ -132,25 +132,33 @@ const getStatusColor = (status: string) => {
 };
 
 // Mock data for multiple sections in the same report
-const generateSectionData = (itemNumber: number, sector: any) => ({
-  itemNo: itemNumber,
-  inspectionNo: itemNumber,
-  date: new Date().toLocaleDateString('en-GB'),
-  time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
-  projectNumber: "GR7188",
-  startMH: `SW0${itemNumber}`,
-  finishMH: `SW0${itemNumber + 1}`,
-  pipeSize: itemNumber === 1 ? "150mm" : itemNumber === 2 ? "225mm" : "300mm",
-  pipeMaterial: itemNumber === 1 ? "PVC" : itemNumber === 2 ? "Concrete" : "Clay",
-  totalLength: itemNumber === 1 ? "15.56" : itemNumber === 2 ? "23.45" : "18.23",
-  lengthSurveyed: itemNumber === 1 ? "15.56" : itemNumber === 2 ? "23.45" : "18.23",
-  defects: itemNumber === 1 ? "None" : itemNumber === 2 ? "Minor crack" : "Root intrusion",
-  severityGrade: itemNumber === 1 ? 1 : itemNumber === 2 ? 2 : 3,
-  sectorType: sector.name,
-  recommendations: itemNumber === 1 ? "Monitor" : itemNumber === 2 ? "Schedule repair" : "Urgent repair",
-  adoptable: sector.id === 'adoption' ? (itemNumber === 1 ? "Yes" : itemNumber === 2 ? "Yes" : "No") : "N/A",
-  cost: itemNumber === 1 ? "£0" : itemNumber === 2 ? "£450" : "£1,200"
-});
+const generateSectionData = (itemNumber: number, sector: any) => {
+  // Items with no defects: 1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24
+  const noDefectItems = [1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24];
+  const hasNoDefects = noDefectItems.includes(itemNumber);
+  
+  return {
+    itemNo: itemNumber,
+    inspectionNo: 1, // Always 1 for first survey - would be 2, 3, etc. for repeat surveys of same section
+    date: new Date().toLocaleDateString('en-GB'),
+    time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+    projectNumber: "GR7188",
+    startMH: `SW0${itemNumber}`,
+    finishMH: `SW0${itemNumber + 1}`,
+    pipeSize: itemNumber === 1 ? "150mm" : itemNumber === 2 ? "225mm" : "300mm",
+    pipeMaterial: itemNumber === 1 ? "PVC" : itemNumber === 2 ? "Concrete" : "Clay",
+    totalLength: itemNumber === 1 ? "15.56" : itemNumber === 2 ? "23.45" : "18.23",
+    lengthSurveyed: itemNumber === 1 ? "15.56" : itemNumber === 2 ? "23.45" : "18.23",
+    defects: hasNoDefects ? "No action required pipe observed in acceptable structural and service condition" : 
+             (itemNumber === 3 ? "Minor crack" : itemNumber === 6 ? "Root intrusion" : "Joint displacement"),
+    severityGrade: hasNoDefects ? "0" : (itemNumber === 3 ? "2" : itemNumber === 6 ? "3" : "2"),
+    sectorType: sector.name,
+    recommendations: hasNoDefects ? "No action required pipe observed in acceptable structural and service condition" : 
+                    (itemNumber === 3 ? "Schedule repair" : itemNumber === 6 ? "Urgent repair" : "Monitor"),
+    adoptable: hasNoDefects ? "Yes" : (sector.id === 'adoption' ? "No" : "N/A"),
+    cost: hasNoDefects ? "£0" : (itemNumber === 3 ? "£450" : itemNumber === 6 ? "£1,200" : "£300")
+  };
+};
 
 export default function Dashboard() {
   const { toast } = useToast();

@@ -126,6 +126,8 @@ Changelog:
 - June 27, 2025. Added report viewing and deletion functionality: Users can click eye icon to view specific reports in dashboard with URL parameters, and delete reports using trash icon with secure backend validation
 - June 27, 2025. Enhanced dashboard layout: Project number now displays before item number, supports 1-24 sections per report, and moved analysis standards below section inspection data for better information hierarchy
 - June 27, 2025. Restored separate Item No column: Added back dedicated Item No column (1,2,3,4,5...) from Section inspection data, with separate Inspec. No column (defaults to '1' unless multiple surveys of same section)
+- June 27, 2025. Fixed Inspec. No column: Corrected to show all '1' values for single survey report (would increment to '2', '3' only for repeat surveys of same sections)
+- June 27, 2025. Implemented default values for no-defect sections: Items 1,2,4,5,9,11,12,16,17,18,24 now show standard "No action required" text with Grade 0 and Adoptable Yes for all reports
 ```
 
 ## User Preferences
