@@ -297,6 +297,50 @@ export default function Dashboard() {
     queryKey: ["/api/equipment-types/2"], // Cleansing category
   });
 
+  // Export to Excel function
+  const exportToExcel = () => {
+    if (!sectionData?.length) return;
+    
+    const csvContent = [
+      // Headers
+      ['Project No', 'Item No', 'Inspec. No', 'Date', 'Time', 'Start MH', 'Finish MH', 'Pipe Size', 'Pipe Material', 'Total Length', 'Length Surveyed', 'Defects', 'Severity Grade', 'Major Service Defects', 'Repair Methods', 'Cleaning Methods', 'Adoptable', 'Cost'].join(','),
+      // Data rows
+      ...sectionData.map(section => [
+        'GR7188',
+        section.itemNo,
+        section.inspectionNo,
+        section.date,
+        section.time,
+        section.startMH,
+        section.finishMH,
+        section.pipeSize,
+        section.pipeMaterial,
+        section.totalLength,
+        section.lengthSurveyed,
+        section.defects,
+        section.severityGrade,
+        section.severityGrade === "0" ? "No service issues" :
+        section.severityGrade === "1" ? "Minor service impacts" :
+        section.severityGrade === "2" ? "Moderate service defects" :
+        section.severityGrade === "3" ? "Major service defects" : "Blocked or non-functional",
+        section.severityGrade === "0" ? "None required" :
+        section.severityGrade === "2" ? "Local patch lining" :
+        section.severityGrade === "3" ? "High-pressure jetting" : "Excavate and replace",
+        section.severityGrade === "0" ? "None required" :
+        section.severityGrade === "2" ? "Medium-pressure jetting" :
+        section.severityGrade === "3" ? "Jet-Vac unit removal" : "High-pressure rotating head",
+        section.adoptable,
+        calculateSectionCost(section)
+      ].map(field => `"${field}"`).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${currentUpload?.fileName || 'section-inspection'}-analysis.csv`;
+    link.click();
+  };
+
   // Calculate actual costs based on user pricing configuration
   const calculateSectionCost = (section: any) => {
     // Check if section has defects requiring repair
@@ -312,44 +356,46 @@ export default function Dashboard() {
 
     // Section has defects and requires repairs - check pricing availability
 
-    // For utilities sector reports, require utilities-ONLY pricing (not mixed sectors)
-    const utilitiesPricing = userPricing.filter((pricing: any) => 
+    // For sector reports, require sector-ONLY pricing (not mixed sectors)
+    // Determine the current report sector - this would come from the actual report data
+    const reportSector = 'utilities'; // This should be dynamically determined from the report
+    
+    const sectorPricing = userPricing.filter((pricing: any) => 
       pricing.sectors && 
-      pricing.sectors.includes('utilities') &&
+      pricing.sectors.includes(reportSector) &&
       pricing.sectors.length === 1 && 
-      pricing.sectors[0] === 'utilities'
+      pricing.sectors[0] === reportSector
     );
 
-    if (!utilitiesPricing.length || !equipmentTypes.length) {
+    if (!sectorPricing.length || !equipmentTypes.length) {
       return (
         <div className="text-amber-600 font-medium text-sm">
-          <div>Configure utilities</div>
+          <div>Configure {reportSector}</div>
           <div>sector pricing first</div>
         </div>
       );
     }
 
-    // Since this is a utilities sector report, we need utilities-specific pricing
-    // Check if there are any completed utilities pricing configurations
-    const validUtilitiesPricing = utilitiesPricing.filter((pricing: any) => 
+    // Check if there are any completed sector pricing configurations
+    const validSectorPricing = sectorPricing.filter((pricing: any) => 
       pricing.costPerDay && 
       parseFloat(pricing.costPerDay) > 0 &&
       pricing.sectionsPerDay &&
       parseFloat(pricing.sectionsPerDay) > 0
     );
 
-    if (!validUtilitiesPricing.length) {
+    if (!validSectorPricing.length) {
       return (
         <div className="text-amber-600 font-medium text-sm">
-          <div>Configure utilities</div>
+          <div>Configure {reportSector}</div>
           <div>sector pricing first</div>
         </div>
       );
     }
 
-    // Find appropriate utilities equipment pricing based on section length
+    // Find appropriate sector equipment pricing based on section length
     const sectionLength = parseFloat(section.totalLength) || 0;
-    const appropriatePricing = validUtilitiesPricing.find((pricing: any) => {
+    const appropriatePricing = validSectorPricing.find((pricing: any) => {
       const minRange = parseFloat(pricing.meterageRangeMin) || 0;
       const maxRange = parseFloat(pricing.meterageRangeMax) || 100;
       return sectionLength >= minRange && sectionLength <= maxRange;
@@ -358,7 +404,7 @@ export default function Dashboard() {
     if (!appropriatePricing) {
       return (
         <div className="text-amber-600 font-medium text-sm">
-          <div>Configure utilities</div>
+          <div>Configure {reportSector}</div>
           <div>sector pricing first</div>
         </div>
       );
@@ -396,15 +442,22 @@ export default function Dashboard() {
               Pricing
             </Button>
           </Link>
-          <div className="ml-auto">
+          <div className="ml-auto flex gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => refreshMutation.mutate()}
-              disabled={refreshMutation.isPending}
+              onClick={() => window.location.reload()}
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${refreshMutation.isPending ? 'animate-spin' : ''}`} />
-              {refreshMutation.isPending ? "Refreshing..." : "Refresh Data"}
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh Dashboard
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportToExcel}
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export to Excel
             </Button>
           </div>
         </div>
