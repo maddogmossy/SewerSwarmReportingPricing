@@ -46,6 +46,7 @@ interface UserPricing {
   meterageRangeMin: string;
   meterageRangeMax: string;
   sectionsPerDay: string;
+  sectors: string[];
 }
 
 const pipeSizes = [
@@ -106,6 +107,7 @@ const predefinedEquipmentTypes = [
 export default function CleansingPricing() {
   const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
   const [isAddingEquipment, setIsAddingEquipment] = useState(false);
+  const [isAddingPricing, setIsAddingPricing] = useState(false);
   const [newEquipment, setNewEquipment] = useState({
     name: "",
     description: "",
@@ -721,23 +723,26 @@ export default function CleansingPricing() {
                               </div>
                             </td>
                             <td className="p-2">
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setNewPricing({
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setNewPricing({
                                     equipmentTypeId: equipment.id,
                                     costPerDay: pricing.costPerDay || "",
                                     costPerHour: pricing.costPerHour || "",
                                     sectionsPerDay: pricing.sectionsPerDay || "",
                                     meterageRangeMin: pricing.meterageRangeMin || "",
                                     meterageRangeMax: pricing.meterageRangeMax || "",
-                                    sectors: []
-                                  })}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                              </div>
+                                    sectors: pricing.sectors || []
+                                  });
+                                  setSelectedEquipmentType(equipment.id.toString());
+                                  setIsAddingPricing(true);
+                                }}
+                              >
+                                <Edit className="h-4 w-4 mr-1" />
+                                Edit
+                              </Button>
                             </td>
                           </tr>
                         );
