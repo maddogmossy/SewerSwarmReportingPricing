@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, RotateCcw, Save, Wrench, Building, Car, Shield, Banknote, House } from "lucide-react";
+import { Settings, RotateCcw, Save, Wrench, Building, Car, Shield, Banknote, House, Home } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { Link } from "wouter";
 
 interface CostBand {
   id?: number;
@@ -125,6 +126,16 @@ export default function Pricing() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
       <div className="max-w-6xl mx-auto space-y-8">
+        {/* Navigation */}
+        <div className="flex justify-start">
+          <Link href="/">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Home className="h-4 w-4" />
+              Back to Home
+            </Button>
+          </Link>
+        </div>
+        
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-3">

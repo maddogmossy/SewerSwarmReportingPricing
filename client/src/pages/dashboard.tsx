@@ -553,18 +553,16 @@ export default function Dashboard() {
                           </div>
                           <div className="space-y-2">
                             {sector.standards.map((standard, idx) => (
-                              <div key={`${standard.name}-${idx}-${Date.now()}`} className="flex items-center justify-between text-sm p-2 bg-slate-50 rounded">
-                                <span className="font-medium">{standard.name}</span>
-                                {standard.url !== "#" && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => window.open(standard.url, '_blank')}
-                                    className="text-xs h-6 px-2 text-blue-600 hover:text-blue-800"
-                                  >
-                                    View Documentation
-                                  </Button>
-                                )}
+                              <div key={`${standard.name}-${idx}`} className="flex items-center justify-between text-sm p-2 bg-slate-50 rounded">
+                                <span className="font-medium text-slate-800">{standard.name}</span>
+                                <a 
+                                  href={standard.url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                                >
+                                  View Documentation
+                                </a>
                               </div>
                             ))}
                           </div>
