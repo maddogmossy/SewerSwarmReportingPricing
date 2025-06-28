@@ -696,7 +696,7 @@ export default function CleansingPricing() {
                               <div className="flex flex-wrap gap-1">
                                 {(pricing.sectors || []).map((sectorName, index) => {
                                   // Map sector names to colors
-                                  const sectorColorMap = {
+                                  const sectorColorMap: { [key: string]: string } = {
                                     'utilities': 'bg-blue-100 text-blue-800',
                                     'adoption': 'bg-green-100 text-green-800', 
                                     'highways': 'bg-orange-100 text-orange-800',
