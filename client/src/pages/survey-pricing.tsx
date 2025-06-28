@@ -758,7 +758,7 @@ export default function SurveyPricing() {
                   ) : (
                     <>
                       <Save className="h-4 w-4 mr-2" />
-                      Save Changes
+                      {editingEquipment?.id === 0 ? 'Add Equipment' : 'Save Changes'}
                     </>
                   )}
                 </Button>
