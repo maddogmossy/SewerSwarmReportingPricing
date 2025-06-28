@@ -117,6 +117,7 @@ export default function CleansingPricing() {
   
   const [selectedEquipmentType, setSelectedEquipmentType] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState<EquipmentType | null>(null);
+  const [editingPricingId, setEditingPricingId] = useState<number | null>(null);
   
   // Handle equipment type selection from dropdown
   const handleEquipmentTypeSelection = (equipmentTypeName: string) => {
@@ -132,7 +133,6 @@ export default function CleansingPricing() {
     }
   };
   const [checkedEquipment, setCheckedEquipment] = useState<Set<number>>(new Set());
-  const [editingPricingId, setEditingPricingId] = useState<number | null>(null);
   const [newPricing, setNewPricing] = useState({
     equipmentTypeId: 0,
     costPerDay: "",
@@ -715,10 +715,10 @@ export default function CleansingPricing() {
               <Button 
                 onClick={handleSavePricing} 
                 className="w-full"
-                disabled={savePricingMutation.isPending || newPricing.equipmentTypeId === 0}
+                disabled={savePricingMutation.isPending || updatePricingMutation.isPending || newPricing.equipmentTypeId === 0}
               >
                 <Save className="h-4 w-4 mr-2" />
-                Save Equipment Pricing
+                {editingPricingId ? 'Update Equipment Pricing' : 'Save Equipment Pricing'}
               </Button>
             </CardContent>
           </Card>
