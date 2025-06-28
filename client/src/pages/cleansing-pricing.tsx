@@ -469,7 +469,6 @@ export default function CleansingPricing() {
                       <td className="p-3">{pricing.sectionsPerDay}</td>
                       <td className="p-3">
                         <div className="flex gap-1 flex-wrap">
-                          {console.log('Pricing object:', pricing)}
                           {pricing.sectors && Array.isArray(pricing.sectors) && pricing.sectors.length > 0 ? pricing.sectors.map((sector: string, index: number) => {
                             const colorMap: Record<string, string> = {
                               'utilities': 'bg-blue-100 text-blue-800',
