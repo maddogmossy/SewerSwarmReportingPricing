@@ -17,7 +17,13 @@ import {
   Save, 
   ArrowLeft,
   Droplets,
-  Settings
+  Settings,
+  Wrench,
+  Building,
+  Car,
+  Banknote,
+  HardHat,
+  House
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -63,12 +69,12 @@ export default function CleansingPricing() {
   });
 
   const sectors = [
-    { id: "utilities", name: "Utilities", icon: "🔧", color: "blue" },
-    { id: "adoption", name: "Adoption", icon: "🏗️", color: "green" },
-    { id: "highways", name: "Highways", icon: "🚗", color: "orange" },
-    { id: "insurance", name: "Insurance", icon: "🛡️", color: "red" },
-    { id: "construction", name: "Construction", icon: "🏗️", color: "purple" },
-    { id: "domestic", name: "Domestic", icon: "🏠", color: "brown" }
+    { id: "utilities", name: "Utilities", icon: Wrench, color: "#3b82f6" }, // Blue
+    { id: "adoption", name: "Adoption", icon: Building, color: "#10b981" }, // Emerald
+    { id: "highways", name: "Highways", icon: Car, color: "#f59e0b" }, // Amber
+    { id: "insurance", name: "Insurance", icon: Banknote, color: "#ef4444" }, // Red
+    { id: "construction", name: "Construction", icon: HardHat, color: "#06b6d4" }, // Cyan
+    { id: "domestic", name: "Domestic", icon: House, color: "#92400e" } // Brown
   ];
 
   const { toast } = useToast();
@@ -370,31 +376,50 @@ export default function CleansingPricing() {
               {/* Sector Selection */}
               <div>
                 <Label>Applicable Sectors</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {sectors.map((sector) => (
-                    <div
-                      key={sector.id}
-                      className={`flex items-center space-x-2 p-2 border rounded cursor-pointer transition-colors ${
-                        newPricing.sectors.includes(sector.id)
-                          ? `border-${sector.color}-500 bg-${sector.color}-50`
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => {
-                        const isSelected = newPricing.sectors.includes(sector.id);
-                        setNewPricing(prev => ({
-                          ...prev,
-                          sectors: isSelected 
-                            ? prev.sectors.filter(s => s !== sector.id)
-                            : [...prev.sectors, sector.id]
-                        }));
-                      }}
-                    >
-                      <span className="text-sm">{sector.icon}</span>
-                      <span className="text-sm font-medium">{sector.name}</span>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  {sectors.map((sector) => {
+                    const isSelected = newPricing.sectors.includes(sector.id);
+                    return (
+                      <div
+                        key={sector.id}
+                        className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                          isSelected
+                            ? 'border-current bg-white/50'
+                            : 'border-gray-200 bg-white hover:border-gray-300'
+                        }`}
+                        style={{
+                          borderColor: isSelected ? sector.color : undefined,
+                          backgroundColor: isSelected ? `${sector.color}10` : undefined
+                        }}
+                        onClick={() => {
+                          setNewPricing(prev => ({
+                            ...prev,
+                            sectors: isSelected 
+                              ? prev.sectors.filter(s => s !== sector.id)
+                              : [...prev.sectors, sector.id]
+                          }));
+                        }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <sector.icon 
+                            className="h-5 w-5" 
+                            style={{ color: sector.color }}
+                          />
+                          <span className="font-medium text-gray-900">{sector.name}</span>
+                        </div>
+                        {isSelected && (
+                          <div className="absolute top-2 right-2">
+                            <div 
+                              className="w-2 h-2 rounded-full"
+                              style={{ backgroundColor: sector.color }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-2">
                   Select which sectors this pricing applies to
                 </p>
               </div>
