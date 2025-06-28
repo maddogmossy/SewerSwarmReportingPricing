@@ -135,10 +135,7 @@ export default function SurveyPricing() {
 
   const createEquipmentMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("/api/equipment-types", {
-        method: "POST",
-        body: JSON.stringify(data)
-      });
+      return await apiRequest("/api/equipment-types", "POST", data);
     },
     onSuccess: () => {
       toast({
@@ -164,10 +161,7 @@ export default function SurveyPricing() {
 
   const updateEquipmentMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      return await apiRequest(`/api/equipment-types/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data)
-      });
+      return await apiRequest(`/api/equipment-types/${id}`, "PUT", data);
     },
     onSuccess: () => {
       toast({
@@ -242,7 +236,7 @@ export default function SurveyPricing() {
     setShowEquipmentDialog(true);
   };
 
-  const handleUpdateEquipment = () => {
+  const handleSaveEquipment = () => {
     if (!editingEquipment) return;
     
     // Validate required fields
@@ -291,15 +285,23 @@ export default function SurveyPricing() {
       return;
     }
     
-    updateEquipmentMutation.mutate({
-      id: editingEquipment.id,
-      data: {
-        name: editingEquipment.name.trim(),
-        description: editingEquipment.description.trim(),
-        minPipeSize: editingEquipment.minPipeSize,
-        maxPipeSize: editingEquipment.maxPipeSize,
-      }
-    });
+    const equipmentData = {
+      name: editingEquipment.name.trim(),
+      description: editingEquipment.description.trim(),
+      minPipeSize: editingEquipment.minPipeSize,
+      maxPipeSize: editingEquipment.maxPipeSize,
+    };
+    
+    if (editingEquipment.id === 0) {
+      // Creating new equipment
+      createEquipmentMutation.mutate(equipmentData);
+    } else {
+      // Updating existing equipment
+      updateEquipmentMutation.mutate({
+        id: editingEquipment.id,
+        data: equipmentData
+      });
+    }
   };
 
   const handleDeleteEquipment = (equipmentId: number, equipmentName: string) => {
@@ -662,9 +664,14 @@ export default function SurveyPricing() {
       <Dialog open={showEquipmentDialog} onOpenChange={setShowEquipmentDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit Equipment Specification</DialogTitle>
+            <DialogTitle>
+              {editingEquipment?.id === 0 ? 'Add New Equipment' : 'Edit Equipment Specification'}
+            </DialogTitle>
             <DialogDescription>
-              Update the equipment details and pipe size range for this survey equipment.
+              {editingEquipment?.id === 0 
+                ? 'Add a new equipment type with pipe size range for survey pricing.'
+                : 'Update the equipment details and pipe size range for this survey equipment.'
+              }
             </DialogDescription>
           </DialogHeader>
           {editingEquipment && (
@@ -740,13 +747,13 @@ export default function SurveyPricing() {
                   Cancel
                 </Button>
                 <Button 
-                  onClick={handleUpdateEquipment}
-                  disabled={updateEquipmentMutation.isPending}
+                  onClick={handleSaveEquipment}
+                  disabled={updateEquipmentMutation.isPending || createEquipmentMutation.isPending}
                 >
-                  {updateEquipmentMutation.isPending ? (
+                  {(updateEquipmentMutation.isPending || createEquipmentMutation.isPending) ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Updating...
+                      {editingEquipment?.id === 0 ? 'Creating...' : 'Updating...'}
                     </>
                   ) : (
                     <>
