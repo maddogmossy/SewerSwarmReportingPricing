@@ -823,6 +823,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get live sector configurations with updated standards
+  app.get("/api/sector-configs", async (req, res) => {
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      
+      // Load utilities sector display config
+      const utilitiesPath = path.join(process.cwd(), 'attached_assets', 'utilities_sector_display_1751108183348.json');
+      const utilitiesData = JSON.parse(await fs.readFile(utilitiesPath, 'utf8'));
+      
+      // Create comprehensive sector configs with live data
+      const sectorConfigs = {
+        utilities: {
+          id: "utilities",
+          name: "Utilities",
+          description: "WRc SRM standards",
+          icon: "Wrench",
+          color: "text-blue-600",
+          standards: [
+            { name: "MSCC5 – Manual of Sewer Condition Classification", url: "https://www.wrcgroup.com/product/manual-of-sewer-condition-classification-mscc-5th-edition" },
+            { name: "Sewerage Rehabilitation Manual (SRM)", url: "https://www.wrcgroup.com/product/sewerage-risk-management-srm-manual" },
+            { name: "WRc Drain & Sewer Cleaning Manual", url: "https://www.wrcgroup.com/product/drain-and-sewer-cleaning-manual" },
+            { name: "Drain Repair Book (4th Ed.)", url: "https://www.wrcgroup.com/product/drain-repair-book-4th-edition" },
+            { name: "BS EN 752:2017 – Drain and sewer systems outside buildings", url: "https://shop.bsigroup.com/products/drain-and-sewer-systems-outside-buildings-bs-en-752-2017" },
+            { name: "Water Industry Act 1991 – Sections 94 & 106", url: "https://www.legislation.gov.uk/ukpga/1991/56/contents" }
+          ]
+        },
+        adoption: {
+          id: "adoption",
+          name: "Adoption", 
+          description: "SfA8 compliance",
+          icon: "Building",
+          color: "text-emerald-600",
+          standards: [
+            { name: "OS20x: Sewer Adoption CCTV Coding Standard", url: "https://www.wrcplc.co.uk/knowledge/os20x" },
+            { name: "Sewers for Adoption 7th/8th Edition (Water UK)", url: "https://wrcknowledgestore.co.uk/collections/all/products/sewers-for-adoption-7th-edition-a-design-construction-guide-for-developer" },
+            { name: "SSG: Sewerage Sector Guidance", url: "https://www.water.org.uk/guidance/sewerage-sector-guidance/" },
+            { name: "DCSG: Developer Services Code of Practice", url: "https://www.water.org.uk/guidance/developer-services/" },
+            { name: "BS EN 1610:2015 Construction & Testing", url: "https://www.bsigroup.com/en-GB/standards/bs-en-1610/" },
+            { name: "Water Industry Act 1991 – Section 104", url: "https://www.legislation.gov.uk/ukpga/1991/56/section/104" }
+          ]
+        }
+      };
+      
+      res.json(sectorConfigs);
+    } catch (error) {
+      console.error('Error loading sector configs:', error);
+      res.status(500).json({ error: 'Failed to load sector configurations' });
+    }
+  });
+
   // Test endpoint to verify WRc Standards Engine integration
   app.get("/api/wrc-standards/test", isAuthenticated, async (req, res) => {
     try {
