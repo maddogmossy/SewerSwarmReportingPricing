@@ -418,7 +418,6 @@ export default function Dashboard() {
     return `£${costPerSection.toFixed(2)}`;
   };
 
-
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Navigation */}
@@ -495,7 +494,25 @@ export default function Dashboard() {
             {/* Section Inspection Data Table */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections) - {currentSector.name} Sector</CardTitle>
+                <div className="flex items-center gap-3">
+                  <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border-2 ${
+                    currentSector.id === 'utilities' ? 'border-blue-500 bg-blue-50' :
+                    currentSector.id === 'adoption' ? 'border-green-500 bg-green-50' :
+                    currentSector.id === 'highways' ? 'border-orange-500 bg-orange-50' :
+                    currentSector.id === 'insurance' ? 'border-red-500 bg-red-50' :
+                    currentSector.id === 'construction' ? 'border-purple-500 bg-purple-50' :
+                    'border-yellow-500 bg-yellow-50'
+                  }`}>
+                    {currentSector.id === 'utilities' && <Building className="h-5 w-5 text-blue-600" />}
+                    {currentSector.id === 'adoption' && <CheckCircle className="h-5 w-5 text-green-600" />}
+                    {currentSector.id === 'highways' && <Car className="h-5 w-5 text-orange-600" />}
+                    {currentSector.id === 'insurance' && <ShieldCheck className="h-5 w-5 text-red-600" />}
+                    {currentSector.id === 'construction' && <HardHat className="h-5 w-5 text-purple-600" />}
+                    {currentSector.id === 'domestic' && <HomeIcon className="h-5 w-5 text-yellow-600" />}
+                    <span className="font-medium text-black">{currentSector.name} Sector</span>
+                  </div>
+                  <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections)</CardTitle>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
