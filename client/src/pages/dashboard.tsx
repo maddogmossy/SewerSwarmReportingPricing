@@ -301,7 +301,9 @@ export default function Dashboard() {
   const calculateSectionCost = (section: any) => {
     // Check if section has defects requiring repair
     const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
-    const noRepairsNeeded = section.repairMethods === "None required" || section.repairMethods === "" || !section.repairMethods;
+    const noRepairsNeeded = section.recommendations === "None required" || section.recommendations === "" || !section.recommendations;
+    
+
     
     // If no defects or no repairs needed, cost is £0.00
     if (!hasDefects || noRepairsNeeded) {
