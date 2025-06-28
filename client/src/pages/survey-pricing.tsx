@@ -341,7 +341,7 @@ export default function SurveyPricing() {
                   onChange={(e) => setNewPricing(prev => ({ ...prev, equipmentTypeId: parseInt(e.target.value) }))}
                 >
                   <option value={0}>Select Equipment Type</option>
-                  {(equipmentTypes as EquipmentType[])?.map((equipment: EquipmentType) => (
+                  {(equipmentTypes as EquipmentType[])?.sort((a, b) => a.minPipeSize - b.minPipeSize).map((equipment: EquipmentType) => (
                     <option key={equipment.id} value={equipment.id}>
                       {equipment.name} ({equipment.minPipeSize}-{equipment.maxPipeSize}mm)
                     </option>
@@ -420,7 +420,7 @@ export default function SurveyPricing() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {(equipmentTypes as EquipmentType[])?.map((equipment: EquipmentType) => (
+                {(equipmentTypes as EquipmentType[])?.sort((a, b) => a.minPipeSize - b.minPipeSize).map((equipment: EquipmentType) => (
                   <div key={equipment.id} className="p-3 bg-slate-50 rounded-lg border">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
