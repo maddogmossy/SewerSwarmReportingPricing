@@ -320,35 +320,35 @@ export default function Upload() {
                     return (
                       <div
                         key={sector.id}
-                        className="relative border-2 bg-white rounded-lg p-6 cursor-pointer hover:shadow-lg transition-shadow duration-200"
+                        className="relative border-2 bg-white rounded-lg p-8 cursor-pointer hover:shadow-lg transition-shadow duration-200 min-h-[280px]"
                         style={{ borderColor: sectorColor }}
                         onClick={() => setSelectedSector(sector.id)}
                       >
                         {/* Title positioned at top center cutting through border */}
                         <div 
-                          className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-md flex items-center gap-2 font-semibold text-sm bg-white border-2"
+                          className="absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-sm bg-white border-2 shadow-sm"
                           style={{ borderColor: sectorColor, color: sectorColor }}
                         >
-                          <IconComponent className="h-4 w-4" />
+                          <IconComponent className="h-5 w-5" />
                           {displayName}
                         </div>
 
                         {/* Content area */}
-                        <div className="mt-4 space-y-3">
-                          <p className="text-sm text-gray-600 font-medium">
+                        <div className="mt-6 space-y-4">
+                          <p className="text-sm text-gray-700 font-medium leading-relaxed">
                             {description}
                           </p>
 
                           {/* Standards as bullet points */}
-                          <div className="space-y-1">
-                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wide">
                               Applicable Standards
                             </h4>
-                            <ul className="text-xs text-gray-600 space-y-1">
+                            <ul className="text-xs text-gray-700 space-y-2">
                               {standards.map((standard, index) => (
-                                <li key={index} className="flex items-start gap-1">
-                                  <span className="text-gray-400 mt-1">•</span>
-                                  <span>{standard}</span>
+                                <li key={index} className="flex items-start gap-2">
+                                  <span className="font-bold mt-0.5" style={{ color: sectorColor }}>•</span>
+                                  <span className="leading-relaxed">{standard}</span>
                                 </li>
                               ))}
                             </ul>
