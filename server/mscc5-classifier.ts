@@ -216,7 +216,7 @@ export class MSCC5Classifier {
    * Parse multiple defects from inspection text with meterage and percentages
    */
   static parseMultipleDefects(defectText: string): Array<{meterage: string, defectCode: string, description: string, percentage: string}> {
-    const defects = [];
+    const defects: Array<{meterage: string, defectCode: string, description: string, percentage: string}> = [];
     
     // Enhanced patterns to capture Section 3 debris entries with specific meterage and percentages
     const patterns = [
