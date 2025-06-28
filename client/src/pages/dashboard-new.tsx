@@ -66,7 +66,7 @@ const sectors = [
   },
   {
     id: "trading",
-    name: "Trading Standards",
+    name: "Domestic",
     description: "MSCC5, Cleaning Manual, and Repair Book guidance",
     icon: Users,
     color: "text-blue-600",

@@ -54,7 +54,7 @@ export class DomesticValidation {
       "Small-diameter drain assessment": true,
       "Household drainage evaluation": true,
       "Private drain responsibility": true,
-      "Trading Standards compliance": true,
+      "Domestic compliance": true,
       "Building Act 1984 Section 59": true
     };
     

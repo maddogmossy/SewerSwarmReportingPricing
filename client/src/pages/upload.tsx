@@ -58,19 +58,19 @@ const sectors = [
     outputColumns: ['Item Number', 'Inspection Number', 'Date', 'Location', 'Pipe Diameter', 'Pipe Material', 'Defect Code', 'Risk Score', 'Grade', 'Recommendations', 'Cost (£)']
   },
   {
-    id: 'trading',
-    name: 'Trading Standards',
-    description: 'Commercial and regulatory compliance',
-    icon: Shield,
-    color: '#8b5cf6', // Violet
+    id: 'domestic',
+    name: 'Domestic',
+    description: 'Household and private drain assessments',
+    icon: HardHat,
+    color: '#92400e', // Brown
     standards: [
-      'Consumer Protection Act 1987',
-      'Trade Descriptions Act 1968',
-      'Building Regulations 2010',
-      'BS EN 752:2017 - Drain and sewer systems',
-      'Construction (Design and Management) Regulations 2015'
+      'MSCC5: Manual of Sewer Condition Classification',
+      'WRc Drain Repair Book (4th Ed.)',
+      'WRc Sewer Cleaning Manual',
+      'BS EN 752:2017 – Drain and sewer systems',
+      'Building Act 1984 – Section 59'
     ],
-    outputColumns: ['Item Number', 'Inspection Number', 'Date', 'Location', 'Pipe Diameter', 'Pipe Material', 'Defect Code', 'Compliance Status', 'Grade', 'Recommendations', 'Cost (£)']
+    outputColumns: ['Item Number', 'Inspection Number', 'Date', 'Location', 'Pipe Diameter', 'Pipe Material', 'Defect Code', 'Risk Score', 'Grade', 'Recommendations', 'Cost (£)']
   },
   {
     id: 'insurance',
@@ -324,10 +324,10 @@ export default function Upload() {
                         style={{ borderColor: sectorColor }}
                         onClick={() => setSelectedSector(sector.id)}
                       >
-                        {/* Title positioned at top cutting through border */}
+                        {/* Title positioned at top center cutting through border */}
                         <div 
-                          className="absolute -top-3 left-4 px-3 py-1 rounded-md flex items-center gap-2 font-semibold text-white text-sm"
-                          style={{ backgroundColor: sectorColor }}
+                          className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-md flex items-center gap-2 font-semibold text-sm bg-white border-2"
+                          style={{ borderColor: sectorColor, color: sectorColor }}
                         >
                           <IconComponent className="h-4 w-4" />
                           {displayName}

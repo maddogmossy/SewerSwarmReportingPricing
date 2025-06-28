@@ -306,7 +306,7 @@ export default function Home() {
                       <span className="text-slate-500">DMRB standards</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Trading Standards</span>
+                      <span>Domestic</span>
                       <span className="text-slate-500">Regulatory compliance</span>
                     </div>
                     <div className="flex justify-between">
