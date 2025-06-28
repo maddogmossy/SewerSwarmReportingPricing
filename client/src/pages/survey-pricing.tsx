@@ -190,7 +190,7 @@ export default function SurveyPricing() {
 
   const deleteEquipmentMutation = useMutation({
     mutationFn: async (id: number) => {
-      return await apiRequest("DELETE", "/api/equipment-types/" + id);
+      return await apiRequest("DELETE", `/api/equipment-types/${id}`);
     },
     onSuccess: () => {
       toast({
