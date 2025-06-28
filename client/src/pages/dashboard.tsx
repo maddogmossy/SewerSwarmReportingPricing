@@ -299,6 +299,16 @@ export default function Dashboard() {
 
   // Calculate actual costs based on user pricing configuration
   const calculateSectionCost = (section: any) => {
+    // Check if section has defects requiring repair
+    const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
+    const hasRepairMethods = section.repairMethods && section.repairMethods !== "None required" && section.repairMethods !== "";
+    
+    // If no defects or repairs needed, cost is £0.00
+    if (!hasDefects || !hasRepairMethods) {
+      return "£0.00";
+    }
+
+    // For sections with defects, check if pricing is configured
     if (!userPricing.length || !equipmentTypes.length) {
       return pricingStatus?.cleansing ? "needs adding" : "Configure pricing";
     }
@@ -393,7 +403,7 @@ export default function Dashboard() {
             {/* Section Inspection Data Table */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections)</CardTitle>
+                <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections) - {currentSector.name} Sector</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -482,14 +492,7 @@ export default function Dashboard() {
                             )}
                           </td>
                           <td className="border border-slate-300 px-2 py-1">
-                            {(() => {
-                              // Show "needs adding" for defective sections when pricing is missing
-                              const hasDefects = section.severityGrade !== "0" && section.severityGrade !== 0;
-                              if (hasDefects && !pricingStatus.overall) {
-                                return <span className="text-amber-600 font-medium">needs adding</span>;
-                              }
-                              return calculateSectionCost(section);
-                            })()}
+                            {calculateSectionCost(section)}
                           </td>
                         </tr>
                       ))}
