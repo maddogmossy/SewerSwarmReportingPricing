@@ -9,7 +9,7 @@ if (fs.existsSync(domesticDisplayPath)) {
   DOMESTIC_DISPLAY_CONFIG = JSON.parse(fs.readFileSync(domesticDisplayPath, 'utf-8'));
 }
 
-// Domestic / Trading Standards Validation
+// Domestic Validation
 export class DomesticValidation {
   
   static validateDomesticCriteria(): {
@@ -23,7 +23,7 @@ export class DomesticValidation {
     };
   } {
     
-    console.log("🏠 Domestic / Trading Standards Validation");
+    console.log("🏠 Domestic Validation");
     console.log("=" .repeat(50));
     
     // 1. Check domestic-specific standards files
@@ -99,9 +99,9 @@ export class DomesticValidation {
     return {
       ...DOMESTIC_DISPLAY_CONFIG,
       // Ensure proper defaults
-      display_name: DOMESTIC_DISPLAY_CONFIG.display_name || 'Domestic / Trading Standards',
+      display_name: DOMESTIC_DISPLAY_CONFIG.display_name || 'Domestic',
       button_color: DOMESTIC_DISPLAY_CONFIG.button_color || 'brown',
-      description: DOMESTIC_DISPLAY_CONFIG.ui_description?.summary || 'Household and private drain assessment for Trading Standards',
+      description: DOMESTIC_DISPLAY_CONFIG.ui_description?.summary || 'Household and private drain assessment for homeowners',
       standards: DOMESTIC_DISPLAY_CONFIG.ui_description?.applicable_standards || [
         'MSCC5: Manual of Sewer Condition Classification',
         'WRc Drain Repair Book (4th Ed.)',

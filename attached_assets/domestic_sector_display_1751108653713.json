@@ -1,9 +1,9 @@
 {
     "sector": "domestic",
-    "display_name": "Domestic / Trading Standards",
+    "display_name": "Domestic",
     "button_color": "brown",
     "ui_description": {
-        "summary": "Assesses small-diameter household and private drains for structural defects, blockages, or recurring issues. Suitable for homeowners and Trading Standards disputes.",
+        "summary": "Assesses small-diameter household and private drains for structural defects, blockages, or recurring issues. Suitable for homeowners and private property drainage assessments.",
         "applicable_standards": [
             "MSCC5: Manual of Sewer Condition Classification",
             "WRc Drain Repair Book (4th Ed.)",
