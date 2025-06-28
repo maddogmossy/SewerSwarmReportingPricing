@@ -685,6 +685,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get adoption sector profile endpoint
+  app.get("/api/adoption/profile", isAuthenticated, async (req, res) => {
+    try {
+      const { AdoptionValidation } = await import('./adoption-validation');
+      const profile = AdoptionValidation.getAdoptionProfile();
+      res.json(profile);
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get adoption profile",
+        error: (error as Error).message
+      });
+    }
+  });
+
   // Utilities sector validation endpoint
   app.get("/api/utilities/validate", isAuthenticated, async (req, res) => {
     try {

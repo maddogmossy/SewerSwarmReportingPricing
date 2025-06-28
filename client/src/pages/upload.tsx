@@ -110,18 +110,31 @@ export default function Upload() {
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [, setLocation] = useLocation();
   const [utilitiesProfile, setUtilitiesProfile] = useState<any>(null);
+  const [adoptionProfile, setAdoptionProfile] = useState<any>(null);
 
   // Fetch utilities logic profile for dynamic styling
-  const { data: logicProfile } = useQuery({
+  const { data: utilitiesLogicProfile } = useQuery({
     queryKey: ["/api/utilities/profile"],
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
+  // Fetch adoption sector profile for dynamic styling
+  const { data: adoptionLogicProfile } = useQuery({
+    queryKey: ["/api/adoption/profile"],
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
   useEffect(() => {
-    if (logicProfile) {
-      setUtilitiesProfile(logicProfile);
+    if (utilitiesLogicProfile) {
+      setUtilitiesProfile(utilitiesLogicProfile);
     }
-  }, [logicProfile]);
+  }, [utilitiesLogicProfile]);
+
+  useEffect(() => {
+    if (adoptionLogicProfile) {
+      setAdoptionProfile(adoptionLogicProfile);
+    }
+  }, [adoptionLogicProfile]);
 
   const { data: uploads = [], refetch } = useQuery<FileUploadType[]>({
     queryKey: ["/api/uploads"],
@@ -258,18 +271,25 @@ export default function Upload() {
                 <h3 className="font-medium">Select Applicable Sector</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {sectors.map((sector) => {
-                    // Apply dynamic styling for utilities sector from logic profile
+                    // Apply dynamic styling for utilities and adoption sectors from logic profiles
                     const isUtilities = sector.id === 'utilities';
-                    const sectorColor = isUtilities && utilitiesProfile ? 
-                      (utilitiesProfile.button_color === 'blue' ? '#3b82f6' : utilitiesProfile.button_color) : 
+                    const isAdoption = sector.id === 'adoption';
+                    
+                    // Dynamic configuration support
+                    const activeProfile = isUtilities ? utilitiesProfile : isAdoption ? adoptionProfile : null;
+                    
+                    const sectorColor = activeProfile ? 
+                      (activeProfile.button_color === 'blue' ? '#3b82f6' : 
+                       activeProfile.button_color === 'green' ? '#22c55e' : 
+                       activeProfile.button_color) : 
                       sector.color;
                     
-                    const displayName = isUtilities && utilitiesProfile ? 
-                      utilitiesProfile.display_name : sector.name;
-                    const description = isUtilities && utilitiesProfile ? 
-                      utilitiesProfile.description : sector.description;
-                    const standards = isUtilities && utilitiesProfile && utilitiesProfile.standards ? 
-                      utilitiesProfile.standards : sector.standards;
+                    const displayName = activeProfile ? 
+                      activeProfile.display_name : sector.name;
+                    const description = activeProfile ? 
+                      activeProfile.description : sector.description;
+                    const standards = activeProfile && activeProfile.standards ? 
+                      activeProfile.standards : sector.standards;
 
                     const IconComponent = sector.icon;
 
