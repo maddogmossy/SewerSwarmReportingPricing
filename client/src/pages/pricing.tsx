@@ -1,127 +1,35 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, RotateCcw, Save, Wrench, Building, Car, Shield, Banknote, House, Home, ArrowRight } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { Settings, Wrench, Building2, Scissors, Droplets, Hammer, Layers, Truck, Home, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 
-interface CostBand {
-  id?: number;
-  grade: number;
-  costBand: string;
-  sector: string;
-  isActive?: boolean;
+interface WorkCategory {
+  id: number;
+  name: string;
+  description: string;
+  icon: any;
+  color: string;
+  implemented: boolean;
 }
 
-const sectors = [
-  { id: 'utilities', name: 'Utilities', icon: Wrench, color: 'text-blue-600' },
-  { id: 'adoption', name: 'Adoption', icon: Building, color: 'text-green-600' },
-  { id: 'highways', name: 'Highways', icon: Car, color: 'text-orange-600' },
-  { id: 'insurance', name: 'Insurance', icon: Shield, color: 'text-red-600' },
-  { id: 'construction', name: 'Construction', icon: Banknote, color: 'text-purple-600' },
-  { id: 'domestic', name: 'Domestic', icon: House, color: 'text-amber-600' }
+const workCategories: WorkCategory[] = [
+  { id: 1, name: 'Surveys', description: 'CCTV inspections and condition assessments', icon: Wrench, color: 'text-blue-600', implemented: true },
+  { id: 2, name: 'Cleansing / Root Cutting', description: 'High pressure jetting and root removal', icon: Droplets, color: 'text-cyan-600', implemented: false },
+  { id: 3, name: 'Robotic Cutting', description: 'Automated cutting and removal operations', icon: Scissors, color: 'text-orange-600', implemented: false },
+  { id: 4, name: 'Directional Water Cutting', description: 'Precision water jet cutting systems', icon: Droplets, color: 'text-teal-600', implemented: false },
+  { id: 5, name: 'Patching', description: 'Localized repair and patching work', icon: Hammer, color: 'text-red-600', implemented: false },
+  { id: 6, name: 'Lining', description: 'Pipe lining and rehabilitation', icon: Layers, color: 'text-purple-600', implemented: false },
+  { id: 7, name: 'Excavations', description: 'Open cut excavation and replacement', icon: Building2, color: 'text-amber-600', implemented: false },
+  { id: 8, name: 'Tankering', description: 'Waste removal and transportation', icon: Truck, color: 'text-green-600', implemented: false }
 ];
 
-const gradeDescriptions = {
-  0: 'No defects - No action required',
-  1: 'Minor defects - Monitoring recommended',
-  2: 'Moderate defects - Minor repairs needed',
-  3: 'Significant defects - Major repairs required',
-  4: 'Severe defects - Urgent intervention needed',
-  5: 'Critical defects - Immediate replacement required'
-};
-
 export default function Pricing() {
-  const [selectedSector, setSelectedSector] = useState('utilities');
-  const [editingCostBands, setEditingCostBands] = useState<{ [key: number]: string }>({});
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  const { data: costBands = [], isLoading } = useQuery<CostBand[]>({
-    queryKey: [`/api/cost-bands/${selectedSector}`],
-    enabled: !!selectedSector
+  const { data: workCategoriesData = [] } = useQuery({
+    queryKey: ['/api/work-categories']
   });
-
-  const updateCostBandMutation = useMutation({
-    mutationFn: async ({ id, costBand }: { id: number; costBand: string }) => {
-      return await apiRequest(`/api/cost-bands/${id}`, 'PUT', { costBand });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/cost-bands/${selectedSector}`] });
-      toast({
-        title: "Cost band updated",
-        description: "Your pricing customization has been saved."
-      });
-      setEditingCostBands({});
-    },
-    onError: () => {
-      toast({
-        title: "Update failed",
-        description: "Unable to save cost band changes.",
-        variant: "destructive"
-      });
-    }
-  });
-
-  const resetCostBandsMutation = useMutation({
-    mutationFn: async () => {
-      return await apiRequest(`/api/cost-bands/${selectedSector}/reset`, 'DELETE');
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/cost-bands/${selectedSector}`] });
-      toast({
-        title: "Cost bands reset",
-        description: "Pricing has been restored to default values."
-      });
-      setEditingCostBands({});
-    },
-    onError: () => {
-      toast({
-        title: "Reset failed",
-        description: "Unable to reset cost bands.",
-        variant: "destructive"
-      });
-    }
-  });
-
-  const handleCostBandChange = (grade: number, value: string) => {
-    setEditingCostBands(prev => ({
-      ...prev,
-      [grade]: value
-    }));
-  };
-
-  const saveCostBand = async (grade: number) => {
-    const newValue = editingCostBands[grade];
-    if (!newValue) return;
-
-    const existingBand = costBands.find((band) => band.grade === grade);
-    if (existingBand?.id) {
-      updateCostBandMutation.mutate({ id: existingBand.id, costBand: newValue });
-    }
-  };
-
-  const resetToDefaults = () => {
-    resetCostBandsMutation.mutate();
-  };
-
-  const selectedSectorData = sectors.find(s => s.id === selectedSector);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center">Loading pricing settings...</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
@@ -141,151 +49,92 @@ export default function Pricing() {
           <div className="flex items-center justify-center gap-3">
             <Settings className="h-8 w-8 text-blue-600" />
             <h1 className="text-4xl font-bold text-gray-900">
-              Pricing Customization
+              Work Category Pricing
             </h1>
           </div>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Customize repair cost estimates for each sector based on your local market rates and experience. 
-            These values will be used in all future report analysis.
+            Configure equipment-specific rates, hourly/daily costs, and capacity metrics across all work categories. 
+            Set detailed pricing for surveys, cleansing, repairs, and more based on your local market rates.
           </p>
-          
-          {/* Link to New Detailed Pricing System */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
-            <div className="flex items-center justify-between">
-              <div className="text-left">
-                <h3 className="font-semibold text-blue-900">New: Detailed Work Category Pricing</h3>
-                <p className="text-sm text-blue-700">Configure equipment-specific rates, hourly/daily costs, and capacity metrics for surveys, cleansing, repairs, and more.</p>
-              </div>
-              <Link href="/survey-pricing">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2">
-                  Access New System
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </div>
         </div>
 
-        {/* Sector Selection */}
+        {/* Work Categories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {workCategories.map((category) => {
+            const IconComponent = category.icon;
+            return (
+              <Card key={category.id} className="relative hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <IconComponent className={`h-6 w-6 ${category.color}`} />
+                      <CardTitle className="text-lg">{category.name}</CardTitle>
+                    </div>
+                    {category.implemented ? (
+                      <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                        Available
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-amber-600 border-amber-200">
+                        Coming Soon
+                      </Badge>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-gray-600 text-sm">{category.description}</p>
+                  
+                  {category.implemented ? (
+                    <Link href="/survey-pricing">
+                      <Button className="w-full flex items-center justify-between">
+                        Configure Pricing
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button disabled className="w-full">
+                      Coming Soon
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Implementation Status */}
         <Card>
           <CardHeader>
-            <CardTitle>Select Sector</CardTitle>
-            <CardDescription>
-              Choose the sector to customize pricing for different defect severity grades
-            </CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Implementation Roadmap
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs value={selectedSector} onValueChange={setSelectedSector}>
-              <TabsList className="grid w-full grid-cols-6">
-                {sectors.map(sector => {
-                  const Icon = sector.icon;
-                  return (
-                    <TabsTrigger key={sector.id} value={sector.id} className="flex items-center gap-2">
-                      <Icon className={`h-4 w-4 ${sector.color}`} />
-                      <span className="hidden sm:inline">{sector.name}</span>
-                    </TabsTrigger>
-                  );
-                })}
-              </TabsList>
-
-              {sectors.map(sector => (
-                <TabsContent key={sector.id} value={sector.id}>
-                  <div className="space-y-6 mt-6">
-                    {/* Current Sector Info */}
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                      <sector.icon className={`h-6 w-6 ${sector.color}`} />
-                      <div>
-                        <h3 className="font-semibold text-lg">{sector.name} Sector</h3>
-                        <p className="text-sm text-gray-600">
-                          Customize repair cost estimates for {sector.name.toLowerCase()} sector analysis
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Cost Bands Grid */}
-                    <div className="grid gap-4">
-                      <div className="flex justify-between items-center">
-                        <h4 className="text-lg font-semibold">Cost Bands by Defect Grade</h4>
-                        <Button
-                          variant="outline"
-                          onClick={resetToDefaults}
-                          disabled={resetCostBandsMutation.isPending}
-                          className="flex items-center gap-2"
-                        >
-                          <RotateCcw className="h-4 w-4" />
-                          Reset to Defaults
-                        </Button>
-                      </div>
-
-                      <div className="grid gap-4">
-                        {costBands.map((band) => {
-                          const isEditing = editingCostBands.hasOwnProperty(band.grade);
-                          const currentValue = isEditing ? editingCostBands[band.grade] : band.costBand;
-
-                          return (
-                            <Card key={band.grade} className="p-4">
-                              <div className="flex items-center justify-between gap-4">
-                                <div className="flex items-center gap-4 flex-1">
-                                  <Badge variant="outline" className="text-lg font-semibold min-w-16">
-                                    Grade {band.grade}
-                                  </Badge>
-                                  <div className="flex-1">
-                                    <p className="font-medium text-gray-900">
-                                      {gradeDescriptions[band.grade as keyof typeof gradeDescriptions]}
-                                    </p>
-                                  </div>
-                                </div>
-                                
-                                <div className="flex items-center gap-3">
-                                  <div className="w-48">
-                                    <Label htmlFor={`grade-${band.grade}`} className="text-sm font-medium">
-                                      Cost Range
-                                    </Label>
-                                    <Input
-                                      id={`grade-${band.grade}`}
-                                      value={currentValue}
-                                      onChange={(e) => handleCostBandChange(band.grade, e.target.value)}
-                                      placeholder="e.g., £500-2,000"
-                                      className="mt-1"
-                                    />
-                                  </div>
-                                  
-                                  {isEditing && (
-                                    <Button
-                                      size="sm"
-                                      onClick={() => saveCostBand(band.grade)}
-                                      disabled={updateCostBandMutation.isPending}
-                                      className="flex items-center gap-2"
-                                    >
-                                      <Save className="h-4 w-4" />
-                                      Save
-                                    </Button>
-                                  )}
-                                </div>
-                              </div>
-                            </Card>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Usage Information */}
-                    <Card className="bg-blue-50 border-blue-200">
-                      <CardContent className="p-4">
-                        <h5 className="font-semibold text-blue-900 mb-2">How This Works</h5>
-                        <ul className="text-sm text-blue-800 space-y-1">
-                          <li>• Cost bands are applied automatically during report analysis</li>
-                          <li>• Each defect is assigned a grade (0-5) based on MSCC5 standards</li>
-                          <li>• Your custom cost ranges help estimate repair expenses</li>
-                          <li>• These settings are saved to your account and persist across sessions</li>
-                          <li>• You can reset to default values at any time</li>
-                        </ul>
-                      </CardContent>
-                    </Card>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center gap-3">
+                  <Wrench className="h-5 w-5 text-green-600" />
+                  <div>
+                    <h4 className="font-medium text-green-900">Surveys</h4>
+                    <p className="text-sm text-green-700">Fully implemented with 7 equipment types and detailed specifications</p>
                   </div>
-                </TabsContent>
-              ))}
-            </Tabs>
+                </div>
+                <Badge className="bg-green-600 text-white">Complete</Badge>
+              </div>
+              
+              <div className="text-sm text-gray-600">
+                <p><strong>Next Phase:</strong> The remaining 7 work categories will be implemented with similar detailed equipment specifications, rate configurations, and capacity metrics.</p>
+                <p className="mt-2"><strong>Each category will include:</strong></p>
+                <ul className="list-disc list-inside mt-1 space-y-1">
+                  <li>Equipment-specific configurations</li>
+                  <li>Hourly and daily rate settings</li>
+                  <li>Capacity metrics (units per hour/day)</li>
+                  <li>Size range specifications</li>
+                  <li>Custom pricing rules</li>
+                </ul>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

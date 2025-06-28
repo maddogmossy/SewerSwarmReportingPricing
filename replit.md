@@ -148,6 +148,7 @@ Changelog:
 - June 28, 2025. Updated Utilities sector standards documentation: Integrated comprehensive WRc Group links for MSCC5, SRM, Drain Repair Book, Cleaning Manual, BS EN 752:2017, and Water Industry Act 1991, replacing knowledge store URLs with official WRc Group product pages and BSI standards links for enhanced authenticity and direct access to authoritative documentation sources
 - June 28, 2025. Successfully resolved dashboard standards display issue: Fixed cache invalidation and sector configuration system to properly show all 6 comprehensive Utilities sector standards with proper WRc Group hyperlinks in the Analysis Standards Applied section, replacing previous incomplete 3-standard display
 - June 28, 2025. Implemented comprehensive user-specific pricing customization system: Added PostgreSQL-backed user cost bands with dedicated pricing settings page, API endpoints for CRUD operations, and integration into WRc standards engine for personalized repair cost estimates across all six sectors with persistent storage and login-based customization
+- June 28, 2025. Replaced grade-based pricing with comprehensive work category system: Removed old Grade 0-5 cost bands interface and implemented new 8-category pricing system (Surveys, Cleansing, Robotic Cutting, Water Cutting, Patching, Lining, Excavations, Tankering) with equipment-specific configurations, hourly/daily rates, capacity metrics, and detailed specifications. Surveys category fully implemented with 7 CCTV equipment types and pipe size ranges.
 ```
 
 ## User Preferences
