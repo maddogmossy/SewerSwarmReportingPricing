@@ -395,6 +395,24 @@ export default function SurveyPricing() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <Label htmlFor="costPerDay">Cost per Day (£) *</Label>
+                  <Input
+                    id="costPerDay"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={newPricing.costPerDay}
+                    onChange={(e) => {
+                      const dailyValue = e.target.value;
+                      setNewPricing(prev => ({
+                        ...prev,
+                        costPerDay: dailyValue,
+                        costPerHour: dailyValue ? (parseFloat(dailyValue) / 8).toFixed(2) : ""
+                      }));
+                    }}
+                  />
+                </div>
+                <div>
                   <Label htmlFor="costPerHour">Cost per Hour (£) *</Label>
                   <Input
                     id="costPerHour"
@@ -403,17 +421,6 @@ export default function SurveyPricing() {
                     placeholder="0.00"
                     value={newPricing.costPerHour}
                     onChange={(e) => setNewPricing(prev => ({ ...prev, costPerHour: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="costPerDay">Cost per Day (£) *</Label>
-                  <Input
-                    id="costPerDay"
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={newPricing.costPerDay}
-                    onChange={(e) => setNewPricing(prev => ({ ...prev, costPerDay: e.target.value }))}
                   />
                 </div>
               </div>
@@ -535,8 +542,8 @@ export default function SurveyPricing() {
                     <tr className="border-b">
                       <th className="text-left py-2">Equipment Type</th>
                       <th className="text-left py-2">Size Range</th>
-                      <th className="text-left py-2">Cost/Hour</th>
                       <th className="text-left py-2">Cost/Day</th>
+                      <th className="text-left py-2">Cost/Hour</th>
                       <th className="text-left py-2">Sections/Hour</th>
                       <th className="text-left py-2">Sections/Day</th>
                       <th className="text-left py-2">Actions</th>
@@ -553,8 +560,15 @@ export default function SurveyPricing() {
                               <Input
                                 type="number"
                                 step="0.01"
-                                value={editingPricing.costPerHour}
-                                onChange={(e) => setEditingPricing(prev => prev ? { ...prev, costPerHour: e.target.value } : null)}
+                                value={editingPricing.costPerDay}
+                                onChange={(e) => {
+                                  const dailyValue = e.target.value;
+                                  setEditingPricing(prev => prev ? {
+                                    ...prev,
+                                    costPerDay: dailyValue,
+                                    costPerHour: dailyValue ? (parseFloat(dailyValue) / 8).toFixed(2) : ""
+                                  } : null);
+                                }}
                                 className="w-20"
                               />
                             </td>
@@ -562,8 +576,8 @@ export default function SurveyPricing() {
                               <Input
                                 type="number"
                                 step="0.01"
-                                value={editingPricing.costPerDay}
-                                onChange={(e) => setEditingPricing(prev => prev ? { ...prev, costPerDay: e.target.value } : null)}
+                                value={editingPricing.costPerHour}
+                                onChange={(e) => setEditingPricing(prev => prev ? { ...prev, costPerHour: e.target.value } : null)}
                                 className="w-20"
                               />
                             </td>
@@ -600,8 +614,8 @@ export default function SurveyPricing() {
                           <>
                             <td className="py-2 font-medium">{getEquipmentName(pricing.equipmentTypeId)}</td>
                             <td className="py-2">{getEquipmentSizeRange(pricing.equipmentTypeId)}</td>
-                            <td className="py-2">£{parseFloat(pricing.costPerHour).toFixed(2)}</td>
                             <td className="py-2">£{parseFloat(pricing.costPerDay).toFixed(2)}</td>
+                            <td className="py-2">£{parseFloat(pricing.costPerHour).toFixed(2)}</td>
                             <td className="py-2">{pricing.sectionsPerHour || "—"}</td>
                             <td className="py-2">{pricing.sectionsPerDay || "—"}</td>
                             <td className="py-2">
