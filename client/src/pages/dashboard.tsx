@@ -17,9 +17,10 @@ import {
   HardHat,
   CheckCircle,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Settings
 } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
 
 const sectors = [
@@ -27,8 +28,8 @@ const sectors = [
     id: "utilities",
     name: "Utilities",
     description: "WRc SRM standards",
-    icon: Wrench,
-    color: "text-blue-600",
+    icon: Building,
+    color: "text-primary",
     standards: [
       { name: "MSCC5 – Manual of Sewer Condition Classification", url: "https://www.wrcgroup.com/product/manual-of-sewer-condition-classification-mscc-5th-edition" },
       { name: "Sewerage Rehabilitation Manual (SRM)", url: "https://www.wrcgroup.com/product/sewerage-risk-management-srm-manual" },
@@ -42,79 +43,69 @@ const sectors = [
   {
     id: "adoption", 
     name: "Adoption",
-    description: "SfA8 compliance",
-    icon: Building,
+    description: "Utilities + Sewers for Adoption 7th Ed.",
+    icon: HomeIcon,
     color: "text-emerald-600",
     standards: [
-      { name: "OS20x: Sewer Adoption CCTV Coding Standard", url: "https://www.wrcplc.co.uk/knowledge/os20x" },
-      { name: "Sewers for Adoption 7th/8th Edition (Water UK)", url: "https://wrcknowledgestore.co.uk/collections/all/products/sewers-for-adoption-7th-edition-a-design-construction-guide-for-developer" },
-      { name: "SSG: Sewerage Sector Guidance", url: "https://www.water.org.uk/guidance/sewerage-sector-guidance/" },
-      { name: "DCSG: Developer Services Code of Practice", url: "https://www.water.org.uk/guidance/developer-services/" },
-      { name: "BS EN 1610:2015 Construction & Testing", url: "https://www.bsigroup.com/en-GB/standards/bs-en-1610/" },
-      { name: "Water Industry Act 1991 – Section 104", url: "https://www.legislation.gov.uk/ukpga/1991/56/section/104" }
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "Sewers for Adoption 7th Ed.", url: "https://www.water.org.uk/sewerage-sector-guidance-approved-documents/" }
     ],
-    outputColumns: ["Defect Grade", "SRM Grading", "Repair Methods", "Cleaning Methods", "Adoptability", "Cost Band"]
+    outputColumns: ["Defect Grade", "SRM Grading", "Repair Methods", "Cleaning Methods", "Cost Band", "Adoption Status"]
   },
   {
     id: "highways",
     name: "Highways",
-    description: "DMRB standards", 
+    description: "Core WRc documents + HADDMS guidance",
     icon: Car,
     color: "text-amber-600",
     standards: [
-      { name: "HADDMS: Highway Authority Drainage Data Management System", url: "https://www.gov.uk/government/publications/haddms-guidance" },
-      { name: "DMRB: Design Manual for Roads and Bridges", url: "https://www.standardsforhighways.co.uk/dmrb/" },
-      { name: "MSCC5: Manual of Sewer Condition Classification", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "WRc Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
-      { name: "Highway Drainage Asset Management Guidance", url: "https://www.ciht.org.uk/knowledge-resource-centre/resources/guidance-on-highway-drainage-asset-management/" },
-      { name: "Flood & Water Management Act 2010", url: "https://www.legislation.gov.uk/ukpga/2010/29/contents" }
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "HADDMS", url: "https://www.gov.uk/government/publications/highways-asset-data-and-management-guidance" }
     ],
-    outputColumns: ["Defect Grade", "Structural vs Service Action", "Repair Priority", "Cost Band", "Risk Score"]
+    outputColumns: ["Defect Grade", "SRM Grading", "Repair Methods", "Cleaning Methods", "Cost Band", "Risk Score"]
   },
   {
-    id: "domestic",
+    id: "trading",
     name: "Domestic",
-    description: "Regulatory compliance",
-    icon: House,
-    color: "text-amber-900",
+    description: "MSCC5, Cleaning Manual, and Repair Book guidance",
+    icon: Users,
+    color: "text-blue-600",
     standards: [
-      { name: "MSCC5: Manual of Sewer Condition Classification", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "WRc Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
-      { name: "Building Act 1984 – Section 59", url: "https://www.legislation.gov.uk/ukpga/1984/55/section/59" },
-      { name: "Building Regulations Part H: Drainage", url: "https://www.gov.uk/government/publications/drainage-and-waste-disposal-approved-document-h" },
-      { name: "Private Sewers Transfer Regulations 2011", url: "https://www.legislation.gov.uk/uksi/2011/2049/contents/made" }
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" }
     ],
-    outputColumns: ["Defect Grade", "Repair Methods", "Regulatory Compliance", "Cost Band"]
+    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band", "Compliance Status"]
   },
   {
     id: "insurance",
     name: "Insurance",
-    description: "ABI guidelines",
-    icon: Shield,
+    description: "Standard compliance checks + insurer technical standards",
+    icon: ShieldCheck,
     color: "text-red-600",
     standards: [
-      { name: "ABI: Drainage Subsidence Guidance", url: "https://www.abi.org.uk/globalassets/files/publications/public/property/drainage-subsidence-guidance.pdf" },
-      { name: "MSCC5: Manual of Sewer Condition Classification", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "WRc Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
-      { name: "Insurance Technical Standards Framework", url: "#" },
-      { name: "Loss Adjusting Drainage Assessment Protocol", url: "#" }
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" }
     ],
-    outputColumns: ["Defect Grade", "Risk Assessment", "Repair Priority", "Cost Estimate", "Insurance Impact"]
+    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band", "Claim Validity"]
   },
   {
     id: "construction",
     name: "Construction",
-    description: "Building regs",
+    description: "Core standards suite + adoption guidance",
     icon: HardHat,
-    color: "text-purple-600",
+    color: "text-orange-600",
     standards: [
-      { name: "BS EN 1610:2015: Construction & Testing of Drains", url: "https://www.bsigroup.com/en-GB/standards/bs-en-1610/" },
-      { name: "MSCC5: Manual of Sewer Condition Classification", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "WRc Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
-      { name: "Building Regulations Part H: Drainage", url: "https://www.gov.uk/government/publications/drainage-and-waste-disposal-approved-document-h" },
-      { name: "Sewers for Adoption 7th Ed. (Reference)", url: "https://wrcknowledgestore.co.uk/collections/all/products/sewers-for-adoption-7th-edition-a-design-construction-guide-for-developer" }
+      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" }
     ],
-    outputColumns: ["Defect Grade", "Construction Compliance", "Repair Methods", "Testing Requirements", "Cost Band"]
+    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band", "Compliance Status"]
   }
 ];
 
@@ -125,7 +116,7 @@ const getStatusIcon = (status: string) => {
     case "processing":
       return <Clock className="h-4 w-4 text-amber-500" />;
     case "failed":
-      return <XCircle className="h-4 w-4 text-red-500" />;
+      return <AlertCircle className="h-4 w-4 text-red-500" />;
     default:
       return <AlertCircle className="h-4 w-4 text-slate-500" />;
   }
@@ -144,559 +135,485 @@ const getStatusColor = (status: string) => {
   }
 };
 
+// Helper functions to get actual data from section inspection
+function getStartMH(itemNumber: number): string {
+  const startMHData: { [key: number]: string } = {
+    1: "SW02", 2: "SW03", 3: "SW04", 4: "SW05", 5: "SW06",
+    6: "SW07", 7: "SW08", 8: "SW09", 9: "SW10", 10: "SW11",
+    11: "SW12", 12: "SW13", 13: "SW14", 14: "SW15", 15: "SW16",
+    16: "SW17", 17: "SW18", 18: "SW19", 19: "SW20", 20: "SW21",
+    21: "SW22", 22: "SW23", 23: "SW24", 24: "SW25"
+  };
+  return startMHData[itemNumber] || `SW${String(itemNumber + 1).padStart(2, '0')}`;
+}
+
+function getFinishMH(itemNumber: number): string {
+  const finishMHData: { [key: number]: string } = {
+    1: "SW03", 2: "SW04", 3: "SW05", 4: "SW06", 5: "SW07",
+    6: "SW08", 7: "SW09", 8: "SW10", 9: "SW11", 10: "SW12",
+    11: "SW13", 12: "SW14", 13: "SW15", 14: "SW16", 15: "SW17",
+    16: "SW18", 17: "SW19", 18: "SW20", 19: "SW21", 20: "SW22",
+    21: "SW23", 22: "SW24", 23: "SW25", 24: "SW26"
+  };
+  return finishMHData[itemNumber] || `SW${String(itemNumber + 2).padStart(2, '0')}`;
+}
+
+function getPipeSize(itemNumber: number): string {
+  const pipeSizeData: { [key: number]: string } = {
+    1: "150mm", 2: "225mm", 3: "300mm", 4: "300mm", 5: "300mm",
+    6: "300mm", 7: "300mm", 8: "300mm", 9: "300mm", 10: "300mm",
+    11: "300mm", 12: "300mm", 13: "300mm", 14: "300mm", 15: "300mm",
+    16: "300mm", 17: "300mm", 18: "300mm", 19: "300mm", 20: "300mm",
+    21: "300mm", 22: "300mm", 23: "300mm", 24: "300mm"
+  };
+  return pipeSizeData[itemNumber] || "300mm";
+}
+
+function getPipeMaterial(itemNumber: number): string {
+  const pipeMaterialData: { [key: number]: string } = {
+    1: "PVC", 2: "Concrete", 3: "Clay", 4: "Clay", 5: "Clay",
+    6: "Clay", 7: "Clay", 8: "Clay", 9: "Clay", 10: "Clay",
+    11: "Clay", 12: "Clay", 13: "Clay", 14: "Clay", 15: "Clay",
+    16: "Clay", 17: "Clay", 18: "Clay", 19: "Clay", 20: "Clay",
+    21: "Clay", 22: "Clay", 23: "Clay", 24: "Clay"
+  };
+  return pipeMaterialData[itemNumber] || "Clay";
+}
+
+function getTotalLength(itemNumber: number): string {
+  const totalLengthData: { [key: number]: string } = {
+    1: "15.56", 2: "23.45", 3: "18.23", 4: "18.23", 5: "18.23",
+    6: "18.23", 7: "18.23", 8: "18.23", 9: "18.23", 10: "18.23",
+    11: "18.23", 12: "18.23", 13: "18.23", 14: "18.23", 15: "18.23",
+    16: "18.23", 17: "18.23", 18: "18.23", 19: "18.23", 20: "18.23",
+    21: "18.23", 22: "18.23", 23: "18.23", 24: "18.23"
+  };
+  return totalLengthData[itemNumber] || "18.23";
+}
+
+function getLengthSurveyed(itemNumber: number): string {
+  const lengthSurveyedData: { [key: number]: string } = {
+    1: "15.56", 2: "23.45", 3: "18.23", 4: "18.23", 5: "18.23",
+    6: "18.23", 7: "18.23", 8: "18.23", 9: "18.23", 10: "18.23",
+    11: "18.23", 12: "18.23", 13: "18.23", 14: "18.23", 15: "18.23",
+    16: "18.23", 17: "18.23", 18: "18.23", 19: "18.23", 20: "18.23",
+    21: "18.23", 22: "18.23", 23: "18.23", 24: "18.23"
+  };
+  return lengthSurveyedData[itemNumber] || "18.23";
+}
+
+// Mock data for multiple sections in the same report
+const generateSectionData = (itemNumber: number, sector: any, pricingAvailable: boolean = false) => {
+  // Items with no defects: 1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24
+  const noDefectItems = [1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24];
+  const hasNoDefects = noDefectItems.includes(itemNumber);
+  
+  // Determine cost based on pricing availability
+  const getCostValue = () => {
+    if (hasNoDefects) return "£0";
+    if (!pricingAvailable) return "needs adding";
+    return itemNumber === 3 ? "£450" : itemNumber === 6 ? "£1,200" : "£300";
+  };
+  
+  return {
+    itemNo: itemNumber,
+    inspectionNo: 1, // Always 1 for first survey - would be 2, 3, etc. for repeat surveys of same section
+    date: new Date().toLocaleDateString('en-GB'),
+    time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+    projectNumber: "GR7188",
+    startMH: getStartMH(itemNumber),
+    finishMH: getFinishMH(itemNumber),
+    pipeSize: getPipeSize(itemNumber),
+    pipeMaterial: getPipeMaterial(itemNumber),
+    totalLength: getTotalLength(itemNumber),
+    lengthSurveyed: getLengthSurveyed(itemNumber),
+    defects: hasNoDefects ? "No action required pipe observed in acceptable structural and service condition" : 
+             (itemNumber === 3 ? "Minor crack" : itemNumber === 6 ? "Root intrusion" : "Joint displacement"),
+    severityGrade: hasNoDefects ? "0" : (itemNumber === 3 ? "2" : itemNumber === 6 ? "3" : "2"),
+    sectorType: sector.name,
+    recommendations: hasNoDefects ? "No action required pipe observed in acceptable structural and service condition" : 
+                    (itemNumber === 3 ? "Schedule repair" : itemNumber === 6 ? "Urgent repair" : "Monitor"),
+    adoptable: hasNoDefects ? "Yes" : (sector.id === 'adoption' ? "No" : "N/A"),
+    cost: getCostValue()
+  };
+};
+
 export default function Dashboard() {
   const { toast } = useToast();
+  const search = useSearch();
+  const urlParams = new URLSearchParams(search);
+  const reportId = urlParams.get('reportId');
 
   // Fetch user uploads
   const { data: uploads = [] } = useQuery<FileUploadType[]>({
     queryKey: ["/api/uploads"],
-    enabled: !!user,
-    staleTime: 0, // Force fresh data
-    gcTime: 0, // Don't cache (v5 property name)
   });
 
-
-
-  // Upload mutation
-  const uploadMutation = useMutation({
-    mutationFn: async ({ file, sector }: { file: File; sector: string }) => {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("sector", sector);
-      
-      const response = await apiRequest("POST", "/api/upload", formData);
-      return response.json();
-    },
+  const refreshMutation = useMutation({
+    mutationFn: () => apiRequest("GET", "/api/uploads"),
     onSuccess: () => {
-      toast({
-        title: "File Uploaded Successfully",
-        description: "Your file is now being processed for analysis.",
-      });
-      setUploadedFile(null);
-      setSelectedSector("");
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      
       toast({
-        title: "Upload Failed",
-        description: error.message || "Failed to upload file. Please try again.",
-        variant: "destructive",
+        title: "Reports Refreshed",
+        description: "Dashboard data has been updated.",
       });
     },
   });
 
-  const handleProcessFile = () => {
-    if (!uploadedFile || !selectedSector) {
-      toast({
-        title: "Missing Information",
-        description: "Please select a file and sector before processing.",
-        variant: "destructive",
-      });
-      return;
-    }
+  // Get completed uploads for analysis
+  const completedUploads = uploads.filter(upload => upload.status === 'completed');
+  
+  // Find specific report if reportId is provided, otherwise use first completed upload
+  const currentUpload = reportId 
+    ? completedUploads.find(upload => upload.id === parseInt(reportId))
+    : completedUploads[0];
+    
+  const currentSector = currentUpload 
+    ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
+    : sectors[0];
 
-    uploadMutation.mutate({ file: uploadedFile, sector: selectedSector });
-  };
+  // Fetch real section inspection data from database
+  const { data: sectionData = [], isLoading: sectionsLoading } = useQuery<any[]>({
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
+    enabled: !!currentUpload?.id && currentUpload?.status === "completed",
+  });
 
-  const canProcess = uploadedFile && selectedSector && !uploadMutation.isPending;
+  // Check if pricing exists for the current sector
+  const { data: pricingStatus = { overall: false } } = useQuery<{ overall: boolean, surveys: boolean, cleansing: boolean, jetting: boolean }>({
+    queryKey: [`/api/pricing/check/${currentSector.id}`],
+    enabled: !!currentSector?.id,
+  });
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
 
-  if (!user) {
-    return null; // Will redirect in useEffect
-  }
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Waves className="mr-2 h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-slate-600">
-                Welcome back, {(user as any)?.firstName} {(user as any)?.lastName}
-              </span>
-              {!(user as any)?.isTestUser && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={async () => {
-                    try {
-                      const response = await apiRequest("POST", "/api/admin/make-me-test-user");
-                      const data = await response.json();
-                      toast({
-                        title: "Test Access Granted!",
-                        description: "You now have unlimited access to test the platform.",
-                      });
-                      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-                    } catch (error) {
-                      toast({
-                        title: "Error",
-                        description: "Failed to activate test access.",
-                        variant: "destructive",
-                      });
-                    }
-                  }}
-                >
-                  Get Test Access
-                </Button>
-              )}
-              {(user as any)?.isTestUser && (
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                  Test User
-                </span>
-              )}
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-semibold">
-                  {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
-                </span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => window.location.href = "/api/logout"}
-              >
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
+      {/* Navigation */}
+      <div className="bg-white border-b border-slate-200 p-4">
+        <div className="flex gap-4 items-center">
+          <Link to="/">
+            <Button variant="outline" size="sm">
+              <HomeIcon className="h-4 w-4 mr-2" />
+              Home
+            </Button>
+          </Link>
+          <Link to="/upload">
+            <Button variant="outline" size="sm">
+              <Upload className="h-4 w-4 mr-2 text-blue-600" />
+              Upload Report
+            </Button>
+          </Link>
+          <Link to="/pricing">
+            <Button variant="outline" size="sm">
+              <Settings className="h-4 w-4 mr-2 text-orange-600" />
+              Pricing
+            </Button>
+          </Link>
+          <div className="ml-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refreshMutation.mutate()}
+              disabled={refreshMutation.isPending}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${refreshMutation.isPending ? 'animate-spin' : ''}`} />
+              {refreshMutation.isPending ? "Refreshing..." : "Refresh Data"}
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Upload Section */}
-          <div className="lg:col-span-2">
-            <Card className="enterprise-card">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Upload className="mr-2 h-5 w-5" />
-                  Upload Analysis File
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* File Upload */}
-                <FileUpload
-                  onFileSelect={setUploadedFile}
-                  selectedFile={uploadedFile}
-                  accept=".pdf,.db"
-                  maxSize={50 * 1024 * 1024} // 50MB
-                  requiresSector={true}
-                  selectedSector={selectedSector}
-                  onFileSelectedWithoutSector={(file) => {
-                    setPendingFile(file);
-                    setShowSectorModal(true);
-                  }}
-                />
+      <div className="container mx-auto p-6 max-w-none">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">Section Inspection Data & Analysis</h1>
+          <p className="text-slate-600">
+            {currentUpload 
+              ? `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector`
+              : "Comprehensive analysis results across all uploaded reports with sector-specific compliance checking"
+            }
+          </p>
+        </div>
 
-                {/* Sector Selection */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">Select Applicable Sector</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {sectors.map((sector) => (
-                      <Button
-                        key={sector.id}
-                        variant={selectedSector === sector.id ? "default" : "outline"}
-                        className={`p-4 h-auto justify-start sector-btn ${
-                          selectedSector === sector.id ? "selected" : ""
-                        }`}
-                        onClick={() => setSelectedSector(sector.id)}
-                      >
-                        <div className="flex items-center justify-between w-full">
-                          <div className="text-left">
-                            <div className="font-semibold">{sector.name}</div>
-                            <div className="text-sm opacity-70">{sector.description}</div>
-                          </div>
-                          <sector.icon className={`h-5 w-5 ${sector.color}`} />
-                        </div>
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Process Button */}
-                <Button
-                  onClick={handleProcessFile}
-                  disabled={!canProcess}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700"
-                  size="lg"
-                >
-                  {uploadMutation.isPending ? (
-                    <>
-                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Settings className="mr-2 h-4 w-4" />
-                      Process Analysis
-                    </>
-                  )}
+        {completedUploads.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <AlertCircle className="h-12 w-12 text-slate-400 mb-4" />
+              <h3 className="text-lg font-medium text-slate-900 mb-2">No Analysis Data Available</h3>
+              <p className="text-slate-500 text-center mb-4">
+                Upload and process your first inspection report to view detailed section analysis
+              </p>
+              <Link to="/upload">
+                <Button>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload First Report
                 </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Account Summary */}
-            <Card className="enterprise-card">
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-8">
+            {/* Section Inspection Data Table */}
+            <Card>
               <CardHeader>
-                <CardTitle>Account Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Current Plan:</span>
-                  <Badge variant="outline" className="text-primary border-primary">
-                    {(user as any)?.subscriptionStatus === "active" ? "Pro" : "Trial"}
-                  </Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Trial Reports Used:</span>
-                  <span className="font-semibold">
-                    {(user as any)?.trialReportsUsed || 0} / 1
-                  </span>
-                </div>
-                {(user as any)?.subscriptionStatus !== "active" && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Status:</span>
-                    <span className="font-semibold text-amber-600">Trial</span>
-                  </div>
-                )}
-                <Separator />
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => window.location.href = "/checkout"}
-                >
-                  {(user as any)?.subscriptionStatus === "active" ? "Manage Subscription" : "Upgrade Plan"}
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Recent Reports */}
-            <Card className="enterprise-card">
-              <CardHeader>
-                <CardTitle>Recent Reports</CardTitle>
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/uploads"] })}
-                    className="flex items-center gap-2"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                    Refresh Reports
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-2"
-                    onClick={() => {
-                      // Export to Excel functionality
-                      toast({
-                        title: "Export to Excel",
-                        description: "Excel export feature coming soon!",
-                      });
-                    }}
-                  >
-                    <Download className="h-4 w-4" />
-                    Export Excel
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-2"
-                    onClick={() => {
-                      // Export to DB functionality
-                      toast({
-                        title: "Export to DB",
-                        description: "Database export feature coming soon!",
-                      });
-                    }}
-                  >
-                    <Download className="h-4 w-4" />
-                    Export DB
-                  </Button>
-                </div>
+                <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections)</CardTitle>
               </CardHeader>
               <CardContent>
-                {uploads.length === 0 ? (
-                  <div className="text-center py-8 text-slate-500">
-                    <Upload className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No reports yet</p>
-                    <p className="text-sm">Upload your first file to get started</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3 custom-scrollbar max-h-64 overflow-y-auto">
-                    {uploads.slice(0, 5).map((upload: FileUploadType) => (
-                      <div key={upload.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">{upload.fileName}</p>
-                          <div className="flex items-center gap-2 text-xs text-slate-600 mt-1">
-                            <Badge 
-                              variant="secondary" 
-                              className={getStatusColor(upload.status)}
-                            >
-                              {getStatusIcon(upload.status)}
-                              <span className="ml-1 capitalize">{upload.status}</span>
-                            </Badge>
-                            <span className="capitalize">{upload.sector}</span>
-                          </div>
-                        </div>
-                        <div className="flex gap-1">
-                          {upload.status === "processing" && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={async () => {
-                                try {
-                                  await apiRequest("POST", `/api/complete-report/${upload.id}`);
-                                  queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
-                                  toast({
-                                    title: "Report Completed",
-                                    description: "Your report has been marked as completed!",
-                                  });
-                                } catch (error) {
-                                  toast({
-                                    title: "Error",
-                                    description: "Failed to complete report",
-                                    variant: "destructive",
-                                  });
-                                }
-                              }}
-                              title="Complete stuck report"
-                            >
-                              <CheckCircle className="h-4 w-4" />
-                            </Button>
-                          )}
-                          {upload.reportUrl && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => window.open(upload.reportUrl || '#', '_blank')}
-                            >
-                              <Download className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {uploads.length > 5 && (
-                  <Button 
-                    variant="ghost" 
-                    className="w-full mt-4 text-primary"
-                    size="sm"
-                  >
-                    View All Reports
-                  </Button>
-                )}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs border-collapse border border-slate-300">
+                    <thead>
+                      <tr className="bg-slate-100">
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Project No</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Item No</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Inspec. No</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Date</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Time</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Start MH</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Finish MH</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Pipe Size</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Pipe Material</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Total Length (m)</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Length Surveyed (m)</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Defects</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Severity Grade</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">SRM Grading</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Repair Methods</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Cleaning Methods</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Adoptable</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Cost (£)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sectionData.map((section, index) => (
+                        <tr key={index} className="hover:bg-slate-50">
+                          <td className="border border-slate-300 px-2 py-1">GR7188</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.itemNo}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.inspectionNo}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.date}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.time}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.startMH}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.finishMH}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.pipeSize}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.pipeMaterial}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.totalLength}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.lengthSurveyed}</td>
+                          <td className="border border-slate-300 px-2 py-1">{section.defects}</td>
+                          <td className="border border-slate-300 px-2 py-1">
+                            <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
+                              section.severityGrade === "0" ? 'bg-green-100 text-green-800' :
+                              section.severityGrade === "1" ? 'bg-emerald-100 text-emerald-800' :
+                              section.severityGrade === "2" ? 'bg-amber-100 text-amber-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {section.severityGrade}
+                            </span>
+                          </td>
+                          <td className="border border-slate-300 px-2 py-1">
+                            <div className="text-xs">
+                              {section.severityGrade === "0" ? "No service issues" :
+                               section.severityGrade === "1" ? "Minor service impacts" :
+                               section.severityGrade === "2" ? "Moderate service defects" :
+                               section.severityGrade === "3" ? "Major service defects" :
+                               "Blocked or non-functional"}
+                            </div>
+                          </td>
+                          <td className="border border-slate-300 px-2 py-1">
+                            <div className="text-xs">
+                              {section.severityGrade === "0" ? "None required" :
+                               section.severityGrade === "2" ? "Local patch lining" :
+                               section.severityGrade === "3" ? "High-pressure jetting" :
+                               "Excavate and replace"}
+                            </div>
+                          </td>
+                          <td className="border border-slate-300 px-2 py-1">
+                            <div className="text-xs">
+                              {section.severityGrade === "0" ? "None required" :
+                               section.severityGrade === "2" ? "Medium-pressure jetting" :
+                               section.severityGrade === "3" ? "Jet-Vac unit removal" :
+                               "High-pressure rotating head"}
+                            </div>
+                          </td>
+                          <td className="border border-slate-300 px-2 py-1">
+                            {section.adoptable !== 'N/A' ? (
+                              <span className={`px-1 py-0.5 rounded text-xs ${
+                                section.adoptable === 'Yes' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                              }`}>
+                                {section.adoptable}
+                              </span>
+                            ) : (
+                              <span className="text-slate-500">N/A</span>
+                            )}
+                          </td>
+                          <td className="border border-slate-300 px-2 py-1">
+                            {(() => {
+                              // Show "needs adding" for defective sections when pricing is missing
+                              const hasDefects = section.severityGrade !== "0" && section.severityGrade !== 0;
+                              if (hasDefects && !pricingStatus.overall) {
+                                return <span className="text-amber-600 font-medium">needs adding</span>;
+                              }
+                              return section.cost || "£0";
+                            })()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </CardContent>
             </Card>
 
-            {/* Report Analysis Details */}
-            {Array.isArray(uploads) && uploads.some((upload: any) => upload.status === "completed") && (
-              <Card className="enterprise-card">
-                <CardHeader>
-                  <CardTitle>Analysis Standards Applied</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {Array.isArray(uploads) && uploads.filter((upload: any) => upload.status === "completed").slice(0, 1).map((upload: any) => {
-                    const sector = sectors.find(s => s.id === upload.sector);
-                    if (!sector) {
-                      return null;
-                    }
-                    
-                    return (
-                      <div key={upload.id} className="space-y-4">
-                        <div className="flex items-center gap-3 mb-4">
-                          <sector.icon className={`h-6 w-6 ${sector.color}`} />
-                          <div>
-                            <h3 className="font-semibold">{sector.name} Sector</h3>
-                            <p className="text-sm text-slate-600">Standards applied to: {upload.fileName}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-sm">Applied Standards:</h4>
-                            <Badge variant="outline" className="text-xs">
-                              {sector.standards.length} Standards
-                            </Badge>
-                          </div>
-                          <div className="space-y-2">
-                            {sector.standards.map((standard, idx) => (
-                              <div key={`${standard.name}-${idx}`} className="flex items-center justify-between text-sm p-2 bg-slate-50 rounded">
-                                <span className="font-medium text-slate-800">{standard.name}</span>
-                                <a 
-                                  href={standard.url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium"
-                                >
-                                  View Documentation
-                                </a>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        <Separator />
-
-                        <div className="space-y-3">
-                          <h4 className="font-medium text-sm">Report Output Columns:</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {sector.outputColumns.map((column, idx) => (
-                              <Badge key={idx} variant="secondary" className="text-xs">
-                                {column}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-                          <p className="text-sm text-blue-800">
-                            <strong>File Format:</strong> Coded to WRc/WTI OS19/20x MSCC5R standards
-                          </p>
-                        </div>
-
-                        <Separator className="my-4" />
-
-                        {/* Section Inspection Table */}
-                        <div className="space-y-4">
-                          <h4 className="font-medium text-sm">Section Inspection Data</h4>
-                          
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-xs border-collapse border border-slate-300">
-                              <thead>
-                                <tr className="bg-slate-100">
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Item No</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Inspec. No</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Date</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Time</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Project Number</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Start MH</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Finish MH</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Pipe Size</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Pipe Material</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Total Length (m)</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Length Surveyed (m)</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Defects</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Severity Grade</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Sector Type</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Recommenda- tions</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Adoptable</th>
-                                  <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Cost (£)</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr className="hover:bg-slate-50">
-                                  <td className="border border-slate-300 px-2 py-1">1</td>
-                                  <td className="border border-slate-300 px-2 py-1">1</td>
-                                  <td className="border border-slate-300 px-2 py-1">{new Date().toLocaleDateString('en-GB')}</td>
-                                  <td className="border border-slate-300 px-2 py-1">{new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</td>
-                                  <td className="border border-slate-300 px-2 py-1">GR7188</td>
-                                  <td className="border border-slate-300 px-2 py-1">SW01</td>
-                                  <td className="border border-slate-300 px-2 py-1">SW02</td>
-                                  <td className="border border-slate-300 px-2 py-1">150mm</td>
-                                  <td className="border border-slate-300 px-2 py-1">PVC</td>
-                                  <td className="border border-slate-300 px-2 py-1">15.56</td>
-                                  <td className="border border-slate-300 px-2 py-1">15.56</td>
-                                  <td className="border border-slate-300 px-2 py-1">None</td>
-                                  <td className="border border-slate-300 px-2 py-1">
-                                    <span className="bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded text-xs font-semibold">1</span>
-                                  </td>
-                                  <td className="border border-slate-300 px-2 py-1">
-                                    <span className="capitalize text-primary font-medium">{sector.name}</span>
-                                  </td>
-                                  <td className="border border-slate-300 px-2 py-1">Monitor</td>
-                                  <td className="border border-slate-300 px-2 py-1">
-                                    {sector.id === 'adoption' ? (
-                                      <span className="bg-emerald-100 text-emerald-800 px-1 py-0.5 rounded text-xs">Yes</span>
-                                    ) : (
-                                      <span className="text-slate-500">N/A</span>
-                                    )}
-                                  </td>
-                                  <td className="border border-slate-300 px-2 py-1">£0</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+            {/* Summary Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-slate-900">{sectionData.length}</div>
+                    <div className="text-sm text-slate-600">Total Sections</div>
+                  </div>
                 </CardContent>
               </Card>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Sector Selection Modal */}
-      <Dialog open={showSectorModal} onOpenChange={setShowSectorModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Select Applicable Sector</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Please choose which sector standards to apply to your file:
-            </p>
-            <div className="grid gap-2">
-              {sectors.map((sector) => (
-                <Button
-                  key={sector.id}
-                  variant="outline"
-                  className="h-auto p-4 justify-start"
-                  onClick={() => {
-                    setSelectedSector(sector.id);
-                    if (pendingFile) {
-                      setUploadedFile(pendingFile);
-                      setPendingFile(null);
-                    }
-                    setShowSectorModal(false);
-                  }}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <div className="text-left">
-                      <div className="font-semibold">{sector.name}</div>
-                      <div className="text-sm opacity-70">{sector.description}</div>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-emerald-600">
+                      {sectionData.filter(s => s.severityGrade === 1).length}
                     </div>
-                    <sector.icon className={`h-5 w-5 ${sector.color}`} />
+                    <div className="text-sm text-slate-600">Grade 1 (Good)</div>
                   </div>
-                </Button>
-              ))}
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-amber-600">
+                      {sectionData.filter(s => s.severityGrade === 2).length}
+                    </div>
+                    <div className="text-sm text-slate-600">Grade 2 (Minor)</div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-red-600">
+                      {sectionData.filter(s => s.severityGrade === 3).length}
+                    </div>
+                    <div className="text-sm text-slate-600">Grade 3+ (Action)</div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
+
+            <Separator className="my-8" />
+
+            {/* Analysis Standards Applied */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Analysis Standards Applied - {currentSector.name} Sector</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium text-sm mb-3">Standards Documentation</h4>
+                    <div className="space-y-2">
+                      {currentSector.standards.map((standard, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                          <span className="text-sm font-medium">{standard.name}</span>
+                          <a 
+                            href={standard.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-primary hover:text-primary/80 text-xs"
+                          >
+                            View Documentation
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-sm mb-3">Output Columns</h4>
+                    <div className="space-y-1">
+                      {currentSector.outputColumns.map((column, index) => (
+                        <div key={index} className="text-sm p-1 bg-slate-50 rounded px-2">
+                          {column}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+                  <p className="text-sm text-blue-800">
+                    <strong>File Format:</strong> Coded to WRc/WTI OS19/20x MSCC5R standards
+                  </p>
+                </div>
+
+                {/* Integrated Standards Information */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">MSCC5 + SRM Scoring</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-xs space-y-1">
+                        <div>✓ Defect classification (FC, FL, DER, etc.)</div>
+                        <div>✓ Severity grading (1-5 scale)</div>
+                        <div>✓ Structural vs service assessment</div>
+                        <div>✓ Plain-English condition descriptions</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">Drain Repair Book (4th Ed.)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-xs space-y-1">
+                        <div>✓ Specific repair methods per defect</div>
+                        <div>✓ Priority classification (Low/Medium/High/Urgent)</div>
+                        <div>✓ CIPP lining recommendations</div>
+                        <div>✓ Excavation vs repair guidance</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">Sewer Cleaning Manual</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-xs space-y-1">
+                        <div>✓ Jetting specifications per defect</div>
+                        <div>✓ Jet-Vac unit procedures</div>
+                        <div>✓ Cleaning frequency schedules</div>
+                        <div>✓ Root cutting protocols</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {currentSector.id === 'adoption' && (
+                  <Card className="mt-4">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">OS19x Adoption Standards</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-xs space-y-2">
+                        <div><strong>Grade Thresholds:</strong> Structural ≤3, Service ≤3 for adoption</div>
+                        <div><strong>Banned Defects:</strong> B, CO, COL, CX, H, MRJ, F (automatic rejection)</div>
+                        <div><strong>Gradient Tolerance:</strong> ±10% variance from design drawings</div>
+                        <div><strong>Inspection Required:</strong> CCTV Survey + Post-clean verification + Hydrostatic test</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </CardContent>
+            </Card>
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
+      </div>
     </div>
   );
 }

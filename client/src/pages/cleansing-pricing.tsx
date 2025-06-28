@@ -443,7 +443,7 @@ export default function CleansingPricing() {
                 Configured pricing for cleansing equipment with sector applications
               </p>
             </div>
-            <Link to="/dashboard-new">
+            <Link to="/dashboard">
               <Button variant="outline" size="sm">
                 <BarChart className="h-4 w-4 mr-2 text-green-600" />
                 View Dashboard

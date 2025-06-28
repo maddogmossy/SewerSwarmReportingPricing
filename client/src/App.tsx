@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import Home from "@/pages/home";
-import Dashboard from "@/pages/dashboard-new";
+import Dashboard from "@/pages/dashboard";
 import Upload from "@/pages/upload";
 import Pricing from "@/pages/pricing";
 import SurveyPricing from "@/pages/survey-pricing";
