@@ -462,7 +462,6 @@ export default function CleansingPricing() {
                   <th className="text-left p-3">Meterage Range</th>
                   <th className="text-left p-3">Sections/Day</th>
                   <th className="text-left p-3">Applicable Sectors</th>
-                  <th className="text-left p-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -506,27 +505,6 @@ export default function CleansingPricing() {
                             <span className="text-xs text-gray-500 italic">No sectors configured</span>
                           )}
                         </div>
-                      </td>
-                      <td className="p-3">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setEditingPricingId(pricing.id);
-                            setNewPricing({
-                              equipmentTypeId: pricing.equipmentTypeId,
-                              costPerDay: pricing.costPerDay,
-                              costPerHour: pricing.costPerHour,
-                              meterageRangeMin: pricing.meterageRangeMin,
-                              meterageRangeMax: pricing.meterageRangeMax,
-                              sectionsPerDay: pricing.sectionsPerDay,
-                              sectors: pricing.sectors || []
-                            });
-                            setIsAddingPricing(true);
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
                       </td>
                     </tr>
                   );
