@@ -615,6 +615,29 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
+                {/* Column Visibility Controls */}
+                {hiddenColumns.size > 0 && (
+                  <div className="mb-4 p-3 bg-slate-50 rounded-lg">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium text-slate-600">Hidden columns:</span>
+                      {Array.from(hiddenColumns).map(columnKey => (
+                        <Button
+                          key={columnKey}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleColumnVisibility(columnKey)}
+                          className="text-xs h-7"
+                        >
+                          Show {columnKey === 'projectNo' ? 'Project No' : 
+                                columnKey === 'inspectionNo' ? 'Inspec. No' : 
+                                columnKey === 'date' ? 'Date' : 
+                                columnKey === 'time' ? 'Time' : 
+                                columnKey === 'pipeMaterial' ? 'Pipe Material' : columnKey}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs border-collapse border border-slate-300">
                     <thead>
