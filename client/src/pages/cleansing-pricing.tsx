@@ -689,17 +689,35 @@ export default function CleansingPricing() {
                             <td className="p-2">£{pricing.costPerDay}</td>
                             <td className="p-2">£{pricing.costPerHour}</td>
                             <td className="p-2">{pricing.sectionsPerDay}</td>
-                            <td className="p-2">{pricing.meterageRangeMin}.00-{pricing.meterageRangeMax}.00m</td>
+                            <td className="p-2">{pricing.meterageRangeMin}-{pricing.meterageRangeMax}m</td>
                             <td className="p-2">
                               <div className="flex flex-wrap gap-1">
-                                {sectors.map((sector) => (
-                                  <span 
-                                    key={sector.id}
-                                    className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
-                                  >
-                                    {sector.name}
+                                {(pricing.sectors || []).map((sectorName, index) => {
+                                  // Map sector names to colors
+                                  const sectorColorMap = {
+                                    'utilities': 'bg-blue-100 text-blue-800',
+                                    'adoption': 'bg-green-100 text-green-800', 
+                                    'highways': 'bg-orange-100 text-orange-800',
+                                    'insurance': 'bg-red-100 text-red-800',
+                                    'construction': 'bg-purple-100 text-purple-800',
+                                    'domestic': 'bg-amber-100 text-amber-800'
+                                  };
+                                  const colorClass = sectorColorMap[sectorName.toLowerCase()] || 'bg-gray-100 text-gray-800';
+                                  
+                                  return (
+                                    <span 
+                                      key={index}
+                                      className={`px-2 py-1 text-xs rounded-full ${colorClass}`}
+                                    >
+                                      {sectorName.charAt(0).toUpperCase() + sectorName.slice(1)}
+                                    </span>
+                                  );
+                                })}
+                                {(!pricing.sectors || pricing.sectors.length === 0) && (
+                                  <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                                    No sectors selected
                                   </span>
-                                ))}
+                                )}
                               </div>
                             </td>
                             <td className="p-2">
