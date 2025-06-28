@@ -866,11 +866,13 @@ export default function Dashboard() {
                                   toggleColumnVisibility(column.key);
                                 }
                               }}
-                              className={`
-                                border border-slate-300 px-2 py-1 text-left font-semibold
-                                ${showColumnSelector && canBeHidden ? 'cursor-pointer hover:bg-red-100 hover:text-red-800 transition-colors' : ''}
-                                ${showColumnSelector && !canBeHidden ? 'bg-slate-200 cursor-not-allowed opacity-60' : ''}
-                              `}
+                              className={
+                                showColumnSelector && !canBeHidden 
+                                  ? 'border border-slate-300 px-2 py-1 text-left font-semibold bg-slate-200 cursor-not-allowed opacity-60'
+                                  : showColumnSelector && canBeHidden
+                                  ? 'border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-red-100 hover:text-red-800 transition-colors'
+                                  : 'border border-slate-300 px-2 py-1 text-left font-semibold'
+                              }
                               title={showColumnSelector ? (canBeHidden ? 'Click to hide this column' : 'Essential column - cannot be hidden') : ''}
                             >
                               {column.label}
