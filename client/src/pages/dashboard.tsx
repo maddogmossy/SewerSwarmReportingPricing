@@ -155,12 +155,7 @@ export default function Dashboard() {
     gcTime: 0, // Don't cache (v5 property name)
   });
 
-  // Fetch live sector configurations
-  const { data: sectorConfigs = {} } = useQuery({
-    queryKey: ["/api/sector-configs"],
-    staleTime: 0,
-    gcTime: 0,
-  });
+
 
   // Upload mutation
   const uploadMutation = useMutation({
@@ -533,27 +528,16 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   {Array.isArray(uploads) && uploads.filter((upload: any) => upload.status === "completed").slice(0, 1).map((upload: any) => {
-                    const sector = sectorConfigs[upload.sector];
+                    const sector = sectors.find(s => s.id === upload.sector);
                     if (!sector) {
                       console.log('Sector not found for upload:', upload);
                       return null;
                     }
                     
-                    // Map icon names to actual icon components
-                    const iconComponents = {
-                      Wrench: Wrench,
-                      Building: Building,
-                      Car: Car,
-                      House: House,
-                      Shield: Shield,
-                      HardHat: HardHat
-                    };
-                    const IconComponent = iconComponents[sector.icon as keyof typeof iconComponents] || Wrench;
-                    
                     return (
                       <div key={upload.id} className="space-y-4">
                         <div className="flex items-center gap-3 mb-4">
-                          <IconComponent className={`h-6 w-6 ${sector.color}`} />
+                          <sector.icon className={`h-6 w-6 ${sector.color}`} />
                           <div>
                             <h3 className="font-semibold">{sector.name} Sector</h3>
                             <p className="text-sm text-slate-600">Standards applied to: {upload.fileName}</p>
