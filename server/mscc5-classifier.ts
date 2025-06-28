@@ -104,6 +104,18 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
   }
 };
 
+export interface SRMGrading {
+  description: string;
+  criteria: string;
+  action_required: string;
+  adoptable: boolean;
+}
+
+export interface SRMScoringData {
+  structural: Record<string, SRMGrading>;
+  service: Record<string, SRMGrading>;
+}
+
 export interface DefectClassificationResult {
   defectCode: string;
   defectDescription: string;
@@ -113,7 +125,76 @@ export interface DefectClassificationResult {
   riskAssessment: string;
   adoptable: 'Yes' | 'No' | 'Conditional';
   estimatedCost: string;
+  srmGrading: SRMGrading;
 }
+
+// SRM Scoring Data from attached file
+const SRM_SCORING: SRMScoringData = {
+  structural: {
+    "1": {
+      description: "Excellent structural condition",
+      criteria: "No defects observed",
+      action_required: "None",
+      adoptable: true
+    },
+    "2": {
+      description: "Minor defects",
+      criteria: "Some minor wear or joint displacement",
+      action_required: "No immediate action",
+      adoptable: true
+    },
+    "3": {
+      description: "Moderate deterioration",
+      criteria: "Isolated fractures, minor infiltration",
+      action_required: "Medium-term repair or monitoring",
+      adoptable: true
+    },
+    "4": {
+      description: "Significant deterioration",
+      criteria: "Multiple fractures, poor alignment, heavy infiltration",
+      action_required: "Consider near-term repair",
+      adoptable: false
+    },
+    "5": {
+      description: "Severe structural failure",
+      criteria: "Collapse, deformation, major cracking",
+      action_required: "Immediate repair or replacement",
+      adoptable: false
+    }
+  },
+  service: {
+    "1": {
+      description: "No service issues",
+      criteria: "Free flowing, no obstructions or deposits",
+      action_required: "None",
+      adoptable: true
+    },
+    "2": {
+      description: "Minor service impacts",
+      criteria: "Minor settled deposits or water levels",
+      action_required: "Routine monitoring",
+      adoptable: true
+    },
+    "3": {
+      description: "Moderate service defects",
+      criteria: "Partial blockages, 5–20% cross-sectional loss",
+      action_required: "Desilting or cleaning recommended",
+      adoptable: true
+    },
+    "4": {
+      description: "Major service defects",
+      criteria: "Severe deposits, 20–50% loss, significant flow restriction",
+      action_required: "Cleaning or partial repair",
+      adoptable: false
+    },
+    "5": {
+      description: "Blocked or non-functional",
+      criteria: "Over 50% flow loss or complete blockage",
+      action_required: "Immediate action required",
+      adoptable: false
+    }
+  }
+};
 
 export class MSCC5Classifier {
   /**
@@ -153,6 +234,7 @@ export class MSCC5Classifier {
     
     // Check if it's a no-defect condition first
     if (normalizedText.includes('no action required') || normalizedText.includes('acceptable condition')) {
+      const srmGrading = SRM_SCORING.service["1"];
       return {
         defectCode: 'N/A',
         defectDescription: 'No action required pipe observed in acceptable structural and service condition',
@@ -161,7 +243,8 @@ export class MSCC5Classifier {
         recommendations: 'No action required pipe observed in acceptable structural and service condition',
         riskAssessment: 'Pipe in acceptable condition',
         adoptable: 'Yes',
-        estimatedCost: '£0'
+        estimatedCost: '£0',
+        srmGrading
       };
     }
     
@@ -217,6 +300,10 @@ export class MSCC5Classifier {
         5: '£50,000+'
       };
       
+      // Get SRM grading for this defect type and grade
+      const gradeKey = Math.min(highestGrade, 5).toString();
+      const srmGrading = SRM_SCORING[mainDefectType][gradeKey] || SRM_SCORING.service["1"];
+      
       return {
         defectCode: parsedDefects.map(d => d.defectCode).join(','),
         defectDescription: combinedDescription,
@@ -225,7 +312,8 @@ export class MSCC5Classifier {
         recommendations: combinedRecommendations,
         riskAssessment: `Multiple defects requiring attention. Highest severity: Grade ${highestGrade}`,
         adoptable,
-        estimatedCost: costBands[highestGrade as keyof typeof costBands] || '£TBC'
+        estimatedCost: costBands[highestGrade as keyof typeof costBands] || '£TBC',
+        srmGrading
       };
     }
     
@@ -270,6 +358,7 @@ export class MSCC5Classifier {
     }
     
     if (!detectedDefect) {
+      const srmGrading = SRM_SCORING.service["1"];
       return {
         defectCode: 'N/A',
         defectDescription: 'No action required pipe observed in acceptable structural and service condition',
@@ -278,7 +367,8 @@ export class MSCC5Classifier {
         recommendations: 'No action required pipe observed in acceptable structural and service condition',
         riskAssessment: 'Pipe in acceptable condition',
         adoptable: 'Yes',
-        estimatedCost: '£0'
+        estimatedCost: '£0',
+        srmGrading
       };
     }
     
@@ -304,6 +394,10 @@ export class MSCC5Classifier {
       5: '£50,000+'
     };
     
+    // Get SRM grading for this defect type and grade
+    const gradeKey = Math.min(adjustedGrade, 5).toString();
+    const srmGrading = SRM_SCORING[detectedDefect.type][gradeKey] || SRM_SCORING.service["1"];
+    
     return {
       defectCode,
       defectDescription: detectedDefect.description,
@@ -312,7 +406,8 @@ export class MSCC5Classifier {
       recommendations: detectedDefect.recommended_action,
       riskAssessment: detectedDefect.risk,
       adoptable,
-      estimatedCost: costBands[adjustedGrade as keyof typeof costBands] || '£TBC'
+      estimatedCost: costBands[adjustedGrade as keyof typeof costBands] || '£TBC',
+      srmGrading
     };
   }
   

@@ -1,0 +1,66 @@
+{
+    "structural": {
+        "1": {
+            "description": "Excellent structural condition",
+            "criteria": "No defects observed",
+            "action_required": "None",
+            "adoptable": true
+        },
+        "2": {
+            "description": "Minor defects",
+            "criteria": "Some minor wear or joint displacement",
+            "action_required": "No immediate action",
+            "adoptable": true
+        },
+        "3": {
+            "description": "Moderate deterioration",
+            "criteria": "Isolated fractures, minor infiltration",
+            "action_required": "Medium-term repair or monitoring",
+            "adoptable": true
+        },
+        "4": {
+            "description": "Significant deterioration",
+            "criteria": "Multiple fractures, poor alignment, heavy infiltration",
+            "action_required": "Consider near-term repair",
+            "adoptable": false
+        },
+        "5": {
+            "description": "Severe structural failure",
+            "criteria": "Collapse, deformation, major cracking",
+            "action_required": "Immediate repair or replacement",
+            "adoptable": false
+        }
+    },
+    "service": {
+        "1": {
+            "description": "No service issues",
+            "criteria": "Free flowing, no obstructions or deposits",
+            "action_required": "None",
+            "adoptable": true
+        },
+        "2": {
+            "description": "Minor service impacts",
+            "criteria": "Minor settled deposits or water levels",
+            "action_required": "Routine monitoring",
+            "adoptable": true
+        },
+        "3": {
+            "description": "Moderate service defects",
+            "criteria": "Partial blockages, 5\u201320% cross-sectional loss",
+            "action_required": "Desilting or cleaning recommended",
+            "adoptable": true
+        },
+        "4": {
+            "description": "Major service defects",
+            "criteria": "Severe deposits, 20\u201350% loss, significant flow restriction",
+            "action_required": "Cleaning or partial repair",
+            "adoptable": false
+        },
+        "5": {
+            "description": "Blocked or non-functional",
+            "criteria": "Over 50% flow loss or complete blockage",
+            "action_required": "Immediate action required",
+            "adoptable": false
+        }
+    }
+}
