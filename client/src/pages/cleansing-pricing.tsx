@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -411,9 +411,7 @@ export default function CleansingPricing() {
             return hasEquipment && hasCompletePricing;
           });
           
-          if (savedPricingData.length === 0) {
-            return null;
-          }
+          if (savedPricingData.length === 0) return null;
           
           return (
           <Card>
@@ -523,7 +521,8 @@ export default function CleansingPricing() {
               </p>
             </CardContent>
           </Card>
-        )}
+          );
+        })()}
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
