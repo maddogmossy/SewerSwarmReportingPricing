@@ -10,6 +10,7 @@ import {
   boolean,
   integer,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -136,6 +137,7 @@ export const userPricing = pgTable("user_pricing", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   equipmentTypeId: integer("equipment_type_id").notNull().references(() => equipmentTypes.id, { onDelete: "cascade" }),
+  sectors: text("sectors").array().default(sql`'{}'`), // Array of applicable sectors
   costPerHour: decimal("cost_per_hour", { precision: 10, scale: 2 }),
   costPerDay: decimal("cost_per_day", { precision: 10, scale: 2 }),
   sectionsPerHour: decimal("sections_per_hour", { precision: 5, scale: 2 }),
