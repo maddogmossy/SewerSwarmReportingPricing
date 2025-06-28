@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Wrench, Building2, Scissors, Droplets, Hammer, Layers, Truck, Home, ChevronRight } from "lucide-react";
+import { Settings, Wrench, Building2, Scissors, Droplets, Hammer, Layers, Truck, Home, ChevronRight, BarChart3 } from "lucide-react";
 import { Link } from "wouter";
 
 interface WorkCategory {
@@ -35,11 +35,17 @@ export default function Pricing() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Navigation */}
-        <div className="flex justify-start">
+        <div className="flex justify-start gap-4">
           <Link href="/">
             <Button variant="outline" className="flex items-center gap-2">
               <Home className="h-4 w-4" />
               Back to Home
+            </Button>
+          </Link>
+          <Link href="/dashboard">
+            <Button variant="outline" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-green-600" />
+              Dashboard
             </Button>
           </Link>
         </div>
