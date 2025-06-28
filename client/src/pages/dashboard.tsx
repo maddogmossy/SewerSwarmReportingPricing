@@ -30,12 +30,12 @@ const sectors = [
     icon: Wrench,
     color: "text-blue-600",
     standards: [
-      { name: "MSCC5: Manual of Sewer Condition Classification (5th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "SRM Scoring System & Methodology", url: "https://www.wrcplc.co.uk/knowledge/sewerage-rehabilitation-manual" },
-      { name: "WRc Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
-      { name: "WRc Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
-      { name: "BS EN 752:2017 Drain & Sewer Systems", url: "https://www.bsigroup.com/en-GB/standards/bs-en-752/" },
-      { name: "Water Industry Act 1991", url: "https://www.legislation.gov.uk/ukpga/1991/56/contents" }
+      { name: "MSCC5 – Manual of Sewer Condition Classification", url: "https://www.wrcgroup.com/product/manual-of-sewer-condition-classification-mscc-5th-edition" },
+      { name: "Sewerage Rehabilitation Manual (SRM)", url: "https://www.wrcgroup.com/product/sewerage-risk-management-srm-manual" },
+      { name: "WRc Drain & Sewer Cleaning Manual", url: "https://www.wrcgroup.com/product/drain-and-sewer-cleaning-manual" },
+      { name: "Drain Repair Book (4th Ed.)", url: "https://www.wrcgroup.com/product/drain-repair-book-4th-edition" },
+      { name: "BS EN 752:2017 – Drain and sewer systems outside buildings", url: "https://shop.bsigroup.com/products/drain-and-sewer-systems-outside-buildings-bs-en-752-2017" },
+      { name: "Water Industry Act 1991 – Sections 94 & 106", url: "https://www.legislation.gov.uk/ukpga/1991/56/contents" }
     ],
     outputColumns: ["Defect Grade", "SRM Grading", "Repair Methods", "Cleaning Methods", "Cost Band", "Risk Score"]
   },
