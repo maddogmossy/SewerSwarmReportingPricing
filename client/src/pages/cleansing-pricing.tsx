@@ -23,7 +23,8 @@ import {
   Car,
   Banknote,
   HardHat,
-  House
+  House,
+  BarChart
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "wouter";
@@ -629,21 +630,43 @@ export default function CleansingPricing() {
           </Card>
         </div>
 
-        {/* Current Equipment Pricing Table - Only show if pricing exists */}
+        {/* Current Equipment Pricing Table - Only show saved data */}
         {(() => {
-          const equipmentWithPricing = (equipmentTypes as EquipmentType[]).filter((equipment) => {
-            const pricing = getCurrentPricing(equipment.id);
-            return pricing && (pricing.costPerDay || pricing.costPerHour || pricing.sectionsPerDay);
-          });
+          const savedPricingData = (userPricing as UserPricing[]).filter((pricing: UserPricing) => 
+            pricing.equipmentTypeId && (equipmentTypes as EquipmentType[]).some(eq => eq.id === pricing.equipmentTypeId)
+          );
           
-          if (equipmentWithPricing.length === 0) {
+          if (savedPricingData.length === 0) {
             return null; // Don't show the section if no pricing exists
           }
           
           return (
             <Card>
               <CardHeader>
-                <CardTitle>Current Cleansing Equipment Pricing</CardTitle>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle>Current Cleansing Equipment Pricing</CardTitle>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-sm text-gray-600">Applicable to sectors:</span>
+                      <div className="flex gap-2">
+                        {sectors.map((sector) => (
+                          <span 
+                            key={sector.id}
+                            className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                          >
+                            {sector.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <Link to="/dashboard-new">
+                    <Button variant="outline" size="sm">
+                      <BarChart className="h-4 w-4 mr-2 text-green-600" />
+                      View Dashboard
+                    </Button>
+                  </Link>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -660,16 +683,23 @@ export default function CleansingPricing() {
                       </tr>
                     </thead>
                     <tbody>
-                      {equipmentWithPricing.map((equipment) => {
-                        const pricing = getCurrentPricing(equipment.id);
+                      {savedPricingData.map((pricing: UserPricing) => {
+                        const equipment = (equipmentTypes as EquipmentType[]).find(eq => eq.id === pricing.equipmentTypeId);
+                        if (!equipment) return null;
+                        
                         return (
-                          <tr key={equipment.id} className="border-b">
+                          <tr key={pricing.id} className="border-b">
                             <td className="p-2">{equipment.name}</td>
                             <td className="p-2">{equipment.minPipeSize}mm-{equipment.maxPipeSize}mm</td>
-                            <td className="p-2">£{pricing?.costPerDay || '0.00'}</td>
-                            <td className="p-2">£{pricing?.costPerHour || '0.00'}</td>
-                            <td className="p-2">{pricing?.sectionsPerDay || '0.00'}</td>
-                            <td className="p-2">{pricing?.meterageRangeMin && pricing?.meterageRangeMax ? `${pricing.meterageRangeMin}-${pricing.meterageRangeMax}m` : 'Not set'}</td>
+                            <td className="p-2">£{pricing.costPerDay || '0.00'}</td>
+                            <td className="p-2">£{pricing.costPerHour || '0.00'}</td>
+                            <td className="p-2">{pricing.sectionsPerDay || '0.00'}</td>
+                            <td className="p-2">
+                              {pricing.meterageRangeMin && pricing.meterageRangeMax 
+                                ? `${pricing.meterageRangeMin}.00-${pricing.meterageRangeMax}.00m` 
+                                : 'Not set'
+                              }
+                            </td>
                             <td className="p-2">
                               <div className="flex gap-2">
                                 <Button
@@ -677,11 +707,11 @@ export default function CleansingPricing() {
                                   size="sm"
                                   onClick={() => setNewPricing({
                                     equipmentTypeId: equipment.id,
-                                    costPerDay: pricing?.costPerDay || "",
-                                    costPerHour: pricing?.costPerHour || "",
-                                    sectionsPerDay: pricing?.sectionsPerDay || "",
-                                    meterageRangeMin: pricing?.meterageRangeMin || "",
-                                    meterageRangeMax: pricing?.meterageRangeMax || "",
+                                    costPerDay: pricing.costPerDay || "",
+                                    costPerHour: pricing.costPerHour || "",
+                                    sectionsPerDay: pricing.sectionsPerDay || "",
+                                    meterageRangeMin: pricing.meterageRangeMin || "",
+                                    meterageRangeMax: pricing.meterageRangeMax || "",
                                     sectors: []
                                   })}
                                 >
@@ -696,7 +726,7 @@ export default function CleansingPricing() {
                   </table>
                 </div>
                 <p className="text-sm text-gray-600 mt-4">
-                  * Hourly rates are automatically calculated by dividing daily values by 8 hours. Meterage ranges define pricing tiers based on pipeline cleaning lengths.
+                  * Hourly rates are automatically calculated by dividing daily values by 8 hours. Meterage ranges define pricing tiers based on pipeline cleaning lengths. This pricing applies to dashboard cost calculations.
                 </p>
               </CardContent>
             </Card>
