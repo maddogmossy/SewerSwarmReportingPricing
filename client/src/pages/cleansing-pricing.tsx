@@ -49,6 +49,57 @@ const pipeSizes = [
   75, 100, 110, 125, 150, 160, 200, 225, 250, 300, 375, 400, 450, 500, 525, 600, 675, 750, 800, 825, 900, 975, 1000, 1050, 1200, 1350, 1500, 1800, 2100, 2400
 ];
 
+const predefinedEquipmentTypes = [
+  {
+    name: "Van Pack 3.5t",
+    description: "Compact van-mounted jetting system ideal for residential areas and narrow access points. High-pressure capability with excellent maneuverability.",
+    minPipeSize: 75,
+    maxPipeSize: 300
+  },
+  {
+    name: "City Flex 7.5t",
+    description: "Mid-range flexible jetting unit designed for urban environments. Balanced power and mobility for commercial drainage systems.",
+    minPipeSize: 100,
+    maxPipeSize: 450
+  },
+  {
+    name: "Jet Vac 18t",
+    description: "Heavy-duty combination jetting and vacuum unit. Powerful high-pressure cleaning with debris removal capability for large-scale operations.",
+    minPipeSize: 150,
+    maxPipeSize: 750
+  },
+  {
+    name: "Jet Vac 26t",
+    description: "Industrial-grade combination unit with maximum cleaning power. Designed for large diameter mains and challenging blockages.",
+    minPipeSize: 200,
+    maxPipeSize: 1200
+  },
+  {
+    name: "Electric Drain Cleaner",
+    description: "Portable electric-powered cleaning system for internal pipework and small diameter drains. Environmentally friendly operation.",
+    minPipeSize: 75,
+    maxPipeSize: 150
+  },
+  {
+    name: "Root Cutting Unit",
+    description: "Specialized high-pressure system with root cutting attachments. Designed specifically for vegetation ingress removal.",
+    minPipeSize: 100,
+    maxPipeSize: 600
+  },
+  {
+    name: "Compact Jetter 10t",
+    description: "Medium-capacity jetting unit with enhanced accessibility features. Suitable for restricted access commercial properties.",
+    minPipeSize: 100,
+    maxPipeSize: 525
+  },
+  {
+    name: "Multi-Purpose Cleaner",
+    description: "Versatile cleaning system with interchangeable attachments. Adaptable for various drain cleaning applications.",
+    minPipeSize: 75,
+    maxPipeSize: 400
+  }
+];
+
 export default function CleansingPricing() {
   const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
   const [isAddingEquipment, setIsAddingEquipment] = useState(false);
@@ -58,7 +109,23 @@ export default function CleansingPricing() {
     minPipeSize: 75,
     maxPipeSize: 2400
   });
+  
+  const [selectedEquipmentType, setSelectedEquipmentType] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState<EquipmentType | null>(null);
+  
+  // Handle equipment type selection from dropdown
+  const handleEquipmentTypeSelection = (equipmentTypeName: string) => {
+    const selectedType = predefinedEquipmentTypes.find(type => type.name === equipmentTypeName);
+    if (selectedType) {
+      setNewEquipment({
+        name: selectedType.name,
+        description: selectedType.description,
+        minPipeSize: selectedType.minPipeSize,
+        maxPipeSize: selectedType.maxPipeSize
+      });
+      setSelectedEquipmentType(equipmentTypeName);
+    }
+  };
   const [newPricing, setNewPricing] = useState({
     equipmentTypeId: 0,
     costPerDay: "",
@@ -593,21 +660,31 @@ export default function CleansingPricing() {
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="equipment-name">Equipment Name</Label>
-                <Input
-                  id="equipment-name"
-                  value={newEquipment.name}
-                  onChange={(e) => setNewEquipment(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g., High-Pressure Root Cutter"
-                />
+                <Label htmlFor="equipment-type">Equipment Type</Label>
+                <Select
+                  value={selectedEquipmentType}
+                  onValueChange={handleEquipmentTypeSelection}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select equipment type..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {predefinedEquipmentTypes.map((equipment) => (
+                      <SelectItem key={equipment.name} value={equipment.name}>
+                        {equipment.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="equipment-description">Description</Label>
                 <Input
                   id="equipment-description"
                   value={newEquipment.description}
-                  onChange={(e) => setNewEquipment(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="e.g., Specialized root cutting equipment for residential drains"
+                  readOnly
+                  className="bg-gray-50 text-gray-700"
+                  placeholder="Description will be automatically filled when you select an equipment type"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
