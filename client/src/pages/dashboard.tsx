@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -272,9 +272,27 @@ export default function Dashboard() {
   const urlParams = new URLSearchParams(search);
   const reportId = urlParams.get('reportId');
 
-  // Column visibility state
+  // Column visibility state with localStorage persistence
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
   const [showColumnSelector, setShowColumnSelector] = useState(false);
+
+  // Load hidden columns from localStorage on component mount
+  useEffect(() => {
+    const savedHiddenColumns = localStorage.getItem('dashboard-hidden-columns');
+    if (savedHiddenColumns) {
+      try {
+        const parsedColumns = JSON.parse(savedHiddenColumns);
+        setHiddenColumns(new Set(parsedColumns));
+      } catch (error) {
+        console.error('Failed to parse saved hidden columns:', error);
+      }
+    }
+  }, []);
+
+  // Save hidden columns to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('dashboard-hidden-columns', JSON.stringify(Array.from(hiddenColumns)));
+  }, [hiddenColumns]);
 
   const toggleColumnVisibility = (columnKey: string) => {
     setHiddenColumns(prev => {
@@ -811,7 +829,10 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setHiddenColumns(new Set())}
+                      onClick={() => {
+                        setHiddenColumns(new Set());
+                        localStorage.removeItem('dashboard-hidden-columns');
+                      }}
                       className="text-xs"
                       disabled={hiddenColumns.size === 0}
                     >
