@@ -275,12 +275,9 @@ export default function CleansingPricing() {
   // Create or update pricing mutation
   const savePricingMutation = useMutation({
     mutationFn: async (pricing: typeof newPricing) => {
-      const existingPricing = (userPricing as UserPricing[]).find(
-        (p: UserPricing) => p.equipmentTypeId === pricing.equipmentTypeId
-      );
-
-      if (existingPricing) {
-        return await apiRequest('PUT', `/api/user-pricing/${existingPricing.id}`, {
+      // Check if we're editing an existing pricing entry
+      if (editingPricingId) {
+        return await apiRequest('PUT', `/api/user-pricing/${editingPricingId}`, {
           costPerDay: pricing.costPerDay,
           costPerHour: pricing.costPerHour,
           sectionsPerDay: pricing.sectionsPerDay,
@@ -289,7 +286,23 @@ export default function CleansingPricing() {
           sectors: pricing.sectors
         });
       } else {
-        return await apiRequest('POST', '/api/user-pricing', pricing);
+        // Check if pricing already exists for this equipment type
+        const existingPricing = (userPricing as UserPricing[]).find(
+          (p: UserPricing) => p.equipmentTypeId === pricing.equipmentTypeId
+        );
+        
+        if (existingPricing) {
+          return await apiRequest('PUT', `/api/user-pricing/${existingPricing.id}`, {
+            costPerDay: pricing.costPerDay,
+            costPerHour: pricing.costPerHour,
+            sectionsPerDay: pricing.sectionsPerDay,
+            meterageRangeMin: pricing.meterageRangeMin,
+            meterageRangeMax: pricing.meterageRangeMax,
+            sectors: pricing.sectors
+          });
+        } else {
+          return await apiRequest('POST', '/api/user-pricing', pricing);
+        }
       }
     },
     onSuccess: () => {
@@ -303,6 +316,8 @@ export default function CleansingPricing() {
         meterageRangeMax: "",
         sectors: []
       });
+      setEditingPricingId(null);
+      setIsAddingPricing(false);
       toast({ title: "Equipment pricing saved successfully" });
     },
     onError: (error) => {
