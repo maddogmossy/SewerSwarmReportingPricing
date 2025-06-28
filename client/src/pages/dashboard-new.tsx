@@ -292,7 +292,7 @@ export default function Dashboard() {
           </Link>
           <Link to="/pricing">
             <Button variant="outline" size="sm">
-              <Settings className="h-4 w-4 mr-2" />
+              <Settings className="h-4 w-4 mr-2 text-orange-600" />
               Pricing
             </Button>
           </Link>
