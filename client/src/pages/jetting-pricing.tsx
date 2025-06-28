@@ -63,7 +63,7 @@ export default function JettingPricing() {
   // Create equipment mutation
   const createEquipmentMutation = useMutation({
     mutationFn: async (equipment: Omit<EquipmentType, "id">) => {
-      return await apiRequest('/api/equipment-types', 'POST', equipment);
+      return await apiRequest('POST', '/api/equipment-types', equipment);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/4"] });
@@ -89,7 +89,7 @@ export default function JettingPricing() {
   // Update equipment mutation
   const updateEquipmentMutation = useMutation({
     mutationFn: async (equipment: EquipmentType) => {
-      return await apiRequest(`/api/equipment-types/${equipment.id}`, 'PUT', {
+      return await apiRequest('PUT', `/api/equipment-types/${equipment.id}`, {
         name: equipment.name,
         description: equipment.description,
         minPipeSize: equipment.minPipeSize,
@@ -120,7 +120,7 @@ export default function JettingPricing() {
   // Delete equipment mutation
   const deleteEquipmentMutation = useMutation({
     mutationFn: async (id: number) => {
-      return await apiRequest(`/api/equipment-types/${id}`, 'DELETE');
+      return await apiRequest('DELETE', `/api/equipment-types/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/4"] });
