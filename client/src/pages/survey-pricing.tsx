@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { 
@@ -142,10 +142,11 @@ export default function SurveyPricing() {
       setShowEquipmentDialog(false);
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/1"] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error("Equipment update error:", error);
       toast({
         title: "Error",
-        description: "Failed to update equipment specification",
+        description: error?.message || "Failed to update equipment specification",
         variant: "destructive",
       });
     },
@@ -203,11 +204,58 @@ export default function SurveyPricing() {
 
   const handleUpdateEquipment = () => {
     if (!editingEquipment) return;
+    
+    // Validate required fields
+    if (!editingEquipment.name?.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Equipment name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!editingEquipment.description?.trim()) {
+      toast({
+        title: "Validation Error", 
+        description: "Equipment description is required",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!editingEquipment.minPipeSize || editingEquipment.minPipeSize <= 0) {
+      toast({
+        title: "Validation Error",
+        description: "Min pipe size must be greater than 0",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!editingEquipment.maxPipeSize || editingEquipment.maxPipeSize <= 0) {
+      toast({
+        title: "Validation Error",
+        description: "Max pipe size must be greater than 0",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (editingEquipment.minPipeSize >= editingEquipment.maxPipeSize) {
+      toast({
+        title: "Validation Error",
+        description: "Max pipe size must be greater than min pipe size",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     updateEquipmentMutation.mutate({
       id: editingEquipment.id,
       data: {
-        name: editingEquipment.name,
-        description: editingEquipment.description,
+        name: editingEquipment.name.trim(),
+        description: editingEquipment.description.trim(),
         minPipeSize: editingEquipment.minPipeSize,
         maxPipeSize: editingEquipment.maxPipeSize,
       }
@@ -592,6 +640,9 @@ export default function SurveyPricing() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Edit Equipment Specification</DialogTitle>
+            <DialogDescription>
+              Update the equipment details and pipe size range for this survey equipment.
+            </DialogDescription>
           </DialogHeader>
           {editingEquipment && (
             <div className="space-y-4">
