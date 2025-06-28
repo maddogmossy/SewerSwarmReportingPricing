@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -44,6 +45,8 @@ export default function SurveyPricing() {
   const [editingPricing, setEditingPricing] = useState<UserPricing | null>(null);
   const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
   const [showEquipmentDialog, setShowEquipmentDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [equipmentToDelete, setEquipmentToDelete] = useState<EquipmentType | null>(null);
 
   // Standard UK pipe sizes
   const standardPipeSizes = [75, 100, 150, 200, 225, 300, 375, 450, 525, 600, 675, 750, 900, 1050, 1200, 1350, 1500, 1800, 2100, 2400];
@@ -304,9 +307,16 @@ export default function SurveyPricing() {
     }
   };
 
-  const handleDeleteEquipment = (equipmentId: number, equipmentName: string) => {
-    if (confirm(`Are you sure you want to delete "${equipmentName}"? This action cannot be undone.`)) {
-      deleteEquipmentMutation.mutate(equipmentId);
+  const handleDeleteEquipment = (equipment: EquipmentType) => {
+    setEquipmentToDelete(equipment);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDeleteEquipment = () => {
+    if (equipmentToDelete) {
+      deleteEquipmentMutation.mutate(equipmentToDelete.id);
+      setShowDeleteDialog(false);
+      setEquipmentToDelete(null);
     }
   };
 
@@ -497,7 +507,7 @@ export default function SurveyPricing() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDeleteEquipment(equipment.id, equipment.name)}
+                            onClick={() => handleDeleteEquipment(equipment)}
                             className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
                             <Trash2 className="h-3 w-3" />
@@ -767,6 +777,29 @@ export default function SurveyPricing() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Equipment</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{equipmentToDelete?.name}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDeleteDialog(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteEquipment}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
