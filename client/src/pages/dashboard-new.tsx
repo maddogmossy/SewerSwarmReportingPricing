@@ -203,10 +203,17 @@ function getLengthSurveyed(itemNumber: number): string {
 }
 
 // Mock data for multiple sections in the same report
-const generateSectionData = (itemNumber: number, sector: any) => {
+const generateSectionData = (itemNumber: number, sector: any, pricingAvailable: boolean = false) => {
   // Items with no defects: 1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24
   const noDefectItems = [1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24];
   const hasNoDefects = noDefectItems.includes(itemNumber);
+  
+  // Determine cost based on pricing availability
+  const getCostValue = () => {
+    if (hasNoDefects) return "£0";
+    if (!pricingAvailable) return "needs adding";
+    return itemNumber === 3 ? "£450" : itemNumber === 6 ? "£1,200" : "£300";
+  };
   
   return {
     itemNo: itemNumber,
@@ -227,7 +234,7 @@ const generateSectionData = (itemNumber: number, sector: any) => {
     recommendations: hasNoDefects ? "No action required pipe observed in acceptable structural and service condition" : 
                     (itemNumber === 3 ? "Schedule repair" : itemNumber === 6 ? "Urgent repair" : "Monitor"),
     adoptable: hasNoDefects ? "Yes" : (sector.id === 'adoption' ? "No" : "N/A"),
-    cost: hasNoDefects ? "£0" : (itemNumber === 3 ? "£450" : itemNumber === 6 ? "£1,200" : "£300")
+    cost: getCostValue()
   };
 };
 
@@ -269,6 +276,12 @@ export default function Dashboard() {
   const { data: sectionData = [], isLoading: sectionsLoading } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
+  });
+
+  // Check if pricing exists for the current sector
+  const { data: pricingStatus = { overall: false } } = useQuery<{ overall: boolean, surveys: boolean, cleansing: boolean, jetting: boolean }>({
+    queryKey: [`/api/pricing/check/${currentSector.id}`],
+    enabled: !!currentSector?.id,
   });
 
 
@@ -430,7 +443,16 @@ export default function Dashboard() {
                               <span className="text-slate-500">N/A</span>
                             )}
                           </td>
-                          <td className="border border-slate-300 px-2 py-1">{section.cost}</td>
+                          <td className="border border-slate-300 px-2 py-1">
+                            {(() => {
+                              // Show "needs adding" for defective sections when pricing is missing
+                              const hasDefects = section.severityGrade !== "0" && section.severityGrade !== 0;
+                              if (hasDefects && !pricingStatus.overall) {
+                                return <span className="text-amber-600 font-medium">needs adding</span>;
+                              }
+                              return section.cost || "£0";
+                            })()}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
