@@ -43,7 +43,7 @@ export default function Pricing() {
   const queryClient = useQueryClient();
 
   const { data: costBands = [], isLoading } = useQuery<CostBand[]>({
-    queryKey: ['/api/cost-bands', selectedSector],
+    queryKey: [`/api/cost-bands/${selectedSector}`],
     enabled: !!selectedSector
   });
 
@@ -52,7 +52,7 @@ export default function Pricing() {
       return await apiRequest(`/api/cost-bands/${id}`, 'PUT', { costBand });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cost-bands', selectedSector] });
+      queryClient.invalidateQueries({ queryKey: [`/api/cost-bands/${selectedSector}`] });
       toast({
         title: "Cost band updated",
         description: "Your pricing customization has been saved."
@@ -73,7 +73,7 @@ export default function Pricing() {
       return await apiRequest(`/api/cost-bands/${selectedSector}/reset`, 'DELETE');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cost-bands', selectedSector] });
+      queryClient.invalidateQueries({ queryKey: [`/api/cost-bands/${selectedSector}`] });
       toast({
         title: "Cost bands reset",
         description: "Pricing has been restored to default values."
