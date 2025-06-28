@@ -987,9 +987,9 @@ SRM Classification: ${result.srmGrading.description}
 
 RECOMMENDATIONS:
 Action Required: ${result.srmGrading.action_required}
-Repair Methods: ${result.repairMethods?.join(', ') || 'No specific repairs required'}
+Recommendation Methods: ${result.recommendationMethods?.join(', ') || 'No specific recommendations required'}
 Cleaning Requirements: ${result.cleaningMethods?.join(', ') || 'Standard maintenance'}
-Priority: ${result.repairPriority}
+Priority: ${result.recommendationPriority}
 Estimated Cost: ${result.estimatedCost}
 ${upload.sector === 'adoption' ? `Adoptability: ${result.adoptable} ${result.adoptionNotes ? '- ' + result.adoptionNotes : ''}` : ''}
 

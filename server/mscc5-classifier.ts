@@ -530,9 +530,9 @@ export class MSCC5Classifier {
       adoptable,
       estimatedCost: costBands[adjustedGrade as keyof typeof costBands] || '£TBC',
       srmGrading,
-      repairMethods: repairData?.suggested_repairs,
+      recommendationMethods: repairData?.suggested_repairs,
       cleaningMethods: cleaningData?.recommended_methods,
-      repairPriority: repairData?.repair_priority,
+      recommendationPriority: repairData?.repair_priority,
       cleaningFrequency: cleaningData?.cleaning_frequency,
       adoptionNotes
     };

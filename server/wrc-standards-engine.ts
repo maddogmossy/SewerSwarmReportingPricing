@@ -25,8 +25,8 @@ export interface WRcAnalysisResult {
     action_required: string;
     adoptable: boolean;
   };
-  repairMethods: string[];
-  repairPriority: string;
+  recommendationMethods: string[];
+  recommendationPriority: string;
   cleaningMethods: string[];
   cleaningFrequency: string;
   adoptable: 'Yes' | 'No' | 'Conditional';
@@ -57,8 +57,8 @@ export class WRcStandardsEngine {
     // Step 3: Use os19x_adoption.json to check whether a section is adoptable
     const adoptionResult = this.checkAdoptability(defectClassification, sector);
     
-    // Step 4: Use drain_repair_book.json for matching defects to repairs
-    const repairData = this.getRepairMethods(defectClassification.code);
+    // Step 4: Use drain_repair_book.json for matching defects to recommendations
+    const repairData = this.getRecommendationMethods(defectClassification.code);
     
     // Step 5: Use sewer_cleaning.json for mapping obstructions to cleaning tasks
     const cleaningData = this.getCleaningMethods(defectClassification.code);
@@ -79,8 +79,8 @@ export class WRcStandardsEngine {
       severityGrade: defectClassification.grade,
       defectType: defectClassification.type,
       srmGrading,
-      repairMethods: repairData.methods,
-      repairPriority: repairData.priority,
+      recommendationMethods: repairData.methods,
+      recommendationPriority: repairData.priority,
       cleaningMethods: cleaningData.methods,
       cleaningFrequency: cleaningData.frequency,
       adoptable: adoptionResult.adoptable,
@@ -204,9 +204,9 @@ export class WRcStandardsEngine {
   }
   
   /**
-   * Get repair methods from drain repair book
+   * Get recommendation methods from drain repair book
    */
-  private static getRepairMethods(defectCode: string): {
+  private static getRecommendationMethods(defectCode: string): {
     methods: string[];
     priority: string;
   } {
