@@ -70,7 +70,7 @@ export default function SurveyPricing() {
 
   const createPricingMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("/api/user-pricing", "POST", data);
+      return await apiRequest("POST", "/api/user-pricing", data);
     },
     onSuccess: () => {
       toast({
@@ -97,7 +97,7 @@ export default function SurveyPricing() {
 
   const updatePricingMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      return await apiRequest(`/api/user-pricing/${id}`, "PUT", data);
+      return await apiRequest("PUT", `/api/user-pricing/${id}`, data);
     },
     onSuccess: () => {
       toast({
@@ -118,7 +118,7 @@ export default function SurveyPricing() {
 
   const deletePricingMutation = useMutation({
     mutationFn: async (id: number) => {
-      return await apiRequest(`/api/user-pricing/${id}`, "DELETE");
+      return await apiRequest("DELETE", `/api/user-pricing/${id}`);
     },
     onSuccess: () => {
       toast({
