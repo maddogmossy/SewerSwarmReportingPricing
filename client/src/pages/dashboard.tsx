@@ -13,6 +13,7 @@ import {
   Upload,
   Building,
   Home as HomeIcon,
+  RefreshCcw,
   Car,
   RefreshCw,
   Users,
@@ -803,6 +804,26 @@ export default function Dashboard() {
                     <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections)</CardTitle>
                   </div>
                   <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        if (currentUpload) {
+                          try {
+                            await apiRequest('POST', `/api/refresh-database/${currentUpload.id}`);
+                            queryClient.invalidateQueries({ queryKey: ['/api/uploads'] });
+                            queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+                            window.location.reload();
+                          } catch (error) {
+                            console.error('Failed to refresh database:', error);
+                          }
+                        }
+                      }}
+                      className="text-xs"
+                    >
+                      <RefreshCcw className="h-3 w-3 mr-1" />
+                      Refresh Data
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"

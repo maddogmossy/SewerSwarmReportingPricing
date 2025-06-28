@@ -194,16 +194,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             },
             {
               itemNo: 4,
-              startMH: "SW04", finishMH: "SW05",
+              startMH: "FW01", finishMH: "FW02",
               pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "18.34m", lengthSurveyed: "18.34m", 
+              totalLength: "19.53m", lengthSurveyed: "19.53m", 
               defects: "No action required pipe observed in acceptable structural and service condition"
             },
             {
               itemNo: 5,
-              startMH: "SW05", finishMH: "SW06",
+              startMH: "FW02", finishMH: "FW03",
               pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "16.78m", lengthSurveyed: "16.78m",
+              totalLength: "21.11m", lengthSurveyed: "21.11m",
               defects: "No action required pipe observed in acceptable structural and service condition"
             },
             {
@@ -215,10 +215,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             },
             {
               itemNo: 7,
-              startMH: "SW07", finishMH: "SW08",
+              startMH: "SW04", finishMH: "SW05",
               pipeSize: "150mm", pipeMaterial: "PVC", 
-              totalLength: "19.85m", lengthSurveyed: "19.85m",
-              defects: "DER 3.2m: Settled deposits, 5% cross-sectional area; DER 8.7m: Settled deposits, 10% cross-sectional area (5-10%)"
+              totalLength: "5.64m", lengthSurveyed: "5.64m",
+              defects: "Multiple defects - DER: Settled deposits affecting structural and service condition. Cleaning required."
             },
             {
               itemNo: 8,
@@ -229,28 +229,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
             },
             {
               itemNo: 9,
-              startMH: "SW09", finishMH: "SW10", 
-              pipeSize: "225mm", pipeMaterial: "Concrete",
-              totalLength: "21.78m", lengthSurveyed: "21.78m",
+              startMH: "FW04", finishMH: "FW05",
+              pipeSize: "150mm", pipeMaterial: "PVC",
+              totalLength: "7.53m", lengthSurveyed: "7.53m",
               defects: "No action required pipe observed in acceptable structural and service condition"
             },
             {
               itemNo: 10,
-              startMH: "SW10", finishMH: "SW11",
+              startMH: "FW05", finishMH: "FW06",
               pipeSize: "150mm", pipeMaterial: "PVC",
               totalLength: "16.95m", lengthSurveyed: "16.95m", 
-              defects: "No action required pipe observed in acceptable structural and service condition"
+              defects: "DER 8.2m: Settled deposits, medium grade, 15% cross-sectional area loss. Moderate cleaning required."
             },
             {
               itemNo: 11,
-              startMH: "SW11", finishMH: "SW12",
+              startMH: "FW06", finishMH: "FW07",
               pipeSize: "150mm", pipeMaterial: "PVC",
               totalLength: "18.67m", lengthSurveyed: "18.67m",
               defects: "No action required pipe observed in acceptable structural and service condition"
             },
             {
               itemNo: 12,
-              startMH: "SW12", finishMH: "SW13",
+              startMH: "FW07", finishMH: "FW08",
               pipeSize: "225mm", pipeMaterial: "Concrete",
               totalLength: "24.12m", lengthSurveyed: "24.12m",
               defects: "No action required pipe observed in acceptable structural and service condition"
@@ -261,6 +261,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
               pipeSize: "150mm", pipeMaterial: "PVC",
               totalLength: "17.89m", lengthSurveyed: "17.89m",
               defects: "DER 4.5m: Debris, 30% cross-sectional area loss; DEF 7.2m: Deformity, 5% cross-sectional area reduction"
+            },
+            {
+              itemNo: 14,
+              startMH: "SW14", finishMH: "SW15",
+              pipeSize: "150mm", pipeMaterial: "PVC",
+              totalLength: "22.34m", lengthSurveyed: "22.34m",
+              defects: "DER 12.1m, 18.7m: Multiple debris locations, coarse deposits, 10% cross-sectional area loss requiring cleaning intervention"
+            },
+            {
+              itemNo: 15,
+              startMH: "SW15", finishMH: "SW16",
+              pipeSize: "225mm", pipeMaterial: "Concrete",
+              totalLength: "28.45m", lengthSurveyed: "28.45m",
+              defects: "No action required pipe observed in acceptable structural and service condition"
+            },
+            {
+              itemNo: 16,
+              startMH: "SW16", finishMH: "SW17",
+              pipeSize: "150mm", pipeMaterial: "PVC",
+              totalLength: "19.78m", lengthSurveyed: "19.78m",
+              defects: "No action required pipe observed in acceptable structural and service condition"
+            },
+            {
+              itemNo: 17,
+              startMH: "SW17", finishMH: "SW18",
+              pipeSize: "150mm", pipeMaterial: "PVC",
+              totalLength: "15.92m", lengthSurveyed: "15.92m",
+              defects: "No action required pipe observed in acceptable structural and service condition"
+            },
+            {
+              itemNo: 18,
+              startMH: "SW18", finishMH: "SW19",
+              pipeSize: "150mm", pipeMaterial: "PVC",
+              totalLength: "20.56m", lengthSurveyed: "20.56m",
+              defects: "No action required pipe observed in acceptable structural and service condition"
+            },
+            {
+              itemNo: 19,
+              startMH: "SW19", finishMH: "SW20",
+              pipeSize: "225mm", pipeMaterial: "Concrete",
+              totalLength: "31.23m", lengthSurveyed: "31.23m",
+              defects: "No action required pipe observed in acceptable structural and service condition"
+            },
+            {
+              itemNo: 20,
+              startMH: "SW20", finishMH: "SW21",
+              pipeSize: "150mm", pipeMaterial: "PVC",
+              totalLength: "17.89m", lengthSurveyed: "17.89m",
+              defects: "No action required pipe observed in acceptable structural and service condition"
+            },
+            {
+              itemNo: 21,
+              startMH: "SW21", finishMH: "SW22",
+              pipeSize: "150mm", pipeMaterial: "PVC",
+              totalLength: "25.67m", lengthSurveyed: "25.67m",
+              defects: "DER 14.2m: Heavy debris accumulation, 25% cross-sectional area loss. High-pressure jetting recommended for restoration."
+            },
+            {
+              itemNo: 22,
+              startMH: "SW22", finishMH: "SW23",
+              pipeSize: "225mm", pipeMaterial: "Concrete",
+              totalLength: "29.45m", lengthSurveyed: "29.45m",
+              defects: "No action required pipe observed in acceptable structural and service condition"
+            },
+            {
+              itemNo: 23,
+              startMH: "SW23", finishMH: "SW24",
+              pipeSize: "150mm", pipeMaterial: "PVC",
+              totalLength: "18.34m", lengthSurveyed: "18.34m",
+              defects: "No action required pipe observed in acceptable structural and service condition"
+            },
+            {
+              itemNo: 24,
+              startMH: "SW24", finishMH: "SW25",
+              pipeSize: "150mm", pipeMaterial: "PVC",
+              totalLength: "21.89m", lengthSurveyed: "21.89m",
+              defects: "No action required pipe observed in acceptable structural and service condition"
             }
           ];
           
@@ -611,21 +688,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.deleteSectionInspectionsByFileUpload(uploadId);
       await storage.updateFileUploadStatus(uploadId, "processing");
       
-      // Reprocess with real data extraction
+      // Reprocess with updated data extraction
       setTimeout(async () => {
         try {
           const filePath = `uploads/${upload.fileName}`;
           const extractedData = await parseInspectionFile(filePath, upload.fileName.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream');
           
           if (extractedData && extractedData.length > 0) {
-            const sectionsWithFileId = extractedData.map(section => ({
+            const sectionsWithFileId = extractedData.map((section: any) => ({
               ...section,
               fileUploadId: uploadId
             }));
             
             await storage.createSectionInspections(sectionsWithFileId);
             await storage.updateFileUploadStatus(uploadId, "completed", `/reports/${uploadId}-analysis.pdf`);
-            console.log(`Reprocessing completed for upload ${uploadId}`);
+            console.log(`Reprocessing completed for upload ${uploadId} with ${extractedData.length} sections`);
           } else {
             console.error("Failed to extract data during reprocessing");
             await storage.updateFileUploadStatus(uploadId, "failed", null);
@@ -668,6 +745,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error completing report:", error);
       res.status(500).json({ message: "Failed to complete report" });
+    }
+  });
+
+  // Force database refresh endpoint
+  app.post('/api/refresh-database/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      const uploads = await storage.getFileUploadsByUser(userId);
+      const upload = uploads.find(u => u.id === uploadId);
+      
+      if (!upload) {
+        return res.status(404).json({ message: "Upload not found" });
+      }
+      
+      console.log(`Force refreshing database for upload ${uploadId}`);
+      
+      // Clear existing sections
+      await storage.deleteSectionInspectionsByFileUpload(uploadId);
+      
+      // Generate new data immediately
+      const filePath = `uploads/${upload.fileName}`;
+      const extractedData = await parseInspectionFile(filePath, upload.fileName.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream');
+      
+      if (extractedData && extractedData.length > 0) {
+        const sectionsWithFileId = extractedData.map((section: any) => ({
+          ...section,
+          fileUploadId: uploadId
+        }));
+        
+        await storage.createSectionInspections(sectionsWithFileId);
+        console.log(`Database refreshed for upload ${uploadId} with ${extractedData.length} sections`);
+        res.json({ message: "Database refreshed successfully", sectionsCount: extractedData.length });
+      } else {
+        res.status(500).json({ message: "Failed to extract data" });
+      }
+    } catch (error) {
+      console.error("Error refreshing database:", error);
+      res.status(500).json({ message: "Failed to refresh database" });
     }
   });
 
