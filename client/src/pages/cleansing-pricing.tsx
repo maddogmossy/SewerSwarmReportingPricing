@@ -25,6 +25,7 @@ import {
   HardHat,
   House
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "wouter";
 
 interface EquipmentType {
@@ -127,6 +128,7 @@ export default function CleansingPricing() {
       setSelectedEquipmentType(equipmentTypeName);
     }
   };
+  const [checkedEquipment, setCheckedEquipment] = useState<Set<number>>(new Set());
   const [newPricing, setNewPricing] = useState({
     equipmentTypeId: 0,
     costPerDay: "",
@@ -147,6 +149,19 @@ export default function CleansingPricing() {
   ];
 
   const { toast } = useToast();
+
+  // Handle equipment checkbox changes
+  const handleEquipmentCheck = (equipmentId: number, checked: boolean) => {
+    setCheckedEquipment(prev => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(equipmentId);
+      } else {
+        newSet.delete(equipmentId);
+      }
+      return newSet;
+    });
+  };
 
   // Get equipment types for cleansing category (ID: 2)
   const { data: equipmentTypes = [], isLoading: equipmentLoading } = useQuery({
@@ -379,11 +394,13 @@ export default function CleansingPricing() {
                     <SelectValue placeholder="Select Equipment Type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(equipmentTypes as EquipmentType[]).map((equipment) => (
-                      <SelectItem key={equipment.id} value={equipment.id.toString()}>
-                        {equipment.name}
-                      </SelectItem>
-                    ))}
+                    {(equipmentTypes as EquipmentType[])
+                      .filter((equipment) => checkedEquipment.has(equipment.id))
+                      .map((equipment) => (
+                        <SelectItem key={equipment.id} value={equipment.id.toString()}>
+                          {equipment.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -528,13 +545,24 @@ export default function CleansingPricing() {
             </CardHeader>
             <CardContent className="space-y-4">
               {(equipmentTypes as EquipmentType[]).map((equipment) => (
-                <div key={equipment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex-1">
-                    <h4 className="font-medium">{equipment.name}</h4>
-                    <p className="text-sm text-gray-600">{equipment.description}</p>
-                    <p className="text-xs text-gray-500">
-                      {equipment.minPipeSize}mm-{equipment.maxPipeSize}mm
-                    </p>
+                <div 
+                  key={equipment.id} 
+                  className={`flex items-center justify-between p-3 border rounded-lg transition-colors ${
+                    checkedEquipment.has(equipment.id) ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 flex-1">
+                    <Checkbox
+                      checked={checkedEquipment.has(equipment.id)}
+                      onCheckedChange={(checked) => handleEquipmentCheck(equipment.id, checked as boolean)}
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium">{equipment.name}</h4>
+                      <p className="text-sm text-gray-600">{equipment.description}</p>
+                      <p className="text-xs text-gray-500">
+                        {equipment.minPipeSize}mm-{equipment.maxPipeSize}mm
+                      </p>
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <Button
