@@ -109,32 +109,49 @@ export default function Upload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [, setLocation] = useLocation();
-  const [utilitiesProfile, setUtilitiesProfile] = useState<any>(null);
-  const [adoptionProfile, setAdoptionProfile] = useState<any>(null);
+  const [sectorProfiles, setSectorProfiles] = useState<Record<string, any>>({});
 
-  // Fetch utilities logic profile for dynamic styling
-  const { data: utilitiesLogicProfile } = useQuery({
+  // Fetch all sector profiles for dynamic styling
+  const { data: utilitiesProfile } = useQuery({
     queryKey: ["/api/utilities/profile"],
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  // Fetch adoption sector profile for dynamic styling
-  const { data: adoptionLogicProfile } = useQuery({
+  const { data: adoptionProfile } = useQuery({
     queryKey: ["/api/adoption/profile"],
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  useEffect(() => {
-    if (utilitiesLogicProfile) {
-      setUtilitiesProfile(utilitiesLogicProfile);
-    }
-  }, [utilitiesLogicProfile]);
+  const { data: highwaysProfile } = useQuery({
+    queryKey: ["/api/highways/profile"],
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  const { data: insuranceProfile } = useQuery({
+    queryKey: ["/api/insurance/profile"],
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  const { data: constructionProfile } = useQuery({
+    queryKey: ["/api/construction/profile"],
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  const { data: domesticProfile } = useQuery({
+    queryKey: ["/api/domestic/profile"],
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
 
   useEffect(() => {
-    if (adoptionLogicProfile) {
-      setAdoptionProfile(adoptionLogicProfile);
-    }
-  }, [adoptionLogicProfile]);
+    setSectorProfiles({
+      utilities: utilitiesProfile,
+      adoption: adoptionProfile,
+      highways: highwaysProfile,
+      insurance: insuranceProfile,
+      construction: constructionProfile,
+      domestic: domesticProfile
+    });
+  }, [utilitiesProfile, adoptionProfile, highwaysProfile, insuranceProfile, constructionProfile, domesticProfile]);
 
   const { data: uploads = [], refetch } = useQuery<FileUploadType[]>({
     queryKey: ["/api/uploads"],
@@ -271,22 +288,29 @@ export default function Upload() {
                 <h3 className="font-medium">Select Applicable Sector</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {sectors.map((sector) => {
-                    // Apply dynamic styling for utilities and adoption sectors from logic profiles
-                    const isUtilities = sector.id === 'utilities';
-                    const isAdoption = sector.id === 'adoption';
+                    // Apply dynamic styling from sector profiles
+                    const activeProfile = sectorProfiles[sector.id];
                     
-                    // Dynamic configuration support
-                    const activeProfile = isUtilities ? utilitiesProfile : isAdoption ? adoptionProfile : null;
+                    // Color mapping for all sectors
+                    const getColorFromName = (colorName: string) => {
+                      const colorMap: Record<string, string> = {
+                        'blue': '#3b82f6',
+                        'green': '#22c55e', 
+                        'orange': '#f97316',
+                        'red': '#ef4444',
+                        'purple': '#a855f7',
+                        'brown': '#92400e'
+                      };
+                      return colorMap[colorName] || colorName;
+                    };
                     
-                    const sectorColor = activeProfile ? 
-                      (activeProfile.button_color === 'blue' ? '#3b82f6' : 
-                       activeProfile.button_color === 'green' ? '#22c55e' : 
-                       activeProfile.button_color) : 
+                    const sectorColor = activeProfile && activeProfile.button_color ? 
+                      getColorFromName(activeProfile.button_color) : 
                       sector.color;
                     
-                    const displayName = activeProfile ? 
+                    const displayName = activeProfile && activeProfile.display_name ? 
                       activeProfile.display_name : sector.name;
-                    const description = activeProfile ? 
+                    const description = activeProfile && activeProfile.description ? 
                       activeProfile.description : sector.description;
                     const standards = activeProfile && activeProfile.standards ? 
                       activeProfile.standards : sector.standards;

@@ -1,0 +1,16 @@
+{
+    "sector": "highways",
+    "display_name": "Highways / HADDMS",
+    "button_color": "orange",
+    "ui_description": {
+        "summary": "Inspects and codes drainage assets for highways using HADDMS conventions. Suitable for National Highways, local authorities, and highway frameworks.",
+        "applicable_standards": [
+            "HADDMS Drainage Data Management Manual",
+            "MSCC5: Manual of Sewer Condition Classification",
+            "DMRB CD 535: Drainage asset condition inspection",
+            "BS EN 13508-2:2003 + A1:2011 \u2013 Coding of defects",
+            "Manual for Streets (if urban roads)",
+            "Traffic Signs Manual Chapter 8 (safety compliance)"
+        ]
+    }
+}

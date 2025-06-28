@@ -1,0 +1,15 @@
+{
+    "sector": "insurance",
+    "display_name": "Insurance / Loss Adjusting",
+    "button_color": "red",
+    "ui_description": {
+        "summary": "Evaluates damage and liability for insurance reports. Uses WRc defect grading and interprets against pre-claim and incident data for root cause analysis.",
+        "applicable_standards": [
+            "MSCC5: Manual of Sewer Condition Classification",
+            "Drain Repair Book (4th Ed.)",
+            "ABI Drainage Reporting Guidelines",
+            "BS EN 752:2017 \u2013 Drain and sewer systems",
+            "WRc Sewer Cleaning Manual"
+        ]
+    }
+}

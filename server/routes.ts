@@ -700,6 +700,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get highways sector profile endpoint
+  app.get("/api/highways/profile", isAuthenticated, async (req, res) => {
+    try {
+      const { HighwaysValidation } = await import('./highways-validation');
+      const profile = HighwaysValidation.getHighwaysProfile();
+      res.json(profile);
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get highways profile",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  // Get insurance sector profile endpoint
+  app.get("/api/insurance/profile", isAuthenticated, async (req, res) => {
+    try {
+      const { InsuranceValidation } = await import('./insurance-validation');
+      const profile = InsuranceValidation.getInsuranceProfile();
+      res.json(profile);
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get insurance profile",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  // Get construction sector profile endpoint
+  app.get("/api/construction/profile", isAuthenticated, async (req, res) => {
+    try {
+      const { ConstructionValidation } = await import('./construction-validation');
+      const profile = ConstructionValidation.getConstructionProfile();
+      res.json(profile);
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get construction profile",
+        error: (error as Error).message
+      });
+    }
+  });
+
+  // Get domestic sector profile endpoint
+  app.get("/api/domestic/profile", isAuthenticated, async (req, res) => {
+    try {
+      const { DomesticValidation } = await import('./domestic-validation');
+      const profile = DomesticValidation.getDomesticProfile();
+      res.json(profile);
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get domestic profile",
+        error: (error as Error).message
+      });
+    }
+  });
+
   // Utilities sector validation endpoint
   app.get("/api/utilities/validate", isAuthenticated, async (req, res) => {
     try {

@@ -1,0 +1,15 @@
+{
+    "sector": "construction",
+    "display_name": "Construction (Pre/Post Build Validation)",
+    "button_color": "purple",
+    "ui_description": {
+        "summary": "Pre-construction and post-construction validation surveys for new builds and developments. Assesses damage, debris, and construction compliance.",
+        "applicable_standards": [
+            "MSCC5: Manual of Sewer Condition Classification",
+            "BS EN 1610:2015 \u2013 Testing & commissioning drains",
+            "Sewers for Adoption / DCSG",
+            "WRc Sewer Cleaning Manual",
+            "Water UK Developer Guidance"
+        ]
+    }
+}
