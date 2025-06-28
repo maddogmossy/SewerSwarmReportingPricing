@@ -156,6 +156,7 @@ Changelog:
 - June 28, 2025. Enhanced jetting pricing page structure: Completely rebuilt jetting-pricing.tsx to match CCTV page functionality with proper equipment management, pre-loaded 5 realistic water jetting equipment examples (High-Pressure Small, Heavy-Duty Medium, Industrial Large, Truck-Mounted, Portable Root Cutting), implemented full CRUD operations with proper API request formatting, and added automatic calculation logic for hourly/daily rates and productivity metrics.
 - June 28, 2025. Added pricing button to dashboard navigation: Users can now easily access pricing settings directly from the dashboard page via a dedicated "Pricing" button with Settings gear icon positioned next to the Upload Report button, linking to the main Work Category Pricing page for improved user experience and quick access to all equipment cost configuration categories.
 - June 28, 2025. Added dashboard button to pricing page navigation: Implemented bidirectional navigation with green BarChart3 icon dashboard button on pricing page matching user-provided design, enabling seamless navigation between pricing settings and dashboard for enhanced user workflow efficiency.
+- June 28, 2025. Enhanced upload button styling on dashboard: Added blue Upload icon color (text-blue-600) to match established design pattern with colored navigation icons - blue for Upload, orange for Pricing, green for Dashboard - creating consistent visual hierarchy across all navigation buttons.
 ```
 
 ## User Preferences

@@ -286,7 +286,7 @@ export default function Dashboard() {
           </Link>
           <Link to="/upload">
             <Button variant="outline" size="sm">
-              <Upload className="h-4 w-4 mr-2" />
+              <Upload className="h-4 w-4 mr-2 text-blue-600" />
               Upload Report
             </Button>
           </Link>
