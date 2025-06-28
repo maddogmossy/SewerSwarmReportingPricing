@@ -151,6 +151,8 @@ export default function Dashboard() {
   const { data: uploads = [] } = useQuery<FileUploadType[]>({
     queryKey: ["/api/uploads"],
     enabled: !!user,
+    staleTime: 0, // Force fresh data
+    gcTime: 0, // Don't cache (v5 property name)
   });
 
   // Upload mutation
@@ -541,19 +543,24 @@ export default function Dashboard() {
                         </div>
                         
                         <div className="space-y-3">
-                          <h4 className="font-medium text-sm">Applied Standards:</h4>
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium text-sm">Applied Standards:</h4>
+                            <Badge variant="outline" className="text-xs">
+                              {sector.standards.length} Standards
+                            </Badge>
+                          </div>
                           <div className="space-y-2">
                             {sector.standards.map((standard, idx) => (
-                              <div key={idx} className="flex items-center justify-between text-sm">
-                                <span>{standard.name}</span>
+                              <div key={idx} className="flex items-center justify-between text-sm p-2 bg-slate-50 rounded">
+                                <span className="font-medium">{standard.name}</span>
                                 {standard.url !== "#" && (
                                   <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => window.open(standard.url, '_blank')}
-                                    className="text-xs h-6 px-2"
+                                    className="text-xs h-6 px-2 text-blue-600 hover:text-blue-800"
                                   >
-                                    View
+                                    View Documentation
                                   </Button>
                                 )}
                               </div>
