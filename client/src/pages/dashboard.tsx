@@ -745,7 +745,10 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setShowColumnSelector(!showColumnSelector)}
+                      onClick={() => {
+                        console.log('Column selector toggle clicked, current state:', showColumnSelector);
+                        setShowColumnSelector(!showColumnSelector);
+                      }}
                       className="text-xs"
                     >
                       {showColumnSelector ? 'Hide Columns' : 'Show Columns'}
@@ -767,6 +770,9 @@ export default function Dashboard() {
                 {showColumnSelector && (
                   <div className="mb-4 p-4 bg-slate-50 rounded-lg border">
                     <h4 className="text-sm font-medium mb-3">Select Columns to Display</h4>
+                    <div className="mb-2 text-xs text-blue-600">
+                      Debug: Panel is showing. Hidden columns: {Array.from(hiddenColumns).join(', ') || 'none'}
+                    </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                       {columns.map((column) => (
                         <div key={column.key} className="flex items-center space-x-2">
@@ -774,6 +780,7 @@ export default function Dashboard() {
                             id={column.key}
                             checked={!hiddenColumns.has(column.key)}
                             onCheckedChange={(checked) => {
+                              console.log(`Column ${column.key} toggled to ${checked}`);
                               if (!checked && !column.hideable) return; // Prevent hiding essential columns
                               toggleColumnVisibility(column.key);
                             }}
@@ -783,7 +790,7 @@ export default function Dashboard() {
                             htmlFor={column.key}
                             className={`text-xs ${!column.hideable ? 'text-slate-500' : 'text-slate-700 cursor-pointer'}`}
                           >
-                            {column.label}
+                            {column.label} {!column.hideable && '(required)'}
                           </label>
                         </div>
                       ))}
