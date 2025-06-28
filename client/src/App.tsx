@@ -53,9 +53,9 @@ function Router() {
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/upload" component={Upload} />
           <Route path="/pricing" component={Pricing} />
-          <Route path="/survey-pricing" component={SurveyPricing} />
-          <Route path="/cleansing-pricing" component={CleansingPricing} />
-          <Route path="/jetting-pricing" component={JettingPricing} />
+          <Route path="/pricing/surveys" component={SurveyPricing} />
+          <Route path="/pricing/cleansing" component={CleansingPricing} />
+          <Route path="/pricing/jetting" component={JettingPricing} />
           <Route path="/checkout" component={Checkout} />
         </>
       )}

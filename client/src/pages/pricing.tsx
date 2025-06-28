@@ -91,7 +91,7 @@ export default function Pricing() {
                   <p className="text-gray-600 text-sm">{category.description}</p>
                   
                   {category.implemented ? (
-                    <Link href={category.id === 1 ? "/survey-pricing" : category.id === 2 ? "/cleansing-pricing" : category.id === 4 ? "/jetting-pricing" : "#"}>
+                    <Link href={category.id === 1 ? "/pricing/surveys" : category.id === 2 ? "/pricing/cleansing" : category.id === 4 ? "/pricing/jetting" : "#"}>
                       <Button className="w-full flex items-center justify-between">
                         Configure Pricing
                         <ChevronRight className="h-4 w-4" />
