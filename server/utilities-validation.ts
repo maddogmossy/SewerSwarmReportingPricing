@@ -3,10 +3,16 @@ import * as path from 'path';
 
 // Load utilities logic profile from JSON
 const utilitiesLogicPath = path.join(process.cwd(), 'attached_assets', 'utilities_logic_profile_1751105838603.json');
+const utilitiesDisplayPath = path.join(process.cwd(), 'attached_assets', 'utilities_sector_display_1751108183348.json');
 let UTILITIES_LOGIC_PROFILE: any = {};
+let UTILITIES_DISPLAY_CONFIG: any = {};
 
 if (fs.existsSync(utilitiesLogicPath)) {
   UTILITIES_LOGIC_PROFILE = JSON.parse(fs.readFileSync(utilitiesLogicPath, 'utf-8'));
+}
+
+if (fs.existsSync(utilitiesDisplayPath)) {
+  UTILITIES_DISPLAY_CONFIG = JSON.parse(fs.readFileSync(utilitiesDisplayPath, 'utf-8'));
 }
 
 // Utilities Sector Sewer Inspections Validation
@@ -350,6 +356,15 @@ export class UtilitiesValidation {
 
   // Get utilities logic profile for external access
   static getUtilitiesProfile() {
-    return UTILITIES_LOGIC_PROFILE;
+    // Merge logic profile with display configuration
+    return {
+      ...UTILITIES_LOGIC_PROFILE,
+      ...UTILITIES_DISPLAY_CONFIG,
+      // Ensure display config takes precedence for UI properties
+      display_name: UTILITIES_DISPLAY_CONFIG.display_name || UTILITIES_LOGIC_PROFILE.display_name || 'Utilities',
+      button_color: UTILITIES_DISPLAY_CONFIG.button_color || UTILITIES_LOGIC_PROFILE.button_color || 'blue',
+      description: UTILITIES_DISPLAY_CONFIG.ui_description?.summary || UTILITIES_LOGIC_PROFILE.description || 'Water companies, utility providers',
+      standards: UTILITIES_DISPLAY_CONFIG.ui_description?.applicable_standards || UTILITIES_LOGIC_PROFILE.standards_used || []
+    };
   }
 }

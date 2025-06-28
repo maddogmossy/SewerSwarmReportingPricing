@@ -268,6 +268,8 @@ export default function Upload() {
                       utilitiesProfile.display_name : sector.name;
                     const description = isUtilities && utilitiesProfile ? 
                       utilitiesProfile.description : sector.description;
+                    const standards = isUtilities && utilitiesProfile && utilitiesProfile.standards ? 
+                      utilitiesProfile.standards : sector.standards;
 
                     const IconComponent = sector.icon;
 
@@ -299,7 +301,7 @@ export default function Upload() {
                               Applicable Standards
                             </h4>
                             <ul className="text-xs text-gray-600 space-y-1">
-                              {sector.standards.map((standard, index) => (
+                              {standards.map((standard, index) => (
                                 <li key={index} className="flex items-start gap-1">
                                   <span className="text-gray-400 mt-1">•</span>
                                   <span>{standard}</span>

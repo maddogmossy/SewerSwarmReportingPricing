@@ -139,6 +139,7 @@ Changelog:
 - June 28, 2025. Implemented utilities logic profile integration: Added configurable utilities_logic_profile.json with sector-specific routing, grade escalation rules, and Water UK export format support for complete utilities sector compliance
 - June 28, 2025. Added Water UK format export: Implemented CSV/JSON export functionality with PLR calculation, required fields mapping, and full compliance with Water UK adoption reporting standards
 - June 28, 2025. Redesigned sector selection interface: Replaced button layout with outlined boxes featuring white interiors, color-coded borders, titles positioned at top cutting through borders, sector-specific icons (Wrench, Building, Car, Shield, Banknote, HardHat), and bullet-pointed standards lists for enhanced visual hierarchy and user experience
+- June 28, 2025. Enhanced utilities sector display configuration: Added utilities_sector_display_1751108183348.json with detailed WRc standards (MSCC5, SRM, BS EN 752:2017, Water Industry Act 1991, WRc Drain Repair Book 4th Ed., WRc Sewer Cleaning Manual) ensuring complete separation from adoption logic and providing accurate water authority compliance information
 ```
 
 ## User Preferences

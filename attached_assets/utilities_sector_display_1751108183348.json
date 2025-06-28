@@ -1,0 +1,16 @@
+{
+    "sector": "utilities",
+    "display_name": "Utilities Sector (Water Authorities)",
+    "button_color": "blue",
+    "ui_description": {
+        "summary": "Applies WRc-compliant defect grading (MSCC5), SRM-based condition scoring, and water industry repair and cleaning recommendations. Used by Severn Trent, Thames Water, Anglian Water, etc.",
+        "applicable_standards": [
+            "MSCC5: Manual of Sewer Condition Classification (WRc)",
+            "Sewerage Rehabilitation Manual (SRM)",
+            "BS EN 752:2017 \u2013 Drain and sewer systems outside buildings",
+            "Water Industry Act 1991 \u2013 Sections 94 & 106",
+            "WRc Drain Repair Book (4th Ed.)",
+            "WRc Sewer Cleaning Manual"
+        ]
+    }
+}
