@@ -26,84 +26,95 @@ const sectors = [
   {
     id: "utilities",
     name: "Utilities",
-    description: "MSCC5, Cleaning Manual, Repair Book",
-    icon: Building,
-    color: "text-primary",
+    description: "WRc SRM standards",
+    icon: Wrench,
+    color: "text-blue-600",
     standards: [
-      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
-      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" }
+      { name: "MSCC5: Manual of Sewer Condition Classification (5th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "SRM Scoring System & Methodology", url: "https://www.wrcplc.co.uk/knowledge/sewerage-rehabilitation-manual" },
+      { name: "WRc Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "WRc Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
+      { name: "BS EN 752:2017 Drain & Sewer Systems", url: "https://www.bsigroup.com/en-GB/standards/bs-en-752/" },
+      { name: "Water Industry Act 1991", url: "https://www.legislation.gov.uk/ukpga/1991/56/contents" }
     ],
-    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band", "Risk Score"]
+    outputColumns: ["Defect Grade", "SRM Grading", "Repair Methods", "Cleaning Methods", "Cost Band", "Risk Score"]
   },
   {
     id: "adoption", 
     name: "Adoption",
-    description: "Utilities + Sewers for Adoption 7th Ed.",
-    icon: HomeIcon,
+    description: "SfA8 compliance",
+    icon: Building,
     color: "text-emerald-600",
     standards: [
-      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
-      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
-      { name: "Sewers for Adoption 7th Ed.", url: "https://wrcknowledgestore.co.uk/collections/all/products/sewers-for-adoption-7th-edition-a-design-construction-guide-for-developer" }
+      { name: "OS20x: Sewer Adoption CCTV Coding Standard", url: "https://www.wrcplc.co.uk/knowledge/os20x" },
+      { name: "Sewers for Adoption 7th/8th Edition (Water UK)", url: "https://wrcknowledgestore.co.uk/collections/all/products/sewers-for-adoption-7th-edition-a-design-construction-guide-for-developer" },
+      { name: "SSG: Sewerage Sector Guidance", url: "https://www.water.org.uk/guidance/sewerage-sector-guidance/" },
+      { name: "DCSG: Developer Services Code of Practice", url: "https://www.water.org.uk/guidance/developer-services/" },
+      { name: "BS EN 1610:2015 Construction & Testing", url: "https://www.bsigroup.com/en-GB/standards/bs-en-1610/" },
+      { name: "Water Industry Act 1991 – Section 104", url: "https://www.legislation.gov.uk/ukpga/1991/56/section/104" }
     ],
-    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band", "Adoptability"]
+    outputColumns: ["Defect Grade", "SRM Grading", "Repair Methods", "Cleaning Methods", "Adoptability", "Cost Band"]
   },
   {
     id: "highways",
-    name: "Highways", 
-    description: "Core WRc docs + HADDMS guidance",
+    name: "Highways",
+    description: "DMRB standards", 
     icon: Car,
     color: "text-amber-600",
     standards: [
-      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
-      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
-      { name: "HADDMS Guidance", url: "#" }
+      { name: "HADDMS: Highway Authority Drainage Data Management System", url: "https://www.gov.uk/government/publications/haddms-guidance" },
+      { name: "DMRB: Design Manual for Roads and Bridges", url: "https://www.standardsforhighways.co.uk/dmrb/" },
+      { name: "MSCC5: Manual of Sewer Condition Classification", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "WRc Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "Highway Drainage Asset Management Guidance", url: "https://www.ciht.org.uk/knowledge-resource-centre/resources/guidance-on-highway-drainage-asset-management/" },
+      { name: "Flood & Water Management Act 2010", url: "https://www.legislation.gov.uk/ukpga/2010/29/contents" }
     ],
-    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band", "Risk Score"]
+    outputColumns: ["Defect Grade", "Structural vs Service Action", "Repair Priority", "Cost Band", "Risk Score"]
   },
   {
     id: "domestic",
     name: "Domestic",
-    description: "MSCC5, Cleaning, Repair standards", 
-    icon: Users,
-    color: "text-blue-600",
+    description: "Regulatory compliance",
+    icon: House,
+    color: "text-amber-900",
     standards: [
-      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
-      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" }
+      { name: "MSCC5: Manual of Sewer Condition Classification", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "WRc Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "Building Act 1984 – Section 59", url: "https://www.legislation.gov.uk/ukpga/1984/55/section/59" },
+      { name: "Building Regulations Part H: Drainage", url: "https://www.gov.uk/government/publications/drainage-and-waste-disposal-approved-document-h" },
+      { name: "Private Sewers Transfer Regulations 2011", url: "https://www.legislation.gov.uk/uksi/2011/2049/contents/made" }
     ],
-    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band"]
+    outputColumns: ["Defect Grade", "Repair Methods", "Regulatory Compliance", "Cost Band"]
   },
   {
     id: "insurance",
     name: "Insurance",
-    description: "Standard + insurer requirements",
-    icon: ShieldCheck,
+    description: "ABI guidelines",
+    icon: Shield,
     color: "text-red-600",
     standards: [
-      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
-      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
-      { name: "Current Insurer Technical Standard", url: "#" }
+      { name: "ABI: Drainage Subsidence Guidance", url: "https://www.abi.org.uk/globalassets/files/publications/public/property/drainage-subsidence-guidance.pdf" },
+      { name: "MSCC5: Manual of Sewer Condition Classification", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "WRc Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "Insurance Technical Standards Framework", url: "#" },
+      { name: "Loss Adjusting Drainage Assessment Protocol", url: "#" }
     ],
-    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band"]
+    outputColumns: ["Defect Grade", "Risk Assessment", "Repair Priority", "Cost Estimate", "Insurance Impact"]
   },
   {
     id: "construction",
     name: "Construction",
-    description: "Core standards + adoption guidance",
+    description: "Building regs",
     icon: HardHat,
-    color: "text-orange-600",
+    color: "text-purple-600",
     standards: [
-      { name: "MSCC5", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
-      { name: "Drain & Sewer Cleaning Manual", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-and-sewer-cleaning-manual" },
-      { name: "Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
-      { name: "Sewers for Adoption 7th Ed. (guidance only)", url: "https://wrcknowledgestore.co.uk/collections/all/products/sewers-for-adoption-7th-edition-a-design-construction-guide-for-developer" }
+      { name: "BS EN 1610:2015: Construction & Testing of Drains", url: "https://www.bsigroup.com/en-GB/standards/bs-en-1610/" },
+      { name: "MSCC5: Manual of Sewer Condition Classification", url: "https://wrcknowledgestore.co.uk/collections/all/products/manual-of-sewer-condition-classification-5th-edition" },
+      { name: "WRc Drain Repair Book (4th Ed.)", url: "https://wrcknowledgestore.co.uk/collections/all/products/drain-repair-book-4th-edition" },
+      { name: "Building Regulations Part H: Drainage", url: "https://www.gov.uk/government/publications/drainage-and-waste-disposal-approved-document-h" },
+      { name: "Sewers for Adoption 7th Ed. (Reference)", url: "https://wrcknowledgestore.co.uk/collections/all/products/sewers-for-adoption-7th-edition-a-design-construction-guide-for-developer" }
     ],
-    outputColumns: ["Defect Grade", "Structural vs Operational Action", "Repair Recommendation", "Cost Band"]
+    outputColumns: ["Defect Grade", "Construction Compliance", "Repair Methods", "Testing Requirements", "Cost Band"]
   }
 ];
 
