@@ -101,6 +101,18 @@ export const reportPricing = pgTable("report_pricing", {
   isActive: boolean("is_active").default(true),
 });
 
+// User-specific cost band customization table
+export const userCostBands = pgTable("user_cost_bands", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  grade: integer("grade").notNull(), // 0-5
+  costBand: varchar("cost_band").notNull(), // e.g., "£0", "£500-2,000"
+  sector: varchar("sector").notNull(), // utilities, adoption, highways, etc.
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type FileUpload = typeof fileUploads.$inferSelect;
@@ -109,6 +121,8 @@ export type SectionInspection = typeof sectionInspections.$inferSelect;
 export type InsertSectionInspection = typeof sectionInspections.$inferInsert;
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type ReportPricing = typeof reportPricing.$inferSelect;
+export type UserCostBand = typeof userCostBands.$inferSelect;
+export type InsertUserCostBand = typeof userCostBands.$inferInsert;
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,

@@ -4,6 +4,7 @@ import {
   sectionInspections,
   subscriptionPlans,
   reportPricing,
+  userCostBands,
   type User,
   type UpsertUser,
   type FileUpload,
@@ -12,6 +13,8 @@ import {
   type InsertSectionInspection,
   type SubscriptionPlan,
   type ReportPricing,
+  type UserCostBand,
+  type InsertUserCostBand,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -46,6 +49,13 @@ export interface IStorage {
   
   // Test user management
   setTestUser(userId: string, isTestUser?: boolean): Promise<User>;
+  
+  // User cost band customization
+  getUserCostBands(userId: string, sector: string): Promise<UserCostBand[]>;
+  createUserCostBand(costBand: InsertUserCostBand): Promise<UserCostBand>;
+  updateUserCostBand(id: number, costBand: string): Promise<UserCostBand>;
+  deleteUserCostBand(id: number): Promise<void>;
+  resetUserCostBands(userId: string, sector: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
