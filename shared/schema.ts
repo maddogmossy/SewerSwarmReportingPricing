@@ -140,7 +140,8 @@ export const userPricing = pgTable("user_pricing", {
   sectors: text("sectors").array().notNull().default(sql`ARRAY[]::text[]`), // Array of applicable sectors
   costPerHour: decimal("cost_per_hour", { precision: 10, scale: 2 }),
   costPerDay: decimal("cost_per_day", { precision: 10, scale: 2 }),
-  sectionsPerHour: decimal("sections_per_hour", { precision: 5, scale: 2 }),
+  meterageRangeMin: decimal("meterage_range_min", { precision: 8, scale: 2 }), // Minimum meterage for this pricing tier
+  meterageRangeMax: decimal("meterage_range_max", { precision: 8, scale: 2 }), // Maximum meterage for this pricing tier
   sectionsPerDay: decimal("sections_per_day", { precision: 5, scale: 2 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

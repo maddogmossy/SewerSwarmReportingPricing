@@ -41,7 +41,8 @@ interface UserPricing {
   equipmentTypeId: number;
   costPerHour: string;
   costPerDay: string;
-  sectionsPerHour: string;
+  meterageRangeMin: string;
+  meterageRangeMax: string;
   sectionsPerDay: string;
 }
 
@@ -131,7 +132,8 @@ export default function CleansingPricing() {
     costPerDay: "",
     costPerHour: "",
     sectionsPerDay: "",
-    sectionsPerHour: "",
+    meterageRangeMin: "",
+    meterageRangeMax: "",
     sectors: [] as string[]
   });
 
@@ -429,13 +431,25 @@ export default function CleansingPricing() {
                   />
                 </div>
                 <div>
-                  <Label>Sections per Hour</Label>
+                  <Label>Meterage Range Min (m)</Label>
                   <Input
                     type="number"
                     step="0.1"
                     placeholder="0.0"
-                    value={newPricing.sectionsPerHour}
-                    onChange={(e) => handlePricingChange('sectionsPerHour', e.target.value)}
+                    value={newPricing.meterageRangeMin}
+                    onChange={(e) => handlePricingChange('meterageRangeMin', e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <Label>Meterage Range Max (m)</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    placeholder="0.0"
+                    value={newPricing.meterageRangeMax}
+                    onChange={(e) => handlePricingChange('meterageRangeMax', e.target.value)}
                   />
                 </div>
               </div>
