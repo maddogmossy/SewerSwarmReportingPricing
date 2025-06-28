@@ -42,7 +42,7 @@ export default function Pricing() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: costBands = [], isLoading } = useQuery({
+  const { data: costBands = [], isLoading } = useQuery<CostBand[]>({
     queryKey: ['/api/cost-bands', selectedSector],
     enabled: !!selectedSector
   });
@@ -70,9 +70,7 @@ export default function Pricing() {
 
   const resetCostBandsMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest(`/api/cost-bands/${selectedSector}/reset`, {
-        method: 'DELETE'
-      });
+      return await apiRequest(`/api/cost-bands/${selectedSector}/reset`, 'DELETE');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/cost-bands', selectedSector] });
@@ -102,7 +100,7 @@ export default function Pricing() {
     const newValue = editingCostBands[grade];
     if (!newValue) return;
 
-    const existingBand = costBands.find((band: CostBand) => band.grade === grade);
+    const existingBand = costBands.find((band) => band.grade === grade);
     if (existingBand?.id) {
       updateCostBandMutation.mutate({ id: existingBand.id, costBand: newValue });
     }
@@ -193,7 +191,7 @@ export default function Pricing() {
                       </div>
 
                       <div className="grid gap-4">
-                        {costBands.map((band: CostBand) => {
+                        {costBands.map((band) => {
                           const isEditing = editingCostBands.hasOwnProperty(band.grade);
                           const currentValue = isEditing ? editingCostBands[band.grade] : band.costBand;
 

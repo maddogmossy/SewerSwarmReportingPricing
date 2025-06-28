@@ -305,6 +305,7 @@ export class MSCC5Classifier {
         adoptable = 'Conditional';
       }
       
+      // Use default cost bands - user-specific cost bands will be applied at the API level
       const costBands = {
         0: '£0',
         1: '£0-500',
