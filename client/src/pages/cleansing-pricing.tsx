@@ -470,7 +470,27 @@ export default function CleansingPricing() {
                   if (!equipment) return null;
                   
                   return (
-                    <tr key={pricing.id} className="border-b hover:bg-gray-50">
+                    <tr 
+                      key={pricing.id} 
+                      className={`border-b cursor-pointer transition-colors ${
+                        editingPricingId === pricing.id 
+                          ? 'bg-green-50 hover:bg-green-100' 
+                          : 'hover:bg-green-50'
+                      }`}
+                      onClick={() => {
+                        setEditingPricingId(pricing.id);
+                        setNewPricing({
+                          equipmentTypeId: pricing.equipmentTypeId,
+                          costPerDay: pricing.costPerDay,
+                          costPerHour: pricing.costPerHour,
+                          meterageRangeMin: pricing.meterageRangeMin,
+                          meterageRangeMax: pricing.meterageRangeMax,
+                          sectionsPerDay: pricing.sectionsPerDay,
+                          sectors: pricing.sectors || []
+                        });
+                        setIsAddingPricing(true);
+                      }}
+                    >
                       <td className="p-3">
                         <div>
                           <p className="font-medium">{equipment.name}</p>
@@ -572,7 +592,7 @@ export default function CleansingPricing() {
                 ) : (
                   <>
                     <Plus className="h-5 w-5" />
-                    Add New Equipment Pricing
+                    Add/Update Equipment Pricing
                   </>
                 )}
               </CardTitle>
