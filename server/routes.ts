@@ -683,7 +683,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         status: "error",
         message: "Utilities validation failed",
-        error: error.message
+        error: (error as Error).message
+      });
+    }
+  });
+
+  // Water UK format export endpoint
+  app.get("/api/utilities/export/:uploadId", isAuthenticated, async (req, res) => {
+    try {
+      const { uploadId } = req.params;
+      const { format = 'CSV' } = req.query;
+      
+      // Get section inspection data for the upload
+      const sections = await storage.getSectionInspectionsByFileUpload(parseInt(uploadId));
+      
+      if (sections.length === 0) {
+        return res.status(404).json({ message: "No section data found for this upload" });
+      }
+
+      // Transform section data for Water UK export
+      const exportData = sections.map(section => ({
+        itemNo: section.itemNo,
+        upstreamNode: section.startMH || `MH${section.itemNo}`,
+        downstreamNode: section.finishMH || `MH${section.itemNo + 1}`,
+        structuralGrade: section.grade || 0,
+        serviceGrade: section.grade || 0,
+        defectDescription: section.defects || 'No action required',
+        recommendedAction: section.recommendations || 'No action required',
+        actionType: section.actionType || 0
+      }));
+
+      const exportResult = UtilitiesValidation.generateWaterUKExport(
+        exportData,
+        format as 'CSV' | 'JSON'
+      );
+
+      const filename = `utilities_export_${uploadId}.${format.toLowerCase()}`;
+      const contentType = format === 'JSON' ? 'application/json' : 'text/csv';
+      
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(exportResult);
+
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Export failed",
+        error: (error as Error).message
       });
     }
   });

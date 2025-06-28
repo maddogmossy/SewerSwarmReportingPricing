@@ -1,6 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+// Load utilities logic profile from JSON
+const utilitiesLogicPath = path.join(process.cwd(), 'attached_assets', 'utilities_logic_profile_1751105838603.json');
+let UTILITIES_LOGIC_PROFILE: any = {};
+
+if (fs.existsSync(utilitiesLogicPath)) {
+  UTILITIES_LOGIC_PROFILE = JSON.parse(fs.readFileSync(utilitiesLogicPath, 'utf-8'));
+}
+
 // Utilities Sector Sewer Inspections Validation
 export class UtilitiesValidation {
   
@@ -18,13 +26,13 @@ export class UtilitiesValidation {
     console.log("🔍 Utilities Sector Logic Profile Validation");
     console.log("=" .repeat(50));
     
-    // 1. Confirm all JSON files are loaded
-    const requiredFiles = [
-      "mscc5_defects_1751041682277.json",
-      "srm_scoring_1751103611940.json", 
-      "drain_repair_book_1751103963332.json",
-      "os19x_adoption_1751104089690.json",
-      "sewer_cleaning_1751104019888.json"
+    // 1. Confirm all JSON files are loaded (using logic profile configuration)
+    const requiredFiles = UTILITIES_LOGIC_PROFILE.standards_used || [
+      "mscc5_defects.json",
+      "srm_scoring.json", 
+      "drain_repair_book.json",
+      "os19x_adoption.json",
+      "sewer_cleaning.json"
     ];
     
     const filesLoaded: Record<string, boolean> = {};
@@ -117,7 +125,7 @@ export class UtilitiesValidation {
     };
   }
   
-  // Enhanced defect processing with utilities sector logic
+  // Enhanced defect processing with utilities sector logic (using profile configuration)
   static processUtilitiesDefect(defectData: {
     defectCode: string;
     grade: number;
@@ -129,6 +137,7 @@ export class UtilitiesValidation {
     reinspectionNeeded: boolean;
     specificActions: string[];
     priorityLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+    adoptable: boolean;
   } {
     
     const { defectCode, grade, type, description } = defectData;
@@ -137,48 +146,59 @@ export class UtilitiesValidation {
     let cleaningRequired = false;
     let reinspectionNeeded = false;
     let priorityLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT' = 'LOW';
+    let adoptable = true;
     
-    // Structural Grade ≥ 4 → urgent repair flag
-    if (type === 'structural' && grade >= 4) {
-      urgentRepairFlag = true;
-      priorityLevel = 'URGENT';
-      actions.push('Immediate structural repair required');
-      actions.push('Consider excavation or CIPP lining');
+    const logicRouting = UTILITIES_LOGIC_PROFILE.logic_routing || {};
+    
+    // Apply grade escalation logic from profile
+    if (logicRouting.grade_escalation) {
+      if (type === 'structural' && logicRouting.grade_escalation.structural?.grade_4_or_5 && grade >= 4) {
+        urgentRepairFlag = true;
+        priorityLevel = 'URGENT';
+        actions.push('Flag for urgent repair (Grade ≥ 4)');
+        actions.push('Consider excavation or CIPP lining');
+        adoptable = false; // OS19x standard: reject Grade ≥ 4
+      }
+      
+      if (type === 'service' && logicRouting.grade_escalation.service?.grade_4_or_5 && grade >= 4) {
+        cleaningRequired = true;
+        reinspectionNeeded = true;
+        priorityLevel = grade === 5 ? 'URGENT' : 'HIGH';
+        actions.push('Flag for cleaning and reinspection (Grade ≥ 4)');
+        actions.push('High-pressure jetting required');
+        adoptable = false; // OS19x standard: reject Grade ≥ 4
+      }
     }
     
-    // Service Grade ≥ 4 → cleaning + reinspection
-    if (type === 'service' && grade >= 4) {
+    // Root ingress handling from profile
+    if (logicRouting.root_ingress && 
+        (defectCode === logicRouting.root_ingress.code || 
+         defectCode === 'RI' || 
+         description.toLowerCase().includes('root'))) {
       cleaningRequired = true;
-      reinspectionNeeded = true;
-      priorityLevel = grade === 5 ? 'URGENT' : 'HIGH';
-      actions.push('High-pressure jetting required');
-      actions.push('Post-clean CCTV verification needed');
-    }
-    
-    // Root ingress → root cut / reline logic
-    if (defectCode === 'RI' || description.toLowerCase().includes('root')) {
-      cleaningRequired = true;
-      actions.push('Mechanical root cutting required');
+      actions.push(logicRouting.root_ingress.action || 'Mechanical root cut + reinspection');
       actions.push('Consider root barrier installation');
-      actions.push('Annual monitoring for regrowth');
       priorityLevel = grade >= 3 ? 'HIGH' : 'MEDIUM';
     }
     
-    // Infiltration/exfiltration → seal or pressure test
-    if (defectCode === 'I' || defectCode === 'E' || 
-        description.toLowerCase().includes('infiltration') || 
-        description.toLowerCase().includes('exfiltration')) {
-      actions.push('Joint sealing required');
-      actions.push('Hydrostatic pressure test recommended');
-      priorityLevel = grade >= 3 ? 'HIGH' : 'MEDIUM';
+    // Infiltration/exfiltration handling from profile
+    if (logicRouting.infiltration_or_exfiltration) {
+      const triggerCodes = logicRouting.infiltration_or_exfiltration.trigger_codes || ['I', 'X'];
+      if (triggerCodes.includes(defectCode) || 
+          description.toLowerCase().includes('infiltration') || 
+          description.toLowerCase().includes('exfiltration')) {
+        actions.push(logicRouting.infiltration_or_exfiltration.action || 'Pressure test or seal lining');
+        priorityLevel = grade >= 3 ? 'HIGH' : 'MEDIUM';
+      }
     }
     
-    // Fractures require immediate attention
-    if (defectCode === 'FC' || defectCode === 'FL') {
+    // Additional structural defects requiring immediate attention
+    if (defectCode === 'FC' || defectCode === 'FL' || defectCode === 'C') {
       urgentRepairFlag = true;
       priorityLevel = 'URGENT';
       actions.push('Structural assessment required');
       actions.push('Consider emergency bypass if critical');
+      adoptable = false;
     }
     
     return {
@@ -186,7 +206,8 @@ export class UtilitiesValidation {
       cleaningRequired,
       reinspectionNeeded,
       specificActions: actions,
-      priorityLevel
+      priorityLevel,
+      adoptable
     };
   }
   
@@ -226,5 +247,109 @@ export class UtilitiesValidation {
       issues,
       recommendations
     };
+  }
+
+  // Water UK format export function
+  static generateWaterUKExport(sectionData: Array<{
+    itemNo: number;
+    upstreamNode: string;
+    downstreamNode: string;
+    structuralGrade: number;
+    serviceGrade: number;
+    defectDescription: string;
+    recommendedAction: string;
+    actionType: number;
+    plr?: number;
+  }>, format: 'CSV' | 'JSON' = 'CSV'): string {
+    
+    const exportProfile = UTILITIES_LOGIC_PROFILE.export_profile || {};
+    const requiredFields = exportProfile.required_fields || [
+      "PLR",
+      "Upstream Node", 
+      "Downstream Node",
+      "Structural Grade",
+      "Service Grade", 
+      "Recommended Action",
+      "Action Type"
+    ];
+
+    if (format === 'JSON') {
+      const jsonData = sectionData.map(section => ({
+        "Item No": section.itemNo,
+        "PLR": section.plr || this.calculatePLR(section.structuralGrade, section.serviceGrade),
+        "Upstream Node": section.upstreamNode,
+        "Downstream Node": section.downstreamNode,
+        "Structural Grade": section.structuralGrade,
+        "Service Grade": section.serviceGrade,
+        "Defect Description": section.defectDescription,
+        "Recommended Action": section.recommendedAction,
+        "Action Type": section.actionType,
+        "Compatible With": exportProfile.compatible_with?.join(', ') || 'Water UK',
+        "Export Timestamp": new Date().toISOString()
+      }));
+      
+      return JSON.stringify({
+        metadata: {
+          sector: UTILITIES_LOGIC_PROFILE.sector || 'utilities',
+          display_name: UTILITIES_LOGIC_PROFILE.display_name || 'Utilities Sector',
+          standards_used: UTILITIES_LOGIC_PROFILE.standards_used || [],
+          export_format: 'Water UK Compliance',
+          generated_at: new Date().toISOString()
+        },
+        sections: jsonData
+      }, null, 2);
+    }
+
+    // CSV format
+    const headers = [
+      "Item No",
+      "PLR", 
+      "Upstream Node",
+      "Downstream Node", 
+      "Structural Grade",
+      "Service Grade",
+      "Defect Description",
+      "Recommended Action",
+      "Action Type"
+    ];
+    
+    const csvRows = [headers.join(',')];
+    
+    sectionData.forEach(section => {
+      const row = [
+        section.itemNo,
+        section.plr || this.calculatePLR(section.structuralGrade, section.serviceGrade),
+        `"${section.upstreamNode}"`,
+        `"${section.downstreamNode}"`,
+        section.structuralGrade,
+        section.serviceGrade,
+        `"${section.defectDescription}"`,
+        `"${section.recommendedAction}"`,
+        section.actionType
+      ];
+      csvRows.push(row.join(','));
+    });
+    
+    return csvRows.join('\n');
+  }
+
+  // Calculate Pipeline Likelihood Rating (PLR) based on grades
+  private static calculatePLR(structuralGrade: number, serviceGrade: number): number {
+    // PLR calculation using WRc standards
+    // Higher grades indicate higher likelihood of problems
+    const maxGrade = Math.max(structuralGrade, serviceGrade);
+    const avgGrade = (structuralGrade + serviceGrade) / 2;
+    
+    // PLR scale 1-5 (1 = low risk, 5 = high risk)
+    if (maxGrade >= 5) return 5;
+    if (maxGrade >= 4) return 4;
+    if (avgGrade >= 3) return 3;
+    if (avgGrade >= 2) return 2;
+    return 1;
+  }
+
+  // Get utilities logic profile for external access
+  static getUtilitiesProfile() {
+    return UTILITIES_LOGIC_PROFILE;
   }
 }

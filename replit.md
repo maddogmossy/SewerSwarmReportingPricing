@@ -136,6 +136,8 @@ Changelog:
 - June 27, 2025. Implemented MSCC5 defect classification system: Fixed Section 1 pipe material consistency and added authentic defect data for Section 3 debris with proper meterage, percentages, and Grade 3/4 classifications using real inspection report data and WRc/WTI standards
 - June 27, 2025. Enhanced MSCC5 system with detailed defect parsing: Added multi-defect support with specific meterage (0.76m, 1.40m), percentage ranges (5-10%), and complex defect combinations like Item 7 (5% + 10% deposits) and Item 13 (30% debris + 5% deformity) matching real inspection report format
 - June 28, 2025. Integrated comprehensive standards library: Added Drain Repair Book (4th Ed.), Sewer Cleaning Manual, and OS19x Adoption standards as separate modules with specific repair methods, cleaning procedures, and adoption criteria for enhanced sector-specific analysis
+- June 28, 2025. Implemented utilities logic profile integration: Added configurable utilities_logic_profile.json with sector-specific routing, grade escalation rules, and Water UK export format support for complete utilities sector compliance
+- June 28, 2025. Added Water UK format export: Implemented CSV/JSON export functionality with PLR calculation, required fields mapping, and full compliance with Water UK adoption reporting standards
 ```
 
 ## User Preferences
