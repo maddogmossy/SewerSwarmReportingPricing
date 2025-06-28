@@ -367,6 +367,122 @@ export default function CleansingPricing() {
     return (userPricing as UserPricing[]).find((p: UserPricing) => p.equipmentTypeId === equipmentTypeId);
   };
 
+  const currentPricingDisplay = useMemo(() => {
+    const savedPricingData = (userPricing as UserPricing[]).filter((pricing: UserPricing) => {
+      const hasEquipment = (equipmentTypes as EquipmentType[]).some(eq => eq.id === pricing.equipmentTypeId);
+      const hasCompletePricing = pricing.costPerDay && pricing.costPerHour && pricing.sectionsPerDay && 
+                               pricing.meterageRangeMin && pricing.meterageRangeMax;
+      return hasEquipment && hasCompletePricing;
+    });
+    
+    if (savedPricingData.length === 0) return null;
+    
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle>Current Cleansing Equipment Pricing</CardTitle>
+              <p className="text-sm text-gray-600 mt-1">
+                Configured pricing for cleansing equipment with sector applications
+              </p>
+            </div>
+            <Link to="/dashboard-new">
+              <Button variant="outline" size="sm">
+                <BarChart className="h-4 w-4 mr-2 text-green-600" />
+                View Dashboard
+              </Button>
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-3">Equipment</th>
+                  <th className="text-left p-3">Daily Rate</th>
+                  <th className="text-left p-3">Hourly Rate</th>
+                  <th className="text-left p-3">Meterage Range</th>
+                  <th className="text-left p-3">Sections/Day</th>
+                  <th className="text-left p-3">Applicable Sectors</th>
+                  <th className="text-left p-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {savedPricingData.map((pricing: UserPricing) => {
+                  const equipment = (equipmentTypes as EquipmentType[]).find(eq => eq.id === pricing.equipmentTypeId);
+                  if (!equipment) return null;
+                  
+                  return (
+                    <tr key={pricing.id} className="border-b hover:bg-gray-50">
+                      <td className="p-3">
+                        <div>
+                          <p className="font-medium">{equipment.name}</p>
+                          <p className="text-sm text-gray-500">{equipment.description}</p>
+                        </div>
+                      </td>
+                      <td className="p-3">£{pricing.costPerDay}</td>
+                      <td className="p-3">£{pricing.costPerHour}</td>
+                      <td className="p-3">{pricing.meterageRangeMin}m - {pricing.meterageRangeMax}m</td>
+                      <td className="p-3">{pricing.sectionsPerDay}</td>
+                      <td className="p-3">
+                        <div className="flex gap-1 flex-wrap">
+                          {pricing.sectors && pricing.sectors.map((sector: string, index: number) => {
+                            const colorMap: Record<string, string> = {
+                              'utilities': 'bg-blue-100 text-blue-800',
+                              'adoption': 'bg-green-100 text-green-800',
+                              'highways': 'bg-orange-100 text-orange-800',
+                              'insurance': 'bg-red-100 text-red-800',
+                              'construction': 'bg-purple-100 text-purple-800',
+                              'domestic': 'bg-amber-100 text-amber-800'
+                            };
+                            return (
+                              <Badge
+                                key={index}
+                                variant="secondary"
+                                className={`text-xs ${colorMap[sector] || 'bg-gray-100 text-gray-800'}`}
+                              >
+                                {sector}
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setNewPricing({
+                              equipmentTypeId: pricing.equipmentTypeId,
+                              costPerDay: pricing.costPerDay,
+                              costPerHour: pricing.costPerHour,
+                              meterageRangeMin: pricing.meterageRangeMin,
+                              meterageRangeMax: pricing.meterageRangeMax,
+                              sectionsPerDay: pricing.sectionsPerDay,
+                              sectors: pricing.sectors || []
+                            });
+                            setIsAddingPricing(true);
+                          }}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-xs text-gray-500 mt-3">
+            * Hourly rates are automatically calculated by dividing daily values by 8 hours. Meterage ranges define pricing tiers based on pipeline cleaning lengths. This pricing applies to dashboard cost calculations.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }, [userPricing, equipmentTypes]);
+
   if (equipmentLoading || pricingLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 p-8">
@@ -403,126 +519,7 @@ export default function CleansingPricing() {
         </div>
 
         {/* Current Cleansing Equipment Pricing - Moved to Top */}
-        {(() => {
-          const savedPricingData = (userPricing as UserPricing[]).filter((pricing: UserPricing) => {
-            const hasEquipment = (equipmentTypes as EquipmentType[]).some(eq => eq.id === pricing.equipmentTypeId);
-            const hasCompletePricing = pricing.costPerDay && pricing.costPerHour && pricing.sectionsPerDay && 
-                                     pricing.meterageRangeMin && pricing.meterageRangeMax;
-            return hasEquipment && hasCompletePricing;
-          });
-          
-          if (savedPricingData.length === 0) return null;
-          
-          return (
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle>Current Cleansing Equipment Pricing</CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Configured pricing for cleansing equipment with sector applications
-                  </p>
-                </div>
-                <Link to="/dashboard-new">
-                  <Button variant="outline" size="sm">
-                    <BarChart className="h-4 w-4 mr-2 text-green-600" />
-                    View Dashboard
-                  </Button>
-                </Link>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2">Equipment Type</th>
-                      <th className="text-left p-2">Size Range</th>
-                      <th className="text-left p-2">Cost/Day</th>
-                      <th className="text-left p-2">Cost/Hour</th>
-                      <th className="text-left p-2">Sections/Day</th>
-                      <th className="text-left p-2">Meterage Range</th>
-                      <th className="text-left p-2">Applicable Sectors</th>
-                      <th className="text-left p-2">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {savedPricingData.map((pricing: UserPricing) => {
-                      const equipment = (equipmentTypes as EquipmentType[]).find(eq => eq.id === pricing.equipmentTypeId);
-                      if (!equipment) return null;
-                      
-                      return (
-                        <tr key={pricing.id} className="border-b">
-                          <td className="p-2">{equipment.name}</td>
-                          <td className="p-2">{equipment.minPipeSize}mm-{equipment.maxPipeSize}mm</td>
-                          <td className="p-2">£{pricing.costPerDay}</td>
-                          <td className="p-2">£{pricing.costPerHour}</td>
-                          <td className="p-2">{pricing.sectionsPerDay}</td>
-                          <td className="p-2">{pricing.meterageRangeMin}-{pricing.meterageRangeMax}m</td>
-                          <td className="p-2">
-                            <div className="flex flex-wrap gap-1">
-                              {(pricing.sectors || []).map((sectorName, index) => {
-                                const sectorColorMap: { [key: string]: string } = {
-                                  'utilities': 'bg-blue-100 text-blue-800',
-                                  'adoption': 'bg-green-100 text-green-800', 
-                                  'highways': 'bg-orange-100 text-orange-800',
-                                  'insurance': 'bg-red-100 text-red-800',
-                                  'construction': 'bg-purple-100 text-purple-800',
-                                  'domestic': 'bg-amber-100 text-amber-800'
-                                };
-                                const colorClass = sectorColorMap[sectorName.toLowerCase()] || 'bg-gray-100 text-gray-800';
-                                
-                                return (
-                                  <span 
-                                    key={index}
-                                    className={`px-2 py-1 text-xs rounded-full ${colorClass}`}
-                                  >
-                                    {sectorName.charAt(0).toUpperCase() + sectorName.slice(1)}
-                                  </span>
-                                );
-                              })}
-                              {(!pricing.sectors || pricing.sectors.length === 0) && (
-                                <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                                  No sectors selected
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="p-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                setNewPricing({
-                                  equipmentTypeId: equipment.id,
-                                  costPerDay: pricing.costPerDay || "",
-                                  costPerHour: pricing.costPerHour || "",
-                                  sectionsPerDay: pricing.sectionsPerDay || "",
-                                  meterageRangeMin: pricing.meterageRangeMin || "",
-                                  meterageRangeMax: pricing.meterageRangeMax || "",
-                                  sectors: pricing.sectors || []
-                                });
-                                setSelectedEquipmentType(equipment.id.toString());
-                                setIsAddingPricing(true);
-                              }}
-                            >
-                              <Edit className="h-4 w-4 mr-1" />
-                              Edit
-                            </Button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              <p className="text-xs text-gray-500 mt-3">
-                * Hourly rates are automatically calculated by dividing daily values by 8 hours. Meterage ranges define pricing tiers based on pipeline cleaning lengths. This pricing applies to dashboard cost calculations.
-              </p>
-            </CardContent>
-          </Card>
-          );
-        })()}
+        {currentPricingDisplay}
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
