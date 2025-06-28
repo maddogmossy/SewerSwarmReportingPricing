@@ -306,28 +306,28 @@ export default function Dashboard() {
     });
   };
 
-  // Define columns with their properties
+  // Define columns with their properties and widths
   const columns = [
-    { key: 'projectNo', label: 'Project No', hideable: true },
-    { key: 'itemNo', label: 'Item No', hideable: false },
-    { key: 'inspectionNo', label: 'Inspec. No', hideable: true },
-    { key: 'date', label: 'Date', hideable: true },
-    { key: 'time', label: 'Time', hideable: true },
-    { key: 'startMH', label: 'Start MH', hideable: false },
-    { key: 'startMHDepth', label: 'Start MH Depth', hideable: true },
-    { key: 'finishMH', label: 'Finish MH', hideable: false },
-    { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true },
-    { key: 'pipeSize', label: 'Pipe Size', hideable: false },
-    { key: 'pipeMaterial', label: 'Pipe Material', hideable: true },
-    { key: 'totalLength', label: 'Total Length (m)', hideable: false },
-    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: false },
-    { key: 'defects', label: 'Defects', hideable: false },
-    { key: 'severityGrade', label: 'Severity Grade', hideable: false },
-    { key: 'srmGrading', label: 'SRM Grading', hideable: false },
-    { key: 'recommendations', label: 'Recommendations', hideable: false },
-    { key: 'cleaningMethods', label: 'Actions Required', hideable: false },
-    { key: 'adoptable', label: 'Adoptable', hideable: false },
-    { key: 'cost', label: 'Cost (£)', hideable: false }
+    { key: 'projectNo', label: 'Project No', hideable: true, width: 'w-20' },
+    { key: 'itemNo', label: 'Item No', hideable: false, width: 'w-16' },
+    { key: 'inspectionNo', label: 'Inspec. No', hideable: true, width: 'w-18' },
+    { key: 'date', label: 'Date', hideable: true, width: 'w-24' },
+    { key: 'time', label: 'Time', hideable: true, width: 'w-20' },
+    { key: 'startMH', label: 'Start MH', hideable: false, width: 'w-20' },
+    { key: 'startMHDepth', label: 'Start MH Depth', hideable: true, width: 'w-20' },
+    { key: 'finishMH', label: 'Finish MH', hideable: false, width: 'w-20' },
+    { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true, width: 'w-20' },
+    { key: 'pipeSize', label: 'Pipe Size', hideable: false, width: 'w-20' },
+    { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: 'w-24' },
+    { key: 'totalLength', label: 'Total Length (m)', hideable: false, width: 'w-20' },
+    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: false, width: 'w-20' },
+    { key: 'defects', label: 'Defects', hideable: false, width: 'w-64' },
+    { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: 'w-20' },
+    { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: 'w-24' },
+    { key: 'recommendations', label: 'Recommendations', hideable: false, width: 'w-64' },
+    { key: 'cleaningMethods', label: 'Actions Required', hideable: false, width: 'w-32' },
+    { key: 'adoptable', label: 'Adoptable', hideable: false, width: 'w-20' },
+    { key: 'cost', label: 'Cost (£)', hideable: false, width: 'w-24' }
   ];
 
   // Function to render cell content based on column key
@@ -866,19 +866,18 @@ export default function Dashboard() {
                                   toggleColumnVisibility(column.key);
                                 }
                               }}
-                              className={
-                                showColumnSelector && !canBeHidden 
-                                  ? 'border border-slate-300 px-2 py-1 text-left font-semibold bg-slate-200 cursor-not-allowed opacity-60'
+                              className={`
+                                ${column.width} border border-slate-300 px-1 py-1 text-left font-semibold text-xs
+                                ${showColumnSelector && !canBeHidden 
+                                  ? 'bg-slate-200 cursor-not-allowed opacity-60'
                                   : showColumnSelector && canBeHidden
-                                  ? 'border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-red-100 hover:text-red-800 transition-colors'
-                                  : 'border border-slate-300 px-2 py-1 text-left font-semibold'
-                              }
+                                  ? 'cursor-pointer hover:bg-red-100 hover:text-red-800 transition-colors'
+                                  : ''
+                                }
+                              `}
                               title={showColumnSelector ? (canBeHidden ? 'Click to hide this column' : 'Essential column - cannot be hidden') : ''}
                             >
                               {column.label}
-                              {showColumnSelector && !canBeHidden && (
-                                <span className="ml-1 text-xs text-slate-500">(required)</span>
-                              )}
                             </th>
                           );
                         })}
@@ -890,7 +889,7 @@ export default function Dashboard() {
                           {columns.map((column) => {
                             if (hiddenColumns.has(column.key)) return null;
                             return (
-                              <td key={column.key} className="border border-slate-300 px-2 py-1">
+                              <td key={column.key} className={`${column.width} border border-slate-300 px-1 py-1 text-xs`}>
                                 {renderCellContent(column.key, section)}
                               </td>
                             );
