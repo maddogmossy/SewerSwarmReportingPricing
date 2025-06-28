@@ -310,7 +310,7 @@ export default function Dashboard() {
 
     // For sections with defects, check if pricing is configured
     if (!userPricing.length || !equipmentTypes.length) {
-      return pricingStatus?.cleansing ? "needs adding" : "Configure pricing";
+      return <span className="text-amber-600 font-medium">pricing required for utilities sector</span>;
     }
 
     // Find appropriate equipment pricing based on section length
@@ -322,7 +322,7 @@ export default function Dashboard() {
     });
 
     if (!appropriatePricing) {
-      return "needs adding";
+      return <span className="text-amber-600 font-medium">pricing required for utilities sector</span>;
     }
 
     // Calculate based on daily rate and sections per day
