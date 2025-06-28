@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -587,6 +587,9 @@ export default function CleansingPricing() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add New Cleansing Equipment</DialogTitle>
+              <DialogDescription>
+                Add a new cleansing equipment type with specifications and pipe size ranges.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
@@ -662,6 +665,9 @@ export default function CleansingPricing() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Edit Equipment</DialogTitle>
+              <DialogDescription>
+                Modify the equipment specifications and pipe size ranges.
+              </DialogDescription>
             </DialogHeader>
             {editingEquipment && (
               <div className="space-y-4">
