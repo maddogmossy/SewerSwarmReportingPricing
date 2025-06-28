@@ -320,12 +320,12 @@ export default function Dashboard() {
     { key: 'pipeSize', label: 'Pipe Size', hideable: false },
     { key: 'pipeMaterial', label: 'Pipe Material', hideable: true },
     { key: 'totalLength', label: 'Total Length (m)', hideable: false },
-    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: true },
+    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: false },
     { key: 'defects', label: 'Defects', hideable: false },
     { key: 'severityGrade', label: 'Severity Grade', hideable: false },
-    { key: 'srmGrading', label: 'SRM Grading', hideable: true },
+    { key: 'srmGrading', label: 'SRM Grading', hideable: false },
     { key: 'recommendations', label: 'Recommendations', hideable: false },
-    { key: 'cleaningMethods', label: 'Actions Required', hideable: true },
+    { key: 'cleaningMethods', label: 'Actions Required', hideable: false },
     { key: 'adoptable', label: 'Adoptable', hideable: false },
     { key: 'cost', label: 'Cost (£)', hideable: false }
   ];
