@@ -312,9 +312,12 @@ export default function Dashboard() {
 
     // Section has defects and requires repairs - check pricing availability
 
-    // For sections with defects, check if utilities sector pricing is configured
+    // For utilities sector reports, require utilities-ONLY pricing (not mixed sectors)
     const utilitiesPricing = userPricing.filter((pricing: any) => 
-      pricing.sectors && pricing.sectors.includes('utilities')
+      pricing.sectors && 
+      pricing.sectors.includes('utilities') &&
+      pricing.sectors.length === 1 && 
+      pricing.sectors[0] === 'utilities'
     );
 
     if (!utilitiesPricing.length || !equipmentTypes.length) {
