@@ -188,9 +188,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             {
               itemNo: 3,
               startMH: "SW03", finishMH: "SW04",
-              pipeSize: "225mm", pipeMaterial: "Concrete", 
-              totalLength: "23.45m", lengthSurveyed: "23.45m",
-              defects: "DER 0.76m: Settled deposits, coarse, 5% cross-sectional area loss; DER 1.40m: Settled deposits, coarse, 10% cross-sectional area loss"
+              pipeSize: "150mm", pipeMaterial: "Polyvinyl chloride", 
+              totalLength: "30.24m", lengthSurveyed: "30.24m",
+              defects: "DER 13.27m, 16.63m, 17.73m, 21.60m: Settled deposits, coarse and fine, 5% cross-sectional area loss at multiple locations"
             },
             {
               itemNo: 4,

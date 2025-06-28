@@ -136,9 +136,9 @@ export interface DefectClassificationResult {
   adoptable: 'Yes' | 'No' | 'Conditional';
   estimatedCost: string;
   srmGrading: SRMGrading;
-  repairMethods?: string[];
+  recommendationMethods?: string[];
   cleaningMethods?: string[];
-  repairPriority?: string;
+  recommendationPriority?: string;
   cleaningFrequency?: string;
   adoptionNotes?: string;
 }
@@ -409,9 +409,9 @@ export class MSCC5Classifier {
         adoptable,
         estimatedCost: costBands[highestGrade as keyof typeof costBands] || '£TBC',
         srmGrading,
-        repairMethods: repairData?.suggested_repairs,
+        recommendationMethods: repairData?.suggested_repairs,
         cleaningMethods: cleaningData?.recommended_methods,
-        repairPriority: repairData?.repair_priority,
+        recommendationPriority: repairData?.repair_priority,
         cleaningFrequency: cleaningData?.cleaning_frequency,
         adoptionNotes
       };
