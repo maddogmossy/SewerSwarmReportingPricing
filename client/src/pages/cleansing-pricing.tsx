@@ -689,40 +689,24 @@ export default function CleansingPricing() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="min-pipe-size">Min Pipe Size</Label>
-                  <Select
-                    value={newEquipment.minPipeSize.toString()}
-                    onValueChange={(value) => setNewEquipment(prev => ({ ...prev, minPipeSize: parseInt(value) }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pipeSizes.map((size) => (
-                        <SelectItem key={size} value={size.toString()}>
-                          {size}mm
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="min-pipe-size">Min Pipe Size (mm)</Label>
+                  <Input
+                    id="min-pipe-size"
+                    value={newEquipment.minPipeSize ? `${newEquipment.minPipeSize}mm` : ""}
+                    readOnly
+                    className="bg-gray-50 text-gray-700"
+                    placeholder="Auto-filled from equipment type"
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="max-pipe-size">Max Pipe Size</Label>
-                  <Select
-                    value={newEquipment.maxPipeSize.toString()}
-                    onValueChange={(value) => setNewEquipment(prev => ({ ...prev, maxPipeSize: parseInt(value) }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pipeSizes.map((size) => (
-                        <SelectItem key={size} value={size.toString()}>
-                          {size}mm
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="max-pipe-size">Max Pipe Size (mm)</Label>
+                  <Input
+                    id="max-pipe-size"
+                    value={newEquipment.maxPipeSize ? `${newEquipment.maxPipeSize}mm` : ""}
+                    readOnly
+                    className="bg-gray-50 text-gray-700"
+                    placeholder="Auto-filled from equipment type"
+                  />
                 </div>
               </div>
               <div className="flex gap-2 pt-4">
