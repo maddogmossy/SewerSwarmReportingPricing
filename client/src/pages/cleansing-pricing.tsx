@@ -731,7 +731,7 @@ export default function CleansingPricing() {
               <Button 
                 onClick={handleSavePricing} 
                 className="w-full"
-                disabled={savePricingMutation.isPending || updatePricingMutation.isPending || newPricing.equipmentTypeId === 0}
+                disabled={savePricingMutation.isPending || newPricing.equipmentTypeId === 0}
               >
                 <Save className="h-4 w-4 mr-2" />
                 {editingPricingId ? 'Update Equipment Pricing' : 'Save Equipment Pricing'}
