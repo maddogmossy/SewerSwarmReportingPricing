@@ -1,3 +1,7 @@
+import { DRAIN_REPAIR_BOOK } from './drain-repair-book';
+import { SEWER_CLEANING_MANUAL } from './sewer-cleaning';
+import { OS19X_ADOPTION_STANDARDS } from './os19x-adoption';
+
 export interface MSCC5Defect {
   code: string;
   description: string;
@@ -132,6 +136,11 @@ export interface DefectClassificationResult {
   adoptable: 'Yes' | 'No' | 'Conditional';
   estimatedCost: string;
   srmGrading: SRMGrading;
+  repairMethods?: string[];
+  cleaningMethods?: string[];
+  repairPriority?: string;
+  cleaningFrequency?: string;
+  adoptionNotes?: string;
 }
 
 // SRM Scoring Data from attached file
@@ -309,6 +318,26 @@ export class MSCC5Classifier {
       const gradeKey = Math.min(highestGrade, 5).toString();
       const srmGrading = SRM_SCORING[mainDefectType][gradeKey] || SRM_SCORING.service["1"];
       
+      // Get repair and cleaning methods from integrated standards
+      const primaryDefectCode = parsedDefects[0]?.defectCode;
+      const repairData = DRAIN_REPAIR_BOOK[primaryDefectCode];
+      const cleaningData = SEWER_CLEANING_MANUAL[primaryDefectCode];
+      
+      // Check OS19x adoption standards
+      let adoptionNotes = '';
+      if (sector === 'adoption') {
+        if (OS19X_ADOPTION_STANDARDS.banned_defects.codes.includes(primaryDefectCode)) {
+          adoptable = 'No';
+          adoptionNotes = 'Contains banned defect code - automatic rejection for adoption';
+        } else if (mainDefectType === 'structural' && highestGrade > OS19X_ADOPTION_STANDARDS.grading_thresholds.structural.max_grade) {
+          adoptable = 'No';
+          adoptionNotes = OS19X_ADOPTION_STANDARDS.grading_thresholds.structural.description;
+        } else if (mainDefectType === 'service' && highestGrade > OS19X_ADOPTION_STANDARDS.grading_thresholds.service.max_grade) {
+          adoptable = 'Conditional';
+          adoptionNotes = OS19X_ADOPTION_STANDARDS.grading_thresholds.service.description;
+        }
+      }
+      
       return {
         defectCode: parsedDefects.map(d => d.defectCode).join(','),
         defectDescription: combinedDescription,
@@ -318,7 +347,12 @@ export class MSCC5Classifier {
         riskAssessment: `Multiple defects requiring attention. Highest severity: Grade ${highestGrade}`,
         adoptable,
         estimatedCost: costBands[highestGrade as keyof typeof costBands] || '£TBC',
-        srmGrading
+        srmGrading,
+        repairMethods: repairData?.suggested_repairs,
+        cleaningMethods: cleaningData?.recommended_methods,
+        repairPriority: repairData?.repair_priority,
+        cleaningFrequency: cleaningData?.cleaning_frequency,
+        adoptionNotes
       };
     }
     
@@ -406,16 +440,40 @@ export class MSCC5Classifier {
     const gradeKey = Math.min(adjustedGrade, 5).toString();
     const srmGrading = SRM_SCORING[detectedDefect.type][gradeKey] || SRM_SCORING.service["1"];
     
+    // Get repair and cleaning methods from integrated standards
+    const repairData = DRAIN_REPAIR_BOOK[defectCode];
+    const cleaningData = SEWER_CLEANING_MANUAL[defectCode];
+    
+    // Check OS19x adoption standards
+    let adoptionNotes = '';
+    if (sector === 'adoption') {
+      if (OS19X_ADOPTION_STANDARDS.banned_defects.codes.includes(defectCode)) {
+        adoptable = 'No';
+        adoptionNotes = 'Contains banned defect code - automatic rejection for adoption';
+      } else if (detectedDefect.type === 'structural' && adjustedGrade > OS19X_ADOPTION_STANDARDS.grading_thresholds.structural.max_grade) {
+        adoptable = 'No';
+        adoptionNotes = OS19X_ADOPTION_STANDARDS.grading_thresholds.structural.description;
+      } else if (detectedDefect.type === 'service' && adjustedGrade > OS19X_ADOPTION_STANDARDS.grading_thresholds.service.max_grade) {
+        adoptable = 'Conditional';
+        adoptionNotes = OS19X_ADOPTION_STANDARDS.grading_thresholds.service.description;
+      }
+    }
+    
     return {
       defectCode,
       defectDescription: detectedDefect.description,
       severityGrade: adjustedGrade,
-      defectType: detectedDefect.type,
+      defectType: detectedDefected.type,
       recommendations: detectedDefect.recommended_action,
       riskAssessment: detectedDefect.risk,
       adoptable,
       estimatedCost: costBands[adjustedGrade as keyof typeof costBands] || '£TBC',
-      srmGrading
+      srmGrading,
+      repairMethods: repairData?.suggested_repairs,
+      cleaningMethods: cleaningData?.recommended_methods,
+      repairPriority: repairData?.repair_priority,
+      cleaningFrequency: cleaningData?.cleaning_frequency,
+      adoptionNotes
     };
   }
   
