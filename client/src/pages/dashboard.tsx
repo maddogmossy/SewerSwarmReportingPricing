@@ -321,11 +321,10 @@ export default function Dashboard() {
     { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: 'w-20', priority: 'tight' },
     { key: 'totalLength', label: 'Total Length (m)', hideable: false, width: 'w-16', priority: 'tight' },
     { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: false, width: 'w-16', priority: 'tight' },
-    { key: 'defects', label: 'Defects', hideable: false, width: 'w-80', priority: 'pretty' },
+    { key: 'defects', label: 'Defects', hideable: false, width: 'w-96', priority: 'pretty' },
     { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: 'w-16', priority: 'tight' },
     { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: 'w-20', priority: 'tight' },
-    { key: 'recommendations', label: 'Recommendations', hideable: false, width: 'w-80', priority: 'pretty' },
-    { key: 'cleaningMethods', label: 'Actions Required', hideable: false, width: 'w-64', priority: 'pretty' },
+    { key: 'recommendations', label: 'Recommendations', hideable: false, width: 'w-96', priority: 'pretty' },
     { key: 'adoptable', label: 'Adoptable', hideable: false, width: 'w-16', priority: 'tight' },
     { key: 'cost', label: 'Cost (£)', hideable: false, width: 'w-20', priority: 'tight' }
   ];
@@ -444,20 +443,6 @@ export default function Dashboard() {
         return (
           <div className="text-xs max-w-48">
             No action required - pipe in acceptable condition
-          </div>
-        );
-      case 'cleaningMethods':
-        // Actions Required based on Grade 3 debris cleaning standards
-        if (section.itemNo === 3) {
-          return (
-            <div className="text-xs max-w-48">
-              Cleaning or high-pressure jetting required at all locations. Medium-to-high maintenance activities recommended.
-            </div>
-          );
-        }
-        return (
-          <div className="text-xs max-w-48">
-            {section.cleaningMethods || "None required"}
           </div>
         );
       case 'adoptable':
