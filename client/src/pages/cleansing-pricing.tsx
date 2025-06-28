@@ -166,14 +166,14 @@ export default function CleansingPricing() {
       );
 
       if (existingPricing) {
-        return await apiRequest(`/api/user-pricing/${existingPricing.id}`, 'PUT', {
+        return await apiRequest('PUT', `/api/user-pricing/${existingPricing.id}`, {
           costPerDay: pricing.costPerDay,
           costPerHour: pricing.costPerHour,
           sectionsPerDay: pricing.sectionsPerDay,
           sectionsPerHour: pricing.sectionsPerHour
         });
       } else {
-        return await apiRequest('/api/user-pricing', 'POST', pricing);
+        return await apiRequest('POST', '/api/user-pricing', pricing);
       }
     },
     onSuccess: () => {

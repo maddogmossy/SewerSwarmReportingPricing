@@ -148,9 +148,9 @@ export default function JettingPricing() {
       const existingPricing = (userPricing as UserPricing[]).find((p: UserPricing) => p.equipmentTypeId === equipmentTypeId);
       
       if (existingPricing) {
-        return await apiRequest(`/api/user-pricing/${existingPricing.id}`, 'PUT', pricing);
+        return await apiRequest('PUT', `/api/user-pricing/${existingPricing.id}`, pricing);
       } else {
-        return await apiRequest('/api/user-pricing', 'POST', {
+        return await apiRequest('POST', '/api/user-pricing', {
           equipmentTypeId,
           ...pricing
         });
