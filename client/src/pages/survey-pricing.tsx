@@ -140,6 +140,7 @@ export default function SurveyPricing() {
       });
       setEditingEquipment(null);
       setShowEquipmentDialog(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types"] });
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/1"] });
     },
     onError: (error: any) => {
@@ -161,6 +162,7 @@ export default function SurveyPricing() {
         title: "Success",
         description: "Equipment specification deleted successfully",
       });
+      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types"] });
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/1"] });
     },
     onError: (error) => {
