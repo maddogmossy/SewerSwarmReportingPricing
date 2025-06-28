@@ -205,7 +205,7 @@ export default function CleansingPricing() {
 
   const handlePricingChange = (equipmentTypeId: number, field: keyof UserPricing, value: string) => {
     const currentPricing = editingPricing[equipmentTypeId] || 
-      userPricing.find(p => p.equipmentTypeId === equipmentTypeId) || 
+      (userPricing as UserPricing[]).find((p: UserPricing) => p.equipmentTypeId === equipmentTypeId) || 
       {
         id: 0,
         equipmentTypeId,
