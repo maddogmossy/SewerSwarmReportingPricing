@@ -218,24 +218,55 @@ export class MSCC5Classifier {
   static parseMultipleDefects(defectText: string): Array<{meterage: string, defectCode: string, description: string, percentage: string}> {
     const defects = [];
     
-    // Pattern to match defect entries like "DER 0.76m: Settled deposits, coarse, 5% cross-sectional area loss"
-    const defectPattern = /(\w+)\s+(\d+\.?\d*m?):\s*([^;]+?)(?:;\s*|$)/g;
-    let match;
+    // Enhanced patterns to capture Section 3 debris entries with specific meterage and percentages
+    const patterns = [
+      // Standard format: "DER 13.07m: Settled deposits, coarse, 5% cross-sectional area loss"
+      /(\w+)\s+(\d+\.?\d*m?):\s*([^;]+?)(?:;\s*|$)/g,
+      // Alternative format: "13.07m DER: Settled deposits, coarse, 5%"
+      /(\d+\.?\d*m?)\s+(\w+):\s*([^;]+?)(?:;\s*|$)/g,
+      // Section 3 specific format: multiple debris points with meterage
+      /(\d+\.?\d*)\s+(\w+)\s+([^0-9]+?)(\d+%)?/g
+    ];
     
-    while ((match = defectPattern.exec(defectText)) !== null) {
-      const [, code, meterage, description] = match;
-      
-      // Extract percentage if present
-      const percentageMatch = description.match(/(\d+(?:-\d+)?%)/);
-      const percentage = percentageMatch ? percentageMatch[1] : '';
-      
-      defects.push({
-        meterage,
-        defectCode: code.toUpperCase(),
-        description: description.trim(),
-        percentage
-      });
-    }
+    // Try each pattern to capture all debris entries
+    patterns.forEach(pattern => {
+      let match;
+      while ((match = pattern.exec(defectText)) !== null) {
+        let meterage, code, description, percentage = '';
+        
+        // Handle different match arrangements
+        if (/^\d+\.?\d*m?$/.test(match[1]) || match[1].includes('m')) {
+          // First group is meterage
+          meterage = match[1].includes('m') ? match[1] : `${match[1]}m`;
+          code = match[2];
+          description = match[3];
+          percentage = match[4] || '';
+        } else {
+          // First group is code
+          code = match[1];
+          meterage = match[2];
+          description = match[3];
+          percentage = match[4] || '';
+        }
+        
+        // Extract percentage if not captured
+        if (!percentage && description) {
+          const percentageMatch = description.match(/(\d+(?:-\d+)?%)/);
+          percentage = percentageMatch ? percentageMatch[1] : '';
+        }
+        
+        // Avoid duplicates and ensure valid data
+        const existing = defects.find(d => d.meterage === meterage && d.defectCode === code.toUpperCase());
+        if (!existing && code && meterage) {
+          defects.push({
+            meterage,
+            defectCode: code.toUpperCase(),
+            description: description ? description.trim() : 'Debris deposits affecting flow',
+            percentage
+          });
+        }
+      }
+    });
     
     return defects;
   }
