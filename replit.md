@@ -147,6 +147,7 @@ Changelog:
 - June 28, 2025. Fixed comprehensive download report generation: Replaced basic summary with detailed MSCC5-compliant analysis reports featuring authentic section data, real defect classifications, sector-specific standards application, executive summaries, detailed section breakdowns with actual MH references and pipe specifications, repair/cleaning recommendations from WRc standards, and proper compliance verification for all six sectors
 - June 28, 2025. Updated Utilities sector standards documentation: Integrated comprehensive WRc Group links for MSCC5, SRM, Drain Repair Book, Cleaning Manual, BS EN 752:2017, and Water Industry Act 1991, replacing knowledge store URLs with official WRc Group product pages and BSI standards links for enhanced authenticity and direct access to authoritative documentation sources
 - June 28, 2025. Successfully resolved dashboard standards display issue: Fixed cache invalidation and sector configuration system to properly show all 6 comprehensive Utilities sector standards with proper WRc Group hyperlinks in the Analysis Standards Applied section, replacing previous incomplete 3-standard display
+- June 28, 2025. Implemented comprehensive user-specific pricing customization system: Added PostgreSQL-backed user cost bands with dedicated pricing settings page, API endpoints for CRUD operations, and integration into WRc standards engine for personalized repair cost estimates across all six sectors with persistent storage and login-based customization
 ```
 
 ## User Preferences
