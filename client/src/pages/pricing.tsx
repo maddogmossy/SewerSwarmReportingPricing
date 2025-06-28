@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, RotateCcw, Save, Wrench, Building, Car, Shield, Banknote, House, Home } from "lucide-react";
+import { Settings, RotateCcw, Save, Wrench, Building, Car, Shield, Banknote, House, Home, ArrowRight } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 
@@ -148,6 +148,22 @@ export default function Pricing() {
             Customize repair cost estimates for each sector based on your local market rates and experience. 
             These values will be used in all future report analysis.
           </p>
+          
+          {/* Link to New Detailed Pricing System */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
+            <div className="flex items-center justify-between">
+              <div className="text-left">
+                <h3 className="font-semibold text-blue-900">New: Detailed Work Category Pricing</h3>
+                <p className="text-sm text-blue-700">Configure equipment-specific rates, hourly/daily costs, and capacity metrics for surveys, cleansing, repairs, and more.</p>
+              </div>
+              <Link href="/survey-pricing">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2">
+                  Access New System
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Sector Selection */}
