@@ -37,13 +37,14 @@ export interface WRcAnalysisResult {
 
 export class WRcStandardsEngine {
   /**
-   * Apply all WRc standards to analyze defect data
+   * Apply all WRc standards to analyze defect data with optional user cost bands
    */
   static applyStandards(data: {
     defectText: string;
     sector: string;
     meterage?: string;
     percentage?: string;
+    userCostBands?: { [key: number]: string };
   }): WRcAnalysisResult {
     const { defectText, sector, meterage, percentage } = data;
     
@@ -84,7 +85,7 @@ export class WRcStandardsEngine {
       cleaningFrequency: cleaningData.frequency,
       adoptable: adoptionResult.adoptable,
       adoptionNotes: adoptionResult.notes,
-      estimatedCost: costBands[defectClassification.grade as keyof typeof costBands] || '£TBC',
+      estimatedCost: WRcStandardsEngine.getEstimatedCost(defectClassification.grade, data.userCostBands),
       riskAssessment: defectClassification.risk
     };
   }
@@ -250,6 +251,29 @@ export class WRcStandardsEngine {
     return sections.map(section => this.applyStandards(section));
   }
   
+  /**
+   * Get estimated cost using user-specific cost bands or defaults
+   */
+  private static getEstimatedCost(grade: number, userCostBands?: { [key: number]: string }): string {
+    const defaultCostMapping = {
+      0: '£0',
+      1: '£0-500',
+      2: '£500-2,000',
+      3: '£2,000-10,000',
+      4: '£10,000-50,000',
+      5: '£50,000+'
+    };
+    
+    // Use user-specific cost bands if provided, otherwise use defaults
+    if (userCostBands) {
+      const gradeKey = Math.min(grade, 5);
+      return userCostBands[gradeKey] || '£TBC';
+    }
+    
+    const gradeKey = Math.min(grade, 5) as keyof typeof defaultCostMapping;
+    return defaultCostMapping[gradeKey] || '£TBC';
+  }
+
   /**
    * Generate comprehensive sector report
    */
