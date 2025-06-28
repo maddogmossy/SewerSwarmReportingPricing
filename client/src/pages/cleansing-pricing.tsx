@@ -239,7 +239,8 @@ export default function CleansingPricing() {
           costPerDay: pricing.costPerDay,
           costPerHour: pricing.costPerHour,
           sectionsPerDay: pricing.sectionsPerDay,
-          sectionsPerHour: pricing.sectionsPerHour
+          meterageRangeMin: pricing.meterageRangeMin,
+          meterageRangeMax: pricing.meterageRangeMax
         });
       } else {
         return await apiRequest('POST', '/api/user-pricing', pricing);
@@ -252,7 +253,8 @@ export default function CleansingPricing() {
         costPerDay: "",
         costPerHour: "",
         sectionsPerDay: "",
-        sectionsPerHour: "",
+        meterageRangeMin: "",
+        meterageRangeMax: "",
         sectors: []
       });
       toast({ title: "Equipment pricing saved successfully" });
@@ -296,17 +298,7 @@ export default function CleansingPricing() {
     let updatedPricing = { ...newPricing, [field]: value };
 
     // Auto-calculate based on the field that was changed
-    if (field === 'sectionsPerDay' && value) {
-      const sectionsPerDay = parseFloat(value);
-      if (!isNaN(sectionsPerDay) && sectionsPerDay > 0) {
-        updatedPricing.sectionsPerHour = (sectionsPerDay / 8).toFixed(2);
-      }
-    } else if (field === 'sectionsPerHour' && value) {
-      const sectionsPerHour = parseFloat(value);
-      if (!isNaN(sectionsPerHour) && sectionsPerHour > 0) {
-        updatedPricing.sectionsPerDay = (sectionsPerHour * 8).toFixed(2);
-      }
-    } else if (field === 'costPerDay' && value) {
+    if (field === 'costPerDay' && value) {
       const costPerDay = parseFloat(value);
       if (!isNaN(costPerDay) && costPerDay > 0) {
         updatedPricing.costPerHour = (costPerDay / 8).toFixed(2);
@@ -591,7 +583,7 @@ export default function CleansingPricing() {
                     <th className="text-left p-2">Cost/Day</th>
                     <th className="text-left p-2">Cost/Hour</th>
                     <th className="text-left p-2">Sections/Day</th>
-                    <th className="text-left p-2">Sections/Hour</th>
+                    <th className="text-left p-2">Meterage Range</th>
                     <th className="text-left p-2">Actions</th>
                   </tr>
                 </thead>
@@ -605,7 +597,7 @@ export default function CleansingPricing() {
                         <td className="p-2">£{pricing?.costPerDay || '0.00'}</td>
                         <td className="p-2">£{pricing?.costPerHour || '0.00'}</td>
                         <td className="p-2">{pricing?.sectionsPerDay || '0.00'}</td>
-                        <td className="p-2">{pricing?.sectionsPerHour || '0.00'}</td>
+                        <td className="p-2">{pricing?.meterageRangeMin && pricing?.meterageRangeMax ? `${pricing.meterageRangeMin}-${pricing.meterageRangeMax}m` : 'Not set'}</td>
                         <td className="p-2">
                           <div className="flex gap-2">
                             <Button
@@ -616,7 +608,8 @@ export default function CleansingPricing() {
                                 costPerDay: pricing?.costPerDay || "",
                                 costPerHour: pricing?.costPerHour || "",
                                 sectionsPerDay: pricing?.sectionsPerDay || "",
-                                sectionsPerHour: pricing?.sectionsPerHour || "",
+                                meterageRangeMin: pricing?.meterageRangeMin || "",
+                                meterageRangeMax: pricing?.meterageRangeMax || "",
                                 sectors: []
                               })}
                             >
