@@ -72,6 +72,8 @@ export interface IStorage {
   // New detailed pricing system
   getWorkCategories(): Promise<WorkCategory[]>;
   getEquipmentTypesByCategory(categoryId: number): Promise<EquipmentType[]>;
+  updateEquipmentType(id: number, equipment: Partial<EquipmentType>): Promise<EquipmentType>;
+  deleteEquipmentType(id: number): Promise<void>;
   getUserPricing(userId: string, equipmentTypeId?: number): Promise<UserPricing[]>;
   createUserPricing(pricing: InsertUserPricing): Promise<UserPricing>;
   updateUserPricing(id: number, pricing: Partial<InsertUserPricing>): Promise<UserPricing>;
@@ -285,6 +287,18 @@ export class DatabaseStorage implements IStorage {
   async getEquipmentTypesByCategory(categoryId: number): Promise<EquipmentType[]> {
     return await db.select().from(equipmentTypes)
       .where(eq(equipmentTypes.workCategoryId, categoryId));
+  }
+
+  async updateEquipmentType(id: number, equipmentUpdate: Partial<EquipmentType>): Promise<EquipmentType> {
+    const [updated] = await db.update(equipmentTypes)
+      .set(equipmentUpdate)
+      .where(eq(equipmentTypes.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteEquipmentType(id: number): Promise<void> {
+    await db.delete(equipmentTypes).where(eq(equipmentTypes.id, id));
   }
 
   async getUserPricing(userId: string, equipmentTypeId?: number): Promise<UserPricing[]> {
