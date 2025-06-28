@@ -630,14 +630,18 @@ export default function CleansingPricing() {
           </Card>
         </div>
 
-        {/* Current Equipment Pricing Table - Only show saved data */}
+        {/* Current Equipment Pricing Table - Only show saved data with complete configuration */}
         {(() => {
-          const savedPricingData = (userPricing as UserPricing[]).filter((pricing: UserPricing) => 
-            pricing.equipmentTypeId && (equipmentTypes as EquipmentType[]).some(eq => eq.id === pricing.equipmentTypeId)
-          );
+          const savedPricingData = (userPricing as UserPricing[]).filter((pricing: UserPricing) => {
+            // Only show if equipment exists AND has meaningful pricing data configured
+            const hasEquipment = (equipmentTypes as EquipmentType[]).some(eq => eq.id === pricing.equipmentTypeId);
+            const hasCompletePricing = pricing.costPerDay && pricing.costPerHour && pricing.sectionsPerDay && 
+                                     pricing.meterageRangeMin && pricing.meterageRangeMax;
+            return hasEquipment && hasCompletePricing;
+          });
           
           if (savedPricingData.length === 0) {
-            return null; // Don't show the section if no pricing exists
+            return null; // Don't show the section if no complete pricing exists
           }
           
           return (
@@ -646,19 +650,9 @@ export default function CleansingPricing() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle>Current Cleansing Equipment Pricing</CardTitle>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-sm text-gray-600">Applicable to sectors:</span>
-                      <div className="flex gap-2">
-                        {sectors.map((sector) => (
-                          <span 
-                            key={sector.id}
-                            className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
-                          >
-                            {sector.name}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Configured pricing for cleansing equipment with sector applications
+                    </p>
                   </div>
                   <Link to="/dashboard-new">
                     <Button variant="outline" size="sm">
@@ -679,6 +673,7 @@ export default function CleansingPricing() {
                         <th className="text-left p-2">Cost/Hour</th>
                         <th className="text-left p-2">Sections/Day</th>
                         <th className="text-left p-2">Meterage Range</th>
+                        <th className="text-left p-2">Applicable Sectors</th>
                         <th className="text-left p-2">Actions</th>
                       </tr>
                     </thead>
@@ -691,14 +686,21 @@ export default function CleansingPricing() {
                           <tr key={pricing.id} className="border-b">
                             <td className="p-2">{equipment.name}</td>
                             <td className="p-2">{equipment.minPipeSize}mm-{equipment.maxPipeSize}mm</td>
-                            <td className="p-2">£{pricing.costPerDay || '0.00'}</td>
-                            <td className="p-2">£{pricing.costPerHour || '0.00'}</td>
-                            <td className="p-2">{pricing.sectionsPerDay || '0.00'}</td>
+                            <td className="p-2">£{pricing.costPerDay}</td>
+                            <td className="p-2">£{pricing.costPerHour}</td>
+                            <td className="p-2">{pricing.sectionsPerDay}</td>
+                            <td className="p-2">{pricing.meterageRangeMin}.00-{pricing.meterageRangeMax}.00m</td>
                             <td className="p-2">
-                              {pricing.meterageRangeMin && pricing.meterageRangeMax 
-                                ? `${pricing.meterageRangeMin}.00-${pricing.meterageRangeMax}.00m` 
-                                : 'Not set'
-                              }
+                              <div className="flex flex-wrap gap-1">
+                                {sectors.map((sector) => (
+                                  <span 
+                                    key={sector.id}
+                                    className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                                  >
+                                    {sector.name}
+                                  </span>
+                                ))}
+                              </div>
                             </td>
                             <td className="p-2">
                               <div className="flex gap-2">
