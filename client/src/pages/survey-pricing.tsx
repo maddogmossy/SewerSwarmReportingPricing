@@ -410,22 +410,47 @@ export default function SurveyPricing() {
             </CardContent>
           </Card>
 
-          {/* Equipment Specifications Reference */}
+          {/* Available Equipment Specifications with Management */}
           <Card>
             <CardHeader>
-              <CardTitle>Available Equipment Specifications</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Available Equipment Specifications
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {(equipmentTypes as EquipmentType[])?.map((equipment: EquipmentType) => (
-                  <div key={equipment.id} className="p-3 bg-slate-50 rounded-lg">
+                  <div key={equipment.id} className="p-3 bg-slate-50 rounded-lg border">
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-semibold text-sm">{equipment.name}</h4>
-                      <Badge variant="outline" className="text-xs">
-                        {equipment.minPipeSize}-{equipment.maxPipeSize}mm
-                      </Badge>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-sm">{equipment.name}</h4>
+                        <p className="text-xs text-slate-600 mt-1">{equipment.description}</p>
+                      </div>
+                      <div className="flex items-center gap-2 ml-3">
+                        <Badge variant="outline" className="text-xs">
+                          {equipment.minPipeSize}-{equipment.maxPipeSize}mm
+                        </Badge>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditEquipment(equipment)}
+                            className="h-7 w-7 p-0"
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteEquipment(equipment.id, equipment.name)}
+                            className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-xs text-slate-600">{equipment.description}</p>
                   </div>
                 ))}
               </div>
@@ -551,69 +576,7 @@ export default function SurveyPricing() {
           </CardContent>
         </Card>
 
-        {/* Equipment Management */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Equipment Management
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-sm text-slate-600">
-                Manage your equipment specifications. Edit equipment details or remove equipment that's no longer available.
-              </p>
-              
-              {equipmentTypes && (equipmentTypes as EquipmentType[]).length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {(equipmentTypes as EquipmentType[]).map((equipment: EquipmentType) => (
-                    <Card key={equipment.id} className="border-slate-200">
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Wrench className="h-4 w-4 text-blue-600" />
-                              <h4 className="font-medium">{equipment.name}</h4>
-                            </div>
-                            <p className="text-sm text-slate-600 mb-2">{equipment.description}</p>
-                            <Badge variant="outline" className="text-xs">
-                              {equipment.minPipeSize}-{equipment.maxPipeSize}mm
-                            </Badge>
-                          </div>
-                          <div className="flex gap-1 ml-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleEditEquipment(equipment)}
-                              className="h-8 w-8 p-0"
-                            >
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleDeleteEquipment(equipment.id, equipment.name)}
-                              disabled={deleteEquipmentMutation.isPending}
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-slate-500">
-                  <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No equipment specifications available.</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+
 
         {/* Information Panel */}
         <Card className="bg-blue-50 border-blue-200">
