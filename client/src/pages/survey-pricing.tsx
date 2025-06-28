@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { 
@@ -43,6 +44,9 @@ export default function SurveyPricing() {
   const [editingPricing, setEditingPricing] = useState<UserPricing | null>(null);
   const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
   const [showEquipmentDialog, setShowEquipmentDialog] = useState(false);
+
+  // Standard UK pipe sizes
+  const standardPipeSizes = [75, 100, 150, 200, 225, 300, 375, 450, 525, 600, 675, 750, 900, 1050, 1200, 1350, 1500, 1800, 2100, 2400];
   const [newPricing, setNewPricing] = useState({
     equipmentTypeId: 0,
     costPerHour: "",
@@ -140,8 +144,8 @@ export default function SurveyPricing() {
       });
       setEditingEquipment(null);
       setShowEquipmentDialog(false);
-      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types"] });
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/1"] });
+      queryClient.refetchQueries({ queryKey: ["/api/equipment-types/1"] });
     },
     onError: (error: any) => {
       console.error("Equipment update error:", error);
@@ -162,8 +166,8 @@ export default function SurveyPricing() {
         title: "Success",
         description: "Equipment specification deleted successfully",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types"] });
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/1"] });
+      queryClient.refetchQueries({ queryKey: ["/api/equipment-types/1"] });
     },
     onError: (error) => {
       toast({
@@ -671,24 +675,40 @@ export default function SurveyPricing() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="minPipeSize">Min Pipe Size (mm)</Label>
-                  <Input
-                    id="minPipeSize"
-                    type="number"
-                    value={editingEquipment.minPipeSize}
-                    onChange={(e) => setEditingEquipment(prev => prev ? { ...prev, minPipeSize: parseInt(e.target.value) } : null)}
-                    placeholder="75"
-                  />
+                  <Select
+                    value={editingEquipment.minPipeSize.toString()}
+                    onValueChange={(value) => setEditingEquipment(prev => prev ? { ...prev, minPipeSize: parseInt(value) } : null)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select min size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {standardPipeSizes.map((size) => (
+                        <SelectItem key={size} value={size.toString()}>
+                          {size}mm
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div>
                   <Label htmlFor="maxPipeSize">Max Pipe Size (mm)</Label>
-                  <Input
-                    id="maxPipeSize"
-                    type="number"
-                    value={editingEquipment.maxPipeSize}
-                    onChange={(e) => setEditingEquipment(prev => prev ? { ...prev, maxPipeSize: parseInt(e.target.value) } : null)}
-                    placeholder="300"
-                  />
+                  <Select
+                    value={editingEquipment.maxPipeSize.toString()}
+                    onValueChange={(value) => setEditingEquipment(prev => prev ? { ...prev, maxPipeSize: parseInt(value) } : null)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select max size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {standardPipeSizes.filter(size => size >= editingEquipment.minPipeSize).map((size) => (
+                        <SelectItem key={size} value={size.toString()}>
+                          {size}mm
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               
