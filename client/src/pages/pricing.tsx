@@ -19,7 +19,7 @@ const workCategories: WorkCategory[] = [
   { id: 1, name: 'Surveys', description: 'CCTV inspections and condition assessments', icon: Wrench, color: 'text-blue-600', implemented: true },
   { id: 2, name: 'Cleansing / Root Cutting', description: 'High pressure jetting and root removal', icon: Droplets, color: 'text-cyan-600', implemented: false },
   { id: 3, name: 'Robotic Cutting', description: 'Automated cutting and removal operations', icon: Scissors, color: 'text-orange-600', implemented: false },
-  { id: 4, name: 'Directional Water Cutting', description: 'Precision water jet cutting systems', icon: Droplets, color: 'text-teal-600', implemented: false },
+  { id: 4, name: 'Directional Water Cutting', description: 'Precision water jet cutting systems', icon: Droplets, color: 'text-teal-600', implemented: true },
   { id: 5, name: 'Patching', description: 'Localized repair and patching work', icon: Hammer, color: 'text-red-600', implemented: false },
   { id: 6, name: 'Lining', description: 'Pipe lining and rehabilitation', icon: Layers, color: 'text-purple-600', implemented: false },
   { id: 7, name: 'Excavations', description: 'Open cut excavation and replacement', icon: Building2, color: 'text-amber-600', implemented: false },
@@ -85,7 +85,7 @@ export default function Pricing() {
                   <p className="text-gray-600 text-sm">{category.description}</p>
                   
                   {category.implemented ? (
-                    <Link href="/survey-pricing">
+                    <Link href={category.id === 1 ? "/survey-pricing" : category.id === 4 ? "/jetting-pricing" : "#"}>
                       <Button className="w-full flex items-center justify-between">
                         Configure Pricing
                         <ChevronRight className="h-4 w-4" />
@@ -123,8 +123,19 @@ export default function Pricing() {
                 <Badge className="bg-green-600 text-white">Complete</Badge>
               </div>
               
+              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center gap-3">
+                  <Droplets className="h-5 w-5 text-green-600" />
+                  <div>
+                    <h4 className="font-medium text-green-900">Directional Water Cutting</h4>
+                    <p className="text-sm text-green-700">Fully implemented with equipment management and pricing configuration</p>
+                  </div>
+                </div>
+                <Badge className="bg-green-600 text-white">Complete</Badge>
+              </div>
+              
               <div className="text-sm text-gray-600">
-                <p><strong>Next Phase:</strong> The remaining 7 work categories will be implemented with similar detailed equipment specifications, rate configurations, and capacity metrics.</p>
+                <p><strong>Next Phase:</strong> The remaining 6 work categories will be implemented with similar detailed equipment specifications, rate configurations, and capacity metrics.</p>
                 <p className="mt-2"><strong>Each category will include:</strong></p>
                 <ul className="list-disc list-inside mt-1 space-y-1">
                   <li>Equipment-specific configurations</li>

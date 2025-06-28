@@ -9,6 +9,7 @@ import Dashboard from "@/pages/dashboard-new";
 import Upload from "@/pages/upload";
 import Pricing from "@/pages/pricing";
 import SurveyPricing from "@/pages/survey-pricing";
+import JettingPricing from "@/pages/jetting-pricing";
 import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 
@@ -37,6 +38,7 @@ function Router() {
           <Route path="/upload" component={Upload} />
           <Route path="/pricing" component={Pricing} />
           <Route path="/survey-pricing" component={SurveyPricing} />
+          <Route path="/jetting-pricing" component={JettingPricing} />
           <Route path="/checkout" component={Checkout} />
         </>
       )}
