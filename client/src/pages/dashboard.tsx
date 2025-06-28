@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
@@ -273,6 +274,7 @@ export default function Dashboard() {
 
   // Column visibility state
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
+  const [showColumnSelector, setShowColumnSelector] = useState(false);
 
   const toggleColumnVisibility = (columnKey: string) => {
     setHiddenColumns(prev => {
@@ -284,6 +286,111 @@ export default function Dashboard() {
       }
       return newSet;
     });
+  };
+
+  // Define columns with their properties
+  const columns = [
+    { key: 'projectNo', label: 'Project No', hideable: true },
+    { key: 'itemNo', label: 'Item No', hideable: false },
+    { key: 'inspectionNo', label: 'Inspec. No', hideable: true },
+    { key: 'date', label: 'Date', hideable: true },
+    { key: 'time', label: 'Time', hideable: true },
+    { key: 'startMH', label: 'Start MH', hideable: false },
+    { key: 'startMHDepth', label: 'Start MH Depth', hideable: true },
+    { key: 'finishMH', label: 'Finish MH', hideable: false },
+    { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true },
+    { key: 'pipeSize', label: 'Pipe Size', hideable: false },
+    { key: 'pipeMaterial', label: 'Pipe Material', hideable: true },
+    { key: 'totalLength', label: 'Total Length (m)', hideable: false },
+    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: true },
+    { key: 'defects', label: 'Defects', hideable: false },
+    { key: 'severityGrade', label: 'Severity Grade', hideable: false },
+    { key: 'srmGrading', label: 'SRM Grading', hideable: true },
+    { key: 'recommendations', label: 'Recommendations', hideable: false },
+    { key: 'cleaningMethods', label: 'Cleaning Methods', hideable: true },
+    { key: 'adoptable', label: 'Adoptable', hideable: false },
+    { key: 'cost', label: 'Cost (£)', hideable: false }
+  ];
+
+  // Function to render cell content based on column key
+  const renderCellContent = (columnKey: string, section: any) => {
+    switch (columnKey) {
+      case 'projectNo':
+        return 'GR7188';
+      case 'itemNo':
+        return section.itemNo;
+      case 'inspectionNo':
+        return section.inspectionNo;
+      case 'date':
+        return section.date;
+      case 'time':
+        return section.time;
+      case 'startMH':
+        return section.startMH;
+      case 'startMHDepth':
+        return section.startMHDepth;
+      case 'finishMH':
+        return section.finishMH;
+      case 'finishMHDepth':
+        return section.finishMHDepth;
+      case 'pipeSize':
+        return section.pipeSize;
+      case 'pipeMaterial':
+        return section.pipeMaterial;
+      case 'totalLength':
+        return section.totalLength;
+      case 'lengthSurveyed':
+        return section.lengthSurveyed;
+      case 'defects':
+        return section.defects;
+      case 'severityGrade':
+        return (
+          <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
+            section.severityGrade === "0" ? 'bg-green-100 text-green-800' :
+            section.severityGrade === "1" ? 'bg-emerald-100 text-emerald-800' :
+            section.severityGrade === "2" ? 'bg-amber-100 text-amber-800' :
+            'bg-red-100 text-red-800'
+          }`}>
+            {section.severityGrade}
+          </span>
+        );
+      case 'srmGrading':
+        return (
+          <div className="text-xs">
+            {section.severityGrade === "0" ? "No service issues" :
+             section.severityGrade === "1" ? "Minor service impacts" :
+             section.severityGrade === "2" ? "Moderate service defects" :
+             section.severityGrade === "3" ? "Major service defects" :
+             "Blocked or non-functional"}
+          </div>
+        );
+      case 'recommendations':
+        return (
+          <div className="text-xs max-w-48">
+            {section.recommendations || "No action required"}
+          </div>
+        );
+      case 'cleaningMethods':
+        return (
+          <div className="text-xs max-w-48">
+            {section.cleaningMethods || "None required"}
+          </div>
+        );
+      case 'adoptable':
+        return (
+          <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
+            section.adoptable === "Yes" ? 'bg-green-100 text-green-800' :
+            section.adoptable === "No" ? 'bg-red-100 text-red-800' :
+            'bg-yellow-100 text-yellow-800'
+          }`}>
+            {section.adoptable}
+          </span>
+        );
+      case 'cost':
+        return `£${section.cost}`;
+      default:
+        return '';
+    }
   };
 
   // Fetch user uploads
@@ -594,47 +701,75 @@ export default function Dashboard() {
             {/* Section Inspection Data Table */}
             <Card>
               <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border-2 ${
-                    currentSector.id === 'utilities' ? 'border-blue-500 bg-blue-50' :
-                    currentSector.id === 'adoption' ? 'border-green-500 bg-green-50' :
-                    currentSector.id === 'highways' ? 'border-orange-500 bg-orange-50' :
-                    currentSector.id === 'insurance' ? 'border-red-500 bg-red-50' :
-                    currentSector.id === 'construction' ? 'border-purple-500 bg-purple-50' :
-                    'border-yellow-500 bg-yellow-50'
-                  }`}>
-                    {currentSector.id === 'utilities' && <Building className="h-5 w-5 text-blue-600" />}
-                    {currentSector.id === 'adoption' && <CheckCircle className="h-5 w-5 text-green-600" />}
-                    {currentSector.id === 'highways' && <Car className="h-5 w-5 text-orange-600" />}
-                    {currentSector.id === 'insurance' && <ShieldCheck className="h-5 w-5 text-red-600" />}
-                    {currentSector.id === 'construction' && <HardHat className="h-5 w-5 text-purple-600" />}
-                    {currentSector.id === 'domestic' && <HomeIcon className="h-5 w-5 text-yellow-600" />}
-                    <span className="font-medium text-black">{currentSector.name} Sector</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border-2 ${
+                      currentSector.id === 'utilities' ? 'border-blue-500 bg-blue-50' :
+                      currentSector.id === 'adoption' ? 'border-green-500 bg-green-50' :
+                      currentSector.id === 'highways' ? 'border-orange-500 bg-orange-50' :
+                      currentSector.id === 'insurance' ? 'border-red-500 bg-red-50' :
+                      currentSector.id === 'construction' ? 'border-purple-500 bg-purple-50' :
+                      'border-yellow-500 bg-yellow-50'
+                    }`}>
+                      {currentSector.id === 'utilities' && <Building className="h-5 w-5 text-blue-600" />}
+                      {currentSector.id === 'adoption' && <CheckCircle className="h-5 w-5 text-green-600" />}
+                      {currentSector.id === 'highways' && <Car className="h-5 w-5 text-orange-600" />}
+                      {currentSector.id === 'insurance' && <ShieldCheck className="h-5 w-5 text-red-600" />}
+                      {currentSector.id === 'construction' && <HardHat className="h-5 w-5 text-purple-600" />}
+                      {currentSector.id === 'domestic' && <HomeIcon className="h-5 w-5 text-yellow-600" />}
+                      <span className="font-medium text-black">{currentSector.name} Sector</span>
+                    </div>
+                    <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections)</CardTitle>
                   </div>
-                  <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections)</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowColumnSelector(!showColumnSelector)}
+                      className="text-xs"
+                    >
+                      {showColumnSelector ? 'Hide Columns' : 'Show Columns'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setHiddenColumns(new Set())}
+                      className="text-xs"
+                      disabled={hiddenColumns.size === 0}
+                    >
+                      Unhide All
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
-                {/* Column Visibility Controls */}
-                {hiddenColumns.size > 0 && (
-                  <div className="mb-4 p-3 bg-slate-50 rounded-lg">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-medium text-slate-600">Hidden columns:</span>
-                      {Array.from(hiddenColumns).map(columnKey => (
-                        <Button
-                          key={columnKey}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleColumnVisibility(columnKey)}
-                          className="text-xs h-7"
-                        >
-                          Show {columnKey === 'projectNo' ? 'Project No' : 
-                                columnKey === 'inspectionNo' ? 'Inspec. No' : 
-                                columnKey === 'date' ? 'Date' : 
-                                columnKey === 'time' ? 'Time' : 
-                                columnKey === 'pipeMaterial' ? 'Pipe Material' : columnKey}
-                        </Button>
+                {/* Column Selector Panel */}
+                {showColumnSelector && (
+                  <div className="mb-4 p-4 bg-slate-50 rounded-lg border">
+                    <h4 className="text-sm font-medium mb-3">Select Columns to Display</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {columns.map((column) => (
+                        <div key={column.key} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={column.key}
+                            checked={!hiddenColumns.has(column.key)}
+                            onCheckedChange={(checked) => {
+                              if (!checked && !column.hideable) return; // Prevent hiding essential columns
+                              toggleColumnVisibility(column.key);
+                            }}
+                            disabled={!column.hideable}
+                          />
+                          <label
+                            htmlFor={column.key}
+                            className={`text-xs ${!column.hideable ? 'text-slate-500' : 'text-slate-700 cursor-pointer'}`}
+                          >
+                            {column.label}
+                          </label>
+                        </div>
                       ))}
+                    </div>
+                    <div className="mt-3 text-xs text-slate-500">
+                      Note: Essential columns cannot be hidden
                     </div>
                   </div>
                 )}
@@ -642,144 +777,30 @@ export default function Dashboard() {
                   <table className="w-full text-xs border-collapse border border-slate-300">
                     <thead>
                       <tr className="bg-slate-100">
-                        {!hiddenColumns.has('projectNo') && (
-                          <th 
-                            className="border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-slate-200"
-                            onClick={() => toggleColumnVisibility('projectNo')}
-                            title="Click to hide column"
-                          >
-                            Project No
-                          </th>
-                        )}
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Item No</th>
-                        {!hiddenColumns.has('inspectionNo') && (
-                          <th 
-                            className="border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-slate-200"
-                            onClick={() => toggleColumnVisibility('inspectionNo')}
-                            title="Click to hide column"
-                          >
-                            Inspec. No
-                          </th>
-                        )}
-                        {!hiddenColumns.has('date') && (
-                          <th 
-                            className="border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-slate-200"
-                            onClick={() => toggleColumnVisibility('date')}
-                            title="Click to hide column"
-                          >
-                            Date
-                          </th>
-                        )}
-                        {!hiddenColumns.has('time') && (
-                          <th 
-                            className="border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-slate-200"
-                            onClick={() => toggleColumnVisibility('time')}
-                            title="Click to hide column"
-                          >
-                            Time
-                          </th>
-                        )}
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Start MH</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Start MH Depth</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Finish MH</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Finish MH Depth</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Pipe Size</th>
-                        {!hiddenColumns.has('pipeMaterial') && (
-                          <th 
-                            className="border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-slate-200"
-                            onClick={() => toggleColumnVisibility('pipeMaterial')}
-                            title="Click to hide column"
-                          >
-                            Pipe Material
-                          </th>
-                        )}
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Total Length (m)</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Length Surveyed (m)</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Defects</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Severity Grade</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">SRM Grading</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Recommendations</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Cleaning Methods</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Adoptable</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Cost (£)</th>
+                        {columns.map((column) => {
+                          if (hiddenColumns.has(column.key)) return null;
+                          return (
+                            <th 
+                              key={column.key}
+                              className="border border-slate-300 px-2 py-1 text-left font-semibold"
+                            >
+                              {column.label}
+                            </th>
+                          );
+                        })}
                       </tr>
                     </thead>
                     <tbody>
                       {sectionData.map((section, index) => (
                         <tr key={index} className="hover:bg-slate-50">
-                          {!hiddenColumns.has('projectNo') && (
-                            <td className="border border-slate-300 px-2 py-1">GR7188</td>
-                          )}
-                          <td className="border border-slate-300 px-2 py-1">{section.itemNo}</td>
-                          {!hiddenColumns.has('inspectionNo') && (
-                            <td className="border border-slate-300 px-2 py-1">{section.inspectionNo}</td>
-                          )}
-                          {!hiddenColumns.has('date') && (
-                            <td className="border border-slate-300 px-2 py-1">{section.date}</td>
-                          )}
-                          {!hiddenColumns.has('time') && (
-                            <td className="border border-slate-300 px-2 py-1">{section.time}</td>
-                          )}
-                          <td className="border border-slate-300 px-2 py-1">{section.startMH}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.startMHDepth}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.finishMH}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.finishMHDepth}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.pipeSize}</td>
-                          {!hiddenColumns.has('pipeMaterial') && (
-                            <td className="border border-slate-300 px-2 py-1">{section.pipeMaterial}</td>
-                          )}
-                          <td className="border border-slate-300 px-2 py-1">{section.totalLength}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.lengthSurveyed}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.defects}</td>
-                          <td className="border border-slate-300 px-2 py-1">
-                            <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
-                              section.severityGrade === "0" ? 'bg-green-100 text-green-800' :
-                              section.severityGrade === "1" ? 'bg-emerald-100 text-emerald-800' :
-                              section.severityGrade === "2" ? 'bg-amber-100 text-amber-800' :
-                              'bg-red-100 text-red-800'
-                            }`}>
-                              {section.severityGrade}
-                            </span>
-                          </td>
-                          <td className="border border-slate-300 px-2 py-1">
-                            <div className="text-xs">
-                              {section.severityGrade === "0" ? "No service issues" :
-                               section.severityGrade === "1" ? "Minor service impacts" :
-                               section.severityGrade === "2" ? "Moderate service defects" :
-                               section.severityGrade === "3" ? "Major service defects" :
-                               "Blocked or non-functional"}
-                            </div>
-                          </td>
-                          <td className="border border-slate-300 px-2 py-1">
-                            <div className="text-xs">
-                              {section.severityGrade === "0" ? "None required" :
-                               section.severityGrade === "2" ? "Local patch lining" :
-                               section.severityGrade === "3" ? "High-pressure jetting" :
-                               "Excavate and replace"}
-                            </div>
-                          </td>
-                          <td className="border border-slate-300 px-2 py-1">
-                            <div className="text-xs">
-                              {section.severityGrade === "0" ? "None required" :
-                               section.severityGrade === "2" ? "Medium-pressure jetting" :
-                               section.severityGrade === "3" ? "Jet-Vac unit removal" :
-                               "High-pressure rotating head"}
-                            </div>
-                          </td>
-                          <td className="border border-slate-300 px-2 py-1">
-                            {section.adoptable !== 'N/A' ? (
-                              <span className={`px-1 py-0.5 rounded text-xs ${
-                                section.adoptable === 'Yes' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
-                              }`}>
-                                {section.adoptable}
-                              </span>
-                            ) : (
-                              <span className="text-slate-500">N/A</span>
-                            )}
-                          </td>
-                          <td className="border border-slate-300 px-2 py-1">
-                            {calculateCost(section)}
-                          </td>
+                          {columns.map((column) => {
+                            if (hiddenColumns.has(column.key)) return null;
+                            return (
+                              <td key={column.key} className="border border-slate-300 px-2 py-1">
+                                {renderCellContent(column.key, section)}
+                              </td>
+                            );
+                          })}
                         </tr>
                       ))}
                     </tbody>
