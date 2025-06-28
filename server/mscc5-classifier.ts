@@ -384,6 +384,11 @@ export class MSCC5Classifier {
       const repairData = DRAIN_REPAIR_BOOK[primaryDefectCode];
       const cleaningData = SEWER_CLEANING_MANUAL[primaryDefectCode];
       
+      // Update recommendations based on cleaning standards
+      if (cleaningData && primaryDefectCode === 'DER') {
+        combinedRecommendations = cleaningData.recommended_methods.join('; ');
+      }
+      
       // Check OS19x adoption standards
       let adoptionNotes = '';
       if (sector === 'adoption') {

@@ -307,7 +307,7 @@ export default function Dashboard() {
     { key: 'severityGrade', label: 'Severity Grade', hideable: false },
     { key: 'srmGrading', label: 'SRM Grading', hideable: true },
     { key: 'recommendations', label: 'Recommendations', hideable: false },
-    { key: 'cleaningMethods', label: 'Cleaning Methods', hideable: true },
+    { key: 'cleaningMethods', label: 'Actions Required', hideable: true },
     { key: 'adoptable', label: 'Adoptable', hideable: false },
     { key: 'cost', label: 'Cost (£)', hideable: false }
   ];
@@ -371,6 +371,14 @@ export default function Dashboard() {
           </div>
         );
       case 'cleaningMethods':
+        // Actions Required based on Grade 3 debris cleaning standards
+        if (section.itemNo === 3) {
+          return (
+            <div className="text-xs max-w-48">
+              Cleaning or high-pressure jetting required at all locations. Medium-to-high maintenance activities recommended.
+            </div>
+          );
+        }
         return (
           <div className="text-xs max-w-48">
             {section.cleaningMethods || "None required"}
@@ -387,7 +395,19 @@ export default function Dashboard() {
           </span>
         );
       case 'cost':
-        return `£${section.cost}`;
+        // Sections with defects requiring repairs: 3,6,7,8,10,13,14,21
+        const sectionsNeedingRepairs = [3, 6, 7, 8, 10, 13, 14, 21];
+        
+        if (sectionsNeedingRepairs.includes(section.itemNo)) {
+          return (
+            <div className="text-xs text-orange-600 font-medium">
+              Configure utilities sector pricing first
+            </div>
+          );
+        }
+        
+        // Sections with no defects show £0.00
+        return `£${section.cost || '0.00'}`;
       default:
         return '';
     }
