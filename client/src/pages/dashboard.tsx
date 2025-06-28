@@ -13,9 +13,8 @@ import {
   Upload,
   Building,
   Home as HomeIcon,
-  RefreshCcw,
-  Car,
   RefreshCw,
+  Car,
   Users,
   ShieldCheck,
   HardHat,
@@ -821,7 +820,7 @@ export default function Dashboard() {
                       }}
                       className="text-xs"
                     >
-                      <RefreshCcw className="h-3 w-3 mr-1" />
+                      <RefreshCw className="h-3 w-3 mr-1" />
                       Refresh Data
                     </Button>
                     <Button
