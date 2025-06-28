@@ -143,6 +143,7 @@ Changelog:
 - June 28, 2025. Implemented adoption sector display system: Added adoption_sector_display_1751108379083.json integration with OS20x standards (Sewers for Adoption 7th/8th Edition, SSG, DCSG, BS EN 1610:2015, Water Industry Act 1991 Section 104), green color scheme, and separate API endpoints for complete utilities/adoption logic isolation
 - June 28, 2025. Completed comprehensive sector system: Added highways (orange, HADDMS), insurance (red, ABI guidelines), construction (purple, BS EN 1610:2015), and domestic (brown) sectors with dedicated validation modules, API endpoints (/api/{sector}/profile), and dynamic UI configuration supporting all six inspection sectors with sector-specific standards and color schemes
 - June 28, 2025. Updated domestic sector naming: Simplified display name from "Domestic / Trading Standards" to just "Domestic" per user request while maintaining Trading Standards compliance standards in the underlying validation logic
+- June 28, 2025. Enhanced sector title styling: Changed title text to black for better readability while keeping icons in sector-specific colors, replaced domestic sector HardHat icon with House icon for appropriate household drain representation, expanded container width to max-w-7xl for better sector box spacing
 ```
 
 ## User Preferences

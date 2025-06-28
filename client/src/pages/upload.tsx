@@ -8,7 +8,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/ui/file-upload";
 import { FileUpload as FileUploadType } from "@shared/schema";
-import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench } from "lucide-react";
+import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 const sectors = [
@@ -61,7 +61,7 @@ const sectors = [
     id: 'domestic',
     name: 'Domestic',
     description: 'Household and private drain assessments',
-    icon: HardHat,
+    icon: House,
     color: '#92400e', // Brown
     standards: [
       'MSCC5: Manual of Sewer Condition Classification',
@@ -326,10 +326,10 @@ export default function Upload() {
                       >
                         {/* Title positioned at top center cutting through border */}
                         <div 
-                          className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-6 py-2 rounded-lg flex items-center gap-2 font-bold text-sm bg-white border-2 shadow-sm min-w-[200px] justify-center"
-                          style={{ borderColor: sectorColor, color: sectorColor }}
+                          className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-6 py-2 rounded-lg flex items-center gap-2 font-bold text-sm bg-white border-2 shadow-sm min-w-[200px] justify-center text-black"
+                          style={{ borderColor: sectorColor }}
                         >
-                          <IconComponent className="h-5 w-5" />
+                          <IconComponent className="h-5 w-5" style={{ color: sectorColor }} />
                           <span className="whitespace-nowrap">{displayName}</span>
                         </div>
 
