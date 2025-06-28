@@ -312,8 +312,12 @@ export default function Dashboard() {
 
     // Section has defects and requires repairs - check pricing availability
 
-    // For sections with defects, check if pricing is configured
-    if (!userPricing.length || !equipmentTypes.length) {
+    // For sections with defects, check if utilities sector pricing is configured
+    const utilitiesPricing = userPricing.filter((pricing: any) => 
+      pricing.sectors && pricing.sectors.includes('utilities')
+    );
+
+    if (!utilitiesPricing.length || !equipmentTypes.length) {
       return (
         <div className="text-amber-600 font-medium text-sm">
           <div>Configure utilities</div>
@@ -322,9 +326,27 @@ export default function Dashboard() {
       );
     }
 
-    // Find appropriate equipment pricing based on section length
+    // Since this is a utilities sector report, we need utilities-specific pricing
+    // Check if there are any completed utilities pricing configurations
+    const validUtilitiesPricing = utilitiesPricing.filter((pricing: any) => 
+      pricing.costPerDay && 
+      parseFloat(pricing.costPerDay) > 0 &&
+      pricing.sectionsPerDay &&
+      parseFloat(pricing.sectionsPerDay) > 0
+    );
+
+    if (!validUtilitiesPricing.length) {
+      return (
+        <div className="text-amber-600 font-medium text-sm">
+          <div>Configure utilities</div>
+          <div>sector pricing first</div>
+        </div>
+      );
+    }
+
+    // Find appropriate utilities equipment pricing based on section length
     const sectionLength = parseFloat(section.totalLength) || 0;
-    const appropriatePricing = userPricing.find((pricing: any) => {
+    const appropriatePricing = validUtilitiesPricing.find((pricing: any) => {
       const minRange = parseFloat(pricing.meterageRangeMin) || 0;
       const maxRange = parseFloat(pricing.meterageRangeMax) || 100;
       return sectionLength >= minRange && sectionLength <= maxRange;
