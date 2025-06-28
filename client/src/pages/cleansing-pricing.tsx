@@ -582,12 +582,21 @@ export default function CleansingPricing() {
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column - Add New Equipment Pricing */}
+          {/* Left Column - Add/Edit Equipment Pricing */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Plus className="h-5 w-5" />
-                Add New Equipment Pricing
+                {editingPricingId ? (
+                  <>
+                    <Edit className="h-5 w-5" />
+                    Edit Equipment Pricing
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-5 w-5" />
+                    Add New Equipment Pricing
+                  </>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -728,14 +737,36 @@ export default function CleansingPricing() {
                 </p>
               </div>
 
-              <Button 
-                onClick={handleSavePricing} 
-                className="w-full"
-                disabled={savePricingMutation.isPending || newPricing.equipmentTypeId === 0}
-              >
-                <Save className="h-4 w-4 mr-2" />
-                {editingPricingId ? 'Update Equipment Pricing' : 'Save Equipment Pricing'}
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleSavePricing} 
+                  className="flex-1"
+                  disabled={savePricingMutation.isPending || newPricing.equipmentTypeId === 0}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {editingPricingId ? 'Update Equipment Pricing' : 'Save Equipment Pricing'}
+                </Button>
+                {editingPricingId && (
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      setEditingPricingId(null);
+                      setIsAddingPricing(false);
+                      setNewPricing({
+                        equipmentTypeId: 0,
+                        costPerDay: "",
+                        costPerHour: "",
+                        sectionsPerDay: "",
+                        meterageRangeMin: "",
+                        meterageRangeMax: "",
+                        sectors: []
+                      });
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                )}
+              </div>
             </CardContent>
           </Card>
 
