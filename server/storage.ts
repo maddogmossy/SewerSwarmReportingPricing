@@ -216,6 +216,39 @@ export class DatabaseStorage implements IStorage {
       .delete(sectionInspections)
       .where(eq(sectionInspections.fileUploadId, fileUploadId));
   }
+
+  // User cost band customization methods
+  async getUserCostBands(userId: string, sector: string): Promise<UserCostBand[]> {
+    return await db.select().from(userCostBands).where(
+      eq(userCostBands.userId, userId)
+    );
+  }
+
+  async createUserCostBand(costBand: InsertUserCostBand): Promise<UserCostBand> {
+    const [result] = await db.insert(userCostBands).values(costBand).returning();
+    return result;
+  }
+
+  async updateUserCostBand(id: number, costBandValue: string): Promise<UserCostBand> {
+    const [result] = await db.update(userCostBands)
+      .set({ 
+        costBand: costBandValue,
+        updatedAt: new Date()
+      })
+      .where(eq(userCostBands.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteUserCostBand(id: number): Promise<void> {
+    await db.delete(userCostBands).where(eq(userCostBands.id, id));
+  }
+
+  async resetUserCostBands(userId: string, sector: string): Promise<void> {
+    await db.delete(userCostBands).where(
+      eq(userCostBands.userId, userId)
+    );
+  }
 }
 
 export const storage = new DatabaseStorage();
