@@ -427,6 +427,24 @@ export default function SurveyPricing() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <Label htmlFor="sectionsPerDay">Sections per Day</Label>
+                  <Input
+                    id="sectionsPerDay"
+                    type="number"
+                    step="0.1"
+                    placeholder="0.0"
+                    value={newPricing.sectionsPerDay}
+                    onChange={(e) => {
+                      const dailyValue = e.target.value;
+                      setNewPricing(prev => ({
+                        ...prev,
+                        sectionsPerDay: dailyValue,
+                        sectionsPerHour: dailyValue ? (parseFloat(dailyValue) / 8).toFixed(1) : ""
+                      }));
+                    }}
+                  />
+                </div>
+                <div>
                   <Label htmlFor="sectionsPerHour">Sections per Hour</Label>
                   <Input
                     id="sectionsPerHour"
@@ -435,17 +453,6 @@ export default function SurveyPricing() {
                     placeholder="0.0"
                     value={newPricing.sectionsPerHour}
                     onChange={(e) => setNewPricing(prev => ({ ...prev, sectionsPerHour: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="sectionsPerDay">Sections per Day</Label>
-                  <Input
-                    id="sectionsPerDay"
-                    type="number"
-                    step="0.1"
-                    placeholder="0.0"
-                    value={newPricing.sectionsPerDay}
-                    onChange={(e) => setNewPricing(prev => ({ ...prev, sectionsPerDay: e.target.value }))}
                   />
                 </div>
               </div>
@@ -544,8 +551,8 @@ export default function SurveyPricing() {
                       <th className="text-left py-2">Size Range</th>
                       <th className="text-left py-2">Cost/Day</th>
                       <th className="text-left py-2">Cost/Hour</th>
-                      <th className="text-left py-2">Sections/Hour</th>
                       <th className="text-left py-2">Sections/Day</th>
+                      <th className="text-left py-2">Sections/Hour</th>
                       <th className="text-left py-2">Actions</th>
                     </tr>
                   </thead>
@@ -585,8 +592,15 @@ export default function SurveyPricing() {
                               <Input
                                 type="number"
                                 step="0.1"
-                                value={editingPricing.sectionsPerHour}
-                                onChange={(e) => setEditingPricing(prev => prev ? { ...prev, sectionsPerHour: e.target.value } : null)}
+                                value={editingPricing.sectionsPerDay}
+                                onChange={(e) => {
+                                  const dailyValue = e.target.value;
+                                  setEditingPricing(prev => prev ? {
+                                    ...prev,
+                                    sectionsPerDay: dailyValue,
+                                    sectionsPerHour: dailyValue ? (parseFloat(dailyValue) / 8).toFixed(1) : ""
+                                  } : null);
+                                }}
                                 className="w-20"
                               />
                             </td>
@@ -594,8 +608,8 @@ export default function SurveyPricing() {
                               <Input
                                 type="number"
                                 step="0.1"
-                                value={editingPricing.sectionsPerDay}
-                                onChange={(e) => setEditingPricing(prev => prev ? { ...prev, sectionsPerDay: e.target.value } : null)}
+                                value={editingPricing.sectionsPerHour}
+                                onChange={(e) => setEditingPricing(prev => prev ? { ...prev, sectionsPerHour: e.target.value } : null)}
                                 className="w-20"
                               />
                             </td>
@@ -616,8 +630,8 @@ export default function SurveyPricing() {
                             <td className="py-2">{getEquipmentSizeRange(pricing.equipmentTypeId)}</td>
                             <td className="py-2">£{parseFloat(pricing.costPerDay).toFixed(2)}</td>
                             <td className="py-2">£{parseFloat(pricing.costPerHour).toFixed(2)}</td>
-                            <td className="py-2">{pricing.sectionsPerHour || "—"}</td>
                             <td className="py-2">{pricing.sectionsPerDay || "—"}</td>
+                            <td className="py-2">{pricing.sectionsPerHour || "—"}</td>
                             <td className="py-2">
                               <div className="flex gap-1">
                                 <Button 
@@ -652,9 +666,14 @@ export default function SurveyPricing() {
               </div>
             )}
           </CardContent>
+          {(userPricing as UserPricing[]) && (userPricing as UserPricing[]).length > 0 && (
+            <div className="px-6 pb-4">
+              <p className="text-xs text-gray-500">
+                * Hourly rates and sections per hour are automatically calculated by dividing daily values by 8 hours
+              </p>
+            </div>
+          )}
         </Card>
-
-
 
         {/* Information Panel */}
         <Card className="bg-blue-50 border-blue-200">
