@@ -867,8 +867,8 @@ export default function Dashboard() {
                                 }
                               }}
                               className={`
-                                ${column.width} border border-slate-300 text-left font-semibold
-                                ${column.priority === 'pretty' ? 'px-2 py-2 text-sm' : 'px-1 py-1 text-xs'}
+                                ${column.width} border border-slate-300 text-left font-semibold text-xs
+                                ${column.priority === 'pretty' ? 'px-2 py-2' : 'px-1 py-1'}
                                 ${showColumnSelector && !canBeHidden 
                                   ? 'bg-slate-200 cursor-not-allowed opacity-60'
                                   : showColumnSelector && canBeHidden
@@ -891,8 +891,8 @@ export default function Dashboard() {
                             if (hiddenColumns.has(column.key)) return null;
                             return (
                               <td key={column.key} className={`
-                                ${column.width} border border-slate-300
-                                ${column.priority === 'pretty' ? 'px-2 py-2 text-sm leading-relaxed' : 'px-1 py-1 text-xs'}
+                                ${column.width} border border-slate-300 text-xs
+                                ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
                               `}>
                                 {renderCellContent(column.key, section)}
                               </td>
