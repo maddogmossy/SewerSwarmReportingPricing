@@ -624,7 +624,7 @@ export default function CleansingPricing() {
               </table>
             </div>
             <p className="text-sm text-gray-600 mt-4">
-              * Hourly rates and sections per hour are automatically calculated by dividing daily values by 8 hours
+              * Hourly rates are automatically calculated by dividing daily values by 8 hours. Meterage ranges define pricing tiers based on pipeline cleaning lengths.
             </p>
           </CardContent>
         </Card>
