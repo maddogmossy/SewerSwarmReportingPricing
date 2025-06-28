@@ -824,7 +824,7 @@ export default function Dashboard() {
                       onClick={() => setShowColumnSelector(!showColumnSelector)}
                       className="text-xs"
                     >
-                      {showColumnSelector ? 'Hide Columns' : 'Show Columns'}
+                      {showColumnSelector ? 'Done Selecting' : 'Hide Columns'}
                     </Button>
                     <Button
                       variant="outline"
@@ -842,33 +842,11 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                {/* Column Selector Panel */}
+                {/* Instructions for column selection */}
                 {showColumnSelector && (
-                  <div className="mb-4 p-4 bg-slate-50 rounded-lg border">
-                    <h4 className="text-sm font-medium mb-3">Select Columns to Display</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                      {columns.map((column) => (
-                        <div key={column.key} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={column.key}
-                            checked={!hiddenColumns.has(column.key)}
-                            onCheckedChange={(checked) => {
-                              if (!checked && !column.hideable) return; // Prevent hiding essential columns
-                              toggleColumnVisibility(column.key);
-                            }}
-                            disabled={!column.hideable}
-                          />
-                          <label
-                            htmlFor={column.key}
-                            className={`text-xs ${!column.hideable ? 'text-slate-500' : 'text-slate-700 cursor-pointer'}`}
-                          >
-                            {column.label} {!column.hideable && '(required)'}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-3 text-xs text-slate-500">
-                      Note: Essential columns cannot be hidden
+                  <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="text-sm text-blue-800">
+                      <span className="font-medium">Click column headers below to hide them.</span> Essential columns cannot be hidden.
                     </div>
                   </div>
                 )}
@@ -878,12 +856,27 @@ export default function Dashboard() {
                       <tr className="bg-slate-100">
                         {columns.map((column) => {
                           if (hiddenColumns.has(column.key)) return null;
+                          const canBeHidden = column.hideable;
+                          
                           return (
                             <th 
                               key={column.key}
-                              className="border border-slate-300 px-2 py-1 text-left font-semibold"
+                              onClick={() => {
+                                if (showColumnSelector && canBeHidden) {
+                                  toggleColumnVisibility(column.key);
+                                }
+                              }}
+                              className={`
+                                border border-slate-300 px-2 py-1 text-left font-semibold
+                                ${showColumnSelector && canBeHidden ? 'cursor-pointer hover:bg-red-100 hover:text-red-800 transition-colors' : ''}
+                                ${showColumnSelector && !canBeHidden ? 'bg-slate-200 cursor-not-allowed opacity-60' : ''}
+                              `}
+                              title={showColumnSelector ? (canBeHidden ? 'Click to hide this column' : 'Essential column - cannot be hidden') : ''}
                             >
                               {column.label}
+                              {showColumnSelector && !canBeHidden && (
+                                <span className="ml-1 text-xs text-slate-500">(required)</span>
+                              )}
                             </th>
                           );
                         })}
