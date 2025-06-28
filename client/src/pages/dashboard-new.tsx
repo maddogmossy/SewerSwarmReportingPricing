@@ -17,7 +17,8 @@ import {
   HardHat,
   CheckCircle,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Settings
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
@@ -287,6 +288,12 @@ export default function Dashboard() {
             <Button variant="outline" size="sm">
               <Upload className="h-4 w-4 mr-2" />
               Upload Report
+            </Button>
+          </Link>
+          <Link to="/survey-pricing">
+            <Button variant="outline" size="sm">
+              <Settings className="h-4 w-4 mr-2" />
+              Pricing
             </Button>
           </Link>
           <div className="ml-auto">
