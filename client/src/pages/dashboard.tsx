@@ -1,11 +1,12 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { EnhancedTable } from "@/components/enhanced-table";
+
 import { 
   Download,
   Upload,
@@ -269,6 +270,21 @@ export default function Dashboard() {
   const search = useSearch();
   const urlParams = new URLSearchParams(search);
   const reportId = urlParams.get('reportId');
+
+  // Column visibility state
+  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
+
+  const toggleColumnVisibility = (columnKey: string) => {
+    setHiddenColumns(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(columnKey)) {
+        newSet.delete(columnKey);
+      } else {
+        newSet.add(columnKey);
+      }
+      return newSet;
+    });
+  };
 
   // Fetch user uploads
   const { data: uploads = [] } = useQuery<FileUploadType[]>({
@@ -603,17 +619,57 @@ export default function Dashboard() {
                   <table className="w-full text-xs border-collapse border border-slate-300">
                     <thead>
                       <tr className="bg-slate-100">
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Project No</th>
+                        {!hiddenColumns.has('projectNo') && (
+                          <th 
+                            className="border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-slate-200"
+                            onClick={() => toggleColumnVisibility('projectNo')}
+                            title="Click to hide column"
+                          >
+                            Project No
+                          </th>
+                        )}
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Item No</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Inspec. No</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Date</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Time</th>
+                        {!hiddenColumns.has('inspectionNo') && (
+                          <th 
+                            className="border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-slate-200"
+                            onClick={() => toggleColumnVisibility('inspectionNo')}
+                            title="Click to hide column"
+                          >
+                            Inspec. No
+                          </th>
+                        )}
+                        {!hiddenColumns.has('date') && (
+                          <th 
+                            className="border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-slate-200"
+                            onClick={() => toggleColumnVisibility('date')}
+                            title="Click to hide column"
+                          >
+                            Date
+                          </th>
+                        )}
+                        {!hiddenColumns.has('time') && (
+                          <th 
+                            className="border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-slate-200"
+                            onClick={() => toggleColumnVisibility('time')}
+                            title="Click to hide column"
+                          >
+                            Time
+                          </th>
+                        )}
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Start MH</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Start MH Depth</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Finish MH</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Finish MH Depth</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Pipe Size</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Pipe Material</th>
+                        {!hiddenColumns.has('pipeMaterial') && (
+                          <th 
+                            className="border border-slate-300 px-2 py-1 text-left font-semibold cursor-pointer hover:bg-slate-200"
+                            onClick={() => toggleColumnVisibility('pipeMaterial')}
+                            title="Click to hide column"
+                          >
+                            Pipe Material
+                          </th>
+                        )}
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Total Length (m)</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Length Surveyed (m)</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Defects</th>
@@ -628,17 +684,27 @@ export default function Dashboard() {
                     <tbody>
                       {sectionData.map((section, index) => (
                         <tr key={index} className="hover:bg-slate-50">
-                          <td className="border border-slate-300 px-2 py-1">GR7188</td>
+                          {!hiddenColumns.has('projectNo') && (
+                            <td className="border border-slate-300 px-2 py-1">GR7188</td>
+                          )}
                           <td className="border border-slate-300 px-2 py-1">{section.itemNo}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.inspectionNo}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.date}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.time}</td>
+                          {!hiddenColumns.has('inspectionNo') && (
+                            <td className="border border-slate-300 px-2 py-1">{section.inspectionNo}</td>
+                          )}
+                          {!hiddenColumns.has('date') && (
+                            <td className="border border-slate-300 px-2 py-1">{section.date}</td>
+                          )}
+                          {!hiddenColumns.has('time') && (
+                            <td className="border border-slate-300 px-2 py-1">{section.time}</td>
+                          )}
                           <td className="border border-slate-300 px-2 py-1">{section.startMH}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.startMHDepth}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.finishMH}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.finishMHDepth}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.pipeSize}</td>
-                          <td className="border border-slate-300 px-2 py-1">{section.pipeMaterial}</td>
+                          {!hiddenColumns.has('pipeMaterial') && (
+                            <td className="border border-slate-300 px-2 py-1">{section.pipeMaterial}</td>
+                          )}
                           <td className="border border-slate-300 px-2 py-1">{section.totalLength}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.lengthSurveyed}</td>
                           <td className="border border-slate-300 px-2 py-1">{section.defects}</td>
