@@ -10,6 +10,7 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertFileUploadSchema } from "@shared/schema";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { WRcStandardsEngine } from "./wrc-standards-engine";
+import { UtilitiesValidation } from "./utilities-validation";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
@@ -667,6 +668,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error completing report:", error);
       res.status(500).json({ message: "Failed to complete report" });
+    }
+  });
+
+  // Utilities sector validation endpoint
+  app.get("/api/utilities/validate", isAuthenticated, async (req, res) => {
+    try {
+      const validationResults = UtilitiesValidation.validateStartupChecklist();
+      res.json({
+        message: "Utilities Sector Logic Profile Validation Complete",
+        ...validationResults
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Utilities validation failed",
+        error: error.message
+      });
     }
   });
 
