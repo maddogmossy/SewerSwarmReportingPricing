@@ -208,10 +208,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             },
             {
               itemNo: 6,
-              startMH: "SW06", finishMH: "SW07",
-              pipeSize: "225mm", pipeMaterial: "Concrete",
-              totalLength: "22.15m", lengthSurveyed: "22.15m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
+              startMH: "FW03", finishMH: "FW04",
+              pipeSize: "150mm", pipeMaterial: "PVC",
+              totalLength: "33.76m", lengthSurveyed: "33.76m",
+              defects: "Multiple defects - DER: Settled deposits affecting pipe capacity. Assessment required for maintenance scheduling."
             },
             {
               itemNo: 7,
@@ -222,10 +222,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             },
             {
               itemNo: 8,
-              startMH: "SW08", finishMH: "SW09",
+              startMH: "SW05", finishMH: "SW07",
               pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "17.42m", lengthSurveyed: "17.42m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
+              totalLength: "31.47m", lengthSurveyed: "31.47m",
+              defects: "DER: Settled deposits, coarse - 5% cross-sectional area loss at 31.47m total length. Reduces flow capacity."
             },
             {
               itemNo: 9,
