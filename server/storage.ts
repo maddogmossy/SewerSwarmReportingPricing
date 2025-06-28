@@ -5,6 +5,10 @@ import {
   subscriptionPlans,
   reportPricing,
   userCostBands,
+  workCategories,
+  equipmentTypes,
+  userPricing,
+  pricingRules,
   type User,
   type UpsertUser,
   type FileUpload,
@@ -15,6 +19,14 @@ import {
   type ReportPricing,
   type UserCostBand,
   type InsertUserCostBand,
+  type WorkCategory,
+  type InsertWorkCategory,
+  type EquipmentType,
+  type InsertEquipmentType,
+  type UserPricing,
+  type InsertUserPricing,
+  type PricingRule,
+  type InsertPricingRule,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -56,6 +68,18 @@ export interface IStorage {
   updateUserCostBand(id: number, costBand: string): Promise<UserCostBand>;
   deleteUserCostBand(id: number): Promise<void>;
   resetUserCostBands(userId: string, sector: string): Promise<void>;
+  
+  // New detailed pricing system
+  getWorkCategories(): Promise<WorkCategory[]>;
+  getEquipmentTypesByCategory(categoryId: number): Promise<EquipmentType[]>;
+  getUserPricing(userId: string, equipmentTypeId?: number): Promise<UserPricing[]>;
+  createUserPricing(pricing: InsertUserPricing): Promise<UserPricing>;
+  updateUserPricing(id: number, pricing: Partial<InsertUserPricing>): Promise<UserPricing>;
+  deleteUserPricing(id: number): Promise<void>;
+  getUserPricingRules(userId: string, categoryId?: number): Promise<PricingRule[]>;
+  createPricingRule(rule: InsertPricingRule): Promise<PricingRule>;
+  updatePricingRule(id: number, rule: Partial<InsertPricingRule>): Promise<PricingRule>;
+  deletePricingRule(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {

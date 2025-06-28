@@ -113,6 +113,47 @@ export const userCostBands = pgTable("user_cost_bands", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// New detailed pricing structure for work categories
+export const workCategories = pgTable("work_categories", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(), // Surveys, Cleansing, Root Cutting, etc.
+  description: text("description"),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const equipmentTypes = pgTable("equipment_types", {
+  id: serial("id").primaryKey(),
+  workCategoryId: integer("work_category_id").notNull().references(() => workCategories.id, { onDelete: "cascade" }),
+  name: varchar("name").notNull(), // Push/Pull Camera, Crawler Camera, etc.
+  description: text("description"),
+  minPipeSize: integer("min_pipe_size"), // in mm
+  maxPipeSize: integer("max_pipe_size"), // in mm
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userPricing = pgTable("user_pricing", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  equipmentTypeId: integer("equipment_type_id").notNull().references(() => equipmentTypes.id, { onDelete: "cascade" }),
+  costPerHour: decimal("cost_per_hour", { precision: 10, scale: 2 }),
+  costPerDay: decimal("cost_per_day", { precision: 10, scale: 2 }),
+  sectionsPerHour: decimal("sections_per_hour", { precision: 5, scale: 2 }),
+  sectionsPerDay: decimal("sections_per_day", { precision: 5, scale: 2 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const pricingRules = pgTable("pricing_rules", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  workCategoryId: integer("work_category_id").notNull().references(() => workCategories.id, { onDelete: "cascade" }),
+  ruleName: varchar("rule_name").notNull(),
+  condition: text("condition").notNull(), // JSON condition
+  adjustment: text("adjustment").notNull(), // JSON adjustment
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type FileUpload = typeof fileUploads.$inferSelect;
@@ -123,6 +164,15 @@ export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type ReportPricing = typeof reportPricing.$inferSelect;
 export type UserCostBand = typeof userCostBands.$inferSelect;
 export type InsertUserCostBand = typeof userCostBands.$inferInsert;
+
+export type WorkCategory = typeof workCategories.$inferSelect;
+export type InsertWorkCategory = typeof workCategories.$inferInsert;
+export type EquipmentType = typeof equipmentTypes.$inferSelect;
+export type InsertEquipmentType = typeof equipmentTypes.$inferInsert;
+export type UserPricing = typeof userPricing.$inferSelect;
+export type InsertUserPricing = typeof userPricing.$inferInsert;
+export type PricingRule = typeof pricingRules.$inferSelect;
+export type InsertPricingRule = typeof pricingRules.$inferInsert;
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
