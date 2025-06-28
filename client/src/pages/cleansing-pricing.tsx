@@ -470,8 +470,11 @@ export default function CleansingPricing() {
                     value={newPricing.meterageRangeMin && newPricing.meterageRangeMax ? `${newPricing.meterageRangeMin}-${newPricing.meterageRangeMax}` : ""}
                     onValueChange={(value) => {
                       const [min, max] = value.split('-');
-                      handlePricingChange('meterageRangeMin', min);
-                      handlePricingChange('meterageRangeMax', max);
+                      setNewPricing(prev => ({
+                        ...prev,
+                        meterageRangeMin: min,
+                        meterageRangeMax: max
+                      }));
                     }}
                   >
                     <SelectTrigger>
