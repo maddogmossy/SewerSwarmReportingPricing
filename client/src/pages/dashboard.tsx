@@ -253,9 +253,12 @@ export default function Dashboard() {
     mutationFn: () => apiRequest("GET", "/api/uploads"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${currentSector.id}`] });
       toast({
         title: "Reports Refreshed",
-        description: "Dashboard data has been updated.",
+        description: "Dashboard data and pricing updated.",
       });
     },
   });
@@ -279,7 +282,7 @@ export default function Dashboard() {
   });
 
   // Check if pricing exists for the current sector
-  const { data: pricingStatus = { overall: false } } = useQuery<{ overall: boolean, surveys: boolean, cleansing: boolean, jetting: boolean }>({
+  const { data: pricingStatus = { overall: false, surveys: false, cleansing: false, jetting: false } } = useQuery<{ overall: boolean, surveys: boolean, cleansing: boolean, jetting: boolean }>({
     queryKey: [`/api/pricing/check/${currentSector.id}`],
     enabled: !!currentSector?.id,
   });
@@ -294,6 +297,31 @@ export default function Dashboard() {
     queryKey: ["/api/equipment-types/2"], // Cleansing category
   });
 
+  // Calculate actual costs based on user pricing configuration
+  const calculateSectionCost = (section: any) => {
+    if (!userPricing.length || !equipmentTypes.length) {
+      return pricingStatus?.cleansing ? "needs adding" : "Configure pricing";
+    }
+
+    // Find appropriate equipment pricing based on section length
+    const sectionLength = parseFloat(section.totalLength) || 0;
+    const appropriatePricing = userPricing.find((pricing: any) => {
+      const minRange = parseFloat(pricing.meterageRangeMin) || 0;
+      const maxRange = parseFloat(pricing.meterageRangeMax) || 100;
+      return sectionLength >= minRange && sectionLength <= maxRange;
+    });
+
+    if (!appropriatePricing) {
+      return "needs adding";
+    }
+
+    // Calculate based on daily rate and sections per day
+    const dailyRate = parseFloat(appropriatePricing.costPerDay) || 0;
+    const sectionsPerDay = parseFloat(appropriatePricing.sectionsPerDay) || 1;
+    const costPerSection = dailyRate / sectionsPerDay;
+    
+    return `£${costPerSection.toFixed(2)}`;
+  };
 
 
   return (
@@ -460,7 +488,7 @@ export default function Dashboard() {
                               if (hasDefects && !pricingStatus.overall) {
                                 return <span className="text-amber-600 font-medium">needs adding</span>;
                               }
-                              return section.cost || "£0";
+                              return calculateSectionCost(section);
                             })()}
                           </td>
                         </tr>
