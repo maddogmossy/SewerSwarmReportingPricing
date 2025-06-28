@@ -1,6 +1,3 @@
-// MSCC5 Defect Classification System
-// Manual of Sewer Condition Classification 5th Edition
-
 export interface MSCC5Defect {
   code: string;
   description: string;
@@ -12,95 +9,104 @@ export interface MSCC5Defect {
 }
 
 export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
-  "FC": {
-    code: "FC",
-    description: "Fracture - circumferential",
-    type: "structural",
-    default_grade: 3,
-    risk: "May indicate structural instability in the pipe wall.",
-    recommended_action: "Patch lining or excavation depending on severity",
-    action_type: 6
-  },
-  "FL": {
-    code: "FL",
-    description: "Fracture - longitudinal",
-    type: "structural",
-    default_grade: 3,
-    risk: "Potential for pipe collapse or leakage.",
-    recommended_action: "Patch or full-length liner depending on location",
-    action_type: 6
-  },
-  "DER": {
-    code: "DER",
-    description: "Deposits - coarse settled",
-    type: "service",
-    default_grade: 3,
-    risk: "Reduces flow capacity and may cause blockages.",
-    recommended_action: "Desilt or high-pressure jetting",
-    action_type: 2
-  },
-  "DES": {
-    code: "DES",
-    description: "Deposits - fine settled",
-    type: "service",
-    default_grade: 3,
-    risk: "May cause partial blockage or contribute to silt build-up.",
-    recommended_action: "Mechanical or hydraulic cleaning",
-    action_type: 2
-  },
-  "WL": {
-    code: "WL",
-    description: "Water level above normal",
-    type: "service",
-    default_grade: 2,
-    risk: "May suggest partial blockage or gradient issue.",
-    recommended_action: "Check for downstream restriction",
-    action_type: 1
-  },
-  "JDL": {
-    code: "JDL",
-    description: "Joint displacement - large",
-    type: "structural",
+  FC: {
+    code: 'FC',
+    description: 'Fracture - circumferential',
+    type: 'structural',
     default_grade: 4,
-    risk: "Can allow infiltration/exfiltration and blockages.",
-    recommended_action: "Excavation or robotic joint realignment",
-    action_type: 7
-  },
-  "JDS": {
-    code: "JDS",
-    description: "Joint displacement - small",
-    type: "structural",
-    default_grade: 2,
-    risk: "Minor structural concern with potential for progression.",
-    recommended_action: "Monitor and schedule inspection",
+    risk: 'High risk of collapse or infiltration',
+    recommended_action: 'Immediate structural repair required',
     action_type: 1
   },
-  "CR": {
-    code: "CR",
-    description: "Crack",
-    type: "structural",
+  FL: {
+    code: 'FL',
+    description: 'Fracture - longitudinal',
+    type: 'structural',
+    default_grade: 3,
+    risk: 'Medium risk of structural failure',
+    recommended_action: 'Medium-term structural repair',
+    action_type: 1
+  },
+  CR: {
+    code: 'CR',
+    description: 'Crack',
+    type: 'structural',
     default_grade: 2,
-    risk: "May allow infiltration and could progress to fracture.",
-    recommended_action: "Seal or patch repair depending on extent",
-    action_type: 3
-  },
-  "RI": {
-    code: "RI",
-    description: "Root intrusion",
-    type: "service",
-    default_grade: 3,
-    risk: "Causes blockages and potential structural damage.",
-    recommended_action: "Root cutting and chemical treatment",
-    action_type: 4
-  },
-  "OB": {
-    code: "OB",
-    description: "Obstacle",
-    type: "service",
-    default_grade: 3,
-    risk: "Reduces flow capacity and may cause blockages.",
-    recommended_action: "Remove obstacle or bypass",
+    risk: 'Low to medium risk depending on extent',
+    recommended_action: 'Monitor and consider repair',
     action_type: 2
+  },
+  RI: {
+    code: 'RI',
+    description: 'Root intrusion',
+    type: 'service',
+    default_grade: 3,
+    risk: 'Progressive blockage and potential structural damage',
+    recommended_action: 'Root removal and sealing',
+    action_type: 2
+  },
+  JDL: {
+    code: 'JDL',
+    description: 'Joint displacement - large',
+    type: 'structural',
+    default_grade: 4,
+    risk: 'High risk of pipe misalignment and infiltration',
+    recommended_action: 'Immediate joint repair or replacement',
+    action_type: 1
+  },
+  JDS: {
+    code: 'JDS',
+    description: 'Joint displacement - small',
+    type: 'structural',
+    default_grade: 2,
+    risk: 'Low to medium risk of infiltration',
+    recommended_action: 'Monitor and consider sealing',
+    action_type: 2
+  },
+  DER: {
+    code: 'DER',
+    description: 'Deposits - coarse',
+    type: 'service',
+    default_grade: 3,
+    risk: 'Flow restriction and potential blockage',
+    recommended_action: 'Mechanical or hydraulic cleaning',
+    action_type: 2
+  },
+  DES: {
+    code: 'DES',
+    description: 'Deposits - fine settled',
+    type: 'service',
+    default_grade: 2,
+    risk: 'Gradual flow reduction',
+    recommended_action: 'Hydraulic cleaning or jetting',
+    action_type: 2
+  },
+  WL: {
+    code: 'WL',
+    description: 'Water level',
+    type: 'service',
+    default_grade: 1,
+    risk: 'May indicate downstream blockage',
+    recommended_action: 'Investigate downstream and clear if necessary',
+    action_type: 2
+  },
+  OB: {
+    code: 'OB',
+    description: 'Obstacle',
+    type: 'service',
+    default_grade: 4,
+    risk: 'Immediate flow restriction or blockage',
+    recommended_action: 'Remove obstacle immediately',
+    action_type: 2
+  },
+  DEF: {
+    code: 'DEF',
+    description: 'Deformity',
+    type: 'structural',
+    default_grade: 3,
+    risk: 'Progressive structural deterioration',
+    recommended_action: 'Structural assessment and repair',
+    action_type: 1
   }
 };
 
@@ -202,7 +208,6 @@ export class MSCC5Classifier {
    */
   static parseMultipleDefects(defectText: string): Array<{meterage: string, defectCode: string, description: string, percentage: string}> {
     const defects = [];
-    const normalizedText = defectText.toLowerCase();
     
     // Pattern to match defect entries like "DER 0.76m: Settled deposits, coarse, 5% cross-sectional area loss"
     const defectPattern = /(\w+)\s+(\d+\.?\d*m?):\s*([^;]+?)(?:;\s*|$)/g;
@@ -355,6 +360,9 @@ export class MSCC5Classifier {
     } else if (normalizedText.includes('obstacle') || normalizedText.includes('obstruction')) {
       detectedDefect = MSCC5_DEFECTS.OB;
       defectCode = 'OB';
+    } else if (normalizedText.includes('deformity') || normalizedText.includes('deformation')) {
+      detectedDefect = MSCC5_DEFECTS.DEF;
+      defectCode = 'DEF';
     }
     
     if (!detectedDefect) {
@@ -438,52 +446,47 @@ export class MSCC5Classifier {
    * Generate sector-specific analysis based on MSCC5 standards
    */
   static generateSectorAnalysis(defects: DefectClassificationResult[], sector: string): string {
-    const structuralDefects = defects.filter(d => d.defectType === 'structural' && d.severityGrade > 0);
-    const serviceDefects = defects.filter(d => d.defectType === 'service' && d.severityGrade > 0);
-    const highGradeDefects = defects.filter(d => d.severityGrade >= 4);
+    const totalDefects = defects.filter(d => d.defectCode !== 'N/A').length;
+    const structuralDefects = defects.filter(d => d.defectType === 'structural').length;
+    const serviceDefects = defects.filter(d => d.defectType === 'service').length;
     
-    let analysis = `MSCC5 Defect Classification Analysis - ${sector.toUpperCase()} Sector\n\n`;
+    let analysis = `## MSCC5 Analysis Report for ${sector.toUpperCase()} Sector\n\n`;
     
-    analysis += `Summary:\n`;
+    analysis += `**Summary:**\n`;
     analysis += `- Total sections analyzed: ${defects.length}\n`;
-    analysis += `- Structural defects identified: ${structuralDefects.length}\n`;
-    analysis += `- Service defects identified: ${serviceDefects.length}\n`;
-    analysis += `- High severity defects (Grade 4+): ${highGradeDefects.length}\n\n`;
+    analysis += `- Defects identified: ${totalDefects}\n`;
+    analysis += `- Structural defects: ${structuralDefects}\n`;
+    analysis += `- Service defects: ${serviceDefects}\n\n`;
     
-    if (highGradeDefects.length > 0) {
-      analysis += `URGENT ATTENTION REQUIRED:\n`;
-      highGradeDefects.forEach(defect => {
-        analysis += `- ${defect.defectCode}: ${defect.defectDescription} (Grade ${defect.severityGrade})\n`;
-      });
-      analysis += `\n`;
+    // Calculate overall condition
+    const averageGrade = defects.reduce((sum, defect) => sum + defect.severityGrade, 0) / defects.length;
+    
+    if (sector === 'adoption') {
+      analysis += `**Adoption Assessment:**\n`;
+      const nonAdoptable = defects.filter(d => d.adoptable === 'No').length;
+      const conditional = defects.filter(d => d.adoptable === 'Conditional').length;
+      
+      analysis += `- Immediately adoptable sections: ${defects.length - nonAdoptable - conditional}\n`;
+      analysis += `- Conditional adoption sections: ${conditional}\n`;
+      analysis += `- Non-adoptable sections: ${nonAdoptable}\n\n`;
     }
     
-    // Sector-specific recommendations
-    switch (sector) {
-      case 'adoption':
-        analysis += `Adoption Compliance:\n`;
-        const nonAdoptable = defects.filter(d => d.adoptable === 'No').length;
-        const conditional = defects.filter(d => d.adoptable === 'Conditional').length;
-        analysis += `- Non-adoptable sections: ${nonAdoptable}\n`;
-        analysis += `- Conditionally adoptable: ${conditional}\n`;
-        if (nonAdoptable > 0 || conditional > 0) {
-          analysis += `- Remedial works required before adoption can proceed\n`;
-        }
-        break;
-        
-      case 'utilities':
-        analysis += `Operational Impact:\n`;
-        const operationalRisk = serviceDefects.filter(d => d.severityGrade >= 3).length;
-        analysis += `- Sections with operational risk: ${operationalRisk}\n`;
-        analysis += `- Recommended maintenance frequency: ${operationalRisk > 0 ? 'Increased' : 'Standard'}\n`;
-        break;
-        
-      case 'insurance':
-        analysis += `Insurance Considerations:\n`;
-        const claimRelevant = defects.filter(d => d.severityGrade >= 3).length;
-        analysis += `- Sections relevant to claims: ${claimRelevant}\n`;
-        analysis += `- Documentation standard: MSCC5 compliant\n`;
-        break;
+    // Cost estimation
+    const totalCostBand = defects.reduce((total, d) => {
+      const costMatch = d.estimatedCost.match(/£([\d,]+)/);
+      return total + (costMatch ? parseInt(costMatch[1].replace(',', '')) : 0);
+    }, 0);
+    
+    analysis += `**Estimated Repair Costs:** £${totalCostBand.toLocaleString()}\n\n`;
+    
+    analysis += `**Standards Applied:**\n`;
+    analysis += `- Manual of Sewer Condition Classification 5th Edition (MSCC5)\n`;
+    analysis += `- WRc/WTI Technical Standards\n`;
+    
+    if (sector === 'adoption') {
+      analysis += `- Sewers for Adoption 7th Edition\n`;
+    } else if (sector === 'highways') {
+      analysis += `- HADDMS Guidance\n`;
     }
     
     return analysis;
