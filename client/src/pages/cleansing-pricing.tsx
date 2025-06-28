@@ -626,66 +626,79 @@ export default function CleansingPricing() {
           </Card>
         </div>
 
-        {/* Current Equipment Pricing Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Current Cleansing Equipment Pricing</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-2">Equipment Type</th>
-                    <th className="text-left p-2">Size Range</th>
-                    <th className="text-left p-2">Cost/Day</th>
-                    <th className="text-left p-2">Cost/Hour</th>
-                    <th className="text-left p-2">Sections/Day</th>
-                    <th className="text-left p-2">Meterage Range</th>
-                    <th className="text-left p-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(equipmentTypes as EquipmentType[]).map((equipment) => {
-                    const pricing = getCurrentPricing(equipment.id);
-                    return (
-                      <tr key={equipment.id} className="border-b">
-                        <td className="p-2">{equipment.name}</td>
-                        <td className="p-2">{equipment.minPipeSize}mm-{equipment.maxPipeSize}mm</td>
-                        <td className="p-2">£{pricing?.costPerDay || '0.00'}</td>
-                        <td className="p-2">£{pricing?.costPerHour || '0.00'}</td>
-                        <td className="p-2">{pricing?.sectionsPerDay || '0.00'}</td>
-                        <td className="p-2">{pricing?.meterageRangeMin && pricing?.meterageRangeMax ? `${pricing.meterageRangeMin}-${pricing.meterageRangeMax}m` : 'Not set'}</td>
-                        <td className="p-2">
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setNewPricing({
-                                equipmentTypeId: equipment.id,
-                                costPerDay: pricing?.costPerDay || "",
-                                costPerHour: pricing?.costPerHour || "",
-                                sectionsPerDay: pricing?.sectionsPerDay || "",
-                                meterageRangeMin: pricing?.meterageRangeMin || "",
-                                meterageRangeMax: pricing?.meterageRangeMax || "",
-                                sectors: []
-                              })}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
+        {/* Current Equipment Pricing Table - Only show if pricing exists */}
+        {(() => {
+          const equipmentWithPricing = (equipmentTypes as EquipmentType[]).filter((equipment) => {
+            const pricing = getCurrentPricing(equipment.id);
+            return pricing && (pricing.costPerDay || pricing.costPerHour || pricing.sectionsPerDay);
+          });
+          
+          if (equipmentWithPricing.length === 0) {
+            return null; // Don't show the section if no pricing exists
+          }
+          
+          return (
+            <Card>
+              <CardHeader>
+                <CardTitle>Current Cleansing Equipment Pricing</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left p-2">Equipment Type</th>
+                        <th className="text-left p-2">Size Range</th>
+                        <th className="text-left p-2">Cost/Day</th>
+                        <th className="text-left p-2">Cost/Hour</th>
+                        <th className="text-left p-2">Sections/Day</th>
+                        <th className="text-left p-2">Meterage Range</th>
+                        <th className="text-left p-2">Actions</th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            <p className="text-sm text-gray-600 mt-4">
-              * Hourly rates are automatically calculated by dividing daily values by 8 hours. Meterage ranges define pricing tiers based on pipeline cleaning lengths.
-            </p>
-          </CardContent>
-        </Card>
+                    </thead>
+                    <tbody>
+                      {equipmentWithPricing.map((equipment) => {
+                        const pricing = getCurrentPricing(equipment.id);
+                        return (
+                          <tr key={equipment.id} className="border-b">
+                            <td className="p-2">{equipment.name}</td>
+                            <td className="p-2">{equipment.minPipeSize}mm-{equipment.maxPipeSize}mm</td>
+                            <td className="p-2">£{pricing?.costPerDay || '0.00'}</td>
+                            <td className="p-2">£{pricing?.costPerHour || '0.00'}</td>
+                            <td className="p-2">{pricing?.sectionsPerDay || '0.00'}</td>
+                            <td className="p-2">{pricing?.meterageRangeMin && pricing?.meterageRangeMax ? `${pricing.meterageRangeMin}-${pricing.meterageRangeMax}m` : 'Not set'}</td>
+                            <td className="p-2">
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setNewPricing({
+                                    equipmentTypeId: equipment.id,
+                                    costPerDay: pricing?.costPerDay || "",
+                                    costPerHour: pricing?.costPerHour || "",
+                                    sectionsPerDay: pricing?.sectionsPerDay || "",
+                                    meterageRangeMin: pricing?.meterageRangeMin || "",
+                                    meterageRangeMax: pricing?.meterageRangeMax || "",
+                                    sectors: []
+                                  })}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-sm text-gray-600 mt-4">
+                  * Hourly rates are automatically calculated by dividing daily values by 8 hours. Meterage ranges define pricing tiers based on pipeline cleaning lengths.
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })()}
 
         {/* Cleansing Pricing Guidelines */}
         <Card>
