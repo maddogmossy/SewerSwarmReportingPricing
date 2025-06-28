@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -167,6 +167,32 @@ export default function CleansingPricing() {
   const { data: equipmentTypes = [], isLoading: equipmentLoading } = useQuery({
     queryKey: ['/api/equipment-types/2']
   });
+
+  // Extract weight from equipment name for sorting
+  const getEquipmentWeight = (equipmentName: string): number => {
+    const match = equipmentName.match(/(\d+(?:\.\d+)?)t/i);
+    return match ? parseFloat(match[1]) : 0;
+  };
+
+  // Sort equipment by weight (lightest first)
+  const sortedEquipmentTypes = useMemo(() => {
+    return (equipmentTypes as EquipmentType[]).sort((a, b) => {
+      const weightA = getEquipmentWeight(a.name);
+      const weightB = getEquipmentWeight(b.name);
+      
+      // If both have weights, sort by weight
+      if (weightA > 0 && weightB > 0) {
+        return weightA - weightB;
+      }
+      
+      // If only one has weight, prioritize the one with weight
+      if (weightA > 0) return -1;
+      if (weightB > 0) return 1;
+      
+      // If neither has weight, sort alphabetically
+      return a.name.localeCompare(b.name);
+    });
+  }, [equipmentTypes]);
 
   // Get user pricing
   const { data: userPricing = [], isLoading: pricingLoading } = useQuery({
@@ -544,7 +570,7 @@ export default function CleansingPricing() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {(equipmentTypes as EquipmentType[]).map((equipment) => (
+              {sortedEquipmentTypes.map((equipment) => (
                 <div 
                   key={equipment.id} 
                   className={`flex items-center justify-between p-3 border rounded-lg transition-colors ${
