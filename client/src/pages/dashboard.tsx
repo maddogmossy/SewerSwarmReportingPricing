@@ -301,12 +301,14 @@ export default function Dashboard() {
   const calculateSectionCost = (section: any) => {
     // Check if section has defects requiring repair
     const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
-    const hasRepairMethods = section.repairMethods && section.repairMethods !== "None required" && section.repairMethods !== "";
+    const noRepairsNeeded = section.repairMethods === "None required" || section.repairMethods === "" || !section.repairMethods;
     
-    // If no defects or repairs needed, cost is £0.00
-    if (!hasDefects || !hasRepairMethods) {
+    // If no defects or no repairs needed, cost is £0.00
+    if (!hasDefects || noRepairsNeeded) {
       return "£0.00";
     }
+
+    // Section has defects and requires repairs - check pricing availability
 
     // For sections with defects, check if pricing is configured
     if (!userPricing.length || !equipmentTypes.length) {
