@@ -70,12 +70,9 @@ export default function CleansingPricing() {
   // Create equipment mutation
   const createEquipmentMutation = useMutation({
     mutationFn: async (equipment: typeof newEquipment) => {
-      return await apiRequest('/api/equipment-types', {
-        method: 'POST',
-        body: JSON.stringify({
-          ...equipment,
-          workCategoryId: 2 // Cleansing category
-        })
+      return await apiRequest('/api/equipment-types', 'POST', {
+        ...equipment,
+        workCategoryId: 2 // Cleansing category
       });
     },
     onSuccess: () => {
@@ -98,14 +95,11 @@ export default function CleansingPricing() {
   // Update equipment mutation
   const updateEquipmentMutation = useMutation({
     mutationFn: async (equipment: EquipmentType) => {
-      return await apiRequest(`/api/equipment-types/${equipment.id}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          name: equipment.name,
-          description: equipment.description,
-          minPipeSize: equipment.minPipeSize,
-          maxPipeSize: equipment.maxPipeSize
-        })
+      return await apiRequest(`/api/equipment-types/${equipment.id}`, 'PUT', {
+        name: equipment.name,
+        description: equipment.description,
+        minPipeSize: equipment.minPipeSize,
+        maxPipeSize: equipment.maxPipeSize
       });
     },
     onSuccess: () => {
@@ -127,9 +121,7 @@ export default function CleansingPricing() {
   // Delete equipment mutation
   const deleteEquipmentMutation = useMutation({
     mutationFn: async (id: number) => {
-      return await apiRequest(`/api/equipment-types/${id}`, {
-        method: 'DELETE'
-      });
+      return await apiRequest(`/api/equipment-types/${id}`, 'DELETE');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/equipment-types/2'] });
@@ -150,20 +142,14 @@ export default function CleansingPricing() {
   // Update pricing mutation
   const updatePricingMutation = useMutation({
     mutationFn: async ({ equipmentTypeId, pricing }: { equipmentTypeId: number; pricing: Partial<UserPricing> }) => {
-      const existingPricing = userPricing.find(p => p.equipmentTypeId === equipmentTypeId);
+      const existingPricing = (userPricing as UserPricing[]).find((p: UserPricing) => p.equipmentTypeId === equipmentTypeId);
       
       if (existingPricing) {
-        return await apiRequest(`/api/user-pricing/${existingPricing.id}`, {
-          method: 'PUT',
-          body: JSON.stringify(pricing)
-        });
+        return await apiRequest(`/api/user-pricing/${existingPricing.id}`, 'PUT', pricing);
       } else {
-        return await apiRequest('/api/user-pricing', {
-          method: 'POST',
-          body: JSON.stringify({
-            equipmentTypeId,
-            ...pricing
-          })
+        return await apiRequest('/api/user-pricing', 'POST', {
+          equipmentTypeId,
+          ...pricing
         });
       }
     },
@@ -269,7 +255,7 @@ export default function CleansingPricing() {
 
   const getCurrentPricing = (equipmentTypeId: number) => {
     return editingPricing[equipmentTypeId] || 
-      userPricing.find(p => p.equipmentTypeId === equipmentTypeId) || 
+      (userPricing as UserPricing[]).find((p: UserPricing) => p.equipmentTypeId === equipmentTypeId) || 
       {
         costPerHour: "",
         costPerDay: "",
@@ -318,7 +304,7 @@ export default function CleansingPricing() {
 
         {/* Equipment Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {equipmentTypes.map((equipment: EquipmentType) => {
+          {(equipmentTypes as EquipmentType[]).map((equipment: EquipmentType) => {
             const pricing = getCurrentPricing(equipment.id);
             const isEditing = editingPricing[equipment.id];
 
@@ -437,7 +423,7 @@ export default function CleansingPricing() {
           })}
         </div>
 
-        {equipmentTypes.length === 0 && (
+        {(equipmentTypes as EquipmentType[]).length === 0 && (
           <Card>
             <CardContent className="text-center py-12">
               <Droplets className="h-16 w-16 text-gray-400 mx-auto mb-4" />
