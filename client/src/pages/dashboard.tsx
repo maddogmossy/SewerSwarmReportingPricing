@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { EnhancedTable } from "@/components/enhanced-table";
 import { 
   Download,
   Upload,
@@ -222,7 +223,9 @@ const generateSectionData = (itemNumber: number, sector: any, pricingAvailable: 
     time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
     projectNumber: "GR7188",
     startMH: getStartMH(itemNumber),
+    startMHDepth: `${(1.2 + (itemNumber * 0.1)).toFixed(1)}m`,
     finishMH: getFinishMH(itemNumber),
+    finishMHDepth: `${(1.4 + (itemNumber * 0.1)).toFixed(1)}m`,
     pipeSize: getPipeSize(itemNumber),
     pipeMaterial: getPipeMaterial(itemNumber),
     totalLength: getTotalLength(itemNumber),
@@ -237,6 +240,29 @@ const generateSectionData = (itemNumber: number, sector: any, pricingAvailable: 
     cost: getCostValue()
   };
 };
+
+// Column definitions for the enhanced table
+const tableColumns = [
+  { key: 'itemNo', label: 'Item No', hideable: false },
+  { key: 'inspectionNo', label: 'Inspec. No', hideable: true },
+  { key: 'projectNumber', label: 'Project No', hideable: true },
+  { key: 'date', label: 'Date', hideable: true },
+  { key: 'time', label: 'Time', hideable: true },
+  { key: 'startMH', label: 'Start MH', hideable: false },
+  { key: 'startMHDepth', label: 'Start MH Depth', hideable: false },
+  { key: 'finishMH', label: 'Finish MH', hideable: false },
+  { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: false },
+  { key: 'pipeSize', label: 'Pipe Size', hideable: false },
+  { key: 'pipeMaterial', label: 'Pipe Material', hideable: true },
+  { key: 'totalLength', label: 'Total Length', hideable: false },
+  { key: 'lengthSurveyed', label: 'Length Surveyed', hideable: false },
+  { key: 'defects', label: 'Defects', hideable: false },
+  { key: 'severityGrade', label: 'Grade', hideable: false },
+  { key: 'sectorType', label: 'Sector', hideable: false },
+  { key: 'recommendations', label: 'Recommendations', hideable: false },
+  { key: 'adoptable', label: 'Adoptable', hideable: false },
+  { key: 'cost', label: 'Cost', hideable: false }
+];
 
 export default function Dashboard() {
   const { toast } = useToast();
