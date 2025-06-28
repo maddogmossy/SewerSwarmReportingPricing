@@ -132,6 +132,7 @@ export default function CleansingPricing() {
     }
   };
   const [checkedEquipment, setCheckedEquipment] = useState<Set<number>>(new Set());
+  const [editingPricingId, setEditingPricingId] = useState<number | null>(null);
   const [newPricing, setNewPricing] = useState({
     equipmentTypeId: 0,
     costPerDay: "",
@@ -312,6 +313,25 @@ export default function CleansingPricing() {
     }
   });
 
+  const updatePricingMutation = useMutation({
+    mutationFn: async (data: { id: number } & typeof newPricing) => {
+      const { id, ...pricingData } = data;
+      return await apiRequest('PUT', `/api/user-pricing/${id}`, pricingData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
+      resetForm();
+      toast({ title: "Equipment pricing updated successfully" });
+    },
+    onError: (error) => {
+      toast({ 
+        title: "Error updating pricing", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    }
+  });
+
   const handleAddEquipment = () => {
     if (newEquipment.name && newEquipment.description) {
       createEquipmentMutation.mutate(newEquipment);
@@ -359,8 +379,28 @@ export default function CleansingPricing() {
 
   const handleSavePricing = () => {
     if (newPricing.equipmentTypeId > 0) {
-      savePricingMutation.mutate(newPricing);
+      if (editingPricingId) {
+        // Update existing pricing
+        updatePricingMutation.mutate({ id: editingPricingId, ...newPricing });
+      } else {
+        // Create new pricing
+        savePricingMutation.mutate(newPricing);
+      }
     }
+  };
+
+  const resetForm = () => {
+    setNewPricing({
+      equipmentTypeId: 0,
+      costPerDay: "",
+      costPerHour: "",
+      sectionsPerDay: "",
+      meterageRangeMin: "",
+      meterageRangeMax: "",
+      sectors: []
+    });
+    setEditingPricingId(null);
+    setIsAddingPricing(false);
   };
 
   const getCurrentPricing = (equipmentTypeId: number) => {
@@ -428,7 +468,7 @@ export default function CleansingPricing() {
                       <td className="p-3">{pricing.sectionsPerDay}</td>
                       <td className="p-3">
                         <div className="flex gap-1 flex-wrap">
-                          {pricing.sectors && pricing.sectors.map((sector: string, index: number) => {
+                          {pricing.sectors && pricing.sectors.length > 0 ? pricing.sectors.map((sector: string, index: number) => {
                             const colorMap: Record<string, string> = {
                               'utilities': 'bg-blue-100 text-blue-800',
                               'adoption': 'bg-green-100 text-green-800',
@@ -441,12 +481,14 @@ export default function CleansingPricing() {
                               <Badge
                                 key={index}
                                 variant="secondary"
-                                className={`text-xs ${colorMap[sector] || 'bg-gray-100 text-gray-800'}`}
+                                className={`text-xs ${colorMap[sector.toLowerCase()] || 'bg-gray-100 text-gray-800'}`}
                               >
-                                {sector}
+                                {sector.charAt(0).toUpperCase() + sector.slice(1)}
                               </Badge>
                             );
-                          })}
+                          }) : (
+                            <span className="text-xs text-gray-500 italic">No sectors configured</span>
+                          )}
                         </div>
                       </td>
                       <td className="p-3">
@@ -454,6 +496,7 @@ export default function CleansingPricing() {
                           variant="ghost"
                           size="sm"
                           onClick={() => {
+                            setEditingPricingId(pricing.id);
                             setNewPricing({
                               equipmentTypeId: pricing.equipmentTypeId,
                               costPerDay: pricing.costPerDay,
