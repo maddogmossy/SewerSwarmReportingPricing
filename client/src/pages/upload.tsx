@@ -326,11 +326,11 @@ export default function Upload() {
                       >
                         {/* Title positioned at top center cutting through border */}
                         <div 
-                          className="absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-sm bg-white border-2 shadow-sm"
+                          className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-6 py-2 rounded-lg flex items-center gap-2 font-bold text-sm bg-white border-2 shadow-sm min-w-[200px] justify-center"
                           style={{ borderColor: sectorColor, color: sectorColor }}
                         >
                           <IconComponent className="h-5 w-5" />
-                          {displayName}
+                          <span className="whitespace-nowrap">{displayName}</span>
                         </div>
 
                         {/* Content area */}
