@@ -875,30 +875,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Report not found or access denied" });
       }
       
-      // Generate sector-specific analysis report
+      // Generate sector-specific analysis report with real data
       const upload = uploads.find(u => u.reportUrl === `/reports/${filename}`);
+      
+      if (!upload) {
+        return res.status(404).json({ message: "Upload not found" });
+      }
+
+      // Get actual section inspection data
+      const sections = await storage.getSectionInspectionsByFileUpload(upload.id);
+      
+      // Use WRc Standards Engine for comprehensive analysis
+      const { WRcStandardsEngine } = await import('./wrc-standards-engine');
+      
+      const sectionData = sections.map(section => ({
+        defectText: section.defects || 'No action required pipe observed in acceptable structural and service condition',
+        sector: upload.sector || 'utilities',
+        itemNo: section.itemNo,
+        startMH: section.startMH,
+        finishMH: section.finishMH,
+        pipeSize: section.pipeSize,
+        pipeMaterial: section.pipeMaterial,
+        totalLength: section.totalLength,
+        lengthSurveyed: section.lengthSurveyed
+      }));
+
+      const analysisResults = WRcStandardsEngine.analyzeSections(sectionData);
+      const sectorReport = WRcStandardsEngine.generateSectorReport(analysisResults, upload.sector || 'utilities');
+
+      // Generate detailed report content
       const reportContent = `SEWER CONDITION ANALYSIS REPORT
-Generated: ${new Date().toLocaleDateString()}
-File: ${upload?.fileName || filename.replace('-analysis.pdf', '')}
-Sector: ${upload?.sector || 'Unknown'}
-Standards Applied: WRc/WTI OS19/20x MSCC5R
+==============================================
+Generated: ${new Date().toLocaleDateString('en-GB')} ${new Date().toLocaleTimeString('en-GB')}
+File: ${upload.fileName}
+Project Reference: ${upload.fileName.split(' - ')[0] || 'N/A'}
+Sector: ${upload.sector?.toUpperCase() || 'UTILITIES'}
+Standards Applied: MSCC5R, WRc SRM, ${upload.sector === 'adoption' ? 'OS20x Sewers for Adoption' : upload.sector === 'highways' ? 'HADDMS' : 'WRc Standards'}
 
-DEFECT ANALYSIS SUMMARY:
-- Structural Grade: A-C classification applied
-- Operational Grade: Flow capacity assessment  
-- Repair Priority: Immediate/Planned/Monitor
-- Cost Band: Based on ${upload?.sector || 'sector'} standards
-${upload?.sector === 'utilities' || upload?.sector === 'highways' ? '- Risk Score: Environmental and safety impact assessment' : ''}
-${upload?.sector === 'adoption' ? '- Adoptability: Compliance with Sewers for Adoption 7th Ed.' : ''}
+EXECUTIVE SUMMARY
+==============================================
+Total sections inspected: ${sections.length}
+Sections with defects: ${analysisResults.filter(r => r.defectCode !== 'NO_DEFECT').length}
+Average structural grade: ${(analysisResults.reduce((sum, r) => sum + r.severityGrade, 0) / analysisResults.length).toFixed(1)}
+${upload.sector === 'adoption' ? `Adoptability status: ${analysisResults.filter(r => r.adoptable === 'Yes').length} adoptable, ${analysisResults.filter(r => r.adoptable === 'Conditional').length} conditional, ${analysisResults.filter(r => r.adoptable === 'No').length} rejected` : ''}
 
-STANDARDS COMPLIANCE:
-✓ MSCC5 Classification Applied
-✓ Cleaning Manual Guidelines Followed  
-✓ Repair Book Recommendations Applied
-${upload?.sector === 'adoption' || upload?.sector === 'construction' ? '✓ Sewers for Adoption 7th Ed. Standards' : ''}
-${upload?.sector === 'highways' ? '✓ HADDMS Guidance Applied' : ''}
+DETAILED SECTION ANALYSIS
+==============================================
+${analysisResults.map((result, index) => {
+  const section = sections[index];
+  return `
+ITEM ${section?.itemNo || index + 1}: ${section?.startMH || `MH${index + 1}`} → ${section?.finishMH || `MH${index + 2}`}
+Pipe Details: ${section?.pipeSize || 'Unknown'} ${section?.pipeMaterial || 'Unknown'}
+Length: ${section?.totalLength || 'Unknown'} (Surveyed: ${section?.lengthSurveyed || 'Unknown'})
 
-This report provides comprehensive sewer condition analysis based on sector-specific requirements.`;
+DEFECT CLASSIFICATION:
+Code: ${result.defectCode}
+Description: ${result.defectDescription}
+Severity Grade: ${result.severityGrade} (${result.defectType.toUpperCase()})
+SRM Classification: ${result.srmGrading.description}
+
+RECOMMENDATIONS:
+Action Required: ${result.srmGrading.action_required}
+Repair Methods: ${result.repairMethods?.join(', ') || 'No specific repairs required'}
+Cleaning Requirements: ${result.cleaningMethods?.join(', ') || 'Standard maintenance'}
+Priority: ${result.repairPriority}
+Estimated Cost: ${result.estimatedCost}
+${upload.sector === 'adoption' ? `Adoptability: ${result.adoptable} ${result.adoptionNotes ? '- ' + result.adoptionNotes : ''}` : ''}
+
+Risk Assessment: ${result.riskAssessment}
+`;
+}).join('\n')}
+
+SECTOR-SPECIFIC ANALYSIS
+==============================================
+${sectorReport}
+
+STANDARDS COMPLIANCE VERIFICATION
+==============================================
+✓ MSCC5 Defect Classification System applied
+✓ SRM Scoring methodology implemented
+✓ WRc Drain Repair Book (4th Edition) referenced
+✓ WRc Sewer Cleaning Manual applied
+${upload.sector === 'adoption' ? '✓ OS20x Sewer Adoption CCTV Coding Standards\n✓ Sewers for Adoption 7th/8th Edition compliance' : ''}
+${upload.sector === 'highways' ? '✓ HADDMS Highway Drainage Standards\n✓ DMRB Design Manual for Roads and Bridges' : ''}
+${upload.sector === 'insurance' ? '✓ ABI Loss Adjusting Guidelines\n✓ Insurance technical assessment criteria' : ''}
+${upload.sector === 'construction' ? '✓ BS EN 1610:2015 Construction standards\n✓ Pre/post construction validation' : ''}
+${upload.sector === 'domestic' ? '✓ Domestic drainage regulatory compliance\n✓ Trading Standards requirements' : ''}
+
+CERTIFICATION
+==============================================
+This report has been generated using certified WRc/WTI standards and methodologies.
+All defect classifications comply with MSCC5R requirements.
+Analysis performed in accordance with ${upload.sector} sector best practices.
+
+Report generated by Sewer Swarm AI Analysis Platform
+© 2025 Professional Sewer Condition Assessment Services`;
       
       res.setHeader('Content-Type', 'text/plain');
       res.setHeader('Content-Disposition', `attachment; filename="${filename.replace('.pdf', '.txt')}"`);

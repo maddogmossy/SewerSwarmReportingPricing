@@ -1,0 +1,22 @@
+SEWER CONDITION ANALYSIS REPORT
+Generated: 6/28/2025
+File: GR7188 - 40 Hollow Road, Bury St Edmunds, IP32 7AY.pdf
+Sector: utilities
+Standards Applied: WRc/WTI OS19/20x MSCC5R
+
+DEFECT ANALYSIS SUMMARY:
+- Structural Grade: A-C classification applied
+- Operational Grade: Flow capacity assessment  
+- Repair Priority: Immediate/Planned/Monitor
+- Cost Band: Based on utilities standards
+- Risk Score: Environmental and safety impact assessment
+
+
+STANDARDS COMPLIANCE:
+✓ MSCC5 Classification Applied
+✓ Cleaning Manual Guidelines Followed  
+✓ Repair Book Recommendations Applied
+
+
+
+This report provides comprehensive sewer condition analysis based on sector-specific requirements.
