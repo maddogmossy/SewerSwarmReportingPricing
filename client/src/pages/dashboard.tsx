@@ -308,26 +308,26 @@ export default function Dashboard() {
 
   // Define columns with their properties and widths
   const columns = [
-    { key: 'projectNo', label: 'Project No', hideable: true, width: 'w-20' },
-    { key: 'itemNo', label: 'Item No', hideable: false, width: 'w-16' },
-    { key: 'inspectionNo', label: 'Inspec. No', hideable: true, width: 'w-18' },
-    { key: 'date', label: 'Date', hideable: true, width: 'w-24' },
-    { key: 'time', label: 'Time', hideable: true, width: 'w-20' },
-    { key: 'startMH', label: 'Start MH', hideable: false, width: 'w-20' },
-    { key: 'startMHDepth', label: 'Start MH Depth', hideable: true, width: 'w-20' },
-    { key: 'finishMH', label: 'Finish MH', hideable: false, width: 'w-20' },
-    { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true, width: 'w-20' },
-    { key: 'pipeSize', label: 'Pipe Size', hideable: false, width: 'w-20' },
-    { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: 'w-24' },
-    { key: 'totalLength', label: 'Total Length (m)', hideable: false, width: 'w-20' },
-    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: false, width: 'w-20' },
-    { key: 'defects', label: 'Defects', hideable: false, width: 'w-64' },
-    { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: 'w-20' },
-    { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: 'w-24' },
-    { key: 'recommendations', label: 'Recommendations', hideable: false, width: 'w-64' },
-    { key: 'cleaningMethods', label: 'Actions Required', hideable: false, width: 'w-32' },
-    { key: 'adoptable', label: 'Adoptable', hideable: false, width: 'w-20' },
-    { key: 'cost', label: 'Cost (£)', hideable: false, width: 'w-24' }
+    { key: 'projectNo', label: 'Project No', hideable: true, width: 'w-16', priority: 'tight' },
+    { key: 'itemNo', label: 'Item No', hideable: false, width: 'w-12', priority: 'tight' },
+    { key: 'inspectionNo', label: 'Inspec. No', hideable: true, width: 'w-16', priority: 'tight' },
+    { key: 'date', label: 'Date', hideable: true, width: 'w-20', priority: 'tight' },
+    { key: 'time', label: 'Time', hideable: true, width: 'w-16', priority: 'tight' },
+    { key: 'startMH', label: 'Start MH', hideable: false, width: 'w-16', priority: 'tight' },
+    { key: 'startMHDepth', label: 'Start MH Depth', hideable: true, width: 'w-16', priority: 'tight' },
+    { key: 'finishMH', label: 'Finish MH', hideable: false, width: 'w-16', priority: 'tight' },
+    { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true, width: 'w-16', priority: 'tight' },
+    { key: 'pipeSize', label: 'Pipe Size', hideable: false, width: 'w-16', priority: 'tight' },
+    { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: 'w-20', priority: 'tight' },
+    { key: 'totalLength', label: 'Total Length (m)', hideable: false, width: 'w-16', priority: 'tight' },
+    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: false, width: 'w-16', priority: 'tight' },
+    { key: 'defects', label: 'Defects', hideable: false, width: 'w-80', priority: 'pretty' },
+    { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: 'w-16', priority: 'tight' },
+    { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: 'w-20', priority: 'tight' },
+    { key: 'recommendations', label: 'Recommendations', hideable: false, width: 'w-80', priority: 'pretty' },
+    { key: 'cleaningMethods', label: 'Actions Required', hideable: false, width: 'w-64', priority: 'pretty' },
+    { key: 'adoptable', label: 'Adoptable', hideable: false, width: 'w-16', priority: 'tight' },
+    { key: 'cost', label: 'Cost (£)', hideable: false, width: 'w-20', priority: 'tight' }
   ];
 
   // Function to render cell content based on column key
@@ -867,7 +867,8 @@ export default function Dashboard() {
                                 }
                               }}
                               className={`
-                                ${column.width} border border-slate-300 px-1 py-1 text-left font-semibold text-xs
+                                ${column.width} border border-slate-300 text-left font-semibold
+                                ${column.priority === 'pretty' ? 'px-2 py-2 text-sm' : 'px-1 py-1 text-xs'}
                                 ${showColumnSelector && !canBeHidden 
                                   ? 'bg-slate-200 cursor-not-allowed opacity-60'
                                   : showColumnSelector && canBeHidden
@@ -889,7 +890,10 @@ export default function Dashboard() {
                           {columns.map((column) => {
                             if (hiddenColumns.has(column.key)) return null;
                             return (
-                              <td key={column.key} className={`${column.width} border border-slate-300 px-1 py-1 text-xs`}>
+                              <td key={column.key} className={`
+                                ${column.width} border border-slate-300
+                                ${column.priority === 'pretty' ? 'px-2 py-2 text-sm leading-relaxed' : 'px-1 py-1 text-xs'}
+                              `}>
                                 {renderCellContent(column.key, section)}
                               </td>
                             );
