@@ -284,6 +284,16 @@ export default function Dashboard() {
     enabled: !!currentSector?.id,
   });
 
+  // Fetch user pricing data for cost calculations
+  const { data: userPricing = [] } = useQuery<any[]>({
+    queryKey: ["/api/user-pricing"],
+  });
+
+  // Fetch equipment types for pricing calculations
+  const { data: equipmentTypes = [] } = useQuery<any[]>({
+    queryKey: ["/api/equipment-types/2"], // Cleansing category
+  });
+
 
 
   return (
