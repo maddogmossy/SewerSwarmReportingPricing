@@ -222,6 +222,8 @@ export class MSCC5Classifier {
     const patterns = [
       // Standard format: "DER 13.07m: Settled deposits, coarse, 5% cross-sectional area loss"
       /(\w+)\s+(\d+\.?\d*m?):\s*([^;]+?)(?:;\s*|$)/g,
+      // Multiple meterage format: "DER 13.07m, 16.93m, 17.73m, 21.80m: description"
+      /(\w+)\s+((?:\d+\.?\d*m?,?\s*)+):\s*([^;]+?)(?:;\s*|$)/g,
       // Alternative format: "13.07m DER: Settled deposits, coarse, 5%"
       /(\d+\.?\d*m?)\s+(\w+):\s*([^;]+?)(?:;\s*|$)/g,
       // Section 3 specific format: multiple debris points with meterage
@@ -249,21 +251,48 @@ export class MSCC5Classifier {
           percentage = match[4] || '';
         }
         
-        // Extract percentage if not captured
-        if (!percentage && description) {
-          const percentageMatch = description.match(/(\d+(?:-\d+)?%)/);
-          percentage = percentageMatch ? percentageMatch[1] : '';
-        }
-        
-        // Avoid duplicates and ensure valid data
-        const existing = defects.find(d => d.meterage === meterage && d.defectCode === code.toUpperCase());
-        if (!existing && code && meterage) {
-          defects.push({
-            meterage,
-            defectCode: code.toUpperCase(),
-            description: description ? description.trim() : 'Debris deposits affecting flow',
-            percentage
+        // Handle multiple meterages in one entry (e.g., "13.07m, 16.93m, 17.73m, 21.80m")
+        if (meterage && meterage.includes(',')) {
+          const meterages = meterage.split(',').map(m => m.trim()).filter(m => m);
+          meterages.forEach(singleMeterage => {
+            const cleanMeterage = singleMeterage.includes('m') ? singleMeterage : `${singleMeterage}m`;
+            
+            // Extract percentage if not captured
+            let singlePercentage = percentage;
+            if (!singlePercentage && description) {
+              const percentageMatch = description.match(/(\d+(?:-\d+)?%)/);
+              singlePercentage = percentageMatch ? percentageMatch[1] : '';
+            }
+            
+            // Avoid duplicates and ensure valid data
+            const existing = defects.find(d => d.meterage === cleanMeterage && d.defectCode === code.toUpperCase());
+            if (!existing && code && cleanMeterage) {
+              defects.push({
+                meterage: cleanMeterage,
+                defectCode: code.toUpperCase(),
+                description: description ? description.trim() : 'Debris deposits affecting flow',
+                percentage: singlePercentage
+              });
+            }
           });
+        } else {
+          // Single meterage entry
+          // Extract percentage if not captured
+          if (!percentage && description) {
+            const percentageMatch = description.match(/(\d+(?:-\d+)?%)/);
+            percentage = percentageMatch ? percentageMatch[1] : '';
+          }
+          
+          // Avoid duplicates and ensure valid data
+          const existing = defects.find(d => d.meterage === meterage && d.defectCode === code.toUpperCase());
+          if (!existing && code && meterage) {
+            defects.push({
+              meterage,
+              defectCode: code.toUpperCase(),
+              description: description ? description.trim() : 'Debris deposits affecting flow',
+              percentage
+            });
+          }
         }
       }
     });
