@@ -17,7 +17,7 @@ import {
   type InsertUserCostBand,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -220,7 +220,10 @@ export class DatabaseStorage implements IStorage {
   // User cost band customization methods
   async getUserCostBands(userId: string, sector: string): Promise<UserCostBand[]> {
     return await db.select().from(userCostBands).where(
-      eq(userCostBands.userId, userId)
+      and(
+        eq(userCostBands.userId, userId),
+        eq(userCostBands.sector, sector)
+      )
     );
   }
 
