@@ -18,6 +18,8 @@ import {
   HardHat,
   Gift,
   Check,
+  Wrench,
+  House,
   Waves,
   TestTube,
   BarChart3,
@@ -117,40 +119,40 @@ export default function Home() {
 
   const sectors = [
     {
-      icon: Building,
+      icon: Wrench,
       title: "Utilities",
-      description: "MSCC5, Cleaning Manual, Repair Book",
-      color: "text-primary"
+      description: "WRc SRM standards",
+      color: "text-blue-600"
     },
     {
-      icon: HomeIcon,
+      icon: Building,
       title: "Adoption",
-      description: "All Utilities standards plus Sewers for Adoption 7th Ed.",
+      description: "SfA8 compliance",
       color: "text-emerald-600"
     },
     {
       icon: Car,
       title: "Highways",
-      description: "Core WRc documents plus HADDMS guidance",
+      description: "DMRB standards",
       color: "text-amber-600"
     },
     {
-      icon: Users,
+      icon: House,
       title: "Domestic",
-      description: "MSCC5, Cleaning Manual, and Repair Book guidance",
-      color: "text-blue-600"
+      description: "Regulatory compliance",
+      color: "text-amber-900"
     },
     {
-      icon: ShieldCheck,
+      icon: Shield,
       title: "Insurance",
-      description: "Standard compliance checks plus insurer technical standards",
+      description: "ABI guidelines",
       color: "text-red-600"
     },
     {
       icon: HardHat,
       title: "Construction",
-      description: "Core standards suite plus adoption guidance",
-      color: "text-orange-600"
+      description: "Building regs",
+      color: "text-purple-600"
     }
   ];
 
