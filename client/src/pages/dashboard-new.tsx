@@ -352,8 +352,9 @@ export default function Dashboard() {
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Length Surveyed (m)</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Defects</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Severity Grade</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Sector Type</th>
-                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Recommenda- tions</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">SRM Grading</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Repair Methods</th>
+                        <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Cleaning Methods</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Adoptable</th>
                         <th className="border border-slate-300 px-2 py-1 text-left font-semibold">Cost (£)</th>
                       </tr>
@@ -384,9 +385,30 @@ export default function Dashboard() {
                             </span>
                           </td>
                           <td className="border border-slate-300 px-2 py-1">
-                            <span className="capitalize text-primary font-medium">{currentSector.name}</span>
+                            <div className="text-xs">
+                              {section.severityGrade === "0" ? "No service issues" :
+                               section.severityGrade === "1" ? "Minor service impacts" :
+                               section.severityGrade === "2" ? "Moderate service defects" :
+                               section.severityGrade === "3" ? "Major service defects" :
+                               "Blocked or non-functional"}
+                            </div>
                           </td>
-                          <td className="border border-slate-300 px-2 py-1">{section.recommendations}</td>
+                          <td className="border border-slate-300 px-2 py-1">
+                            <div className="text-xs">
+                              {section.severityGrade === "0" ? "None required" :
+                               section.severityGrade === "2" ? "Local patch lining" :
+                               section.severityGrade === "3" ? "High-pressure jetting" :
+                               "Excavate and replace"}
+                            </div>
+                          </td>
+                          <td className="border border-slate-300 px-2 py-1">
+                            <div className="text-xs">
+                              {section.severityGrade === "0" ? "None required" :
+                               section.severityGrade === "2" ? "Medium-pressure jetting" :
+                               section.severityGrade === "3" ? "Jet-Vac unit removal" :
+                               "High-pressure rotating head"}
+                            </div>
+                          </td>
                           <td className="border border-slate-300 px-2 py-1">
                             {section.adoptable !== 'N/A' ? (
                               <span className={`px-1 py-0.5 rounded text-xs ${
@@ -494,6 +516,67 @@ export default function Dashboard() {
                     <strong>File Format:</strong> Coded to WRc/WTI OS19/20x MSCC5R standards
                   </p>
                 </div>
+
+                {/* Integrated Standards Information */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">MSCC5 + SRM Scoring</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-xs space-y-1">
+                        <div>✓ Defect classification (FC, FL, DER, etc.)</div>
+                        <div>✓ Severity grading (1-5 scale)</div>
+                        <div>✓ Structural vs service assessment</div>
+                        <div>✓ Plain-English condition descriptions</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">Drain Repair Book (4th Ed.)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-xs space-y-1">
+                        <div>✓ Specific repair methods per defect</div>
+                        <div>✓ Priority classification (Low/Medium/High/Urgent)</div>
+                        <div>✓ CIPP lining recommendations</div>
+                        <div>✓ Excavation vs repair guidance</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">Sewer Cleaning Manual</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-xs space-y-1">
+                        <div>✓ Jetting specifications per defect</div>
+                        <div>✓ Jet-Vac unit procedures</div>
+                        <div>✓ Cleaning frequency schedules</div>
+                        <div>✓ Root cutting protocols</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {currentSector.id === 'adoption' && (
+                  <Card className="mt-4">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm">OS19x Adoption Standards</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-xs space-y-2">
+                        <div><strong>Grade Thresholds:</strong> Structural ≤3, Service ≤3 for adoption</div>
+                        <div><strong>Banned Defects:</strong> B, CO, COL, CX, H, MRJ, F (automatic rejection)</div>
+                        <div><strong>Gradient Tolerance:</strong> ±10% variance from design drawings</div>
+                        <div><strong>Inspection Required:</strong> CCTV Survey + Post-clean verification + Hydrostatic test</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </CardContent>
             </Card>
           </div>
