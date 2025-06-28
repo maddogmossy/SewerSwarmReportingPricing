@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { 
@@ -13,7 +14,9 @@ import {
   Plus,
   Edit,
   Trash2,
-  ArrowLeft
+  ArrowLeft,
+  Settings,
+  Wrench
 } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
@@ -38,6 +41,8 @@ interface UserPricing {
 export default function SurveyPricing() {
   const { toast } = useToast();
   const [editingPricing, setEditingPricing] = useState<UserPricing | null>(null);
+  const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
+  const [showEquipmentDialog, setShowEquipmentDialog] = useState(false);
   const [newPricing, setNewPricing] = useState({
     equipmentTypeId: 0,
     costPerHour: "",
@@ -124,6 +129,48 @@ export default function SurveyPricing() {
     },
   });
 
+  const updateEquipmentMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      return await apiRequest(`/api/equipment-types/${id}`, "PUT", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Equipment specification updated successfully",
+      });
+      setEditingEquipment(null);
+      setShowEquipmentDialog(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/1"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update equipment specification",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteEquipmentMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest(`/api/equipment-types/${id}`, "DELETE");
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Equipment specification deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/1"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete equipment specification",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleCreatePricing = () => {
     if (!newPricing.equipmentTypeId || !newPricing.costPerHour || !newPricing.costPerDay) {
       toast({
@@ -147,6 +194,30 @@ export default function SurveyPricing() {
         sectionsPerDay: editingPricing.sectionsPerDay,
       }
     });
+  };
+
+  const handleEditEquipment = (equipment: EquipmentType) => {
+    setEditingEquipment(equipment);
+    setShowEquipmentDialog(true);
+  };
+
+  const handleUpdateEquipment = () => {
+    if (!editingEquipment) return;
+    updateEquipmentMutation.mutate({
+      id: editingEquipment.id,
+      data: {
+        name: editingEquipment.name,
+        description: editingEquipment.description,
+        minPipeSize: editingEquipment.minPipeSize,
+        maxPipeSize: editingEquipment.maxPipeSize,
+      }
+    });
+  };
+
+  const handleDeleteEquipment = (equipmentId: number, equipmentName: string) => {
+    if (confirm(`Are you sure you want to delete "${equipmentName}"? This action cannot be undone.`)) {
+      deleteEquipmentMutation.mutate(equipmentId);
+    }
   };
 
   const getEquipmentName = (equipmentTypeId: number) => {
@@ -424,6 +495,70 @@ export default function SurveyPricing() {
           </CardContent>
         </Card>
 
+        {/* Equipment Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Equipment Management
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-slate-600">
+                Manage your equipment specifications. Edit equipment details or remove equipment that's no longer available.
+              </p>
+              
+              {equipmentTypes && (equipmentTypes as EquipmentType[]).length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {(equipmentTypes as EquipmentType[]).map((equipment: EquipmentType) => (
+                    <Card key={equipment.id} className="border-slate-200">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Wrench className="h-4 w-4 text-blue-600" />
+                              <h4 className="font-medium">{equipment.name}</h4>
+                            </div>
+                            <p className="text-sm text-slate-600 mb-2">{equipment.description}</p>
+                            <Badge variant="outline" className="text-xs">
+                              {equipment.minPipeSize}-{equipment.maxPipeSize}mm
+                            </Badge>
+                          </div>
+                          <div className="flex gap-1 ml-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEditEquipment(equipment)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDeleteEquipment(equipment.id, equipment.name)}
+                              disabled={deleteEquipmentMutation.isPending}
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-slate-500">
+                  <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No equipment specifications available.</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Information Panel */}
         <Card className="bg-blue-50 border-blue-200">
           <CardHeader>
@@ -451,6 +586,90 @@ export default function SurveyPricing() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Equipment Edit Dialog */}
+      <Dialog open={showEquipmentDialog} onOpenChange={setShowEquipmentDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Equipment Specification</DialogTitle>
+          </DialogHeader>
+          {editingEquipment && (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="equipmentName">Equipment Name</Label>
+                <Input
+                  id="equipmentName"
+                  value={editingEquipment.name}
+                  onChange={(e) => setEditingEquipment(prev => prev ? { ...prev, name: e.target.value } : null)}
+                  placeholder="e.g., CCTV Camera System"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="equipmentDescription">Description</Label>
+                <Input
+                  id="equipmentDescription"
+                  value={editingEquipment.description}
+                  onChange={(e) => setEditingEquipment(prev => prev ? { ...prev, description: e.target.value } : null)}
+                  placeholder="e.g., High-resolution camera for pipe inspection"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="minPipeSize">Min Pipe Size (mm)</Label>
+                  <Input
+                    id="minPipeSize"
+                    type="number"
+                    value={editingEquipment.minPipeSize}
+                    onChange={(e) => setEditingEquipment(prev => prev ? { ...prev, minPipeSize: parseInt(e.target.value) } : null)}
+                    placeholder="75"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="maxPipeSize">Max Pipe Size (mm)</Label>
+                  <Input
+                    id="maxPipeSize"
+                    type="number"
+                    value={editingEquipment.maxPipeSize}
+                    onChange={(e) => setEditingEquipment(prev => prev ? { ...prev, maxPipeSize: parseInt(e.target.value) } : null)}
+                    placeholder="300"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex justify-end gap-2 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowEquipmentDialog(false);
+                    setEditingEquipment(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleUpdateEquipment}
+                  disabled={updateEquipmentMutation.isPending}
+                >
+                  {updateEquipmentMutation.isPending ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
