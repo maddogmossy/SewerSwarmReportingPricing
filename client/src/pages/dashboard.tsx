@@ -548,12 +548,12 @@ export default function Dashboard() {
                           <div className="flex items-center justify-between">
                             <h4 className="font-medium text-sm">Applied Standards:</h4>
                             <Badge variant="outline" className="text-xs">
-                              {sector.standards.length} Standards
+                              {sector.standards.length} Standards (Force Refresh: {Date.now()})
                             </Badge>
                           </div>
                           <div className="space-y-2">
                             {sector.standards.map((standard, idx) => (
-                              <div key={idx} className="flex items-center justify-between text-sm p-2 bg-slate-50 rounded">
+                              <div key={`${standard.name}-${idx}-${Date.now()}`} className="flex items-center justify-between text-sm p-2 bg-slate-50 rounded">
                                 <span className="font-medium">{standard.name}</span>
                                 {standard.url !== "#" && (
                                   <Button
