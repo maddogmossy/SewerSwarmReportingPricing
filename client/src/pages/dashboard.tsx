@@ -530,7 +530,6 @@ export default function Dashboard() {
                   {Array.isArray(uploads) && uploads.filter((upload: any) => upload.status === "completed").slice(0, 1).map((upload: any) => {
                     const sector = sectors.find(s => s.id === upload.sector);
                     if (!sector) {
-                      console.log('Sector not found for upload:', upload);
                       return null;
                     }
                     
@@ -548,7 +547,7 @@ export default function Dashboard() {
                           <div className="flex items-center justify-between">
                             <h4 className="font-medium text-sm">Applied Standards:</h4>
                             <Badge variant="outline" className="text-xs">
-                              {sector.standards.length} Standards (Force Refresh: {Date.now()})
+                              {sector.standards.length} Standards
                             </Badge>
                           </div>
                           <div className="space-y-2">
