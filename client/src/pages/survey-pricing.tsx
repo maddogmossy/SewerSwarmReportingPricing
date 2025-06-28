@@ -58,10 +58,7 @@ export default function SurveyPricing() {
 
   const createPricingMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("/api/user-pricing", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest("/api/user-pricing", "POST", data);
     },
     onSuccess: () => {
       toast({
@@ -88,10 +85,7 @@ export default function SurveyPricing() {
 
   const updatePricingMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      return await apiRequest(`/api/user-pricing/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest(`/api/user-pricing/${id}`, "PUT", data);
     },
     onSuccess: () => {
       toast({
@@ -112,9 +106,7 @@ export default function SurveyPricing() {
 
   const deletePricingMutation = useMutation({
     mutationFn: async (id: number) => {
-      return await apiRequest(`/api/user-pricing/${id}`, {
-        method: "DELETE",
-      });
+      return await apiRequest(`/api/user-pricing/${id}`, "DELETE");
     },
     onSuccess: () => {
       toast({
@@ -158,12 +150,12 @@ export default function SurveyPricing() {
   };
 
   const getEquipmentName = (equipmentTypeId: number) => {
-    const equipment = equipmentTypes?.find((e: EquipmentType) => e.id === equipmentTypeId);
+    const equipment = (equipmentTypes as EquipmentType[])?.find((e: EquipmentType) => e.id === equipmentTypeId);
     return equipment?.name || "Unknown Equipment";
   };
 
   const getEquipmentSizeRange = (equipmentTypeId: number) => {
-    const equipment = equipmentTypes?.find((e: EquipmentType) => e.id === equipmentTypeId);
+    const equipment = (equipmentTypes as EquipmentType[])?.find((e: EquipmentType) => e.id === equipmentTypeId);
     return equipment ? `${equipment.minPipeSize}-${equipment.maxPipeSize}mm` : "";
   };
 
@@ -222,7 +214,7 @@ export default function SurveyPricing() {
                   onChange={(e) => setNewPricing(prev => ({ ...prev, equipmentTypeId: parseInt(e.target.value) }))}
                 >
                   <option value={0}>Select Equipment Type</option>
-                  {equipmentTypes?.map((equipment: EquipmentType) => (
+                  {(equipmentTypes as EquipmentType[])?.map((equipment: EquipmentType) => (
                     <option key={equipment.id} value={equipment.id}>
                       {equipment.name} ({equipment.minPipeSize}-{equipment.maxPipeSize}mm)
                     </option>
@@ -298,7 +290,7 @@ export default function SurveyPricing() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {equipmentTypes?.map((equipment: EquipmentType) => (
+                {(equipmentTypes as EquipmentType[])?.map((equipment: EquipmentType) => (
                   <div key={equipment.id} className="p-3 bg-slate-50 rounded-lg">
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-semibold text-sm">{equipment.name}</h4>
@@ -320,7 +312,7 @@ export default function SurveyPricing() {
             <CardTitle>Current Survey Equipment Pricing</CardTitle>
           </CardHeader>
           <CardContent>
-            {userPricing && userPricing.length > 0 ? (
+            {(userPricing as UserPricing[]) && (userPricing as UserPricing[]).length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -335,7 +327,7 @@ export default function SurveyPricing() {
                     </tr>
                   </thead>
                   <tbody>
-                    {userPricing.map((pricing: UserPricing) => (
+                    {(userPricing as UserPricing[]).map((pricing: UserPricing) => (
                       <tr key={pricing.id} className="border-b">
                         {editingPricing?.id === pricing.id ? (
                           <>
