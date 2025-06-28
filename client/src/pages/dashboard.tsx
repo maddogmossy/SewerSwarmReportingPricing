@@ -806,22 +806,11 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={async () => {
-                        if (currentUpload) {
-                          try {
-                            await apiRequest('POST', `/api/refresh-database/${currentUpload.id}`);
-                            queryClient.invalidateQueries({ queryKey: ['/api/uploads'] });
-                            queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-                            window.location.reload();
-                          } catch (error) {
-                            console.error('Failed to refresh database:', error);
-                          }
-                        }
-                      }}
+                      onClick={() => window.location.reload()}
                       className="text-xs"
                     >
                       <RefreshCw className="h-3 w-3 mr-1" />
-                      Refresh Data
+                      Refresh Page
                     </Button>
                     <Button
                       variant="outline"
