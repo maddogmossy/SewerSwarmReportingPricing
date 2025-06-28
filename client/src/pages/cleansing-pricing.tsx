@@ -415,34 +415,38 @@ export default function CleansingPricing() {
                 <div>
                   <Label>Sections per Day</Label>
                   <Input
-                    type="number"
-                    step="0.1"
+                    type="text"
                     placeholder="0.0"
                     value={newPricing.sectionsPerDay}
                     onChange={(e) => handlePricingChange('sectionsPerDay', e.target.value)}
                   />
                 </div>
                 <div>
-                  <Label>Meterage Range Min (m)</Label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    placeholder="0.0"
-                    value={newPricing.meterageRangeMin}
-                    onChange={(e) => handlePricingChange('meterageRangeMin', e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <Label>Meterage Range Max (m)</Label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    placeholder="0.0"
-                    value={newPricing.meterageRangeMax}
-                    onChange={(e) => handlePricingChange('meterageRangeMax', e.target.value)}
-                  />
+                  <Label>Meterage Range</Label>
+                  <Select
+                    value={newPricing.meterageRangeMin && newPricing.meterageRangeMax ? `${newPricing.meterageRangeMin}-${newPricing.meterageRangeMax}` : ""}
+                    onValueChange={(value) => {
+                      const [min, max] = value.split('-');
+                      handlePricingChange('meterageRangeMin', min);
+                      handlePricingChange('meterageRangeMax', max);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Range" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0-10">0-10m</SelectItem>
+                      <SelectItem value="0-20">0-20m</SelectItem>
+                      <SelectItem value="0-30">0-30m</SelectItem>
+                      <SelectItem value="0-40">0-40m</SelectItem>
+                      <SelectItem value="0-50">0-50m</SelectItem>
+                      <SelectItem value="0-60">0-60m</SelectItem>
+                      <SelectItem value="0-70">0-70m</SelectItem>
+                      <SelectItem value="0-80">0-80m</SelectItem>
+                      <SelectItem value="0-90">0-90m</SelectItem>
+                      <SelectItem value="0-100">0-100m</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
