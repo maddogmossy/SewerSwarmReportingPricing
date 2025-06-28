@@ -8,7 +8,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/ui/file-upload";
 import { FileUpload as FileUploadType } from "@shared/schema";
-import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye } from "lucide-react";
+import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 const sectors = [
@@ -16,6 +16,8 @@ const sectors = [
     id: 'utilities',
     name: 'Utilities',
     description: 'Water companies, utility providers',
+    icon: Wrench,
+    color: '#3b82f6', // Blue
     standards: [
       'WRc Sewerage Rehabilitation Manual (SRM)',
       'Water Industry Act 1991',
@@ -29,6 +31,8 @@ const sectors = [
     id: 'adoption',
     name: 'Adoption',
     description: 'Section 104 adoption agreements',
+    icon: Building,
+    color: '#10b981', // Emerald
     standards: [
       'Sewers for Adoption 8th Edition (SfA8)',
       'Section 104 Water Industry Act 1991',
@@ -42,6 +46,8 @@ const sectors = [
     id: 'highways',
     name: 'Highways',
     description: 'Highway drainage systems',
+    icon: Car,
+    color: '#f59e0b', // Amber
     standards: [
       'Design Manual for Roads and Bridges (DMRB)',
       'Highway Act 1980',
@@ -55,6 +61,8 @@ const sectors = [
     id: 'trading',
     name: 'Trading Standards',
     description: 'Commercial and regulatory compliance',
+    icon: Shield,
+    color: '#8b5cf6', // Violet
     standards: [
       'Consumer Protection Act 1987',
       'Trade Descriptions Act 1968',
@@ -68,6 +76,8 @@ const sectors = [
     id: 'insurance',
     name: 'Insurance',
     description: 'Insurance assessments and claims',
+    icon: Banknote,
+    color: '#ef4444', // Red
     standards: [
       'Association of British Insurers (ABI) Guidelines',
       'RICS Professional Standards',
@@ -81,6 +91,8 @@ const sectors = [
     id: 'construction',
     name: 'Construction',
     description: 'New build and development projects',
+    icon: HardHat,
+    color: '#06b6d4', // Cyan
     standards: [
       'Building Regulations Approved Document H',
       'Construction (Design and Management) Regulations 2015',
@@ -244,40 +256,59 @@ export default function Upload() {
             {!selectedSector && (
               <div className="space-y-4">
                 <h3 className="font-medium">Select Applicable Sector</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {sectors.map((sector) => {
                     // Apply dynamic styling for utilities sector from logic profile
                     const isUtilities = sector.id === 'utilities';
-                    const dynamicStyle = isUtilities && utilitiesProfile ? {
-                      backgroundColor: utilitiesProfile.button_color === 'blue' ? '#3b82f6' : utilitiesProfile.button_color,
-                      color: utilitiesProfile.button_color === 'blue' ? 'white' : 'black',
-                      borderColor: utilitiesProfile.button_color === 'blue' ? '#3b82f6' : utilitiesProfile.button_color
-                    } : {};
+                    const sectorColor = isUtilities && utilitiesProfile ? 
+                      (utilitiesProfile.button_color === 'blue' ? '#3b82f6' : utilitiesProfile.button_color) : 
+                      sector.color;
                     
                     const displayName = isUtilities && utilitiesProfile ? 
                       utilitiesProfile.display_name : sector.name;
                     const description = isUtilities && utilitiesProfile ? 
                       utilitiesProfile.description : sector.description;
 
+                    const IconComponent = sector.icon;
+
                     return (
-                      <Button
+                      <div
                         key={sector.id}
-                        variant={isUtilities && utilitiesProfile ? "default" : "outline"}
-                        className="h-auto p-4 text-left justify-start"
-                        style={dynamicStyle}
+                        className="relative border-2 bg-white rounded-lg p-6 cursor-pointer hover:shadow-lg transition-shadow duration-200"
+                        style={{ borderColor: sectorColor }}
                         onClick={() => setSelectedSector(sector.id)}
                       >
-                        <div>
-                          <div className="font-medium">{displayName}</div>
-                          <div className="text-sm mt-1" style={
-                            isUtilities && utilitiesProfile ? 
-                            { color: utilitiesProfile.button_color === 'blue' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)' } : 
-                            {}
-                          }>
+                        {/* Title positioned at top cutting through border */}
+                        <div 
+                          className="absolute -top-3 left-4 px-3 py-1 rounded-md flex items-center gap-2 font-semibold text-white text-sm"
+                          style={{ backgroundColor: sectorColor }}
+                        >
+                          <IconComponent className="h-4 w-4" />
+                          {displayName}
+                        </div>
+
+                        {/* Content area */}
+                        <div className="mt-4 space-y-3">
+                          <p className="text-sm text-gray-600 font-medium">
                             {description}
+                          </p>
+
+                          {/* Standards as bullet points */}
+                          <div className="space-y-1">
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                              Applicable Standards
+                            </h4>
+                            <ul className="text-xs text-gray-600 space-y-1">
+                              {sector.standards.map((standard, index) => (
+                                <li key={index} className="flex items-start gap-1">
+                                  <span className="text-gray-400 mt-1">•</span>
+                                  <span>{standard}</span>
+                                </li>
+                              ))}
+                            </ul>
                           </div>
                         </div>
-                      </Button>
+                      </div>
                     );
                   })}
                 </div>

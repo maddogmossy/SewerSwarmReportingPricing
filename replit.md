@@ -138,6 +138,7 @@ Changelog:
 - June 28, 2025. Integrated comprehensive standards library: Added Drain Repair Book (4th Ed.), Sewer Cleaning Manual, and OS19x Adoption standards as separate modules with specific repair methods, cleaning procedures, and adoption criteria for enhanced sector-specific analysis
 - June 28, 2025. Implemented utilities logic profile integration: Added configurable utilities_logic_profile.json with sector-specific routing, grade escalation rules, and Water UK export format support for complete utilities sector compliance
 - June 28, 2025. Added Water UK format export: Implemented CSV/JSON export functionality with PLR calculation, required fields mapping, and full compliance with Water UK adoption reporting standards
+- June 28, 2025. Redesigned sector selection interface: Replaced button layout with outlined boxes featuring white interiors, color-coded borders, titles positioned at top cutting through borders, sector-specific icons (Wrench, Building, Car, Shield, Banknote, HardHat), and bullet-pointed standards lists for enhanced visual hierarchy and user experience
 ```
 
 ## User Preferences
