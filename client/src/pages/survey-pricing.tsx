@@ -144,8 +144,10 @@ export default function SurveyPricing() {
       });
       setEditingEquipment(null);
       setShowEquipmentDialog(false);
-      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/1"] });
-      queryClient.refetchQueries({ queryKey: ["/api/equipment-types/1"] });
+      // Force complete page refresh to show updates
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     },
     onError: (error: any) => {
       console.error("Equipment update error:", error);
