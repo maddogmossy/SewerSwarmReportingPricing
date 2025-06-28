@@ -285,7 +285,8 @@ export default function CleansingPricing() {
           costPerHour: pricing.costPerHour,
           sectionsPerDay: pricing.sectionsPerDay,
           meterageRangeMin: pricing.meterageRangeMin,
-          meterageRangeMax: pricing.meterageRangeMax
+          meterageRangeMax: pricing.meterageRangeMax,
+          sectors: pricing.sectors
         });
       } else {
         return await apiRequest('POST', '/api/user-pricing', pricing);
