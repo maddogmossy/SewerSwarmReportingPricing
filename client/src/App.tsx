@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard-new";
 import Upload from "@/pages/upload";
 import Pricing from "@/pages/pricing";
+import SurveyPricing from "@/pages/survey-pricing";
 import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 

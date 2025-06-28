@@ -276,6 +276,70 @@ export class DatabaseStorage implements IStorage {
       eq(userCostBands.userId, userId)
     );
   }
+
+  // New detailed pricing system implementation
+  async getWorkCategories(): Promise<WorkCategory[]> {
+    return await db.select().from(workCategories).orderBy(workCategories.sortOrder);
+  }
+
+  async getEquipmentTypesByCategory(categoryId: number): Promise<EquipmentType[]> {
+    return await db.select().from(equipmentTypes)
+      .where(eq(equipmentTypes.workCategoryId, categoryId));
+  }
+
+  async getUserPricing(userId: string, equipmentTypeId?: number): Promise<UserPricing[]> {
+    const conditions = [eq(userPricing.userId, userId)];
+    if (equipmentTypeId) {
+      conditions.push(eq(userPricing.equipmentTypeId, equipmentTypeId));
+    }
+    return await db.select().from(userPricing)
+      .where(and(...conditions))
+      .orderBy(desc(userPricing.updatedAt));
+  }
+
+  async createUserPricing(pricing: InsertUserPricing): Promise<UserPricing> {
+    const [created] = await db.insert(userPricing).values(pricing).returning();
+    return created;
+  }
+
+  async updateUserPricing(id: number, pricingUpdate: Partial<InsertUserPricing>): Promise<UserPricing> {
+    const [updated] = await db.update(userPricing)
+      .set({ ...pricingUpdate, updatedAt: new Date() })
+      .where(eq(userPricing.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteUserPricing(id: number): Promise<void> {
+    await db.delete(userPricing).where(eq(userPricing.id, id));
+  }
+
+  async getUserPricingRules(userId: string, categoryId?: number): Promise<PricingRule[]> {
+    const conditions = [eq(pricingRules.userId, userId)];
+    if (categoryId) {
+      conditions.push(eq(pricingRules.workCategoryId, categoryId));
+    }
+    return await db.select().from(pricingRules)
+      .where(and(...conditions))
+      .orderBy(desc(pricingRules.createdAt));
+  }
+
+  async createPricingRule(rule: InsertPricingRule): Promise<PricingRule> {
+    const [created] = await db.insert(pricingRules).values(rule).returning();
+    return created;
+  }
+
+  async updatePricingRule(id: number, ruleUpdate: Partial<InsertPricingRule>): Promise<PricingRule> {
+    const [updated] = await db.update(pricingRules)
+      .set(ruleUpdate)
+      .where(eq(pricingRules.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deletePricingRule(id: number): Promise<void> {
+    await db.delete(pricingRules).where(eq(pricingRules.id, id));
+  }
 }
 
 export const storage = new DatabaseStorage();
