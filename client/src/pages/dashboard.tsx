@@ -365,9 +365,67 @@ export default function Dashboard() {
           </div>
         );
       case 'recommendations':
+        // User-friendly recommendations without grade references
+        if (section.itemNo === 3) {
+          return (
+            <div className="text-xs max-w-48">
+              We recommend cleansing and resurvey due to debris
+            </div>
+          );
+        }
+        
+        // Check for specific defect types and provide appropriate recommendations
+        const defectText = section.defects || '';
+        const hasDefects = defectText && !defectText.includes('No action required');
+        
+        if (hasDefects) {
+          // Provide specific recommendations based on defect types
+          if (defectText.toLowerCase().includes('debris') || defectText.toLowerCase().includes('der')) {
+            return (
+              <div className="text-xs max-w-48">
+                We recommend cleansing and resurvey due to debris
+              </div>
+            );
+          }
+          if (defectText.toLowerCase().includes('crack') || defectText.toLowerCase().includes('fracture')) {
+            return (
+              <div className="text-xs max-w-48">
+                We recommend structural assessment and repair
+              </div>
+            );
+          }
+          if (defectText.toLowerCase().includes('displacement') || defectText.toLowerCase().includes('deformation')) {
+            return (
+              <div className="text-xs max-w-48">
+                We recommend structural repair and realignment
+              </div>
+            );
+          }
+          if (defectText.toLowerCase().includes('obstruction') || defectText.toLowerCase().includes('blockage')) {
+            return (
+              <div className="text-xs max-w-48">
+                We recommend removal of obstruction and cleansing
+              </div>
+            );
+          }
+          if (defectText.toLowerCase().includes('root') || defectText.toLowerCase().includes('vegetation')) {
+            return (
+              <div className="text-xs max-w-48">
+                We recommend root cutting and preventative treatment
+              </div>
+            );
+          }
+          // Generic recommendation for other defects
+          return (
+            <div className="text-xs max-w-48">
+              We recommend detailed inspection and appropriate remedial action
+            </div>
+          );
+        }
+        
         return (
           <div className="text-xs max-w-48">
-            {section.recommendations || "No action required"}
+            No action required - pipe in acceptable condition
           </div>
         );
       case 'cleaningMethods':
@@ -745,10 +803,7 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        console.log('Column selector toggle clicked, current state:', showColumnSelector);
-                        setShowColumnSelector(!showColumnSelector);
-                      }}
+                      onClick={() => setShowColumnSelector(!showColumnSelector)}
                       className="text-xs"
                     >
                       {showColumnSelector ? 'Hide Columns' : 'Show Columns'}
@@ -770,9 +825,6 @@ export default function Dashboard() {
                 {showColumnSelector && (
                   <div className="mb-4 p-4 bg-slate-50 rounded-lg border">
                     <h4 className="text-sm font-medium mb-3">Select Columns to Display</h4>
-                    <div className="mb-2 text-xs text-blue-600">
-                      Debug: Panel is showing. Hidden columns: {Array.from(hiddenColumns).join(', ') || 'none'}
-                    </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                       {columns.map((column) => (
                         <div key={column.key} className="flex items-center space-x-2">
@@ -780,7 +832,6 @@ export default function Dashboard() {
                             id={column.key}
                             checked={!hiddenColumns.has(column.key)}
                             onCheckedChange={(checked) => {
-                              console.log(`Column ${column.key} toggled to ${checked}`);
                               if (!checked && !column.hideable) return; // Prevent hiding essential columns
                               toggleColumnVisibility(column.key);
                             }}
