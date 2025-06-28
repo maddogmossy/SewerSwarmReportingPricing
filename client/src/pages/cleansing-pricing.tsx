@@ -536,7 +536,7 @@ export default function CleansingPricing() {
                                 costPerHour: pricing?.costPerHour || "",
                                 sectionsPerDay: pricing?.sectionsPerDay || "",
                                 sectionsPerHour: pricing?.sectionsPerHour || "",
-                                sectors: pricing?.sectors || []
+                                sectors: []
                               })}
                             >
                               <Edit className="h-4 w-4" />
