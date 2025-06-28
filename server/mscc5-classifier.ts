@@ -463,7 +463,7 @@ export class MSCC5Classifier {
       defectCode,
       defectDescription: detectedDefect.description,
       severityGrade: adjustedGrade,
-      defectType: detectedDefected.type,
+      defectType: detectedDefect.type,
       recommendations: detectedDefect.recommended_action,
       riskAssessment: detectedDefect.risk,
       adoptable,
