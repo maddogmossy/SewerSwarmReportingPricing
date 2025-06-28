@@ -133,9 +133,41 @@ export default function SurveyPricing() {
     },
   });
 
+  const createEquipmentMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("/api/equipment-types", {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Equipment specification created successfully",
+      });
+      setEditingEquipment(null);
+      setShowEquipmentDialog(false);
+      // Force complete page refresh to show updates
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    },
+    onError: (error: any) => {
+      console.error("Equipment creation error:", error);
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to create equipment specification",
+        variant: "destructive",
+      });
+    },
+  });
+
   const updateEquipmentMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      return await apiRequest("PUT", "/api/equipment-types/" + id, data);
+      return await apiRequest(`/api/equipment-types/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(data)
+      });
     },
     onSuccess: () => {
       toast({
@@ -413,10 +445,30 @@ export default function SurveyPricing() {
           {/* Available Equipment Specifications with Management */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Available Equipment Specifications
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  Available Equipment Specifications
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setEditingEquipment({
+                      id: 0,
+                      name: '',
+                      description: '',
+                      minPipeSize: 75,
+                      maxPipeSize: 300
+                    });
+                    setShowEquipmentDialog(true);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Equipment
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
