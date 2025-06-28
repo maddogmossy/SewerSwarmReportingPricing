@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -97,6 +97,19 @@ export default function Upload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [, setLocation] = useLocation();
+  const [utilitiesProfile, setUtilitiesProfile] = useState<any>(null);
+
+  // Fetch utilities logic profile for dynamic styling
+  const { data: logicProfile } = useQuery({
+    queryKey: ["/api/utilities/profile"],
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  useEffect(() => {
+    if (logicProfile) {
+      setUtilitiesProfile(logicProfile);
+    }
+  }, [logicProfile]);
 
   const { data: uploads = [], refetch } = useQuery<FileUploadType[]>({
     queryKey: ["/api/uploads"],
@@ -232,21 +245,41 @@ export default function Upload() {
               <div className="space-y-4">
                 <h3 className="font-medium">Select Applicable Sector</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {sectors.map((sector) => (
-                    <Button
-                      key={sector.id}
-                      variant="outline"
-                      className="h-auto p-4 text-left justify-start"
-                      onClick={() => setSelectedSector(sector.id)}
-                    >
-                      <div>
-                        <div className="font-medium">{sector.name}</div>
-                        <div className="text-sm text-muted-foreground mt-1">
-                          {sector.description}
+                  {sectors.map((sector) => {
+                    // Apply dynamic styling for utilities sector from logic profile
+                    const isUtilities = sector.id === 'utilities';
+                    const dynamicStyle = isUtilities && utilitiesProfile ? {
+                      backgroundColor: utilitiesProfile.button_color === 'blue' ? '#3b82f6' : utilitiesProfile.button_color,
+                      color: utilitiesProfile.button_color === 'blue' ? 'white' : 'black',
+                      borderColor: utilitiesProfile.button_color === 'blue' ? '#3b82f6' : utilitiesProfile.button_color
+                    } : {};
+                    
+                    const displayName = isUtilities && utilitiesProfile ? 
+                      utilitiesProfile.display_name : sector.name;
+                    const description = isUtilities && utilitiesProfile ? 
+                      utilitiesProfile.description : sector.description;
+
+                    return (
+                      <Button
+                        key={sector.id}
+                        variant={isUtilities && utilitiesProfile ? "default" : "outline"}
+                        className="h-auto p-4 text-left justify-start"
+                        style={dynamicStyle}
+                        onClick={() => setSelectedSector(sector.id)}
+                      >
+                        <div>
+                          <div className="font-medium">{displayName}</div>
+                          <div className="text-sm mt-1" style={
+                            isUtilities && utilitiesProfile ? 
+                            { color: utilitiesProfile.button_color === 'blue' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)' } : 
+                            {}
+                          }>
+                            {description}
+                          </div>
                         </div>
-                      </div>
-                    </Button>
-                  ))}
+                      </Button>
+                    );
+                  })}
                 </div>
               </div>
             )}

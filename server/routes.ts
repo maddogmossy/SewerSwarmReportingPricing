@@ -671,6 +671,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get utilities logic profile endpoint
+  app.get("/api/utilities/profile", isAuthenticated, async (req, res) => {
+    try {
+      const profile = UtilitiesValidation.getUtilitiesProfile();
+      res.json(profile);
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get utilities profile",
+        error: (error as Error).message
+      });
+    }
+  });
+
   // Utilities sector validation endpoint
   app.get("/api/utilities/validate", isAuthenticated, async (req, res) => {
     try {
