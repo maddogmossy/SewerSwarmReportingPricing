@@ -687,6 +687,19 @@ export default function SectorPricingDetail() {
                       }
                     } catch (error) {
                       console.warn('Could not fetch cleaning recommendations:', error);
+                      
+                      // Fallback to hardcoded WRc standards for DER
+                      if (value === 'DER') {
+                        recommendationType = 'Jet-vac cleaning for material removal, High-pressure jetting with rotating nozzle, Post-clean CCTV verification survey, Adoptability fail for Grade 4-5 or 20%+ obstruction';
+                      } else if (value === 'DES') {
+                        recommendationType = 'Jetting with medium-pressure nozzle, Vacuum extraction (Jet-Vac unit), Flushing to downstream manhole';
+                      } else if (value === 'RI') {
+                        recommendationType = 'Mechanical root cutting, Hydraulic root removal nozzle, CCTV confirmation post-clean, Root barrier or liner for long-term control';
+                      } else if (value === 'WL') {
+                        recommendationType = 'Investigate downstream blockage, Clear obstruction if identified, Check gradient and flows';
+                      } else if (value === 'OB') {
+                        recommendationType = 'Physical removal of obstruction, High-pressure jetting if organic, CCTV survey to confirm clearance';
+                      }
                     }
                   }
                   

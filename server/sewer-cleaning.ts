@@ -19,9 +19,11 @@ export const SEWER_CLEANING_MANUAL: Record<string, SewerCleaningData> = {
   DER: {
     description: "Deposits - coarse (gravel, debris)",
     recommended_methods: [
+      "Jet-vac cleaning for material removal",
       "High-pressure jetting with rotating nozzle",
-      "Bucket machine (for large pipes)",
-      "Jet-Vac unit for removal"
+      "Post-clean CCTV verification survey",
+      "Bucket machine for large pipes (>450mm)",
+      "Adoptability fail for Grade 4-5 or 20%+ obstruction"
     ],
     cleaning_frequency: "Quarterly or after CCTV trigger",
     action_type: 2

@@ -31,8 +31,10 @@ export const DRAIN_REPAIR_BOOK: Record<string, DrainRepairData> = {
     defect: "Deposits - coarse",
     symptoms: "Blockage from sand, stones, or debris in flow path",
     suggested_repairs: [
-      "High-pressure water jetting",
-      "CCTV post-clean inspection",
+      "Jet-vac cleaning for material removal",
+      "High-pressure jetting with rotating nozzle",
+      "Post-clean CCTV verification survey",
+      "Adoptability fail for Grade 4-5 or 20%+ obstruction",
       "Root-cutting if deposit is organic or recurring"
     ],
     repair_priority: "Medium",
