@@ -92,6 +92,9 @@ export default function SectorPricingDetail() {
     costPerDay: ''
   });
 
+  const [showAddGroup, setShowAddGroup] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
+
   // Fetch sector-specific rules
   const { data: pricingRules = [] } = useQuery({
     queryKey: [`/api/pricing-rules/${sector}`],
