@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Settings, Wrench, Building2, Scissors, Droplets, Hammer, Layers, Truck, Home, ChevronRight, BarChart3, Plus, Edit, Trash2, Save } from "lucide-react";
+import { Settings, Wrench, Building2, Scissors, Droplets, Hammer, Layers, Truck, Home, ChevronRight, BarChart3, Plus, Edit, Trash2, Save, X } from "lucide-react";
 import { Link } from "wouter";
 
 // MSCC5 Defect Codes
@@ -294,7 +294,13 @@ export default function Pricing() {
         description: '',
         minPipeSize: 75,
         maxPipeSize: 300,
-        workCategoryId: selectedCategory
+        workCategoryId: selectedCategory,
+        costPerHour: '',
+        costPerDay: '',
+        meterageRangeMin: '',
+        meterageRangeMax: '',
+        sectionsPerDay: '',
+        sectors: []
       });
       toast({
         title: "Success",
@@ -340,7 +346,13 @@ export default function Pricing() {
       description: equipment.description,
       minPipeSize: equipment.minPipeSize,
       maxPipeSize: equipment.maxPipeSize,
-      workCategoryId: equipment.workCategoryId
+      workCategoryId: equipment.workCategoryId,
+      costPerHour: '',
+      costPerDay: '',
+      meterageRangeMin: '',
+      meterageRangeMax: '',
+      sectionsPerDay: '',
+      sectors: []
     });
     setShowAddEquipment(true);
   };
@@ -357,7 +369,13 @@ export default function Pricing() {
       description: standardEquipment.description,
       minPipeSize: standardEquipment.minPipeSize,
       maxPipeSize: standardEquipment.maxPipeSize,
-      workCategoryId: selectedCategory
+      workCategoryId: selectedCategory,
+      costPerHour: '',
+      costPerDay: '',
+      meterageRangeMin: '',
+      meterageRangeMax: '',
+      sectionsPerDay: '',
+      sectors: []
     });
     setShowAddEquipment(true);
   };
@@ -958,6 +976,102 @@ export default function Pricing() {
               <Button variant="outline" onClick={() => setShowAddEquipment(false)}>
                 Cancel
               </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Equipment Dialog */}
+      {showAddEquipment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold">
+                {editingEquipment ? 'Edit Equipment' : 'Add New Equipment'}
+              </h2>
+              <Button variant="outline" size="sm" onClick={() => setShowAddEquipment(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column - Equipment Form */}
+              <div className="space-y-4">
+                <h3 className="font-medium text-gray-900">Equipment Details</h3>
+                
+                <div>
+                  <Label>Equipment Name</Label>
+                  <Input 
+                    value={newEquipment.name} 
+                    onChange={(e) => setNewEquipment({...newEquipment, name: e.target.value})}
+                    placeholder="e.g., Van Pack CCTV Unit 3.5t"
+                  />
+                </div>
+
+                <div>
+                  <Label>Description</Label>
+                  <Input 
+                    value={newEquipment.description} 
+                    onChange={(e) => setNewEquipment({...newEquipment, description: e.target.value})}
+                    placeholder="e.g., Compact van-mounted CCTV system"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Min Pipe Size (mm)</Label>
+                    <Input 
+                      type="number" 
+                      value={newEquipment.minPipeSize} 
+                      onChange={(e) => setNewEquipment({...newEquipment, minPipeSize: parseInt(e.target.value) || 0})}
+                    />
+                  </div>
+                  <div>
+                    <Label>Max Pipe Size (mm)</Label>
+                    <Input 
+                      type="number" 
+                      value={newEquipment.maxPipeSize} 
+                      onChange={(e) => setNewEquipment({...newEquipment, maxPipeSize: parseInt(e.target.value) || 0})}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handleSubmitEquipment}
+                    disabled={!newEquipment.name || !newEquipment.description}
+                    className="flex items-center gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    {editingEquipment ? 'Update Equipment' : 'Add Equipment'}
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowAddEquipment(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Column - Standard Equipment Templates */}
+              <div className="space-y-4">
+                <h3 className="font-medium text-gray-900">Standard Survey Equipment</h3>
+                <p className="text-sm text-gray-600">Click any template to pre-fill the form</p>
+                
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {STANDARD_SURVEY_EQUIPMENT.map((equipment, index) => (
+                    <div 
+                      key={index}
+                      className="border rounded-lg p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => handleAddStandardEquipment(equipment)}
+                    >
+                      <div className="font-medium text-sm text-gray-900">{equipment.name}</div>
+                      <div className="text-xs text-gray-600 mt-1">{equipment.description}</div>
+                      <div className="text-xs text-blue-600 mt-1">
+                        Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
