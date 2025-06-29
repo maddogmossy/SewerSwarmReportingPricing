@@ -78,7 +78,6 @@ export default function SectorPricingDetail() {
   const [equipmentToDelete, setEquipmentToDelete] = useState<string | number | null>(null);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
-  const [standardEquipmentOverrides, setStandardEquipmentOverrides] = useState<Record<string, any>>({});
 
   // Toggle category collapse
   const toggleCategory = (category: string) => {
@@ -124,18 +123,7 @@ export default function SectorPricingDetail() {
     enabled: !!sector
   });
 
-  // Reset equipment state and clear duplicates
-  const resetEquipmentMutation = useMutation({
-    mutationFn: async () => {
-      // Clear standard equipment overrides
-      setStandardEquipmentOverrides({});
-      return { success: true };
-    },
-    onSuccess: () => {
-      refetchEquipment();
-      toast({ title: "Success", description: "Equipment state reset successfully" });
-    }
-  });
+
 
   // Add new rule mutation
   const addRuleMutation = useMutation({
@@ -187,17 +175,6 @@ export default function SectorPricingDetail() {
   // Update equipment mutation
   const updateEquipmentMutation = useMutation({
     mutationFn: async (equipment: any) => {
-      // For standard equipment, store in memory only
-      if (typeof equipment.id === 'string' && equipment.id.startsWith('standard-')) {
-        console.log('Standard equipment update - storing in memory:', equipment);
-        setStandardEquipmentOverrides(prev => ({
-          ...prev,
-          [equipment.id]: equipment
-        }));
-        return { success: true, equipment };
-      }
-      
-      // For user equipment, save to database
       const sanitizedEquipment = {
         ...equipment,
         minPipeSize: typeof equipment.minPipeSize === 'number' && !isNaN(equipment.minPipeSize) ? equipment.minPipeSize : 75,
@@ -372,33 +349,19 @@ export default function SectorPricingDetail() {
 
   // Organize equipment by categories with alphabetical ordering and smallest pipe sizes first
   const organizeEquipmentByCategory = () => {
-    // Only include database equipment (no standard equipment from this function)
+    // Simple standard equipment examples - one per category
+    const standardEquipment = [
+      { id: 'standard-0', name: 'Van Pack 3.5t', description: 'Compact CCTV system for small diameter pipes', category: 'CCTV', minPipeSize: 75, maxPipeSize: 300, costPerDay: 150, isStandard: true },
+      { id: 'standard-1', name: 'High-Pressure Jetter 7.5t', description: 'Water jetting system for pipe cleaning', category: 'Jetting', minPipeSize: 75, maxPipeSize: 600, costPerDay: 180, isStandard: true },
+      { id: 'standard-2', name: 'UV Curing System', description: 'UV light curing system for lining repairs', category: 'Patching', minPipeSize: 100, maxPipeSize: 600, costPerDay: 280, isStandard: true }
+    ];
+
+    // Include database equipment
     const dbEquipment = (equipmentTypes || []).map((eq: any) => ({ ...eq, isStandard: false }));
     
-    // Add standard equipment with proper category preservation
-    const standardEquipment = STANDARD_SURVEY_EQUIPMENT.map((eq, index) => {
-      const standardId = `standard-${index}`;
-      const override = standardEquipmentOverrides[standardId];
-      return { 
-        ...eq, 
-        ...(override || {}),
-        id: standardId, 
-        isStandard: true,
-        costPerDay: override?.costPerDay || 0,
-        category: override?.category || eq.category // Preserve original or override category
-      };
-    });
-
     const allEquipment = [...dbEquipment, ...standardEquipment];
 
-    // Remove duplicates by name and category combination
-    const uniqueEquipment = allEquipment.filter((equipment, index, array) => {
-      return array.findIndex(item => 
-        item.name === equipment.name && item.category === equipment.category
-      ) === index;
-    });
-
-    const groupedByCategory = uniqueEquipment.reduce((groups: any, equipment: any) => {
+    const groupedByCategory = allEquipment.reduce((groups: any, equipment: any) => {
       const category = equipment.category || 'CCTV';
       if (!groups[category]) {
         groups[category] = [];
@@ -521,14 +484,6 @@ export default function SectorPricingDetail() {
               <div className="flex items-center justify-between">
                 <CardTitle>Current Assets/Vehicles - Surveys</CardTitle>
                 <div className="flex gap-2">
-                  <Button 
-                    onClick={() => resetEquipmentMutation.mutate()} 
-                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700"
-                    disabled={resetEquipmentMutation.isPending}
-                  >
-                    <RotateCcw className="h-4 w-4" />
-                    Reset Equipment
-                  </Button>
                   <Button onClick={() => setShowAddCategory(true)} className="flex items-center gap-2 bg-green-600 hover:bg-green-700">
                     <Plus className="h-4 w-4" />
                     Add Category
