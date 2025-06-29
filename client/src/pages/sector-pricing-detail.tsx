@@ -45,7 +45,7 @@ const STANDARD_SURVEY_EQUIPMENT = [
   { name: "Multi-Sensor CCTV Unit", description: "Advanced CCTV with sonar and laser profiling", minPipeSize: 100, maxPipeSize: 800, category: "CCTV" },
   { name: "Main Line CCTV Unit 12t", description: "Heavy-duty CCTV system for main sewer inspections", minPipeSize: 150, maxPipeSize: 600, category: "CCTV" },
   { name: "Large Bore CCTV 18t", description: "Specialized unit for large diameter trunk sewers", minPipeSize: 300, maxPipeSize: 1200, category: "CCTV" },
-  { name: "High-Pressure Jetter 7.5t", description: "Compact high-pressure jetting unit for blockage removal", minPipeSize: 75, maxPipeSize: 300, category: "Jetting" },
+  { name: "High-Pressure Jetter 7.5t", description: "Compact high-pressure jetting unit for blockage removal", minPipeSize: 125, maxPipeSize: 300, category: "Jetting" },
   { name: "Combination Jetter 18t", description: "Combined jetting and vacuum unit for comprehensive cleaning", minPipeSize: 100, maxPipeSize: 600, category: "Jetting" },
   { name: "Root Cutting Jetter", description: "Specialized jetting equipment for root removal", minPipeSize: 100, maxPipeSize: 450, category: "Jetting" },
   { name: "Patch Repair Kit", description: "Portable patching equipment for minor repairs", minPipeSize: 75, maxPipeSize: 300, category: "Patching" },
@@ -119,9 +119,22 @@ export default function SectorPricingDetail() {
   });
 
   // Fetch equipment for this sector (using category 1 for surveys)
-  const { data: equipmentTypes = [], isLoading: isLoadingEquipment } = useQuery({
+  const { data: equipmentTypes = [], isLoading: isLoadingEquipment, refetch: refetchEquipment } = useQuery({
     queryKey: [`/api/equipment-types/1`],
     enabled: !!sector
+  });
+
+  // Reset equipment state and clear duplicates
+  const resetEquipmentMutation = useMutation({
+    mutationFn: async () => {
+      // Clear standard equipment overrides
+      setStandardEquipmentOverrides({});
+      return { success: true };
+    },
+    onSuccess: () => {
+      refetchEquipment();
+      toast({ title: "Success", description: "Equipment state reset successfully" });
+    }
   });
 
   // Add new rule mutation
@@ -359,22 +372,33 @@ export default function SectorPricingDetail() {
 
   // Organize equipment by categories with alphabetical ordering and smallest pipe sizes first
   const organizeEquipmentByCategory = () => {
-    const allEquipment = [
-      ...(equipmentTypes || []).map((eq: any) => ({ ...eq, isStandard: false })),
-      ...STANDARD_SURVEY_EQUIPMENT.map((eq, index) => {
-        const standardId = `standard-${index}`;
-        const override = standardEquipmentOverrides[standardId];
-        return { 
-          ...eq, 
-          ...(override || {}),
-          id: standardId, 
-          isStandard: true,
-          costPerDay: override?.costPerDay || 0
-        };
-      })
-    ];
+    // Only include database equipment (no standard equipment from this function)
+    const dbEquipment = (equipmentTypes || []).map((eq: any) => ({ ...eq, isStandard: false }));
+    
+    // Add standard equipment with proper category preservation
+    const standardEquipment = STANDARD_SURVEY_EQUIPMENT.map((eq, index) => {
+      const standardId = `standard-${index}`;
+      const override = standardEquipmentOverrides[standardId];
+      return { 
+        ...eq, 
+        ...(override || {}),
+        id: standardId, 
+        isStandard: true,
+        costPerDay: override?.costPerDay || 0,
+        category: override?.category || eq.category // Preserve original or override category
+      };
+    });
 
-    const groupedByCategory = allEquipment.reduce((groups: any, equipment: any) => {
+    const allEquipment = [...dbEquipment, ...standardEquipment];
+
+    // Remove duplicates by name and category combination
+    const uniqueEquipment = allEquipment.filter((equipment, index, array) => {
+      return array.findIndex(item => 
+        item.name === equipment.name && item.category === equipment.category
+      ) === index;
+    });
+
+    const groupedByCategory = uniqueEquipment.reduce((groups: any, equipment: any) => {
       const category = equipment.category || 'CCTV';
       if (!groups[category]) {
         groups[category] = [];
