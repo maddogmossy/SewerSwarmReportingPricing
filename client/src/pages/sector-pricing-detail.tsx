@@ -239,38 +239,18 @@ export default function SectorPricingDetail() {
     }
   };
 
-  // Organize equipment by categories with proper deduplication
+  // Organize equipment by categories - database equipment only
   const organizeEquipmentByCategory = () => {
-    // Standard equipment examples - one per category
-    const standardEquipment = [
-      { id: 'standard-0', name: 'Van Pack 3.5t', description: 'Compact CCTV system for small diameter pipes', category: 'CCTV', minPipeSize: 75, maxPipeSize: 300, costPerDay: 150, isStandard: true },
-      { id: 'standard-1', name: 'High-Pressure Jetter 7.5t', description: 'Water jetting system for pipe cleaning', category: 'Jetting', minPipeSize: 75, maxPipeSize: 600, costPerDay: 180, isStandard: true },
-      { id: 'standard-2', name: 'UV Curing System', description: 'UV light curing system for lining repairs', category: 'Patching', minPipeSize: 100, maxPipeSize: 600, costPerDay: 280, isStandard: true }
-    ];
-
-    // Include database equipment and remove duplicates by name
+    // Only use real database equipment - no standard examples
     const dbEquipment = (equipmentTypes || []).map((eq: any) => ({ ...eq, isStandard: false }));
     
-    // Remove database equipment that has the same name or similar name as standard equipment
-    const uniqueDbEquipment = dbEquipment.filter(dbEq => 
-      !standardEquipment.some(stdEq => 
-        stdEq.name === dbEq.name || 
-        dbEq.name.includes(stdEq.name) || 
-        stdEq.name.includes(dbEq.name)
-      )
-    );
-    
-    // Also remove duplicates within database equipment itself - more aggressive matching
-    const deduplicatedDbEquipment = uniqueDbEquipment.filter((equipment, index, array) => {
-      const firstOccurrence = array.findIndex(item => 
-        item.name === equipment.name || 
-        item.name.toLowerCase().includes(equipment.name.toLowerCase()) ||
-        equipment.name.toLowerCase().includes(item.name.toLowerCase())
-      );
+    // Remove duplicates within database equipment
+    const deduplicatedDbEquipment = dbEquipment.filter((equipment, index, array) => {
+      const firstOccurrence = array.findIndex(item => item.name === equipment.name);
       return firstOccurrence === index;
     });
     
-    const allEquipment = [...deduplicatedDbEquipment, ...standardEquipment];
+    const allEquipment = [...deduplicatedDbEquipment];
 
     const groupedByCategory = allEquipment.reduce((groups: any, equipment: any) => {
       const category = equipment.category || 'CCTV';
