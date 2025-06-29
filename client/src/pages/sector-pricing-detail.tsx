@@ -457,54 +457,6 @@ export default function SectorPricingDetail() {
                   </div>
                 ))}
               </div>
-                  
-                  // If it exists, don't show the standard one (user version takes precedence)
-                  if (existingEquipment) return null;
-                  
-                  return (
-                    <div 
-                      key={`standard-${index}`}
-                      className="border rounded-lg p-4"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium">{equipment.name}</span>
-                        <div className="flex gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => {
-                              setNewEquipment({
-                                name: equipment.name,
-                                description: equipment.description,
-                                category: equipment.category || 'CCTV',
-                                minPipeSize: equipment.minPipeSize,
-                                maxPipeSize: equipment.maxPipeSize,
-                                costPerDay: ''
-                              });
-                              setEditingEquipment({ id: `standard-${index}`, ...equipment });
-                              setShowAddEquipment(true);
-                            }}
-                          >
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => setEquipmentToDelete(`standard-${index}`)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
-                      <div className="text-xs text-gray-500">
-                        <p>Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm</p>
-                        <p className="font-medium text-green-600">Cost per Day: £0.00</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
             </CardContent>
           </Card>
         </div>
