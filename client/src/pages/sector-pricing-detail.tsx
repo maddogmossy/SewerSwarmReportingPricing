@@ -58,7 +58,7 @@ export default function SectorPricingDetail() {
   const [editingRule, setEditingRule] = useState<PricingRule | null>(null);
   const [editingEquipment, setEditingEquipment] = useState<any>(null);
   const [equipmentToDelete, setEquipmentToDelete] = useState<string | number | null>(null);
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set(['CCTV', 'Jetting', 'Patching']));
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
   // Toggle category collapse
   const toggleCategory = (category: string) => {
@@ -112,9 +112,7 @@ export default function SectorPricingDetail() {
   // Ensure equipmentTypes is always an array
   const safeEquipmentTypes = Array.isArray(equipmentTypes) ? equipmentTypes : [];
   
-  // Debug logging
-  console.log('Equipment data:', equipmentTypes);
-  console.log('Safe equipment types:', safeEquipmentTypes);
+  // Ensure equipmentTypes is loaded properly
 
   // Add new rule mutation
   const addRuleMutation = useMutation({
