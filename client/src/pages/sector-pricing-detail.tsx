@@ -286,7 +286,8 @@ export default function SectorPricingDetail() {
         maxPipeSize: maxPipe,
         costPerDay: cost,
         workCategoryId: 1,
-        sector: sector
+        sector: sector,
+        category: editingEquipment.category || newEquipment.category || 'CCTV'
       });
     } else {
       addEquipmentMutation.mutate({
