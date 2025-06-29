@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ArrowLeft, Plus, Edit, Trash2, Save, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Save, ChevronDown, ChevronRight, RotateCcw } from "lucide-react";
 import { Link } from "wouter";
 
 // MSCC5 Defect Codes
@@ -521,6 +521,14 @@ export default function SectorPricingDetail() {
               <div className="flex items-center justify-between">
                 <CardTitle>Current Assets/Vehicles - Surveys</CardTitle>
                 <div className="flex gap-2">
+                  <Button 
+                    onClick={() => resetEquipmentMutation.mutate()} 
+                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700"
+                    disabled={resetEquipmentMutation.isPending}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    Reset Equipment
+                  </Button>
                   <Button onClick={() => setShowAddCategory(true)} className="flex items-center gap-2 bg-green-600 hover:bg-green-700">
                     <Plus className="h-4 w-4" />
                     Add Category
