@@ -114,10 +114,77 @@ const workCategories: WorkCategory[] = [
   { id: 8, name: 'Tankering', description: 'Waste removal and transportation', icon: Truck, color: 'text-green-600', implemented: false }
 ];
 
+// Standardized survey equipment list
+const STANDARD_SURVEY_EQUIPMENT = [
+  {
+    name: "Van Pack CCTV Unit 3.5t",
+    description: "Compact van-mounted CCTV system for urban drainage surveys",
+    minPipeSize: 75,
+    maxPipeSize: 300,
+    workCategoryId: 1
+  },
+  {
+    name: "City Flex CCTV 7.5t",
+    description: "Mid-size flexible CCTV unit for city infrastructure",
+    minPipeSize: 100,
+    maxPipeSize: 450,
+    workCategoryId: 1
+  },
+  {
+    name: "Main Line CCTV Unit 12t",
+    description: "Heavy-duty CCTV system for main sewer inspections",
+    minPipeSize: 150,
+    maxPipeSize: 600,
+    workCategoryId: 1
+  },
+  {
+    name: "Push Rod CCTV System",
+    description: "Portable push rod system for small diameter pipes",
+    minPipeSize: 50,
+    maxPipeSize: 200,
+    workCategoryId: 1
+  },
+  {
+    name: "Crawler CCTV Robot",
+    description: "Self-propelled robotic CCTV for detailed inspections",
+    minPipeSize: 75,
+    maxPipeSize: 300,
+    workCategoryId: 1
+  },
+  {
+    name: "Large Bore CCTV 18t",
+    description: "Specialized unit for large diameter trunk sewers",
+    minPipeSize: 300,
+    maxPipeSize: 1200,
+    workCategoryId: 1
+  },
+  {
+    name: "Multi-Sensor CCTV Unit",
+    description: "Advanced CCTV with sonar and laser profiling",
+    minPipeSize: 100,
+    maxPipeSize: 800,
+    workCategoryId: 1
+  }
+];
+
 export default function Pricing() {
   const [selectedCategory, setSelectedCategory] = useState<number>(1);
   const [showAddRule, setShowAddRule] = useState(false);
   const [showAddEquipment, setShowAddEquipment] = useState(false);
+  const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
+  const [newEquipment, setNewEquipment] = useState({
+    name: '',
+    description: '',
+    minPipeSize: 75,
+    maxPipeSize: 300,
+    workCategoryId: 1,
+    costPerHour: '',
+    costPerDay: '',
+    meterageRangeMin: '',
+    meterageRangeMax: '',
+    sectionsPerDay: '',
+    sectors: [] as string[]
+  });
   const [newRule, setNewRule] = useState({
     mscc5Code: '',
     recommendationType: '',
@@ -128,18 +195,6 @@ export default function Pricing() {
     equipmentOptions: [] as string[],
     defaultEquipment: '',
     applicableSectors: [] as string[]
-  });
-  const [newEquipment, setNewEquipment] = useState({
-    name: '',
-    description: '',
-    minPipeSize: 75,
-    maxPipeSize: 300,
-    costPerHour: '',
-    costPerDay: '',
-    meterageRangeMin: '',
-    meterageRangeMax: '',
-    sectionsPerDay: '',
-    sectors: [] as string[]
   });
 
   const { toast } = useToast();
@@ -225,25 +280,10 @@ export default function Pricing() {
 
   const addEquipmentMutation = useMutation({
     mutationFn: async (equipment: any) => {
-      const response = await apiRequest('POST', '/api/equipment-types', {
+      return await apiRequest('POST', '/api/equipment-types', {
         ...equipment,
         workCategoryId: selectedCategory
       });
-      const equipmentResult = await response.json();
-      
-      if (equipment.costPerHour || equipment.costPerDay) {
-        await apiRequest('POST', '/api/user-pricing', {
-          equipmentTypeId: (equipmentResult as any).id,
-          costPerHour: equipment.costPerHour,
-          costPerDay: equipment.costPerDay,
-          meterageRangeMin: equipment.meterageRangeMin,
-          meterageRangeMax: equipment.meterageRangeMax,
-          sectionsPerDay: equipment.sectionsPerDay,
-          sectors: equipment.sectors
-        });
-      }
-      
-      return equipmentResult;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/equipment-types', selectedCategory] });
@@ -254,12 +294,7 @@ export default function Pricing() {
         description: '',
         minPipeSize: 75,
         maxPipeSize: 300,
-        costPerHour: '',
-        costPerDay: '',
-        meterageRangeMin: '',
-        meterageRangeMax: '',
-        sectionsPerDay: '',
-        sectors: []
+        workCategoryId: selectedCategory
       });
       toast({
         title: "Success",
@@ -267,6 +302,76 @@ export default function Pricing() {
       });
     }
   });
+
+  const updateEquipmentMutation = useMutation({
+    mutationFn: async (equipment: any) => {
+      return await apiRequest('PUT', `/api/equipment-types/${equipment.id}`, equipment);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types', selectedCategory] });
+      setEditingEquipment(null);
+      setShowAddEquipment(false);
+      toast({
+        title: "Success",
+        description: "Equipment updated successfully"
+      });
+    }
+  });
+
+  const deleteEquipmentMutation = useMutation({
+    mutationFn: async (equipmentId: number) => {
+      return await apiRequest('DELETE', `/api/equipment-types/${equipmentId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types', selectedCategory] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
+      toast({
+        title: "Success",
+        description: "Equipment deleted successfully"
+      });
+    }
+  });
+
+  // Handler functions
+  const handleEditEquipment = (equipment: EquipmentType) => {
+    setEditingEquipment(equipment);
+    setNewEquipment({
+      name: equipment.name,
+      description: equipment.description,
+      minPipeSize: equipment.minPipeSize,
+      maxPipeSize: equipment.maxPipeSize,
+      workCategoryId: equipment.workCategoryId
+    });
+    setShowAddEquipment(true);
+  };
+
+  const handleDeleteEquipment = (equipmentId: number) => {
+    if (window.confirm('Are you sure you want to delete this equipment?')) {
+      deleteEquipmentMutation.mutate(equipmentId);
+    }
+  };
+
+  const handleAddStandardEquipment = (standardEquipment: any) => {
+    setNewEquipment({
+      name: standardEquipment.name,
+      description: standardEquipment.description,
+      minPipeSize: standardEquipment.minPipeSize,
+      maxPipeSize: standardEquipment.maxPipeSize,
+      workCategoryId: selectedCategory
+    });
+    setShowAddEquipment(true);
+  };
+
+  const handleSubmitEquipment = () => {
+    if (editingEquipment) {
+      updateEquipmentMutation.mutate({
+        ...newEquipment,
+        id: editingEquipment.id
+      });
+    } else {
+      addEquipmentMutation.mutate(newEquipment);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
@@ -380,54 +485,84 @@ export default function Pricing() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Wrench className="h-5 w-5" />
-                  Current Assets/Vehicles - {selectedCategoryData?.name}
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Wrench className="h-5 w-5" />
+                    Current Assets/Vehicles - {selectedCategoryData?.name}
+                  </CardTitle>
+                  <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Asset
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {userPricing.length === 0 ? (
+                {equipmentTypes.length === 0 ? (
                   <p className="text-gray-500 text-center py-8">
-                    No vehicles/assets configured for {selectedCategoryData?.name}. Configure equipment pricing to see available assets.
+                    No vehicles/assets configured for {selectedCategoryData?.name}. Add your first asset to get started.
                   </p>
                 ) : (
                   <div className="space-y-4">
-                    {userPricing.map((pricing: UserPricing) => {
-                      const equipment = equipmentTypes.find((eq: EquipmentType) => eq.id === pricing.equipmentTypeId);
-                      if (!equipment) return null;
+                    {equipmentTypes.map((equipment: EquipmentType) => {
+                      const pricing = userPricing.find((p: UserPricing) => p.equipmentTypeId === equipment.id);
                       
                       return (
                         <div key={equipment.id} className="border rounded-lg p-4 space-y-3 bg-white">
-                          <div className="space-y-2">
-                            <h4 className="font-medium text-base text-gray-900">{equipment.name}</h4>
-                            <p className="text-sm text-gray-600">{equipment.description}</p>
-                            
-                            <div className="grid grid-cols-2 gap-4 mt-3">
-                              <div className="space-y-1">
-                                <p className="text-xs font-medium text-gray-700">Specifications</p>
-                                <p className="text-xs text-blue-600">
-                                  Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm
-                                </p>
-                                <p className="text-xs text-gray-600">
-                                  Meterage: {pricing.meterageRangeMin}m - {pricing.meterageRangeMax}m
-                                </p>
-                                <p className="text-xs text-gray-600">
-                                  Sections/Day: {pricing.sectionsPerDay}
-                                </p>
-                              </div>
+                          <div className="flex items-start justify-between">
+                            <div className="space-y-2 flex-1">
+                              <h4 className="font-medium text-base text-gray-900">{equipment.name}</h4>
+                              <p className="text-sm text-gray-600">{equipment.description}</p>
                               
-                              <div className="space-y-1">
-                                <p className="text-xs font-medium text-gray-700">Daily Rates</p>
-                                <p className="text-sm font-bold text-green-600">
-                                  £{pricing.costPerDay} per day
-                                </p>
-                                <p className="text-xs text-gray-600">
-                                  £{pricing.costPerHour} per hour
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  Sectors: {pricing.sectors.join(', ') || 'All'}
-                                </p>
+                              <div className="grid grid-cols-2 gap-4 mt-3">
+                                <div className="space-y-1">
+                                  <p className="text-xs font-medium text-gray-700">Specifications</p>
+                                  <p className="text-xs text-blue-600">
+                                    Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm
+                                  </p>
+                                  {pricing && (
+                                    <>
+                                      <p className="text-xs text-gray-600">
+                                        Meterage: {pricing.meterageRangeMin}m - {pricing.meterageRangeMax}m
+                                      </p>
+                                      <p className="text-xs text-gray-600">
+                                        Sections/Day: {pricing.sectionsPerDay}
+                                      </p>
+                                    </>
+                                  )}
+                                </div>
+                                
+                                {pricing && (
+                                  <div className="space-y-1">
+                                    <p className="text-xs font-medium text-gray-700">Daily Rates</p>
+                                    <p className="text-sm font-bold text-green-600">
+                                      £{pricing.costPerDay} per day
+                                    </p>
+                                    <p className="text-xs text-gray-600">
+                                      £{pricing.costPerHour} per hour
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                      Sectors: {pricing.sectors.join(', ') || 'All'}
+                                    </p>
+                                  </div>
+                                )}
                               </div>
+                            </div>
+                            
+                            <div className="flex gap-1 ml-4">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleEditEquipment(equipment)}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleDeleteEquipment(equipment.id)}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
                             </div>
                           </div>
                         </div>
