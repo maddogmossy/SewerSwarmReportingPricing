@@ -526,7 +526,7 @@ export default function SectorPricingDetail() {
                     className="flex items-center gap-2 bg-red-600 hover:bg-red-700"
                     disabled={resetEquipmentMutation.isPending}
                   >
-                    <RefreshCw className="h-4 w-4" />
+                    <RotateCcw className="h-4 w-4" />
                     Reset Equipment
                   </Button>
                   <Button onClick={() => setShowAddCategory(true)} className="flex items-center gap-2 bg-green-600 hover:bg-green-700">
