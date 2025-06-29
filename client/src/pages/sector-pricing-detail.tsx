@@ -192,6 +192,38 @@ export default function SectorPricingDetail() {
     }
   });
 
+  // Cleanup duplicates mutation
+  const cleanupDuplicatesMutation = useMutation({
+    mutationFn: async () => {
+      // Get current equipment and identify duplicates by name
+      const equipmentList = equipmentTypes || [];
+      const duplicateIds = [];
+      const seen = new Set();
+      
+      for (const equipment of equipmentList) {
+        if (seen.has(equipment.name)) {
+          duplicateIds.push(equipment.id);
+        } else {
+          seen.add(equipment.name);
+        }
+      }
+      
+      // Delete duplicates one by one
+      for (const id of duplicateIds) {
+        await apiRequest('DELETE', `/api/equipment-types/${id}`);
+      }
+      
+      return { removedCount: duplicateIds.length };
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types/1'] });
+      toast({ 
+        title: "Success", 
+        description: `Removed ${result.removedCount} duplicate equipment entries` 
+      });
+    }
+  });
+
   const handleSaveEquipment = () => {
     if (editingEquipment?.id) {
       updateEquipmentMutation.mutate(editingEquipment);
@@ -207,7 +239,7 @@ export default function SectorPricingDetail() {
     }
   };
 
-  // Organize equipment by categories - clean simple approach
+  // Organize equipment by categories with proper deduplication
   const organizeEquipmentByCategory = () => {
     // Standard equipment examples - one per category
     const standardEquipment = [
@@ -216,10 +248,20 @@ export default function SectorPricingDetail() {
       { id: 'standard-2', name: 'UV Curing System', description: 'UV light curing system for lining repairs', category: 'Patching', minPipeSize: 100, maxPipeSize: 600, costPerDay: 280, isStandard: true }
     ];
 
-    // Include database equipment
+    // Include database equipment and remove duplicates by name
     const dbEquipment = (equipmentTypes || []).map((eq: any) => ({ ...eq, isStandard: false }));
     
-    const allEquipment = [...dbEquipment, ...standardEquipment];
+    // Remove database equipment that has the same name as standard equipment
+    const uniqueDbEquipment = dbEquipment.filter(dbEq => 
+      !standardEquipment.some(stdEq => stdEq.name === dbEq.name)
+    );
+    
+    // Also remove duplicates within database equipment itself
+    const deduplicatedDbEquipment = uniqueDbEquipment.filter((equipment, index, array) => 
+      array.findIndex(item => item.name === equipment.name) === index
+    );
+    
+    const allEquipment = [...deduplicatedDbEquipment, ...standardEquipment];
 
     const groupedByCategory = allEquipment.reduce((groups: any, equipment: any) => {
       const category = equipment.category || 'CCTV';
@@ -304,6 +346,14 @@ export default function SectorPricingDetail() {
           <div className="flex items-center justify-between">
             <CardTitle>Current Assets/Vehicles - Surveys</CardTitle>
             <div className="flex gap-2">
+              <Button 
+                onClick={() => cleanupDuplicatesMutation.mutate()}
+                variant="outline"
+                disabled={cleanupDuplicatesMutation.isPending}
+                className="border-red-500 text-red-600 hover:bg-red-50"
+              >
+                {cleanupDuplicatesMutation.isPending ? 'Cleaning...' : 'Remove Duplicates'}
+              </Button>
               <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 Add Equipment
