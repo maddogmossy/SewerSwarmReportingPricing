@@ -204,7 +204,19 @@ export default function SectorPricingDetail() {
     },
     onError: (error: any) => {
       console.error('Mutation error:', error);
-      const errorMessage = error?.message || "Failed to update equipment. Please try again.";
+      // Extract error message from various possible formats
+      let errorMessage = "Failed to update equipment. Please try again.";
+      
+      if (error?.message) {
+        // Check if it's in the format "400: Standard equipment cannot be modified"
+        const match = error.message.match(/^\d+:\s*(.+)$/);
+        if (match && match[1]) {
+          errorMessage = match[1];
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       toast({ 
         title: "Error", 
         description: errorMessage, 
