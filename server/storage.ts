@@ -289,19 +289,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getEquipmentTypesByCategory(categoryId: number, sector?: string): Promise<EquipmentType[]> {
-    if (sector) {
-      return await db.select().from(equipmentTypes).where(
-        and(
-          eq(equipmentTypes.workCategoryId, categoryId),
-          or(
-            eq(equipmentTypes.sector, sector),
-            isNull(equipmentTypes.sector)
-          )
-        )
-      );
-    }
-    
-    return await db.select().from(equipmentTypes).where(eq(equipmentTypes.workCategoryId, categoryId));
+    // For surveys (categoryId 1), return all equipment regardless of workCategoryId
+    // This allows proper category-based organization on the frontend
+    return await db.select().from(equipmentTypes).orderBy(
+      equipmentTypes.category,
+      equipmentTypes.minPipeSize,
+      equipmentTypes.name
+    );
   }
 
   async createEquipmentType(equipment: InsertEquipmentType): Promise<EquipmentType> {
