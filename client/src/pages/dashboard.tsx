@@ -650,26 +650,6 @@ export default function Dashboard() {
     queryKey: ["/api/uploads"],
   });
 
-  // Fetch pricing rules for the current sector to display authentic recommendations
-  const { data: pricingRules = [] } = useQuery({
-    queryKey: ["/api/pricing-rules", sectorParam],
-    enabled: !!sectorParam,
-  });
-
-  const refreshMutation = useMutation({
-    mutationFn: () => apiRequest("GET", "/api/uploads"),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
-      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${currentSector.id}`] });
-      toast({
-        title: "Reports Refreshed",
-        description: "Dashboard data and pricing updated.",
-      });
-    },
-  });
-
   // Get completed uploads for analysis
   const completedUploads = uploads.filter(upload => upload.status === 'completed');
   
@@ -682,6 +662,26 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
+  // Fetch pricing rules for the current sector to display authentic recommendations
+  const { data: pricingRules = [] } = useQuery({
+    queryKey: ["/api/pricing-rules", currentSector?.id],
+    enabled: !!currentSector?.id,
+  });
+
+  const refreshMutation = useMutation({
+    mutationFn: () => apiRequest("GET", "/api/uploads"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${currentSector?.id}`] });
+      toast({
+        title: "Reports Refreshed",
+        description: "Dashboard data and pricing updated.",
+      });
+    },
+  });
+
   // Fetch real section inspection data from database
   const { data: sectionData = [], isLoading: sectionsLoading } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
@@ -690,7 +690,7 @@ export default function Dashboard() {
 
   // Check if pricing exists for the current sector
   const { data: pricingStatus = { overall: false, surveys: false, cleansing: false, jetting: false } } = useQuery<{ overall: boolean, surveys: boolean, cleansing: boolean, jetting: boolean }>({
-    queryKey: [`/api/pricing/check/${currentSector.id}`],
+    queryKey: [`/api/pricing/check/${currentSector?.id}`],
     enabled: !!currentSector?.id,
   });
 
