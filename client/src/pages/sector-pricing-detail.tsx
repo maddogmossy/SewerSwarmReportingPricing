@@ -202,11 +202,12 @@ export default function SectorPricingDetail() {
         window.location.reload();
       }, 500);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Mutation error:', error);
+      const errorMessage = error?.message || "Failed to update equipment. Please try again.";
       toast({ 
         title: "Error", 
-        description: "Failed to update equipment. Please try again.", 
+        description: errorMessage, 
         variant: "destructive" 
       });
     }
