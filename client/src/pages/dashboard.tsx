@@ -932,7 +932,7 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Section Inspection Data & Analysis</h1>
           <p className="text-slate-600">
             {currentUpload 
-              ? `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector`
+              ? `Viewing report: ${currentUpload.fileName} • ${currentSector?.name || 'Utilities'} Sector`
               : "Comprehensive analysis results across all uploaded reports with sector-specific compliance checking"
             }
           </p>
@@ -962,20 +962,20 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border-2 ${
-                      currentSector.id === 'utilities' ? 'border-blue-500 bg-blue-50' :
-                      currentSector.id === 'adoption' ? 'border-green-500 bg-green-50' :
-                      currentSector.id === 'highways' ? 'border-orange-500 bg-orange-50' :
-                      currentSector.id === 'insurance' ? 'border-red-500 bg-red-50' :
-                      currentSector.id === 'construction' ? 'border-purple-500 bg-purple-50' :
+                      currentSector?.id === 'utilities' ? 'border-blue-500 bg-blue-50' :
+                      currentSector?.id === 'adoption' ? 'border-green-500 bg-green-50' :
+                      currentSector?.id === 'highways' ? 'border-orange-500 bg-orange-50' :
+                      currentSector?.id === 'insurance' ? 'border-red-500 bg-red-50' :
+                      currentSector?.id === 'construction' ? 'border-purple-500 bg-purple-50' :
                       'border-yellow-500 bg-yellow-50'
                     }`}>
-                      {currentSector.id === 'utilities' && <Building className="h-5 w-5 text-blue-600" />}
-                      {currentSector.id === 'adoption' && <CheckCircle className="h-5 w-5 text-green-600" />}
-                      {currentSector.id === 'highways' && <Car className="h-5 w-5 text-orange-600" />}
-                      {currentSector.id === 'insurance' && <ShieldCheck className="h-5 w-5 text-red-600" />}
-                      {currentSector.id === 'construction' && <HardHat className="h-5 w-5 text-purple-600" />}
-                      {currentSector.id === 'domestic' && <HomeIcon className="h-5 w-5 text-yellow-600" />}
-                      <span className="font-medium text-black">{currentSector.name} Sector</span>
+                      {currentSector?.id === 'utilities' && <Building className="h-5 w-5 text-blue-600" />}
+                      {currentSector?.id === 'adoption' && <CheckCircle className="h-5 w-5 text-green-600" />}
+                      {currentSector?.id === 'highways' && <Car className="h-5 w-5 text-orange-600" />}
+                      {currentSector?.id === 'insurance' && <ShieldCheck className="h-5 w-5 text-red-600" />}
+                      {currentSector?.id === 'construction' && <HardHat className="h-5 w-5 text-purple-600" />}
+                      {currentSector?.id === 'domestic' && <HomeIcon className="h-5 w-5 text-yellow-600" />}
+                      <span className="font-medium text-black">{currentSector?.name || 'Utilities'} Sector</span>
                     </div>
                     <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections)</CardTitle>
                   </div>
@@ -1124,14 +1124,14 @@ export default function Dashboard() {
             {/* Analysis Standards Applied */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Analysis Standards Applied - {currentSector.name} Sector</CardTitle>
+                <CardTitle className="text-lg">Analysis Standards Applied - {currentSector?.name || 'Utilities'} Sector</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h4 className="font-medium text-sm mb-3">Standards Documentation</h4>
                     <div className="space-y-2">
-                      {currentSector.standards.map((standard, index) => (
+                      {currentSector?.standards?.map((standard: any, index: number) => (
                         <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded">
                           <span className="text-sm font-medium">{standard.name}</span>
                           <a 
@@ -1143,18 +1143,18 @@ export default function Dashboard() {
                             View Documentation
                           </a>
                         </div>
-                      ))}
+                      )) || []}
                     </div>
                   </div>
                   
                   <div>
                     <h4 className="font-medium text-sm mb-3">Output Columns</h4>
                     <div className="space-y-1">
-                      {currentSector.outputColumns.map((column, index) => (
+                      {currentSector?.outputColumns?.map((column: any, index: number) => (
                         <div key={index} className="text-sm p-1 bg-slate-50 rounded px-2">
                           {column}
                         </div>
-                      ))}
+                      )) || []}
                     </div>
                   </div>
                 </div>
@@ -1210,7 +1210,7 @@ export default function Dashboard() {
                   </Card>
                 </div>
 
-                {currentSector.id === 'adoption' && (
+                {currentSector?.id === 'adoption' && (
                   <Card className="mt-4">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-sm">OS19x Adoption Standards</CardTitle>
