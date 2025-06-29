@@ -58,7 +58,7 @@ export default function SectorPricingDetail() {
   const [editingRule, setEditingRule] = useState<PricingRule | null>(null);
   const [editingEquipment, setEditingEquipment] = useState<any>(null);
   const [equipmentToDelete, setEquipmentToDelete] = useState<string | number | null>(null);
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set(['CCTV', 'Jetting', 'Patching']));
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
   // Toggle category collapse
   const toggleCategory = (category: string) => {
@@ -369,15 +369,6 @@ export default function SectorPricingDetail() {
                 >
                   <Plus className="h-4 w-4" />
                   Add Group
-                </Button>
-                <Button 
-                  onClick={() => window.location.reload()}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  title="Refresh to see new equipment"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                  Refresh
                 </Button>
               </div>
             </div>
