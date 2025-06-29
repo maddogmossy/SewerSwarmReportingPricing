@@ -322,37 +322,41 @@ export default function SectorPricingDetail() {
                   </div>
                 ))}
                 
-                {/* Standard Equipment Options */}
+                {/* Standard Equipment - Always Visible */}
                 {STANDARD_SURVEY_EQUIPMENT.map((equipment, index) => {
-                  // Don't show standard equipment if it's already added
-                  const alreadyExists = equipmentTypes.some((existing: any) => existing.name === equipment.name);
-                  if (alreadyExists) return null;
+                  // Check if this standard equipment already exists as a user equipment
+                  const existingEquipment = equipmentTypes.find((existing: any) => existing.name === equipment.name);
+                  
+                  // If it exists, don't show the standard one (user version takes precedence)
+                  if (existingEquipment) return null;
                   
                   return (
                     <div 
                       key={`standard-${index}`}
-                      className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors border-dashed border-blue-300"
-                      onClick={() => handleAddStandardEquipment(equipment)}
+                      className="border rounded-lg p-4 bg-blue-50 border-blue-200"
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-blue-700">{equipment.name}</span>
-                        <Button size="sm" variant="outline" className="text-blue-600 border-blue-300">
-                          <Plus className="h-3 w-3 mr-1" />
-                          Add
-                        </Button>
+                        <span className="font-medium text-blue-900">{equipment.name}</span>
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-blue-600 border-blue-300"
+                            onClick={() => handleAddStandardEquipment(equipment)}
+                          >
+                            <Edit className="h-3 w-3 mr-1" />
+                            Configure
+                          </Button>
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
-                      <div className="text-xs text-gray-500">
+                      <p className="text-sm text-blue-700 mb-2">{equipment.description}</p>
+                      <div className="text-xs text-blue-600">
                         <p>Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm</p>
-                        <p className="font-medium text-blue-600">Click to add to your equipment list</p>
+                        <p className="font-medium">Standard Equipment - Click Configure to customize pricing</p>
                       </div>
                     </div>
                   );
                 })}
-                
-                {equipmentTypes.length === 0 && (
-                  <p className="text-gray-500 text-center py-4">Add equipment from the options above to get started</p>
-                )}
               </div>
             </CardContent>
           </Card>
