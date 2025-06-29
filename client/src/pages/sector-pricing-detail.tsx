@@ -78,6 +78,7 @@ export default function SectorPricingDetail() {
   const [equipmentToDelete, setEquipmentToDelete] = useState<string | number | null>(null);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [standardEquipmentOverrides, setStandardEquipmentOverrides] = useState<Record<string, any>>({});
 
   // Toggle category collapse
   const toggleCategory = (category: string) => {
@@ -173,7 +174,17 @@ export default function SectorPricingDetail() {
   // Update equipment mutation
   const updateEquipmentMutation = useMutation({
     mutationFn: async (equipment: any) => {
-      // Ensure all numeric fields are properly validated before sending
+      // For standard equipment, store in memory only
+      if (typeof equipment.id === 'string' && equipment.id.startsWith('standard-')) {
+        console.log('Standard equipment update - storing in memory:', equipment);
+        setStandardEquipmentOverrides(prev => ({
+          ...prev,
+          [equipment.id]: equipment
+        }));
+        return { success: true, equipment };
+      }
+      
+      // For user equipment, save to database
       const sanitizedEquipment = {
         ...equipment,
         minPipeSize: typeof equipment.minPipeSize === 'number' && !isNaN(equipment.minPipeSize) ? equipment.minPipeSize : 75,
@@ -184,7 +195,32 @@ export default function SectorPricingDetail() {
       console.log('Sending equipment update:', sanitizedEquipment);
       return await apiRequest('PUT', `/api/equipment-types/${equipment.id}`, sanitizedEquipment);
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      // Store current collapsed state
+      const currentCollapsed = new Set(collapsedCategories);
+      
+      // For standard equipment, don't invalidate queries
+      if (typeof variables.id === 'string' && variables.id.startsWith('standard-')) {
+        setEditingEquipment(null);
+        setShowAddEquipment(false);
+        setNewEquipment({
+          name: '',
+          description: '',
+          category: 'CCTV',
+          minPipeSize: 75,
+          maxPipeSize: 300,
+          costPerDay: ''
+        });
+        toast({ title: "Success", description: "Equipment updated successfully" });
+        
+        // Restore collapsed state immediately
+        setTimeout(() => {
+          setCollapsedCategories(currentCollapsed);
+        }, 10);
+        return;
+      }
+      
+      // For database equipment, invalidate and refresh
       queryClient.invalidateQueries({ queryKey: ['/api/equipment-types/1'] });
       setEditingEquipment(null);
       setShowAddEquipment(false);
@@ -197,10 +233,11 @@ export default function SectorPricingDetail() {
         costPerDay: ''
       });
       toast({ title: "Success", description: "Equipment updated successfully" });
-      // Refresh page to ensure updates are visible
+      
+      // Restore collapsed state
       setTimeout(() => {
-        window.location.reload();
-      }, 500);
+        setCollapsedCategories(currentCollapsed);
+      }, 100);
     },
     onError: (error: any) => {
       console.error('Mutation error:', error);
@@ -324,12 +361,17 @@ export default function SectorPricingDetail() {
   const organizeEquipmentByCategory = () => {
     const allEquipment = [
       ...(equipmentTypes || []).map((eq: any) => ({ ...eq, isStandard: false })),
-      ...STANDARD_SURVEY_EQUIPMENT.map((eq, index) => ({ 
-        ...eq, 
-        id: `standard-${index}`, 
-        isStandard: true,
-        costPerDay: 0
-      }))
+      ...STANDARD_SURVEY_EQUIPMENT.map((eq, index) => {
+        const standardId = `standard-${index}`;
+        const override = standardEquipmentOverrides[standardId];
+        return { 
+          ...eq, 
+          ...(override || {}),
+          id: standardId, 
+          isStandard: true,
+          costPerDay: override?.costPerDay || 0
+        };
+      })
     ];
 
     const groupedByCategory = allEquipment.reduce((groups: any, equipment: any) => {
