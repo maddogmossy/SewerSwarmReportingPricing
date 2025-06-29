@@ -38,13 +38,18 @@ const RECOMMENDATION_TYPES = {
 
 // Standard Survey Equipment Templates
 const STANDARD_SURVEY_EQUIPMENT = [
-  { name: "Van Pack CCTV Unit 3.5t", description: "Compact van-mounted CCTV system for urban drainage surveys", minPipeSize: 75, maxPipeSize: 300 },
-  { name: "City Flex CCTV 7.5t", description: "Mid-size flexible CCTV unit for city infrastructure", minPipeSize: 100, maxPipeSize: 450 },
-  { name: "Main Line CCTV Unit 12t", description: "Heavy-duty CCTV system for main sewer inspections", minPipeSize: 150, maxPipeSize: 600 },
-  { name: "Push Rod CCTV System", description: "Portable push rod system for small diameter pipes", minPipeSize: 50, maxPipeSize: 200 },
-  { name: "Crawler CCTV Robot", description: "Self-propelled robotic CCTV for detailed inspections", minPipeSize: 75, maxPipeSize: 300 },
-  { name: "Large Bore CCTV 18t", description: "Specialized unit for large diameter trunk sewers", minPipeSize: 300, maxPipeSize: 1200 },
-  { name: "Multi-Sensor CCTV Unit", description: "Advanced CCTV with sonar and laser profiling", minPipeSize: 100, maxPipeSize: 800 }
+  { name: "Push Rod CCTV System", description: "Portable push rod system for small diameter pipes", minPipeSize: 50, maxPipeSize: 200, category: "CCTV" },
+  { name: "Van Pack CCTV Unit 3.5t", description: "Compact van-mounted CCTV system for urban drainage surveys", minPipeSize: 75, maxPipeSize: 300, category: "CCTV" },
+  { name: "Crawler CCTV Robot", description: "Self-propelled robotic CCTV for detailed inspections", minPipeSize: 75, maxPipeSize: 300, category: "CCTV" },
+  { name: "City Flex CCTV 7.5t", description: "Mid-size flexible CCTV unit for city infrastructure", minPipeSize: 100, maxPipeSize: 450, category: "CCTV" },
+  { name: "Multi-Sensor CCTV Unit", description: "Advanced CCTV with sonar and laser profiling", minPipeSize: 100, maxPipeSize: 800, category: "CCTV" },
+  { name: "Main Line CCTV Unit 12t", description: "Heavy-duty CCTV system for main sewer inspections", minPipeSize: 150, maxPipeSize: 600, category: "CCTV" },
+  { name: "Large Bore CCTV 18t", description: "Specialized unit for large diameter trunk sewers", minPipeSize: 300, maxPipeSize: 1200, category: "CCTV" },
+  { name: "High-Pressure Jetter 7.5t", description: "Compact high-pressure jetting unit for blockage removal", minPipeSize: 75, maxPipeSize: 300, category: "Jetting" },
+  { name: "Combination Jetter 18t", description: "Combined jetting and vacuum unit for comprehensive cleaning", minPipeSize: 100, maxPipeSize: 600, category: "Jetting" },
+  { name: "Root Cutting Jetter", description: "Specialized jetting equipment for root removal", minPipeSize: 100, maxPipeSize: 450, category: "Jetting" },
+  { name: "Patch Repair Kit", description: "Portable patching equipment for minor repairs", minPipeSize: 75, maxPipeSize: 300, category: "Patching" },
+  { name: "Robotic Patch Unit", description: "Remote-controlled patching system for precise repairs", minPipeSize: 100, maxPipeSize: 600, category: "Patching" }
 ];
 
 interface PricingRule {
@@ -67,9 +72,11 @@ export default function SectorPricingDetail() {
 
   const [showAddRule, setShowAddRule] = useState(false);
   const [showAddEquipment, setShowAddEquipment] = useState(false);
+  const [showAddCategory, setShowAddCategory] = useState(false);
   const [editingRule, setEditingRule] = useState<PricingRule | null>(null);
   const [editingEquipment, setEditingEquipment] = useState<any>(null);
   const [equipmentToDelete, setEquipmentToDelete] = useState<string | number | null>(null);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   const [newRule, setNewRule] = useState<PricingRule>({
     sector: sector || '',
@@ -86,6 +93,7 @@ export default function SectorPricingDetail() {
   const [newEquipment, setNewEquipment] = useState({
     name: '',
     description: '',
+    category: 'CCTV',
     minPipeSize: 75,
     maxPipeSize: 300,
     costPerDay: ''

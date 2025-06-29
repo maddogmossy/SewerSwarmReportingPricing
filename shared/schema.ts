@@ -130,6 +130,7 @@ export const equipmentTypes = pgTable("equipment_types", {
   workCategoryId: integer("work_category_id").notNull().references(() => workCategories.id, { onDelete: "cascade" }),
   name: varchar("name").notNull(), // Push/Pull Camera, Crawler Camera, etc.
   description: text("description"),
+  category: varchar("category").notNull().default("CCTV"), // CCTV, Jetting, Patching, etc.
   minPipeSize: integer("min_pipe_size"), // in mm
   maxPipeSize: integer("max_pipe_size"), // in mm
   sector: varchar("sector"), // utilities, adoption, highways, insurance, construction, domestic
