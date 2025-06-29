@@ -273,7 +273,7 @@ export default function Home() {
                 </Card>
               </Link>
 
-              <Link to="/pricing">
+              <Link to="/sector-pricing">
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                   <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
