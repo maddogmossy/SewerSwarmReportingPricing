@@ -121,8 +121,9 @@ export default function Pricing() {
   const [newRule, setNewRule] = useState({
     mscc5Code: '',
     recommendationType: '',
-    percentage: 0,
-    quantityRule: '',
+    percentageFrom: 0,
+    percentageTo: 0,
+    quantityRule: 0,
     equipmentOptions: [] as string[],
     defaultEquipment: '',
     applicableSectors: [] as string[]
@@ -186,8 +187,17 @@ export default function Pricing() {
   const addRuleMutation = useMutation({
     mutationFn: async (rule: any) => {
       return await apiRequest('POST', '/api/pricing-rules', {
-        ...rule,
-        workCategoryId: selectedCategory
+        workCategoryId: selectedCategory,
+        mscc5Code: rule.mscc5Code,
+        recommendationType: rule.recommendationType,
+        percentage: rule.percentageFrom, // Use percentageFrom as main percentage for backend compatibility
+        percentageFrom: rule.percentageFrom,
+        percentageTo: rule.percentageTo,
+        quantityRule: rule.quantityRule.toString(), // Convert to string for backend
+        equipmentOptions: rule.equipmentOptions,
+        defaultEquipment: rule.defaultEquipment,
+        applicableSectors: rule.applicableSectors,
+        isActive: true
       });
     },
     onSuccess: () => {
@@ -196,8 +206,9 @@ export default function Pricing() {
       setNewRule({
         mscc5Code: '',
         recommendationType: '',
-        percentage: 0,
-        quantityRule: '',
+        percentageFrom: 0,
+        percentageTo: 0,
+        quantityRule: 0,
         equipmentOptions: [],
         defaultEquipment: '',
         applicableSectors: []
@@ -469,43 +480,58 @@ export default function Pricing() {
 
               <div>
                 <Label>Recommendation Type</Label>
-                <Select 
+                <Input 
                   value={newRule.recommendationType} 
-                  onValueChange={(value) => setNewRule({...newRule, recommendationType: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select recommendation type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {newRule.mscc5Code && MSCC5_CODES[newRule.mscc5Code as keyof typeof MSCC5_CODES] ? 
-                      MSCC5_CODES[newRule.mscc5Code as keyof typeof MSCC5_CODES].recommendations.map(rec => (
-                        <SelectItem key={rec} value={rec}>{rec}</SelectItem>
-                      )) :
-                      standardRecommendations.map(rec => (
-                        <SelectItem key={rec} value={rec}>{rec}</SelectItem>
-                      ))
-                    }
-                  </SelectContent>
-                </Select>
+                  onChange={(e) => setNewRule({...newRule, recommendationType: e.target.value})}
+                  placeholder="Enter recommendation type (e.g., Mechanical cleaning, Structural repair)"
+                />
+                {newRule.mscc5Code && MSCC5_CODES[newRule.mscc5Code as keyof typeof MSCC5_CODES] && (
+                  <div className="mt-1 text-xs text-gray-600">
+                    Suggestions: {MSCC5_CODES[newRule.mscc5Code as keyof typeof MSCC5_CODES].recommendations.join(', ')}
+                  </div>
+                )}
               </div>
               
               <div>
-                <Label>Percentage (%)</Label>
+                <Label>Percentage Range (%)</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs text-gray-600">From %</Label>
+                    <Input 
+                      type="number" 
+                      value={newRule.percentageFrom} 
+                      onChange={(e) => setNewRule({...newRule, percentageFrom: parseInt(e.target.value) || 0})}
+                      placeholder="0"
+                      min="0"
+                      max="100"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-600">To %</Label>
+                    <Input 
+                      type="number" 
+                      value={newRule.percentageTo} 
+                      onChange={(e) => setNewRule({...newRule, percentageTo: parseInt(e.target.value) || 0})}
+                      placeholder="100"
+                      min="0"
+                      max="100"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Label>Lengths that can be completed in 8hrs</Label>
                 <Input 
                   type="number" 
-                  value={newRule.percentage} 
-                  onChange={(e) => setNewRule({...newRule, percentage: parseInt(e.target.value) || 0})}
-                  placeholder="Enter percentage"
-                />
-              </div>
-              
-              <div>
-                <Label>Quantity Rule</Label>
-                <Textarea 
                   value={newRule.quantityRule} 
-                  onChange={(e) => setNewRule({...newRule, quantityRule: e.target.value})}
-                  placeholder="Describe how quantity is calculated at this percentage"
+                  onChange={(e) => setNewRule({...newRule, quantityRule: parseInt(e.target.value) || 0})}
+                  placeholder="Enter meters (e.g., 150)"
+                  min="0"
                 />
+                <div className="mt-1 text-xs text-gray-600">
+                  Enter the total meters that can be completed in an 8-hour working day
+                </div>
               </div>
               
               <div>
