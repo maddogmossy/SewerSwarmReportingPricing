@@ -215,6 +215,23 @@ export default function SectorPricingDetail() {
     }
   };
 
+  // Handle adding new group
+  const handleAddGroup = () => {
+    if (newGroupName && newGroupName.trim()) {
+      setNewEquipment({
+        ...newEquipment,
+        category: newGroupName.trim()
+      });
+      setShowAddGroup(false);
+      setNewGroupName('');
+      setShowAddEquipment(true);
+      toast({ 
+        title: "Success", 
+        description: `New group "${newGroupName.trim()}" created` 
+      });
+    }
+  };
+
   const handleSaveEquipment = () => {
     if (editingEquipment?.id) {
       updateEquipmentMutation.mutate(editingEquipment);
@@ -332,16 +349,7 @@ export default function SectorPricingDetail() {
                   Add Equipment
                 </Button>
                 <Button 
-                  onClick={() => {
-                    const groupName = prompt('Enter new group name:');
-                    if (groupName && groupName.trim()) {
-                      setNewEquipment({
-                        ...newEquipment,
-                        category: groupName.trim()
-                      });
-                      setShowAddEquipment(true);
-                    }
-                  }}
+                  onClick={() => setShowAddGroup(true)}
                   variant="outline"
                   className="flex items-center gap-2"
                 >
@@ -590,6 +598,45 @@ export default function SectorPricingDetail() {
             </Button>
             <Button variant="destructive" onClick={handleDeleteEquipment}>
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Group Dialog */}
+      <Dialog open={showAddGroup} onOpenChange={setShowAddGroup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Equipment Group</DialogTitle>
+            <DialogDescription>
+              Create a new category to organize your equipment.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="groupName">Group Name</Label>
+              <Input
+                id="groupName"
+                value={newGroupName}
+                onChange={(e) => setNewGroupName(e.target.value)}
+                placeholder="Enter group name (e.g., Excavation, Lining)"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleAddGroup();
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowAddGroup(false);
+              setNewGroupName('');
+            }}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddGroup} disabled={!newGroupName.trim()}>
+              Create Group
             </Button>
           </DialogFooter>
         </DialogContent>
