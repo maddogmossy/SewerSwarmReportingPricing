@@ -1,0 +1,19 @@
+| **Condition**                         | **Trigger Defect Codes** | **Recommended Action**               | **Action Type** | **Notes**                             |
+| ------------------------------------- | ------------------------ | ------------------------------------ | --------------- | ------------------------------------- |
+| Structural Grade 4 or 5               | FC, FL, JDL, CX, B       | Patch lining or excavation           | 6 / 8           | Based on Drain Repair Book & SRM      |
+| Service Grade 4 or 5                  | DES, DER, WL, BLO        | Jetting / desilting                  | 2               | Cleaning manual thresholds            |
+| Root Ingress                          | RO, R                    | Root cutting + reline                | 4 + 6           | Consider CIPP relining if repeated    |
+| Water Level Above Pipe                | WL                       | Check downstream MH + jet            | 1               | Possible partial blockage             |
+| Displaced Joint (Large)               | JDL                      | Patch / robotic repair               | 6               | Non-adoptable under OS19x             |
+| Broken Pipe                           | B                        | Excavate and replace                 | 8               | Mandatory under adoption criteria     |
+| Circumferential/Longitudinal Fracture | FC / FL                  | Patch if isolated, CIPP if extensive | 6               | MSCC5 + Drain Repair Book             |
+| Heavy Deposits (Coarse)               | DER                      | Jet vac or bucket removal            | 2               | Flow loss >20% triggers fail          |
+| Fine Silt or Settled Material         | DES                      | Desilt or flush                      | 2               | Reinspect post-clean                  |
+| Infiltration / Exfiltration           | I / X                    | Pressure test or seal repair         | 11              | Not adoptable if ongoing              |
+| Poor Gradient / Standing Water        | GZ, WL (persistent)      | Survey gradient, re-lay section      | 12              | Required under BS EN 1610             |
+| Deformed Pipe                         | CX, DZ                   | Excavation or liner                  | 8               | Structural failure warning            |
+| MH Cover Off / Chamber Cracked        | CC, MH Faults            | Repair or replace cover/frame        | 13              | Flag for access risk                  |
+| Chamber Benching Defective            | CB, CI                   | Manhole benching works               | 14              | OS20x failure trigger                 |
+| Rodent Traces / Infestation           | RS                       | Rodent baiting + seal defects        | 15              | Optional for domestic/sensitive sites |
+| Misconnection (e.g. foul to SW)       | MC                       | Reconnect correctly + inform WA      | 10              | Required under S104/Water UK rules    |
+| Non-compliant Pipe Material           | MP                       | Replace with approved pipe           | 9               | Required under adoption spec          |

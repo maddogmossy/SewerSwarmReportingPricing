@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ArrowLeft, Plus, Edit, Trash2, Save, ChevronDown, ChevronRight, RefreshCw, BookOpen, Wrench } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Save, BookOpen, Settings, BarChart3 } from "lucide-react";
 import { Link } from "wouter";
 
 // MSCC5 Defect Codes
