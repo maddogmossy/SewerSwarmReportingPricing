@@ -149,6 +149,7 @@ export default function SectorPricingDetail() {
       setNewEquipment({
         name: '',
         description: '',
+        category: 'CCTV',
         minPipeSize: 75,
         maxPipeSize: 300,
         costPerDay: ''
@@ -169,6 +170,7 @@ export default function SectorPricingDetail() {
       setNewEquipment({
         name: '',
         description: '',
+        category: 'CCTV',
         minPipeSize: 75,
         maxPipeSize: 300,
         costPerDay: ''
@@ -271,6 +273,47 @@ export default function SectorPricingDetail() {
       setEquipmentToDelete(null);
     }
   };
+
+  // Organize equipment by categories with alphabetical ordering and smallest pipe sizes first
+  const organizeEquipmentByCategory = () => {
+    const allEquipment = [
+      ...equipmentTypes.map((eq: any) => ({ ...eq, isStandard: false })),
+      ...STANDARD_SURVEY_EQUIPMENT.map((eq, index) => ({ 
+        ...eq, 
+        id: `standard-${index}`, 
+        isStandard: true,
+        costPerDay: 0
+      }))
+    ];
+
+    const groupedByCategory = allEquipment.reduce((groups: any, equipment: any) => {
+      const category = equipment.category || 'CCTV';
+      if (!groups[category]) {
+        groups[category] = [];
+      }
+      groups[category].push(equipment);
+      return groups;
+    }, {});
+
+    // Sort categories alphabetically
+    const sortedCategories = Object.keys(groupedByCategory).sort();
+    
+    // Sort equipment within each category by smallest pipe size first, then by name
+    sortedCategories.forEach(category => {
+      groupedByCategory[category].sort((a: any, b: any) => {
+        const sizeA = a.minPipeSize || 0;
+        const sizeB = b.minPipeSize || 0;
+        if (sizeA !== sizeB) {
+          return sizeA - sizeB; // Smallest first
+        }
+        return a.name.localeCompare(b.name); // Then alphabetical by name
+      });
+    });
+
+    return { groupedByCategory, sortedCategories };
+  };
+
+  const { groupedByCategory, sortedCategories } = organizeEquipmentByCategory();
 
   // Combine existing equipment and standard equipment for dropdown options
   const availableEquipment = [
