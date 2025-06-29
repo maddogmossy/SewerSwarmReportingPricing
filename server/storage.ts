@@ -29,7 +29,7 @@ import {
   type InsertPricingRule,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -285,9 +285,20 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(workCategories).orderBy(workCategories.sortOrder);
   }
 
-  async getEquipmentTypesByCategory(categoryId: number): Promise<EquipmentType[]> {
-    return await db.select().from(equipmentTypes)
-      .where(eq(equipmentTypes.workCategoryId, categoryId));
+  async getEquipmentTypesByCategory(categoryId: number, sector?: string): Promise<EquipmentType[]> {
+    if (sector) {
+      return await db.select().from(equipmentTypes).where(
+        and(
+          eq(equipmentTypes.workCategoryId, categoryId),
+          or(
+            eq(equipmentTypes.sector, sector),
+            isNull(equipmentTypes.sector)
+          )
+        )
+      );
+    }
+    
+    return await db.select().from(equipmentTypes).where(eq(equipmentTypes.workCategoryId, categoryId));
   }
 
   async createEquipmentType(equipment: InsertEquipmentType): Promise<EquipmentType> {
@@ -357,8 +368,45 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
 
-  async deletePricingRule(id: number): Promise<void> {
-    await db.delete(pricingRules).where(eq(pricingRules.id, id));
+  async deletePricingRule(id: number, userId?: string): Promise<void> {
+    if (userId) {
+      await db.delete(pricingRules).where(
+        and(
+          eq(pricingRules.id, id),
+          eq(pricingRules.userId, userId)
+        )
+      );
+    } else {
+      await db.delete(pricingRules).where(eq(pricingRules.id, id));
+    }
+  }
+
+  // Sector-specific pricing rules methods
+  async getPricingRulesBySector(userId: string, sector: string): Promise<PricingRule[]> {
+    return await db.select().from(pricingRules).where(
+      and(
+        eq(pricingRules.userId, userId),
+        eq(pricingRules.sector, sector)
+      )
+    );
+  }
+
+  async createPricingRule(ruleData: InsertPricingRule): Promise<PricingRule> {
+    const [created] = await db.insert(pricingRules).values(ruleData).returning();
+    return created;
+  }
+
+  async updatePricingRule(id: number, userId: string, ruleUpdate: Partial<InsertPricingRule>): Promise<PricingRule> {
+    const [updated] = await db.update(pricingRules)
+      .set(ruleUpdate)
+      .where(
+        and(
+          eq(pricingRules.id, id),
+          eq(pricingRules.userId, userId)
+        )
+      )
+      .returning();
+    return updated;
   }
 }
 
