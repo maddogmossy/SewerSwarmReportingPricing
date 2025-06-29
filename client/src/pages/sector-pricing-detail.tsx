@@ -207,10 +207,21 @@ export default function SectorPricingDetail() {
   };
 
   const handleSubmitEquipment = () => {
-    // Ensure all numeric fields are valid numbers
-    const minPipe = parseInt(newEquipment.minPipeSize?.toString()) || 75;
-    const maxPipe = parseInt(newEquipment.maxPipeSize?.toString()) || 300;
-    const cost = parseFloat(newEquipment.costPerDay?.toString()) || 0;
+    // Safely parse numeric fields with proper fallbacks
+    const minPipe = (() => {
+      const parsed = parseInt(newEquipment.minPipeSize?.toString() || '75', 10);
+      return isNaN(parsed) ? 75 : parsed;
+    })();
+    
+    const maxPipe = (() => {
+      const parsed = parseInt(newEquipment.maxPipeSize?.toString() || '300', 10);
+      return isNaN(parsed) ? 300 : parsed;
+    })();
+    
+    const cost = (() => {
+      const parsed = parseFloat(newEquipment.costPerDay?.toString() || '0');
+      return isNaN(parsed) ? 0 : parsed;
+    })();
     
     if (editingEquipment) {
       updateEquipmentMutation.mutate({
