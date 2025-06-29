@@ -192,37 +192,22 @@ export default function SectorPricingDetail() {
     }
   });
 
-  // Cleanup duplicates mutation
-  const cleanupDuplicatesMutation = useMutation({
-    mutationFn: async () => {
-      // Get current equipment and identify duplicates by name
-      const equipmentList = equipmentTypes || [];
-      const duplicateIds = [];
-      const seen = new Set();
-      
-      for (const equipment of equipmentList) {
-        if (seen.has(equipment.name)) {
-          duplicateIds.push(equipment.id);
-        } else {
-          seen.add(equipment.name);
-        }
-      }
-      
-      // Delete duplicates one by one
-      for (const id of duplicateIds) {
-        await apiRequest('DELETE', `/api/equipment-types/${id}`);
-      }
-      
-      return { removedCount: duplicateIds.length };
-    },
-    onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types/1'] });
+  // Delete empty group functionality
+  const handleDeleteGroup = async (category: string) => {
+    const categoryEquipment = groupedByCategory[category] || [];
+    if (categoryEquipment.length === 0) {
       toast({ 
         title: "Success", 
-        description: `Removed ${result.removedCount} duplicate equipment entries` 
+        description: `Empty group "${category}" removed` 
+      });
+    } else {
+      toast({ 
+        title: "Cannot delete", 
+        description: `Group "${category}" contains ${categoryEquipment.length} equipment items`,
+        variant: "destructive"
       });
     }
-  });
+  };
 
   const handleSaveEquipment = () => {
     if (editingEquipment?.id) {
@@ -293,63 +278,73 @@ export default function SectorPricingDetail() {
         <h1 className="text-3xl font-bold capitalize">{sector} Sector Pricing Configuration</h1>
       </div>
 
-      {/* Pricing Rules Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Pricing Rules</CardTitle>
-            <Button onClick={() => setShowAddRule(true)} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Add Rule
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {Array.isArray(pricingRules) && pricingRules.length > 0 ? (
-            <div className="space-y-4">
-              {pricingRules.map((rule: any) => (
-                <div key={rule.id} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold">{rule.mscc5Code} - {MSCC5_CODES[rule.mscc5Code as keyof typeof MSCC5_CODES]}</h3>
-                      <p className="text-sm text-gray-600">{rule.recommendationType}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => setEditingRule(rule)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Side - Pricing Rules */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Pricing Rules</CardTitle>
+              <Button onClick={() => setShowAddRule(true)} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Rule
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {Array.isArray(pricingRules) && pricingRules.length > 0 ? (
+              <div className="space-y-4">
+                {pricingRules.map((rule: any) => (
+                  <div key={rule.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold">{rule.mscc5Code} - {MSCC5_CODES[rule.mscc5Code as keyof typeof MSCC5_CODES]}</h3>
+                        <p className="text-sm text-gray-600">{rule.recommendationType}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => setEditingRule(rule)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500">No pricing rules configured for this sector yet.</p>
-          )}
-        </CardContent>
-      </Card>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">No pricing rules configured for this sector yet.</p>
+            )}
+          </CardContent>
+        </Card>
 
-      {/* Equipment Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Current Assets/Vehicles - Surveys</CardTitle>
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => cleanupDuplicatesMutation.mutate()}
-                variant="outline"
-                disabled={cleanupDuplicatesMutation.isPending}
-                className="border-red-500 text-red-600 hover:bg-red-50"
-              >
-                {cleanupDuplicatesMutation.isPending ? 'Cleaning...' : 'Remove Duplicates'}
-              </Button>
-              <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Add Equipment
-              </Button>
+        {/* Right Side - Equipment Section */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Current Assets/Vehicles - Surveys</CardTitle>
+              <div className="flex gap-2">
+                <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Add Equipment
+                </Button>
+                <Button 
+                  onClick={() => {
+                    const groupName = prompt('Enter new group name:');
+                    if (groupName && groupName.trim()) {
+                      setNewEquipment({
+                        ...newEquipment,
+                        category: groupName.trim()
+                      });
+                      setShowAddEquipment(true);
+                    }
+                  }}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Group
+                </Button>
+              </div>
             </div>
-          </div>
-        </CardHeader>
+          </CardHeader>
         <CardContent>
           <div className="space-y-6">
             {/* Equipment organized by categories */}
@@ -357,17 +352,29 @@ export default function SectorPricingDetail() {
               const isCollapsed = collapsedCategories.has(category);
               return (
                 <div key={category} className="space-y-3">
-                  <div 
-                    className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
-                    onClick={() => toggleCategory(category)}
-                  >
-                    {isCollapsed ? (
-                      <ChevronRight className="h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4" />
+                  <div className="flex items-center justify-between">
+                    <div 
+                      className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded flex-1"
+                      onClick={() => toggleCategory(category)}
+                    >
+                      {isCollapsed ? (
+                        <ChevronRight className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                      <h3 className="text-lg font-semibold">{category}</h3>
+                      <span className="text-sm text-gray-500">({groupedByCategory[category]?.length || 0} items)</span>
+                    </div>
+                    {(groupedByCategory[category]?.length || 0) === 0 && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDeleteGroup(category)}
+                        className="border-red-500 text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     )}
-                    <h3 className="text-lg font-semibold">{category}</h3>
-                    <span className="text-sm text-gray-500">({groupedByCategory[category]?.length || 0} items)</span>
                   </div>
 
                   {!isCollapsed && (
@@ -412,7 +419,8 @@ export default function SectorPricingDetail() {
             })}
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
 
       {/* Add/Edit Equipment Dialog */}
       <Dialog open={showAddEquipment || !!editingEquipment} onOpenChange={(open) => {
