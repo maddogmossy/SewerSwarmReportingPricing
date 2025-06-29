@@ -212,7 +212,11 @@ export default function SectorPricingDetail() {
     }
   };
 
-  const availableEquipment = equipmentTypes.map((eq: any) => eq.name);
+  // Combine existing equipment and standard equipment for dropdown options
+  const availableEquipment = [
+    ...equipmentTypes.map((eq: any) => eq.name),
+    ...STANDARD_SURVEY_EQUIPMENT.map(eq => eq.name)
+  ];
 
   const sectorNames: Record<string, string> = {
     utilities: 'Utilities',
@@ -296,73 +300,58 @@ export default function SectorPricingDetail() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {equipmentTypes.length === 0 ? (
-                  <div>
-                    <p className="text-gray-500 text-center py-4">No equipment configured for this sector</p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-900 mb-3">Standard Survey Equipment</h4>
-                      <div className="space-y-2">
-                        {STANDARD_SURVEY_EQUIPMENT.map((equipment, index) => (
-                          <div 
-                            key={index}
-                            className="border rounded-lg p-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                            onClick={() => handleAddStandardEquipment(equipment)}
-                          >
-                            <div className="font-medium text-sm text-gray-900">{equipment.name}</div>
-                            <div className="text-xs text-gray-600 mt-1">{equipment.description}</div>
-                            <div className="text-xs text-blue-600 mt-1">
-                              Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm | Click to add
-                            </div>
-                          </div>
-                        ))}
+                {/* Existing Equipment */}
+                {equipmentTypes.map((equipment: any) => (
+                  <div key={equipment.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">{equipment.name}</span>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEditEquipment(equipment)}>
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleDeleteEquipment(equipment.id)}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
                       </div>
                     </div>
+                    <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
+                    <div className="text-xs text-gray-500">
+                      <p>Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm</p>
+                      <p className="font-medium text-green-600">Cost per Day: £{equipment.costPerDay || '0.00'}</p>
+                    </div>
                   </div>
-                ) : (
-                  <div>
-                    {equipmentTypes.map((equipment: any) => (
-                      <div key={equipment.id} className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-medium">{equipment.name}</span>
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" onClick={() => handleEditEquipment(equipment)}>
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleDeleteEquipment(equipment.id)}>
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
-                        <div className="text-xs text-gray-500">
-                          <p>Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm</p>
-                          <p className="font-medium text-green-600">Cost per Day: £{equipment.costPerDay || '0.00'}</p>
-                        </div>
+                ))}
+                
+                {/* Standard Equipment Options */}
+                {STANDARD_SURVEY_EQUIPMENT.map((equipment, index) => {
+                  // Don't show standard equipment if it's already added
+                  const alreadyExists = equipmentTypes.some((existing: any) => existing.name === equipment.name);
+                  if (alreadyExists) return null;
+                  
+                  return (
+                    <div 
+                      key={`standard-${index}`}
+                      className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors border-dashed border-blue-300"
+                      onClick={() => handleAddStandardEquipment(equipment)}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium text-blue-700">{equipment.name}</span>
+                        <Button size="sm" variant="outline" className="text-blue-600 border-blue-300">
+                          <Plus className="h-3 w-3 mr-1" />
+                          Add
+                        </Button>
                       </div>
-                    ))}
-                    
-                    {/* Show standard equipment if user has limited custom equipment */}
-                    {equipmentTypes.length < 4 && (
-                      <div className="mt-6">
-                        <h4 className="font-medium text-gray-900 mb-3">Add Standard Equipment</h4>
-                        <div className="space-y-2">
-                          {STANDARD_SURVEY_EQUIPMENT.slice(0, 3).map((equipment, index) => (
-                            <div 
-                              key={index}
-                              className="border rounded-lg p-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                              onClick={() => handleAddStandardEquipment(equipment)}
-                            >
-                              <div className="font-medium text-sm text-gray-900">{equipment.name}</div>
-                              <div className="text-xs text-gray-600 mt-1">{equipment.description}</div>
-                              <div className="text-xs text-blue-600 mt-1">
-                                Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm | Click to add
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                      <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
+                      <div className="text-xs text-gray-500">
+                        <p>Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm</p>
+                        <p className="font-medium text-blue-600">Click to add to your equipment list</p>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  );
+                })}
+                
+                {equipmentTypes.length === 0 && (
+                  <p className="text-gray-500 text-center py-4">Add equipment from the options above to get started</p>
                 )}
               </div>
             </CardContent>
