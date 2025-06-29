@@ -91,13 +91,13 @@ export default function SectorPricingDetail() {
 
   // Fetch sector-specific rules
   const { data: pricingRules = [] } = useQuery({
-    queryKey: ['/api/pricing-rules', sector],
+    queryKey: [`/api/pricing-rules/${sector}`],
     enabled: !!sector
   });
 
-  // Fetch equipment for this sector
+  // Fetch equipment for this sector (using category 1 for surveys)
   const { data: equipmentTypes = [] } = useQuery({
-    queryKey: ['/api/equipment-types', sector],
+    queryKey: [`/api/equipment-types/1`],
     enabled: !!sector
   });
 
