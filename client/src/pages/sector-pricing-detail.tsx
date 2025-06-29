@@ -203,21 +203,29 @@ export default function SectorPricingDetail() {
   };
 
   const handleSubmitEquipment = () => {
+    // Ensure all numeric fields are valid numbers
+    const minPipe = parseInt(newEquipment.minPipeSize?.toString()) || 75;
+    const maxPipe = parseInt(newEquipment.maxPipeSize?.toString()) || 300;
+    const cost = parseFloat(newEquipment.costPerDay?.toString()) || 0;
+    
     if (editingEquipment) {
       updateEquipmentMutation.mutate({
         id: editingEquipment.id,
         name: newEquipment.name,
         description: newEquipment.description,
-        minPipeSize: newEquipment.minPipeSize,
-        maxPipeSize: newEquipment.maxPipeSize,
-        costPerDay: parseFloat(newEquipment.costPerDay) || 0,
+        minPipeSize: minPipe,
+        maxPipeSize: maxPipe,
+        costPerDay: cost,
         workCategoryId: 1,
         sector: sector
       });
     } else {
       addEquipmentMutation.mutate({
-        ...newEquipment,
-        costPerDay: parseFloat(newEquipment.costPerDay) || 0,
+        name: newEquipment.name,
+        description: newEquipment.description,
+        minPipeSize: minPipe,
+        maxPipeSize: maxPipe,
+        costPerDay: cost,
         workCategoryId: 1,
         sector: sector
       });
@@ -536,21 +544,87 @@ export default function SectorPricingDetail() {
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Min Pipe Size (mm)</Label>
-                    <Input 
-                      type="text" 
+                    <select 
                       value={newEquipment.minPipeSize} 
-                      onChange={(e) => setNewEquipment({...newEquipment, minPipeSize: parseInt(e.target.value) || 0})}
-                      placeholder="75"
-                    />
+                      onChange={(e) => setNewEquipment({...newEquipment, minPipeSize: parseInt(e.target.value)})}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <option value={10}>10mm</option>
+                      <option value={15}>15mm</option>
+                      <option value={20}>20mm</option>
+                      <option value={25}>25mm</option>
+                      <option value={32}>32mm</option>
+                      <option value={40}>40mm</option>
+                      <option value={50}>50mm</option>
+                      <option value={65}>65mm</option>
+                      <option value={75}>75mm</option>
+                      <option value={100}>100mm</option>
+                      <option value={110}>110mm</option>
+                      <option value={125}>125mm</option>
+                      <option value={150}>150mm</option>
+                      <option value={160}>160mm</option>
+                      <option value={200}>200mm</option>
+                      <option value={225}>225mm</option>
+                      <option value={250}>250mm</option>
+                      <option value={300}>300mm</option>
+                      <option value={315}>315mm</option>
+                      <option value={355}>355mm</option>
+                      <option value={400}>400mm</option>
+                      <option value={450}>450mm</option>
+                      <option value={500}>500mm</option>
+                      <option value={600}>600mm</option>
+                      <option value={750}>750mm</option>
+                      <option value={900}>900mm</option>
+                      <option value={1050}>1050mm</option>
+                      <option value={1200}>1200mm</option>
+                      <option value={1350}>1350mm</option>
+                      <option value={1500}>1500mm</option>
+                      <option value={1800}>1800mm</option>
+                      <option value={2100}>2100mm</option>
+                      <option value={2400}>2400mm</option>
+                    </select>
                   </div>
                   <div>
                     <Label>Max Pipe Size (mm)</Label>
-                    <Input 
-                      type="text" 
+                    <select 
                       value={newEquipment.maxPipeSize} 
-                      onChange={(e) => setNewEquipment({...newEquipment, maxPipeSize: parseInt(e.target.value) || 0})}
-                      placeholder="300"
-                    />
+                      onChange={(e) => setNewEquipment({...newEquipment, maxPipeSize: parseInt(e.target.value)})}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <option value={10}>10mm</option>
+                      <option value={15}>15mm</option>
+                      <option value={20}>20mm</option>
+                      <option value={25}>25mm</option>
+                      <option value={32}>32mm</option>
+                      <option value={40}>40mm</option>
+                      <option value={50}>50mm</option>
+                      <option value={65}>65mm</option>
+                      <option value={75}>75mm</option>
+                      <option value={100}>100mm</option>
+                      <option value={110}>110mm</option>
+                      <option value={125}>125mm</option>
+                      <option value={150}>150mm</option>
+                      <option value={160}>160mm</option>
+                      <option value={200}>200mm</option>
+                      <option value={225}>225mm</option>
+                      <option value={250}>250mm</option>
+                      <option value={300}>300mm</option>
+                      <option value={315}>315mm</option>
+                      <option value={355}>355mm</option>
+                      <option value={400}>400mm</option>
+                      <option value={450}>450mm</option>
+                      <option value={500}>500mm</option>
+                      <option value={600}>600mm</option>
+                      <option value={750}>750mm</option>
+                      <option value={900}>900mm</option>
+                      <option value={1050}>1050mm</option>
+                      <option value={1200}>1200mm</option>
+                      <option value={1350}>1350mm</option>
+                      <option value={1500}>1500mm</option>
+                      <option value={1800}>1800mm</option>
+                      <option value={2100}>2100mm</option>
+                      <option value={2400}>2400mm</option>
+                    </select>
                   </div>
                   <div>
                     <Label>Cost per Day (£)</Label>
