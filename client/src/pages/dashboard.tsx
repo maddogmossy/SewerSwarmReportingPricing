@@ -903,7 +903,7 @@ export default function Dashboard() {
           <Link to="/sector-pricing">
             <Button variant="outline" size="sm">
               <Settings className="h-4 w-4 mr-2 text-orange-600" />
-              Standards
+              Pricing
             </Button>
           </Link>
           <div className="ml-auto flex gap-2">

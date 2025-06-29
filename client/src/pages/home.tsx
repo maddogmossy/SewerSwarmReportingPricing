@@ -279,9 +279,9 @@ export default function Home() {
                     <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
                       <Settings className="h-6 w-6 text-orange-600" />
                     </div>
-                    <CardTitle className="text-lg">Standards Configuration</CardTitle>
+                    <CardTitle className="text-lg">Pricing Settings</CardTitle>
                     <CardDescription>
-                      Configure standards-based recommendations for different infrastructure sectors
+                      Customize repair cost estimates for each sector based on your market rates
                     </CardDescription>
                   </CardHeader>
                 </Card>
