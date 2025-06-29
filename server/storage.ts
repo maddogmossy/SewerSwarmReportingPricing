@@ -9,7 +9,6 @@ import {
   equipmentTypes,
   userPricing,
   pricingRules,
-  standardsRules,
   type User,
   type UpsertUser,
   type FileUpload,
@@ -28,8 +27,6 @@ import {
   type InsertUserPricing,
   type PricingRule,
   type InsertPricingRule,
-  type StandardsRule,
-  type InsertStandardsRule,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, isNull } from "drizzle-orm";
@@ -89,12 +86,6 @@ export interface IStorage {
   
   // Sector-specific pricing rules
   getPricingRulesBySector(userId: string, sector: string): Promise<PricingRule[]>;
-  
-  // Standards-based recommendations
-  getStandardsRules(userId: string, sector: string): Promise<StandardsRule[]>;
-  createStandardsRule(rule: InsertStandardsRule): Promise<StandardsRule>;
-  updateStandardsRule(id: number, userId: string, rule: Partial<InsertStandardsRule>): Promise<StandardsRule>;
-  deleteStandardsRule(id: number, userId?: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -399,47 +390,6 @@ export class DatabaseStorage implements IStorage {
       );
     } else {
       await db.delete(pricingRules).where(eq(pricingRules.id, id));
-    }
-  }
-
-  // Standards-based recommendations implementation
-  async getStandardsRules(userId: string, sector: string): Promise<StandardsRule[]> {
-    return await db.select().from(standardsRules).where(
-      and(
-        eq(standardsRules.userId, userId),
-        eq(standardsRules.sector, sector)
-      )
-    );
-  }
-
-  async createStandardsRule(ruleData: InsertStandardsRule): Promise<StandardsRule> {
-    const [rule] = await db.insert(standardsRules).values(ruleData).returning();
-    return rule;
-  }
-
-  async updateStandardsRule(id: number, userId: string, ruleUpdate: Partial<InsertStandardsRule>): Promise<StandardsRule> {
-    const [updated] = await db.update(standardsRules)
-      .set(ruleUpdate)
-      .where(
-        and(
-          eq(standardsRules.id, id),
-          eq(standardsRules.userId, userId)
-        )
-      )
-      .returning();
-    return updated;
-  }
-
-  async deleteStandardsRule(id: number, userId?: string): Promise<void> {
-    if (userId) {
-      await db.delete(standardsRules).where(
-        and(
-          eq(standardsRules.id, id),
-          eq(standardsRules.userId, userId)
-        )
-      );
-    } else {
-      await db.delete(standardsRules).where(eq(standardsRules.id, id));
     }
   }
 }

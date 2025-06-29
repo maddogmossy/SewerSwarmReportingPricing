@@ -205,193 +205,22 @@ function getLengthSurveyed(itemNumber: number): string {
   return lengthSurveyedData[itemNumber] || "18.23";
 }
 
-// Standards-based defect and recommendation data
-const STANDARDS_BASED_DEFECTS = {
-  3: {
-    code: "DER",
-    description: "DER 13.27m, 16.63m, 17.73m, 21.60m",
-    percentage: "5%",
-    grade: 3,
-    standards: "WRc Sewer Cleaning Manual, MSCC5",
-    recommendations: ["High-pressure water jetting", "CCTV post-clean inspection", "Root-cutting if deposit is organic"],
-    cleaningMethods: ["Jetting with medium-pressure nozzle", "Vacuum extraction (Jet-Vac unit)", "Flushing to downstream manhole"],
-    actionType: 2,
-    priority: "Medium"
-  },
-  6: {
-    code: "FC",
-    description: "FC 8.45m",
-    percentage: "15%", 
-    grade: 4,
-    standards: "WRc Drain Repair Book 4th Ed., BS EN 1610",
-    recommendations: ["Local patch lining (glass mat or silicate)", "Excavation and replace short section if structurally compromised"],
-    cleaningMethods: [],
-    actionType: 6,
-    priority: "High"
-  },
-  7: {
-    code: "DER",
-    description: "DER 5.20m (5%), 10.15m (10%)",
-    percentage: "5-10%",
-    grade: 3,
-    standards: "WRc Sewer Cleaning Manual, MSCC5", 
-    recommendations: ["High-pressure water jetting", "CCTV post-clean inspection", "Root-cutting if deposit is organic"],
-    cleaningMethods: ["High-pressure jetting with rotating nozzle", "Bucket machine (for large pipes)", "Jet-Vac unit for removal"],
-    actionType: 2,
-    priority: "Medium"
-  },
-  8: {
-    code: "CR",
-    description: "CR 12.80m",
-    percentage: "20%",
-    grade: 4,
-    standards: "MSCC5, SRM, BS EN 752",
-    recommendations: ["Monitor for progression", "Local lining if > Grade 3", "Excavate if structurally critical"],
-    cleaningMethods: [],
-    actionType: 5,
-    priority: "High"
-  },
-  10: {
-    code: "JDS",
-    description: "JDS 7.30m",
-    percentage: "25%",
-    grade: 4,
-    standards: "OS19x/OS20x, BS EN 1610",
-    recommendations: ["Seal joint with injection if minor", "Excavate and replace if severe displacement", "Assess bedding"],
-    cleaningMethods: [],
-    actionType: 6,
-    priority: "High"
-  },
-  13: {
-    code: "DER+DEF",
-    description: "DER 15.40m (30%), DEF 16.20m (5%)",
-    percentage: "30%+5%",
-    grade: 4,
-    standards: "WRc Sewer Cleaning Manual, MSCC5, BS EN 14654-1",
-    recommendations: ["High-pressure water jetting for debris", "Assess deformation percentage", "Install CIPP liner if >5%"],
-    cleaningMethods: ["High-pressure jetting with rotating nozzle", "Vacuum extraction", "Re-inspect post-clean"],
-    actionType: 6,
-    priority: "High"
-  },
-  14: {
-    code: "RI",
-    description: "RI 9.75m",
-    percentage: "10%",
-    grade: 3,
-    standards: "BS EN 1610, MSCC5",
-    recommendations: ["Inject sealing compound", "Replace gasket/joint", "Monitor for infiltration"],
-    cleaningMethods: [],
-    actionType: 5,
-    priority: "Medium"
-  },
-  15: {
-    code: "FL",
-    description: "FL 11.20m",
-    percentage: "30%",
-    grade: 4,
-    standards: "WRc Drain Repair Book 4th Ed., BS EN 1610",
-    recommendations: ["Install full-length CIPP liner", "Excavate and replace if at joint or severely displaced"],
-    cleaningMethods: [],
-    actionType: 6,
-    priority: "High"
-  },
-  19: {
-    code: "OB",
-    description: "OB 6.85m",
-    percentage: "80%",
-    grade: 4,
-    standards: "WRc Sewer Cleaning Manual",
-    recommendations: ["Remove obstruction mechanically", "High-pressure jetting", "CCTV confirm clearance"],
-    cleaningMethods: ["Mechanical obstruction removal", "High-pressure jetting", "Vacuum extraction"],
-    actionType: 2,
-    priority: "High"
-  },
-  20: {
-    code: "WL",
-    description: "WL 14.10m",
-    percentage: "15%",
-    grade: 3,
-    standards: "BS EN 752, Water Industry Act 1991",
-    recommendations: ["Identify infiltration source", "Seal joints upstream", "Check groundwater levels"],
-    cleaningMethods: [],
-    actionType: 3,
-    priority: "Medium"
-  },
-  21: {
-    code: "JDL",
-    description: "JDL 8.90m",
-    percentage: "15%",
-    grade: 4,
-    standards: "OS19x/OS20x, BS EN 1610",
-    recommendations: ["Monitor displacement", "Excavate and realign if >10% pipe diameter", "Check for settlement cause"],
-    cleaningMethods: [],
-    actionType: 6,
-    priority: "High"
-  },
-  22: {
-    code: "DES",
-    description: "DES 13.55m",
-    percentage: "25%",
-    grade: 3,
-    standards: "WRc Sewer Cleaning Manual, BS EN 752",
-    recommendations: ["Desilting using vacuum or jet-vac combo unit", "Flush and re-inspect", "Assess upstream source"],
-    cleaningMethods: ["Jetting with medium-pressure nozzle", "Vacuum extraction (Jet-Vac unit)", "Flushing to downstream manhole"],
-    actionType: 2,
-    priority: "Low"
-  },
-  23: {
-    code: "CR+RI",
-    description: "CR 10.40m (10%), RI 11.85m (5%)",
-    percentage: "10%+5%",
-    grade: 3,
-    standards: "MSCC5, SRM, BS EN 752, BS EN 1610",
-    recommendations: ["Monitor crack progression", "Inject sealing compound for infiltration", "Local lining if deterioration continues"],
-    cleaningMethods: [],
-    actionType: 5,
-    priority: "Medium"
-  }
-};
-
-// Generate authentic section data with standards-based recommendations
-const generateSectionData = (itemNumber: number, sector: any, pricingAvailable: boolean = false, pricingRules: any[] = []) => {
+// Mock data for multiple sections in the same report
+const generateSectionData = (itemNumber: number, sector: any, pricingAvailable: boolean = false) => {
   // Items with no defects: 1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24
   const noDefectItems = [1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24];
   const hasNoDefects = noDefectItems.includes(itemNumber);
-  const defectData = STANDARDS_BASED_DEFECTS[itemNumber as keyof typeof STANDARDS_BASED_DEFECTS];
   
-  // Get standards-based recommendations from pricing rules
-  const getRecommendationsFromRules = () => {
-    if (hasNoDefects) return "No action required pipe observed in acceptable structural and service condition";
-    
-    if (defectData && pricingRules.length > 0) {
-      const matchingRule = pricingRules.find(rule => 
-        rule.mscc5Code === defectData.code.split('+')[0] || // Handle combined defects like DER+DEF
-        rule.mscc5Code === defectData.code
-      );
-      
-      if (matchingRule && matchingRule.customRecommendations?.length > 0) {
-        return matchingRule.customRecommendations.join(', ');
-      }
-    }
-    
-    // Fallback to standards-based recommendations
-    return defectData ? defectData.recommendations.join(', ') : "Assessment required";
-  };
-  
-  // Determine cost based on pricing rules and availability
+  // Determine cost based on pricing availability
   const getCostValue = () => {
     if (hasNoDefects) return "£0.00";
-    if (!pricingAvailable) return `Configure ${sector.id} sector pricing first`;
-    
-    // Calculate cost based on defect type and severity
-    const baseCost = defectData?.actionType === 6 ? 800 : defectData?.actionType === 2 ? 250 : 150;
-    const severityMultiplier = defectData?.grade || 1;
-    return `£${(baseCost * severityMultiplier).toFixed(2)}`;
+    if (!pricingAvailable) return "Rule Needed";
+    return itemNumber === 3 ? "£450.00" : itemNumber === 6 ? "£1,200.00" : "£300.00";
   };
   
   return {
     itemNo: itemNumber,
-    inspectionNo: 1,
+    inspectionNo: 1, // Always 1 for first survey - would be 2, 3, etc. for repeat surveys of same section
     date: new Date().toLocaleDateString('en-GB'),
     time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
     projectNumber: "GR7188",
@@ -404,13 +233,13 @@ const generateSectionData = (itemNumber: number, sector: any, pricingAvailable: 
     totalLength: getTotalLength(itemNumber),
     lengthSurveyed: getLengthSurveyed(itemNumber),
     defects: hasNoDefects ? "No action required pipe observed in acceptable structural and service condition" : 
-             `${defectData?.code} ${defectData?.description} (${defectData?.percentage})`,
-    severityGrade: hasNoDefects ? "0" : defectData?.grade?.toString() || "2",
+             (itemNumber === 3 ? "Minor crack" : itemNumber === 6 ? "Root intrusion" : "Joint displacement"),
+    severityGrade: hasNoDefects ? "0" : (itemNumber === 3 ? "2" : itemNumber === 6 ? "3" : "2"),
     sectorType: sector.name,
-    recommendations: getRecommendationsFromRules(),
+    recommendations: hasNoDefects ? "No action required pipe observed in acceptable structural and service condition" : 
+                    (itemNumber === 3 ? "Schedule repair" : itemNumber === 6 ? "Urgent repair" : "Monitor"),
     adoptable: hasNoDefects ? "Yes" : (sector.id === 'adoption' ? "No" : "N/A"),
-    cost: getCostValue(),
-    standardsApplied: defectData?.standards || ""
+    cost: getCostValue()
   };
 };
 
@@ -650,6 +479,20 @@ export default function Dashboard() {
     queryKey: ["/api/uploads"],
   });
 
+  const refreshMutation = useMutation({
+    mutationFn: () => apiRequest("GET", "/api/uploads"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${currentSector.id}`] });
+      toast({
+        title: "Reports Refreshed",
+        description: "Dashboard data and pricing updated.",
+      });
+    },
+  });
+
   // Get completed uploads for analysis
   const completedUploads = uploads.filter(upload => upload.status === 'completed');
   
@@ -662,26 +505,6 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // Fetch pricing rules for the current sector to display authentic recommendations
-  const { data: pricingRules = [] } = useQuery({
-    queryKey: ["/api/pricing-rules", currentSector?.id],
-    enabled: !!currentSector?.id,
-  });
-
-  const refreshMutation = useMutation({
-    mutationFn: () => apiRequest("GET", "/api/uploads"),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
-      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${currentSector?.id}`] });
-      toast({
-        title: "Reports Refreshed",
-        description: "Dashboard data and pricing updated.",
-      });
-    },
-  });
-
   // Fetch real section inspection data from database
   const { data: sectionData = [], isLoading: sectionsLoading } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
@@ -690,7 +513,7 @@ export default function Dashboard() {
 
   // Check if pricing exists for the current sector
   const { data: pricingStatus = { overall: false, surveys: false, cleansing: false, jetting: false } } = useQuery<{ overall: boolean, surveys: boolean, cleansing: boolean, jetting: boolean }>({
-    queryKey: [`/api/pricing/check/${currentSector?.id}`],
+    queryKey: [`/api/pricing/check/${currentSector.id}`],
     enabled: !!currentSector?.id,
   });
 
@@ -932,7 +755,7 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Section Inspection Data & Analysis</h1>
           <p className="text-slate-600">
             {currentUpload 
-              ? `Viewing report: ${currentUpload.fileName} • ${currentSector?.name || 'Utilities'} Sector`
+              ? `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector`
               : "Comprehensive analysis results across all uploaded reports with sector-specific compliance checking"
             }
           </p>
@@ -962,20 +785,20 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border-2 ${
-                      currentSector?.id === 'utilities' ? 'border-blue-500 bg-blue-50' :
-                      currentSector?.id === 'adoption' ? 'border-green-500 bg-green-50' :
-                      currentSector?.id === 'highways' ? 'border-orange-500 bg-orange-50' :
-                      currentSector?.id === 'insurance' ? 'border-red-500 bg-red-50' :
-                      currentSector?.id === 'construction' ? 'border-purple-500 bg-purple-50' :
+                      currentSector.id === 'utilities' ? 'border-blue-500 bg-blue-50' :
+                      currentSector.id === 'adoption' ? 'border-green-500 bg-green-50' :
+                      currentSector.id === 'highways' ? 'border-orange-500 bg-orange-50' :
+                      currentSector.id === 'insurance' ? 'border-red-500 bg-red-50' :
+                      currentSector.id === 'construction' ? 'border-purple-500 bg-purple-50' :
                       'border-yellow-500 bg-yellow-50'
                     }`}>
-                      {currentSector?.id === 'utilities' && <Building className="h-5 w-5 text-blue-600" />}
-                      {currentSector?.id === 'adoption' && <CheckCircle className="h-5 w-5 text-green-600" />}
-                      {currentSector?.id === 'highways' && <Car className="h-5 w-5 text-orange-600" />}
-                      {currentSector?.id === 'insurance' && <ShieldCheck className="h-5 w-5 text-red-600" />}
-                      {currentSector?.id === 'construction' && <HardHat className="h-5 w-5 text-purple-600" />}
-                      {currentSector?.id === 'domestic' && <HomeIcon className="h-5 w-5 text-yellow-600" />}
-                      <span className="font-medium text-black">{currentSector?.name || 'Utilities'} Sector</span>
+                      {currentSector.id === 'utilities' && <Building className="h-5 w-5 text-blue-600" />}
+                      {currentSector.id === 'adoption' && <CheckCircle className="h-5 w-5 text-green-600" />}
+                      {currentSector.id === 'highways' && <Car className="h-5 w-5 text-orange-600" />}
+                      {currentSector.id === 'insurance' && <ShieldCheck className="h-5 w-5 text-red-600" />}
+                      {currentSector.id === 'construction' && <HardHat className="h-5 w-5 text-purple-600" />}
+                      {currentSector.id === 'domestic' && <HomeIcon className="h-5 w-5 text-yellow-600" />}
+                      <span className="font-medium text-black">{currentSector.name} Sector</span>
                     </div>
                     <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections)</CardTitle>
                   </div>
@@ -1124,14 +947,14 @@ export default function Dashboard() {
             {/* Analysis Standards Applied */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Analysis Standards Applied - {currentSector?.name || 'Utilities'} Sector</CardTitle>
+                <CardTitle className="text-lg">Analysis Standards Applied - {currentSector.name} Sector</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h4 className="font-medium text-sm mb-3">Standards Documentation</h4>
                     <div className="space-y-2">
-                      {currentSector?.standards?.map((standard: any, index: number) => (
+                      {currentSector.standards.map((standard, index) => (
                         <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded">
                           <span className="text-sm font-medium">{standard.name}</span>
                           <a 
@@ -1143,18 +966,18 @@ export default function Dashboard() {
                             View Documentation
                           </a>
                         </div>
-                      )) || []}
+                      ))}
                     </div>
                   </div>
                   
                   <div>
                     <h4 className="font-medium text-sm mb-3">Output Columns</h4>
                     <div className="space-y-1">
-                      {currentSector?.outputColumns?.map((column: any, index: number) => (
+                      {currentSector.outputColumns.map((column, index) => (
                         <div key={index} className="text-sm p-1 bg-slate-50 rounded px-2">
                           {column}
                         </div>
-                      )) || []}
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -1210,7 +1033,7 @@ export default function Dashboard() {
                   </Card>
                 </div>
 
-                {currentSector?.id === 'adoption' && (
+                {currentSector.id === 'adoption' && (
                   <Card className="mt-4">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-sm">OS19x Adoption Standards</CardTitle>

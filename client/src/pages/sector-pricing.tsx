@@ -61,8 +61,8 @@ export default function SectorPricing() {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Standards Configuration</h1>
-            <p className="text-gray-600 mt-2">Configure standards-based recommendations for each sector</p>
+            <h1 className="text-3xl font-bold text-gray-900">Sector Pricing Configuration</h1>
+            <p className="text-gray-600 mt-2">Configure pricing rules and equipment costs for each sector</p>
           </div>
           <Link href="/dashboard">
             <Button variant="outline" className="flex items-center gap-2">
@@ -92,7 +92,7 @@ export default function SectorPricing() {
                     </p>
                     <div className="flex justify-center">
                       <Button className="w-full">
-                        Configure Pricing
+                        Configure Pricing Rules
                       </Button>
                     </div>
                   </CardContent>
