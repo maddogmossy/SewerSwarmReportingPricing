@@ -136,7 +136,7 @@ export default function SectorPricingDetail() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types', sector] });
+      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types/1'] });
       setShowAddEquipment(false);
       setNewEquipment({
         name: '',
@@ -155,7 +155,7 @@ export default function SectorPricingDetail() {
       return await apiRequest('PUT', `/api/equipment-types/${equipment.id}`, equipment);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types', sector] });
+      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types/1'] });
       setEditingEquipment(null);
       setShowAddEquipment(false);
       setNewEquipment({
@@ -166,6 +166,10 @@ export default function SectorPricingDetail() {
         costPerDay: ''
       });
       toast({ title: "Success", description: "Equipment updated successfully" });
+      // Refresh page to ensure updates are visible
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     }
   });
 
@@ -175,7 +179,7 @@ export default function SectorPricingDetail() {
       return await apiRequest('DELETE', `/api/equipment-types/${equipmentId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types', sector] });
+      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types/1'] });
       toast({ title: "Success", description: "Equipment deleted successfully" });
     }
   });
