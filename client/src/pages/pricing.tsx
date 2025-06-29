@@ -286,6 +286,7 @@ export default function Pricing() {
       });
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types'] });
       queryClient.invalidateQueries({ queryKey: ['/api/equipment-types', selectedCategory] });
       queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
       setShowAddEquipment(false);
@@ -306,6 +307,8 @@ export default function Pricing() {
         title: "Success",
         description: "Equipment added successfully"
       });
+      // Force page refresh to ensure UI updates
+      setTimeout(() => window.location.reload(), 500);
     }
   });
 
@@ -314,9 +317,13 @@ export default function Pricing() {
       return await apiRequest('PUT', `/api/equipment-types/${equipment.id}`, equipment);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types'] });
       queryClient.invalidateQueries({ queryKey: ['/api/equipment-types', selectedCategory] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
       setEditingEquipment(null);
       setShowAddEquipment(false);
+      // Force page refresh to ensure UI updates
+      window.location.reload();
       toast({
         title: "Success",
         description: "Equipment updated successfully"
@@ -406,6 +413,12 @@ export default function Pricing() {
             <Button variant="outline" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4 text-green-600" />
               Dashboard
+            </Button>
+          </Link>
+          <Link href="/sector-pricing">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Settings className="h-4 w-4 text-blue-600" />
+              Sector Pricing
             </Button>
           </Link>
         </div>
