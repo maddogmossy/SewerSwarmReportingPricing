@@ -401,6 +401,47 @@ export class DatabaseStorage implements IStorage {
       await db.delete(pricingRules).where(eq(pricingRules.id, id));
     }
   }
+
+  // Standards-based recommendations implementation
+  async getStandardsRules(userId: string, sector: string): Promise<StandardsRule[]> {
+    return await db.select().from(standardsRules).where(
+      and(
+        eq(standardsRules.userId, userId),
+        eq(standardsRules.sector, sector)
+      )
+    );
+  }
+
+  async createStandardsRule(ruleData: InsertStandardsRule): Promise<StandardsRule> {
+    const [rule] = await db.insert(standardsRules).values(ruleData).returning();
+    return rule;
+  }
+
+  async updateStandardsRule(id: number, userId: string, ruleUpdate: Partial<InsertStandardsRule>): Promise<StandardsRule> {
+    const [updated] = await db.update(standardsRules)
+      .set(ruleUpdate)
+      .where(
+        and(
+          eq(standardsRules.id, id),
+          eq(standardsRules.userId, userId)
+        )
+      )
+      .returning();
+    return updated;
+  }
+
+  async deleteStandardsRule(id: number, userId?: string): Promise<void> {
+    if (userId) {
+      await db.delete(standardsRules).where(
+        and(
+          eq(standardsRules.id, id),
+          eq(standardsRules.userId, userId)
+        )
+      );
+    } else {
+      await db.delete(standardsRules).where(eq(standardsRules.id, id));
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();
