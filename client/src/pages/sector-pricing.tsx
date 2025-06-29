@@ -76,7 +76,7 @@ export default function SectorPricing() {
           {sectors.map((sector) => {
             const IconComponent = sector.icon;
             return (
-              <Link key={sector.id} href={`/basin-configuration/${sector.id}`}>
+              <Link key={sector.id} href={`/sector-pricing/${sector.id}`}>
                 <Card className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${sector.color} ${sector.bgColor} border-2`}>
                   <CardHeader className="text-center pb-4">
                     <div className="flex justify-center mb-3">
@@ -92,7 +92,7 @@ export default function SectorPricing() {
                     </p>
                     <div className="flex justify-center">
                       <Button className="w-full">
-                        Configure Standards Rules
+                        Configure Pricing
                       </Button>
                     </div>
                   </CardContent>
