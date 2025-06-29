@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ArrowLeft, Plus, Edit, Trash2, Save, ChevronDown, ChevronRight, RefreshCw } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Save, ChevronDown, ChevronRight, RefreshCw, BookOpen, Wrench } from "lucide-react";
 import { Link } from "wouter";
 
 // MSCC5 Defect Codes
@@ -35,6 +37,82 @@ const PIPE_SIZES = [
 
 const CATEGORY_OPTIONS = ['CCTV', 'Jetting', 'Patching', 'Lining', 'Excavation', 'Robotic Cutting'];
 
+// Standards-based recommendation library
+const DRAIN_REPAIR_RECOMMENDATIONS = {
+  FC: {
+    standards: "WRc Drain Repair Book 4th Ed., BS EN 1610",
+    repairs: ["Local patch lining (glass mat or silicate)", "Excavation and replace short section if structurally compromised"],
+    priority: "Medium",
+    actionType: 6
+  },
+  FL: {
+    standards: "WRc Drain Repair Book 4th Ed., BS EN 1610", 
+    repairs: ["Install full-length CIPP liner", "Excavate and replace if at joint or severely displaced"],
+    priority: "High",
+    actionType: 6
+  },
+  CR: {
+    standards: "MSCC5, SRM, BS EN 752",
+    repairs: ["Monitor for progression", "Local lining if > Grade 3", "Excavate if structurally critical"],
+    priority: "Medium",
+    actionType: 5
+  },
+  DER: {
+    standards: "WRc Sewer Cleaning Manual, MSCC5",
+    repairs: ["High-pressure water jetting", "CCTV post-clean inspection", "Root-cutting if deposit is organic"],
+    priority: "Medium", 
+    actionType: 2
+  },
+  DES: {
+    standards: "WRc Sewer Cleaning Manual, BS EN 752",
+    repairs: ["Desilting using vacuum or jet-vac combo unit", "Flush and re-inspect", "Assess upstream source"],
+    priority: "Low",
+    actionType: 2
+  },
+  JDL: {
+    standards: "OS19x/OS20x, BS EN 1610",
+    repairs: ["Monitor displacement", "Excavate and realign if >10% pipe diameter", "Check for settlement cause"],
+    priority: "High",
+    actionType: 6
+  },
+  JDS: {
+    standards: "OS19x/OS20x, BS EN 1610", 
+    repairs: ["Seal joint with injection if minor", "Excavate and replace if severe displacement", "Assess bedding"],
+    priority: "High",
+    actionType: 6
+  },
+  RI: {
+    standards: "BS EN 1610, MSCC5",
+    repairs: ["Inject sealing compound", "Replace gasket/joint", "Monitor for infiltration"],
+    priority: "Medium",
+    actionType: 5
+  },
+  WL: {
+    standards: "BS EN 752, Water Industry Act 1991",
+    repairs: ["Identify infiltration source", "Seal joints upstream", "Check groundwater levels"],
+    priority: "Medium",
+    actionType: 3
+  },
+  OB: {
+    standards: "WRc Sewer Cleaning Manual",
+    repairs: ["Remove obstruction mechanically", "High-pressure jetting", "CCTV confirm clearance"],
+    priority: "High",
+    actionType: 2
+  },
+  DEF: {
+    standards: "MSCC5, SRM, BS EN 14654-1",
+    repairs: ["Assess deformation percentage", "Install CIPP liner if >5%", "Excavate if >15% deformation"],
+    priority: "High", 
+    actionType: 6
+  }
+};
+
+const CLEANING_RECOMMENDATIONS = {
+  DES: ["Jetting with medium-pressure nozzle", "Vacuum extraction (Jet-Vac unit)", "Flushing to downstream manhole"],
+  DER: ["High-pressure jetting with rotating nozzle", "Bucket machine (for large pipes)", "Jet-Vac unit for removal"],
+  RO: ["Mechanical root cutting", "Hydraulic root removal nozzle", "CCTV confirmation post-clean", "Root barrier installation"]
+};
+
 interface PricingRule {
   id?: number;
   sector: string;
@@ -45,6 +123,8 @@ interface PricingRule {
   lengthOfRuns: number;
   equipmentOptions: string[];
   defaultEquipment: string;
+  customRecommendations: string[];
+  standardsApplied: string;
   isActive: boolean;
 }
 
@@ -80,8 +160,24 @@ export default function SectorPricingDetail() {
     lengthOfRuns: 0,
     equipmentOptions: [],
     defaultEquipment: '',
+    customRecommendations: [],
+    standardsApplied: '',
     isActive: true
   });
+
+  // Auto-populate recommendations when MSCC5 code changes
+  useEffect(() => {
+    if (newRule.mscc5Code && DRAIN_REPAIR_RECOMMENDATIONS[newRule.mscc5Code as keyof typeof DRAIN_REPAIR_RECOMMENDATIONS]) {
+      const standardData = DRAIN_REPAIR_RECOMMENDATIONS[newRule.mscc5Code as keyof typeof DRAIN_REPAIR_RECOMMENDATIONS];
+      setNewRule(prev => ({
+        ...prev,
+        customRecommendations: [...standardData.repairs],
+        standardsApplied: standardData.standards,
+        recommendationType: standardData.priority === "High" ? "Repair" : 
+                           standardData.actionType === 2 ? "Cleaning" : "Survey"
+      }));
+    }
+  }, [newRule.mscc5Code]);
 
   const [newEquipment, setNewEquipment] = useState({
     name: '',
@@ -131,6 +227,8 @@ export default function SectorPricingDetail() {
         lengthOfRuns: 0,
         equipmentOptions: [],
         defaultEquipment: '',
+        customRecommendations: [],
+        standardsApplied: '',
         isActive: true
       });
       toast({ title: "Success", description: "Pricing rule added successfully" });
@@ -657,112 +755,209 @@ export default function SectorPricingDetail() {
         </DialogContent>
       </Dialog>
 
-      {/* Add Rule Dialog */}
+      {/* Enhanced Add Rule Dialog with Standards Integration */}
       <Dialog open={showAddRule} onOpenChange={setShowAddRule}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add Pricing Rule</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5" />
+              Add Standards-Based Pricing Rule
+            </DialogTitle>
+            <DialogDescription>
+              Configure pricing rules using WRc, MSCC5, SRM, BS EN, and OS19x/OS20x standards
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="mscc5-code">MSCC5 Code</Label>
-              <Select
-                value={newRule.mscc5Code}
-                onValueChange={(value) => setNewRule({ ...newRule, mscc5Code: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select MSCC5 code" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(MSCC5_CODES).map(([code, description]) => (
-                    <SelectItem key={code} value={code}>
-                      {code} - {description}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          
+          <Tabs defaultValue="basic" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="basic">Basic Configuration</TabsTrigger>
+              <TabsTrigger value="recommendations">Standards & Recommendations</TabsTrigger>
+              <TabsTrigger value="equipment">Equipment & Pricing</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="basic" className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="mscc5-code">MSCC5 Defect Code</Label>
+                  <Select
+                    value={newRule.mscc5Code}
+                    onValueChange={(value) => setNewRule({ ...newRule, mscc5Code: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select MSCC5 code" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(MSCC5_CODES).map(([code, description]) => (
+                        <SelectItem key={code} value={code}>
+                          {code} - {description}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div>
-              <Label htmlFor="recommendation-type">Recommendation Type</Label>
-              <Select
-                value={newRule.recommendationType}
-                onValueChange={(value) => setNewRule({ ...newRule, recommendationType: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select recommendation type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Survey">Survey</SelectItem>
-                  <SelectItem value="Cleaning">Cleaning</SelectItem>
-                  <SelectItem value="Repair">Repair</SelectItem>
-                  <SelectItem value="Replacement">Replacement</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <div>
+                  <Label htmlFor="recommendation-type">Action Type</Label>
+                  <Select
+                    value={newRule.recommendationType}
+                    onValueChange={(value) => setNewRule({ ...newRule, recommendationType: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select action type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Survey">Survey & Monitoring</SelectItem>
+                      <SelectItem value="Cleaning">Cleaning & Maintenance</SelectItem>
+                      <SelectItem value="Repair">Repair & Patching</SelectItem>
+                      <SelectItem value="Replacement">Full Replacement</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
-            <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="percentage">Severity Percentage (%)</Label>
+                  <Input
+                    id="percentage"
+                    type="number"
+                    value={newRule.percentage}
+                    onChange={(e) => setNewRule({ ...newRule, percentage: Number(e.target.value) || 0 })}
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="quantity-rule">Quantity Multiplier</Label>
+                  <Input
+                    id="quantity-rule"
+                    type="number"
+                    value={newRule.quantityRule}
+                    onChange={(e) => setNewRule({ ...newRule, quantityRule: Number(e.target.value) || 0 })}
+                    placeholder="1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="length-of-runs">Length Factor (m)</Label>
+                  <Input
+                    id="length-of-runs"
+                    type="number"
+                    value={newRule.lengthOfRuns}
+                    onChange={(e) => setNewRule({ ...newRule, lengthOfRuns: Number(e.target.value) || 0 })}
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="recommendations" className="space-y-4">
               <div>
-                <Label htmlFor="percentage">Percentage (%)</Label>
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <Wrench className="h-4 w-4" />
+                  Standards Applied
+                </Label>
                 <Input
-                  id="percentage"
-                  type="number"
-                  value={newRule.percentage}
-                  onChange={(e) => setNewRule({ ...newRule, percentage: Number(e.target.value) || 0 })}
-                  placeholder="0"
+                  value={newRule.standardsApplied}
+                  onChange={(e) => setNewRule({ ...newRule, standardsApplied: e.target.value })}
+                  placeholder="e.g., WRc Drain Repair Book 4th Ed., MSCC5, BS EN 1610"
+                  className="mt-1"
                 />
               </div>
+
               <div>
-                <Label htmlFor="quantity-rule">Quantity Rule</Label>
-                <Input
-                  id="quantity-rule"
-                  type="number"
-                  value={newRule.quantityRule}
-                  onChange={(e) => setNewRule({ ...newRule, quantityRule: Number(e.target.value) || 0 })}
-                  placeholder="0"
+                <Label className="text-sm font-medium">Custom Recommendations (one per line)</Label>
+                <Textarea
+                  value={newRule.customRecommendations.join('\n')}
+                  onChange={(e) => setNewRule({ 
+                    ...newRule, 
+                    customRecommendations: e.target.value.split('\n').filter(line => line.trim())
+                  })}
+                  placeholder="Enter recommendations based on standards..."
+                  rows={6}
+                  className="mt-1"
                 />
               </div>
-            </div>
 
-            <div>
-              <Label htmlFor="length-of-runs">Length of Runs (m)</Label>
-              <Input
-                id="length-of-runs"
-                type="number"
-                value={newRule.lengthOfRuns}
-                onChange={(e) => setNewRule({ ...newRule, lengthOfRuns: Number(e.target.value) || 0 })}
-                placeholder="0"
-              />
-            </div>
+              {newRule.mscc5Code && DRAIN_REPAIR_RECOMMENDATIONS[newRule.mscc5Code as keyof typeof DRAIN_REPAIR_RECOMMENDATIONS] && (
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-blue-900 mb-2">
+                    Standards-Based Recommendations for {newRule.mscc5Code}
+                  </h4>
+                  <p className="text-sm text-blue-700 mb-2">
+                    <strong>Standards:</strong> {DRAIN_REPAIR_RECOMMENDATIONS[newRule.mscc5Code as keyof typeof DRAIN_REPAIR_RECOMMENDATIONS].standards}
+                  </p>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    {DRAIN_REPAIR_RECOMMENDATIONS[newRule.mscc5Code as keyof typeof DRAIN_REPAIR_RECOMMENDATIONS].repairs.map((repair, idx) => (
+                      <li key={idx}>• {repair}</li>
+                    ))}
+                  </ul>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="mt-2"
+                    onClick={() => {
+                      const standardData = DRAIN_REPAIR_RECOMMENDATIONS[newRule.mscc5Code as keyof typeof DRAIN_REPAIR_RECOMMENDATIONS];
+                      setNewRule(prev => ({
+                        ...prev,
+                        customRecommendations: [...standardData.repairs],
+                        standardsApplied: standardData.standards
+                      }));
+                    }}
+                  >
+                    Use Standards Recommendations
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
 
-            <div>
-              <Label htmlFor="default-equipment">Default Equipment</Label>
-              <Select
-                value={newRule.defaultEquipment}
-                onValueChange={(value) => setNewRule({ ...newRule, defaultEquipment: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select default equipment" />
-                </SelectTrigger>
-                <SelectContent>
-                  {safeEquipmentTypes.map((equipment: any) => (
-                    <SelectItem key={equipment.id} value={equipment.name}>
-                      {equipment.name} ({equipment.minPipeSize}-{equipment.maxPipeSize}mm)
-                    </SelectItem>
+            <TabsContent value="equipment" className="space-y-4">
+              <div>
+                <Label htmlFor="default-equipment">Default Equipment</Label>
+                <Select
+                  value={newRule.defaultEquipment}
+                  onValueChange={(value) => setNewRule({ ...newRule, defaultEquipment: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select default equipment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {safeEquipmentTypes.map((equipment: any) => (
+                      <SelectItem key={equipment.id} value={equipment.name}>
+                        {equipment.name} ({equipment.minPipeSize}-{equipment.maxPipeSize}mm) - £{equipment.costPerDay}/day
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-2">Available Equipment by Category</h4>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {Object.entries(groupedByCategory).map(([category, equipment]) => (
+                    <div key={category} className="text-sm">
+                      <strong className="text-gray-700">{category}:</strong>
+                      <ul className="ml-4 space-y-1">
+                        {equipment.map((eq: any) => (
+                          <li key={eq.id} className="text-gray-600">
+                            {eq.name} ({eq.minPipeSize}-{eq.maxPipeSize}mm) - £{eq.costPerDay}/day
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddRule(false)}>
               Cancel
             </Button>
             <Button 
               onClick={() => addRuleMutation.mutate(newRule)}
-              disabled={!newRule.mscc5Code || !newRule.recommendationType}
+              disabled={!newRule.mscc5Code || !newRule.recommendationType || newRule.customRecommendations.length === 0}
             >
-              Add Rule
+              Create Pricing Rule
             </Button>
           </DialogFooter>
         </DialogContent>

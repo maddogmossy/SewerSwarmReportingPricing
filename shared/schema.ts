@@ -164,6 +164,8 @@ export const pricingRules = pgTable("pricing_rules", {
   lengthOfRuns: integer("length_of_runs").notNull(), // Length of runs in meters
   equipmentOptions: text("equipment_options").array().notNull().default(sql`ARRAY[]::text[]`), // Available equipment options
   defaultEquipment: varchar("default_equipment"), // User-selected default equipment
+  customRecommendations: text("custom_recommendations").array().notNull().default(sql`ARRAY[]::text[]`), // Standards-based recommendations
+  standardsApplied: text("standards_applied"), // e.g., "WRc Drain Repair Book 4th Ed., MSCC5, BS EN 1610"
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
