@@ -99,10 +99,13 @@ export default function SectorPricingDetail() {
   });
 
   // Fetch equipment for this sector (using category 1 for surveys)
-  const { data: equipmentTypes = [], isLoading: isLoadingEquipment } = useQuery({
+  const { data: equipmentTypes, isLoading: isLoadingEquipment } = useQuery({
     queryKey: [`/api/equipment-types/1`],
     enabled: !!sector
   });
+
+  // Ensure equipmentTypes is always an array
+  const safeEquipmentTypes = Array.isArray(equipmentTypes) ? equipmentTypes : [];
 
   // Add new rule mutation
   const addRuleMutation = useMutation({
@@ -227,11 +230,11 @@ export default function SectorPricingDetail() {
   // Organize equipment by categories - database equipment only
   const organizeEquipmentByCategory = () => {
     // Only use real database equipment - no standard examples
-    const dbEquipment = (equipmentTypes || []).map((eq: any) => ({ ...eq, isStandard: false }));
+    const dbEquipment = safeEquipmentTypes.map((eq: any) => ({ ...eq, isStandard: false }));
     
     // Remove duplicates within database equipment
-    const deduplicatedDbEquipment = dbEquipment.filter((equipment, index, array) => {
-      const firstOccurrence = array.findIndex(item => item.name === equipment.name);
+    const deduplicatedDbEquipment = dbEquipment.filter((equipment: any, index: number, array: any[]) => {
+      const firstOccurrence = array.findIndex((item: any) => item.name === equipment.name);
       return firstOccurrence === index;
     });
     
@@ -575,7 +578,9 @@ export default function SectorPricingDetail() {
           <DialogHeader>
             <DialogTitle>Delete Equipment</DialogTitle>
           </DialogHeader>
-          <p>Are you sure you want to delete this equipment? This action cannot be undone.</p>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete this equipment? This action cannot be undone.
+          </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEquipmentToDelete(null)}>
               Cancel
