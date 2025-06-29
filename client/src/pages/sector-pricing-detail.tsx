@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ArrowLeft, Plus, Edit, Trash2, Save, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Save, ChevronDown, ChevronRight, RefreshCw } from "lucide-react";
 import { Link } from "wouter";
 
 // MSCC5 Defect Codes
@@ -144,6 +144,7 @@ export default function SectorPricingDetail() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/equipment-types/1'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types'] });
       setShowAddEquipment(false);
       setNewEquipment({
         name: '',
@@ -154,6 +155,10 @@ export default function SectorPricingDetail() {
         costPerDay: ''
       });
       toast({ title: "Success", description: "Equipment added successfully" });
+      // Force page refresh to ensure new equipment appears
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   });
 
@@ -193,8 +198,13 @@ export default function SectorPricingDetail() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/equipment-types/1'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/equipment-types'] });
       setEquipmentToDelete(null);
       toast({ title: "Success", description: "Equipment deleted successfully" });
+      // Force page refresh to ensure changes appear
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   });
 
@@ -355,6 +365,15 @@ export default function SectorPricingDetail() {
                 >
                   <Plus className="h-4 w-4" />
                   Add Group
+                </Button>
+                <Button 
+                  onClick={() => window.location.reload()}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  title="Refresh to see new equipment"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Refresh
                 </Button>
               </div>
             </div>
