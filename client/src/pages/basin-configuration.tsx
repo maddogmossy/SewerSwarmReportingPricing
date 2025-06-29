@@ -39,6 +39,18 @@ interface ConditionTriggerData {
   }>;
 }
 
+interface StandardsRule {
+  id: number;
+  userId: string;
+  sector: string;
+  condition: string;
+  recommendationType: string;
+  standardsApplied: string;
+  customRecommendations: string[];
+  notes?: string;
+  isActive: boolean;
+}
+
 export default function BasinConfiguration() {
   const { sector } = useParams();
   const { user } = useAuth();
@@ -47,12 +59,12 @@ export default function BasinConfiguration() {
   const [customRecommendation, setCustomRecommendation] = useState("");
 
   // Fetch condition-trigger-action data
-  const { data: conditionData, isLoading: isLoadingConditions } = useQuery({
+  const { data: conditionData, isLoading: isLoadingConditions } = useQuery<ConditionTriggerData>({
     queryKey: ["/api/condition-triggers"],
   });
 
   // Fetch existing standards rules for this sector
-  const { data: standardsRules = [], isLoading: isLoadingRules } = useQuery({
+  const { data: standardsRules = [], isLoading: isLoadingRules } = useQuery<StandardsRule[]>({
     queryKey: [`/api/standards-rules/${sector}`],
     enabled: !!sector,
   });
@@ -148,7 +160,7 @@ export default function BasinConfiguration() {
     }
   };
 
-  const handleEdit = (rule: any) => {
+  const handleEdit = (rule: StandardsRule) => {
     setEditingRule(rule);
     form.reset({
       condition: rule.condition,
@@ -177,8 +189,8 @@ export default function BasinConfiguration() {
   const getRecommendationsForCondition = (condition: string) => {
     if (!conditionData?.allMappings) return [];
     return conditionData.allMappings
-      .filter((mapping: any) => mapping.condition === condition)
-      .map((mapping: any) => mapping.recommendedAction);
+      .filter((mapping) => mapping.condition === condition)
+      .map((mapping) => mapping.recommendedAction);
   };
 
   const selectedCondition = form.watch("condition");
@@ -246,7 +258,7 @@ export default function BasinConfiguration() {
                             <SelectItem key={condition} value={condition}>
                               {condition}
                             </SelectItem>
-                          ))}
+                          )) || []}
                         </SelectContent>
                       </Select>
                       <FormMessage />

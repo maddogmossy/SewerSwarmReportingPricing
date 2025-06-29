@@ -11,6 +11,7 @@ import Upload from "@/pages/upload";
 import Pricing from "@/pages/pricing";
 import SectorPricing from "@/pages/sector-pricing";
 import SectorPricingDetail from "@/pages/sector-pricing-detail";
+import BasinConfiguration from "@/pages/basin-configuration";
 import SurveyPricing from "@/pages/survey-pricing";
 import CleansingPricing from "@/pages/cleansing-pricing";
 import JettingPricing from "@/pages/jetting-pricing";
@@ -57,6 +58,7 @@ function Router() {
           <Route path="/pricing" component={Pricing} />
           <Route path="/sector-pricing" component={SectorPricing} />
           <Route path="/sector-pricing/:sector" component={SectorPricingDetail} />
+          <Route path="/basin-configuration/:sector" component={BasinConfiguration} />
           <Route path="/pricing/surveys" component={SurveyPricing} />
           <Route path="/pricing/cleansing" component={CleansingPricing} />
           <Route path="/pricing/jetting" component={JettingPricing} />
