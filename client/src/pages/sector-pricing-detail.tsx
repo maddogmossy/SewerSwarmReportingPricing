@@ -173,7 +173,16 @@ export default function SectorPricingDetail() {
   // Update equipment mutation
   const updateEquipmentMutation = useMutation({
     mutationFn: async (equipment: any) => {
-      return await apiRequest('PUT', `/api/equipment-types/${equipment.id}`, equipment);
+      // Ensure all numeric fields are properly validated before sending
+      const sanitizedEquipment = {
+        ...equipment,
+        minPipeSize: typeof equipment.minPipeSize === 'number' && !isNaN(equipment.minPipeSize) ? equipment.minPipeSize : 75,
+        maxPipeSize: typeof equipment.maxPipeSize === 'number' && !isNaN(equipment.maxPipeSize) ? equipment.maxPipeSize : 300,
+        costPerDay: typeof equipment.costPerDay === 'number' && !isNaN(equipment.costPerDay) ? equipment.costPerDay : 0
+      };
+      
+      console.log('Sending equipment update:', sanitizedEquipment);
+      return await apiRequest('PUT', `/api/equipment-types/${equipment.id}`, sanitizedEquipment);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/equipment-types/1'] });
@@ -192,6 +201,14 @@ export default function SectorPricingDetail() {
       setTimeout(() => {
         window.location.reload();
       }, 500);
+    },
+    onError: (error) => {
+      console.error('Mutation error:', error);
+      toast({ 
+        title: "Error", 
+        description: "Failed to update equipment. Please try again.", 
+        variant: "destructive" 
+      });
     }
   });
 
