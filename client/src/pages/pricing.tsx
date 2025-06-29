@@ -124,6 +124,7 @@ export default function Pricing() {
     percentageFrom: 0,
     percentageTo: 0,
     quantityRule: 0,
+    lengthOfRuns: 0,
     equipmentOptions: [] as string[],
     defaultEquipment: '',
     applicableSectors: [] as string[]
@@ -194,6 +195,7 @@ export default function Pricing() {
         percentageFrom: rule.percentageFrom,
         percentageTo: rule.percentageTo,
         quantityRule: rule.quantityRule.toString(), // Convert to string for backend
+        lengthOfRuns: rule.lengthOfRuns.toString(), // Add lengthOfRuns field
         equipmentOptions: rule.equipmentOptions,
         defaultEquipment: rule.defaultEquipment,
         applicableSectors: rule.applicableSectors,
@@ -209,6 +211,7 @@ export default function Pricing() {
         percentageFrom: 0,
         percentageTo: 0,
         quantityRule: 0,
+        lengthOfRuns: 0,
         equipmentOptions: [],
         defaultEquipment: '',
         applicableSectors: []
@@ -377,53 +380,56 @@ export default function Pricing() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Wrench className="h-5 w-5" />
-                    Available Equipment Specifications
-                  </CardTitle>
-                  <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add Equipment
-                  </Button>
-                </div>
+                <CardTitle className="flex items-center gap-2">
+                  <Wrench className="h-5 w-5" />
+                  Current Assets/Vehicles - {selectedCategoryData?.name}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {equipmentTypes.length === 0 ? (
+                {userPricing.length === 0 ? (
                   <p className="text-gray-500 text-center py-8">
-                    No equipment configured for {selectedCategoryData?.name}. Add equipment to get started.
+                    No vehicles/assets configured for {selectedCategoryData?.name}. Configure equipment pricing to see available assets.
                   </p>
                 ) : (
                   <div className="space-y-4">
-                    {equipmentTypes.map((equipment: EquipmentType) => {
-                      const pricing = userPricing.find((p: UserPricing) => p.equipmentTypeId === equipment.id);
+                    {userPricing.map((pricing: UserPricing) => {
+                      const equipment = equipmentTypes.find((eq: EquipmentType) => eq.id === pricing.equipmentTypeId);
+                      if (!equipment) return null;
+                      
                       return (
-                        <div key={equipment.id} className="border rounded-lg p-4 space-y-3">
-                          <div className="flex items-start justify-between">
-                            <div className="space-y-1">
-                              <h4 className="font-medium text-sm">{equipment.name}</h4>
-                              <p className="text-xs text-gray-500">{equipment.description}</p>
-                              <p className="text-xs text-gray-400">
-                                Pipe Size: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm
-                              </p>
-                            </div>
-                            <div className="flex gap-1">
-                              <Button size="sm" variant="outline">
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                              <Button size="sm" variant="outline">
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
+                        <div key={equipment.id} className="border rounded-lg p-4 space-y-3 bg-white">
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-base text-gray-900">{equipment.name}</h4>
+                            <p className="text-sm text-gray-600">{equipment.description}</p>
+                            
+                            <div className="grid grid-cols-2 gap-4 mt-3">
+                              <div className="space-y-1">
+                                <p className="text-xs font-medium text-gray-700">Specifications</p>
+                                <p className="text-xs text-blue-600">
+                                  Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                  Meterage: {pricing.meterageRangeMin}m - {pricing.meterageRangeMax}m
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                  Sections/Day: {pricing.sectionsPerDay}
+                                </p>
+                              </div>
+                              
+                              <div className="space-y-1">
+                                <p className="text-xs font-medium text-gray-700">Daily Rates</p>
+                                <p className="text-sm font-bold text-green-600">
+                                  £{pricing.costPerDay} per day
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                  £{pricing.costPerHour} per hour
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  Sectors: {pricing.sectors.join(', ') || 'All'}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                          {pricing && (
-                            <div className="text-xs space-y-1 bg-gray-50 p-2 rounded">
-                              <p><span className="font-medium">Cost/Hour:</span> £{pricing.costPerHour}</p>
-                              <p><span className="font-medium">Cost/Day:</span> £{pricing.costPerDay}</p>
-                              <p><span className="font-medium">Meterage:</span> {pricing.meterageRangeMin}m - {pricing.meterageRangeMax}m</p>
-                              <p><span className="font-medium">Sections/Day:</span> {pricing.sectionsPerDay}</p>
-                            </div>
-                          )}
                         </div>
                       );
                     })}
@@ -520,50 +526,80 @@ export default function Pricing() {
                 </div>
               </div>
               
-              <div>
-                <Label>Lengths that can be completed in 8hrs</Label>
-                <Input 
-                  type="number" 
-                  value={newRule.quantityRule} 
-                  onChange={(e) => setNewRule({...newRule, quantityRule: parseInt(e.target.value) || 0})}
-                  placeholder="Enter meters (e.g., 150)"
-                  min="0"
-                />
-                <div className="mt-1 text-xs text-gray-600">
-                  Enter the total meters that can be completed in an 8-hour working day
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Lengths that can be completed in 8hrs</Label>
+                  <Input 
+                    type="number" 
+                    value={newRule.quantityRule} 
+                    onChange={(e) => setNewRule({...newRule, quantityRule: parseInt(e.target.value) || 0})}
+                    placeholder="Enter meters (e.g., 150)"
+                    min="0"
+                  />
+                  <div className="mt-1 text-xs text-gray-600">
+                    Total meters completed in an 8-hour working day
+                  </div>
+                </div>
+                <div>
+                  <Label>Length of Runs</Label>
+                  <Input 
+                    type="number" 
+                    value={newRule.lengthOfRuns} 
+                    onChange={(e) => setNewRule({...newRule, lengthOfRuns: parseInt(e.target.value) || 0})}
+                    placeholder="Enter meters (e.g., 50)"
+                    min="0"
+                  />
+                  <div className="mt-1 text-xs text-gray-600">
+                    Checked against total length or length surveyed
+                  </div>
                 </div>
               </div>
               
               <div>
-                <Label>Available Equipment</Label>
-                <div className="grid grid-cols-1 gap-2 mt-2 max-h-40 overflow-y-auto">
-                  {VEHICLE_FLEET
-                    .filter(vehicle => !selectedCategoryData || vehicle.category === selectedCategoryData.name || 
-                      (selectedCategoryData.name === 'Cleansing / Root Cutting' && 
-                       (vehicle.category === 'Cleansing' || vehicle.category === 'Root Cutting')))
-                    .map(vehicle => (
-                    <div key={vehicle.name} className="flex items-start space-x-2 p-2 border rounded">
-                      <Checkbox 
-                        checked={newRule.equipmentOptions.includes(vehicle.name)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setNewRule({...newRule, equipmentOptions: [...newRule.equipmentOptions, vehicle.name]});
-                          } else {
-                            setNewRule({...newRule, equipmentOptions: newRule.equipmentOptions.filter(e => e !== vehicle.name)});
-                          }
-                        }}
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">{vehicle.name}</div>
-                        <div className="text-xs text-gray-600">{vehicle.description}</div>
-                        <div className="text-xs text-blue-600">
-                          {vehicle.pipeRange && `Pipe Range: ${vehicle.pipeRange}`}
-                          {vehicle.capacity && `Capacity: ${vehicle.capacity}`}
-                          {vehicle.depth && `Max Depth: ${vehicle.depth}`}
+                <Label>Available Equipment Specifications</Label>
+                <div className="grid grid-cols-1 gap-2 mt-2 max-h-48 overflow-y-auto">
+                  {userPricing.map((pricing: UserPricing) => {
+                    const equipment = equipmentTypes.find((eq: EquipmentType) => eq.id === pricing.equipmentTypeId);
+                    if (!equipment) return null;
+                    
+                    return (
+                      <div key={equipment.id} className="flex items-start space-x-2 p-3 border rounded bg-gray-50">
+                        <Checkbox 
+                          checked={newRule.equipmentOptions.includes(equipment.name)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setNewRule({...newRule, equipmentOptions: [...newRule.equipmentOptions, equipment.name]});
+                            } else {
+                              setNewRule({...newRule, equipmentOptions: newRule.equipmentOptions.filter(e => e !== equipment.name)});
+                            }
+                          }}
+                        />
+                        <div className="flex-1">
+                          <div className="font-medium text-sm">{equipment.name}</div>
+                          <div className="text-xs text-gray-600 mb-1">{equipment.description}</div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="text-blue-600">
+                              Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm
+                            </div>
+                            <div className="text-green-600 font-medium">
+                              Cost/Day: £{pricing.costPerDay}
+                            </div>
+                            <div className="text-gray-600">
+                              Meterage: {pricing.meterageRangeMin}m - {pricing.meterageRangeMax}m
+                            </div>
+                            <div className="text-gray-600">
+                              Sections/Day: {pricing.sectionsPerDay}
+                            </div>
+                          </div>
                         </div>
                       </div>
+                    );
+                  })}
+                  {userPricing.length === 0 && (
+                    <div className="text-center text-gray-500 p-4">
+                      No equipment specifications configured. Please add equipment pricing first.
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
               
