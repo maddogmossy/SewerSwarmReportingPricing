@@ -671,11 +671,29 @@ export default function SectorPricingDetail() {
               <Label>MSCC5 Defect Code</Label>
               <Select 
                 value={newRule.mscc5Code} 
-                onValueChange={(value) => {
+                onValueChange={async (value) => {
+                  // Get appropriate recommendations based on defect type
+                  let recommendationType = MSCC5_CODES[value as keyof typeof MSCC5_CODES] || '';
+                  
+                  // For cleaning-related defects, get methods from Sewer Cleaning Manual
+                  if (['DES', 'DER', 'RI', 'WL', 'OB'].includes(value)) {
+                    try {
+                      const response = await fetch(`/api/sewer-cleaning/${value}`);
+                      if (response.ok) {
+                        const cleaningData = await response.json();
+                        if (cleaningData.recommended_methods && cleaningData.recommended_methods.length > 0) {
+                          recommendationType = cleaningData.recommended_methods.join(', ');
+                        }
+                      }
+                    } catch (error) {
+                      console.warn('Could not fetch cleaning recommendations:', error);
+                    }
+                  }
+                  
                   setNewRule({
                     ...newRule, 
                     mscc5Code: value,
-                    recommendationType: MSCC5_CODES[value as keyof typeof MSCC5_CODES] || ''
+                    recommendationType: recommendationType
                   });
                 }}
               >
@@ -697,7 +715,7 @@ export default function SectorPricingDetail() {
               <Input
                 value={newRule.recommendationType}
                 onChange={(e) => setNewRule({...newRule, recommendationType: e.target.value})}
-                placeholder="e.g., Mechanical cleaning, CCTV survey, Repair required"
+                placeholder="Auto-populated from Sewer Cleaning Manual for cleaning defects"
               />
             </div>
 
