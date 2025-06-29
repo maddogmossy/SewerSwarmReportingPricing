@@ -171,6 +171,18 @@ export const pricingRules = pgTable("pricing_rules", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Standards-based recommendations table
+export const standardsRules = pgTable("standards_rules", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  sector: varchar("sector").notNull(), // utilities, adoption, highways, insurance, construction, domestic
+  standardsApplied: text("standards_applied").notNull(), // e.g., "WRc Drain Repair Book 4th Ed., MSCC5, BS EN 1610"
+  customRecommendations: text("custom_recommendations").notNull(), // Standards-based recommendations
+  applicableStandards: text("applicable_standards"), // Detailed standards information
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type FileUpload = typeof fileUploads.$inferSelect;
@@ -190,6 +202,8 @@ export type UserPricing = typeof userPricing.$inferSelect;
 export type InsertUserPricing = typeof userPricing.$inferInsert;
 export type PricingRule = typeof pricingRules.$inferSelect;
 export type InsertPricingRule = typeof pricingRules.$inferInsert;
+export type StandardsRule = typeof standardsRules.$inferSelect;
+export type InsertStandardsRule = typeof standardsRules.$inferInsert;
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,

@@ -9,6 +9,7 @@ import {
   equipmentTypes,
   userPricing,
   pricingRules,
+  standardsRules,
   type User,
   type UpsertUser,
   type FileUpload,
@@ -27,6 +28,8 @@ import {
   type InsertUserPricing,
   type PricingRule,
   type InsertPricingRule,
+  type StandardsRule,
+  type InsertStandardsRule,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, isNull } from "drizzle-orm";
@@ -86,6 +89,12 @@ export interface IStorage {
   
   // Sector-specific pricing rules
   getPricingRulesBySector(userId: string, sector: string): Promise<PricingRule[]>;
+  
+  // Standards-based recommendations
+  getStandardsRules(userId: string, sector: string): Promise<StandardsRule[]>;
+  createStandardsRule(rule: InsertStandardsRule): Promise<StandardsRule>;
+  updateStandardsRule(id: number, userId: string, rule: Partial<InsertStandardsRule>): Promise<StandardsRule>;
+  deleteStandardsRule(id: number, userId?: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
