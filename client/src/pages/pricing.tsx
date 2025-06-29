@@ -415,12 +415,7 @@ export default function Pricing() {
               Dashboard
             </Button>
           </Link>
-          <Link href="/sector-pricing">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Settings className="h-4 w-4 text-blue-600" />
-              Sector Pricing
-            </Button>
-          </Link>
+
         </div>
         
         {/* Header */}

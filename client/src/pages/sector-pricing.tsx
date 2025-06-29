@@ -64,10 +64,10 @@ export default function SectorPricing() {
             <h1 className="text-3xl font-bold text-gray-900">Sector Pricing Configuration</h1>
             <p className="text-gray-600 mt-2">Configure pricing rules and equipment costs for each sector</p>
           </div>
-          <Link href="/pricing">
+          <Link href="/dashboard">
             <Button variant="outline" className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Back to Overview
+              Back to Dashboard
             </Button>
           </Link>
         </div>
