@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ArrowLeft, Plus, Edit, Trash2, Save } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Save, ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 
 // MSCC5 Defect Codes
@@ -77,6 +77,18 @@ export default function SectorPricingDetail() {
   const [editingEquipment, setEditingEquipment] = useState<any>(null);
   const [equipmentToDelete, setEquipmentToDelete] = useState<string | number | null>(null);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+
+  // Toggle category collapse
+  const toggleCategory = (category: string) => {
+    const newCollapsed = new Set(collapsedCategories);
+    if (newCollapsed.has(category)) {
+      newCollapsed.delete(category);
+    } else {
+      newCollapsed.add(category);
+    }
+    setCollapsedCategories(newCollapsed);
+  };
 
   const [newRule, setNewRule] = useState<PricingRule>({
     sector: sector || '',
@@ -419,19 +431,32 @@ export default function SectorPricingDetail() {
             <CardContent>
               <div className="space-y-6">
                 {/* Equipment organized by categories */}
-                {sortedCategories.map(category => (
-                  <div key={category} className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
-                        {category} Equipment
-                      </h3>
-                      <span className="text-sm text-gray-500">
-                        {groupedByCategory[category].length} items
-                      </span>
-                    </div>
-                    
-                    <div className="grid gap-3">
-                      {groupedByCategory[category].map((equipment: any) => (
+                {sortedCategories.map(category => {
+                  const isCollapsed = collapsedCategories.has(category);
+                  return (
+                    <div key={category} className="space-y-3">
+                      <div 
+                        className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                        onClick={() => toggleCategory(category)}
+                      >
+                        <div className="flex items-center gap-2">
+                          {isCollapsed ? (
+                            <ChevronRight className="h-4 w-4 text-gray-500" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4 text-gray-500" />
+                          )}
+                          <h3 className="text-lg font-semibold text-gray-800">
+                            {category} Equipment
+                          </h3>
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          {groupedByCategory[category].length} items
+                        </span>
+                      </div>
+                      
+                      {!isCollapsed && (
+                        <div className="grid gap-3 ml-6">
+                          {groupedByCategory[category].map((equipment: any) => (
                         <div 
                           key={equipment.isStandard ? equipment.id : equipment.id}
                           className={`border rounded-lg p-4 ${equipment.isStandard ? 'bg-blue-50 border-blue-200' : 'bg-white'}`}
@@ -466,9 +491,11 @@ export default function SectorPricingDetail() {
                           </div>
                         </div>
                       ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
