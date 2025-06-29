@@ -58,7 +58,7 @@ export default function SectorPricingDetail() {
   const [editingRule, setEditingRule] = useState<PricingRule | null>(null);
   const [editingEquipment, setEditingEquipment] = useState<any>(null);
   const [equipmentToDelete, setEquipmentToDelete] = useState<string | number | null>(null);
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set(['CCTV', 'Jetting', 'Patching']));
 
   // Toggle category collapse
   const toggleCategory = (category: string) => {
@@ -358,10 +358,6 @@ export default function SectorPricingDetail() {
             <div className="flex items-center justify-between">
               <CardTitle>Current Assets/Vehicles - Surveys</CardTitle>
               <div className="flex gap-2">
-                <Button onClick={() => refetchEquipment()} size="sm" variant="outline">
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh
-                </Button>
                 <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
                   Add Equipment
