@@ -198,6 +198,7 @@ export default function SectorPricingDetail() {
     setNewEquipment({
       name: equipment.name,
       description: equipment.description,
+      category: equipment.category || 'CCTV',
       minPipeSize: equipment.minPipeSize,
       maxPipeSize: equipment.maxPipeSize,
       costPerDay: ''
@@ -209,6 +210,7 @@ export default function SectorPricingDetail() {
     setNewEquipment({
       name: equipment.name,
       description: equipment.description,
+      category: equipment.category || 'CCTV',
       minPipeSize: equipment.minPipeSize,
       maxPipeSize: equipment.maxPipeSize,
       costPerDay: equipment.costPerDay || ''
@@ -402,33 +404,59 @@ export default function SectorPricingDetail() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {/* Existing Equipment */}
-                {equipmentTypes.map((equipment: any) => (
-                  <div key={equipment.id} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium">{equipment.name}</span>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => handleEditEquipment(equipment)}>
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => setEquipmentToDelete(equipment.id)}>
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
+              <div className="space-y-6">
+                {/* Equipment organized by categories */}
+                {sortedCategories.map(category => (
+                  <div key={category} className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
+                        {category} Equipment
+                      </h3>
+                      <span className="text-sm text-gray-500">
+                        {groupedByCategory[category].length} items
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
-                    <div className="text-xs text-gray-500">
-                      <p>Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm</p>
-                      <p className="font-medium text-green-600">Cost per Day: £{equipment.costPerDay || '0.00'}</p>
+                    
+                    <div className="grid gap-3">
+                      {groupedByCategory[category].map((equipment: any) => (
+                        <div 
+                          key={equipment.isStandard ? equipment.id : equipment.id}
+                          className={`border rounded-lg p-4 ${equipment.isStandard ? 'bg-blue-50 border-blue-200' : 'bg-white'}`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium">{equipment.name}</span>
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => handleEditEquipment(equipment)}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => setEquipmentToDelete(equipment.id)}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
+                          <div className="text-xs text-gray-500">
+                            <p>Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm</p>
+                            {equipment.isStandard ? (
+                              <p className="font-medium text-blue-600">Standard Equipment</p>
+                            ) : (
+                              <p className="font-medium text-green-600">Cost per Day: £{equipment.costPerDay || '0.00'}</p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
-                
-                {/* Standard Equipment - Always Visible */}
-                {STANDARD_SURVEY_EQUIPMENT.map((equipment, index) => {
-                  // Check if this standard equipment already exists as a user equipment
-                  const existingEquipment = equipmentTypes.find((existing: any) => existing.name === equipment.name);
+              </div>
                   
                   // If it exists, don't show the standard one (user version takes precedence)
                   if (existingEquipment) return null;
@@ -448,6 +476,7 @@ export default function SectorPricingDetail() {
                               setNewEquipment({
                                 name: equipment.name,
                                 description: equipment.description,
+                                category: equipment.category || 'CCTV',
                                 minPipeSize: equipment.minPipeSize,
                                 maxPipeSize: equipment.maxPipeSize,
                                 costPerDay: ''
@@ -718,6 +747,7 @@ export default function SectorPricingDetail() {
                     setNewEquipment({
                       name: '',
                       description: '',
+                      category: 'CCTV',
                       minPipeSize: 75,
                       maxPipeSize: 300,
                       costPerDay: ''
