@@ -81,8 +81,11 @@ export interface IStorage {
   deleteUserPricing(id: number): Promise<void>;
   getUserPricingRules(userId: string, categoryId?: number): Promise<PricingRule[]>;
   createPricingRule(rule: InsertPricingRule): Promise<PricingRule>;
-  updatePricingRule(id: number, rule: Partial<InsertPricingRule>): Promise<PricingRule>;
-  deletePricingRule(id: number): Promise<void>;
+  updatePricingRule(id: number, userId: string, rule: Partial<InsertPricingRule>): Promise<PricingRule>;
+  deletePricingRule(id: number, userId?: string): Promise<void>;
+  
+  // Sector-specific pricing rules
+  getPricingRulesBySector(userId: string, sector: string): Promise<PricingRule[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -355,32 +358,6 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(pricingRules.createdAt));
   }
 
-  async createPricingRule(rule: InsertPricingRule): Promise<PricingRule> {
-    const [created] = await db.insert(pricingRules).values(rule).returning();
-    return created;
-  }
-
-  async updatePricingRule(id: number, ruleUpdate: Partial<InsertPricingRule>): Promise<PricingRule> {
-    const [updated] = await db.update(pricingRules)
-      .set(ruleUpdate)
-      .where(eq(pricingRules.id, id))
-      .returning();
-    return updated;
-  }
-
-  async deletePricingRule(id: number, userId?: string): Promise<void> {
-    if (userId) {
-      await db.delete(pricingRules).where(
-        and(
-          eq(pricingRules.id, id),
-          eq(pricingRules.userId, userId)
-        )
-      );
-    } else {
-      await db.delete(pricingRules).where(eq(pricingRules.id, id));
-    }
-  }
-
   // Sector-specific pricing rules methods
   async getPricingRulesBySector(userId: string, sector: string): Promise<PricingRule[]> {
     return await db.select().from(pricingRules).where(
@@ -407,6 +384,19 @@ export class DatabaseStorage implements IStorage {
       )
       .returning();
     return updated;
+  }
+
+  async deletePricingRule(id: number, userId?: string): Promise<void> {
+    if (userId) {
+      await db.delete(pricingRules).where(
+        and(
+          eq(pricingRules.id, id),
+          eq(pricingRules.userId, userId)
+        )
+      );
+    } else {
+      await db.delete(pricingRules).where(eq(pricingRules.id, id));
+    }
   }
 }
 
