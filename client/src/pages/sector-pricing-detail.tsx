@@ -106,7 +106,7 @@ export default function SectorPricingDetail() {
   });
 
   // Fetch equipment for this sector (using category 1 for surveys)
-  const { data: equipmentTypes = [] } = useQuery({
+  const { data: equipmentTypes = [], isLoading: isLoadingEquipment } = useQuery({
     queryKey: [`/api/equipment-types/1`],
     enabled: !!sector
   });
@@ -279,7 +279,7 @@ export default function SectorPricingDetail() {
   // Organize equipment by categories with alphabetical ordering and smallest pipe sizes first
   const organizeEquipmentByCategory = () => {
     const allEquipment = [
-      ...equipmentTypes.map((eq: any) => ({ ...eq, isStandard: false })),
+      ...(equipmentTypes || []).map((eq: any) => ({ ...eq, isStandard: false })),
       ...STANDARD_SURVEY_EQUIPMENT.map((eq, index) => ({ 
         ...eq, 
         id: `standard-${index}`, 
@@ -319,7 +319,7 @@ export default function SectorPricingDetail() {
 
   // Combine existing equipment and standard equipment for dropdown options
   const availableEquipment = [
-    ...equipmentTypes.map((eq: any) => eq.name),
+    ...(equipmentTypes || []).map((eq: any) => eq.name),
     ...STANDARD_SURVEY_EQUIPMENT.map(eq => eq.name)
   ];
 
@@ -331,6 +331,19 @@ export default function SectorPricingDetail() {
     construction: 'Construction',
     domestic: 'Domestic'
   };
+
+  // Show loading state while data is being fetched
+  if (isLoadingEquipment) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-lg text-gray-600">Loading equipment data...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
