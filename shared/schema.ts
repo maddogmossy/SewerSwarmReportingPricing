@@ -132,6 +132,8 @@ export const equipmentTypes = pgTable("equipment_types", {
   description: text("description"),
   minPipeSize: integer("min_pipe_size"), // in mm
   maxPipeSize: integer("max_pipe_size"), // in mm
+  sector: varchar("sector"), // utilities, adoption, highways, insurance, construction, domestic
+  costPerDay: decimal("cost_per_day", { precision: 10, scale: 2 }),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

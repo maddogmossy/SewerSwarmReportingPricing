@@ -213,9 +213,9 @@ const generateSectionData = (itemNumber: number, sector: any, pricingAvailable: 
   
   // Determine cost based on pricing availability
   const getCostValue = () => {
-    if (hasNoDefects) return "£0";
-    if (!pricingAvailable) return "needs adding";
-    return itemNumber === 3 ? "£450" : itemNumber === 6 ? "£1,200" : "£300";
+    if (hasNoDefects) return "£0.00";
+    if (!pricingAvailable) return "Rule Needed";
+    return itemNumber === 3 ? "£450.00" : itemNumber === 6 ? "£1,200.00" : "£300.00";
   };
   
   return {
@@ -723,7 +723,7 @@ export default function Dashboard() {
               Upload Report
             </Button>
           </Link>
-          <Link to="/pricing">
+          <Link to="/sector-pricing">
             <Button variant="outline" size="sm">
               <Settings className="h-4 w-4 mr-2 text-orange-600" />
               Pricing
