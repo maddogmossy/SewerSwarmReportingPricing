@@ -102,13 +102,19 @@ export default function SectorPricingDetail() {
   });
 
   // Fetch equipment for this sector (using category 1 for surveys)
-  const { data: equipmentTypes, isLoading: isLoadingEquipment } = useQuery({
+  const { data: equipmentTypes, isLoading: isLoadingEquipment, refetch: refetchEquipment } = useQuery({
     queryKey: [`/api/equipment-types/1`],
-    enabled: !!sector
+    enabled: !!sector,
+    staleTime: 0, // Always fetch fresh data
+    gcTime: 0 // Don't cache (React Query v5 syntax)
   });
 
   // Ensure equipmentTypes is always an array
   const safeEquipmentTypes = Array.isArray(equipmentTypes) ? equipmentTypes : [];
+  
+  // Debug logging
+  console.log('Equipment data:', equipmentTypes);
+  console.log('Safe equipment types:', safeEquipmentTypes);
 
   // Add new rule mutation
   const addRuleMutation = useMutation({
@@ -354,6 +360,10 @@ export default function SectorPricingDetail() {
             <div className="flex items-center justify-between">
               <CardTitle>Current Assets/Vehicles - Surveys</CardTitle>
               <div className="flex gap-2">
+                <Button onClick={() => refetchEquipment()} size="sm" variant="outline">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
                 <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
                   Add Equipment
