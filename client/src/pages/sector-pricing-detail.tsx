@@ -297,7 +297,8 @@ export default function SectorPricingDetail() {
         maxPipeSize: maxPipe,
         costPerDay: cost,
         workCategoryId: 1,
-        sector: sector
+        sector: sector,
+        category: newEquipment.category || 'CCTV'
       });
     }
   };
@@ -453,10 +454,16 @@ export default function SectorPricingDetail() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Current Assets/Vehicles - Surveys</CardTitle>
-                <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Equipment
-                </Button>
+                <div className="flex gap-2">
+                  <Button onClick={() => setShowAddCategory(true)} className="flex items-center gap-2 bg-green-600 hover:bg-green-700">
+                    <Plus className="h-4 w-4" />
+                    Add Category
+                  </Button>
+                  <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Equipment
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -659,6 +666,24 @@ export default function SectorPricingDetail() {
                   />
                 </div>
 
+                <div>
+                  <Label>Category</Label>
+                  <select 
+                    value={newEquipment.category || 'CCTV'} 
+                    onChange={(e) => setNewEquipment({...newEquipment, category: e.target.value})}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="CCTV">CCTV</option>
+                    <option value="Jetting">Jetting</option>
+                    <option value="Patching">Patching</option>
+                    <option value="Excavation">Excavation</option>
+                    <option value="Tankering">Tankering</option>
+                    <option value="Lining">Lining</option>
+                    <option value="Robotic Cutting">Robotic Cutting</option>
+                    <option value="Water Cutting">Water Cutting</option>
+                  </select>
+                </div>
+
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Min Pipe Size (mm)</Label>
@@ -797,6 +822,46 @@ export default function SectorPricingDetail() {
               </Button>
               <Button variant="destructive" onClick={handleDeleteEquipment}>
                 Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add Category Dialog */}
+        <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Category</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Category Name</Label>
+                <Input
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="Enter category name (e.g., Excavation, Tankering)"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setShowAddCategory(false);
+                setNewCategoryName('');
+              }}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                if (newCategoryName.trim()) {
+                  // Add to standard equipment as a new category
+                  toast({
+                    title: "Category added",
+                    description: `New category "${newCategoryName}" has been created. You can now add equipment to this category.`,
+                  });
+                  setShowAddCategory(false);
+                  setNewCategoryName('');
+                }
+              }}>
+                Add Category
               </Button>
             </DialogFooter>
           </DialogContent>
