@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Settings, Wrench, Building2, Scissors, Droplets, Hammer, Layers, Truck, Home, ChevronRight, BarChart3, Plus, Edit, Trash2, Save } from "lucide-react";
+import { Link } from "wouter";
 
 // MSCC5 Defect Codes
 const MSCC5_CODES = {
@@ -118,6 +119,7 @@ export default function Pricing() {
   const [showAddRule, setShowAddRule] = useState(false);
   const [showAddEquipment, setShowAddEquipment] = useState(false);
   const [newRule, setNewRule] = useState({
+    mscc5Code: '',
     recommendationType: '',
     percentage: 0,
     quantityRule: '',
@@ -192,6 +194,7 @@ export default function Pricing() {
       queryClient.invalidateQueries({ queryKey: ['/api/pricing-rules', selectedCategory] });
       setShowAddRule(false);
       setNewRule({
+        mscc5Code: '',
         recommendationType: '',
         percentage: 0,
         quantityRule: '',
@@ -428,6 +431,43 @@ export default function Pricing() {
             <h3 className="text-lg font-semibold mb-4">Add New Pricing Rule</h3>
             <div className="space-y-4">
               <div>
+                <Label>MSCC5 Defect Code</Label>
+                <Select 
+                  value={newRule.mscc5Code} 
+                  onValueChange={(value) => {
+                    const selectedCode = MSCC5_CODES[value as keyof typeof MSCC5_CODES];
+                    setNewRule({
+                      ...newRule, 
+                      mscc5Code: value,
+                      recommendationType: selectedCode ? selectedCode.recommendations[0] : ''
+                    });
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select MSCC5 defect code" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(MSCC5_CODES).map(defect => (
+                      <SelectItem key={defect.code} value={defect.code}>
+                        {defect.code} - {defect.description} ({defect.type})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {newRule.mscc5Code && (
+                  <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
+                    <p><strong>Type:</strong> {MSCC5_CODES[newRule.mscc5Code as keyof typeof MSCC5_CODES]?.type}</p>
+                    <p><strong>Available Recommendations:</strong></p>
+                    <ul className="list-disc list-inside mt-1">
+                      {MSCC5_CODES[newRule.mscc5Code as keyof typeof MSCC5_CODES]?.recommendations.map((rec, idx) => (
+                        <li key={idx}>{rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              <div>
                 <Label>Recommendation Type</Label>
                 <Select 
                   value={newRule.recommendationType} 
@@ -437,9 +477,14 @@ export default function Pricing() {
                     <SelectValue placeholder="Select recommendation type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {standardRecommendations.map(rec => (
-                      <SelectItem key={rec} value={rec}>{rec}</SelectItem>
-                    ))}
+                    {newRule.mscc5Code && MSCC5_CODES[newRule.mscc5Code as keyof typeof MSCC5_CODES] ? 
+                      MSCC5_CODES[newRule.mscc5Code as keyof typeof MSCC5_CODES].recommendations.map(rec => (
+                        <SelectItem key={rec} value={rec}>{rec}</SelectItem>
+                      )) :
+                      standardRecommendations.map(rec => (
+                        <SelectItem key={rec} value={rec}>{rec}</SelectItem>
+                      ))
+                    }
                   </SelectContent>
                 </Select>
               </div>
@@ -465,20 +510,32 @@ export default function Pricing() {
               
               <div>
                 <Label>Available Equipment</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {availableEquipment.map(eq => (
-                    <div key={eq} className="flex items-center space-x-2">
+                <div className="grid grid-cols-1 gap-2 mt-2 max-h-40 overflow-y-auto">
+                  {VEHICLE_FLEET
+                    .filter(vehicle => !selectedCategoryData || vehicle.category === selectedCategoryData.name || 
+                      (selectedCategoryData.name === 'Cleansing / Root Cutting' && 
+                       (vehicle.category === 'Cleansing' || vehicle.category === 'Root Cutting')))
+                    .map(vehicle => (
+                    <div key={vehicle.name} className="flex items-start space-x-2 p-2 border rounded">
                       <Checkbox 
-                        checked={newRule.equipmentOptions.includes(eq)}
+                        checked={newRule.equipmentOptions.includes(vehicle.name)}
                         onCheckedChange={(checked) => {
                           if (checked) {
-                            setNewRule({...newRule, equipmentOptions: [...newRule.equipmentOptions, eq]});
+                            setNewRule({...newRule, equipmentOptions: [...newRule.equipmentOptions, vehicle.name]});
                           } else {
-                            setNewRule({...newRule, equipmentOptions: newRule.equipmentOptions.filter(e => e !== eq)});
+                            setNewRule({...newRule, equipmentOptions: newRule.equipmentOptions.filter(e => e !== vehicle.name)});
                           }
                         }}
                       />
-                      <span className="text-sm">{eq}</span>
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{vehicle.name}</div>
+                        <div className="text-xs text-gray-600">{vehicle.description}</div>
+                        <div className="text-xs text-blue-600">
+                          {vehicle.pipeRange && `Pipe Range: ${vehicle.pipeRange}`}
+                          {vehicle.capacity && `Capacity: ${vehicle.capacity}`}
+                          {vehicle.depth && `Max Depth: ${vehicle.depth}`}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -499,6 +556,22 @@ export default function Pricing() {
                     ))}
                   </SelectContent>
                 </Select>
+                {newRule.defaultEquipment && (
+                  <div className="mt-2 p-2 bg-green-50 rounded text-sm">
+                    {(() => {
+                      const selectedVehicle = VEHICLE_FLEET.find(v => v.name === newRule.defaultEquipment);
+                      return selectedVehicle ? (
+                        <div>
+                          <p><strong>Selected Unit:</strong> {selectedVehicle.name}</p>
+                          <p><strong>Description:</strong> {selectedVehicle.description}</p>
+                          {selectedVehicle.pipeRange && <p><strong>Pipe Range:</strong> {selectedVehicle.pipeRange}</p>}
+                          {selectedVehicle.capacity && <p><strong>Capacity:</strong> {selectedVehicle.capacity}</p>}
+                          {selectedVehicle.depth && <p><strong>Max Depth:</strong> {selectedVehicle.depth}</p>}
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                )}
               </div>
               
               <div>
