@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ArrowLeft, Plus, Edit, Trash2, Save } from "lucide-react";
@@ -68,6 +69,7 @@ export default function SectorPricingDetail() {
   const [showAddEquipment, setShowAddEquipment] = useState(false);
   const [editingRule, setEditingRule] = useState<PricingRule | null>(null);
   const [editingEquipment, setEditingEquipment] = useState<any>(null);
+  const [equipmentToDelete, setEquipmentToDelete] = useState<string | number | null>(null);
 
   const [newRule, setNewRule] = useState<PricingRule>({
     sector: sector || '',
@@ -206,9 +208,20 @@ export default function SectorPricingDetail() {
     }
   };
 
-  const handleDeleteEquipment = (equipmentId: number) => {
-    if (window.confirm('Are you sure you want to delete this equipment?')) {
-      deleteEquipmentMutation.mutate(equipmentId);
+  const handleDeleteEquipment = () => {
+    if (equipmentToDelete) {
+      if (typeof equipmentToDelete === 'string' && equipmentToDelete.startsWith('standard-')) {
+        // For standard equipment, just hide it (remove from view)
+        setEquipmentToDelete(null);
+        toast({
+          title: "Equipment removed",
+          description: "Standard equipment has been removed from view",
+        });
+      } else {
+        // For user equipment, delete from database
+        deleteEquipmentMutation.mutate(equipmentToDelete as number);
+      }
+      setEquipmentToDelete(null);
     }
   };
 
@@ -309,7 +322,7 @@ export default function SectorPricingDetail() {
                         <Button size="sm" variant="outline" onClick={() => handleEditEquipment(equipment)}>
                           <Edit className="h-3 w-3" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => handleDeleteEquipment(equipment.id)}>
+                        <Button size="sm" variant="outline" onClick={() => setEquipmentToDelete(equipment.id)}>
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
@@ -333,26 +346,41 @@ export default function SectorPricingDetail() {
                   return (
                     <div 
                       key={`standard-${index}`}
-                      className="border rounded-lg p-4 bg-blue-50 border-blue-200"
+                      className="border rounded-lg p-4"
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-blue-900">{equipment.name}</span>
+                        <span className="font-medium">{equipment.name}</span>
                         <div className="flex gap-2">
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            className="text-blue-600 border-blue-300"
-                            onClick={() => handleAddStandardEquipment(equipment)}
+                            onClick={() => {
+                              setNewEquipment({
+                                name: equipment.name,
+                                description: equipment.description,
+                                minPipeSize: equipment.minPipeSize,
+                                maxPipeSize: equipment.maxPipeSize,
+                                costPerDay: ''
+                              });
+                              setEditingEquipment({ id: `standard-${index}`, ...equipment });
+                              setShowAddEquipment(true);
+                            }}
                           >
-                            <Edit className="h-3 w-3 mr-1" />
-                            Configure
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => setEquipmentToDelete(`standard-${index}`)}
+                          >
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
-                      <p className="text-sm text-blue-700 mb-2">{equipment.description}</p>
-                      <div className="text-xs text-blue-600">
+                      <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
+                      <div className="text-xs text-gray-500">
                         <p>Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm</p>
-                        <p className="font-medium">Standard Equipment - Click Configure to customize pricing</p>
+                        <p className="font-medium text-green-600">Cost per Day: £0.00</p>
                       </div>
                     </div>
                   );
@@ -545,6 +573,24 @@ export default function SectorPricingDetail() {
             </div>
           </div>
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={!!equipmentToDelete} onOpenChange={() => setEquipmentToDelete(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm Deletion</DialogTitle>
+            </DialogHeader>
+            <p>Are you sure you want to delete this equipment? This action cannot be undone.</p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEquipmentToDelete(null)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleDeleteEquipment}>
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
