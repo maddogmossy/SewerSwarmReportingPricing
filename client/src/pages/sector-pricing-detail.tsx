@@ -457,40 +457,40 @@ export default function SectorPricingDetail() {
                       {!isCollapsed && (
                         <div className="grid gap-3 ml-6">
                           {groupedByCategory[category].map((equipment: any) => (
-                        <div 
-                          key={equipment.isStandard ? equipment.id : equipment.id}
-                          className={`border rounded-lg p-4 ${equipment.isStandard ? 'bg-blue-50 border-blue-200' : 'bg-white'}`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium">{equipment.name}</span>
-                            <div className="flex gap-2">
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                onClick={() => handleEditEquipment(equipment)}
-                              >
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                onClick={() => setEquipmentToDelete(equipment.id)}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
+                            <div 
+                              key={equipment.isStandard ? equipment.id : equipment.id}
+                              className={`border rounded-lg p-4 ${equipment.isStandard ? 'bg-blue-50 border-blue-200' : 'bg-white'}`}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="font-medium">{equipment.name}</span>
+                                <div className="flex gap-2">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    onClick={() => handleEditEquipment(equipment)}
+                                  >
+                                    <Edit className="h-3 w-3" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    onClick={() => setEquipmentToDelete(equipment.id)}
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                              <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
+                              <div className="text-xs text-gray-500">
+                                <p>Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm</p>
+                                {equipment.isStandard ? (
+                                  <p className="font-medium text-blue-600">Standard Equipment</p>
+                                ) : (
+                                  <p className="font-medium text-green-600">Cost per Day: £{equipment.costPerDay || '0.00'}</p>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                          <p className="text-sm text-gray-600 mb-2">{equipment.description}</p>
-                          <div className="text-xs text-gray-500">
-                            <p>Pipe Range: {equipment.minPipeSize}mm - {equipment.maxPipeSize}mm</p>
-                            {equipment.isStandard ? (
-                              <p className="font-medium text-blue-600">Standard Equipment</p>
-                            ) : (
-                              <p className="font-medium text-green-600">Cost per Day: £{equipment.costPerDay || '0.00'}</p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                          ))}
                         </div>
                       )}
                     </div>
