@@ -11,7 +11,54 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Settings, Wrench, Building2, Scissors, Droplets, Hammer, Layers, Truck, Home, ChevronRight, BarChart3, Plus, Edit, Trash2, Save } from "lucide-react";
-import { Link } from "wouter";
+
+// MSCC5 Defect Codes
+const MSCC5_CODES = {
+  FC: { code: 'FC', description: 'Fracture - circumferential', type: 'structural', recommendations: ['Immediate structural repair required', 'Pipe replacement', 'Emergency repair'] },
+  FL: { code: 'FL', description: 'Fracture - longitudinal', type: 'structural', recommendations: ['Medium-term structural repair', 'Pipe lining', 'Local repair'] },
+  CR: { code: 'CR', description: 'Crack', type: 'structural', recommendations: ['Monitor and consider repair', 'Sealing', 'Preventive maintenance'] },
+  RI: { code: 'RI', description: 'Root intrusion', type: 'service', recommendations: ['Root removal and sealing', 'Chemical treatment', 'Mechanical cutting'] },
+  JDL: { code: 'JDL', description: 'Joint displacement - large', type: 'structural', recommendations: ['Immediate joint repair or replacement', 'Structural assessment', 'Excavation repair'] },
+  JDS: { code: 'JDS', description: 'Joint displacement - small', type: 'structural', recommendations: ['Monitor and consider sealing', 'Joint sealing', 'Regular inspection'] },
+  DER: { code: 'DER', description: 'Deposits - coarse', type: 'service', recommendations: ['Mechanical or hydraulic cleaning', 'High-pressure jetting', 'Vacuum cleaning'] },
+  DES: { code: 'DES', description: 'Deposits - fine settled', type: 'service', recommendations: ['Hydraulic cleaning or jetting', 'Regular maintenance', 'Preventive cleaning'] },
+  WL: { code: 'WL', description: 'Water level', type: 'service', recommendations: ['Investigate downstream and clear if necessary', 'Obstruction removal', 'Flow assessment'] },
+  OB: { code: 'OB', description: 'Obstacle', type: 'service', recommendations: ['Remove obstacle immediately', 'Mechanical removal', 'Emergency clearance'] },
+  DEF: { code: 'DEF', description: 'Deformity', type: 'structural', recommendations: ['Structural assessment and repair', 'Pipe replacement', 'Strengthening works'] }
+};
+
+// Complete Vehicle Fleet Options
+const VEHICLE_FLEET = [
+  // Survey Vehicles
+  { name: 'Van Pack 3.5t', category: 'Surveys', description: 'Compact CCTV survey van with push/pull camera systems', pipeRange: '75-300mm' },
+  { name: 'City Flex 7.5t', category: 'Surveys', description: 'Medium survey vehicle with crawler camera and winch systems', pipeRange: '150-600mm' },
+  { name: 'CCTV Unit 12t', category: 'Surveys', description: 'Heavy-duty survey truck with advanced imaging and reporting', pipeRange: '150-1200mm' },
+  { name: 'Specialist Survey 18t', category: 'Surveys', description: 'Large diameter survey vehicle with robotic crawler systems', pipeRange: '300-2400mm' },
+  
+  // Cleansing Vehicles
+  { name: 'Jet Vac 26t', category: 'Cleansing', description: 'Combined high-pressure jetting and vacuum tanker', capacity: '10,000L tank' },
+  { name: 'Combination Unit 32t', category: 'Cleansing', description: 'Heavy-duty combination unit for large diameter cleaning', capacity: '15,000L tank' },
+  { name: 'Compact Jetter 7.5t', category: 'Cleansing', description: 'Small access jetting vehicle for confined spaces', capacity: '3,000L tank' },
+  { name: 'Recycler Unit 18t', category: 'Cleansing', description: 'Water recycling jetting system for extended operations', capacity: '8,000L tank' },
+  
+  // Root Cutting Vehicles
+  { name: 'Root Cutter 12t', category: 'Root Cutting', description: 'Specialized root cutting and removal equipment', pipeRange: '100-600mm' },
+  { name: 'Mechanical Cutter 18t', category: 'Root Cutting', description: 'Heavy-duty mechanical cutting with debris removal', pipeRange: '150-900mm' },
+  
+  // Robotic Cutting
+  { name: 'Robotic Cutter 15t', category: 'Robotic Cutting', description: 'Precision robotic cutting and grinding systems', pipeRange: '150-1200mm' },
+  { name: 'Remote Grinder 20t', category: 'Robotic Cutting', description: 'Remote-controlled grinding and milling equipment', pipeRange: '300-1800mm' },
+  
+  // Excavation Vehicles
+  { name: 'Excavator 15t', category: 'Excavations', description: 'Standard excavator for open cut repairs', depth: '5m max' },
+  { name: 'Mini Excavator 3t', category: 'Excavations', description: 'Compact excavator for confined space work', depth: '3m max' },
+  { name: 'Long Reach 25t', category: 'Excavations', description: 'Extended reach excavator for deep excavations', depth: '8m max' },
+  
+  // Tankering
+  { name: 'Vacuum Tanker 26t', category: 'Tankering', description: 'High-capacity vacuum tanker for liquid waste', capacity: '15,000L' },
+  { name: 'Gully Emptier 18t', category: 'Tankering', description: 'Specialized gully and catch pit emptying vehicle', capacity: '8,000L' },
+  { name: 'Cesspit Emptier 32t', category: 'Tankering', description: 'Heavy-duty cesspit and septic tank emptying', capacity: '20,000L' }
+];
 
 interface WorkCategory {
   id: number;
@@ -45,6 +92,7 @@ interface UserPricing {
 interface PricingRule {
   id: number;
   workCategoryId: number;
+  mscc5Code?: string;
   recommendationType: string;
   percentage: number;
   quantityRule: string;

@@ -153,6 +153,7 @@ export const pricingRules = pgTable("pricing_rules", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   workCategoryId: integer("work_category_id").notNull().references(() => workCategories.id, { onDelete: "cascade" }),
+  mscc5Code: varchar("mscc5_code", { length: 10 }), // MSCC5 defect code (FC, FL, CR, RI, etc.)
   recommendationType: varchar("recommendation_type").notNull(), // e.g., "We recommend cleansing and resurvey due to debris"
   percentage: integer("percentage").notNull(), // Percentage for quantity calculation
   quantityRule: text("quantity_rule").notNull(), // Rule for calculating quantity at percentage
