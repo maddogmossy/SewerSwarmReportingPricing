@@ -656,6 +656,117 @@ export default function SectorPricingDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Add Rule Dialog */}
+      <Dialog open={showAddRule} onOpenChange={setShowAddRule}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add Pricing Rule</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="mscc5-code">MSCC5 Code</Label>
+              <Select
+                value={newRule.mscc5Code}
+                onValueChange={(value) => setNewRule({ ...newRule, mscc5Code: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select MSCC5 code" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(MSCC5_CODES).map(([code, description]) => (
+                    <SelectItem key={code} value={code}>
+                      {code} - {description}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="recommendation-type">Recommendation Type</Label>
+              <Select
+                value={newRule.recommendationType}
+                onValueChange={(value) => setNewRule({ ...newRule, recommendationType: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select recommendation type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Survey">Survey</SelectItem>
+                  <SelectItem value="Cleaning">Cleaning</SelectItem>
+                  <SelectItem value="Repair">Repair</SelectItem>
+                  <SelectItem value="Replacement">Replacement</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="percentage">Percentage (%)</Label>
+                <Input
+                  id="percentage"
+                  type="number"
+                  value={newRule.percentage}
+                  onChange={(e) => setNewRule({ ...newRule, percentage: Number(e.target.value) || 0 })}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="quantity-rule">Quantity Rule</Label>
+                <Input
+                  id="quantity-rule"
+                  type="number"
+                  value={newRule.quantityRule}
+                  onChange={(e) => setNewRule({ ...newRule, quantityRule: Number(e.target.value) || 0 })}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="length-of-runs">Length of Runs (m)</Label>
+              <Input
+                id="length-of-runs"
+                type="number"
+                value={newRule.lengthOfRuns}
+                onChange={(e) => setNewRule({ ...newRule, lengthOfRuns: Number(e.target.value) || 0 })}
+                placeholder="0"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="default-equipment">Default Equipment</Label>
+              <Select
+                value={newRule.defaultEquipment}
+                onValueChange={(value) => setNewRule({ ...newRule, defaultEquipment: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select default equipment" />
+                </SelectTrigger>
+                <SelectContent>
+                  {safeEquipmentTypes.map((equipment: any) => (
+                    <SelectItem key={equipment.id} value={equipment.name}>
+                      {equipment.name} ({equipment.minPipeSize}-{equipment.maxPipeSize}mm)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddRule(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => addRuleMutation.mutate(newRule)}
+              disabled={!newRule.mscc5Code || !newRule.recommendationType}
+            >
+              Add Rule
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
