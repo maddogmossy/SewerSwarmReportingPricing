@@ -158,6 +158,13 @@ export default function SectorPricingDetail() {
       queryClient.invalidateQueries({ queryKey: ['/api/equipment-types', sector] });
       setEditingEquipment(null);
       setShowAddEquipment(false);
+      setNewEquipment({
+        name: '',
+        description: '',
+        minPipeSize: 75,
+        maxPipeSize: 300,
+        costPerDay: ''
+      });
       toast({ title: "Success", description: "Equipment updated successfully" });
     }
   });
@@ -198,13 +205,22 @@ export default function SectorPricingDetail() {
   const handleSubmitEquipment = () => {
     if (editingEquipment) {
       updateEquipmentMutation.mutate({
-        ...newEquipment,
         id: editingEquipment.id,
+        name: newEquipment.name,
+        description: newEquipment.description,
+        minPipeSize: newEquipment.minPipeSize,
+        maxPipeSize: newEquipment.maxPipeSize,
+        costPerDay: parseFloat(newEquipment.costPerDay) || 0,
         workCategoryId: 1,
         sector: sector
       });
     } else {
-      addEquipmentMutation.mutate(newEquipment);
+      addEquipmentMutation.mutate({
+        ...newEquipment,
+        costPerDay: parseFloat(newEquipment.costPerDay) || 0,
+        workCategoryId: 1,
+        sector: sector
+      });
     }
   };
 
@@ -521,24 +537,25 @@ export default function SectorPricingDetail() {
                   <div>
                     <Label>Min Pipe Size (mm)</Label>
                     <Input 
-                      type="number" 
+                      type="text" 
                       value={newEquipment.minPipeSize} 
                       onChange={(e) => setNewEquipment({...newEquipment, minPipeSize: parseInt(e.target.value) || 0})}
+                      placeholder="75"
                     />
                   </div>
                   <div>
                     <Label>Max Pipe Size (mm)</Label>
                     <Input 
-                      type="number" 
+                      type="text" 
                       value={newEquipment.maxPipeSize} 
                       onChange={(e) => setNewEquipment({...newEquipment, maxPipeSize: parseInt(e.target.value) || 0})}
+                      placeholder="300"
                     />
                   </div>
                   <div>
                     <Label>Cost per Day (£)</Label>
                     <Input 
-                      type="number" 
-                      step="0.01"
+                      type="text" 
                       value={newEquipment.costPerDay} 
                       onChange={(e) => setNewEquipment({...newEquipment, costPerDay: e.target.value})}
                       placeholder="0.00"
