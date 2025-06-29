@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Wrench, Building2, Scissors, Droplets, Hammer, Layers, Truck, Home, ChevronRight, BarChart3 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Settings, Wrench, Building2, Scissors, Droplets, Hammer, Layers, Truck, Home, ChevronRight, BarChart3, Plus, Edit, Trash2, Save } from "lucide-react";
 import { Link } from "wouter";
 
 interface WorkCategory {
@@ -13,6 +20,38 @@ interface WorkCategory {
   icon: any;
   color: string;
   implemented: boolean;
+}
+
+interface EquipmentType {
+  id: number;
+  workCategoryId: number;
+  name: string;
+  description: string;
+  minPipeSize: number;
+  maxPipeSize: number;
+}
+
+interface UserPricing {
+  id: number;
+  equipmentTypeId: number;
+  costPerHour: string;
+  costPerDay: string;
+  meterageRangeMin: string;
+  meterageRangeMax: string;
+  sectionsPerDay: string;
+  sectors: string[];
+}
+
+interface PricingRule {
+  id: number;
+  workCategoryId: number;
+  recommendationType: string;
+  percentage: number;
+  quantityRule: string;
+  equipmentOptions: string[];
+  defaultEquipment: string;
+  applicableSectors: string[];
+  isActive: boolean;
 }
 
 const workCategories: WorkCategory[] = [

@@ -153,10 +153,15 @@ export const pricingRules = pgTable("pricing_rules", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   workCategoryId: integer("work_category_id").notNull().references(() => workCategories.id, { onDelete: "cascade" }),
-  ruleName: varchar("rule_name").notNull(),
-  condition: text("condition").notNull(), // JSON condition
-  adjustment: text("adjustment").notNull(), // JSON adjustment
+  recommendationType: varchar("recommendation_type").notNull(), // e.g., "We recommend cleansing and resurvey due to debris"
+  percentage: integer("percentage").notNull(), // Percentage for quantity calculation
+  quantityRule: text("quantity_rule").notNull(), // Rule for calculating quantity at percentage
+  equipmentOptions: text("equipment_options").array().notNull().default(sql`ARRAY[]::text[]`), // Available equipment options
+  defaultEquipment: varchar("default_equipment"), // User-selected default equipment
+  applicableSectors: text("applicable_sectors").array().notNull().default(sql`ARRAY[]::text[]`), // Sectors this rule applies to
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export type UpsertUser = typeof users.$inferInsert;
