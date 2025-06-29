@@ -9,6 +9,8 @@ import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Upload from "@/pages/upload";
 import Pricing from "@/pages/pricing";
+import SectorPricing from "@/pages/sector-pricing";
+import SectorPricingDetail from "@/pages/sector-pricing-detail";
 import SurveyPricing from "@/pages/survey-pricing";
 import CleansingPricing from "@/pages/cleansing-pricing";
 import JettingPricing from "@/pages/jetting-pricing";
@@ -53,6 +55,8 @@ function Router() {
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/upload" component={Upload} />
           <Route path="/pricing" component={Pricing} />
+          <Route path="/sector-pricing" component={SectorPricing} />
+          <Route path="/sector-pricing/:sector" component={SectorPricingDetail} />
           <Route path="/pricing/surveys" component={SurveyPricing} />
           <Route path="/pricing/cleansing" component={CleansingPricing} />
           <Route path="/pricing/jetting" component={JettingPricing} />

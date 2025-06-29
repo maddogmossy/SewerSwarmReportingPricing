@@ -153,13 +153,14 @@ export const pricingRules = pgTable("pricing_rules", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   workCategoryId: integer("work_category_id").notNull().references(() => workCategories.id, { onDelete: "cascade" }),
+  sector: varchar("sector").notNull(), // utilities, adoption, highways, insurance, construction, domestic
   mscc5Code: varchar("mscc5_code", { length: 10 }), // MSCC5 defect code (FC, FL, CR, RI, etc.)
   recommendationType: varchar("recommendation_type").notNull(), // e.g., "We recommend cleansing and resurvey due to debris"
   percentage: integer("percentage").notNull(), // Percentage for quantity calculation
-  quantityRule: text("quantity_rule").notNull(), // Rule for calculating quantity at percentage
+  quantityRule: integer("quantity_rule").notNull(), // Numeric quantity rule
+  lengthOfRuns: integer("length_of_runs").notNull(), // Length of runs in meters
   equipmentOptions: text("equipment_options").array().notNull().default(sql`ARRAY[]::text[]`), // Available equipment options
   defaultEquipment: varchar("default_equipment"), // User-selected default equipment
-  applicableSectors: text("applicable_sectors").array().notNull().default(sql`ARRAY[]::text[]`), // Sectors this rule applies to
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
