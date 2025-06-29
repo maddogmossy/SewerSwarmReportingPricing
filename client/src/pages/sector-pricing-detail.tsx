@@ -58,7 +58,7 @@ export default function SectorPricingDetail() {
   const [editingRule, setEditingRule] = useState<PricingRule | null>(null);
   const [editingEquipment, setEditingEquipment] = useState<any>(null);
   const [equipmentToDelete, setEquipmentToDelete] = useState<string | number | null>(null);
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set(['CCTV', 'Jetting', 'Patching']));
 
   // Toggle category collapse
   const toggleCategory = (category: string) => {
@@ -251,15 +251,24 @@ export default function SectorPricingDetail() {
     // Include database equipment and remove duplicates by name
     const dbEquipment = (equipmentTypes || []).map((eq: any) => ({ ...eq, isStandard: false }));
     
-    // Remove database equipment that has the same name as standard equipment
+    // Remove database equipment that has the same name or similar name as standard equipment
     const uniqueDbEquipment = dbEquipment.filter(dbEq => 
-      !standardEquipment.some(stdEq => stdEq.name === dbEq.name)
+      !standardEquipment.some(stdEq => 
+        stdEq.name === dbEq.name || 
+        dbEq.name.includes(stdEq.name) || 
+        stdEq.name.includes(dbEq.name)
+      )
     );
     
-    // Also remove duplicates within database equipment itself
-    const deduplicatedDbEquipment = uniqueDbEquipment.filter((equipment, index, array) => 
-      array.findIndex(item => item.name === equipment.name) === index
-    );
+    // Also remove duplicates within database equipment itself - more aggressive matching
+    const deduplicatedDbEquipment = uniqueDbEquipment.filter((equipment, index, array) => {
+      const firstOccurrence = array.findIndex(item => 
+        item.name === equipment.name || 
+        item.name.toLowerCase().includes(equipment.name.toLowerCase()) ||
+        equipment.name.toLowerCase().includes(item.name.toLowerCase())
+      );
+      return firstOccurrence === index;
+    });
     
     const allEquipment = [...deduplicatedDbEquipment, ...standardEquipment];
 
