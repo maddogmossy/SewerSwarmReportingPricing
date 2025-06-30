@@ -18,6 +18,7 @@ import {
   Users,
   ShieldCheck,
   HardHat,
+  Zap,
   CheckCircle,
   Clock,
   AlertCircle,
