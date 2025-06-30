@@ -146,6 +146,12 @@ export interface DefectClassificationResult {
 // SRM Scoring Data from attached file
 const SRM_SCORING: SRMScoringData = {
   structural: {
+    "0": {
+      description: "No action required",
+      criteria: "Pipe observed in acceptable structural and service condition",
+      action_required: "No action required",
+      adoptable: true
+    },
     "1": {
       description: "Excellent structural condition",
       criteria: "No defects observed",
@@ -212,6 +218,37 @@ const SRM_SCORING: SRMScoringData = {
 };
 
 export class MSCC5Classifier {
+  /**
+   * Check if defect text contains only observation codes (not actual defects)
+   */
+  static containsOnlyObservationCodes(defectText: string, observationCodes: string[]): boolean {
+    if (!defectText || defectText.trim() === '') return true;
+    
+    // Extract all codes from the text
+    const codePattern = /\b([A-Z]{2,5})\b/g;
+    const foundCodes = [];
+    let match;
+    
+    while ((match = codePattern.exec(defectText.toUpperCase())) !== null) {
+      foundCodes.push(match[1]);
+    }
+    
+    // If no codes found, check if it's just general remarks
+    if (foundCodes.length === 0) {
+      const lowerText = defectText.toLowerCase();
+      return lowerText.includes('water level') || 
+             lowerText.includes('line deviates') || 
+             lowerText.includes('general remark') ||
+             lowerText.includes('pipe material') ||
+             lowerText.includes('vertical dimension') ||
+             lowerText.includes('rest bend') ||
+             lowerText.includes('changes to');
+    }
+    
+    // Check if all found codes are observation codes
+    return foundCodes.every(code => observationCodes.includes(code));
+  }
+
   /**
    * Parse multiple defects from inspection text with meterage and percentages
    */
@@ -308,7 +345,38 @@ export class MSCC5Classifier {
     
     // Check if it's a no-defect condition first
     if (normalizedText.includes('no action required') || normalizedText.includes('acceptable condition')) {
-      const srmGrading = SRM_SCORING.service["1"];
+      const srmGrading = SRM_SCORING.structural["0"] || {
+        description: "No action required",
+        criteria: "Pipe observed in acceptable structural and service condition",
+        action_required: "No action required",
+        adoptable: true
+      };
+      return {
+        defectCode: 'N/A',
+        defectDescription: 'No action required pipe observed in acceptable structural and service condition',
+        severityGrade: 0,
+        defectType: 'service',
+        recommendations: 'No action required pipe observed in acceptable structural and service condition',
+        riskAssessment: 'Pipe in acceptable condition',
+        adoptable: 'Yes',
+        estimatedCost: '£0',
+        srmGrading
+      };
+    }
+    
+    // Define observation codes that are NOT defects (just survey observations)
+    const observationCodes = ['LL', 'REM', 'MCPP', 'REST', 'BEND', 'WL'];
+    
+    // Check if defectText contains only observation codes (not actual defects)
+    const containsOnlyObservations = this.containsOnlyObservationCodes(defectText, observationCodes);
+    
+    if (containsOnlyObservations) {
+      const srmGrading = SRM_SCORING.structural["0"] || {
+        description: "No action required",
+        criteria: "Pipe observed in acceptable structural and service condition",
+        action_required: "No action required",
+        adoptable: true
+      };
       return {
         defectCode: 'N/A',
         defectDescription: 'No action required pipe observed in acceptable structural and service condition',

@@ -540,8 +540,8 @@ export default function Dashboard() {
   const exportToExcel = () => {
     if (!sectionData?.length) return;
     
-    // Get visible columns based on hideColumns state
-    const hiddenColumns = hideColumns;
+    // Get visible columns based on hiddenColumns state
+    const currentHiddenColumns = hiddenColumns;
     
     // Build dynamic headers based on visible columns
     const allHeaders = [
@@ -567,7 +567,7 @@ export default function Dashboard() {
     
     // Filter visible headers
     const visibleHeaders = allHeaders.filter(header => 
-      !header.hideable || !hiddenColumns[header.key]
+      !header.hideable || !currentHiddenColumns.has(header.key)
     );
     
     const csvContent = [
