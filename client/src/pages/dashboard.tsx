@@ -540,37 +540,66 @@ export default function Dashboard() {
   const exportToExcel = () => {
     if (!sectionData?.length) return;
     
+    // Get visible columns based on hideColumns state
+    const hiddenColumns = hideColumns;
+    
+    // Build dynamic headers based on visible columns
+    const allHeaders = [
+      { key: 'projectNumber', label: 'Project No', hideable: true },
+      { key: 'itemNo', label: 'Item No', hideable: false },
+      { key: 'inspectionNo', label: 'Inspec. No', hideable: true },
+      { key: 'date', label: 'Date', hideable: true },
+      { key: 'time', label: 'Time', hideable: true },
+      { key: 'startMH', label: 'Start MH', hideable: false },
+      { key: 'startMHDepth', label: 'Start MH Depth', hideable: true },
+      { key: 'finishMH', label: 'Finish MH', hideable: false },
+      { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true },
+      { key: 'pipeSize', label: 'Pipe Size', hideable: false },
+      { key: 'pipeMaterial', label: 'Pipe Material', hideable: true },
+      { key: 'totalLength', label: 'Total Length', hideable: false },
+      { key: 'lengthSurveyed', label: 'Length Surveyed', hideable: false },
+      { key: 'defects', label: 'Defects', hideable: false },
+      { key: 'severityGrade', label: 'Severity Grade', hideable: false },
+      { key: 'recommendations', label: 'Recommendations', hideable: false },
+      { key: 'adoptable', label: 'Adoptable', hideable: false },
+      { key: 'cost', label: 'Cost', hideable: false }
+    ];
+    
+    // Filter visible headers
+    const visibleHeaders = allHeaders.filter(header => 
+      !header.hideable || !hiddenColumns[header.key]
+    );
+    
     const csvContent = [
-      // Headers
-      ['Project No', 'Item No', 'Inspec. No', 'Date', 'Time', 'Start MH', 'Finish MH', 'Pipe Size', 'Pipe Material', 'Total Length', 'Length Surveyed', 'Defects', 'Severity Grade', 'Major Service Defects', 'Repair Methods', 'Cleaning Methods', 'Adoptable', 'Cost'].join(','),
-      // Data rows
-      ...sectionData.map(section => [
-        currentUpload?.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
-        section.itemNo,
-        section.inspectionNo,
-        section.date,
-        section.time,
-        section.startMH,
-        section.finishMH,
-        section.pipeSize,
-        section.pipeMaterial,
-        section.totalLength,
-        section.lengthSurveyed,
-        section.defects,
-        section.severityGrade,
-        section.severityGrade === "0" ? "No service issues" :
-        section.severityGrade === "1" ? "Minor service impacts" :
-        section.severityGrade === "2" ? "Moderate service defects" :
-        section.severityGrade === "3" ? "Major service defects" : "Blocked or non-functional",
-        section.severityGrade === "0" ? "None required" :
-        section.severityGrade === "2" ? "Local patch lining" :
-        section.severityGrade === "3" ? "High-pressure jetting" : "Excavate and replace",
-        section.severityGrade === "0" ? "None required" :
-        section.severityGrade === "2" ? "Medium-pressure jetting" :
-        section.severityGrade === "3" ? "Jet-Vac unit removal" : "High-pressure rotating head",
-        section.adoptable,
-        calculateSectionCost(section)
-      ].map(field => `"${field}"`).join(','))
+      // Headers - only include visible columns
+      visibleHeaders.map(h => h.label).join(','),
+      // Data rows - only include visible columns
+      ...sectionData.map(section => {
+        const rowData: { [key: string]: any } = {
+          projectNumber: currentUpload?.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
+          itemNo: section.itemNo,
+          inspectionNo: section.inspectionNo,
+          date: section.date,
+          time: section.time,
+          startMH: section.startMH,
+          startMHDepth: section.startMHDepth || 'Not Specified',
+          finishMH: section.finishMH,
+          finishMHDepth: section.finishMHDepth || 'Not Specified',
+          pipeSize: section.pipeSize,
+          pipeMaterial: section.pipeMaterial,
+          totalLength: section.totalLength,
+          lengthSurveyed: section.lengthSurveyed,
+          defects: section.defects,
+          severityGrade: section.severityGrade,
+          recommendations: section.recommendations,
+          adoptable: section.adoptable,
+          cost: section.cost || '£0.00'
+        };
+        
+        return visibleHeaders.map(header => 
+          `"${rowData[header.key] || ''}"`
+        ).join(',');
+      })
     ].join('\n');
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
