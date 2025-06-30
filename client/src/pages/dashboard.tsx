@@ -489,6 +489,8 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
       queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${currentSector.id}`] });
+      // Invalidate all section data queries
+      queryClient.invalidateQueries({ queryKey: ["/api/uploads", "sections"] });
       toast({
         title: "Reports Refreshed",
         description: "Dashboard data and pricing updated.",
@@ -499,10 +501,10 @@ export default function Dashboard() {
   // Get completed uploads for analysis
   const completedUploads = uploads.filter(upload => upload.status === 'completed');
   
-  // Find specific report if reportId is provided, otherwise use first completed upload
+  // Find specific report if reportId is provided, otherwise use most recent completed upload
   const currentUpload = reportId 
     ? completedUploads.find(upload => upload.id === parseInt(reportId))
-    : completedUploads[0];
+    : completedUploads.sort((a, b) => b.id - a.id)[0]; // Sort by ID desc to get most recent
     
   const currentSector = currentUpload 
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
