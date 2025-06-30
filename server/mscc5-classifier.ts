@@ -413,10 +413,10 @@ export class MSCC5Classifier {
       };
       return {
         defectCode: 'N/A',
-        defectDescription: defectText, // Keep original observation text
+        defectDescription: 'No action required pipe observed in acceptable structural and service condition',
         severityGrade: 0,
         defectType: 'service',
-        recommendations: 'We recommend detailed inspection and appropriate remedial action',
+        recommendations: 'No action required pipe observed in acceptable structural and service condition',
         riskAssessment: 'Pipe in acceptable condition',
         adoptable: 'Yes',
         estimatedCost: '£0',
