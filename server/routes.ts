@@ -284,7 +284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             // Extract manhole references
             if ((line.includes('SW') || line.includes('FW') || line.includes('RE')) && (line.includes('→') || line.includes('->'))) {
-              const mhMatch = line.match(/(SW\d+|FW\d+|RE\d+)\s*[→\->\s]+\s*(SW\d+|FW\d+|Main Run|RE\d+)/);
+              const mhMatch = line.match(/(SW\d+|FW\d+|RE\d+)\s*(?:→|->)\s*(SW\d+|FW\d+|Main Run|RE\d+)/);
               if (mhMatch && currentSection) {
                 currentSection.startMH = mhMatch[1];
                 currentSection.finishMH = mhMatch[2];
@@ -868,7 +868,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       setTimeout(async () => {
         try {
           const filePath = `uploads/${upload.fileName}`;
-          const extractedData = await parseInspectionFile(filePath, upload.fileName.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream');
+          const extractedData = await parsePDFInspectionReport(filePath);
           
           if (extractedData && extractedData.length > 0) {
             const sectionsWithFileId = extractedData.map((section: any) => ({
@@ -944,7 +944,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Generate new data immediately
       const filePath = `uploads/${upload.fileName}`;
-      const extractedData = await parseInspectionFile(filePath, upload.fileName.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream');
+      const extractedData = await parsePDFInspectionReport(filePath);
       
       if (extractedData && extractedData.length > 0) {
         const sectionsWithFileId = extractedData.map((section: any) => ({
