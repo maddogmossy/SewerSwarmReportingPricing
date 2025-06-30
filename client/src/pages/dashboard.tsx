@@ -404,8 +404,17 @@ export default function Dashboard() {
           </span>
         );
       case 'cost':
-        // Sections with defects requiring repairs: 3,6,7,8,10,13,14,21
-        const sectionsNeedingRepairs = [3, 6, 7, 8, 10, 13, 14, 21];
+        // Check if section has "No action required" in recommendations
+        if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition')) {
+          return (
+            <div className="text-xs text-green-600 font-medium">
+              Complete
+            </div>
+          );
+        }
+        
+        // Sections with defects requiring repairs: 6,7,8,10,13,14,21 (removed 3 as it's now "Complete")
+        const sectionsNeedingRepairs = [6, 7, 8, 10, 13, 14, 21];
         
         if (sectionsNeedingRepairs.includes(section.itemNo)) {
           return (
@@ -415,7 +424,7 @@ export default function Dashboard() {
           );
         }
         
-        // Sections with no defects show £0.00
+        // Fallback for any other sections
         return `£${section.cost || '0.00'}`;
       default:
         return '';
