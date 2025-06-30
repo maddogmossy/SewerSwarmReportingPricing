@@ -175,5 +175,29 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Add authentication user endpoint
+  app.get("/api/auth/user", async (req: Request, res: Response) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const user = req.user as any;
+      const dbUser = await db.select()
+        .from(users)
+        .where(eq(users.id, user.sub))
+        .limit(1);
+
+      if (dbUser.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(dbUser[0]);
+    } catch (error) {
+      console.error("Auth user error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   return server;
 }
