@@ -735,6 +735,35 @@ export default function Dashboard() {
             </Button>
           </Link>
           <div className="ml-auto flex gap-2">
+            {currentUpload && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  try {
+                    const result = await apiRequest("DELETE", `/api/uploads/${currentUpload.id}/reprocess`);
+                    toast({
+                      title: "Reprocessing Started",
+                      description: `Extracting all sections from ${currentUpload.fileName}`,
+                    });
+                    // Refresh after a delay to allow processing
+                    setTimeout(() => {
+                      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+                      window.location.reload();
+                    }, 3000);
+                  } catch (error) {
+                    toast({
+                      title: "Reprocessing Failed",
+                      description: "Failed to reprocess PDF file",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              >
+                <Zap className="h-4 w-4 mr-2 text-purple-600" />
+                Reprocess PDF
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
