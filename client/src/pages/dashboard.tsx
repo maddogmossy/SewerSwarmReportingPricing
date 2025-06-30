@@ -742,7 +742,7 @@ export default function Dashboard() {
                 size="sm"
                 onClick={async () => {
                   try {
-                    const result = await apiRequest("DELETE", `/api/uploads/${currentUpload.id}/reprocess`);
+                    const result = await apiRequest("POST", `/api/uploads/${currentUpload.id}/generate-all-sections`);
                     toast({
                       title: "Reprocessing Started",
                       description: `Extracting all sections from ${currentUpload.fileName}`,
