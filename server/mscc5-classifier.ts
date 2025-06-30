@@ -184,6 +184,12 @@ const SRM_SCORING: SRMScoringData = {
     }
   },
   service: {
+    "0": {
+      description: "No action required",
+      criteria: "Pipe observed in acceptable structural and service condition",
+      action_required: "No action required",
+      adoptable: true
+    },
     "1": {
       description: "No service issues",
       criteria: "Free flowing, no obstructions or deposits",
