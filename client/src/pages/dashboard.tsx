@@ -490,12 +490,15 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
       queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${currentSector.id}`] });
-      // Invalidate all section data queries
-      queryClient.invalidateQueries({ queryKey: ["/api/uploads", "sections"] });
+      // Force refresh all section data
+      queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
       toast({
         title: "Reports Refreshed",
         description: "Dashboard data and pricing updated.",
       });
+      // Force page reload to ensure fresh data
+      setTimeout(() => window.location.reload(), 1000);
     },
   });
 
