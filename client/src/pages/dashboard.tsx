@@ -472,7 +472,7 @@ export default function Dashboard() {
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`, Date.now()],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
     staleTime: 0, // Force fresh data
-    cacheTime: 0, // Don't cache the response
+    gcTime: 0, // Don't cache the response (replaces cacheTime in v5)
   });
 
   // Check if pricing exists for the current sector
