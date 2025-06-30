@@ -333,7 +333,10 @@ export default function Dashboard() {
   const renderCellContent = (columnKey: string, section: any) => {
     switch (columnKey) {
       case 'projectNo':
-        return 'GR7188';
+        // Extract project number from filename (e.g., "3588-JRL-NineElmsPark.pdf" -> "3588")
+        const fileName = currentUpload?.fileName || '';
+        const projectMatch = fileName.match(/^(\d+)/);
+        return projectMatch ? projectMatch[1] : 'Unknown';
       case 'itemNo':
         return section.itemNo;
       case 'inspectionNo':
@@ -536,7 +539,7 @@ export default function Dashboard() {
       ['Project No', 'Item No', 'Inspec. No', 'Date', 'Time', 'Start MH', 'Finish MH', 'Pipe Size', 'Pipe Material', 'Total Length', 'Length Surveyed', 'Defects', 'Severity Grade', 'Major Service Defects', 'Repair Methods', 'Cleaning Methods', 'Adoptable', 'Cost'].join(','),
       // Data rows
       ...sectionData.map(section => [
-        'GR7188',
+        currentUpload?.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
         section.itemNo,
         section.inspectionNo,
         section.date,
