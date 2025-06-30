@@ -18,9 +18,7 @@ import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  // Temporarily bypass authentication to fix infinite loop
-  const isAuthenticated = true;
-  const isLoading = false;
+  const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
     // Global error handler for unhandled rejections
