@@ -467,12 +467,10 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // Fetch real section inspection data from database with cache busting
+  // Fetch real section inspection data from database
   const { data: sectionData = [], isLoading: sectionsLoading } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, Date.now()],
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
-    staleTime: 0, // Force fresh data
-    gcTime: 0, // Don't cache the response (replaces cacheTime in v5)
   });
 
   // Check if pricing exists for the current sector
