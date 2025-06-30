@@ -467,10 +467,11 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // Fetch real section inspection data from database
-  const { data: sectionData = [], isLoading: sectionsLoading } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
+  // Fetch real section inspection data from database with fresh query
+  const { data: sectionData = [], isLoading: sectionsLoading, refetch: refetchSections } = useQuery<any[]>({
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'fresh'],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
+    staleTime: 0,
   });
 
   // Check if pricing exists for the current sector
@@ -794,6 +795,20 @@ export default function Dashboard() {
                 Reprocess PDF
               </Button>
             )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                refetchSections();
+                toast({
+                  title: "Data Refreshed",
+                  description: "Section inspection data has been reloaded",
+                });
+              }}
+            >
+              <RefreshCw className="h-4 w-4 mr-2 text-blue-600" />
+              Refresh Data
+            </Button>
             <Button
               variant="outline"
               size="sm"
