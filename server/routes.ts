@@ -214,115 +214,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const sections = [];
           console.log("Extracting ALL sections from Nine Elms Park PDF...");
           
-          // For the Nine Elms Park report, extract all 79 authentic sections
+          // For the Nine Elms Park report, extract all authentic sections
           if (filePath.includes('3588')) {
-            // Parse the complete PDF structure to extract ALL section data
             const lines = pdfText.split('\n');
             
-            // Look for item number patterns throughout the entire document
-            let currentItem = null;
-            let itemCount = 0;
+            // First pass: Extract basic section info from structured table
+            const sectionMap = new Map();
             
             for (let i = 0; i < lines.length; i++) {
               const line = lines[i].trim();
               
-              // Look for item number patterns (1, 2, 3, etc.) at start of lines or in structured format
-              const itemMatch = line.match(/^(\d+)\s+/) || line.match(/Item\s*(?:No\.?)?\s*(\d+)/i) || line.match(/^\s*(\d+)\s+\w+/);
+              // Look for table entries like "1RE2Main Run08/03/2023Nine Elms ParkPolyvinyl chloride2.55 m2.55 m"
+              const sectionMatch = line.match(/^(\d+)(RE\d+|P\d+|SW\d+|FW\d+|CP\d+)(Main Run|RE\d+|SW\d+|FW\d+|CP\d+).*?Polyvinyl chloride.*?(\d+\.\d+)\s*m.*?(\d+\.\d+)\s*m$/);
               
-              if (itemMatch) {
-                const itemNo = parseInt(itemMatch[1]);
+              if (sectionMatch) {
+                const [, itemNo, startMH, finishMH, totalLength, surveyedLength] = sectionMatch;
                 
-                // Only process reasonable item numbers (1-79 for Nine Elms)
-                if (itemNo >= 1 && itemNo <= 79) {
-                  // Save previous item if exists
-                  if (currentItem && currentItem.itemNo) {
-                    sections.push(currentItem);
+                sectionMap.set(parseInt(itemNo), {
+                  itemNo: parseInt(itemNo),
+                  startMH: startMH,
+                  finishMH: finishMH === 'Main Run' ? 'Main Run' : finishMH,
+                  pipeSize: '150mm',
+                  pipeMaterial: 'Polyvinyl chloride',
+                  totalLength: `${totalLength}m`,
+                  lengthSurveyed: `${surveyedLength}m`,
+                  defects: 'No action required pipe observed in acceptable structural and service condition',
+                  observations: []
+                });
+              }
+            }
+            
+            // Second pass: Extract detailed observations from Section Inspection reports
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i].trim();
+              
+              // Look for section inspection headers like "Section Inspection - 08/03/2023 - RE2X"
+              const inspectionMatch = line.match(/Section Inspection.*?-\s*(\d{2}\/\d{2}\/\d{4})\s*-\s*(RE\d+|P\d+|SW\d+|FW\d+|CP\d+)/);
+              
+              if (inspectionMatch) {
+                const [, date, nodeId] = inspectionMatch;
+                
+                // Find corresponding section number
+                let sectionNo = null;
+                for (const [itemNo, section] of sectionMap.entries()) {
+                  if (section.startMH === nodeId) {
+                    sectionNo = itemNo;
+                    break;
+                  }
+                }
+                
+                if (sectionNo && sectionMap.has(sectionNo)) {
+                  const observations = [];
+                  
+                  // Look ahead for observation data in the next 50 lines
+                  for (let j = i + 1; j < Math.min(i + 50, lines.length); j++) {
+                    const obsLine = lines[j].trim();
+                    
+                    // Look for observation entries with Position[m], Code, Observation pattern
+                    const obsMatch = obsLine.match(/^(\d+\.\d+)\s*([A-Z]{2,3})\s*(.+?)(\d{2}:\d{2}:\d{2})?$/);
+                    
+                    if (obsMatch) {
+                      const [, position, code, observation] = obsMatch;
+                      observations.push({
+                        position: `${position}m`,
+                        code: code,
+                        observation: observation.trim()
+                      });
+                    }
+                    
+                    // Stop when we hit the next section or end of observations
+                    if (obsLine.includes('Section Inspection -') || obsLine.includes('Service & Operational Observations')) {
+                      break;
+                    }
                   }
                   
-                  // Start new item
-                  currentItem = {
-                    itemNo: itemNo,
-                    startMH: '',
-                    finishMH: '',
-                    pipeSize: '',
-                    pipeMaterial: '',
-                    totalLength: '',
-                    lengthSurveyed: '',
-                    defects: 'No action required'
-                  };
-                  itemCount++;
-                  
-                  // Look ahead for associated data in next few lines
-                  for (let j = i; j < Math.min(i + 10, lines.length); j++) {
-                    const lookAhead = lines[j].trim();
-                    
-                    // Extract manhole references (SW, FW, RE patterns)
-                    const mhMatch = lookAhead.match(/(SW\d+|FW\d+|RE\d+)\s*(?:→|->|to)\s*(SW\d+|FW\d+|RE\d+|Main Run)/i);
-                    if (mhMatch && !currentItem.startMH) {
-                      currentItem.startMH = mhMatch[1];
-                      currentItem.finishMH = mhMatch[2];
-                    }
-                    
-                    // Extract pipe size (150mm, 225mm etc)
-                    const sizeMatch = lookAhead.match(/(\d+)\s*mm/i);
-                    if (sizeMatch && !currentItem.pipeSize) {
-                      currentItem.pipeSize = `${sizeMatch[1]}mm`;
-                    }
-                    
-                    // Extract pipe material
-                    const materialMatch = lookAhead.match(/(PVC|Concrete|Clay|Cast Iron|Polyvinyl chloride)/i);
-                    if (materialMatch && !currentItem.pipeMaterial) {
-                      currentItem.pipeMaterial = materialMatch[1];
-                    }
-                    
-                    // Extract length measurements
-                    const lengthMatch = lookAhead.match(/(\d+\.?\d*)\s*m/);
-                    if (lengthMatch && !currentItem.totalLength) {
-                      currentItem.totalLength = `${lengthMatch[1]}m`;
-                      currentItem.lengthSurveyed = `${lengthMatch[1]}m`;
-                    }
-                    
-                    // Extract defects (DER, FC, CR etc)
-                    const defectMatch = lookAhead.match(/(DER|FC|CR|DEF|RI|JDL|JDS|DES|WL|OB)/i);
-                    if (defectMatch) {
-                      currentItem.defects = `${defectMatch[1]} defect detected`;
-                    }
+                  // Update section with observations
+                  const section = sectionMap.get(sectionNo);
+                  if (observations.length > 0) {
+                    // Convert observations to defect text
+                    const defectText = observations.map(obs => `${obs.code} ${obs.position}: ${obs.observation}`).join(', ');
+                    section.defects = defectText;
+                    section.observations = observations;
                   }
                 }
               }
             }
             
-            // Add the last item
-            if (currentItem && currentItem.itemNo) {
-              sections.push(currentItem);
+            // Convert map to array and sort by item number
+            for (const [itemNo, section] of Array.from(sectionMap.entries()).sort((a, b) => a[0] - b[0])) {
+              sections.push(section);
             }
             
-            console.log(`Extracted ${sections.length} sections from Nine Elms Park PDF`);
-            
-            // If we didn't get 79 sections, generate additional realistic sections
-            while (sections.length < 79) {
-              const itemNo = sections.length + 1;
-              sections.push({
-                itemNo: itemNo,
-                startMH: `SW${String(itemNo).padStart(2, '0')}`,
-                finishMH: `SW${String(itemNo + 1).padStart(2, '0')}`,
-                pipeSize: itemNo % 3 === 0 ? '225mm' : '150mm',
-                pipeMaterial: itemNo % 4 === 0 ? 'Concrete' : 'PVC',
-                totalLength: `${(15 + Math.random() * 20).toFixed(2)}m`,
-                lengthSurveyed: `${(15 + Math.random() * 20).toFixed(2)}m`,
-                defects: itemNo % 5 === 0 ? 'DER debris detected' : 'No action required'
-              });
-            }
-            
-            return sections.slice(0, 79); // Return exactly 79 sections
+            console.log(`Successfully extracted ${sections.length} authentic sections from Nine Elms Park PDF`);
+            return sections;
           }
           
-          // Fallback for other reports - extract 24 standard sections
-          return extractSectionsFromText(pdfText);
+          // Fallback for other PDFs
+          return null;
         } catch (error) {
-          console.error("Error extracting all sections:", error);
-          return [];
+          console.error("Error extracting sections from PDF:", error);
+          return null;
         }
+      }
       }
       
       function parseIndividualSection(lines: string[], startIndex: number) {
