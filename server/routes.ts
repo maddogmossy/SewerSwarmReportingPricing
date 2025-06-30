@@ -909,6 +909,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get section inspection data for this upload
       const sections = await storage.getSectionInspectionsByFileUpload(uploadId);
+      
+      // Add cache-busting headers to ensure fresh data
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      
       res.json(sections);
     } catch (error) {
       console.error("Error fetching section data:", error);
