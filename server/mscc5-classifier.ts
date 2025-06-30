@@ -230,29 +230,57 @@ export class MSCC5Classifier {
   static containsOnlyObservationCodes(defectText: string, observationCodes: string[]): boolean {
     if (!defectText || defectText.trim() === '') return true;
     
-    // Extract all codes from the text
+    const upperText = defectText.toUpperCase();
+    const lowerText = defectText.toLowerCase();
+    
+    // Check for specific observation keywords that indicate non-defective conditions
+    const observationKeywords = [
+      'water level',
+      'line deviates',
+      'general remark',
+      'pipe material',
+      'vertical dimension',
+      'rest bend',
+      'changes to',
+      'polyvinyl',
+      'polypropylene',
+      'concrete'
+    ];
+    
+    // If text contains observation keywords, it's likely an observation
+    const hasObservationKeywords = observationKeywords.some(keyword => 
+      lowerText.includes(keyword)
+    );
+    
+    // Extract all codes from the text (2-5 letter codes)
     const codePattern = /\b([A-Z]{2,5})\b/g;
     const foundCodes = [];
     let match;
     
-    while ((match = codePattern.exec(defectText.toUpperCase())) !== null) {
+    while ((match = codePattern.exec(upperText)) !== null) {
       foundCodes.push(match[1]);
     }
     
-    // If no codes found, check if it's just general remarks
-    if (foundCodes.length === 0) {
-      const lowerText = defectText.toLowerCase();
-      return lowerText.includes('water level') || 
-             lowerText.includes('line deviates') || 
-             lowerText.includes('general remark') ||
-             lowerText.includes('pipe material') ||
-             lowerText.includes('vertical dimension') ||
-             lowerText.includes('rest bend') ||
-             lowerText.includes('changes to');
+    // If no codes found but has observation keywords, it's an observation
+    if (foundCodes.length === 0 && hasObservationKeywords) {
+      return true;
     }
     
     // Check if all found codes are observation codes
-    return foundCodes.every(code => observationCodes.includes(code));
+    const allCodesAreObservations = foundCodes.length > 0 && 
+      foundCodes.every(code => observationCodes.includes(code));
+    
+    // Check for defect codes that indicate actual problems
+    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'DES', 'OB', 'DEF'];
+    const hasDefectCodes = foundCodes.some(code => defectCodes.includes(code));
+    
+    // If it has defect codes, it's not just an observation
+    if (hasDefectCodes) {
+      return false;
+    }
+    
+    // Return true if it only has observation codes OR observation keywords
+    return allCodesAreObservations || hasObservationKeywords;
   }
 
   /**
