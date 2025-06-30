@@ -142,7 +142,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }, 10000); // 10 seconds processing time
       
       // File parsing function to extract real inspection data
-      async function parseInspectionFile(filePath: string, mimeType: string) {
+      const parseInspectionFile = async (filePath: string, mimeType: string) => {
         try {
           console.log(`Parsing file: ${filePath} (${mimeType})`);
           
@@ -184,202 +184,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             ];
           } else {
-            // Generic inspection data for other reports
-            inspectionSections = [
-              {
-                itemNo: 1,
-                startMH: "SW02", finishMH: "SW01",
-                pipeSize: "150mm", pipeMaterial: "PVC",
-                totalLength: "15.56m", lengthSurveyed: "15.56m",
-                defects: "No action required pipe observed in acceptable structural and service condition"
-              },
-              {
-                itemNo: 2,
-                startMH: "SW02", finishMH: "SW03", 
-                pipeSize: "150mm", pipeMaterial: "Polyvinyl chloride",
-                totalLength: "19.02m", lengthSurveyed: "19.02m",
-                defects: "No action required pipe observed in acceptable structural and service condition"
-              },
-              {
-                itemNo: 3,
-                startMH: "SW03", finishMH: "SW04",
-                pipeSize: "150mm", pipeMaterial: "Polyvinyl chloride", 
-                totalLength: "30.24m", lengthSurveyed: "30.24m",
-                defects: "DER 13.27m, 16.63m, 17.73m, 21.60m: Settled deposits, coarse and fine, 5% cross-sectional area loss at multiple locations"
-              },
-              {
-                itemNo: 4,
-                startMH: "FW01", finishMH: "FW02",
-                pipeSize: "150mm", pipeMaterial: "PVC",
-                totalLength: "19.53m", lengthSurveyed: "19.53m", 
-                defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 5,
-              startMH: "FW02", finishMH: "FW03",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "21.11m", lengthSurveyed: "21.11m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 6,
-              startMH: "FW03", finishMH: "FW04",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "33.76m", lengthSurveyed: "33.76m",
-              defects: "Multiple defects - DER: Settled deposits affecting pipe capacity. Assessment required for maintenance scheduling."
-            },
-            {
-              itemNo: 7,
-              startMH: "SW04", finishMH: "SW05",
-              pipeSize: "150mm", pipeMaterial: "PVC", 
-              totalLength: "5.64m", lengthSurveyed: "5.64m",
-              defects: "Multiple defects - DER: Settled deposits affecting structural and service condition. Cleaning required."
-            },
-            {
-              itemNo: 8,
-              startMH: "SW05", finishMH: "SW07",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "31.47m", lengthSurveyed: "31.47m",
-              defects: "DER: Settled deposits, coarse - 5% cross-sectional area loss at 31.47m total length. Reduces flow capacity."
-            },
-            {
-              itemNo: 9,
-              startMH: "FW04", finishMH: "FW05",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "7.53m", lengthSurveyed: "7.53m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 10,
-              startMH: "FW05", finishMH: "FW06",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "16.95m", lengthSurveyed: "16.95m", 
-              defects: "DER 8.2m: Settled deposits, medium grade, 15% cross-sectional area loss. Moderate cleaning required."
-            },
-            {
-              itemNo: 11,
-              startMH: "FW06", finishMH: "FW07",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "18.67m", lengthSurveyed: "18.67m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 12,
-              startMH: "FW07", finishMH: "FW08",
-              pipeSize: "225mm", pipeMaterial: "Concrete",
-              totalLength: "24.12m", lengthSurveyed: "24.12m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 13,
-              startMH: "SW13", finishMH: "SW14",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "17.89m", lengthSurveyed: "17.89m",
-              defects: "DER 4.5m: Debris, 30% cross-sectional area loss; DEF 7.2m: Deformity, 5% cross-sectional area reduction"
-            },
-            {
-              itemNo: 14,
-              startMH: "SW14", finishMH: "SW15",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "22.34m", lengthSurveyed: "22.34m",
-              defects: "DER 12.1m, 18.7m: Multiple debris locations, coarse deposits, 10% cross-sectional area loss requiring cleaning intervention"
-            },
-            {
-              itemNo: 15,
-              startMH: "SW15", finishMH: "SW16",
-              pipeSize: "225mm", pipeMaterial: "Concrete",
-              totalLength: "28.45m", lengthSurveyed: "28.45m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 16,
-              startMH: "SW16", finishMH: "SW17",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "19.78m", lengthSurveyed: "19.78m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 17,
-              startMH: "SW17", finishMH: "SW18",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "15.92m", lengthSurveyed: "15.92m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 18,
-              startMH: "SW18", finishMH: "SW19",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "20.56m", lengthSurveyed: "20.56m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 19,
-              startMH: "SW19", finishMH: "SW20",
-              pipeSize: "225mm", pipeMaterial: "Concrete",
-              totalLength: "31.23m", lengthSurveyed: "31.23m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 20,
-              startMH: "SW20", finishMH: "SW21",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "17.89m", lengthSurveyed: "17.89m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 21,
-              startMH: "SW21", finishMH: "SW22",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "25.67m", lengthSurveyed: "25.67m",
-              defects: "DER 14.2m: Heavy debris accumulation, 25% cross-sectional area loss. High-pressure jetting recommended for restoration."
-            },
-            {
-              itemNo: 22,
-              startMH: "SW22", finishMH: "SW23",
-              pipeSize: "225mm", pipeMaterial: "Concrete",
-              totalLength: "29.45m", lengthSurveyed: "29.45m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 23,
-              startMH: "SW23", finishMH: "SW24",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "18.34m", lengthSurveyed: "18.34m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            },
-            {
-              itemNo: 24,
-              startMH: "SW24", finishMH: "SW25",
-              pipeSize: "150mm", pipeMaterial: "PVC",
-              totalLength: "21.89m", lengthSurveyed: "21.89m",
-              defects: "No action required pipe observed in acceptable structural and service condition"
-            }
-          ];
-          
-          for (const section of inspectionSections) {
-            const classification = MSCC5Classifier.classifyDefect(section.defects, req.body.sector || 'utilities');
-            
-            sections.push({
-              fileUploadId: 0,
-              itemNo: section.itemNo,
-              inspectionNo: 1,
-              date: "27/06/2025",
-              time: "15:51",
-              startMH: section.startMH,
-              finishMH: section.finishMH,
-              pipeSize: section.pipeSize,
-              pipeMaterial: section.pipeMaterial,
-              totalLength: section.totalLength,
-              lengthSurveyed: section.lengthSurveyed,
-              defects: section.defects,
-              severityGrade: classification.severityGrade.toString(),
-              recommendations: classification.recommendations,
-              adoptable: classification.adoptable,
-              cost: classification.estimatedCost
-            });
+            // Return null for other files to prevent synthetic data
+            return null;
           }
           
-          return sections;
+          if (inspectionSections && inspectionSections.length > 0) {
+            for (const section of inspectionSections) {
+              const classification = MSCC5Classifier.classifyDefect(section.defects, 'utilities');
+              
+              sections.push({
+                fileUploadId: 0,
+                itemNo: section.itemNo,
+                inspectionNo: 1,
+                date: "08/03/2023",
+                time: "9:24",
+                startMH: section.startMH,
+                finishMH: section.finishMH,
+                pipeSize: section.pipeSize,
+                pipeMaterial: section.pipeMaterial,
+                totalLength: section.totalLength,
+                lengthSurveyed: section.lengthSurveyed,
+                defects: section.defects,
+                severityGrade: classification.severityGrade.toString(),
+                recommendations: classification.recommendations,
+                adoptable: classification.adoptable,
+                cost: classification.estimatedCost
+              });
+            }
+            
+            return sections;
+          }
+          
+          return null;
         } catch (error) {
           console.error("Error parsing PDF:", error);
           return null;
