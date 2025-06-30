@@ -387,16 +387,6 @@ export default function Dashboard() {
         );
       case 'recommendations':
         // User-friendly recommendations without grade references
-        if (section.itemNo === 3) {
-          return (
-            <div className="text-xs max-w-48">
-              We recommend cleansing and resurvey due to debris
-            </div>
-          );
-        }
-        
-        // Check for specific defect types and provide appropriate recommendations
-        const defectText = section.defects || '';
         // Use the recommendations directly from the database
         return (
           <div className="text-xs max-w-48">
