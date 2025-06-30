@@ -397,56 +397,10 @@ export default function Dashboard() {
         
         // Check for specific defect types and provide appropriate recommendations
         const defectText = section.defects || '';
-        const hasDefects = defectText && !defectText.includes('No action required');
-        
-        if (hasDefects) {
-          // Provide specific recommendations based on defect types
-          if (defectText.toLowerCase().includes('debris') || defectText.toLowerCase().includes('der')) {
-            return (
-              <div className="text-xs max-w-48">
-                We recommend cleansing and resurvey due to debris
-              </div>
-            );
-          }
-          if (defectText.toLowerCase().includes('crack') || defectText.toLowerCase().includes('fracture')) {
-            return (
-              <div className="text-xs max-w-48">
-                We recommend structural assessment and repair
-              </div>
-            );
-          }
-          if (defectText.toLowerCase().includes('displacement') || defectText.toLowerCase().includes('deformation')) {
-            return (
-              <div className="text-xs max-w-48">
-                We recommend structural repair and realignment
-              </div>
-            );
-          }
-          if (defectText.toLowerCase().includes('obstruction') || defectText.toLowerCase().includes('blockage')) {
-            return (
-              <div className="text-xs max-w-48">
-                We recommend removal of obstruction and cleansing
-              </div>
-            );
-          }
-          if (defectText.toLowerCase().includes('root') || defectText.toLowerCase().includes('vegetation')) {
-            return (
-              <div className="text-xs max-w-48">
-                We recommend root cutting and preventative treatment
-              </div>
-            );
-          }
-          // Generic recommendation for other defects
-          return (
-            <div className="text-xs max-w-48">
-              We recommend detailed inspection and appropriate remedial action
-            </div>
-          );
-        }
-        
+        // Use the recommendations directly from the database
         return (
           <div className="text-xs max-w-48">
-            No action required - pipe in acceptable condition
+            {section.recommendations || 'No recommendations available'}
           </div>
         );
       case 'adoptable':
