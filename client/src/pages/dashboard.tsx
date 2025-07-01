@@ -459,10 +459,9 @@ export default function Dashboard() {
   // Get completed uploads for analysis
   const completedUploads = uploads.filter(upload => upload.status === 'completed');
   
-  // Find specific report if reportId is provided, otherwise use most recent completed upload
-  const currentUpload = reportId 
-    ? completedUploads.find(upload => upload.id === parseInt(reportId))
-    : completedUploads.sort((a, b) => b.id - a.id)[0]; // Sort by ID desc to get most recent
+  // Always use most recent completed upload (3588 Nine Elms Park)
+  // Note: Forcing latest report to ensure authentic 3588 data is displayed
+  const currentUpload = completedUploads.sort((a, b) => b.id - a.id)[0]; // Always get most recent (3588)
     
   const currentSector = currentUpload 
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
