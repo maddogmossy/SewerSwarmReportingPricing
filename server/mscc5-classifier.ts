@@ -112,6 +112,15 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     recommended_action: 'Remove obstacle immediately',
     action_type: 2
   },
+  OBI: {
+    code: 'OBI',
+    description: 'Other obstacles',
+    type: 'service',
+    default_grade: 3,
+    risk: 'Flow restriction and structural interference',
+    recommended_action: 'Obstacle removal and repair required',
+    action_type: 2
+  },
   DEF: {
     code: 'DEF',
     description: 'Deformity',
@@ -1010,8 +1019,13 @@ export class MSCC5Classifier {
       detectedDefect = MSCC5_DEFECTS.WL;
       defectCode = 'WL';
     } else if (normalizedText.includes('obstacle') || normalizedText.includes('obstruction')) {
-      detectedDefect = MSCC5_DEFECTS.OB;
-      defectCode = 'OB';
+      if (normalizedText.includes('obi') || normalizedText.includes('other obstacles')) {
+        detectedDefect = MSCC5_DEFECTS.OBI;
+        defectCode = 'OBI';
+      } else {
+        detectedDefect = MSCC5_DEFECTS.OB;
+        defectCode = 'OB';
+      }
     } else if (normalizedText.includes('deformity') || normalizedText.includes('deformation')) {
       detectedDefect = MSCC5_DEFECTS.DEF;
       defectCode = 'DEF';
@@ -1127,6 +1141,13 @@ export class MSCC5Classifier {
       
       if (connectionAnalysis.recommendReopening) {
         sectorSpecificRecommendation += '. Consideration needs to be given to reopen the JN or CN due to proximity of connections';
+      }
+    } else if (sector === 'construction' && defectCode === 'OBI') {
+      // Check for rebar obstruction requiring specialized cutting procedures
+      if (normalizedText.includes('rebar')) {
+        sectorSpecificRecommendation = 'IMS cutting to cut the rebar top and bottom and install a patch repair or excavate down and pull the rebar out, then patch';
+      } else {
+        sectorSpecificRecommendation = 'Remove obstacle and install patch repair. Excavation may be required for structural obstructions';
       }
     } else if (sector === 'construction' && defectCode === 'DEC') {
       sectorSpecificRecommendation = 'We recommend directional water cutting to remove hard deposit and concrete';
