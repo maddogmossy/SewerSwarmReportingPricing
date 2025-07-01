@@ -169,6 +169,21 @@ export const pricingRules = pgTable("pricing_rules", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Sector Standards table for belly detection and other criteria
+export const sectorStandards = pgTable("sector_standards", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  sector: varchar("sector").notNull(), // utilities, adoption, highways, insurance, construction, domestic
+  standardName: varchar("standard_name").notNull(), // e.g., "OS20x adoption", "WRc/MSCC5"
+  bellyThreshold: integer("belly_threshold").notNull(), // Water level % threshold for adoption failure
+  description: text("description").notNull(),
+  authority: varchar("authority").notNull(), // e.g., "WRc", "Water UK", "BSI"
+  referenceDocument: varchar("reference_document").notNull(), // e.g., "BS EN 1610:2015"
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type FileUpload = typeof fileUploads.$inferSelect;
@@ -188,6 +203,8 @@ export type UserPricing = typeof userPricing.$inferSelect;
 export type InsertUserPricing = typeof userPricing.$inferInsert;
 export type PricingRule = typeof pricingRules.$inferSelect;
 export type InsertPricingRule = typeof pricingRules.$inferInsert;
+export type SectorStandard = typeof sectorStandards.$inferSelect;
+export type InsertSectorStandard = typeof sectorStandards.$inferInsert;
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
