@@ -8,7 +8,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/ui/file-upload";
 import { FileUpload as FileUploadType } from "@shared/schema";
-import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House } from "lucide-react";
+import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House, Settings } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 const sectors = [
@@ -334,24 +334,42 @@ export default function Upload() {
                         </div>
 
                         {/* Content area */}
-                        <div className="mt-6 space-y-4">
-                          <p className="text-sm text-gray-700 font-medium leading-relaxed">
-                            {description}
-                          </p>
+                        <div className="mt-6 space-y-4 flex flex-col h-full">
+                          <div className="flex-grow">
+                            <p className="text-sm text-gray-700 font-medium leading-relaxed">
+                              {description}
+                            </p>
 
-                          {/* Standards as bullet points */}
-                          <div className="space-y-2">
-                            <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wide">
-                              Applicable Standards
-                            </h4>
-                            <ul className="text-xs text-gray-700 space-y-2">
-                              {standards.map((standard, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                  <span className="font-bold mt-0.5" style={{ color: sectorColor }}>•</span>
-                                  <span className="leading-relaxed">{standard}</span>
-                                </li>
-                              ))}
-                            </ul>
+                            {/* Standards as bullet points */}
+                            <div className="space-y-2 mt-4">
+                              <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wide">
+                                Applicable Standards
+                              </h4>
+                              <ul className="text-xs text-gray-700 space-y-2">
+                                {standards.map((standard, index) => (
+                                  <li key={index} className="flex items-start gap-2">
+                                    <span className="font-bold mt-0.5" style={{ color: sectorColor }}>•</span>
+                                    <span className="leading-relaxed">{standard}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                          
+                          {/* Standards Config Button */}
+                          <div className="mt-auto pt-4">
+                            <Link href={`/standards-config?sector=${sector.id}`}>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full text-xs"
+                                style={{ borderColor: sectorColor, color: sectorColor }}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Settings className="w-3 h-3 mr-2" />
+                                Configure Standards
+                              </Button>
+                            </Link>
                           </div>
                         </div>
                       </div>
