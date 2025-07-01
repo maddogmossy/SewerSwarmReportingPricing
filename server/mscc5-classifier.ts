@@ -415,6 +415,34 @@ export class MSCC5Classifier {
   }
 
   /**
+   * Analyze "no coding present" observations requiring cleanse and resurvey
+   */
+  static analyzeNoCodingPresent(defectText: string): {
+    hasNoCoding: boolean;
+    observationDetails: string;
+    requiresCleanseResurvey: boolean;
+    recommendations: string;
+  } {
+    const upperText = defectText.toUpperCase();
+    const hasNoCoding = upperText.includes('NO CODING PRESENT') || upperText.includes('NO CODING');
+    
+    let recommendations = '';
+    let requiresCleanseResurvey = false;
+    
+    if (hasNoCoding) {
+      requiresCleanseResurvey = true;
+      recommendations = 'We would recommend cleansing and resurveying this section';
+    }
+    
+    return {
+      hasNoCoding,
+      observationDetails: hasNoCoding ? defectText : '',
+      requiresCleanseResurvey,
+      recommendations
+    };
+  }
+
+  /**
    * Analyze service connection (S/A) codes for "No connected" observations
    */
   static analyzeServiceConnection(defectText: string): {
@@ -721,6 +749,30 @@ export class MSCC5Classifier {
     const containsOnlyObservations = this.containsOnlyObservationCodes(defectText, observationCodes);
     
     if (containsOnlyObservations) {
+      // Check for "no coding present" observations requiring cleanse and resurvey
+      const noCodingAnalysis = this.analyzeNoCodingPresent(defectText);
+      
+      if (noCodingAnalysis.requiresCleanseResurvey) {
+        const srmGrading = SRM_SCORING.service["2"] || {
+          description: "Minor service defects",
+          criteria: "No coding present - cleanse and resurvey required",
+          action_required: "Cleansing and resurveying recommended",
+          adoptable: true
+        };
+        
+        return {
+          defectCode: 'N/A',
+          defectDescription: 'No coding present',
+          severityGrade: 2,
+          defectType: 'service',
+          recommendations: noCodingAnalysis.recommendations,
+          riskAssessment: 'No coding present - section requires cleansing and resurveying for proper assessment',
+          adoptable: 'Yes',
+          estimatedCost: '£500-2,000',
+          srmGrading
+        };
+      }
+      
       // Check for high water level percentages that indicate downstream blockages
       const highWaterAnalysis = this.analyzeHighWaterLevels(defectText);
       
