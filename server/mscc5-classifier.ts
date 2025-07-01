@@ -1037,7 +1037,7 @@ export class MSCC5Classifier {
     }
     
     // Generate sector-specific recommendations
-    let sectorSpecificRecommendation = detectedDefect.recommended_action;
+    let sectorSpecificRecommendation = finalRecommendations; // Use finalRecommendations which includes S/A analysis
     
     if (sector === 'construction' && defectCode === 'OJM') {
       // Check for nearby connections for OJM defects

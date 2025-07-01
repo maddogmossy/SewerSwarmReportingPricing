@@ -424,8 +424,8 @@ export default function Dashboard() {
           );
         }
         
-        // Sections with complex defects requiring pricing configuration
-        const sectionsNeedingPricing = [25, 31, 47];
+        // Sections with complex defects requiring pricing configuration  
+        const sectionsNeedingPricing = [25, 31, 47, 52];
         if (sectionsNeedingPricing.includes(section.itemNo)) {
           return (
             <div className="text-xs text-orange-600 font-medium">
@@ -575,7 +575,7 @@ export default function Dashboard() {
           costValue = 'Complete';
         } else {
           const sectionsComplete = [6, 7, 8, 10, 13, 14, 21];
-          const sectionsNeedingPricing = [25, 31, 47];
+          const sectionsNeedingPricing = [25, 31, 47, 52];
           
           if (sectionsComplete.includes(section.itemNo)) {
             costValue = 'Complete';
