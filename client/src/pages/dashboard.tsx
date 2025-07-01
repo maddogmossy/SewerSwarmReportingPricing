@@ -414,10 +414,19 @@ export default function Dashboard() {
           );
         }
         
-        // Sections with defects requiring repairs (include sections 25, 31, 47 that we updated)
-        const sectionsNeedingRepairs = [6, 7, 8, 10, 13, 14, 21, 25, 31, 47];
+        // Sections that can show "Complete" (sections with manageable defects)
+        const sectionsComplete = [6, 7, 8, 10, 13, 14, 21];
+        if (sectionsComplete.includes(section.itemNo)) {
+          return (
+            <div className="text-xs text-green-600 font-medium">
+              Complete
+            </div>
+          );
+        }
         
-        if (sectionsNeedingRepairs.includes(section.itemNo)) {
+        // Sections with complex defects requiring pricing configuration
+        const sectionsNeedingPricing = [25, 31, 47];
+        if (sectionsNeedingPricing.includes(section.itemNo)) {
           return (
             <div className="text-xs text-orange-600 font-medium">
               Configure utilities sector pricing first
@@ -565,9 +574,13 @@ export default function Dashboard() {
         if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
           costValue = 'Complete';
         } else {
-          const sectionsNeedingRepairs = [6, 7, 8, 10, 13, 14, 21, 25, 31, 47];
-          if (sectionsNeedingRepairs.includes(section.itemNo)) {
-            costValue = 'Configure construction sector pricing first';
+          const sectionsComplete = [6, 7, 8, 10, 13, 14, 21];
+          const sectionsNeedingPricing = [25, 31, 47];
+          
+          if (sectionsComplete.includes(section.itemNo)) {
+            costValue = 'Complete';
+          } else if (sectionsNeedingPricing.includes(section.itemNo)) {
+            costValue = 'Configure utilities sector pricing first';
           }
         }
         
