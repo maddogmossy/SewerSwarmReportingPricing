@@ -385,7 +385,6 @@ export default function Dashboard() {
           <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
             section.severityGrade === "0" && section.adoptable === "Yes" ? 'bg-green-100 text-green-800' :
             section.severityGrade === "0" && (section.adoptable === "No" || section.adoptable === "Conditional") ? 'bg-gray-100 text-gray-800' :
-            section.severityGrade === "1" ? 'bg-emerald-100 text-emerald-800' :
             section.severityGrade === "2" ? 'bg-amber-100 text-amber-800' :
             section.severityGrade === "5" ? 'bg-green-100 text-green-800' :
             (section.severityGrade === "4" && section.defects && section.defects.includes('DEC')) ? 'bg-green-100 text-green-800' :
