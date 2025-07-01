@@ -138,6 +138,15 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     risk: 'Significant water infiltration and structural failure risk',
     recommended_action: 'Immediate patch repair or joint replacement',
     action_type: 1
+  },
+  SA: {
+    code: 'S/A',
+    description: 'Service connection',
+    type: 'service',
+    default_grade: 2,
+    risk: 'Connection verification required',
+    recommended_action: 'Contractor confirmation and cleanse/resurvey required',
+    action_type: 2
   }
 };
 
@@ -402,6 +411,39 @@ export class MSCC5Classifier {
       hasNearbyConnections: nearbyConnections.length > 0,
       connectionDetails: nearbyConnections,
       recommendReopening
+    };
+  }
+
+  /**
+   * Analyze service connection (S/A) codes for "No connected" observations
+   */
+  static analyzeServiceConnection(defectText: string): {
+    hasServiceConnection: boolean;
+    isNotConnected: boolean;
+    connectionDetails: string;
+    requiresContractorConfirmation: boolean;
+    recommendations: string;
+  } {
+    const upperText = defectText.toUpperCase();
+    const hasServiceConnection = upperText.includes('S/A') || upperText.includes('SERVICE CONNECTION');
+    const isNotConnected = upperText.includes('NO CONNECTED') || upperText.includes('NOT CONNECTED');
+    
+    let recommendations = '';
+    let requiresContractorConfirmation = false;
+    
+    if (hasServiceConnection && isNotConnected) {
+      requiresContractorConfirmation = true;
+      recommendations = 'Contractor to confirm this has been connected and a cleanse and resurvey is required';
+    } else if (hasServiceConnection) {
+      recommendations = 'Service connection identified - verify connection status and functionality';
+    }
+    
+    return {
+      hasServiceConnection,
+      isNotConnected,
+      connectionDetails: hasServiceConnection ? defectText : '',
+      requiresContractorConfirmation,
+      recommendations
     };
   }
 
@@ -897,9 +939,34 @@ export class MSCC5Classifier {
     } else if (normalizedText.includes('deformity') || normalizedText.includes('deformation')) {
       detectedDefect = MSCC5_DEFECTS.DEF;
       defectCode = 'DEF';
+    } else if (normalizedText.includes('s/a') || normalizedText.includes('service connection')) {
+      detectedDefect = MSCC5_DEFECTS.SA;
+      defectCode = 'S/A';
     }
     
     if (!detectedDefect) {
+      // Check for service connections before returning no defect
+      const serviceConnectionAnalysis = this.analyzeServiceConnection(defectText);
+      
+      if (serviceConnectionAnalysis.hasServiceConnection) {
+        const grade = serviceConnectionAnalysis.requiresContractorConfirmation ? 2 : 1;
+        const srmGrading = SRM_SCORING.service[grade.toString()] || SRM_SCORING.service["2"];
+        
+        return {
+          defectCode: 'S/A',
+          defectDescription: serviceConnectionAnalysis.connectionDetails,
+          severityGrade: grade,
+          defectType: 'service',
+          recommendations: serviceConnectionAnalysis.recommendations,
+          riskAssessment: serviceConnectionAnalysis.isNotConnected ? 
+            'Service connection not connected - contractor confirmation required' : 
+            'Service connection requires verification',
+          adoptable: serviceConnectionAnalysis.requiresContractorConfirmation ? 'Conditional' : 'Yes',
+          estimatedCost: grade === 2 ? '£500-2,000' : '£0-500',
+          srmGrading
+        };
+      }
+      
       const srmGrading = SRM_SCORING.service["1"];
       return {
         defectCode: 'N/A',
@@ -915,6 +982,16 @@ export class MSCC5Classifier {
     }
     
     let adjustedGrade = detectedDefect.default_grade;
+    let finalRecommendations = detectedDefect.recommended_action;
+    
+    // Special handling for S/A codes with service connection analysis
+    if (defectCode === 'S/A') {
+      const serviceConnectionAnalysis = this.analyzeServiceConnection(defectText);
+      if (serviceConnectionAnalysis.requiresContractorConfirmation) {
+        adjustedGrade = 2; // Increase grade for "No connected" cases
+        finalRecommendations = serviceConnectionAnalysis.recommendations;
+      }
+    }
     
     if (sector === 'adoption' && detectedDefect.type === 'structural') {
       adjustedGrade = Math.max(adjustedGrade, 3);
