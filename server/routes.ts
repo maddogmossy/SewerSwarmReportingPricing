@@ -16,102 +16,85 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
   
   console.log("🔍 Analyzing PDF text for Nine Elms Park inspection data...");
   
-  // Enhanced patterns for Nine Elms Park inspection report format
-  const patterns = [
-    // Pattern for items with proper formatting: "Item 1: RE2 → Main Run, 15.56m, Polyvinyl chloride"
-    /Item\s+(\d+)[\s:]+([A-Z0-9]+(?:[A-Z0-9\s]*[A-Z0-9])?)\s*(?:→|->|to)\s*([A-Z0-9\s]+(?:Run|[A-Z0-9]+)),?\s*(\d+\.?\d*)\s*m,?\s*(.*?)(?=Item\s+\d+|$)/gi,
-    
-    // Alternative pattern for section headers: "Section 1" followed by data
-    /(?:Section|Item)\s+(\d+)[:\s]+(.*?)(?=(?:Section|Item)\s+\d+|$)/gi,
-    
-    // Pattern for inspection entries with upstream/downstream nodes
-    /(\d+)\s+([A-Z0-9]+(?:[A-Z0-9\s]*[A-Z0-9])?)\s+([A-Z0-9\s]+)\s+(\d+\.?\d*)\s*m?\s+(.*?)(?=\n\d+\s|$)/gi
-  ];
+  // Pattern to extract section inspection headers based on user's red-highlighted fields
+  const sectionHeaderRegex = /Section Inspection.*?Date.*?Time.*?Client.*?Weather.*?Pre Cleaned.*?PLR\s+(\d+)\s+(\d+)\s+(\d{2}\/\d{2}\/\d{2})\s+(\d{1,2}:\d{2})[\s\S]*?Inspection Direction:\s*(Downstream|Upstream)[\s\S]*?Inspected Length:\s*(\d+\.?\d*)\s*m[\s\S]*?Total Length:\s*(\d+\.?\d*)\s*m[\s\S]*?Upstream Node:\s*([A-Z0-9]+(?:[A-Z0-9\s]*[A-Z0-9])?)[\s\S]*?Downstream Node:\s*([A-Z0-9\s]+(?:RUN|[A-Z0-9]+))[\s\S]*?Dia\/Height:\s*(\d+)\s*mm[\s\S]*?Material:\s*(.*?)(?=\n|$)/gi;
   
-  // Try each pattern to find authentic Nine Elms Park data
-  for (const pattern of patterns) {
-    let match;
-    pattern.lastIndex = 0; // Reset regex
+  let match;
+  while ((match = sectionHeaderRegex.exec(pdfText)) !== null) {
+    const sectionNum = parseInt(match[1]);
+    const inspectionNum = parseInt(match[2]);
+    const date = match[3];
+    const time = match[4];
+    const inspectionDirection = match[5].toLowerCase();
+    const inspectedLength = match[6];
+    const totalLength = match[7];
+    const upstreamNode = match[8].trim();
+    const downstreamNode = match[9].trim();
+    const pipeSize = match[10];
+    const material = match[11].trim();
     
-    while ((match = pattern.exec(pdfText)) !== null) {
-      const itemNo = parseInt(match[1]);
-      let startMH, finishMH, length, material;
-      
-      if (pattern === patterns[0]) {
-        // Item pattern: Item 1: RE2 → Main Run, 15.56m, Polyvinyl chloride
-        startMH = match[2].trim();
-        finishMH = match[3].trim();
-        length = match[4];
-        material = match[5].trim();
-      } else if (pattern === patterns[1]) {
-        // Section pattern - parse content
-        const content = match[2].trim();
-        const manholeMatch = content.match(/([A-Z0-9]+(?:[A-Z0-9\s]*[A-Z0-9])?)\s*(?:→|->|to)\s*([A-Z0-9\s]+)/i);
-        const lengthMatch = content.match(/(\d+\.?\d*)\s*m/i);
-        
-        if (manholeMatch && lengthMatch) {
-          startMH = manholeMatch[1].trim();
-          finishMH = manholeMatch[2].trim();
-          length = lengthMatch[1];
-          material = content.match(/(Polyvinyl chloride|PVC|Concrete|Clay|Polypropylene)/i)?.[1] || 'Polyvinyl chloride';
-        } else {
-          continue;
-        }
-      } else {
-        // Table format pattern
-        startMH = match[2].trim();
-        finishMH = match[3].trim();
-        length = match[4];
-        material = match[5].includes('Polyvinyl') ? 'Polyvinyl chloride' : 
-                  match[5].includes('Concrete') ? 'Concrete' :
-                  match[5].includes('Clay') ? 'Clay' : 'Polyvinyl chloride';
-      }
-      
-      // Validate extracted data
-      if (startMH && finishMH && length && itemNo > 0 && itemNo <= 100) {
-        // Use MSCC5 classifier for defect analysis
-        const classification = MSCC5Classifier.classifyDefect(match[0]);
-        
-        extractedSections.push({
-          itemNo: itemNo,
-          inspectionNo: '1',
-          date: '2024-12-30',
-          time: '09:00',
-          startMH: startMH,
-          finishMH: finishMH,
-          startMHDepth: '2.0',
-          finishMHDepth: '2.0',
-          pipeSize: '150',
-          pipeMaterial: material,
-          totalLength: length,
-          lengthSurveyed: length,
-          defects: classification.defectDescription,
-          severityGrade: classification.severityGrade.toString(),
-          recommendations: classification.recommendations,
-          adoptable: classification.adoptable,
-          cost: classification.estimatedCost
-        });
-        
-        console.log(`✓ Extracted authentic Item ${itemNo}: ${startMH}→${finishMH}, ${length}m, ${material}`);
-      }
+    // Apply direction mapping logic as per user requirements
+    let startMH, finishMH;
+    if (inspectionDirection === 'downstream') {
+      // When inspection direction is "downstream", upstream MH becomes start MH 
+      startMH = upstreamNode;
+      finishMH = downstreamNode;
+    } else {
+      // When inspection direction is "upstream", downstream node becomes start MH
+      startMH = downstreamNode;
+      finishMH = upstreamNode;
     }
     
-    // If we found sections with this pattern, break
-    if (extractedSections.length > 0) {
-      console.log(`✅ Successfully used pattern ${patterns.indexOf(pattern) + 1} to extract ${extractedSections.length} sections`);
-      break;
-    }
+    // Extract observations/defects from this section
+    const sectionEndRegex = /Section Inspection.*?Date.*?Time.*?Client.*?Weather.*?Pre Cleaned.*?PLR\s+\d+\s+\d+|$$/gi;
+    sectionEndRegex.lastIndex = match.index + match[0].length;
+    const nextSectionMatch = sectionEndRegex.exec(pdfText);
+    const sectionContent = nextSectionMatch ? 
+      pdfText.substring(match.index + match[0].length, nextSectionMatch.index) :
+      pdfText.substring(match.index + match[0].length);
+    
+    // Use MSCC5 classifier to analyze defects from section content
+    const classification = MSCC5Classifier.classifyDefect(sectionContent);
+    
+    extractedSections.push({
+      itemNo: sectionNum,
+      inspectionNo: inspectionNum.toString(),
+      date: convertDate(date),
+      time: time,
+      startMH: startMH,
+      finishMH: finishMH,
+      startMHDepth: '2.0',
+      finishMHDepth: '2.0',
+      pipeSize: pipeSize,
+      pipeMaterial: material,
+      totalLength: totalLength,
+      lengthSurveyed: inspectedLength,
+      defects: classification.defectDescription,
+      severityGrade: classification.severityGrade.toString(),
+      recommendations: classification.recommendations,
+      adoptable: classification.adoptable,
+      cost: classification.estimatedCost
+    });
+    
+    console.log(`✓ Extracted Section ${sectionNum}: ${startMH}→${finishMH}, ${inspectedLength}m, ${material} (${inspectionDirection} inspection)`);
   }
   
   // Return only authentic data extracted from PDF - NO synthetic fallback data
   if (extractedSections.length === 0) {
     console.log("❌ No sections extracted from PDF - system will NOT generate synthetic data");
-    console.log("📄 PDF content preview (first 500 chars):", pdfText.substring(0, 500));
+    console.log("📄 PDF content preview (first 1000 chars):", pdfText.substring(0, 1000));
     return [];
   }
 
   console.log(`✓ Extracted ${extractedSections.length} sections from PDF using authentic data only`);
   return extractedSections;
+}
+
+function convertDate(dateStr: string): string {
+  // Convert DD/MM/YY to YYYY-MM-DD format
+  const [day, month, year] = dateStr.split('/');
+  const fullYear = parseInt(year) > 50 ? `19${year}` : `20${year}`;
+  return `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 }
 
 export async function registerRoutes(app: express.Express) {
