@@ -100,7 +100,7 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
     }
     
     // Match authentic Nine Elms Park section format - BODY TEXT EXTRACTION ONLY
-    // Use unified regex that works for ALL sections from body text
+    // Use regex that properly captures the node pattern between section number and date
     let sectionMatch = line.match(/^(\d+)([A-Z0-9\s]+?)(\d{2}\/\d{2}\/\d{4}).*?(Polyvinyl chloride|Polyethylene|Concrete|Polypropylene)([\d.]+)\s*m([\d.]+)\s*m/);
     
     if (sectionMatch) {
@@ -134,14 +134,60 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
         downstreamNode = 'CP03';
       } else {
         // Parse normal patterns like "RE2Main Run", "SW10SW01", "POP UP 1SW09", etc.
-        const normalMatch = nodePattern.match(/^(.*?)(Main Run|SW\w+|FW\w+|CP\w+|P\w+|S\w+|EXMH\w+)$/);
-        if (normalMatch) {
-          upstreamNode = normalMatch[1].trim();
-          downstreamNode = normalMatch[2].trim();
+        console.log(`🔍 DEBUG Section ${sectionNum}: nodePattern="${nodePattern}"`);
+        
+        // Handle specific patterns that were working correctly in sections 1-24
+        if (nodePattern.includes('Main Run')) {
+          // Pattern like "RE2Main Run"
+          upstreamNode = nodePattern.replace('Main Run', '').trim();
+          downstreamNode = 'Main Run';
+        } else if (nodePattern.match(/^(SW\d+)(SW\d+)$/)) {
+          // Pattern like "SW10SW01"
+          const swMatch = nodePattern.match(/^(SW\d+)(SW\d+)$/);
+          upstreamNode = swMatch[1];
+          downstreamNode = swMatch[2];
+        } else if (nodePattern.match(/^(FW\d+)(FW\d+)$/)) {
+          // Pattern like "FW02FW03"
+          const fwMatch = nodePattern.match(/^(FW\d+)(FW\d+)$/);
+          upstreamNode = fwMatch[1];
+          downstreamNode = fwMatch[2];
+        } else if (nodePattern.match(/^(P\d+G?)(FW\d+)$/)) {
+          // Pattern like "P1GFW09" or "P2FW02"
+          const pMatch = nodePattern.match(/^(P\d+G?)(FW\d+)$/);
+          upstreamNode = pMatch[1];
+          downstreamNode = pMatch[2];
+        } else if (nodePattern.match(/^(P\d+G?)(SW\d+)$/)) {
+          // Pattern like "P2SW02"
+          const pMatch = nodePattern.match(/^(P\d+G?)(SW\d+)$/);
+          upstreamNode = pMatch[1];
+          downstreamNode = pMatch[2];
+        } else if (nodePattern.match(/^(RE\d+[A-Z]?)(SW\d+)$/)) {
+          // Pattern like "RE28SW03"
+          const reMatch = nodePattern.match(/^(RE\d+[A-Z]?)(SW\d+)$/);
+          upstreamNode = reMatch[1];
+          downstreamNode = reMatch[2];
+        } else if (nodePattern.match(/^(S\d+)(S\d+)$/)) {
+          // Pattern like "S9S10"
+          const sMatch = nodePattern.match(/^(S\d+)(S\d+)$/);
+          upstreamNode = sMatch[1];
+          downstreamNode = sMatch[2];
+        } else if (nodePattern.match(/^(SW\d+)(EXMH\d+)$/)) {
+          // Pattern like "SW01EXMH1"
+          const exMatch = nodePattern.match(/^(SW\d+)(EXMH\d+)$/);
+          upstreamNode = exMatch[1];
+          downstreamNode = exMatch[2];
+        } else if (nodePattern.match(/^(POP UP \d+)(SW\d+)$/)) {
+          // Pattern like "POP UP 1SW09" 
+          const popMatch = nodePattern.match(/^(POP UP \d+)(SW\d+)$/);
+          upstreamNode = popMatch[1];
+          downstreamNode = popMatch[2];
         } else {
+          console.log(`❌ Failed to parse Section ${sectionNum}: nodePattern="${nodePattern}"`);
           // Skip if we can't parse the pattern
           continue;
         }
+        
+        console.log(`✓ Parsed Section ${sectionNum}: "${upstreamNode}" → "${downstreamNode}"`);
       }
       
       // Update sectionMatch to standard format for processing
