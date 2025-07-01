@@ -145,11 +145,8 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
           flowDirectionNote = ' (upstream inspection: downstream→upstream)';
           console.log(`DEBUG Section ${sectionNum}: UPSTREAM inspection flow ${upstreamNode}→${downstreamNode}`);
         }
-      } else if (headerInfo && headerInfo.inspectionDirection && sectionNum <= 24) {
-        console.log(`DEBUG Section ${sectionNum}: PROTECTED - not applying header logic to sections 1-24`);
-        flowDirectionNote = ' (protected section 1-24)';
       } else {
-        // Fallback logic for sections without inspection direction data
+        // For sections 1-24: Apply fallback correction logic regardless of header info
         // Pattern recognition: If we see "Main Run → RE" pattern, it should be "RE → Main Run"
         if (upstreamNode === 'Main Run' && downstreamNode.startsWith('RE')) {
           console.log(`DEBUG Section ${sectionNum}: Detected Main Run→RE pattern, correcting to RE→Main Run`);
@@ -158,7 +155,13 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
           downstreamNode = temp;
           flowDirectionNote = ' (corrected RE→Main Run pattern)';
         }
-        console.log(`DEBUG Section ${sectionNum}: NO direction info found - using flow ${upstreamNode}→${downstreamNode}${flowDirectionNote}`);
+        
+        if (sectionNum <= 24) {
+          console.log(`DEBUG Section ${sectionNum}: PROTECTED - using fallback correction for sections 1-24`);
+          flowDirectionNote += ' (protected section 1-24)';
+        } else {
+          console.log(`DEBUG Section ${sectionNum}: NO direction info found - using flow ${upstreamNode}→${downstreamNode}${flowDirectionNote}`);
+        }
       }
       
       console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${flowDirectionNote}`);
