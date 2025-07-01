@@ -85,6 +85,15 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     recommended_action: 'Hydraulic cleaning or jetting',
     action_type: 2
   },
+  DEC: {
+    code: 'DEC',
+    description: 'Deposits - concrete',
+    type: 'service',
+    default_grade: 4,
+    risk: 'Significant flow restriction from hard concrete deposits',
+    recommended_action: 'Directional water cutting to remove hard deposits',
+    action_type: 2
+  },
   WL: {
     code: 'WL',
     description: 'Water level',
@@ -510,7 +519,7 @@ export class MSCC5Classifier {
       foundCodes.every(code => observationCodes.includes(code));
     
     // Check for defect codes that indicate actual problems
-    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'DES', 'OB', 'DEF', 'OJL', 'OJM'];
+    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'DES', 'DEC', 'OB', 'DEF', 'OJL', 'OJM'];
     const hasDefectCodes = foundCodes.some(code => defectCodes.includes(code));
     
     // If it has defect codes, it's not just an observation
@@ -869,7 +878,10 @@ export class MSCC5Classifier {
         }
       }
     } else if (normalizedText.includes('deposit') || normalizedText.includes('silt') || normalizedText.includes('debris')) {
-      if (normalizedText.includes('coarse') || normalizedText.includes('heavy')) {
+      if (normalizedText.includes('concrete') || normalizedText.includes('dec')) {
+        detectedDefect = MSCC5_DEFECTS.DEC;
+        defectCode = 'DEC';
+      } else if (normalizedText.includes('coarse') || normalizedText.includes('heavy')) {
         detectedDefect = MSCC5_DEFECTS.DER;
         defectCode = 'DER';
       } else {
@@ -959,6 +971,8 @@ export class MSCC5Classifier {
       if (connectionAnalysis.recommendReopening) {
         sectorSpecificRecommendation += '. Consideration needs to be given to reopen the JN or CN due to proximity of connections';
       }
+    } else if (sector === 'construction' && defectCode === 'DEC') {
+      sectorSpecificRecommendation = 'We recommend directional water cutting to remove hard deposit and concrete (Ref: BS EN 1610:2015 construction standards)';
     } else if (sector === 'construction' && (defectCode === 'OJL' || defectCode === 'JDL')) {
       sectorSpecificRecommendation = `${detectedDefect.recommended_action} - patch repair preferred for construction standards`;
     }

@@ -28,6 +28,18 @@ export const SEWER_CLEANING_MANUAL: Record<string, SewerCleaningData> = {
     cleaning_frequency: "Quarterly or after CCTV trigger",
     action_type: 2
   },
+  DEC: {
+    description: "Deposits - concrete (hard deposits)",
+    recommended_methods: [
+      "Directional water cutting to remove hard deposit and concrete",
+      "High-pressure rotary cutting nozzle (3000+ PSI)",
+      "Multiple pass cleaning strategy",
+      "Post-cutting CCTV verification survey",
+      "Debris removal via jet-vac extraction"
+    ],
+    cleaning_frequency: "Immediate upon detection - one-time removal",
+    action_type: 4
+  },
   GRE: {
     description: "Grease or fat deposits",
     recommended_methods: [
