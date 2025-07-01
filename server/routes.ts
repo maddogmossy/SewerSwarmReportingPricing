@@ -38,6 +38,25 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
   const lines = pdfText.split('\n').map(line => line.trim()).filter(line => line);
   let sections = [];
   
+  // Build a map of inspection directions for each section
+  const inspectionDirections = new Map();
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.includes('Inspection Direction:')) {
+      const direction = line.includes('Upstream') ? 'Upstream' : 'Downstream';
+      
+      // Find the section number in nearby lines
+      for (let j = Math.max(0, i-10); j <= Math.min(lines.length-1, i+2); j++) {
+        const searchLine = lines[j];
+        if (/^\d{1,2}\d{2}\d{2}\/\d{2}\/\d{2}/.test(searchLine)) {
+          const sectionNum = parseInt(searchLine.substring(0, 2).replace(/^0/, ''));
+          inspectionDirections.set(sectionNum, direction);
+          break;
+        }
+      }
+    }
+  }
+  
   // Look for authentic PDF format: "26RE24FW0220/03/2023Nine Elms ParkPolyvinyl chloride6.75 m6.75 m"
   // Pattern: SectionNumber + UpstreamNode + DownstreamNode + Date + Location + Material + Lengths
   
@@ -50,14 +69,21 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
     
     if (sectionMatch) {
       const sectionNum = parseInt(sectionMatch[1]);
-      const upstreamNode = sectionMatch[2]; // RE2, RE16A, etc. (clean)
-      const downstreamNode = sectionMatch[3]; // Main Run, FW02, etc.
+      let upstreamNode = sectionMatch[2]; // RE2, RE16A, etc. (clean)
+      let downstreamNode = sectionMatch[3]; // Main Run, FW02, etc.
       const material = sectionMatch[5];
       const totalLength = sectionMatch[6];
       const inspectedLength = sectionMatch[7];
       
-      console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}`);
-      console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
+      // Check if this section has upstream inspection direction - if so, reverse the references
+      const inspectionDirection = inspectionDirections.get(sectionNum);
+      if (inspectionDirection === 'Upstream') {
+        [upstreamNode, downstreamNode] = [downstreamNode, upstreamNode];
+        console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material} (REVERSED for upstream inspection)`);
+      } else {
+        console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}`);
+      }
+      console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}] | Direction: ${inspectionDirection || 'Unknown'}`);
 
       sections.push({
         fileUploadId: fileUploadId,
