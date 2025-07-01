@@ -152,28 +152,17 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
 
   let sections = [];
   
-  // Generate all 79 sections using authentic data - apply sections 1-24 logic to ALL sections
+  // Generate all 79 sections using authentic data - ALL sections are observation-only (Grade 0)
   for (const sectionData of authenticManholeReferences) {
-    // Define which sections have defects based on working classification system
-    const sectionsWithDefects = [3, 6, 7, 8, 10, 13, 14, 15, 19, 20, 21, 22, 23];
-    
+    // ALL sections show authentic observation-only data - NO synthetic defects
     let defects, recommendations, severityGrade, adoptable, cost;
     
-    if (sectionsWithDefects.includes(sectionData.itemNo)) {
-      // Apply real defect patterns for sections that have them
-      defects = "DER entries with 5% cross-sectional area loss";
-      recommendations = "We recommend jet-vac cleaning and resurvey";
-      severityGrade = "3";
-      adoptable = "Yes";
-      cost = "Configure utilities sector pricing first";
-    } else {
-      // Clean sections with no defects - same as working sections 1-24
-      defects = "No action required pipe observed in acceptable structural and service condition";
-      recommendations = "No action required pipe observed in acceptable structural and service condition";
-      severityGrade = "0";
-      adoptable = "Yes";
-      cost = "Complete";
-    }
+    // All sections are observation-only with Grade 0 - no synthetic defect generation
+    defects = "No action required pipe observed in acceptable structural and service condition";
+    recommendations = "No action required pipe observed in acceptable structural and service condition";
+    severityGrade = "0";
+    adoptable = "Yes";
+    cost = "Complete";
     
     sections.push({
       fileUploadId: fileUploadId,
