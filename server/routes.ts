@@ -239,8 +239,8 @@ export async function registerRoutes(app: Express) {
           const fileBuffer = fs.readFileSync(filePath);
           
           console.log("Processing PDF with authentic data extraction...");
-          // For now, using pre-extracted authentic data from Nine Elms Park PDF
-          const pdfData = { text: "authentic_data_extracted", numpages: 90, length: 127802 };
+          const pdfParse = require('pdf-parse');
+          const pdfData = await pdfParse(fileBuffer);
           
           console.log(`PDF parsed: ${pdfData.numpages} pages, ${pdfData.text.length} characters`);
           
