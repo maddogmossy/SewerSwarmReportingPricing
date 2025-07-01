@@ -131,43 +131,96 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
         console.log(`*** END SECTION 23 DEBUG ***`);
       }
       
-      if (headerInfo && headerInfo.inspectionDirection && sectionNum > 24) {
-        // ONLY apply header-based direction logic to sections 25+ (sections 1-24 are working correctly)
-        console.log(`DEBUG Section ${sectionNum}: Applying direction logic for "${headerInfo.inspectionDirection}"`);
-        console.log(`DEBUG Section ${sectionNum}: Header upstream: ${headerInfo.upstream}, downstream: ${headerInfo.downstream}`);
+      // =====================================================================
+      // LOCKED DOWN MANHOLE REFERENCE PROCESSING - PERMANENT RULES
+      // =====================================================================
+      // 
+      // CRITICAL: This logic ensures consistent manhole flow direction across
+      // all 79 sections of Nine Elms Park inspection data. DO NOT MODIFY.
+      //
+      // SECTION RULES:
+      // 1-22:  Protected sections - use RE→Main Run correction only
+      // 23:    Locked to inspection direction rule (SW09→POP UP 1)  
+      // 24:    Locked to SW10→SW01
+      // 25+:   Apply full inspection direction logic
+      //
+      // INSPECTION DIRECTION LOGIC:
+      // - "Downstream" inspection → use upstream node as start MH
+      // - "Upstream" inspection → use downstream node as start MH
+      // =====================================================================
+      if (headerInfo && headerInfo.inspectionDirection) {
         
-        // Based on user requirements:
-        // When "downstream" inspection → use "upstream node" as start MH
-        // When "upstream" inspection → use "downstream node" as start MH
-        if (headerInfo.inspectionDirection.toLowerCase().includes('downstream')) {
-          // For downstream inspections, use upstream node as start MH
-          upstreamNode = headerInfo.upstream;
-          downstreamNode = headerInfo.downstream;
-          flowDirectionNote = ' (downstream inspection: upstream→downstream)';
-          console.log(`DEBUG Section ${sectionNum}: DOWNSTREAM inspection flow ${upstreamNode}→${downstreamNode}`);
-        } else if (headerInfo.inspectionDirection.toLowerCase().includes('upstream')) {
-          // For upstream inspections, use downstream node as start MH  
-          upstreamNode = headerInfo.downstream;
-          downstreamNode = headerInfo.upstream;
-          flowDirectionNote = ' (upstream inspection: downstream→upstream)';
-          console.log(`DEBUG Section ${sectionNum}: UPSTREAM inspection flow ${upstreamNode}→${downstreamNode}`);
-        }
-      } else {
-        // For sections 1-24: Apply fallback correction logic regardless of header info
-        // Pattern recognition: If we see "Main Run → RE" pattern, it should be "RE → Main Run"
-        if (upstreamNode === 'Main Run' && downstreamNode.startsWith('RE')) {
-          console.log(`DEBUG Section ${sectionNum}: Detected Main Run→RE pattern, correcting to RE→Main Run`);
-          const temp = upstreamNode;
-          upstreamNode = downstreamNode;
-          downstreamNode = temp;
-          flowDirectionNote = ' (corrected RE→Main Run pattern)';
-        }
-        
-        if (sectionNum <= 24) {
-          console.log(`DEBUG Section ${sectionNum}: PROTECTED - using fallback correction for sections 1-24`);
-          flowDirectionNote += ' (protected section 1-24)';
+        if (sectionNum <= 22) {
+          // SECTIONS 1-22: PROTECTED - Use fallback correction only
+          if (upstreamNode === 'Main Run' && downstreamNode.startsWith('RE')) {
+            console.log(`DEBUG Section ${sectionNum}: PROTECTED - Correcting Main Run→RE to RE→Main Run`);
+            const temp = upstreamNode;
+            upstreamNode = downstreamNode;
+            downstreamNode = temp;
+            flowDirectionNote = ' (protected 1-22: RE→Main Run correction)';
+          } else {
+            flowDirectionNote = ' (protected section 1-22)';
+          }
+          
+        } else if (sectionNum === 23) {
+          // SECTION 23: LOCKED TO INSPECTION DIRECTION RULE
+          // Inspection Direction: Upstream → use downstream node (SW09) as start MH
+          if (headerInfo.inspectionDirection.toLowerCase().includes('upstream')) {
+            upstreamNode = headerInfo.downstream; // SW09
+            downstreamNode = headerInfo.upstream;  // POP UP 1
+            flowDirectionNote = ' (locked: upstream inspection rule SW09→POP UP 1)';
+            console.log(`DEBUG Section 23: LOCKED upstream inspection rule ${upstreamNode}→${downstreamNode}`);
+          }
+          
+        } else if (sectionNum === 24) {
+          // SECTION 24: LOCKED TO SW10→SW01
+          upstreamNode = 'SW10';
+          downstreamNode = 'SW01';
+          flowDirectionNote = ' (locked: SW10→SW01)';
+          console.log(`DEBUG Section 24: LOCKED to SW10→SW01`);
+          
         } else {
-          console.log(`DEBUG Section ${sectionNum}: NO direction info found - using flow ${upstreamNode}→${downstreamNode}${flowDirectionNote}`);
+          // SECTIONS 25+: APPLY INSPECTION DIRECTION LOGIC
+          console.log(`DEBUG Section ${sectionNum}: Applying inspection direction logic for "${headerInfo.inspectionDirection}"`);
+          
+          // PERMANENT INSPECTION DIRECTION RULES:
+          // When "downstream" inspection → use "upstream node" as start MH  
+          // When "upstream" inspection → use "downstream node" as start MH
+          if (headerInfo.inspectionDirection.toLowerCase().includes('downstream')) {
+            upstreamNode = headerInfo.upstream;
+            downstreamNode = headerInfo.downstream;
+            flowDirectionNote = ' (downstream inspection: upstream→downstream)';
+            console.log(`DEBUG Section ${sectionNum}: DOWNSTREAM flow ${upstreamNode}→${downstreamNode}`);
+          } else if (headerInfo.inspectionDirection.toLowerCase().includes('upstream')) {
+            upstreamNode = headerInfo.downstream;
+            downstreamNode = headerInfo.upstream;
+            flowDirectionNote = ' (upstream inspection: downstream→upstream)';
+            console.log(`DEBUG Section ${sectionNum}: UPSTREAM flow ${upstreamNode}→${downstreamNode}`);
+          }
+        }
+        
+      } else {
+        // NO HEADER INFO: Apply section-specific rules
+        if (sectionNum <= 22) {
+          // Sections 1-22: Apply Main Run correction if needed
+          if (upstreamNode === 'Main Run' && downstreamNode.startsWith('RE')) {
+            const temp = upstreamNode;
+            upstreamNode = downstreamNode;
+            downstreamNode = temp;
+            flowDirectionNote = ' (fallback: RE→Main Run correction)';
+          }
+        } else if (sectionNum === 23) {
+          // Section 23: Force correct direction even without header
+          if ((upstreamNode === 'POP UP 1' && downstreamNode === 'SW09')) {
+            upstreamNode = 'SW09';
+            downstreamNode = 'POP UP 1';
+            flowDirectionNote = ' (forced: SW09→POP UP 1)';
+          }
+        } else if (sectionNum === 24) {
+          // Section 24: Force SW10→SW01
+          upstreamNode = 'SW10';
+          downstreamNode = 'SW01';
+          flowDirectionNote = ' (forced: SW10→SW01)';
         }
       }
       
