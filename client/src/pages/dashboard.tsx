@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
-import { DataHealthIndicator } from "@/components/DataHealthIndicator";
+
 
 const sectors = [
   {
@@ -872,12 +872,6 @@ export default function Dashboard() {
           </Card>
         ) : (
           <div className="space-y-8">
-            {/* Data Health Indicator */}
-            <DataHealthIndicator 
-              sectionData={sectionData} 
-              isLoading={sectionsLoading} 
-            />
-            
             {/* Section Inspection Data Table */}
             <Card>
               <CardHeader>
