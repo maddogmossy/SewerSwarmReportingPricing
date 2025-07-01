@@ -124,6 +124,13 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       
       console.log(`DEBUG Section ${sectionNum}: HeaderInfo exists: ${!!headerInfo}, Direction: ${headerInfo?.inspectionDirection || 'not found'}`);
       
+      if (sectionNum === 23) {
+        console.log(`*** SECTION 23 DEBUG ***`);
+        console.log(`HeaderInfo: ${JSON.stringify(headerInfo)}`);
+        console.log(`Current upstream: ${upstreamNode}, downstream: ${downstreamNode}`);
+        console.log(`*** END SECTION 23 DEBUG ***`);
+      }
+      
       if (headerInfo && headerInfo.inspectionDirection && sectionNum > 24) {
         // ONLY apply header-based direction logic to sections 25+ (sections 1-24 are working correctly)
         console.log(`DEBUG Section ${sectionNum}: Applying direction logic for "${headerInfo.inspectionDirection}"`);
@@ -167,10 +174,11 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${flowDirectionNote}`);
       console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
 
-      // Skip updating sections 1-24 if they already exist (protect from reprocessing changes)
-      if (sectionNum <= 24) {
+      // Skip updating sections 1-22 if they already exist (protect from reprocessing changes)
+      // Allow Section 23 to be reprocessed to check its inspection direction
+      if (sectionNum <= 22) {
         console.log(`DEBUG: Checking if section ${sectionNum} already exists in database...`);
-        // For sections 1-24, only add if not already in database
+        // For sections 1-22, only add if not already in database
         const existingSection = await db.query.sectionInspections.findFirst({
           where: and(
             eq(sectionInspections.fileUploadId, fileUploadId),
@@ -179,9 +187,10 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
         });
         
         if (existingSection) {
-          console.log(`DEBUG: Section ${sectionNum} already exists - SKIPPING to protect sections 1-24`);
+          console.log(`DEBUG: Section ${sectionNum} already exists - SKIPPING to protect sections 1-22`);
           continue;
         }
+      }
       }
 
       sections.push({
