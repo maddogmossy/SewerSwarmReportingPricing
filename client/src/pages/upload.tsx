@@ -173,6 +173,11 @@ export default function Upload() {
       setSelectedFile(null);
       setSelectedSector("");
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+      
+      // Redirect to dashboard after successful upload
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 1500);
     },
     onError: (error) => {
       toast({
