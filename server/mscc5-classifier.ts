@@ -896,12 +896,21 @@ export class MSCC5Classifier {
       }
     }
     
+    // Generate sector-specific recommendations
+    let sectorSpecificRecommendation = detectedDefect.recommended_action;
+    
+    if (sector === 'construction' && defectCode === 'OJM') {
+      sectorSpecificRecommendation = 'Immediate patch repair required - first consideration for construction compliance. Joint replacement alternative if patch ineffective (Ref: BS EN 1610:2015)';
+    } else if (sector === 'construction' && (defectCode === 'OJL' || defectCode === 'JDL')) {
+      sectorSpecificRecommendation = `${detectedDefect.recommended_action} - patch repair preferred for construction standards (BS EN 1610:2015)`;
+    }
+
     return {
       defectCode,
       defectDescription: detectedDefect.description,
       severityGrade: adjustedGrade,
       defectType: detectedDefect.type,
-      recommendations: detectedDefect.recommended_action,
+      recommendations: sectorSpecificRecommendation,
       riskAssessment: detectedDefect.risk,
       adoptable,
       estimatedCost: costBands[adjustedGrade as keyof typeof costBands] || '£TBC',
