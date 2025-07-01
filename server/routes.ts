@@ -123,6 +123,9 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
         } else if (sectionNum === 69 && concatenatedPattern === 'CP05CP04') {
           sectionMatch[2] = 'CP05';
           sectionMatch.splice(3, 0, 'CP04');
+        } else if (sectionNum === 70 && concatenatedPattern === 'CP04CPP1') {
+          sectionMatch[2] = 'CP04';
+          sectionMatch.splice(3, 0, 'CPP1');
         } else if (sectionNum === 71 && concatenatedPattern === 'P10GCP04') {
           sectionMatch[2] = 'P10G';
           sectionMatch.splice(3, 0, 'CP04');
