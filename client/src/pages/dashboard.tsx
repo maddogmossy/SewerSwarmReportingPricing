@@ -383,7 +383,8 @@ export default function Dashboard() {
         
         return (
           <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
-            section.severityGrade === "0" ? 'bg-green-100 text-green-800' :
+            section.severityGrade === "0" && section.adoptable === "Yes" ? 'bg-green-100 text-green-800' :
+            section.severityGrade === "0" && section.adoptable === "No" ? 'bg-gray-100 text-gray-800' :
             section.severityGrade === "1" ? 'bg-emerald-100 text-emerald-800' :
             section.severityGrade === "2" ? 'bg-amber-100 text-amber-800' :
             section.severityGrade === "5" ? 'bg-green-100 text-green-800' :
@@ -441,7 +442,7 @@ export default function Dashboard() {
         }
         
         // Sections with complex defects requiring pricing configuration  
-        const sectionsNeedingPricing = [25, 31, 47, 52, 57, 72, 73, 75, 76, 78];
+        const sectionsNeedingPricing = [25, 31, 47, 52, 57, 72, 73, 74, 75, 76, 78];
         if (sectionsNeedingPricing.includes(section.itemNo)) {
           return (
             <div className="text-xs text-orange-600 font-medium">
