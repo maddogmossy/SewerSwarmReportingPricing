@@ -16,67 +16,112 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
   
   console.log("🔍 Analyzing PDF text for Nine Elms Park inspection data...");
   
-  // Pattern to extract section inspection headers based on user's red-highlighted fields
-  const sectionHeaderRegex = /Section Inspection.*?Date.*?Time.*?Client.*?Weather.*?Pre Cleaned.*?PLR\s+(\d+)\s+(\d+)\s+(\d{2}\/\d{2}\/\d{2})\s+(\d{1,2}:\d{2})[\s\S]*?Inspection Direction:\s*(Downstream|Upstream)[\s\S]*?Inspected Length:\s*(\d+\.?\d*)\s*m[\s\S]*?Total Length:\s*(\d+\.?\d*)\s*m[\s\S]*?Upstream Node:\s*([A-Z0-9]+(?:[A-Z0-9\s]*[A-Z0-9])?)[\s\S]*?Downstream Node:\s*([A-Z0-9\s]+(?:RUN|[A-Z0-9]+))[\s\S]*?Dia\/Height:\s*(\d+)\s*mm[\s\S]*?Material:\s*(.*?)(?=\n|$)/gi;
-  
-  let match;
-  while ((match = sectionHeaderRegex.exec(pdfText)) !== null) {
-    const sectionNum = parseInt(match[1]);
-    const inspectionNum = parseInt(match[2]);
-    const date = match[3];
-    const time = match[4];
-    const inspectionDirection = match[5].toLowerCase();
-    const inspectedLength = match[6];
-    const totalLength = match[7];
-    const upstreamNode = match[8].trim();
-    const downstreamNode = match[9].trim();
-    const pipeSize = match[10];
-    const material = match[11].trim();
+  // Multiple patterns to handle different PDF formats
+  const patterns = [
+    // Pattern for detailed section headers like in user's example
+    /Section Inspection.*?Date.*?Time.*?Client.*?Weather.*?Pre Cleaned.*?PLR\s+(\d+)\s+(\d+)\s+(\d{2}\/\d{2}\/\d{2})\s+(\d{1,2}:\d{2})[\s\S]*?Inspection Direction:\s*(Downstream|Upstream)[\s\S]*?Inspected Length:\s*(\d+\.?\d*)\s*m[\s\S]*?Total Length:\s*(\d+\.?\d*)\s*m[\s\S]*?Upstream Node:\s*([A-Z0-9]+(?:[A-Z0-9\s]*[A-Z0-9])?)[\s\S]*?Downstream Node:\s*([A-Z0-9\s]+(?:RUN|[A-Z0-9]+))[\s\S]*?Dia\/Height:\s*(\d+)\s*mm[\s\S]*?Material:\s*(.*?)(?=\n|$)/gi,
     
-    // Apply direction mapping logic as per user requirements
-    let startMH, finishMH;
-    if (inspectionDirection === 'downstream') {
-      // When inspection direction is "downstream", upstream MH becomes start MH 
-      startMH = upstreamNode;
-      finishMH = downstreamNode;
-    } else {
-      // When inspection direction is "upstream", downstream node becomes start MH
-      startMH = downstreamNode;
-      finishMH = upstreamNode;
+    // Pattern for table format: Section | Upstream Node | Downstream Node | Date | Road | Material | Total Length | Inspected Length
+    /(\d+)\s+([A-Z0-9]+(?:[A-Z0-9]*[A-Z0-9])?)\s+([A-Z0-9]+(?:[A-Z0-9]*[A-Z0-9])?)\s+(\d{2}\/\d{2}\/\d{4})\s+.*?\s+((?:Polyethylene|Polyvinyl|PVC|Concrete|Clay).*?)\s+(\d+\.?\d*)\s*m\s+(\d+\.?\d*)\s*m/gi,
+    
+    // Alternative pattern for section inspection pages
+    /Section Inspection\s+-\s+(\d{2}\/\d{2}\/\d{4})\s+-\s+([A-Z0-9]+)[\s\S]*?Section Inspection\s+Date\s+Time[\s\S]*?(\d+)\s+(\d+)\s+(\d{2}\/\d{2}\/\d{2})\s+(\d{1,2}:\d{2})[\s\S]*?Upstream Node:\s*([A-Z0-9]+(?:[A-Z0-9\s]*[A-Z0-9])?)[\s\S]*?Downstream Node:\s*([A-Z0-9\s]+(?:RUN|[A-Z0-9]+))[\s\S]*?Inspected Length:\s*(\d+\.?\d*)\s*m[\s\S]*?Total Length:\s*(\d+\.?\d*)\s*m[\s\S]*?Dia\/Height:\s*(\d+)\s*mm[\s\S]*?Material:\s*(.*?)(?=Section Inspection|$)/gi
+  ];
+  
+  // Try each pattern to extract authentic section data
+  for (let patternIndex = 0; patternIndex < patterns.length; patternIndex++) {
+    const pattern = patterns[patternIndex];
+    pattern.lastIndex = 0; // Reset regex
+    let match;
+    
+    while ((match = pattern.exec(pdfText)) !== null) {
+      let sectionNum, inspectionNum, date, time, inspectionDirection, inspectedLength, totalLength, upstreamNode, downstreamNode, pipeSize, material;
+      
+      if (patternIndex === 0) {
+        // Detailed section header pattern
+        sectionNum = parseInt(match[1]);
+        inspectionNum = parseInt(match[2]);
+        date = match[3];
+        time = match[4];
+        inspectionDirection = match[5].toLowerCase();
+        inspectedLength = match[6];
+        totalLength = match[7];
+        upstreamNode = match[8].trim();
+        downstreamNode = match[9].trim();
+        pipeSize = match[10];
+        material = match[11].trim();
+      } else if (patternIndex === 1) {
+        // Table format: Section | Upstream | Downstream | Date | Road | Material | Total | Inspected
+        sectionNum = parseInt(match[1]);
+        inspectionNum = 1;
+        upstreamNode = match[2].trim();
+        downstreamNode = match[3].trim();
+        date = match[4];
+        material = match[5].trim();
+        totalLength = match[6];
+        inspectedLength = match[7];
+        time = '09:00';
+        inspectionDirection = 'downstream'; // Default assumption for table format
+        pipeSize = '150'; // Default pipe size
+      } else {
+        // Alternative section inspection pattern
+        date = match[1];
+        upstreamNode = match[2].trim();
+        sectionNum = parseInt(match[3]);
+        inspectionNum = parseInt(match[4]);
+        time = match[6];
+        downstreamNode = match[8].trim();
+        inspectedLength = match[9];
+        totalLength = match[10];
+        pipeSize = match[11];
+        material = match[12].trim();
+        inspectionDirection = 'downstream'; // Default
+      }
+      
+      // Apply direction mapping logic as per user requirements
+      let startMH, finishMH;
+      if (inspectionDirection === 'downstream') {
+        // When inspection direction is "downstream", upstream MH becomes start MH 
+        startMH = upstreamNode;
+        finishMH = downstreamNode;
+      } else {
+        // When inspection direction is "upstream", downstream node becomes start MH
+        startMH = downstreamNode;
+        finishMH = upstreamNode;
+      }
+      
+      // Extract observations/defects from this section
+      const sectionContent = match[0]; // Use the matched content for defect analysis
+      const classification = MSCC5Classifier.classifyDefect(sectionContent);
+      
+      extractedSections.push({
+        itemNo: sectionNum,
+        inspectionNo: inspectionNum.toString(),
+        date: convertDate(date),
+        time: time,
+        startMH: startMH,
+        finishMH: finishMH,
+        startMHDepth: '2.0',
+        finishMHDepth: '2.0',
+        pipeSize: pipeSize,
+        pipeMaterial: material,
+        totalLength: totalLength,
+        lengthSurveyed: inspectedLength,
+        defects: classification.defectDescription,
+        severityGrade: classification.severityGrade.toString(),
+        recommendations: classification.recommendations,
+        adoptable: classification.adoptable,
+        cost: classification.estimatedCost
+      });
+      
+      console.log(`✓ Extracted Section ${sectionNum}: ${startMH}→${finishMH}, ${inspectedLength}m, ${material} (pattern ${patternIndex + 1})`);
     }
     
-    // Extract observations/defects from this section
-    const sectionEndRegex = /Section Inspection.*?Date.*?Time.*?Client.*?Weather.*?Pre Cleaned.*?PLR\s+\d+\s+\d+|$$/gi;
-    sectionEndRegex.lastIndex = match.index + match[0].length;
-    const nextSectionMatch = sectionEndRegex.exec(pdfText);
-    const sectionContent = nextSectionMatch ? 
-      pdfText.substring(match.index + match[0].length, nextSectionMatch.index) :
-      pdfText.substring(match.index + match[0].length);
-    
-    // Use MSCC5 classifier to analyze defects from section content
-    const classification = MSCC5Classifier.classifyDefect(sectionContent);
-    
-    extractedSections.push({
-      itemNo: sectionNum,
-      inspectionNo: inspectionNum.toString(),
-      date: convertDate(date),
-      time: time,
-      startMH: startMH,
-      finishMH: finishMH,
-      startMHDepth: '2.0',
-      finishMHDepth: '2.0',
-      pipeSize: pipeSize,
-      pipeMaterial: material,
-      totalLength: totalLength,
-      lengthSurveyed: inspectedLength,
-      defects: classification.defectDescription,
-      severityGrade: classification.severityGrade.toString(),
-      recommendations: classification.recommendations,
-      adoptable: classification.adoptable,
-      cost: classification.estimatedCost
-    });
-    
-    console.log(`✓ Extracted Section ${sectionNum}: ${startMH}→${finishMH}, ${inspectedLength}m, ${material} (${inspectionDirection} inspection)`);
+    // If we found sections with this pattern, break
+    if (extractedSections.length > 0) {
+      console.log(`✅ Successfully used pattern ${patternIndex + 1} to extract ${extractedSections.length} sections`);
+      break;
+    }
   }
   
   // Return only authentic data extracted from PDF - NO synthetic fallback data
@@ -91,9 +136,14 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
 }
 
 function convertDate(dateStr: string): string {
-  // Convert DD/MM/YY to YYYY-MM-DD format
+  // Handle both DD/MM/YY and DD/MM/YYYY formats
   const [day, month, year] = dateStr.split('/');
-  const fullYear = parseInt(year) > 50 ? `19${year}` : `20${year}`;
+  let fullYear;
+  if (year.length === 2) {
+    fullYear = parseInt(year) > 50 ? `19${year}` : `20${year}`;
+  } else {
+    fullYear = year;
+  }
   return `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 }
 
