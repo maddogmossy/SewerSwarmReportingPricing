@@ -92,14 +92,13 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       const headerInfo = headerReferences.get(sectionNum);
       let useHeaderFallback = false;
       
-      // Detect sections that need header fallback due to S/A codes or format breaks
-      // Based on user feedback: sections 1-37 use body text, sections 38+ use header with reversal
-      // But reverse the direction from what header shows (header shows inspection direction, we want flow direction)
-      if (headerInfo && sectionNum > 37) {
-        upstreamNode = headerInfo.downstream;
-        downstreamNode = headerInfo.upstream;
-        useHeaderFallback = true;
-      }
+      // TEMPORARILY DISABLE HEADER FALLBACK - use body text for all sections
+      // Based on user feedback: all sections should use body text extraction  
+      // if (headerInfo && sectionNum > 37) {
+      //   upstreamNode = headerInfo.downstream;
+      //   downstreamNode = headerInfo.upstream;
+      //   useHeaderFallback = true;
+      // }
       
       console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${useHeaderFallback ? ' (using header references)' : ''}`);
       console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
