@@ -120,6 +120,15 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     risk: 'Water infiltration and potential collapse',
     recommended_action: 'Joint sealing or pipe replacement required',
     action_type: 1
+  },
+  OJM: {
+    code: 'OJM',
+    description: 'Open joint - major',
+    type: 'structural',
+    default_grade: 4,
+    risk: 'Significant water infiltration and structural failure risk',
+    recommended_action: 'Immediate patch repair or joint replacement',
+    action_type: 1
   }
 };
 
@@ -450,7 +459,7 @@ export class MSCC5Classifier {
       foundCodes.every(code => observationCodes.includes(code));
     
     // Check for defect codes that indicate actual problems
-    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'DES', 'OB', 'DEF', 'OJL'];
+    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'DES', 'OB', 'DEF', 'OJL', 'OJM'];
     const hasDefectCodes = foundCodes.some(code => defectCodes.includes(code));
     
     // If it has defect codes, it's not just an observation
@@ -790,13 +799,23 @@ export class MSCC5Classifier {
     } else if (normalizedText.includes('root')) {
       detectedDefect = MSCC5_DEFECTS.RI;
       defectCode = 'RI';
-    } else if (normalizedText.includes('joint') && normalizedText.includes('displacement')) {
-      if (normalizedText.includes('large') || normalizedText.includes('major')) {
-        detectedDefect = MSCC5_DEFECTS.JDL;
-        defectCode = 'JDL';
-      } else {
-        detectedDefect = MSCC5_DEFECTS.JDS;
-        defectCode = 'JDS';
+    } else if (normalizedText.includes('joint')) {
+      if (normalizedText.includes('displacement')) {
+        if (normalizedText.includes('large') || normalizedText.includes('major')) {
+          detectedDefect = MSCC5_DEFECTS.JDL;
+          defectCode = 'JDL';
+        } else {
+          detectedDefect = MSCC5_DEFECTS.JDS;
+          defectCode = 'JDS';
+        }
+      } else if (normalizedText.includes('open')) {
+        if (normalizedText.includes('major') || normalizedText.includes('ojm')) {
+          detectedDefect = MSCC5_DEFECTS.OJM;
+          defectCode = 'OJM';
+        } else if (normalizedText.includes('longitudinal') || normalizedText.includes('ojl')) {
+          detectedDefect = MSCC5_DEFECTS.OJL;
+          defectCode = 'OJL';
+        }
       }
     } else if (normalizedText.includes('deposit') || normalizedText.includes('silt') || normalizedText.includes('debris')) {
       if (normalizedText.includes('coarse') || normalizedText.includes('heavy')) {
