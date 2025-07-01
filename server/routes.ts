@@ -38,21 +38,34 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
   const lines = pdfText.split('\n').map(line => line.trim()).filter(line => line);
   let sections = [];
   
-  // Build a map of inspection directions for each section
-  const inspectionDirections = new Map();
+  // Build a map of header information for sections that need it (when S/A codes break normal format)
+  const headerReferences = new Map();
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (line.includes('Inspection Direction:')) {
-      const direction = line.includes('Upstream') ? 'Upstream' : 'Downstream';
+    if (line.includes('Upstream Node:') || line.includes('Downstream Node:')) {
+      let upstreamNode = '';
+      let downstreamNode = '';
+      let sectionNum = 0;
       
-      // Find the section number in nearby lines
-      for (let j = Math.max(0, i-10); j <= Math.min(lines.length-1, i+2); j++) {
-        const searchLine = lines[j];
-        if (/^\d{1,2}\d{2}\d{2}\/\d{2}\/\d{2}/.test(searchLine)) {
-          const sectionNum = parseInt(searchLine.substring(0, 2).replace(/^0/, ''));
-          inspectionDirections.set(sectionNum, direction);
-          break;
+      // Find upstream and downstream nodes in nearby lines
+      for (let j = i-5; j <= i+5; j++) {
+        if (j >= 0 && j < lines.length) {
+          const contextLine = lines[j];
+          if (contextLine.includes('Upstream Node:')) {
+            upstreamNode = contextLine.split('Upstream Node:')[1]?.trim() || '';
+          }
+          if (contextLine.includes('Downstream Node:')) {
+            downstreamNode = contextLine.split('Downstream Node:')[1]?.trim() || '';
+          }
+          // Find section number
+          if (/^\d{1,2}\d{2}\d{2}\/\d{2}\/\d{2}/.test(contextLine)) {
+            sectionNum = parseInt(contextLine.substring(0, 2).replace(/^0/, ''));
+          }
         }
+      }
+      
+      if (sectionNum && upstreamNode && downstreamNode) {
+        headerReferences.set(sectionNum, { upstream: upstreamNode, downstream: downstreamNode });
       }
     }
   }
@@ -75,7 +88,20 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       const totalLength = sectionMatch[6];
       const inspectedLength = sectionMatch[7];
       
-      console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}`);
+      // Check if this section has problematic format that requires header lookup
+      const headerInfo = headerReferences.get(sectionNum);
+      let useHeaderFallback = false;
+      
+      // Detect sections that need header fallback due to S/A codes or format breaks
+      // Based on user feedback: when S/A codes appear, look to header for end MH ref
+      // But reverse the direction from what header shows (header shows inspection direction, we want flow direction)
+      if (headerInfo && sectionNum > 25) {
+        upstreamNode = headerInfo.downstream;
+        downstreamNode = headerInfo.upstream;
+        useHeaderFallback = true;
+      }
+      
+      console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${useHeaderFallback ? ' (using header references)' : ''}`);
       console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
 
       sections.push({
