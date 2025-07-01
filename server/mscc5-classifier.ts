@@ -346,6 +346,57 @@ export class MSCC5Classifier {
   }
 
   /**
+   * Check for connections (JN/CN) within 0.7m of OJM defects
+   */
+  static analyzeNearbyConnections(defectText: string): {
+    hasNearbyConnections: boolean;
+    connectionDetails: string[];
+    recommendReopening: boolean;
+  } {
+    const ojmPattern = /OJM\s+([\d.]+)m/gi;
+    const connectionPattern = /(JN|CN)\s+([\d.]+)m/gi;
+    
+    const ojmLocations: number[] = [];
+    const connections: { type: string; location: number; text: string }[] = [];
+    
+    // Find all OJM locations
+    let ojmMatch;
+    while ((ojmMatch = ojmPattern.exec(defectText)) !== null) {
+      ojmLocations.push(parseFloat(ojmMatch[1]));
+    }
+    
+    // Find all connection locations
+    let connectionMatch;
+    while ((connectionMatch = connectionPattern.exec(defectText)) !== null) {
+      connections.push({
+        type: connectionMatch[1],
+        location: parseFloat(connectionMatch[2]),
+        text: connectionMatch[0]
+      });
+    }
+    
+    // Check for connections within 0.7m of any OJM
+    const nearbyConnections: string[] = [];
+    let recommendReopening = false;
+    
+    for (const ojmLocation of ojmLocations) {
+      for (const connection of connections) {
+        const distance = Math.abs(ojmLocation - connection.location);
+        if (distance <= 0.7) {
+          nearbyConnections.push(`${connection.type} at ${connection.location}m (${distance.toFixed(2)}m from OJM)`);
+          recommendReopening = true;
+        }
+      }
+    }
+    
+    return {
+      hasNearbyConnections: nearbyConnections.length > 0,
+      connectionDetails: nearbyConnections,
+      recommendReopening
+    };
+  }
+
+  /**
    * Analyze high water level percentages that indicate downstream blockages
    */
   static analyzeHighWaterLevels(defectText: string): {
@@ -900,9 +951,16 @@ export class MSCC5Classifier {
     let sectorSpecificRecommendation = detectedDefect.recommended_action;
     
     if (sector === 'construction' && defectCode === 'OJM') {
-      sectorSpecificRecommendation = 'Immediate patch repair required - first consideration for construction compliance. Joint replacement alternative if patch ineffective (Ref: BS EN 1610:2015)';
+      // Check for nearby connections for OJM defects
+      const connectionAnalysis = this.analyzeNearbyConnections(defectText);
+      
+      sectorSpecificRecommendation = 'Immediate patch repair required - first consideration for construction compliance. Joint replacement alternative if patch ineffective';
+      
+      if (connectionAnalysis.recommendReopening) {
+        sectorSpecificRecommendation += '. Consideration needs to be given to reopen the JN or CN due to proximity of connections';
+      }
     } else if (sector === 'construction' && (defectCode === 'OJL' || defectCode === 'JDL')) {
-      sectorSpecificRecommendation = `${detectedDefect.recommended_action} - patch repair preferred for construction standards (BS EN 1610:2015)`;
+      sectorSpecificRecommendation = `${detectedDefect.recommended_action} - patch repair preferred for construction standards`;
     }
 
     return {
