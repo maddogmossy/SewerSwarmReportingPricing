@@ -207,6 +207,25 @@ export async function registerRoutes(app: express.Express) {
     }
   });
 
+  // Delete upload and all associated sections
+  app.delete("/api/uploads/:uploadId", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      
+      // Delete all associated section inspections first
+      await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
+      
+      // Delete the file upload record
+      await db.delete(fileUploads).where(eq(fileUploads.id, uploadId));
+      
+      console.log(`✓ Deleted upload ${uploadId} and all associated sections`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting upload:", error);
+      res.status(500).json({ error: "Failed to delete upload" });
+    }
+  });
+
   // Get user authentication info
   app.get("/api/auth/user", async (req: Request, res: Response) => {
     try {
