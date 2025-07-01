@@ -139,6 +139,11 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       
       console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${useHeaderFallback ? ' (using header references)' : ''}`);
       console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
+      
+      // Special debug for sections 66-73
+      if (sectionNum >= 66 && sectionNum <= 73) {
+        console.log(`🔍 DEBUG Section ${sectionNum}: upstream="${upstreamNode}", downstream="${downstreamNode}"`);
+      }
 
       sections.push({
         fileUploadId: fileUploadId,
