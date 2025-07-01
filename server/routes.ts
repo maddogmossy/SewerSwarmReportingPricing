@@ -44,18 +44,19 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     
-    // Match authentic Nine Elms Park section format
-    const sectionMatch = line.match(/^(\d+)(RE\w*)(FW\w*|Main Run|\w+)(\d{2}\/\d{2}\/\d{4})?.*?(Polyvinyl chloride|Polyethylene|Concrete)[\s\S]*?([\d.]+)\s*m[\s\S]*?([\d.]+)\s*m/);
+    // Match authentic Nine Elms Park section format: "1RE2Main Run08/03/2023Nine Elms ParkPolyvinyl chloride2.55 m2.55 m"
+    const sectionMatch = line.match(/^(\d+)(RE\w*)(Main Run|FW\w*|SW\w*|CP\w*)(\d{2}\/\d{2}\/\d{4}).*?(Polyvinyl chloride|Polyethylene|Concrete)([\d.]+)\s*m([\d.]+)\s*m/);
     
     if (sectionMatch) {
       const sectionNum = parseInt(sectionMatch[1]);
-      const upstreamNode = sectionMatch[2]; // RE24, RE22, etc.
-      const downstreamNode = sectionMatch[3]; // FW02, FW03, etc.
+      const upstreamNode = sectionMatch[2]; // RE2, RE16A, etc. (clean)
+      const downstreamNode = sectionMatch[3]; // Main Run, FW02, etc.
       const material = sectionMatch[5];
       const totalLength = sectionMatch[6];
       const inspectedLength = sectionMatch[7];
       
       console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}`);
+      console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
 
       sections.push({
         fileUploadId: fileUploadId,
