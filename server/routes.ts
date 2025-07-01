@@ -42,13 +42,14 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
   const headerReferences = new Map();
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (line.includes('Upstream Node:') || line.includes('Downstream Node:')) {
+    if (line.includes('Upstream Node:') || line.includes('Downstream Node:') || line.includes('Inspection Direction:')) {
       let upstreamNode = '';
       let downstreamNode = '';
+      let inspectionDirection = '';
       let sectionNum = 0;
       
-      // Find upstream and downstream nodes in nearby lines
-      for (let j = i-5; j <= i+5; j++) {
+      // Find upstream, downstream nodes and inspection direction in nearby lines
+      for (let j = i-10; j <= i+10; j++) {
         if (j >= 0 && j < lines.length) {
           const contextLine = lines[j];
           if (contextLine.includes('Upstream Node:')) {
@@ -56,6 +57,9 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
           }
           if (contextLine.includes('Downstream Node:')) {
             downstreamNode = contextLine.split('Downstream Node:')[1]?.trim() || '';
+          }
+          if (contextLine.includes('Inspection Direction:')) {
+            inspectionDirection = contextLine.split('Inspection Direction:')[1]?.trim() || '';
           }
           // Find section number
           if (/^\d{1,2}\d{2}\d{2}\/\d{2}\/\d{2}/.test(contextLine)) {
@@ -65,7 +69,7 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       }
       
       if (sectionNum && upstreamNode && downstreamNode) {
-        headerReferences.set(sectionNum, { upstream: upstreamNode, downstream: downstreamNode });
+        headerReferences.set(sectionNum, { upstream: upstreamNode, downstream: downstreamNode, inspectionDirection });
       }
     }
   }
@@ -106,19 +110,27 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
         downstreamNode = 'CP1';
       }
       
-      // Check if this section has problematic format that requires header lookup
+      // Apply inspection direction logic to fix flow direction
       const headerInfo = headerReferences.get(sectionNum);
-      let useHeaderFallback = false;
+      let flowDirectionNote = '';
       
-      // TEMPORARILY DISABLE HEADER FALLBACK - use body text for all sections
-      // Based on user feedback: all sections should use body text extraction  
-      // if (headerInfo && sectionNum > 37) {
-      //   upstreamNode = headerInfo.downstream;
-      //   downstreamNode = headerInfo.upstream;
-      //   useHeaderFallback = true;
-      // }
+      if (headerInfo && headerInfo.inspectionDirection) {
+        // Based on user requirements:
+        // When inspection direction = "Downstream" → reverse flow (show downstream→upstream)
+        // When inspection direction = "Upstream" → normal flow (show upstream→downstream)
+        if (headerInfo.inspectionDirection.toLowerCase().includes('downstream')) {
+          // Reverse the flow direction for downstream inspections
+          const temp = upstreamNode;
+          upstreamNode = downstreamNode;
+          downstreamNode = temp;
+          flowDirectionNote = ' (reversed for downstream inspection)';
+        } else if (headerInfo.inspectionDirection.toLowerCase().includes('upstream')) {
+          // Keep normal flow for upstream inspections
+          flowDirectionNote = ' (normal upstream inspection)';
+        }
+      }
       
-      console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${useHeaderFallback ? ' (using header references)' : ''}`);
+      console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${flowDirectionNote}`);
       console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
 
       sections.push({
