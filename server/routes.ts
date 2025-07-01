@@ -93,9 +93,9 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       let useHeaderFallback = false;
       
       // Detect sections that need header fallback due to S/A codes or format breaks
-      // Based on user feedback: when S/A codes appear, look to header for end MH ref
+      // Based on user feedback: sections 1-37 use body text, sections 38+ use header with reversal
       // But reverse the direction from what header shows (header shows inspection direction, we want flow direction)
-      if (headerInfo && sectionNum > 25) {
+      if (headerInfo && sectionNum > 37) {
         upstreamNode = headerInfo.downstream;
         downstreamNode = headerInfo.upstream;
         useHeaderFallback = true;
