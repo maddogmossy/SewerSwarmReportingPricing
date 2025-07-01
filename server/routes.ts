@@ -60,6 +60,12 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
           }
           if (contextLine.includes('Inspection Direction:')) {
             inspectionDirection = contextLine.split('Inspection Direction:')[1]?.trim() || '';
+            // Clean up contaminated direction data - extract only "Upstream" or "Downstream"
+            if (inspectionDirection.toLowerCase().includes('downstream')) {
+              inspectionDirection = 'Downstream';
+            } else if (inspectionDirection.toLowerCase().includes('upstream')) {
+              inspectionDirection = 'Upstream';
+            }
           }
           // Find section number
           if (/^\d{1,2}\d{2}\d{2}\/\d{2}\/\d{2}/.test(contextLine)) {
