@@ -114,7 +114,10 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       const headerInfo = headerReferences.get(sectionNum);
       let flowDirectionNote = '';
       
+      console.log(`DEBUG Section ${sectionNum}: HeaderInfo exists: ${!!headerInfo}, Direction: ${headerInfo?.inspectionDirection || 'not found'}`);
+      
       if (headerInfo && headerInfo.inspectionDirection) {
+        console.log(`DEBUG Section ${sectionNum}: Applying direction logic for "${headerInfo.inspectionDirection}"`);
         // Based on user requirements:
         // When inspection direction = "Downstream" → reverse flow (show downstream→upstream)
         // When inspection direction = "Upstream" → normal flow (show upstream→downstream)
@@ -124,10 +127,23 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
           upstreamNode = downstreamNode;
           downstreamNode = temp;
           flowDirectionNote = ' (reversed for downstream inspection)';
+          console.log(`DEBUG Section ${sectionNum}: REVERSED flow to ${upstreamNode}→${downstreamNode}`);
         } else if (headerInfo.inspectionDirection.toLowerCase().includes('upstream')) {
           // Keep normal flow for upstream inspections
           flowDirectionNote = ' (normal upstream inspection)';
+          console.log(`DEBUG Section ${sectionNum}: KEPT normal flow ${upstreamNode}→${downstreamNode}`);
         }
+      } else {
+        // Fallback logic for sections without inspection direction data
+        // Pattern recognition: If we see "Main Run → RE" pattern, it should be "RE → Main Run"
+        if (upstreamNode === 'Main Run' && downstreamNode.startsWith('RE')) {
+          console.log(`DEBUG Section ${sectionNum}: Detected Main Run→RE pattern, correcting to RE→Main Run`);
+          const temp = upstreamNode;
+          upstreamNode = downstreamNode;
+          downstreamNode = temp;
+          flowDirectionNote = ' (corrected RE→Main Run pattern)';
+        }
+        console.log(`DEBUG Section ${sectionNum}: NO direction info found - using flow ${upstreamNode}→${downstreamNode}${flowDirectionNote}`);
       }
       
       console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${flowDirectionNote}`);
