@@ -116,8 +116,8 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     code: 'OBI',
     description: 'Other obstacles',
     type: 'service',
-    default_grade: 3,
-    risk: 'Flow restriction and structural interference',
+    default_grade: 5,
+    risk: 'Service & operational observation requiring assessment',
     recommended_action: 'Obstacle removal and repair required',
     action_type: 2
   },
