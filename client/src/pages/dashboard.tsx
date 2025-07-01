@@ -405,8 +405,8 @@ export default function Dashboard() {
           </span>
         );
       case 'cost':
-        // Check if section has "No action required" in recommendations
-        if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition')) {
+        // Check if section has "No action required" in recommendations (Grade 0 sections only)
+        if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
           return (
             <div className="text-xs text-green-600 font-medium">
               Complete
@@ -414,8 +414,8 @@ export default function Dashboard() {
           );
         }
         
-        // Sections with defects requiring repairs: 6,7,8,10,13,14,21 (removed 3 as it's now "Complete")
-        const sectionsNeedingRepairs = [6, 7, 8, 10, 13, 14, 21];
+        // Sections with defects requiring repairs (include sections 25, 31, 47 that we updated)
+        const sectionsNeedingRepairs = [6, 7, 8, 10, 13, 14, 21, 25, 31, 47];
         
         if (sectionsNeedingRepairs.includes(section.itemNo)) {
           return (
@@ -562,12 +562,12 @@ export default function Dashboard() {
       ...sectionData.map(section => {
         // Apply same cost logic as dashboard
         let costValue = section.cost || '£0.00';
-        if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition')) {
+        if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
           costValue = 'Complete';
         } else {
-          const sectionsNeedingRepairs = [6, 7, 8, 10, 13, 14, 21];
+          const sectionsNeedingRepairs = [6, 7, 8, 10, 13, 14, 21, 25, 31, 47];
           if (sectionsNeedingRepairs.includes(section.itemNo)) {
-            costValue = 'Configure utilities sector pricing first';
+            costValue = 'Configure construction sector pricing first';
           }
         }
         
