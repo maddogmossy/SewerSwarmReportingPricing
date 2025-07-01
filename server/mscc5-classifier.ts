@@ -242,6 +242,20 @@ export class MSCC5Classifier {
     const upperText = defectText.toUpperCase();
     const lowerText = defectText.toLowerCase();
     
+    // =====================================================================
+    // LOCKED DOWN OBSERVATION-ONLY HANDLING - DO NOT MODIFY
+    // =====================================================================
+    // CRITICAL: Construction Features and Miscellaneous Features must always
+    // return "No action required pipe observed in acceptable structural 
+    // and service condition" for both defects AND recommendations.
+    // =====================================================================
+    
+    // Immediate return for Construction Features and Miscellaneous Features
+    if (lowerText.includes('construction features') || lowerText.includes('miscellaneous features')) {
+      console.log('LOCKED: Construction/Miscellaneous Features detected - returning observation-only');
+      return true;
+    }
+    
     // Check for specific observation keywords that indicate non-defective conditions
     const observationKeywords = [
       'water level',
@@ -385,6 +399,32 @@ export class MSCC5Classifier {
    */
   static classifyDefect(defectText: string, sector: string = 'utilities'): DefectClassificationResult {
     const normalizedText = defectText.toLowerCase();
+    
+    // =====================================================================
+    // LOCKED DOWN: Construction Features and Miscellaneous Features
+    // =====================================================================
+    // CRITICAL: Must always return observation-only response - DO NOT MODIFY
+    if (normalizedText.includes('construction features') || normalizedText.includes('miscellaneous features')) {
+      console.log('LOCKED: Construction/Miscellaneous Features - forcing observation-only response');
+      const srmGrading = SRM_SCORING.structural["0"] || {
+        description: "No action required",
+        criteria: "Pipe observed in acceptable structural and service condition",
+        action_required: "No action required",
+        adoptable: true
+      };
+      return {
+        defectCode: 'N/A',
+        defectDescription: 'No action required pipe observed in acceptable structural and service condition',
+        severityGrade: 0,
+        defectType: 'service',
+        recommendations: 'No action required pipe observed in acceptable structural and service condition',
+        riskAssessment: 'Pipe in acceptable condition',
+        adoptable: 'Yes',
+        estimatedCost: '£0',
+        srmGrading
+      };
+    }
+    // =====================================================================
     
     // Check if it's a no-defect condition first
     if (normalizedText.includes('no action required') || normalizedText.includes('acceptable condition')) {
