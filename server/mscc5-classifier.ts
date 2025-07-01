@@ -449,6 +449,7 @@ export class MSCC5Classifier {
     hasServiceConnection: boolean;
     isNotConnected: boolean;
     hasBungInLine: boolean;
+    hasCompleteBlockage: boolean;
     connectionDetails: string;
     requiresContractorConfirmation: boolean;
     recommendations: string;
@@ -457,11 +458,15 @@ export class MSCC5Classifier {
     const hasServiceConnection = upperText.includes('S/A') || upperText.includes('SERVICE CONNECTION');
     const isNotConnected = upperText.includes('NO CONNECTED') || upperText.includes('NOT CONNECTED');
     const hasBungInLine = upperText.includes('BUNG IN LINE') || upperText.includes('BUNG');
+    const hasCompleteBlockage = upperText.includes('WL 100%') || upperText.includes('COMPLETE BLOCKAGE');
     
     let recommendations = '';
     let requiresContractorConfirmation = false;
     
-    if (hasServiceConnection && hasBungInLine) {
+    if (hasServiceConnection && hasCompleteBlockage) {
+      requiresContractorConfirmation = true;
+      recommendations = 'Contractor to confirm this has been connected and a cleanse and resurvey is required';
+    } else if (hasServiceConnection && hasBungInLine) {
       requiresContractorConfirmation = true;
       recommendations = 'Contractor to confirm the bung has been removed and requires cleansing and survey once removed';
     } else if (hasServiceConnection && isNotConnected) {
@@ -475,6 +480,7 @@ export class MSCC5Classifier {
       hasServiceConnection,
       isNotConnected,
       hasBungInLine,
+      hasCompleteBlockage,
       connectionDetails: hasServiceConnection ? defectText : '',
       requiresContractorConfirmation,
       recommendations
