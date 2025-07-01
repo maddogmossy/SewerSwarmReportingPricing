@@ -463,13 +463,12 @@ export default function Dashboard() {
   // Note: Forcing latest report to ensure authentic 3588 data is displayed
   const currentUpload = completedUploads.sort((a, b) => b.id - a.id)[0]; // Always get most recent (3588)
   
-  // Force page refresh to clear any browser cache issues
+  // Clear any browser cache issues for authentic data display
   useEffect(() => {
-    if (currentUpload?.id === 2 && !hasAuthenticData) {
-      console.log('Forcing page refresh for authentic 3588 data...');
-      setTimeout(() => window.location.reload(), 1000);
+    if (currentUpload?.id === 2) {
+      queryClient.removeQueries({ queryKey: [`/api/uploads/2/sections`] });
     }
-  }, [currentUpload?.id, hasAuthenticData]);
+  }, [currentUpload?.id]);
     
   const currentSector = currentUpload 
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
@@ -487,9 +486,9 @@ export default function Dashboard() {
     arr.findIndex(s => s.itemNo === section.itemNo) === index
   );
   
-  // Data integrity check - ensure authentic Nine Elms Park data
-  const hasAuthenticData = sectionData.length > 0 && 
-    sectionData.find(s => s.itemNo === 13)?.startMH === 'RE16A';
+  // Data integrity check - ensure authentic Nine Elms Park data  
+  const hasAuthenticData = rawSectionData.length > 0 && 
+    rawSectionData.find(s => s.itemNo === 13)?.startMH === 'RE16A';
 
   // Check if pricing exists for the current sector
   const { data: pricingStatus = { overall: false, surveys: false, cleansing: false, jetting: false } } = useQuery<{ overall: boolean, surveys: boolean, cleansing: boolean, jetting: boolean }>({
