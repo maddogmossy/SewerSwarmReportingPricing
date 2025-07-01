@@ -206,6 +206,10 @@ export async function registerRoutes(app: Express) {
           
           console.log(`Extracted ${sections.length} authentic sections from PDF`);
           
+          // PREVENT DUPLICATES: Delete existing sections before inserting new ones
+          await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
+          console.log(`🗑️ Cleared existing sections for upload ID ${fileUpload.id}`);
+          
           // Insert all extracted sections OR require manual verification
           if (sections.length > 0) {
             for (const section of sections) {
