@@ -104,6 +104,15 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       } else if (sectionNum === 70 && upstreamNode === 'CP04CP' && downstreamNode === 'P1') {
         upstreamNode = 'CP04';
         downstreamNode = 'CP1';
+      } else if (sectionNum === 71 && upstreamNode === 'P10GC' && downstreamNode === 'P04') {
+        upstreamNode = 'P10G';
+        downstreamNode = 'CP04';
+      } else if (sectionNum === 72 && upstreamNode === 'CP03C' && downstreamNode === 'P04') {
+        upstreamNode = 'CP03';
+        downstreamNode = 'CP04';
+      } else if (sectionNum === 73 && upstreamNode === 'CP02C' && downstreamNode === 'P03') {
+        upstreamNode = 'CP02';
+        downstreamNode = 'CP03';
       }
       
       // Check if this section has problematic format that requires header lookup
