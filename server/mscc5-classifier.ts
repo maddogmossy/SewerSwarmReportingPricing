@@ -89,8 +89,8 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     code: 'DEC',
     description: 'Deposits - concrete',
     type: 'service',
-    default_grade: 4,
-    risk: 'Significant flow restriction from hard concrete deposits',
+    default_grade: 5,
+    risk: 'Service & operational observation - concrete deposits requiring removal',
     recommended_action: 'Directional water cutting to remove hard deposits',
     action_type: 2
   },
