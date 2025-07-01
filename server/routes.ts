@@ -117,7 +117,7 @@ export async function registerRoutes(app: express.Express) {
         sections.map(section => ({
           fileUploadId: fileUpload.id,
           itemNo: section.itemNo,
-          inspectionNo: section.inspectionNo,
+          inspectionNo: parseInt(section.inspectionNo),
           date: section.date,
           time: section.time,
           startMh: section.startMH,
@@ -139,7 +139,7 @@ export async function registerRoutes(app: express.Express) {
       // Update upload status
       await db.update(fileUploads)
         .set({ status: "completed" })
-        .where({ id: fileUpload.id });
+        .where(eq(fileUploads.id, fileUpload.id));
 
       console.log(`✅ Successfully processed ${insertedSections.length} authentic sections`);
 
@@ -160,7 +160,7 @@ export async function registerRoutes(app: express.Express) {
   app.get("/api/uploads", async (req: Request, res: Response) => {
     try {
       const userId = "test-user";
-      const uploads = await db.select().from(fileUploads).where({ userId });
+      const uploads = await db.select().from(fileUploads).where(eq(fileUploads.userId, userId));
       res.json(uploads);
     } catch (error) {
       console.error("Error fetching uploads:", error);
@@ -172,7 +172,7 @@ export async function registerRoutes(app: express.Express) {
   app.get("/api/uploads/:uploadId/sections", async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.uploadId);
-      const sections = await db.select().from(sectionInspections).where({ fileUploadId: uploadId });
+      const sections = await db.select().from(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
       res.json(sections);
     } catch (error) {
       console.error("Error fetching sections:", error);
