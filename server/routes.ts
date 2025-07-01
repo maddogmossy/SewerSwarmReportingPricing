@@ -201,6 +201,7 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
   
   console.log(`✓ Successfully generated complete 79-section dataset with authentic manhole references`);
   return sections;
+  } // Close the if statement
 }
 
 export async function registerRoutes(app: Express) {
