@@ -389,6 +389,32 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Delete file upload and all associated data
+  app.delete("/api/uploads/:uploadId", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      
+      // First delete all associated section inspections
+      await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
+      console.log(`🗑️ Deleted section inspections for upload ID ${uploadId}`);
+      
+      // Then delete the file upload record
+      const deletedUpload = await db.delete(fileUploads)
+        .where(and(eq(fileUploads.id, uploadId), eq(fileUploads.userId, "test-user")))
+        .returning();
+      
+      if (deletedUpload.length === 0) {
+        return res.status(404).json({ error: "File upload not found" });
+      }
+      
+      console.log(`🗑️ Successfully deleted upload ID ${uploadId} and all associated data`);
+      res.json({ message: "Upload deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting upload:", error);
+      res.status(500).json({ error: "Failed to delete upload" });
+    }
+  });
+
   // Equipment management endpoints
   app.get("/api/equipment-types/:categoryId", async (req: Request, res: Response) => {
     try {
