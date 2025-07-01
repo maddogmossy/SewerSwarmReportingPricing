@@ -75,15 +75,8 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       const totalLength = sectionMatch[6];
       const inspectedLength = sectionMatch[7];
       
-      // Check if this section has upstream inspection direction - if so, reverse the references
-      const inspectionDirection = inspectionDirections.get(sectionNum);
-      if (inspectionDirection === 'Upstream') {
-        [upstreamNode, downstreamNode] = [downstreamNode, upstreamNode];
-        console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material} (REVERSED for upstream inspection)`);
-      } else {
-        console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}`);
-      }
-      console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}] | Direction: ${inspectionDirection || 'Unknown'}`);
+      console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}`);
+      console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
 
       sections.push({
         fileUploadId: fileUploadId,
