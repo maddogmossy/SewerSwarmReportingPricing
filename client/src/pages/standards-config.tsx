@@ -39,9 +39,19 @@ interface DefectThreshold {
 export default function StandardsConfig() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [location] = useLocation();
   const [selectedSector, setSelectedSector] = useState('utilities');
   const [isAddingStandard, setIsAddingStandard] = useState(false);
   const [editingStandard, setEditingStandard] = useState<SectorStandard | null>(null);
+
+  // Auto-select sector from URL parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.split('?')[1]);
+    const sectorParam = urlParams.get('sector');
+    if (sectorParam) {
+      setSelectedSector(sectorParam);
+    }
+  }, [location]);
 
   // Query sector standards
   const { data: standards = [], isLoading } = useQuery({
