@@ -234,6 +234,80 @@ const SRM_SCORING: SRMScoringData = {
 
 export class MSCC5Classifier {
   /**
+   * Analyze water level patterns for belly detection
+   */
+  static analyzeBellyCondition(defectText: string): {
+    hasBelly: boolean;
+    maxWaterLevel: number;
+    adoptionFail: boolean;
+    bellyObservation: string;
+    adoptionRecommendation: string;
+  } {
+    const waterLevelPattern = /WL\s+([\d.]+)m.*?(\d+)%/gi;
+    const waterLevels: { meterage: number; percentage: number }[] = [];
+    
+    let match;
+    while ((match = waterLevelPattern.exec(defectText)) !== null) {
+      const meterage = parseFloat(match[1]);
+      const percentage = parseInt(match[2]);
+      waterLevels.push({ meterage, percentage });
+    }
+    
+    if (waterLevels.length < 3) {
+      return {
+        hasBelly: false,
+        maxWaterLevel: 0,
+        adoptionFail: false,
+        bellyObservation: '',
+        adoptionRecommendation: ''
+      };
+    }
+    
+    // Sort by meterage to analyze progression
+    waterLevels.sort((a, b) => a.meterage - b.meterage);
+    
+    // Check for rise and fall pattern indicating belly
+    let hasBelly = false;
+    let maxWaterLevel = 0;
+    
+    for (let i = 1; i < waterLevels.length - 1; i++) {
+      const prev = waterLevels[i - 1];
+      const current = waterLevels[i];
+      const next = waterLevels[i + 1];
+      
+      // Check if water level rises then falls (belly pattern)
+      if (current.percentage > prev.percentage && current.percentage > next.percentage) {
+        hasBelly = true;
+        maxWaterLevel = Math.max(maxWaterLevel, current.percentage);
+      }
+    }
+    
+    // OS20x adoption standards: >20% water level fails adoption
+    const adoptionFail = maxWaterLevel > 20;
+    
+    let bellyObservation = '';
+    let adoptionRecommendation = '';
+    
+    if (hasBelly) {
+      bellyObservation = `Belly detected - water level rises to ${maxWaterLevel}% then falls, indicating gradient depression`;
+      
+      if (adoptionFail) {
+        adoptionRecommendation = 'We recommend excavation to correct the fall, client to confirm';
+      } else {
+        adoptionRecommendation = `Belly condition observed (${maxWaterLevel}% water level) - within adoption tolerance but monitoring recommended`;
+      }
+    }
+    
+    return {
+      hasBelly,
+      maxWaterLevel,
+      adoptionFail,
+      bellyObservation,
+      adoptionRecommendation
+    };
+  }
+
+  /**
    * Check if defect text contains only observation codes (not actual defects)
    */
   static containsOnlyObservationCodes(defectText: string, observationCodes: string[]): boolean {
@@ -454,12 +528,31 @@ export class MSCC5Classifier {
     const containsOnlyObservations = this.containsOnlyObservationCodes(defectText, observationCodes);
     
     if (containsOnlyObservations) {
+      // Check for belly condition in water level observations
+      const bellyAnalysis = this.analyzeBellyCondition(defectText);
+      
       const srmGrading = SRM_SCORING.structural["0"] || {
         description: "No action required",
         criteria: "Pipe observed in acceptable structural and service condition",
         action_required: "No action required",
         adoptable: true
       };
+      
+      // Handle belly condition in observations
+      if (bellyAnalysis.hasBelly) {
+        return {
+          defectCode: 'N/A',
+          defectDescription: bellyAnalysis.bellyObservation,
+          severityGrade: 0,
+          defectType: 'service',
+          recommendations: bellyAnalysis.adoptionRecommendation,
+          riskAssessment: `Belly condition detected with ${bellyAnalysis.maxWaterLevel}% maximum water level`,
+          adoptable: bellyAnalysis.adoptionFail ? 'No' : 'Yes',
+          estimatedCost: '£0',
+          srmGrading
+        };
+      }
+      
       return {
         defectCode: 'N/A',
         defectDescription: 'No action required pipe observed in acceptable structural and service condition',

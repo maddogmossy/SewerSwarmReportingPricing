@@ -93,7 +93,7 @@ export class AdoptionValidation {
     };
   }
   
-  // Check adoptability based on OS20x and Section 104 criteria
+  // Check adoptability based on OS20x and Section 104 criteria including belly conditions
   static checkAdoptability(defectData: {
     defectCode: string;
     structuralGrade: number;
@@ -101,16 +101,25 @@ export class AdoptionValidation {
     description: string;
     percentage?: string;
     meterage?: string;
+    adoptable?: string;
+    recommendations?: string;
   }): {
     adoptable: boolean;
     reasons: string[];
     requiredActions: string[];
     complianceLevel: 'FULL' | 'CONDITIONAL' | 'REJECTED';
   } {
-    const { defectCode, structuralGrade, serviceGrade, description } = defectData;
+    const { defectCode, structuralGrade, serviceGrade, description, adoptable: msccAdoptable, recommendations } = defectData;
     const reasons: string[] = [];
     const requiredActions: string[] = [];
     let adoptable = true;
+    
+    // Check for belly condition from MSCC5 classification
+    if (msccAdoptable === 'No' && recommendations?.includes('excavation to correct the fall')) {
+      adoptable = false;
+      reasons.push('Belly condition detected with water level >20% - exceeds adoption standards');
+      requiredActions.push('Excavation required to correct pipe fall/gradient');
+    }
     
     // OS20x compliance checks
     if (structuralGrade > 2) {
