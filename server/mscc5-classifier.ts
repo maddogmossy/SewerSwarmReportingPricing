@@ -111,6 +111,15 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     risk: 'Progressive structural deterioration',
     recommended_action: 'Structural assessment and repair',
     action_type: 1
+  },
+  OJL: {
+    code: 'OJL',
+    description: 'Open joint - longitudinal',
+    type: 'structural',
+    default_grade: 3,
+    risk: 'Water infiltration and potential collapse',
+    recommended_action: 'Joint sealing or pipe replacement required',
+    action_type: 1
   }
 };
 
@@ -271,7 +280,7 @@ export class MSCC5Classifier {
       foundCodes.every(code => observationCodes.includes(code));
     
     // Check for defect codes that indicate actual problems
-    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'DES', 'OB', 'DEF'];
+    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDS', 'DES', 'OB', 'DEF', 'OJL'];
     const hasDefectCodes = foundCodes.some(code => defectCodes.includes(code));
     
     // If it has defect codes, it's not just an observation
