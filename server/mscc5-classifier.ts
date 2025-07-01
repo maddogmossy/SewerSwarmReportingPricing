@@ -143,9 +143,9 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     code: 'OJM',
     description: 'Open joint - major',
     type: 'structural',
-    default_grade: 4,
-    risk: 'Significant water infiltration and structural failure risk',
-    recommended_action: 'Immediate patch repair or joint replacement',
+    default_grade: 1,
+    risk: 'Significant structural failure requiring immediate patch repair',
+    recommended_action: 'Immediate patch repair required - first consideration for construction compliance. Joint replacement alternative if patch ineffective. Consideration needs to be given to reopen the JN or CN due to proximity of connections',
     action_type: 1
   },
   JDM: {
