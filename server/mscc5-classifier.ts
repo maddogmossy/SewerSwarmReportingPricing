@@ -972,7 +972,7 @@ export class MSCC5Classifier {
         sectorSpecificRecommendation += '. Consideration needs to be given to reopen the JN or CN due to proximity of connections';
       }
     } else if (sector === 'construction' && defectCode === 'DEC') {
-      sectorSpecificRecommendation = 'We recommend directional water cutting to remove hard deposit and concrete (Ref: BS EN 1610:2015 construction standards)';
+      sectorSpecificRecommendation = 'We recommend directional water cutting to remove hard deposit and concrete';
     } else if (sector === 'construction' && (defectCode === 'OJL' || defectCode === 'JDL')) {
       sectorSpecificRecommendation = `${detectedDefect.recommended_action} - patch repair preferred for construction standards`;
     }
