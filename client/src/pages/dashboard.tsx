@@ -323,7 +323,7 @@ export default function Dashboard() {
     { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: 'w-20', priority: 'tight' },
     { key: 'totalLength', label: 'Total Length (m)', hideable: false, width: 'w-16', priority: 'tight' },
     { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: false, width: 'w-16', priority: 'tight' },
-    { key: 'defects', label: 'Defects', hideable: false, width: 'w-96', priority: 'pretty' },
+    { key: 'defects', label: 'Observations', hideable: false, width: 'w-96', priority: 'pretty' },
     { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: 'w-16', priority: 'tight' },
     { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: 'w-20', priority: 'tight' },
     { key: 'recommendations', label: 'Recommendations', hideable: false, width: 'w-96', priority: 'pretty' },
