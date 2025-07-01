@@ -592,7 +592,7 @@ export default function Dashboard() {
           costValue = 'Complete';
         } else {
           const sectionsComplete = [6, 7, 8, 10, 13, 14, 21];
-          const sectionsNeedingPricing = [25, 31, 47, 52, 57, 72, 73, 74];
+          const sectionsNeedingPricing = [25, 31, 47, 52, 57, 72, 73, 74, 75, 76, 78];
           
           if (sectionsComplete.includes(section.itemNo)) {
             costValue = 'Complete';
