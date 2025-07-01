@@ -789,22 +789,24 @@ export class MSCC5Classifier {
       const noCodingAnalysis = this.analyzeNoCodingPresent(defectText);
       
       if (noCodingAnalysis.requiresCleanseResurvey) {
-        const srmGrading = SRM_SCORING.service["2"] || {
-          description: "Minor service defects",
-          criteria: "No coding present - cleanse and resurvey required",
-          action_required: "Cleansing and resurveying recommended",
+        // According to MSCC5 standards, "no coding present" is an observation limitation,
+        // not a defect. Grade 0 should be assigned since no defect classification was possible.
+        const srmGrading = SRM_SCORING.structural["0"] || {
+          description: "No action required",
+          criteria: "Pipe observed in acceptable structural and service condition",
+          action_required: "No action required",
           adoptable: true
         };
         
         return {
           defectCode: 'N/A',
           defectDescription: 'No coding present',
-          severityGrade: 2,
+          severityGrade: 0,
           defectType: 'service',
           recommendations: noCodingAnalysis.recommendations,
-          riskAssessment: 'No coding present - section requires cleansing and resurveying for proper assessment',
+          riskAssessment: 'No coding present - inspection limitation, not a pipe defect',
           adoptable: 'Yes',
-          estimatedCost: '£500-2,000',
+          estimatedCost: '£0',
           srmGrading
         };
       }
