@@ -234,9 +234,9 @@ const SRM_SCORING: SRMScoringData = {
 
 export class MSCC5Classifier {
   /**
-   * Analyze water level patterns for belly detection
+   * Analyze water level patterns for belly detection with sector-specific standards
    */
-  static analyzeBellyCondition(defectText: string): {
+  static analyzeBellyCondition(defectText: string, sector: string = 'utilities'): {
     hasBelly: boolean;
     maxWaterLevel: number;
     adoptionFail: boolean;
@@ -282,8 +282,38 @@ export class MSCC5Classifier {
       }
     }
     
-    // OS20x adoption standards: >20% water level fails adoption
-    const adoptionFail = maxWaterLevel > 20;
+    // Sector-specific water level failure thresholds
+    let failureThreshold = 20; // Default OS20x adoption standard
+    let sectorStandard = 'OS20x adoption';
+    
+    switch (sector) {
+      case 'adoption':
+        failureThreshold = 20; // OS20x: >20% water level fails adoption
+        sectorStandard = 'OS20x adoption';
+        break;
+      case 'utilities':
+        failureThreshold = 25; // WRc/MSCC5: Higher tolerance for utilities sector
+        sectorStandard = 'WRc/MSCC5';
+        break;
+      case 'highways':
+        failureThreshold = 15; // HADDMS: Stricter for highway drainage
+        sectorStandard = 'HADDMS';
+        break;
+      case 'insurance':
+        failureThreshold = 30; // ABI: Focus on damage assessment, higher tolerance
+        sectorStandard = 'ABI guidelines';
+        break;
+      case 'construction':
+        failureThreshold = 10; // BS EN 1610:2015: Strict for new construction
+        sectorStandard = 'BS EN 1610:2015';
+        break;
+      case 'domestic':
+        failureThreshold = 25; // Trading standards: Similar to utilities
+        sectorStandard = 'Trading Standards';
+        break;
+    }
+    
+    const adoptionFail = maxWaterLevel > failureThreshold;
     
     let bellyObservation = '';
     let adoptionRecommendation = '';
@@ -292,9 +322,9 @@ export class MSCC5Classifier {
       bellyObservation = `Belly detected - water level rises to ${maxWaterLevel}% then falls, indicating gradient depression`;
       
       if (adoptionFail) {
-        adoptionRecommendation = 'We recommend excavation to correct the fall, client to confirm';
+        adoptionRecommendation = `We recommend excavation to correct the fall, client to confirm (${sectorStandard} standard: >${failureThreshold}% fails)`;
       } else {
-        adoptionRecommendation = `Belly condition observed (${maxWaterLevel}% water level) - within adoption tolerance but monitoring recommended`;
+        adoptionRecommendation = `Belly condition observed (${maxWaterLevel}% water level) - within ${sectorStandard} tolerance (≤${failureThreshold}%) but monitoring recommended`;
       }
     }
     
@@ -529,7 +559,7 @@ export class MSCC5Classifier {
     
     if (containsOnlyObservations) {
       // Check for belly condition in water level observations
-      const bellyAnalysis = this.analyzeBellyCondition(defectText);
+      const bellyAnalysis = this.analyzeBellyCondition(defectText, sector);
       
       const srmGrading = SRM_SCORING.structural["0"] || {
         description: "No action required",
