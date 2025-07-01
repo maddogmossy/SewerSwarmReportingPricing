@@ -22,7 +22,8 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  Settings
+  Settings,
+  Filter
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
@@ -602,7 +603,7 @@ export default function Dashboard() {
       // Column headers - visible columns only
       visibleHeaders.map(h => h.label).join(','),
       
-      // Data rows - only include visible columns with cost logic applied
+      // Data rows - only include visible columns with cost logic applied (filtered data)
       ...sectionData.map(section => {
         // Apply same cost logic as dashboard
         let costValue = section.cost || '£0.00';
@@ -939,6 +940,88 @@ export default function Dashboard() {
                   <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
                     <div className="text-sm text-blue-800">
                       <span className="font-medium">Click column headers below to hide them.</span> Essential columns cannot be hidden.
+                    </div>
+                  </div>
+                )}
+                
+                {/* Filter Controls */}
+                {showFilters && (
+                  <div className="mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Severity Grade</label>
+                        <select
+                          value={filters.severityGrade}
+                          onChange={(e) => setFilters({...filters, severityGrade: e.target.value})}
+                          className="w-full px-3 py-1 text-sm border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">All Grades</option>
+                          <option value="0">Grade 0</option>
+                          <option value="1">Grade 1</option>
+                          <option value="2">Grade 2</option>
+                          <option value="3">Grade 3</option>
+                          <option value="4">Grade 4</option>
+                          <option value="5">Grade 5</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Adoptable</label>
+                        <select
+                          value={filters.adoptable}
+                          onChange={(e) => setFilters({...filters, adoptable: e.target.value})}
+                          className="w-full px-3 py-1 text-sm border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">All Status</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                          <option value="Conditional">Conditional</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Pipe Size</label>
+                        <select
+                          value={filters.pipeSize}
+                          onChange={(e) => setFilters({...filters, pipeSize: e.target.value})}
+                          className="w-full px-3 py-1 text-sm border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">All Sizes</option>
+                          <option value="150mm">150mm</option>
+                          <option value="225mm">225mm</option>
+                          <option value="300mm">300mm</option>
+                          <option value="375mm">375mm</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Pipe Material</label>
+                        <select
+                          value={filters.pipeMaterial}
+                          onChange={(e) => setFilters({...filters, pipeMaterial: e.target.value})}
+                          className="w-full px-3 py-1 text-sm border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">All Materials</option>
+                          <option value="Polyvinyl chloride">Polyvinyl chloride</option>
+                          <option value="Concrete">Concrete</option>
+                          <option value="Clay">Clay</option>
+                          <option value="PVC">PVC</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 mt-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setFilters({severityGrade: '', adoptable: '', pipeSize: '', pipeMaterial: ''})}
+                        className="text-xs"
+                      >
+                        Clear All Filters
+                      </Button>
+                      <span className="text-sm text-slate-600">
+                        Showing {sectionData.length} of {rawFilteredData.length} sections
+                      </span>
                     </div>
                   </div>
                 )}
