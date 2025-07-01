@@ -452,7 +452,7 @@ export default function Dashboard() {
         }
         
         // Fallback for any other sections
-        return `£${section.cost || '0.00'}`;
+        return section.cost || '£0.00';
       default:
         return '';
     }
