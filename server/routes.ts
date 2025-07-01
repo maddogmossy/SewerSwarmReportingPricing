@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { db } from "./db";
 import { fileUploads, users, sectionInspections, equipmentTypes, pricingRules } from "@shared/schema";
-import { eq, desc, asc } from "drizzle-orm";
+import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
 import pdfParse from "pdf-parse";
@@ -118,23 +118,30 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       
       console.log(`DEBUG Section ${sectionNum}: HeaderInfo exists: ${!!headerInfo}, Direction: ${headerInfo?.inspectionDirection || 'not found'}`);
       
-      if (headerInfo && headerInfo.inspectionDirection) {
+      if (headerInfo && headerInfo.inspectionDirection && sectionNum > 24) {
+        // ONLY apply header-based direction logic to sections 25+ (sections 1-24 are working correctly)
         console.log(`DEBUG Section ${sectionNum}: Applying direction logic for "${headerInfo.inspectionDirection}"`);
+        console.log(`DEBUG Section ${sectionNum}: Header upstream: ${headerInfo.upstream}, downstream: ${headerInfo.downstream}`);
+        
         // Based on user requirements:
-        // When inspection direction = "Downstream" → reverse flow (show downstream→upstream)
-        // When inspection direction = "Upstream" → normal flow (show upstream→downstream)
+        // When "downstream" inspection → use "upstream node" as start MH
+        // When "upstream" inspection → use "downstream node" as start MH
         if (headerInfo.inspectionDirection.toLowerCase().includes('downstream')) {
-          // Reverse the flow direction for downstream inspections
-          const temp = upstreamNode;
-          upstreamNode = downstreamNode;
-          downstreamNode = temp;
-          flowDirectionNote = ' (reversed for downstream inspection)';
-          console.log(`DEBUG Section ${sectionNum}: REVERSED flow to ${upstreamNode}→${downstreamNode}`);
+          // For downstream inspections, use upstream node as start MH
+          upstreamNode = headerInfo.upstream;
+          downstreamNode = headerInfo.downstream;
+          flowDirectionNote = ' (downstream inspection: upstream→downstream)';
+          console.log(`DEBUG Section ${sectionNum}: DOWNSTREAM inspection flow ${upstreamNode}→${downstreamNode}`);
         } else if (headerInfo.inspectionDirection.toLowerCase().includes('upstream')) {
-          // Keep normal flow for upstream inspections
-          flowDirectionNote = ' (normal upstream inspection)';
-          console.log(`DEBUG Section ${sectionNum}: KEPT normal flow ${upstreamNode}→${downstreamNode}`);
+          // For upstream inspections, use downstream node as start MH  
+          upstreamNode = headerInfo.downstream;
+          downstreamNode = headerInfo.upstream;
+          flowDirectionNote = ' (upstream inspection: downstream→upstream)';
+          console.log(`DEBUG Section ${sectionNum}: UPSTREAM inspection flow ${upstreamNode}→${downstreamNode}`);
         }
+      } else if (headerInfo && headerInfo.inspectionDirection && sectionNum <= 24) {
+        console.log(`DEBUG Section ${sectionNum}: PROTECTED - not applying header logic to sections 1-24`);
+        flowDirectionNote = ' (protected section 1-24)';
       } else {
         // Fallback logic for sections without inspection direction data
         // Pattern recognition: If we see "Main Run → RE" pattern, it should be "RE → Main Run"
@@ -150,6 +157,23 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       
       console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${flowDirectionNote}`);
       console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
+
+      // Skip updating sections 1-24 if they already exist (protect from reprocessing changes)
+      if (sectionNum <= 24) {
+        console.log(`DEBUG: Checking if section ${sectionNum} already exists in database...`);
+        // For sections 1-24, only add if not already in database
+        const existingSection = await db.query.sectionInspections.findFirst({
+          where: and(
+            eq(sectionInspections.fileUploadId, fileUploadId),
+            eq(sectionInspections.itemNo, sectionNum)
+          )
+        });
+        
+        if (existingSection) {
+          console.log(`DEBUG: Section ${sectionNum} already exists - SKIPPING to protect sections 1-24`);
+          continue;
+        }
+      }
 
       sections.push({
         fileUploadId: fileUploadId,
