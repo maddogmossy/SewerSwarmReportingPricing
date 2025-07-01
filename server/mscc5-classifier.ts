@@ -139,6 +139,15 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     recommended_action: 'Immediate patch repair or joint replacement',
     action_type: 1
   },
+  JDM: {
+    code: 'JDM',
+    description: 'Joint displacement - major',
+    type: 'structural',
+    default_grade: 4,
+    risk: 'Major joint misalignment causing structural instability and infiltration',
+    recommended_action: 'Immediate joint repair or pipe realignment',
+    action_type: 1
+  },
   SA: {
     code: 'S/A',
     description: 'Service connection',
@@ -967,7 +976,10 @@ export class MSCC5Classifier {
       defectCode = 'RI';
     } else if (normalizedText.includes('joint')) {
       if (normalizedText.includes('displacement')) {
-        if (normalizedText.includes('large') || normalizedText.includes('major')) {
+        if (normalizedText.includes('major') || normalizedText.includes('jdm')) {
+          detectedDefect = MSCC5_DEFECTS.JDM;
+          defectCode = 'JDM';
+        } else if (normalizedText.includes('large')) {
           detectedDefect = MSCC5_DEFECTS.JDL;
           defectCode = 'JDL';
         } else {
@@ -1103,11 +1115,15 @@ export class MSCC5Classifier {
     // Generate sector-specific recommendations
     let sectorSpecificRecommendation = finalRecommendations; // Use finalRecommendations which includes S/A analysis
     
-    if (sector === 'construction' && defectCode === 'OJM') {
-      // Check for nearby connections for OJM defects
+    if (sector === 'construction' && (defectCode === 'OJM' || defectCode === 'JDM')) {
+      // Check for nearby connections for OJM/JDM defects
       const connectionAnalysis = this.analyzeNearbyConnections(defectText);
       
-      sectorSpecificRecommendation = 'Immediate patch repair required - first consideration for construction compliance. Joint replacement alternative if patch ineffective';
+      if (defectCode === 'JDM') {
+        sectorSpecificRecommendation = 'First consideration should be given to a patch repair for joint displacement. Joint realignment or replacement alternative if patch ineffective';
+      } else {
+        sectorSpecificRecommendation = 'Immediate patch repair required - first consideration for construction compliance. Joint replacement alternative if patch ineffective';
+      }
       
       if (connectionAnalysis.recommendReopening) {
         sectorSpecificRecommendation += '. Consideration needs to be given to reopen the JN or CN due to proximity of connections';

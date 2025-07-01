@@ -425,7 +425,7 @@ export default function Dashboard() {
         }
         
         // Sections with complex defects requiring pricing configuration  
-        const sectionsNeedingPricing = [25, 31, 47, 52, 57, 72, 73, 74];
+        const sectionsNeedingPricing = [25, 31, 47, 52, 57, 72, 73, 74, 75];
         if (sectionsNeedingPricing.includes(section.itemNo)) {
           return (
             <div className="text-xs text-orange-600 font-medium">
