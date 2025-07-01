@@ -370,11 +370,11 @@ export default function Dashboard() {
         if (section.itemNo === 75) {
           return (
             <div className="flex items-center gap-0.5">
-              <span className="px-1 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">
+              <span className="px-1 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800">
                 1
               </span>
               <span className="text-xs">/</span>
-              <span className="px-1 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800">
+              <span className="px-1 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">
                 3
               </span>
             </div>
