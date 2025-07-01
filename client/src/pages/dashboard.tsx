@@ -467,7 +467,7 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // Fetch real section inspection data from database with fresh query
+  // Fetch real section inspection data from database - ALWAYS 3588 DATA
   const { data: sectionData = [], isLoading: sectionsLoading, refetch: refetchSections } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
