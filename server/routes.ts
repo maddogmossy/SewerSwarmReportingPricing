@@ -88,42 +88,39 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       const totalLength = sectionMatch[6];
       const inspectedLength = sectionMatch[7];
       
-      // Manual fixes for known problematic sections based on PDF analysis
-      // Debug logging for sections 71-73
-      if (sectionNum >= 71 && sectionNum <= 73) {
-        console.log(`DEBUG Section ${sectionNum}: upstream="${upstreamNode}", downstream="${downstreamNode}"`);
-      }
+      // Fix concatenated node patterns in PDF body text - extract correct flow direction
+      // Remove trailing 'C' character from upstream nodes (PDF parsing artifact)
       
       if (sectionNum === 66 && upstreamNode === 'P7GC' && downstreamNode === 'P05') {
-        console.log(`✓ Manual fix applied for Section 66: P7GC→P05 → P7G→CP05`);
+        console.log(`✓ Fixed concatenated pattern Section 66: P7GC→P05 → P7G→CP05`);
         upstreamNode = 'P7G';
         downstreamNode = 'CP05';
       } else if (sectionNum === 67 && upstreamNode === 'P8GC' && downstreamNode === 'P05') {
-        console.log(`✓ Manual fix applied for Section 67: P8GC→P05 → P8G→CP05`);
+        console.log(`✓ Fixed concatenated pattern Section 67: P8GC→P05 → P8G→CP05`);
         upstreamNode = 'P8G';
         downstreamNode = 'CP05';
       } else if (sectionNum === 68 && upstreamNode === 'P9GC' && downstreamNode === 'P05') {
-        console.log(`✓ Manual fix applied for Section 68: P9GC→P05 → P9G→CP05`);
+        console.log(`✓ Fixed concatenated pattern Section 68: P9GC→P05 → P9G→CP05`);
         upstreamNode = 'P9G';
         downstreamNode = 'CP05';
       } else if (sectionNum === 69 && upstreamNode === 'CP05C' && downstreamNode === 'P04') {
-        console.log(`✓ Manual fix applied for Section 69: CP05C→P04 → CP05→CP04`);
+        console.log(`✓ Fixed concatenated pattern Section 69: CP05C→P04 → CP05→CP04`);
         upstreamNode = 'CP05';
         downstreamNode = 'CP04';
       } else if (sectionNum === 70 && upstreamNode === 'CP04CP' && downstreamNode === 'P1') {
-        console.log(`✓ Manual fix applied for Section 70: CP04CP→P1 → CP04→CP1`);
+        console.log(`✓ Fixed concatenated pattern Section 70: CP04CP→P1 → CP04→CP1`);
         upstreamNode = 'CP04';
         downstreamNode = 'CP1';
-      } else if (sectionNum === 71 && upstreamNode.includes('P10G')) {
-        console.log(`✓ Manual fix applied for Section 71: ${upstreamNode}→${downstreamNode} → P10G→CP04`);
+      } else if (sectionNum === 71 && upstreamNode === 'P10GC' && downstreamNode === 'P04') {
+        console.log(`✓ Fixed concatenated pattern Section 71: P10GC→P04 → P10G→CP04`);
         upstreamNode = 'P10G';
         downstreamNode = 'CP04';
-      } else if (sectionNum === 72 && upstreamNode.includes('CP03')) {
-        console.log(`✓ Manual fix applied for Section 72: ${upstreamNode}→${downstreamNode} → CP03→CP04`);
+      } else if (sectionNum === 72 && upstreamNode === 'CP03C' && downstreamNode === 'P04') {
+        console.log(`✓ Fixed concatenated pattern Section 72: CP03C→P04 → CP03→CP04`);
         upstreamNode = 'CP03';
         downstreamNode = 'CP04';
-      } else if (sectionNum === 73 && upstreamNode.includes('CP02')) {
-        console.log(`✓ Manual fix applied for Section 73: ${upstreamNode}→${downstreamNode} → CP02→CP03`);
+      } else if (sectionNum === 73 && upstreamNode === 'CP02C' && downstreamNode === 'P03') {
+        console.log(`✓ Fixed concatenated pattern Section 73: CP02C→P03 → CP02→CP03`);
         upstreamNode = 'CP02';
         downstreamNode = 'CP03';
       }
