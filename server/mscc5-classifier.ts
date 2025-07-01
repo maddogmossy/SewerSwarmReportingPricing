@@ -399,7 +399,7 @@ export class MSCC5Classifier {
     }
     
     // Define observation codes that are NOT defects (just survey observations)
-    const observationCodes = ['LL', 'REM', 'MCPP', 'REST', 'BEND', 'WL'];
+    const observationCodes = ['LL', 'REM', 'MCPP', 'REST', 'BEND', 'WL', 'RE', 'BRF', 'JN', 'LR'];
     
     // Check if defectText contains only observation codes (not actual defects)
     const containsOnlyObservations = this.containsOnlyObservationCodes(defectText, observationCodes);
