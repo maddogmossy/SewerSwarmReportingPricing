@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { Trash2, Edit, Plus, Settings } from "lucide-react";
-import { useLocation } from "wouter";
+import { ArrowLeft, Settings } from "lucide-react";
+import { useLocation, Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 
 interface SectorStandard {
@@ -23,24 +19,12 @@ interface SectorStandard {
 
 export function StandardsConfig() {
   const [location] = useLocation();
-  const { toast } = useToast();
   const [standards, setStandards] = useState<SectorStandard[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingStandard, setEditingStandard] = useState<SectorStandard | null>(null);
-  const [showForm, setShowForm] = useState(false);
   
   // Extract sector from URL parameter
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const selectedSector = urlParams.get('sector') || '';
-  
-  const [formData, setFormData] = useState({
-    sector: selectedSector,
-    standardName: '',
-    bellyThreshold: 20,
-    description: '',
-    authority: '',
-    referenceDocument: ''
-  });
 
   const sectorDisplayNames = {
     utilities: 'Utilities',
@@ -55,106 +39,17 @@ export function StandardsConfig() {
     fetchStandards();
   }, []);
 
-  useEffect(() => {
-    // Auto-select sector from URL
-    if (selectedSector) {
-      setFormData(prev => ({ ...prev, sector: selectedSector }));
-    }
-  }, [selectedSector]);
-
   const fetchStandards = async () => {
     try {
       const response = await apiRequest('GET', '/api/sector-standards') as unknown;
-      // Ensure response is an array
       const standardsData = Array.isArray(response) ? response as SectorStandard[] : [];
       setStandards(standardsData);
     } catch (error) {
       console.error('Error fetching standards:', error);
-      setStandards([]); // Set empty array on error
-      toast({
-        title: "Error",
-        description: "Failed to fetch standards",
-        variant: "destructive",
-      });
+      setStandards([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      if (editingStandard) {
-        await apiRequest('PUT', `/api/sector-standards/${editingStandard.id}`, formData);
-        toast({
-          title: "Success",
-          description: "Standard updated successfully",
-        });
-      } else {
-        await apiRequest('POST', '/api/sector-standards', formData);
-        toast({
-          title: "Success", 
-          description: "Standard created successfully",
-        });
-      }
-      
-      fetchStandards();
-      resetForm();
-    } catch (error) {
-      console.error('Error saving standard:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save standard",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this standard?')) return;
-    
-    try {
-      await apiRequest('DELETE', `/api/sector-standards/${id}`);
-      toast({
-        title: "Success",
-        description: "Standard deleted successfully",
-      });
-      fetchStandards();
-    } catch (error) {
-      console.error('Error deleting standard:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete standard",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      sector: selectedSector,
-      standardName: '',
-      bellyThreshold: 20,
-      description: '',
-      authority: '',
-      referenceDocument: ''
-    });
-    setEditingStandard(null);
-    setShowForm(false);
-  };
-
-  const startEdit = (standard: SectorStandard) => {
-    setEditingStandard(standard);
-    setFormData({
-      sector: standard.sector,
-      standardName: standard.standardName,
-      bellyThreshold: standard.bellyThreshold,
-      description: standard.description,
-      authority: standard.authority,
-      referenceDocument: standard.referenceDocument
-    });
-    setShowForm(true);
   };
 
   if (loading) {
@@ -166,50 +61,50 @@ export function StandardsConfig() {
     : (Array.isArray(standards) ? standards : []);
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div className="container mx-auto p-6 max-w-4xl">
       <div className="flex items-center gap-3 mb-6">
+        <Link href="/upload">
+          <Button variant="outline" size="sm">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Upload
+          </Button>
+        </Link>
         <Settings className="h-6 w-6 text-blue-600" />
         <h1 className="text-3xl font-bold">
-          Standards Configuration
+          Water Level Standards
           {selectedSector && ` - ${sectorDisplayNames[selectedSector as keyof typeof sectorDisplayNames]}`}
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Standards List */}
+      <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Current Standards</CardTitle>
+            <CardTitle>Sector-Specific Belly Detection Thresholds</CardTitle>
+            <p className="text-sm text-gray-600">
+              These standards define the water level percentage thresholds for belly detection in each sector.
+              Water levels exceeding these thresholds indicate potential gradient issues requiring attention.
+            </p>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="grid gap-4">
               {filteredStandards.map((standard) => (
-                <div key={standard.id} className="border rounded-lg p-4">
+                <div key={standard.id} className="border rounded-lg p-4 bg-gray-50">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{standard.standardName}</h3>
-                      <p className="text-sm text-gray-600 capitalize">{standard.sector} Sector</p>
-                      <p className="text-sm mt-1">Belly Threshold: {standard.bellyThreshold}%</p>
-                      <p className="text-sm text-gray-700 mt-2">{standard.description}</p>
-                      <p className="text-xs text-gray-500 mt-2">
-                        Authority: {standard.authority} | {standard.referenceDocument}
+                      <div className="flex items-center gap-4 mb-2">
+                        <h3 className="font-semibold text-lg">{standard.standardName}</h3>
+                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                          {standard.bellyThreshold}% threshold
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 capitalize font-medium mb-2">
+                        {standard.sector} Sector
                       </p>
-                    </div>
-                    <div className="flex gap-2 ml-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => startEdit(standard)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(standard.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <p className="text-sm text-gray-700 mb-3">{standard.description}</p>
+                      <div className="text-xs text-gray-500">
+                        <p><strong>Authority:</strong> {standard.authority}</p>
+                        <p><strong>Reference:</strong> {standard.referenceDocument}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -217,120 +112,38 @@ export function StandardsConfig() {
               
               {filteredStandards.length === 0 && (
                 <p className="text-gray-500 text-center py-8">
-                  No standards configured for this sector yet.
+                  No standards found for this sector.
                 </p>
               )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Add/Edit Form */}
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>
-                {editingStandard ? 'Edit Standard' : 'Add New Standard'}
-              </CardTitle>
-              {!showForm && (
-                <Button onClick={() => setShowForm(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Standard
-                </Button>
-              )}
-            </div>
-          </CardHeader>
-          
-          {showForm && (
+        {!selectedSector && (
+          <Card>
+            <CardHeader>
+              <CardTitle>All Sectors Summary</CardTitle>
+            </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="sector">Sector</Label>
-                  <select
-                    id="sector"
-                    value={formData.sector}
-                    onChange={(e) => setFormData(prev => ({ ...prev, sector: e.target.value }))}
-                    className="w-full p-2 border rounded-md"
-                    required
-                  >
-                    <option value="">Select Sector</option>
-                    <option value="utilities">Utilities</option>
-                    <option value="adoption">Adoption</option>
-                    <option value="highways">Highways</option>
-                    <option value="insurance">Insurance</option>
-                    <option value="construction">Construction</option>
-                    <option value="domestic">Domestic</option>
-                  </select>
-                </div>
-
-                <div>
-                  <Label htmlFor="standardName">Standard Name</Label>
-                  <Input
-                    id="standardName"
-                    value={formData.standardName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, standardName: e.target.value }))}
-                    placeholder="e.g., BS EN 1610:2015"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="bellyThreshold">Belly Detection Threshold (%)</Label>
-                  <Input
-                    id="bellyThreshold"
-                    type="number"
-                    min="1"
-                    max="100"
-                    value={formData.bellyThreshold}
-                    onChange={(e) => setFormData(prev => ({ ...prev, bellyThreshold: parseInt(e.target.value) }))}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="authority">Authority</Label>
-                  <Input
-                    id="authority"
-                    value={formData.authority}
-                    onChange={(e) => setFormData(prev => ({ ...prev, authority: e.target.value }))}
-                    placeholder="e.g., BSI, Water UK, WRc"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="referenceDocument">Reference Document</Label>
-                  <Input
-                    id="referenceDocument"
-                    value={formData.referenceDocument}
-                    onChange={(e) => setFormData(prev => ({ ...prev, referenceDocument: e.target.value }))}
-                    placeholder="e.g., BS EN 1610:2015 - Construction and testing of drains and sewers"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Describe the standard and its application..."
-                    required
-                  />
-                </div>
-
-                <div className="flex gap-2 pt-4">
-                  <Button type="submit" className="flex-1">
-                    {editingStandard ? 'Update Standard' : 'Add Standard'}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={resetForm}>
-                    Cancel
-                  </Button>
-                </div>
-              </form>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {Object.entries(sectorDisplayNames).map(([sectorId, displayName]) => {
+                  const sectorStandard = standards.find(s => s.sector === sectorId);
+                  return (
+                    <div key={sectorId} className="text-center p-3 border rounded-lg">
+                      <h4 className="font-medium">{displayName}</h4>
+                      <p className="text-2xl font-bold text-blue-600">
+                        {sectorStandard?.bellyThreshold || 'N/A'}%
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {sectorStandard?.standardName || 'No standard'}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
             </CardContent>
-          )}
-        </Card>
+          </Card>
+        )}
       </div>
     </div>
   );
