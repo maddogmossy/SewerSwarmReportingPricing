@@ -277,6 +277,15 @@ export default function Dashboard() {
   // Column visibility state with localStorage persistence
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
   const [showColumnSelector, setShowColumnSelector] = useState(false);
+  
+  // Filter state
+  const [filters, setFilters] = useState({
+    severityGrade: '',
+    adoptable: '',
+    pipeSize: '',
+    pipeMaterial: ''
+  });
+  const [showFilters, setShowFilters] = useState(false);
 
   // Load hidden columns from localStorage on component mount
   useEffect(() => {
@@ -507,9 +516,18 @@ export default function Dashboard() {
   });
 
   // DEDUPLICATE: Remove any duplicate sections by item_no (client-side safety)
-  const sectionData = rawSectionData.filter((section, index, arr) => 
+  const rawFilteredData = rawSectionData.filter((section, index, arr) => 
     arr.findIndex(s => s.itemNo === section.itemNo) === index
   );
+
+  // Apply filters to section data
+  const sectionData = rawFilteredData.filter(section => {
+    if (filters.severityGrade && section.severityGrade !== filters.severityGrade) return false;
+    if (filters.adoptable && section.adoptable !== filters.adoptable) return false;
+    if (filters.pipeSize && section.pipeSize !== filters.pipeSize) return false;
+    if (filters.pipeMaterial && section.pipeMaterial !== filters.pipeMaterial) return false;
+    return true;
+  });
   
   // Remove debugging code - data is now clean for fresh uploads
 
@@ -901,6 +919,16 @@ export default function Dashboard() {
                       disabled={hiddenColumns.size === 0}
                     >
                       Unhide All
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="text-xs"
+                    >
+                      <Filter className="h-4 w-4 mr-1" />
+                      {showFilters ? 'Hide Filters' : 'Filter Data'}
                     </Button>
                   </div>
                 </div>
