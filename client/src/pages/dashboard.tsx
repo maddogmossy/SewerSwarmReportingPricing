@@ -777,52 +777,7 @@ export default function Dashboard() {
             </Button>
           </Link>
           <div className="ml-auto flex gap-2">
-            {currentUpload && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={async () => {
-                  try {
-                    const result = await apiRequest("POST", `/api/uploads/${currentUpload.id}/generate-all-sections`);
-                    toast({
-                      title: "Reprocessing Started",
-                      description: `Extracting all sections from ${currentUpload.fileName}`,
-                    });
-                    // Refresh after a delay to allow processing
-                    setTimeout(() => {
-                      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-                      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
-                      queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-                      window.location.reload();
-                    }, 2000);
-                  } catch (error) {
-                    toast({
-                      title: "Reprocessing Failed",
-                      description: "Failed to reprocess PDF file",
-                      variant: "destructive",
-                    });
-                  }
-                }}
-              >
-                <Zap className="h-4 w-4 mr-2 text-purple-600" />
-                Reprocess PDF
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
-                refetchSections();
-                toast({
-                  title: "Data Refreshed",
-                  description: "Section inspection data has been reloaded with latest changes",
-                });
-              }}
-            >
-              <RefreshCw className="h-4 w-4 mr-2 text-blue-600" />
-              Refresh Data
-            </Button>
+
             <Button
               variant="outline"
               size="sm"
@@ -896,15 +851,7 @@ export default function Dashboard() {
                     <CardTitle className="text-lg">Section Inspection Data ({sectionData.length} Sections)</CardTitle>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => window.location.reload()}
-                      className="text-xs"
-                    >
-                      <RefreshCw className="h-3 w-3 mr-1" />
-                      Refresh Page
-                    </Button>
+
                     <Button
                       variant="outline"
                       size="sm"
