@@ -76,21 +76,32 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     
+    // Debug specific sections 66-69, 71-73
+    const sectionMatch66to73 = line.match(/^(66|67|68|69|71|72|73)/);
+    if (sectionMatch66to73) {
+      console.log(`🔍 Checking Section ${sectionMatch66to73[1]}: ${line.substring(0, 80)}...`);
+    }
+    
     // Skip header format lines that start with concatenated numbers (e.g., "6608/03/23", "666621/03/23")
     // These are duplicate header entries, not authentic section data
     if (line.match(/^\d{4,}/)) {
+      if (sectionMatch66to73) {
+        console.log(`❌ Skipping header format: ${line.substring(0, 50)}...`);
+      }
       continue;
     }
     
     // Skip header metadata lines that don't contain pipe specifications
     if (line.includes('Not Specified') || line.includes('No Rain Or Snow') || line.includes('Upstream') || line.includes('UpstreamCP')) {
+      if (sectionMatch66to73) {
+        console.log(`❌ Skipping metadata: ${line.substring(0, 50)}...`);
+      }
       continue;
     }
     
     // Match authentic Nine Elms Park section format with various node types
-    // Examples: "1RE2Main Run...", "23POP UP 1SW09...", "66P7GCP05..." (concatenated), "28FW02FW03..."
-    // Handle both normal and concatenated patterns
-    const sectionMatch = line.match(/^(\d+)([A-Z0-9\s]+)(\d{2}\/\d{2}\/\d{4}).*?(Polyvinyl chloride|Polyethylene|Concrete|Polypropylene)([\d.]+)\s*m([\d.]+)\s*m/);
+    // Examples: "1RE2Main Run...", "23POP UP 1SW09...", "24SW10SW01...", "28FW02FW03..."
+    const sectionMatch = line.match(/^(\d+)(RE\w*|POP UP \d+|SW\w*|FW\w*|CP\w*|P\w*|S\w*)(Main Run|FW\w*|SW\w*|CP\w*|P\w*|S\w*|EXMH\w*)(\d{2}\/\d{2}\/\d{4}).*?(Polyvinyl chloride|Polyethylene|Concrete|Polypropylene)([\d.]+)\s*m([\d.]+)\s*m/);
     
     if (sectionMatch) {
       const sectionNum = parseInt(sectionMatch[1]);
