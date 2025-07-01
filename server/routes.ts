@@ -206,13 +206,16 @@ export async function registerRoutes(app: Express) {
           
           console.log(`Extracted ${sections.length} authentic sections from PDF`);
           
-          // Insert all extracted sections
+          // Insert all extracted sections OR require manual verification
           if (sections.length > 0) {
             for (const section of sections) {
               await db.insert(sectionInspections).values(section);
             }
+            console.log(`✓ Successfully extracted ${sections.length} authentic sections from PDF`);
           } else {
-            console.log("No sections extracted - this should not happen with authentic PDF");
+            console.log("❌ PDF extraction returned 0 sections - manual data entry required");
+            console.log("❌ NEVER generating synthetic data - authentic manhole references required");
+            // Do not insert any synthetic data - require authentic PDF parsing or manual entry
           }
           
           console.log(`Extracted ${sections.length} sections from PDF`);
