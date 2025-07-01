@@ -448,6 +448,7 @@ export class MSCC5Classifier {
   static analyzeServiceConnection(defectText: string): {
     hasServiceConnection: boolean;
     isNotConnected: boolean;
+    hasBungInLine: boolean;
     connectionDetails: string;
     requiresContractorConfirmation: boolean;
     recommendations: string;
@@ -455,11 +456,15 @@ export class MSCC5Classifier {
     const upperText = defectText.toUpperCase();
     const hasServiceConnection = upperText.includes('S/A') || upperText.includes('SERVICE CONNECTION');
     const isNotConnected = upperText.includes('NO CONNECTED') || upperText.includes('NOT CONNECTED');
+    const hasBungInLine = upperText.includes('BUNG IN LINE') || upperText.includes('BUNG');
     
     let recommendations = '';
     let requiresContractorConfirmation = false;
     
-    if (hasServiceConnection && isNotConnected) {
+    if (hasServiceConnection && hasBungInLine) {
+      requiresContractorConfirmation = true;
+      recommendations = 'Contractor to confirm the bung has been removed and requires cleansing and survey once removed';
+    } else if (hasServiceConnection && isNotConnected) {
       requiresContractorConfirmation = true;
       recommendations = 'Contractor to confirm this has been connected and a cleanse and resurvey is required';
     } else if (hasServiceConnection) {
@@ -469,6 +474,7 @@ export class MSCC5Classifier {
     return {
       hasServiceConnection,
       isNotConnected,
+      hasBungInLine,
       connectionDetails: hasServiceConnection ? defectText : '',
       requiresContractorConfirmation,
       recommendations
