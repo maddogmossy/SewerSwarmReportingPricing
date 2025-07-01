@@ -337,6 +337,59 @@ export class MSCC5Classifier {
   }
 
   /**
+   * Analyze high water level percentages that indicate downstream blockages
+   */
+  static analyzeHighWaterLevels(defectText: string): {
+    hasHighWaterLevels: boolean;
+    waterLevelObservations: string[];
+    maxPercentage: number;
+    requiresAction: boolean;
+    recommendations: string;
+  } {
+    const waterLevelPattern = /WL\s+([\d.]+)m.*?(\d+)%/gi;
+    const waterLevels: { meterage: number; percentage: number; observation: string }[] = [];
+    
+    let match;
+    while ((match = waterLevelPattern.exec(defectText)) !== null) {
+      const meterage = parseFloat(match[1]);
+      const percentage = parseInt(match[2]);
+      const observation = `WL ${percentage}%`;
+      waterLevels.push({ meterage, percentage, observation });
+    }
+    
+    // Also check for standalone percentage patterns like "WL 50%", "WL 70%"
+    const standalonePattern = /WL\s+(\d+)%/gi;
+    let standaloneMatch;
+    while ((standaloneMatch = standalonePattern.exec(defectText)) !== null) {
+      const percentage = parseInt(standaloneMatch[1]);
+      const observation = `WL ${percentage}%`;
+      // Only add if not already captured
+      if (!waterLevels.some(wl => wl.observation === observation)) {
+        waterLevels.push({ meterage: 0, percentage, observation });
+      }
+    }
+    
+    const maxPercentage = waterLevels.length > 0 ? Math.max(...waterLevels.map(wl => wl.percentage)) : 0;
+    const hasHighWaterLevels = waterLevels.length > 0 && maxPercentage >= 40; // 40%+ indicates significant issue
+    const requiresAction = maxPercentage >= 50; // 50%+ requires immediate action
+    
+    let recommendations = "";
+    if (requiresAction) {
+      recommendations = "Cleanse and survey to investigate the high water levels, consideration should be given to downstream access";
+    } else if (hasHighWaterLevels) {
+      recommendations = "Monitor water levels and consider downstream investigation";
+    }
+    
+    return {
+      hasHighWaterLevels,
+      waterLevelObservations: waterLevels.map(wl => wl.observation),
+      maxPercentage,
+      requiresAction,
+      recommendations
+    };
+  }
+
+  /**
    * Check if defect text contains only observation codes (not actual defects)
    */
   static containsOnlyObservationCodes(defectText: string, observationCodes: string[]): boolean {
@@ -557,8 +610,33 @@ export class MSCC5Classifier {
     const containsOnlyObservations = this.containsOnlyObservationCodes(defectText, observationCodes);
     
     if (containsOnlyObservations) {
+      // Check for high water level percentages that indicate downstream blockages
+      const highWaterAnalysis = this.analyzeHighWaterLevels(defectText);
+      
       // Check for belly condition in water level observations
       const bellyAnalysis = await this.analyzeBellyCondition(defectText, sector);
+      
+      // If high water levels require action, treat as service defect
+      if (highWaterAnalysis.requiresAction) {
+        const srmGrading = SRM_SCORING.service["3"] || {
+          description: "Moderate service defects",
+          criteria: "High water levels indicating downstream blockage",
+          action_required: "Cleansing and investigation required",
+          adoptable: true
+        };
+        
+        return {
+          defectCode: 'WL',
+          defectDescription: highWaterAnalysis.waterLevelObservations.join(', '),
+          severityGrade: 3,
+          defectType: 'service',
+          recommendations: highWaterAnalysis.recommendations,
+          riskAssessment: `High water levels detected (${highWaterAnalysis.maxPercentage}%) suggesting downstream blockage`,
+          adoptable: 'Yes',
+          estimatedCost: '£0',
+          srmGrading
+        };
+      }
       
       const srmGrading = SRM_SCORING.structural["0"] || {
         description: "No action required",

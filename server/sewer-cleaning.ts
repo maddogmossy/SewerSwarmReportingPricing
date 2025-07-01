@@ -50,14 +50,17 @@ export const SEWER_CLEANING_MANUAL: Record<string, SewerCleaningData> = {
     action_type: 4
   },
   WL: {
-    description: "Water level above normal",
+    description: "Water level above normal (indicating potential downstream blockage)",
     recommended_methods: [
-      "Check downstream manholes for surcharge",
-      "Jet or vacuum to restore normal flow",
-      "Investigate pipe gradient issues"
+      "Cleanse and survey to investigate the high water levels",
+      "Check downstream manholes for surcharge or blockage",
+      "Consideration should be given to downstream access",
+      "High-pressure jetting to clear potential downstream obstruction",
+      "CCTV survey downstream sections to identify blockage location",
+      "Monitor water levels post-cleaning to confirm effectiveness"
     ],
-    cleaning_frequency: "Event-driven",
-    action_type: 1
+    cleaning_frequency: "Immediate for >50% water levels, event-driven for others",
+    action_type: 3
   },
   BLO: {
     description: "Complete blockage",
