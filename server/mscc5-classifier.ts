@@ -440,14 +440,19 @@ export class MSCC5Classifier {
     observationDetails: string;
     requiresCleanseResurvey: boolean;
     recommendations: string;
+    isObservationOnly: boolean;
   } {
     const upperText = defectText.toUpperCase();
     const hasNoCoding = upperText.includes('NO CODING PRESENT') || upperText.includes('NO CODING');
     
     let recommendations = '';
     let requiresCleanseResurvey = false;
+    let isObservationOnly = false;
     
     if (hasNoCoding) {
+      // According to MSCC5 standards, "no coding present" is an observation limitation,
+      // not a defect. It should be Grade 0 since no defect classification was possible.
+      isObservationOnly = true;
       requiresCleanseResurvey = true;
       recommendations = 'We would recommend cleansing and resurveying this section';
     }
@@ -456,7 +461,8 @@ export class MSCC5Classifier {
       hasNoCoding,
       observationDetails: hasNoCoding ? defectText : '',
       requiresCleanseResurvey,
-      recommendations
+      recommendations,
+      isObservationOnly
     };
   }
 
