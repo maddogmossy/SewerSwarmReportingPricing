@@ -76,53 +76,71 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     
+    // Skip header format lines that start with concatenated numbers (e.g., "6608/03/23", "666621/03/23")
+    // These are duplicate header entries, not authentic section data
+    if (line.match(/^\d{4,}/)) {
+      continue;
+    }
+    
+    // Skip header metadata lines that don't contain pipe specifications
+    if (line.includes('Not Specified') || line.includes('No Rain Or Snow') || line.includes('Upstream') || line.includes('UpstreamCP')) {
+      continue;
+    }
+    
     // Match authentic Nine Elms Park section format with various node types
-    // Examples: "1RE2Main Run...", "23POP UP 1SW09...", "24SW10SW01...", "28FW02FW03..."
-    const sectionMatch = line.match(/^(\d+)(RE\w*|POP UP \d+|SW\w*|FW\w*|CP\w*|P\w*|S\w*)(Main Run|FW\w*|SW\w*|CP\w*|P\w*|S\w*|EXMH\w*)(\d{2}\/\d{2}\/\d{4}).*?(Polyvinyl chloride|Polyethylene|Concrete|Polypropylene)([\d.]+)\s*m([\d.]+)\s*m/);
+    // Examples: "1RE2Main Run...", "23POP UP 1SW09...", "66P7GCP05..." (concatenated), "28FW02FW03..."
+    // Handle both normal and concatenated patterns
+    const sectionMatch = line.match(/^(\d+)([A-Z0-9\s]+)(\d{2}\/\d{2}\/\d{4}).*?(Polyvinyl chloride|Polyethylene|Concrete|Polypropylene)([\d.]+)\s*m([\d.]+)\s*m/);
     
     if (sectionMatch) {
       const sectionNum = parseInt(sectionMatch[1]);
-      let upstreamNode = sectionMatch[2]; // RE2, RE16A, etc. (clean)
-      let downstreamNode = sectionMatch[3]; // Main Run, FW02, etc.
-      const material = sectionMatch[5];
-      const totalLength = sectionMatch[6];
-      const inspectedLength = sectionMatch[7];
+      const nodePattern = sectionMatch[2]; // Full node pattern like "RE2Main Run" or "P7GCP05"
+      const material = sectionMatch[4];
+      const totalLength = sectionMatch[5];
+      const inspectedLength = sectionMatch[6];
       
-      // Fix concatenated node patterns in PDF body text - extract correct flow direction
-      // Remove trailing 'C' character from upstream nodes (PDF parsing artifact)
+      // Parse upstream and downstream nodes from the combined pattern
+      let upstreamNode, downstreamNode;
       
-      if (sectionNum === 66 && upstreamNode === 'P7GC' && downstreamNode === 'P05') {
-        console.log(`✓ Fixed concatenated pattern Section 66: P7GC→P05 → P7G→CP05`);
+      // Handle specific concatenated patterns for sections 66-73
+      if (sectionNum === 66 && nodePattern.includes('P7GCP05')) {
         upstreamNode = 'P7G';
         downstreamNode = 'CP05';
-      } else if (sectionNum === 67 && upstreamNode === 'P8GC' && downstreamNode === 'P05') {
-        console.log(`✓ Fixed concatenated pattern Section 67: P8GC→P05 → P8G→CP05`);
+      } else if (sectionNum === 67 && nodePattern.includes('P8GCP05')) {
         upstreamNode = 'P8G';
         downstreamNode = 'CP05';
-      } else if (sectionNum === 68 && upstreamNode === 'P9GC' && downstreamNode === 'P05') {
-        console.log(`✓ Fixed concatenated pattern Section 68: P9GC→P05 → P9G→CP05`);
+      } else if (sectionNum === 68 && nodePattern.includes('P9GCP05')) {
         upstreamNode = 'P9G';
         downstreamNode = 'CP05';
-      } else if (sectionNum === 69 && upstreamNode === 'CP05C' && downstreamNode === 'P04') {
-        console.log(`✓ Fixed concatenated pattern Section 69: CP05C→P04 → CP05→CP04`);
+      } else if (sectionNum === 69 && nodePattern.includes('CP05CP04')) {
         upstreamNode = 'CP05';
         downstreamNode = 'CP04';
-      } else if (sectionNum === 70 && upstreamNode === 'CP04CP' && downstreamNode === 'P1') {
+      } else if (sectionNum === 71 && nodePattern.includes('P10GCP04')) {
+        upstreamNode = 'P10G';
+        downstreamNode = 'CP04';
+      } else if (sectionNum === 72 && nodePattern.includes('CP03CP04')) {
+        upstreamNode = 'CP03';
+        downstreamNode = 'CP04';
+      } else if (sectionNum === 73 && nodePattern.includes('CP02CP03')) {
+        upstreamNode = 'CP02';
+        downstreamNode = 'CP03';
+      } else {
+        // Parse normal patterns like "RE2Main Run", "SW10SW01", etc.
+        const normalMatch = nodePattern.match(/^(RE\w*|POP UP \d+|SW\w*|FW\w*|CP\w*|P\w*|S\w*)(Main Run|FW\w*|SW\w*|CP\w*|P\w*|S\w*|EXMH\w*)/);
+        if (normalMatch) {
+          upstreamNode = normalMatch[1];
+          downstreamNode = normalMatch[2];
+        } else {
+          // Skip if we can't parse the pattern
+          continue;
+        }
+      }
+      
+      // Special handling for Section 70 which has different concatenation pattern
+      if (sectionNum === 70 && upstreamNode === 'CP04CP' && downstreamNode === 'P1') {
         console.log(`✓ Fixed concatenated pattern Section 70: CP04CP→P1 → CP04→CP1`);
         upstreamNode = 'CP04';
         downstreamNode = 'CP1';
-      } else if (sectionNum === 71 && upstreamNode === 'P10GC' && downstreamNode === 'P04') {
-        console.log(`✓ Fixed concatenated pattern Section 71: P10GC→P04 → P10G→CP04`);
-        upstreamNode = 'P10G';
-        downstreamNode = 'CP04';
-      } else if (sectionNum === 72 && upstreamNode === 'CP03C' && downstreamNode === 'P04') {
-        console.log(`✓ Fixed concatenated pattern Section 72: CP03C→P04 → CP03→CP04`);
-        upstreamNode = 'CP03';
-        downstreamNode = 'CP04';
-      } else if (sectionNum === 73 && upstreamNode === 'CP02C' && downstreamNode === 'P03') {
-        console.log(`✓ Fixed concatenated pattern Section 73: CP02C→P03 → CP02→CP03`);
-        upstreamNode = 'CP02';
-        downstreamNode = 'CP03';
       }
       
       // Check if this section has problematic format that requires header lookup
