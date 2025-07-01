@@ -470,7 +470,7 @@ export default function Dashboard() {
 
   // Fetch real section inspection data from database with fresh query
   const { data: sectionData = [], isLoading: sectionsLoading, refetch: refetchSections } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'fresh'],
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
     staleTime: 0,
   });
@@ -800,10 +800,11 @@ export default function Dashboard() {
               variant="outline"
               size="sm"
               onClick={() => {
+                queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
                 refetchSections();
                 toast({
                   title: "Data Refreshed",
-                  description: "Section inspection data has been reloaded",
+                  description: "Section inspection data has been reloaded with latest changes",
                 });
               }}
             >
