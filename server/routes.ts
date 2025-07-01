@@ -78,7 +78,7 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
     
     // Match authentic Nine Elms Park section format with various node types
     // Examples: "1RE2Main Run...", "23POP UP 1SW09...", "24SW10SW01...", "28FW02FW03..."
-    const sectionMatch = line.match(/^(\d+)(RE\w*|POP UP \d+|SW\w*|FW\w*|CP\w*)(Main Run|FW\w*|SW\w*|CP\w*|EXMH\w*)(\d{2}\/\d{2}\/\d{4}).*?(Polyvinyl chloride|Polyethylene|Concrete|Polypropylene)([\d.]+)\s*m([\d.]+)\s*m/);
+    const sectionMatch = line.match(/^(\d+)(RE\w*|POP UP \d+|SW\w*|FW\w*|CP\w*|P\w*|S\w*)(Main Run|FW\w*|SW\w*|CP\w*|P\w*|S\w*|EXMH\w*)(\d{2}\/\d{2}\/\d{4}).*?(Polyvinyl chloride|Polyethylene|Concrete|Polypropylene)([\d.]+)\s*m([\d.]+)\s*m/);
     
     if (sectionMatch) {
       const sectionNum = parseInt(sectionMatch[1]);
