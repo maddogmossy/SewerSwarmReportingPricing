@@ -415,7 +415,7 @@ export default function Dashboard() {
         }
         
         // Sections that can show "Complete" (sections with manageable defects)
-        const sectionsComplete = [6, 7, 8, 10, 13, 14, 21, 72];
+        const sectionsComplete = [6, 7, 8, 10, 13, 14, 21];
         if (sectionsComplete.includes(section.itemNo)) {
           return (
             <div className="text-xs text-green-600 font-medium">
@@ -425,7 +425,7 @@ export default function Dashboard() {
         }
         
         // Sections with complex defects requiring pricing configuration  
-        const sectionsNeedingPricing = [25, 31, 47, 52, 57];
+        const sectionsNeedingPricing = [25, 31, 47, 52, 57, 72];
         if (sectionsNeedingPricing.includes(section.itemNo)) {
           return (
             <div className="text-xs text-orange-600 font-medium">
@@ -574,8 +574,8 @@ export default function Dashboard() {
         if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
           costValue = 'Complete';
         } else {
-          const sectionsComplete = [6, 7, 8, 10, 13, 14, 21, 72];
-          const sectionsNeedingPricing = [25, 31, 47, 52, 57];
+          const sectionsComplete = [6, 7, 8, 10, 13, 14, 21];
+          const sectionsNeedingPricing = [25, 31, 47, 52, 57, 72];
           
           if (sectionsComplete.includes(section.itemNo)) {
             costValue = 'Complete';
