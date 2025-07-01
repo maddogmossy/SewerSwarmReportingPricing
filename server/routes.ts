@@ -10,7 +10,7 @@ import { fileUploads, users, sectionInspections, equipmentTypes, pricingRules } 
 import { eq, desc, asc } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
-// import pdfParse from "pdf-parse"; // Temporarily disabled due to dependency issues
+import pdfParse from "pdf-parse";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -193,7 +193,6 @@ export async function registerRoutes(app: Express) {
           const fileBuffer = fs.readFileSync(filePath);
           
           console.log("Processing PDF with authentic data extraction...");
-          const pdfParse = require('pdf-parse');
           const pdfData = await pdfParse(fileBuffer);
           
           console.log(`PDF parsed: ${pdfData.numpages} pages, ${pdfData.text.length} characters`);
