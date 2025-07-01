@@ -92,6 +92,8 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       const totalLength = sectionMatch[6];
       const inspectedLength = sectionMatch[7];
       
+      console.log(`DEBUG: Processing Section ${sectionNum}: ${upstreamNode}→${downstreamNode} (before any corrections)`);
+      
       // Manual fixes for known problematic sections based on PDF analysis
       if (sectionNum === 66 && upstreamNode === 'P7GC' && downstreamNode === 'P05') {
         upstreamNode = 'P7G';
