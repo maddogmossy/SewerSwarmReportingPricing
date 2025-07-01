@@ -1047,20 +1047,23 @@ export class MSCC5Classifier {
       const serviceConnectionAnalysis = this.analyzeServiceConnection(defectText);
       
       if (serviceConnectionAnalysis.hasServiceConnection) {
-        const grade = serviceConnectionAnalysis.requiresContractorConfirmation ? 2 : 1;
-        const srmGrading = SRM_SCORING.service[grade.toString()] || SRM_SCORING.service["2"];
+        // S/A service connections are infrastructure features, not defects - Grade 0
+        const srmGrading = SRM_SCORING.structural["0"] || {
+          description: "No action required",
+          criteria: "Pipe observed in acceptable structural and service condition",
+          action_required: "No action required",
+          adoptable: true
+        };
         
         return {
           defectCode: 'S/A',
           defectDescription: serviceConnectionAnalysis.connectionDetails,
-          severityGrade: grade,
+          severityGrade: 0,
           defectType: 'service',
           recommendations: serviceConnectionAnalysis.recommendations,
-          riskAssessment: serviceConnectionAnalysis.isNotConnected ? 
-            'Service connection not connected - contractor confirmation required' : 
-            'Service connection requires verification',
-          adoptable: serviceConnectionAnalysis.requiresContractorConfirmation ? 'Conditional' : 'Yes',
-          estimatedCost: grade === 2 ? '£500-2,000' : '£0-500',
+          riskAssessment: 'Service connection observation - infrastructure feature requiring contractor confirmation',
+          adoptable: 'Yes',
+          estimatedCost: '£0',
           srmGrading
         };
       }
@@ -1084,11 +1087,10 @@ export class MSCC5Classifier {
     
     // Special handling for S/A codes with service connection analysis
     if (defectCode === 'S/A') {
+      // S/A service connections are infrastructure features, not defects - always Grade 0
       const serviceConnectionAnalysis = this.analyzeServiceConnection(defectText);
-      if (serviceConnectionAnalysis.requiresContractorConfirmation) {
-        adjustedGrade = 2; // Increase grade for "No connected" cases
-        finalRecommendations = serviceConnectionAnalysis.recommendations;
-      }
+      adjustedGrade = 0; // S/A codes are always Grade 0 observations
+      finalRecommendations = serviceConnectionAnalysis.recommendations;
     }
     
     if (sector === 'adoption' && detectedDefect.type === 'structural') {
