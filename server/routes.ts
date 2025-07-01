@@ -449,6 +449,93 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Sector Standards endpoints
+  app.get("/api/sector-standards", async (req: Request, res: Response) => {
+    try {
+      const standards = await db.select().from(sectorStandards)
+        .where(eq(sectorStandards.userId, "test-user"))
+        .orderBy(asc(sectorStandards.sector), asc(sectorStandards.standardName));
+      res.json(standards);
+    } catch (error) {
+      console.error("Error fetching sector standards:", error);
+      res.status(500).json({ error: "Failed to fetch sector standards" });
+    }
+  });
+
+  app.post("/api/sector-standards", async (req: Request, res: Response) => {
+    try {
+      const { sector, standardName, bellyThreshold, description, authority, referenceDocument } = req.body;
+      
+      const newStandard = await db.insert(sectorStandards).values({
+        userId: "test-user",
+        sector,
+        standardName,
+        bellyThreshold: parseInt(bellyThreshold),
+        description,
+        authority,
+        referenceDocument,
+      }).returning();
+      
+      res.json(newStandard[0]);
+    } catch (error) {
+      console.error("Error creating sector standard:", error);
+      res.status(500).json({ error: "Failed to create sector standard" });
+    }
+  });
+
+  app.put("/api/sector-standards/:id", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { sector, standardName, bellyThreshold, description, authority, referenceDocument } = req.body;
+      
+      const updatedStandard = await db.update(sectorStandards)
+        .set({
+          sector,
+          standardName,
+          bellyThreshold: parseInt(bellyThreshold),
+          description,
+          authority,
+          referenceDocument,
+          updatedAt: new Date(),
+        })
+        .where(and(eq(sectorStandards.id, parseInt(id)), eq(sectorStandards.userId, "test-user")))
+        .returning();
+      
+      if (updatedStandard.length === 0) {
+        return res.status(404).json({ error: "Sector standard not found" });
+      }
+      
+      res.json(updatedStandard[0]);
+    } catch (error) {
+      console.error("Error updating sector standard:", error);
+      res.status(500).json({ error: "Failed to update sector standard" });
+    }
+  });
+
+  app.delete("/api/sector-standards/:id", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      
+      const deletedStandard = await db.delete(sectorStandards)
+        .where(and(eq(sectorStandards.id, parseInt(id)), eq(sectorStandards.userId, "test-user")))
+        .returning();
+      
+      if (deletedStandard.length === 0) {
+        return res.status(404).json({ error: "Sector standard not found" });
+      }
+      
+      res.json({ message: "Sector standard deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting sector standard:", error);
+      res.status(500).json({ error: "Failed to delete sector standard" });
+    }
+  });
+
+  // Placeholder for defect thresholds
+  app.get("/api/defect-thresholds", async (req: Request, res: Response) => {
+    res.json([]); // Future implementation
+  });
+
   // Auth endpoint
   app.get("/api/auth/user", async (req: Request, res: Response) => {
     res.json({

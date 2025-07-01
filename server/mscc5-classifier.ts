@@ -236,13 +236,13 @@ export class MSCC5Classifier {
   /**
    * Analyze water level patterns for belly detection with sector-specific standards
    */
-  static analyzeBellyCondition(defectText: string, sector: string = 'utilities'): {
+  static async analyzeBellyCondition(defectText: string, sector: string = 'utilities'): Promise<{
     hasBelly: boolean;
     maxWaterLevel: number;
     adoptionFail: boolean;
     bellyObservation: string;
     adoptionRecommendation: string;
-  } {
+  }> {
     const waterLevelPattern = /WL\s+([\d.]+)m.*?(\d+)%/gi;
     const waterLevels: { meterage: number; percentage: number }[] = [];
     
@@ -282,35 +282,34 @@ export class MSCC5Classifier {
       }
     }
     
-    // Sector-specific water level failure thresholds
-    let failureThreshold = 20; // Default OS20x adoption standard
-    let sectorStandard = 'OS20x adoption';
+    // Fetch sector-specific water level failure threshold from database
+    let failureThreshold = 20; // Default fallback
+    let sectorStandard = 'Default standard';
     
-    switch (sector) {
-      case 'adoption':
-        failureThreshold = 20; // OS20x: >20% water level fails adoption
-        sectorStandard = 'OS20x adoption';
-        break;
-      case 'utilities':
-        failureThreshold = 25; // WRc/MSCC5: Higher tolerance for utilities sector
-        sectorStandard = 'WRc/MSCC5';
-        break;
-      case 'highways':
-        failureThreshold = 15; // HADDMS: Stricter for highway drainage
-        sectorStandard = 'HADDMS';
-        break;
-      case 'insurance':
-        failureThreshold = 30; // ABI: Focus on damage assessment, higher tolerance
-        sectorStandard = 'ABI guidelines';
-        break;
-      case 'construction':
-        failureThreshold = 10; // BS EN 1610:2015: Strict for new construction
-        sectorStandard = 'BS EN 1610:2015';
-        break;
-      case 'domestic':
-        failureThreshold = 25; // Trading standards: Similar to utilities
-        sectorStandard = 'Trading Standards';
-        break;
+    try {
+      const { db } = await import('./db');
+      const { sectorStandards } = await import('@shared/schema');
+      const { eq, and } = await import('drizzle-orm');
+      
+      const standards = await db.select().from(sectorStandards)
+        .where(and(eq(sectorStandards.sector, sector), eq(sectorStandards.userId, "test-user")))
+        .limit(1);
+      
+      if (standards.length > 0) {
+        failureThreshold = standards[0].bellyThreshold;
+        sectorStandard = standards[0].standardName;
+      }
+    } catch (error) {
+      console.warn(`Failed to fetch standards for sector ${sector}, using defaults:`, error);
+      // Fallback to hardcoded values if database fails
+      switch (sector) {
+        case 'construction': failureThreshold = 10; sectorStandard = 'BS EN 1610:2015'; break;
+        case 'highways': failureThreshold = 15; sectorStandard = 'HADDMS'; break;
+        case 'adoption': failureThreshold = 20; sectorStandard = 'OS20x adoption'; break;
+        case 'utilities': failureThreshold = 25; sectorStandard = 'WRc/MSCC5'; break;
+        case 'domestic': failureThreshold = 25; sectorStandard = 'Trading Standards'; break;
+        case 'insurance': failureThreshold = 30; sectorStandard = 'ABI guidelines'; break;
+      }
     }
     
     const adoptionFail = maxWaterLevel > failureThreshold;
@@ -501,7 +500,7 @@ export class MSCC5Classifier {
   /**
    * Classify defects based on MSCC5 standards with detailed parsing
    */
-  static classifyDefect(defectText: string, sector: string = 'utilities'): DefectClassificationResult {
+  static async classifyDefect(defectText: string, sector: string = 'utilities'): Promise<DefectClassificationResult> {
     const normalizedText = defectText.toLowerCase();
     
     // =====================================================================
@@ -559,7 +558,7 @@ export class MSCC5Classifier {
     
     if (containsOnlyObservations) {
       // Check for belly condition in water level observations
-      const bellyAnalysis = this.analyzeBellyCondition(defectText, sector);
+      const bellyAnalysis = await this.analyzeBellyCondition(defectText, sector);
       
       const srmGrading = SRM_SCORING.structural["0"] || {
         description: "No action required",
