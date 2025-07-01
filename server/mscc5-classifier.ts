@@ -630,11 +630,12 @@ export class MSCC5Classifier {
           defectDescription: highWaterAnalysis.waterLevelObservations.join(', '),
           severityGrade: 3,
           defectType: 'service',
-          recommendations: highWaterAnalysis.recommendations,
-          riskAssessment: `High water levels detected (${highWaterAnalysis.maxPercentage}%) suggesting downstream blockage`,
+          recommendations: `${highWaterAnalysis.recommendations} (Ref: WRc Sewer Cleaning Manual, MSCC5 Section 6.4.3)`,
+          riskAssessment: `High water levels detected (${highWaterAnalysis.maxPercentage}%) suggesting downstream blockage - exceeds sector threshold for ${sector}`,
           adoptable: 'Yes',
           estimatedCost: '£0',
-          srmGrading
+          srmGrading,
+          cleaningMethods: ["High-pressure jetting to clear potential downstream obstruction", "CCTV survey downstream sections to identify blockage location", "Monitor water levels post-cleaning to confirm effectiveness"]
         };
       }
       
