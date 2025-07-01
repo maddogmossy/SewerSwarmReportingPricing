@@ -64,10 +64,13 @@ export function StandardsConfig() {
 
   const fetchStandards = async () => {
     try {
-      const response = await apiRequest('GET', '/api/sector-standards');
-      setStandards(response as SectorStandard[]);
+      const response = await apiRequest('GET', '/api/sector-standards') as unknown;
+      // Ensure response is an array
+      const standardsData = Array.isArray(response) ? response as SectorStandard[] : [];
+      setStandards(standardsData);
     } catch (error) {
       console.error('Error fetching standards:', error);
+      setStandards([]); // Set empty array on error
       toast({
         title: "Error",
         description: "Failed to fetch standards",
@@ -159,8 +162,8 @@ export function StandardsConfig() {
   }
 
   const filteredStandards = selectedSector 
-    ? standards.filter(s => s.sector === selectedSector)
-    : standards;
+    ? (Array.isArray(standards) ? standards.filter(s => s.sector === selectedSector) : [])
+    : (Array.isArray(standards) ? standards : []);
 
   return (
     <div className="container mx-auto p-6 max-w-6xl">
