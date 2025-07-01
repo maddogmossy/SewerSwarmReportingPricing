@@ -468,11 +468,16 @@ export default function Dashboard() {
     : sectors[0];
 
   // Fetch real section inspection data from database - ALWAYS 3588 DATA
-  const { data: sectionData = [], isLoading: sectionsLoading, refetch: refetchSections } = useQuery<any[]>({
+  const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
     staleTime: 0,
   });
+
+  // DEDUPLICATE: Remove any duplicate sections by item_no (client-side safety)
+  const sectionData = rawSectionData.filter((section, index, arr) => 
+    arr.findIndex(s => s.itemNo === section.itemNo) === index
+  );
 
   // Check if pricing exists for the current sector
   const { data: pricingStatus = { overall: false, surveys: false, cleansing: false, jetting: false } } = useQuery<{ overall: boolean, surveys: boolean, cleansing: boolean, jetting: boolean }>({
