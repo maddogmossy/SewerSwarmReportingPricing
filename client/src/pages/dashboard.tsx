@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { DataIntegrityWarning } from "@/components/data-integrity-warning";
 import * as XLSX from 'xlsx';
 
 import { 
@@ -1235,6 +1236,19 @@ export default function Dashboard() {
               </Link>
             </CardContent>
           </Card>
+        ) : sectionData.length === 0 && currentUpload ? (
+          // Show data integrity warning when upload exists but no authentic data is available
+          <DataIntegrityWarning
+            type="warning"
+            message="No authentic inspection data available for this report."
+            details={[
+              `Report: ${currentUpload.fileName}`,
+              "PDF extraction did not find valid section inspection data",
+              "Synthetic or placeholder data has been blocked for data integrity"
+            ]}
+            showUploadButton={true}
+            onUploadClick={() => window.location.href = '/upload'}
+          />
         ) : (
           <div className="space-y-8">
             {/* Section Inspection Data Table */}

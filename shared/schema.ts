@@ -215,6 +215,33 @@ export const sectorStandards = pgTable("sector_standards", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Repair Methods table for hover-based recommendations
+export const repairMethods = pgTable("repair_methods", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(), // "Patch", "Lining", "Excavation"
+  description: text("description"),
+  category: varchar("category").notNull(), // "structural", "service", "emergency"
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Repair Pricing table for method-specific pricing
+export const repairPricing = pgTable("repair_pricing", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  sector: varchar("sector").notNull(), // utilities, adoption, highways, etc.
+  repairMethodId: integer("repair_method_id").notNull().references(() => repairMethods.id),
+  pipeSize: varchar("pipe_size").notNull(), // "150mm", "225mm", "300mm", etc.
+  depth: varchar("depth"), // "0-1m", "1-2m", "2-3m", etc.
+  description: text("description"), // User's custom description
+  cost: decimal("cost", { precision: 10, scale: 2 }).notNull(),
+  rule: text("rule"), // "Rate based on min of 4 patches"
+  minimumQuantity: integer("minimum_quantity").default(1),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type FileUpload = typeof fileUploads.$inferSelect;
@@ -236,6 +263,11 @@ export type PricingRule = typeof pricingRules.$inferSelect;
 export type InsertPricingRule = typeof pricingRules.$inferInsert;
 export type SectorStandard = typeof sectorStandards.$inferSelect;
 export type InsertSectorStandard = typeof sectorStandards.$inferInsert;
+
+export type RepairMethod = typeof repairMethods.$inferSelect;
+export type InsertRepairMethod = typeof repairMethods.$inferInsert;
+export type RepairPricing = typeof repairPricing.$inferSelect;
+export type InsertRepairPricing = typeof repairPricing.$inferInsert;
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
