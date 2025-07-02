@@ -387,21 +387,21 @@ export default function Dashboard() {
     const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
     
     if (sectionsWithSameItem.length > 1) {
-      // Sort by defects priority: DEG comes after CR, so CR gets "2" and DEG gets "2a"
+      // Sort by defects priority: CR comes first (gets "2"), DEG comes second (gets "2a")
       sectionsWithSameItem.sort((a, b) => {
-        // CR defects come first (get original number), DEG defects come second (get letter suffix)
         const aHasCR = a.defects && a.defects.includes('CR ');
         const bHasCR = b.defects && b.defects.includes('CR ');
         const aHasDEG = a.defects && a.defects.includes('DEG ');
         const bHasDEG = b.defects && b.defects.includes('DEG ');
         
-        if (aHasCR && bHasDEG) return -1; // CR comes before DEG
-        if (aHasDEG && bHasCR) return 1;  // DEG comes after CR
+        // CR defects get priority (show as "2"), DEG defects get letter suffix (show as "2a")
+        if (aHasCR && !bHasCR) return -1; // CR comes first
+        if (!aHasCR && bHasCR) return 1;  // CR comes first
+        if (aHasDEG && !bHasDEG) return 1; // DEG comes second
+        if (!aHasDEG && bHasDEG) return -1; // DEG comes second
         
-        // Fallback to meterage ordering for other cases
-        const lengthA = parseFloat(a.totalLength?.replace('m', '') || '0');
-        const lengthB = parseFloat(b.totalLength?.replace('m', '') || '0');
-        return lengthA - lengthB;
+        // Fallback to ID ordering for identical defect types
+        return a.id - b.id;
       });
       
       // Find the index of this section by using a unique identifier
