@@ -413,21 +413,24 @@ export default function Dashboard() {
         
         if (hasDefects) {
           return (
-            <RepairOptionsPopover
-              sectionData={{
-                pipeSize: section.pipeSize,
-                sector: currentSector.id,
-                recommendations: section.recommendations,
-                defects: section.defects
-              }}
-              onPricingNeeded={(method, pipeSize, sector) => {
-                window.location.href = `/repair-pricing/${sector}?method=${method}&size=${pipeSize}`;
-              }}
-            >
+            <div className="relative group">
               <div className="text-xs max-w-48 cursor-pointer hover:bg-blue-100 hover:border-blue-300 border border-transparent p-2 rounded transition-all duration-200">
                 {section.defects || 'No defects recorded'}
               </div>
-            </RepairOptionsPopover>
+              
+              {/* Simple hover tooltip */}
+              <div className="absolute z-50 invisible group-hover:visible bg-black text-white text-xs rounded p-2 -top-8 left-0 whitespace-nowrap">
+                Click to see repair options
+              </div>
+              
+              {/* Click handler for repair options */}
+              <div 
+                className="absolute inset-0 cursor-pointer"
+                onClick={() => {
+                  window.location.href = `/repair-pricing/${currentSector.id}`;
+                }}
+              />
+            </div>
           );
         } else {
           return (
