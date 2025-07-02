@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import * as XLSX from 'xlsx';
@@ -279,6 +280,8 @@ export default function Dashboard() {
   // Column visibility state with localStorage persistence
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
   const [showColumnSelector, setShowColumnSelector] = useState(false);
+  const [showExportWarning, setShowExportWarning] = useState(false);
+  const [pendingExport, setPendingExport] = useState(false);
   
   // Filter state
   const [filters, setFilters] = useState({
@@ -553,13 +556,18 @@ export default function Dashboard() {
   const exportToExcel = () => {
     if (!sectionData?.length) return;
     
-    // Warn user about hidden columns
+    // Check for hidden columns and show warning dialog
     if (hiddenColumns.size > 0) {
-      const hiddenColumnNames = Array.from(hiddenColumns).join(', ');
-      if (!confirm(`Warning: The following hidden columns will NOT be included in the export:\n\n${hiddenColumnNames}\n\nClick OK to continue with export, or Cancel to go back and unhide columns first.`)) {
-        return;
-      }
+      setShowExportWarning(true);
+      return;
     }
+    
+    // Proceed with export
+    performExport();
+  };
+
+  const performExport = () => {
+    if (!sectionData?.length) return;
     
     // Get visible columns based on hiddenColumns state
     const currentHiddenColumns = hiddenColumns;
@@ -1259,6 +1267,42 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Export Warning Dialog */}
+      <Dialog open={showExportWarning} onOpenChange={setShowExportWarning}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Hidden Columns Warning</DialogTitle>
+            <DialogDescription>
+              The following hidden columns will NOT be included in the export:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <p className="text-sm text-amber-800 font-medium">
+                {Array.from(hiddenColumns).join(', ')}
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowExportWarning(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setShowExportWarning(false);
+                performExport();
+              }}
+              className="bg-amber-600 hover:bg-amber-700"
+            >
+              Export Anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
