@@ -465,6 +465,15 @@ export default function Dashboard() {
           </span>
         );
       case 'cost':
+        // If section has individual defect cost, use it
+        if (section.estimatedCost) {
+          return (
+            <div className="text-xs text-blue-600 font-medium">
+              {section.estimatedCost}
+            </div>
+          );
+        }
+        
         // Check if section has "No action required" in recommendations (Grade 0 sections only)
         if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
           return (
@@ -644,13 +653,63 @@ export default function Dashboard() {
     refetchOnWindowFocus: true, // Refetch when window gains focus
   });
 
+  // Fetch individual defects for multiple defects per section
+  const { data: individualDefects = [], isLoading: defectsLoading } = useQuery<any[]>({
+    queryKey: [`/api/uploads/${currentUpload?.id}/defects`],
+    enabled: !!currentUpload?.id && currentUpload?.status === "completed",
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
   // DEDUPLICATE: Remove any duplicate sections by item_no (client-side safety)
   const rawFilteredData = rawSectionData.filter((section, index, arr) => 
     arr.findIndex(s => s.itemNo === section.itemNo) === index
   );
 
-  // Apply filters to section data
-  const sectionData = rawFilteredData.filter(section => {
+  // Combine sections with individual defects - create multiple rows for sections with multiple defects
+  const expandedSectionData = rawFilteredData.reduce((acc: any[], section: any) => {
+    const sectionDefects = individualDefects.filter(defect => defect.itemNo === section.itemNo);
+    
+    if (sectionDefects.length > 0) {
+      // Create a row for each individual defect
+      sectionDefects.forEach((defect, index) => {
+        acc.push({
+          ...section,
+          defectSequence: defect.defectSequence,
+          defectCode: defect.defectCode,
+          meterage: defect.meterage,
+          percentage: defect.percentage,
+          defects: `${defect.defectCode} ${defect.meterage} (${defect.description})`,
+          severityGrade: defect.mscc5Grade.toString(),
+          recommendations: defect.recommendation,
+          operationType: defect.operationType,
+          estimatedCost: defect.estimatedCost,
+          adoptable: defect.mscc5Grade === 0 ? "Yes" : defect.mscc5Grade <= 2 ? "Conditional" : "No",
+          // Add a unique identifier for React keys
+          rowId: `${section.itemNo}-${defect.defectSequence}`,
+          isMultiDefect: sectionDefects.length > 1,
+          defectIndex: index,
+          totalDefects: sectionDefects.length
+        });
+      });
+    } else {
+      // No individual defects, use the section as-is
+      acc.push({
+        ...section,
+        rowId: `${section.itemNo}-single`,
+        isMultiDefect: false,
+        defectIndex: 0,
+        totalDefects: 1
+      });
+    }
+    
+    return acc;
+  }, []);
+
+  // Apply filters to expanded section data
+  const sectionData = expandedSectionData.filter(section => {
     if (filters.severityGrade && section.severityGrade !== filters.severityGrade) return false;
     if (filters.adoptable.length > 0 && !filters.adoptable.includes(section.adoptable)) return false;
     if (filters.pipeSize && section.pipeSize !== filters.pipeSize) return false;
@@ -1385,7 +1444,7 @@ export default function Dashboard() {
                     </thead>
                     <tbody>
                       {sectionData.map((section, index) => (
-                        <tr key={index} className="hover:bg-slate-50">
+                        <tr key={section.rowId || index} className="hover:bg-slate-50">
                           {columns.map((column) => {
                             if (hiddenColumns.has(column.key)) return null;
                             return (
