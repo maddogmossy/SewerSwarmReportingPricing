@@ -500,9 +500,10 @@ export default function Dashboard() {
   // Get completed uploads for analysis
   const completedUploads = uploads.filter(upload => upload.status === 'completed');
   
-  // Always use most recent completed upload (3588 Nine Elms Park)
-  // Note: Forcing latest report to ensure authentic 3588 data is displayed
-  const currentUpload = completedUploads.sort((a, b) => b.id - a.id)[0]; // Always get most recent (3588)
+  // Get current upload based on reportId parameter or most recent upload
+  const currentUpload = reportId 
+    ? completedUploads.find(upload => upload.id === parseInt(reportId))
+    : completedUploads.sort((a, b) => b.id - a.id)[0]; // Default to most recent if no reportId
   
   // Force clear all cached data for fresh uploads and ensure authentic data
   useEffect(() => {
