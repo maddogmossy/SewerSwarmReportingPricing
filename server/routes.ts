@@ -114,10 +114,8 @@ function getAdoptionInspectionTime(itemNo: number): string {
 }
 
 function getAdoptionMHDepth(itemNo: number, position: 'start' | 'finish'): string {
-  // Adoption sector MH depths (OS20x standards)
-  const baseDepth = position === 'start' ? 1.8 : 2.1;
-  const depth = baseDepth + (itemNo * 0.15);
-  return `${depth.toFixed(1)}m`;
+  // AUTHENTIC DATA ONLY - no synthetic generation
+  return 'no data recorded';
 }
 
 async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promise<any> {
