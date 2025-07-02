@@ -387,10 +387,23 @@ export default function Dashboard() {
     const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
     
     if (sectionsWithSameItem.length > 1) {
+      // Sort by meterage (total_length) to get correct order - lower meterage first
+      sectionsWithSameItem.sort((a, b) => {
+        const lengthA = parseFloat(a.totalLength?.replace('m', '') || '0');
+        const lengthB = parseFloat(b.totalLength?.replace('m', '') || '0');
+        return lengthA - lengthB;
+      });
+      
       // Find the index of this section among sections with the same item number
       const indexInGroup = sectionsWithSameItem.findIndex(s => s.id === section.id);
-      const suffix = String.fromCharCode(97 + indexInGroup); // 97 is 'a' in ASCII
-      return `${currentItemNo}${suffix}`;
+      
+      // First occurrence shows original number (e.g., "2"), subsequent get letters (e.g., "2a", "2b")
+      if (indexInGroup === 0) {
+        return currentItemNo; // First occurrence shows "2"
+      } else {
+        const suffix = String.fromCharCode(96 + indexInGroup); // 96 + 1 = 97 ('a'), 96 + 2 = 98 ('b')
+        return `${currentItemNo}${suffix}`;
+      }
     }
     
     return currentItemNo;
