@@ -516,8 +516,8 @@ export default function Dashboard() {
           return (
             <div className={`text-xs ${costColor} font-medium`} title={
               autoCost.isUnderMinimum 
-                ? `Minimum quantity: ${autoCost.minQuantity}m (Current: ${autoCost.meterage}m) - £${autoCost.unitCost} per repair`
-                : `${autoCost.meterage}m × £${autoCost.unitCost} = £${autoCost.cost.toFixed(2)} (${section.pipeSize})`
+                ? `Minimum quantity: ${autoCost.minQuantity} repairs (Current: ${autoCost.numberOfDefects} repair${autoCost.numberOfDefects !== 1 ? 's' : ''}) - £${autoCost.unitCost} per repair`
+                : `${autoCost.numberOfDefects} repair${autoCost.numberOfDefects !== 1 ? 's' : ''} × £${autoCost.unitCost} = £${autoCost.cost.toFixed(2)} (${section.pipeSize})`
             }>
               £{autoCost.cost.toFixed(2)}
             </div>
@@ -697,11 +697,13 @@ export default function Dashboard() {
       return null;
     }
 
-    // Extract meterage from defects
-    const extractMeterage = (defectsText: string): number => {
+    // Count number of defects (repair locations) in the section
+    const countDefects = (defectsText: string): number => {
       if (!defectsText) return 1;
-      const meterageMatch = defectsText.match(/(\d+\.?\d*)\s*m/);
-      return meterageMatch ? parseFloat(meterageMatch[1]) : 1;
+      
+      // Count comma-separated defects or multiple meterage mentions
+      const defectPatterns = defectsText.match(/\d+\.?\d*\s*m/g);
+      return defectPatterns ? defectPatterns.length : 1;
     };
 
     // Extract pipe size (remove "mm" and convert to number)
@@ -711,7 +713,7 @@ export default function Dashboard() {
       return sizeMatch ? parseInt(sizeMatch[1]) : 150;
     };
 
-    const meterage = extractMeterage(section.defects || "");
+    const numberOfDefects = countDefects(section.defects || "");
     const pipeSize = extractPipeSize(section.pipeSize || "");
     
     // Find matching repair pricing from database
@@ -742,19 +744,20 @@ export default function Dashboard() {
 
     // Use actual pricing from database if found
     let unitCost = 450; // Default fallback to £450 as shown in image
-    let minQuantity = 2; // Default minimum
+    let minQuantity = 2; // Default minimum number of repairs
     
     if (matchingPricing) {
       unitCost = parseFloat(matchingPricing.cost) || 450;
       minQuantity = parseInt(matchingPricing.minQuantity) || 2;
     }
 
-    const totalCost = unitCost * meterage;
-    const isUnderMinimum = meterage < minQuantity;
+    // Total cost = number of defects × cost per repair
+    const totalCost = numberOfDefects * unitCost;
+    const isUnderMinimum = numberOfDefects < minQuantity;
 
     return {
       cost: totalCost,
-      meterage,
+      numberOfDefects,
       minQuantity,
       isUnderMinimum,
       unitCost
