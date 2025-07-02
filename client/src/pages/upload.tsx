@@ -356,7 +356,7 @@ export default function Upload() {
                                 Applicable Standards
                               </h4>
                               <ul className="text-xs text-gray-700 space-y-2">
-                                {standards.map((standard, index) => (
+                                {standards.map((standard: string, index: number) => (
                                   <li key={index} className="flex items-start gap-2">
                                     <span className="font-bold mt-0.5" style={{ color: sectorColor }}>•</span>
                                     <span className="leading-relaxed">{standard}</span>
@@ -401,6 +401,15 @@ export default function Upload() {
                   >
                     Change Sector
                   </Button>
+                </div>
+
+                {/* Project Folder Selection */}
+                <div className="space-y-4">
+                  <FolderSelector
+                    selectedFolderId={selectedFolderId}
+                    onFolderSelect={setSelectedFolderId}
+                    fileName={selectedFile?.name}
+                  />
                 </div>
 
                 {/* File Upload */}

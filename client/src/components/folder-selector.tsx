@@ -46,15 +46,14 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
     }
   }, [extractedAddress, projectNumber, newFolderName, newFolderAddress]);
 
-  const { data: folders, isLoading } = useQuery({
+  const { data: folders = [], isLoading } = useQuery<ProjectFolder[]>({
     queryKey: ["/api/folders"],
-    queryFn: () => apiRequest("GET", "/api/folders"),
   });
 
   const createFolderMutation = useMutation({
     mutationFn: (folderData: { folderName: string; projectAddress: string; projectNumber: string }) =>
       apiRequest("POST", "/api/folders", folderData),
-    onSuccess: (newFolder) => {
+    onSuccess: (newFolder: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
       onFolderSelect(newFolder.id);
       setShowCreateDialog(false);
@@ -178,7 +177,7 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
         </div>
 
         {/* Existing Folders */}
-        {folders?.map((folder: ProjectFolder) => (
+        {folders.map((folder) => (
           <div
             key={folder.id}
             className={`p-2 border rounded cursor-pointer transition-colors group ${
