@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/ui/file-upload";
 import { FolderSelector } from "@/components/folder-selector";
 import { FileUpload as FileUploadType } from "@shared/schema";
-import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House, Settings } from "lucide-react";
+import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House, Settings, Folder, FolderOpen, ChevronRight, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 const sectors = [
@@ -111,6 +111,8 @@ export default function Upload() {
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
+
+
   const [, setLocation] = useLocation();
   const [sectorProfiles, setSectorProfiles] = useState<Record<string, any>>({});
 
@@ -163,6 +165,13 @@ export default function Upload() {
   const { data: folders = [] } = useQuery<any[]>({
     queryKey: ["/api/folders"],
   });
+
+  // Auto-expand folders when they're loaded
+  useEffect(() => {
+    if (folders.length > 0) {
+      setExpandedFolders(new Set(folders.map(f => f.id)));
+    }
+  }, [folders]);
 
   const uploadMutation = useMutation({
     mutationFn: async ({ file, sector, folderId }: { file: File; sector: string; folderId: number | null }) => {
@@ -243,6 +252,34 @@ export default function Upload() {
 
   const handleViewReport = (uploadId: number) => {
     setLocation(`/dashboard?reportId=${uploadId}`);
+  };
+
+  const toggleFolder = (folderId: number) => {
+    setExpandedFolders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(folderId)) {
+        newSet.delete(folderId);
+      } else {
+        newSet.add(folderId);
+      }
+      return newSet;
+    });
+  };
+
+  // Group uploads by folder
+  const groupUploadsByFolder = () => {
+    const grouped: { [key: string]: typeof uploads } = {};
+    
+    uploads.forEach(upload => {
+      const folder = folders.find(f => f.id === upload.folderId);
+      const folderKey = folder ? `${folder.id}` : 'no-folder';
+      if (!grouped[folderKey]) {
+        grouped[folderKey] = [];
+      }
+      grouped[folderKey].push(upload);
+    });
+    
+    return grouped;
   };
 
   const getStatusIcon = (status: string) => {
@@ -469,55 +506,143 @@ export default function Upload() {
               </div>
             ) : (
               <div className="space-y-4">
-                {uploads.map((upload) => (
-                  <div key={upload.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      {getStatusIcon(upload.status || 'pending')}
-                      <div>
-                        <div className="font-medium">{upload.fileName}</div>
-                        <div className="text-sm text-muted-foreground">
-                          Uploaded: {new Date(upload.createdAt || new Date()).toLocaleString()}
-                          {upload.sector && ` • Sector: ${sectors.find(s => s.id === upload.sector)?.name}`}
+                {Object.entries(groupUploadsByFolder()).map(([folderKey, folderUploads]) => {
+                  const folder = folders.find(f => f.id === parseInt(folderKey));
+                  const isExpanded = expandedFolders.has(parseInt(folderKey));
+                  
+                  if (folderKey === 'no-folder') {
+                    // Display uploads without folders directly
+                    return folderUploads.map((upload) => (
+                      <div key={upload.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          {getStatusIcon(upload.status || 'pending')}
+                          <div>
+                            <div className="font-medium">{upload.fileName}</div>
+                            <div className="text-sm text-muted-foreground">
+                              Uploaded: {new Date(upload.createdAt || new Date()).toLocaleString()}
+                              {upload.sector && ` • Sector: ${sectors.find(s => s.id === upload.sector)?.name}`}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Badge className={getStatusColor(upload.status || 'pending')}>
+                            {upload.status || 'pending'}
+                          </Badge>
+                          {upload.status === 'completed' && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleViewReport(upload.id)}
+                              title="View Report in Dashboard"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {upload.reportUrl && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(upload.reportUrl || '#', '_blank')}
+                              title="Download Report"
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteMutation.mutate(upload.id)}
+                            disabled={deleteMutation.isPending}
+                            title="Delete Report"
+                            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Badge className={getStatusColor(upload.status || 'pending')}>
-                        {upload.status || 'pending'}
-                      </Badge>
-                      {upload.status === 'completed' && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleViewReport(upload.id)}
-                          title="View Report in Dashboard"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      )}
-                      {upload.reportUrl && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => window.open(upload.reportUrl || '#', '_blank')}
-                          title="Download Report"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteMutation.mutate(upload.id)}
-                        disabled={deleteMutation.isPending}
-                        title="Delete Report"
-                        className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                    ));
+                  }
+
+                  return (
+                    <div key={folderKey} className="border rounded-lg">
+                      {/* Folder Header */}
+                      <div 
+                        className="flex items-center justify-between p-4 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors"
+                        onClick={() => toggleFolder(parseInt(folderKey))}
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                        <div className="flex items-center gap-3">
+                          {isExpanded ? <FolderOpen className="h-5 w-5 text-blue-600" /> : <Folder className="h-5 w-5 text-blue-600" />}
+                          <div>
+                            <div className="font-medium">{folder?.folderName || `Folder ${folderKey}`}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {folder?.projectAddress && `${folder.projectAddress} • `}
+                              {folderUploads.length} report{folderUploads.length !== 1 ? 's' : ''}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{folderUploads.length}</Badge>
+                          {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        </div>
+                      </div>
+
+                      {/* Folder Contents - Only show when expanded */}
+                      {isExpanded && (
+                        <div className="border-t">
+                          {folderUploads.map((upload) => (
+                            <div key={upload.id} className="flex items-center justify-between p-4 border-b last:border-b-0">
+                              <div className="flex items-center gap-3">
+                                {getStatusIcon(upload.status || 'pending')}
+                                <div>
+                                  <div className="font-medium">{upload.fileName}</div>
+                                  <div className="text-sm text-muted-foreground">
+                                    Uploaded: {new Date(upload.createdAt || new Date()).toLocaleString()}
+                                    {upload.sector && ` • Sector: ${sectors.find(s => s.id === upload.sector)?.name}`}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Badge className={getStatusColor(upload.status || 'pending')}>
+                                  {upload.status || 'pending'}
+                                </Badge>
+                                {upload.status === 'completed' && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleViewReport(upload.id)}
+                                    title="View Report in Dashboard"
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                                )}
+                                {upload.reportUrl && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => window.open(upload.reportUrl || '#', '_blank')}
+                                    title="Download Report"
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                )}
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => deleteMutation.mutate(upload.id)}
+                                  disabled={deleteMutation.isPending}
+                                  title="Delete Report"
+                                  className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
