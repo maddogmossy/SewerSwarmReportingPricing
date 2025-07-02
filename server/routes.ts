@@ -6,7 +6,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { db } from "./db";
-import { fileUploads, users, sectionInspections, equipmentTypes, pricingRules, sectorStandards } from "@shared/schema";
+import { fileUploads, users, sectionInspections, equipmentTypes, pricingRules, sectorStandards, projectFolders } from "@shared/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
@@ -412,6 +412,89 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error("Error deleting upload:", error);
       res.status(500).json({ error: "Failed to delete upload" });
+    }
+  });
+
+  // Project folder management endpoints
+  app.get("/api/folders", async (req: Request, res: Response) => {
+    try {
+      const folders = await db.select().from(projectFolders)
+        .where(eq(projectFolders.userId, "test-user"))
+        .orderBy(desc(projectFolders.updatedAt));
+      res.json(folders);
+    } catch (error) {
+      console.error("Error fetching folders:", error);
+      res.status(500).json({ error: "Failed to fetch folders" });
+    }
+  });
+
+  app.post("/api/folders", async (req: Request, res: Response) => {
+    try {
+      const { folderName, projectAddress, projectNumber } = req.body;
+      
+      const [newFolder] = await db.insert(projectFolders).values({
+        userId: "test-user",
+        folderName,
+        projectAddress,
+        projectNumber,
+      }).returning();
+      
+      res.json(newFolder);
+    } catch (error) {
+      console.error("Error creating folder:", error);
+      res.status(500).json({ error: "Failed to create folder" });
+    }
+  });
+
+  app.put("/api/folders/:id", async (req: Request, res: Response) => {
+    try {
+      const folderId = parseInt(req.params.id);
+      const { folderName, projectAddress } = req.body;
+      
+      const [updatedFolder] = await db.update(projectFolders)
+        .set({ 
+          folderName, 
+          projectAddress,
+          updatedAt: new Date()
+        })
+        .where(and(eq(projectFolders.id, folderId), eq(projectFolders.userId, "test-user")))
+        .returning();
+        
+      if (!updatedFolder) {
+        return res.status(404).json({ error: "Folder not found" });
+      }
+      
+      res.json(updatedFolder);
+    } catch (error) {
+      console.error("Error updating folder:", error);
+      res.status(500).json({ error: "Failed to update folder" });
+    }
+  });
+
+  app.delete("/api/folders/:id", async (req: Request, res: Response) => {
+    try {
+      const folderId = parseInt(req.params.id);
+      
+      // Check if folder has any files
+      const filesInFolder = await db.select().from(fileUploads)
+        .where(eq(fileUploads.folderId, folderId));
+        
+      if (filesInFolder.length > 0) {
+        return res.status(400).json({ error: "Cannot delete folder containing files" });
+      }
+      
+      const [deletedFolder] = await db.delete(projectFolders)
+        .where(and(eq(projectFolders.id, folderId), eq(projectFolders.userId, "test-user")))
+        .returning();
+        
+      if (!deletedFolder) {
+        return res.status(404).json({ error: "Folder not found" });
+      }
+      
+      res.json({ message: "Folder deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting folder:", error);
+      res.status(500).json({ error: "Failed to delete folder" });
     }
   });
 

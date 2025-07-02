@@ -44,10 +44,22 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Project folders table for organizing reports
+export const projectFolders = pgTable("project_folders", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  folderName: varchar("folder_name").notNull(),
+  projectAddress: text("project_address"),
+  projectNumber: varchar("project_number"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // File uploads table
 export const fileUploads = pgTable("file_uploads", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id),
+  folderId: integer("folder_id").references(() => projectFolders.id),
   fileName: varchar("file_name").notNull(),
   fileSize: integer("file_size").notNull(),
   fileType: varchar("file_type").notNull(),
@@ -56,6 +68,7 @@ export const fileUploads = pgTable("file_uploads", {
   status: varchar("status").default("pending"), // pending, processing, completed, failed
   reportUrl: varchar("report_url"),
   projectNumber: varchar("project_number"),
+  visitNumber: integer("visit_number").default(1), // Track multiple visits to same project
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -215,11 +228,20 @@ export const insertUserSchema = createInsertSchema(users).pick({
   phoneNumber: true,
 });
 
+export const insertProjectFolderSchema = createInsertSchema(projectFolders).pick({
+  folderName: true,
+  projectAddress: true,
+  projectNumber: true,
+});
+
 export const insertFileUploadSchema = createInsertSchema(fileUploads).pick({
   fileName: true,
   fileSize: true,
   fileType: true,
   sector: true,
+  folderId: true,
+  visitNumber: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type InsertProjectFolder = z.infer<typeof insertProjectFolderSchema>;
