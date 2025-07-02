@@ -376,59 +376,9 @@ export default function Dashboard() {
     { key: 'cost', label: 'Cost (£)', hideable: false, width: 'w-20', priority: 'tight' }
   ];
 
-  // Function to calculate auto-populated cost for defective sections
-  const calculateAutoCost = (section: any) => {
-    // Only calculate for sections with defects
-    if (!section.severityGrade || section.severityGrade === "0" || section.severityGrade === 0) {
-      return null;
-    }
 
-    // Extract meterage from defects
-    const extractMeterage = (defectsText: string): number => {
-      if (!defectsText) return 1;
-      const meterageMatch = defectsText.match(/(\d+\.?\d*)\s*m/);
-      return meterageMatch ? parseFloat(meterageMatch[1]) : 1;
-    };
 
-    // Extract pipe size (remove "mm" and convert to number)
-    const extractPipeSize = (pipeSizeText: string): number => {
-      if (!pipeSizeText) return 150;
-      const sizeMatch = pipeSizeText.match(/(\d+)/);
-      return sizeMatch ? parseInt(sizeMatch[1]) : 150;
-    };
 
-    const meterage = extractMeterage(section.defects || "");
-    const pipeSize = extractPipeSize(section.pipeSize || "");
-    
-    // Base cost calculation (example pricing)
-    let baseCost = 0;
-    
-    // Determine repair type based on defect severity and type
-    if (section.defects?.includes('CR') || section.defects?.includes('FC')) {
-      // Crack repair - patch repair
-      baseCost = 150 + (pipeSize * 0.5); // £150 base + pipe size factor
-    } else if (section.defects?.includes('DER') || section.defects?.includes('DES')) {
-      // Debris - jetting/cleaning
-      baseCost = 80 + (pipeSize * 0.3);
-    } else if (section.defects?.includes('DEF') || section.defects?.includes('FL')) {
-      // Deformation/fracture - lining or excavation
-      baseCost = 300 + (pipeSize * 0.8);
-    } else {
-      // General repair
-      baseCost = 120 + (pipeSize * 0.4);
-    }
-
-    const totalCost = baseCost * meterage;
-    const minQuantity = 5; // Example minimum quantity
-    const isUnderMinimum = meterage < minQuantity;
-
-    return {
-      cost: totalCost,
-      meterage,
-      minQuantity,
-      isUnderMinimum
-    };
-  };
 
   // Function to render cell content based on column key
   const renderCellContent = (columnKey: string, section: any) => {
@@ -566,8 +516,8 @@ export default function Dashboard() {
           return (
             <div className={`text-xs ${costColor} font-medium`} title={
               autoCost.isUnderMinimum 
-                ? `Minimum quantity: ${autoCost.minQuantity}m (Current: ${autoCost.meterage}m)`
-                : `Cost calculated: ${autoCost.meterage}m @ pipe size ${section.pipeSize}`
+                ? `Minimum quantity: ${autoCost.minQuantity}m (Current: ${autoCost.meterage}m) - £${autoCost.unitCost} per repair`
+                : `${autoCost.meterage}m × £${autoCost.unitCost} = £${autoCost.cost.toFixed(2)} (${section.pipeSize})`
             }>
               £{autoCost.cost.toFixed(2)}
             </div>
@@ -733,6 +683,83 @@ export default function Dashboard() {
   const currentSector = currentUpload 
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
+
+  // Fetch repair pricing data for current sector
+  const { data: repairPricingData = [] } = useQuery({
+    queryKey: [`/api/repair-pricing/${currentSector.id}`],
+    enabled: !!currentSector?.id
+  });
+
+  // Function to calculate auto-populated cost for defective sections using actual repair pricing
+  const calculateAutoCost = (section: any) => {
+    // Only calculate for sections with defects
+    if (!section.severityGrade || section.severityGrade === "0" || section.severityGrade === 0) {
+      return null;
+    }
+
+    // Extract meterage from defects
+    const extractMeterage = (defectsText: string): number => {
+      if (!defectsText) return 1;
+      const meterageMatch = defectsText.match(/(\d+\.?\d*)\s*m/);
+      return meterageMatch ? parseFloat(meterageMatch[1]) : 1;
+    };
+
+    // Extract pipe size (remove "mm" and convert to number)
+    const extractPipeSize = (pipeSizeText: string): number => {
+      if (!pipeSizeText) return 150;
+      const sizeMatch = pipeSizeText.match(/(\d+)/);
+      return sizeMatch ? parseInt(sizeMatch[1]) : 150;
+    };
+
+    const meterage = extractMeterage(section.defects || "");
+    const pipeSize = extractPipeSize(section.pipeSize || "");
+    
+    // Find matching repair pricing from database
+    let matchingPricing = null;
+    
+    if (Array.isArray(repairPricingData) && repairPricingData.length > 0) {
+      // Look for exact pipe size match first
+      matchingPricing = repairPricingData.find((pricing: any) => 
+        pricing.pipeSize === `${pipeSize}mm`
+      );
+      
+      // If no exact match, find closest pipe size
+      if (!matchingPricing) {
+        const pipeSizes = repairPricingData.map((p: any) => {
+          const match = p.pipeSize?.match(/(\d+)/);
+          return match ? parseInt(match[1]) : 0;
+        });
+        
+        const closestSize = pipeSizes.reduce((prev: number, curr: number) => 
+          Math.abs(curr - pipeSize) < Math.abs(prev - pipeSize) ? curr : prev
+        );
+        
+        matchingPricing = repairPricingData.find((pricing: any) => 
+          pricing.pipeSize === `${closestSize}mm`
+        );
+      }
+    }
+
+    // Use actual pricing from database if found
+    let unitCost = 450; // Default fallback to £450 as shown in image
+    let minQuantity = 2; // Default minimum
+    
+    if (matchingPricing) {
+      unitCost = parseFloat(matchingPricing.cost) || 450;
+      minQuantity = parseInt(matchingPricing.minQuantity) || 2;
+    }
+
+    const totalCost = unitCost * meterage;
+    const isUnderMinimum = meterage < minQuantity;
+
+    return {
+      cost: totalCost,
+      meterage,
+      minQuantity,
+      isUnderMinimum,
+      unitCost
+    };
+  };
 
   // Fetch real section inspection data from database - ALWAYS AUTHENTIC DATA
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections } = useQuery<any[]>({
