@@ -517,6 +517,23 @@ export async function registerRoutes(app: Express) {
   });
 
   // Get section inspections for a specific upload
+  // Get individual defects for an upload
+  app.get("/api/uploads/:uploadId/defects", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      
+      const defects = await db.select()
+        .from(sectionDefects)
+        .where(eq(sectionDefects.fileUploadId, uploadId))
+        .orderBy(sectionDefects.itemNo, sectionDefects.defectSequence);
+      
+      res.json(defects);
+    } catch (error) {
+      console.error("Error fetching individual defects:", error);
+      res.status(500).json({ error: "Failed to fetch individual defects" });
+    }
+  });
+
   app.get("/api/uploads/:uploadId/sections", async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.uploadId);

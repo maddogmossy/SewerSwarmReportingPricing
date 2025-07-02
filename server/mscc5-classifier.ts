@@ -643,7 +643,38 @@ export class MSCC5Classifier {
   static parseMultipleDefects(defectText: string): Array<{meterage: string, defectCode: string, description: string, percentage: string}> {
     const defects: Array<{meterage: string, defectCode: string, description: string, percentage: string}> = [];
     
-    // Enhanced patterns to capture Section 3 debris entries with specific meterage and percentages
+    // Handle comma-separated defects first: "CR 1.0m (description), DER 2.5m (description)"
+    if (defectText.includes('), ')) {
+      const separateDefects = defectText.split('), ');
+      
+      for (let i = 0; i < separateDefects.length; i++) {
+        let defectPart = separateDefects[i];
+        // Add closing parenthesis back if it was removed by split (except for last item)
+        if (i < separateDefects.length - 1 && !defectPart.endsWith(')')) {
+          defectPart += ')';
+        }
+        
+        // Parse individual defect: "CR 1.0m (Crack, 2-5mm opening)"
+        const match = defectPart.match(/(\w+)\s+(\d+\.?\d*m?)\s*\(([^)]+)\)/);
+        if (match) {
+          const [, code, meterage, description] = match;
+          const percentageMatch = description.match(/(\d+(?:-\d+)?%)/);
+          
+          defects.push({
+            meterage: meterage.includes('m') ? meterage : `${meterage}m`,
+            defectCode: code.toUpperCase(),
+            description: description.trim(),
+            percentage: percentageMatch ? percentageMatch[1] : ''
+          });
+        }
+      }
+      
+      if (defects.length > 0) {
+        return defects;
+      }
+    }
+    
+    // Enhanced patterns to capture other formats if comma-separated parsing fails
     const patterns = [
       // Standard format: "DER 13.07m: Settled deposits, coarse, 5% cross-sectional area loss"
       /(\w+)\s+(\d+\.?\d*m?):\s*([^;]+?)(?:;\s*|$)/g,
