@@ -6,7 +6,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { db } from "./db";
-import { fileUploads, users, sectionInspections, equipmentTypes, pricingRules, sectorStandards, projectFolders } from "@shared/schema";
+import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders } from "@shared/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
@@ -553,9 +553,10 @@ export async function registerRoutes(app: Express) {
     try {
       const uploadId = parseInt(req.params.uploadId);
       
-      // First delete all associated section inspections
+      // First delete all associated section inspections and individual defects
       await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
-      console.log(`🗑️ Deleted section inspections for upload ID ${uploadId}`);
+      await db.delete(sectionDefects).where(eq(sectionDefects.fileUploadId, uploadId));
+      console.log(`🗑️ Deleted section inspections and defects for upload ID ${uploadId}`);
       
       // Then delete the file upload record
       const deletedUpload = await db.delete(fileUploads)
@@ -593,6 +594,48 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error("Error updating upload folder:", error);
       res.status(500).json({ error: "Failed to update upload folder" });
+    }
+  });
+
+  // Process multiple defects for a specific section
+  app.post("/api/uploads/:uploadId/process-defects", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      
+      // Get all sections with defects
+      const sections = await db.select()
+        .from(sectionInspections)
+        .where(eq(sectionInspections.fileUploadId, uploadId));
+      
+      let totalProcessed = 0;
+      
+      for (const section of sections) {
+        if (section.defects && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
+          try {
+            // Use the MSCC5 classifier to process multiple defects
+            const result = await MSCC5Classifier.classifyMultipleDefects(
+              section.defects,
+              'adoption', // Default sector, should be dynamic based on upload
+              uploadId,
+              section.itemNo
+            );
+            
+            console.log(`✓ Processed ${result.individualDefects.length} defects for Section ${section.itemNo}`);
+            totalProcessed += result.individualDefects.length;
+          } catch (error) {
+            console.error(`Error processing defects for Section ${section.itemNo}:`, error);
+          }
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Processed ${totalProcessed} individual defects`,
+        sectionsProcessed: sections.length
+      });
+    } catch (error) {
+      console.error("Error processing multiple defects:", error);
+      res.status(500).json({ error: "Failed to process multiple defects" });
     }
   });
 
