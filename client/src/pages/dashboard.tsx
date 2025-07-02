@@ -504,21 +504,33 @@ export default function Dashboard() {
   // Note: Forcing latest report to ensure authentic 3588 data is displayed
   const currentUpload = completedUploads.sort((a, b) => b.id - a.id)[0]; // Always get most recent (3588)
   
-  // Force clear all cached data for fresh uploads
+  // Force clear all cached data for fresh uploads and ensure authentic data
   useEffect(() => {
     queryClient.removeQueries({ queryKey: ["/api/uploads"] });
     queryClient.removeQueries({ queryKey: ["/api/uploads/*/sections"] });
+    queryClient.clear(); // Clear all cache
   }, []);
+
+  // Additional cache clearing when upload changes
+  useEffect(() => {
+    if (currentUpload?.id) {
+      queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+    }
+  }, [currentUpload?.id]);
     
   const currentSector = currentUpload 
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // Fetch real section inspection data from database - ALWAYS 3588 DATA
+  // Fetch real section inspection data from database - ALWAYS AUTHENTIC DATA
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
     staleTime: 0,
+    gcTime: 0, // Prevent caching
+    refetchOnMount: true, // Always refetch on mount
+    refetchOnWindowFocus: true, // Refetch when window gains focus
   });
 
   // DEDUPLICATE: Remove any duplicate sections by item_no (client-side safety)
