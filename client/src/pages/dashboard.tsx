@@ -925,7 +925,30 @@ export default function Dashboard() {
 
       <div className="container mx-auto p-6 max-w-none">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Section Inspection Data & Analysis</h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl font-bold text-slate-900">Section Inspection Data & Analysis</h1>
+            {completedUploads.length > 1 && (
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-slate-700">Select Report:</label>
+                <select 
+                  value={currentUpload?.id || ''}
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    if (selectedId) {
+                      window.location.href = `/dashboard?reportId=${selectedId}`;
+                    }
+                  }}
+                  className="px-3 py-1 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {completedUploads.sort((a, b) => b.id - a.id).map(upload => (
+                    <option key={upload.id} value={upload.id}>
+                      {upload.fileName} • {sectors.find(s => s.id === upload.sector)?.name || 'Unknown'} Sector
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
           <p className="text-slate-600">
             {currentUpload 
               ? `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector`
