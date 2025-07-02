@@ -301,6 +301,25 @@ export default function Dashboard() {
   
   // Folder expansion state
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
+  
+  // Folder selector state
+  const [showFolderDropdown, setShowFolderDropdown] = useState(false);
+  const [selectedFolderForView, setSelectedFolderForView] = useState<number | null>(null);
+
+  // Auto-collapse dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const dropdown = document.getElementById('folder-dropdown');
+      if (dropdown && !dropdown.contains(event.target as Node)) {
+        setShowFolderDropdown(false);
+      }
+    };
+
+    if (showFolderDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showFolderDropdown]);
 
   // Load hidden columns from localStorage on component mount
   useEffect(() => {
@@ -491,24 +510,12 @@ export default function Dashboard() {
     queryKey: ["/api/folders"],
   });
 
-  // Auto-expand folders when they're loaded
+  // Auto-expand folders when they're loaded - no longer needed with dropdown
   useEffect(() => {
     if (folders.length > 0) {
       setExpandedFolders(new Set(folders.map(f => f.id)));
     }
   }, [folders]);
-
-  const toggleFolder = (folderId: number) => {
-    setExpandedFolders(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(folderId)) {
-        newSet.delete(folderId);
-      } else {
-        newSet.add(folderId);
-      }
-      return newSet;
-    });
-  };
 
   // Group uploads by folder
   const groupUploadsByFolder = () => {
@@ -598,10 +605,15 @@ export default function Dashboard() {
   // Get completed uploads for analysis
   const completedUploads = uploads.filter(upload => upload.status === 'completed');
   
-  // Get current upload based on reportId parameter or most recent upload
+  // Filter uploads by selected folder if one is chosen
+  const filteredUploads = selectedFolderForView 
+    ? completedUploads.filter(upload => upload.folderId === selectedFolderForView)
+    : completedUploads;
+  
+  // Get current upload based on reportId parameter or most recent upload from filtered set
   const currentUpload = reportId 
-    ? completedUploads.find(upload => upload.id === parseInt(reportId))
-    : completedUploads.sort((a, b) => b.id - a.id)[0]; // Default to most recent if no reportId
+    ? filteredUploads.find(upload => upload.id === parseInt(reportId))
+    : filteredUploads.sort((a, b) => b.id - a.id)[0]; // Default to most recent if no reportId
   
   // Force clear all cached data for fresh uploads and ensure authentic data
   useEffect(() => {
@@ -1028,32 +1040,74 @@ export default function Dashboard() {
             {completedUploads.length > 1 && (
               <div className="flex items-center gap-4">
                 <label className="text-sm font-medium text-slate-700">Project Folders:</label>
-                <div className="flex gap-2">
-                  {Object.entries(groupUploadsByFolder()).map(([folderKey, folderUploads]) => {
-                    const folder = folders.find(f => f.id === parseInt(folderKey));
-                    const isExpanded = expandedFolders.has(parseInt(folderKey));
-                    const completedReports = folderUploads.filter(u => u.status === 'completed');
-                    
-                    if (folderKey === 'no-folder' || completedReports.length === 0) {
-                      return null;
-                    }
-
-                    return (
-                      <div key={folderKey} className="relative">
-                        <button
-                          onClick={() => toggleFolder(parseInt(folderKey))}
-                          className="flex items-center gap-2 px-3 py-1 border border-slate-300 rounded-md text-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          {isExpanded ? <FolderOpen className="h-4 w-4 text-blue-600" /> : <Folder className="h-4 w-4 text-blue-600" />}
-                          <span>{folder?.folderName || `Folder ${folderKey}`}</span>
-                          <span className="text-xs text-slate-500">({completedReports.length})</span>
-                          {isExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                        </button>
+                <div className="relative">
+                  {/* Compact Folder Selector */}
+                  <button
+                    onClick={() => setShowFolderDropdown(!showFolderDropdown)}
+                    className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-md text-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-w-[250px] justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Folder className="h-4 w-4 text-blue-600" />
+                      <span>
+                        {selectedFolderForView ? 
+                          folders.find(f => f.id === selectedFolderForView)?.folderName || 'Unknown Folder' :
+                          (currentUpload?.folderId ? 
+                            folders.find(f => f.id === currentUpload.folderId)?.folderName || 'Current Folder' :
+                            'All Folders'
+                          )
+                        }
+                      </span>
+                    </div>
+                    {showFolderDropdown ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </button>
+                  
+                  {/* Dropdown Menu */}
+                  {showFolderDropdown && (
+                    <div className="absolute top-full left-0 mt-1 bg-white border border-slate-300 rounded-md shadow-lg z-20 min-w-[400px] max-h-96 overflow-y-auto">
+                      {/* All Folders Option */}
+                      <div
+                        onClick={() => {
+                          setSelectedFolderForView(null);
+                          setShowFolderDropdown(false);
+                        }}
+                        className="flex items-center justify-between p-3 hover:bg-slate-50 cursor-pointer border-b"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Folder className="h-4 w-4 text-blue-600" />
+                          <span className="font-medium text-sm">All Folders</span>
+                        </div>
+                        <span className="text-xs text-slate-500">({completedUploads.length} reports)</span>
+                      </div>
+                      
+                      {/* Individual Folders */}
+                      {Object.entries(groupUploadsByFolder()).map(([folderKey, folderUploads]) => {
+                        const folder = folders.find(f => f.id === parseInt(folderKey));
+                        const completedReports = folderUploads.filter(u => u.status === 'completed');
                         
-                        {isExpanded && (
-                          <div className="absolute top-full left-0 mt-1 bg-white border border-slate-300 rounded-md shadow-lg z-10 min-w-[300px]">
+                        if (folderKey === 'no-folder' || completedReports.length === 0) {
+                          return null;
+                        }
+
+                        return (
+                          <div key={folderKey}>
+                            {/* Folder Header */}
+                            <div
+                              onClick={() => {
+                                setSelectedFolderForView(parseInt(folderKey));
+                                setShowFolderDropdown(false);
+                              }}
+                              className="flex items-center justify-between p-3 hover:bg-blue-50 cursor-pointer border-b bg-slate-50"
+                            >
+                              <div className="flex items-center gap-2">
+                                <FolderOpen className="h-4 w-4 text-blue-600" />
+                                <span className="font-medium text-sm">{folder?.folderName || `Folder ${folderKey}`}</span>
+                              </div>
+                              <span className="text-xs text-slate-500">({completedReports.length} reports)</span>
+                            </div>
+                            
+                            {/* Reports in this folder */}
                             {completedReports.map((upload) => (
-                              <div key={upload.id} className="flex items-center justify-between p-3 hover:bg-slate-50 border-b last:border-b-0">
+                              <div key={upload.id} className="flex items-center justify-between p-3 pl-8 hover:bg-slate-50 border-b last:border-b-0">
                                 <div className="flex items-center gap-2">
                                   {getStatusIcon(upload.status || 'pending')}
                                   <div>
@@ -1065,14 +1119,22 @@ export default function Dashboard() {
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <button
-                                    onClick={() => handleViewReport(upload.id)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleViewReport(upload.id);
+                                      setShowFolderDropdown(false);
+                                    }}
                                     className="p-1 text-blue-600 hover:bg-blue-50 rounded"
                                     title="View Report"
                                   >
                                     <Eye className="h-3 w-3" />
                                   </button>
                                   <button
-                                    onClick={() => deleteMutation.mutate(upload.id)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      deleteMutation.mutate(upload.id);
+                                      setShowFolderDropdown(false);
+                                    }}
                                     className="p-1 text-red-600 hover:bg-red-50 rounded"
                                     title="Delete Report"
                                   >
@@ -1082,10 +1144,10 @@ export default function Dashboard() {
                               </div>
                             ))}
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
