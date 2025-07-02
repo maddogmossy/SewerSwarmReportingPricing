@@ -60,8 +60,8 @@ export default function RepairPricing() {
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
 
   // Fetch repair methods
-  const { data: repairMethods = [] } = useQuery({
-    queryKey: ['/api/repair-methods'],
+  const { data: workCategories = [] } = useQuery({
+    queryKey: ['/api/work-categories'],
   });
 
   // Fetch existing pricing for this sector
@@ -171,8 +171,8 @@ export default function RepairPricing() {
     }
   };
 
-  const groupedData = repairMethods.reduce((acc: any, method: any) => {
-    acc[method.name] = pricingData.filter((item: any) => item.repairMethodId === method.id);
+  const groupedData = workCategories.reduce((acc: any, category: any) => {
+    acc[category.name] = pricingData.filter((item: any) => item.workCategoryId === category.id);
     return acc;
   }, {});
 
@@ -223,22 +223,22 @@ export default function RepairPricing() {
 
         {/* Repair Methods Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {repairMethods.map((method: any) => {
-            const methodPricing = groupedData[method.name] || [];
+          {workCategories.map((category: any) => {
+            const categoryPricing = groupedData[category.name] || [];
             
             return (
-              <Card key={method.id}>
+              <Card key={category.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg flex items-center gap-2">
                       <Wrench className="h-5 w-5" />
-                      {method.name}
+                      {category.name}
                     </CardTitle>
-                    <Badge variant={methodPricing.length > 0 ? "default" : "secondary"}>
-                      {methodPricing.length} configs
+                    <Badge variant={categoryPricing.length > 0 ? "default" : "secondary"}>
+                      {categoryPricing.length} configs
                     </Badge>
                   </div>
-                  <p className="text-sm text-slate-600">{method.description}</p>
+                  <p className="text-sm text-slate-600">{category.description}</p>
                 </CardHeader>
                 
                 <CardContent className="space-y-3">
