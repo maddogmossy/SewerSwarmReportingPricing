@@ -33,7 +33,8 @@ import {
   ChevronRight,
   ChevronDown,
   Eye,
-  Trash2
+  Trash2,
+  TriangleAlert
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
@@ -524,6 +525,15 @@ export default function Dashboard() {
           );
         }
         
+        // Show warning triangle when no pricing is configured for defective sections
+        if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
+          return (
+            <div className="flex items-center justify-center" title="No pricing configured for this repair type">
+              <TriangleAlert className="h-4 w-4 text-orange-500" />
+            </div>
+          );
+        }
+        
         // Sections that can show "Complete" (sections with manageable defects)
         const sectionsComplete = [6, 7, 8, 10, 13, 14, 21];
         if (sectionsComplete.includes(section.itemNo)) {
@@ -742,14 +752,14 @@ export default function Dashboard() {
       }
     }
 
-    // Use actual pricing from database if found
-    let unitCost = 450; // Default fallback to £450 as shown in image
-    let minQuantity = 2; // Default minimum number of repairs
-    
-    if (matchingPricing) {
-      unitCost = parseFloat(matchingPricing.cost) || 450;
-      minQuantity = parseInt(matchingPricing.minQuantity) || 2;
+    // Return null if no pricing data is available - triggers warning triangle display
+    if (!matchingPricing) {
+      return null;
     }
+    
+    // Use actual pricing from database
+    const unitCost = parseFloat(matchingPricing.cost) || 450;
+    const minQuantity = parseInt(matchingPricing.minQuantity) || 2;
 
     // Total cost = number of defects × cost per repair
     const totalCost = numberOfDefects * unitCost;
