@@ -419,7 +419,7 @@ export default function Upload() {
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <Settings className="w-3 h-3 mr-2" />
-                                Configure Standards
+                                Display Standards/Guide Rules
                               </Button>
                             </Link>
                           </div>
