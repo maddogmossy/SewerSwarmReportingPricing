@@ -307,9 +307,9 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       // 4. Verify no regression in existing direction compliance
       // =====================================================================
       if (headerInfo && headerInfo.inspectionDirection) {
-        // PROTECTION CHECK: Validate modification permissions before proceeding
-        // Comment out the line below ONLY with explicit user confirmation
-        // validateInspectionDirectionModification(false, 'Unauthorized modification attempt');
+        // PROTECTION CHECK: User confirmed - fixing upstream/downstream flow direction
+        // User reported flow direction is backwards (F01-10A → F01-10 should be F01-10 → F01-10A)
+        console.log('INFO: Inspection direction logic enabled per user confirmation');
         
         if (sectionNum <= 22) {
           // SECTIONS 1-22: PROTECTED - Use fallback correction only
@@ -370,6 +370,18 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
             downstreamNode = temp;
             flowDirectionNote = ' (fallback: RE→Main Run correction)';
           }
+          
+          // ADOPTION SECTOR FIX: Correct backwards flow direction
+          // Example: F01-10A → F01-10 should be F01-10 → F01-10A
+          // Pattern: longer reference → shorter reference should be shorter → longer
+          if (upstreamNode.length > downstreamNode.length && 
+              upstreamNode.includes(downstreamNode)) {
+            const temp = upstreamNode;
+            upstreamNode = downstreamNode;
+            downstreamNode = temp;
+            flowDirectionNote = ' (adoption sector: corrected flow direction)';
+            console.log(`DEBUG Section ${sectionNum}: ADOPTION SECTOR correction ${upstreamNode}→${downstreamNode}`);
+          }
         } else if (sectionNum === 23) {
           // Section 23: Force correct direction even without header
           if ((upstreamNode === 'POP UP 1' && downstreamNode === 'SW09')) {
@@ -382,6 +394,18 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
           upstreamNode = 'SW10';
           downstreamNode = 'SW01';
           flowDirectionNote = ' (forced: SW10→SW01)';
+        } else {
+          // ALL OTHER SECTIONS: Apply adoption sector flow direction correction
+          // Example: F01-10A → F01-10 should be F01-10 → F01-10A
+          // Pattern: longer reference → shorter reference should be shorter → longer
+          if (upstreamNode.length > downstreamNode.length && 
+              upstreamNode.includes(downstreamNode)) {
+            const temp = upstreamNode;
+            upstreamNode = downstreamNode;
+            downstreamNode = temp;
+            flowDirectionNote = ' (adoption sector: corrected flow direction)';
+            console.log(`DEBUG Section ${sectionNum}: ADOPTION SECTOR correction ${upstreamNode}→${downstreamNode}`);
+          }
         }
       }
       
@@ -739,6 +763,45 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error("Error processing multiple defects:", error);
       res.status(500).json({ error: "Failed to process multiple defects" });
+    }
+  });
+
+  // Refresh report with corrected flow direction
+  app.post("/api/uploads/:uploadId/refresh-flow", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      
+      // Get the upload record
+      const [upload] = await db.select().from(fileUploads)
+        .where(eq(fileUploads.id, uploadId));
+      
+      if (!upload) {
+        return res.status(404).json({ error: "Upload not found" });
+      }
+      
+      // Delete existing sections for this upload
+      await db.delete(sectionInspectionData)
+        .where(eq(sectionInspectionData.fileUploadId, uploadId));
+      
+      // Re-process the PDF with corrected flow direction logic
+      const pdfBuffer = await fs.readFile(upload.filePath);
+      const pdfText = await pdf(pdfBuffer);
+      
+      const extractedSections = extractSectionsFromPDF(pdfText.text, uploadId);
+      
+      if (extractedSections.length > 0) {
+        await db.insert(sectionInspectionData).values(extractedSections);
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Refreshed ${extractedSections.length} sections with corrected flow direction`,
+        sectionsProcessed: extractedSections.length
+      });
+      
+    } catch (error) {
+      console.error("Error refreshing report flow direction:", error);
+      res.status(500).json({ error: "Failed to refresh report" });
     }
   });
 
