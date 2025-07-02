@@ -532,6 +532,22 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Get individual defects for a specific upload
+  app.get("/api/uploads/:uploadId/defects", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      const defects = await db.select()
+        .from(sectionDefects)
+        .where(eq(sectionDefects.fileUploadId, uploadId))
+        .orderBy(asc(sectionDefects.itemNo), asc(sectionDefects.defectSequence));
+
+      res.json(defects);
+    } catch (error) {
+      console.error("Error fetching individual defects:", error);
+      res.status(500).json({ error: "Failed to fetch individual defects" });
+    }
+  });
+
   // Delete file upload and all associated data
   app.delete("/api/uploads/:uploadId", async (req: Request, res: Response) => {
     try {

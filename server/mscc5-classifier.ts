@@ -726,6 +726,156 @@ export class MSCC5Classifier {
   }
 
   /**
+   * Parse and classify multiple defects within a single section
+   */
+  static async classifyMultipleDefects(
+    defectText: string, 
+    sector: string = 'utilities',
+    fileUploadId: number,
+    itemNo: number
+  ): Promise<{
+    individualDefects: Array<{
+      defectCode: string;
+      meterage: string;
+      percentage: string;
+      description: string;
+      operationType: 'cleaning' | 'patching' | 'lining' | 'excavation';
+      mscc5Grade: number;
+      recommendation: string;
+      estimatedCost: string;
+    }>;
+    summaryClassification: DefectClassificationResult;
+  }> {
+    
+    // Parse multiple defects in the section
+    const parsedDefects = this.parseMultipleDefects(defectText);
+    const individualDefects = [];
+    
+    // Process each defect individually
+    for (let i = 0; i < parsedDefects.length; i++) {
+      const defect = parsedDefects[i];
+      
+      // Classify individual defect
+      const classification = await this.classifyDefect(`${defect.defectCode} ${defect.meterage}: ${defect.description}`, sector);
+      
+      // Determine operation type based on defect code
+      let operationType: 'cleaning' | 'patching' | 'lining' | 'excavation' = 'cleaning';
+      
+      switch (defect.defectCode) {
+        case 'DER':
+        case 'DES':
+        case 'OB':
+        case 'WL':
+          operationType = 'cleaning';
+          break;
+        case 'CR':
+        case 'FC':
+        case 'JDL':
+        case 'JDM':
+        case 'OJM':
+        case 'OJL':
+          operationType = 'patching';
+          break;
+        case 'FL':
+        case 'DEF':
+        case 'RI':
+          operationType = 'lining';
+          break;
+        case 'CO':
+        case 'BF':
+          operationType = 'excavation';
+          break;
+        default:
+          operationType = 'patching';
+      }
+      
+      individualDefects.push({
+        defectCode: defect.defectCode,
+        meterage: defect.meterage,
+        percentage: defect.percentage,
+        description: defect.description,
+        operationType,
+        mscc5Grade: classification.severityGrade,
+        recommendation: classification.recommendations,
+        estimatedCost: classification.estimatedCost
+      });
+    }
+    
+    // Create summary classification for the section
+    const summaryClassification = await this.classifyDefect(defectText, sector);
+    
+    // Store individual defects in database
+    await this.storeIndividualDefects(fileUploadId, itemNo, individualDefects);
+    
+    return {
+      individualDefects,
+      summaryClassification
+    };
+  }
+
+  /**
+   * Store individual defects in the database
+   */
+  static async storeIndividualDefects(
+    fileUploadId: number,
+    itemNo: number,
+    defects: Array<{
+      defectCode: string;
+      meterage: string;
+      percentage: string;
+      description: string;
+      operationType: 'cleaning' | 'patching' | 'lining' | 'excavation';
+      mscc5Grade: number;
+      recommendation: string;
+      estimatedCost: string;
+    }>
+  ): Promise<void> {
+    try {
+      const { db } = await import('./db');
+      const { sectionDefects } = await import('@shared/schema');
+      const { eq, and } = await import('drizzle-orm');
+      
+      // Delete existing defects for this section
+      await db.delete(sectionDefects)
+        .where(and(
+          eq(sectionDefects.fileUploadId, fileUploadId),
+          eq(sectionDefects.itemNo, itemNo)
+        ));
+      
+      // Insert new individual defects
+      for (let i = 0; i < defects.length; i++) {
+        const defect = defects[i];
+        await db.insert(sectionDefects).values({
+          fileUploadId,
+          itemNo,
+          defectSequence: i + 1,
+          defectCode: defect.defectCode,
+          meterage: defect.meterage,
+          percentage: defect.percentage,
+          description: defect.description,
+          mscc5Grade: defect.mscc5Grade,
+          defectType: this.getDefectType(defect.defectCode),
+          recommendation: defect.recommendation,
+          operationType: defect.operationType,
+          estimatedCost: defect.estimatedCost
+        });
+      }
+      
+      console.log(`✓ Stored ${defects.length} individual defects for Section ${itemNo}`);
+    } catch (error) {
+      console.error('Error storing individual defects:', error);
+    }
+  }
+
+  /**
+   * Get defect type (structural/service) based on defect code
+   */
+  static getDefectType(defectCode: string): 'structural' | 'service' {
+    const structuralDefects = ['CR', 'FC', 'FL', 'DEF', 'JDL', 'JDM', 'OJM', 'OJL', 'CO', 'BF'];
+    return structuralDefects.includes(defectCode) ? 'structural' : 'service';
+  }
+
+  /**
    * Classify defects based on MSCC5 standards with detailed parsing
    */
   static async classifyDefect(defectText: string, sector: string = 'utilities'): Promise<DefectClassificationResult> {

@@ -96,6 +96,24 @@ export const sectionInspections = pgTable("section_inspections", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Individual defects table for multiple defects per section
+export const sectionDefects = pgTable("section_defects", {
+  id: serial("id").primaryKey(),
+  fileUploadId: integer("file_upload_id").notNull(),
+  itemNo: integer("item_no").notNull(),
+  defectSequence: integer("defect_sequence").notNull(), // 1, 2, 3 for multiple defects in same section
+  defectCode: varchar("defect_code").notNull(), // CR, DER, FL, etc.
+  meterage: varchar("meterage"), // Location in pipe
+  percentage: varchar("percentage"), // Severity percentage
+  description: text("description"),
+  mscc5Grade: integer("mscc5_grade"),
+  defectType: varchar("defect_type"), // structural, service
+  recommendation: text("recommendation"),
+  operationType: varchar("operation_type"), // cleaning, patching, lining, excavation
+  estimatedCost: varchar("estimated_cost"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Subscription plans table
 export const subscriptionPlans = pgTable("subscription_plans", {
   id: serial("id").primaryKey(),
