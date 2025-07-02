@@ -450,6 +450,32 @@ export default function SectorPricingDetail() {
         </Card>
       </div>
 
+      {/* Repair Pricing Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Repair Pricing Configuration</CardTitle>
+            <Button onClick={() => window.location.href = `/repair-pricing/${sector}`}>
+              <Plus className="h-4 w-4 mr-2" />
+              Configure Repair Methods
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-gray-500">
+            <p className="mb-4">Configure pricing for repair methods: Patch, Lining, and Excavation</p>
+            <p className="text-sm">This is used when hovering over defective sections in the dashboard</p>
+            <Button 
+              onClick={() => window.location.href = `/repair-pricing/${sector}`}
+              variant="outline"
+              className="mt-4"
+            >
+              Open Repair Pricing
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Add/Edit Equipment Dialog */}
       <Dialog open={showAddEquipment || !!editingEquipment} onOpenChange={(open) => {
         if (!open) {

@@ -187,7 +187,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
                               checkQuantityRule(option) ? 'border-red-500 text-red-700 bg-red-50' : ''
                             }`}
                           >
-                            £{option.cost?.toFixed(2)}
+                            £{parseFloat(option.cost || '0').toFixed(2)}
                           </Badge>
                         </div>
                         
