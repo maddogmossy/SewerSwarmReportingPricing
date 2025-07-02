@@ -1260,7 +1260,7 @@ export default function Dashboard() {
               </Link>
             </CardContent>
           </Card>
-        ) : sectionData.length === 0 && currentUpload && !sectionsQuery.isLoading ? (
+        ) : sectionData.length === 0 && currentUpload && !sectionsLoading ? (
           // Show data integrity warning when upload exists but no authentic data is available (and not loading)
           <DataIntegrityWarning
             type="warning"
