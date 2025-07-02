@@ -10,6 +10,7 @@ import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes,
 import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
+import { DataIntegrityValidator, validateBeforeInsert } from "./data-integrity";
 import pdfParse from "pdf-parse";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -465,16 +466,31 @@ export async function registerRoutes(app: Express) {
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
           console.log(`🗑️ Cleared existing sections for upload ID ${fileUpload.id}`);
           
-          // Insert all extracted sections OR require manual verification
+          // Insert all extracted sections with data integrity validation
           if (sections.length > 0) {
-            for (const section of sections) {
-              await db.insert(sectionInspections).values(section);
+            // Validate data integrity before insertion
+            try {
+              validateBeforeInsert({ sections }, 'pdf');
+              
+              for (const section of sections) {
+                // Additional validation per section
+                const validation = DataIntegrityValidator.validateSectionData(section);
+                if (!validation.isValid) {
+                  console.error(`❌ SYNTHETIC DATA BLOCKED for Section ${section.itemNo}:`, validation.errors);
+                  throw new Error(`Data integrity violation in Section ${section.itemNo}: ${validation.errors.join('; ')}`);
+                }
+                
+                await db.insert(sectionInspections).values(section);
+              }
+              console.log(`✓ Successfully extracted ${sections.length} authentic sections from PDF`);
+            } catch (error) {
+              console.error("❌ DATA INTEGRITY VIOLATION:", error.message);
+              throw new Error(`Synthetic data detected. Please ensure PDF contains authentic inspection data.`);
             }
-            console.log(`✓ Successfully extracted ${sections.length} authentic sections from PDF`);
           } else {
-            console.log("❌ PDF extraction returned 0 sections - manual data entry required");
+            console.log("❌ PDF extraction returned 0 sections - requiring authentic data");
             console.log("❌ NEVER generating synthetic data - authentic manhole references required");
-            // Do not insert any synthetic data - require authentic PDF parsing or manual entry
+            throw new Error("No authentic data could be extracted from PDF. Please verify the PDF contains valid inspection data or contact support.");
           }
           
           console.log(`Extracted ${sections.length} sections from PDF`);
@@ -614,7 +630,7 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Process multiple defects for a specific section
+  // Process multiple defects for a specific section with data integrity validation
   app.post("/api/uploads/:uploadId/process-defects", async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.uploadId);
@@ -625,10 +641,19 @@ export async function registerRoutes(app: Express) {
         .where(eq(sectionInspections.fileUploadId, uploadId));
       
       let totalProcessed = 0;
+      const errors: string[] = [];
       
       for (const section of sections) {
         if (section.defects && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
           try {
+            // Validate section data for authenticity before processing
+            const validation = DataIntegrityValidator.validateSectionData(section);
+            if (!validation.isValid) {
+              errors.push(`Section ${section.itemNo}: ${validation.errors.join('; ')}`);
+              console.error(`❌ SYNTHETIC DATA DETECTED in Section ${section.itemNo}:`, validation.errors);
+              continue; // Skip this section
+            }
+            
             // Use the MSCC5 classifier to process multiple defects
             const result = await MSCC5Classifier.classifyMultipleDefects(
               section.defects,
@@ -637,12 +662,32 @@ export async function registerRoutes(app: Express) {
               section.itemNo
             );
             
-            console.log(`✓ Processed ${result.individualDefects.length} defects for Section ${section.itemNo}`);
-            totalProcessed += result.individualDefects.length;
+            // Validate each individual defect before storing
+            for (const defect of result.individualDefects || []) {
+              const defectValidation = DataIntegrityValidator.validateDefectData(defect);
+              if (!defectValidation.isValid) {
+                errors.push(`Section ${section.itemNo} Defect: ${defectValidation.errors.join('; ')}`);
+                console.error(`❌ SYNTHETIC DEFECT DATA BLOCKED:`, defectValidation.errors);
+              }
+            }
+            
+            console.log(`✓ Processed ${result.individualDefects?.length || 0} defects for Section ${section.itemNo}`);
+            totalProcessed += result.individualDefects?.length || 0;
           } catch (error) {
             console.error(`Error processing defects for Section ${section.itemNo}:`, error);
+            errors.push(`Section ${section.itemNo}: ${error.message}`);
           }
         }
+      }
+      
+      if (errors.length > 0) {
+        return res.status(400).json({ 
+          success: false,
+          error: "Synthetic data detected",
+          message: "Some sections contain synthetic data and were not processed",
+          details: errors,
+          userMessage: "Please upload authentic PDF reports. Synthetic or test data has been blocked."
+        });
       }
       
       res.json({ 
