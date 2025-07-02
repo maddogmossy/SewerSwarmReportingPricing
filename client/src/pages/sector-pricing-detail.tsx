@@ -52,32 +52,36 @@ export default function SectorPricingDetail() {
               Repair Pricing Configuration
             </CardTitle>
             <Button onClick={() => window.location.href = `/repair-pricing/${sector}`}>
-              Configure Repair Methods
+              Configure Pricing
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
             <div className="text-center py-8">
-              <h3 className="text-lg font-semibold mb-4">Configure Repair Method Pricing</h3>
+              <h3 className="text-lg font-semibold mb-4">Configure Work Category Pricing</h3>
               <p className="text-gray-600 mb-6">
-                Set up pricing for the three main repair methods: Patch, Lining, and Excavation.
+                Set up pricing for CCTV surveys, jetting, tankering, and directional water cutting.
                 <br />
                 These prices will be used when hovering over defective sections in the dashboard.
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div className="p-4 border rounded-lg">
-                  <h4 className="font-medium text-blue-600">Patch Repairs</h4>
-                  <p className="text-sm text-gray-500">Quick structural fixes for localized defects</p>
+                  <h4 className="font-medium text-blue-600">CCTV Surveys</h4>
+                  <p className="text-sm text-gray-500">Camera inspection and condition assessment</p>
                 </div>
                 <div className="p-4 border rounded-lg">
-                  <h4 className="font-medium text-green-600">Lining Systems</h4>
-                  <p className="text-sm text-gray-500">CIPP and other full-section rehabilitation</p>
+                  <h4 className="font-medium text-green-600">Jetting</h4>
+                  <p className="text-sm text-gray-500">High-pressure water cleaning systems</p>
                 </div>
                 <div className="p-4 border rounded-lg">
-                  <h4 className="font-medium text-red-600">Excavation Work</h4>
-                  <p className="text-sm text-gray-500">Full replacement and open-cut repairs</p>
+                  <h4 className="font-medium text-orange-600">Tankering</h4>
+                  <p className="text-sm text-gray-500">Vacuum tanker waste removal services</p>
+                </div>
+                <div className="p-4 border rounded-lg">
+                  <h4 className="font-medium text-purple-600">Directional Water Cutting</h4>
+                  <p className="text-sm text-gray-500">Precision cutting for blockage removal</p>
                 </div>
               </div>
               
@@ -85,7 +89,7 @@ export default function SectorPricingDetail() {
                 onClick={() => window.location.href = `/repair-pricing/${sector}`}
                 size="lg"
               >
-                Open Repair Pricing Configuration
+                Open Work Category Pricing Configuration
               </Button>
             </div>
           </div>
@@ -95,17 +99,17 @@ export default function SectorPricingDetail() {
       {/* Information Card */}
       <Card>
         <CardHeader>
-          <CardTitle>How Repair Pricing Works</CardTitle>
+          <CardTitle>How Work Category Pricing Works</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4 text-sm text-gray-600">
             <div className="flex items-start gap-3">
               <span className="font-medium text-blue-600">1.</span>
-              <p>Configure pricing for each repair method (Patch, Lining, Excavation) by pipe size</p>
+              <p>Configure pricing for each work category (CCTV, Jetting, Tankering, Directional Water Cutting) by pipe size</p>
             </div>
             <div className="flex items-start gap-3">
               <span className="font-medium text-blue-600">2.</span>
-              <p>Add custom descriptions with dynamic templates like "To install a ()mm patch at ()mtrs"</p>
+              <p>Add custom descriptions with dynamic templates like "To survey a ()mm pipe at ()mtrs"</p>
             </div>
             <div className="flex items-start gap-3">
               <span className="font-medium text-blue-600">3.</span>
@@ -113,7 +117,7 @@ export default function SectorPricingDetail() {
             </div>
             <div className="flex items-start gap-3">
               <span className="font-medium text-blue-600">4.</span>
-              <p>When users hover over defective sections in the dashboard, they see repair options with pricing</p>
+              <p>When users hover over defective sections in the dashboard, they see work category options with pricing</p>
             </div>
           </div>
         </CardContent>

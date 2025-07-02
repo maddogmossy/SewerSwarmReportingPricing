@@ -214,8 +214,8 @@ export default function RepairPricing() {
                 <Wrench className={`h-6 w-6 text-${currentSector.color}-600`} />
               </div>
               <div>
-                <CardTitle className="text-2xl">{currentSector.name} Sector - Repair Pricing</CardTitle>
-                <p className="text-slate-600">Configure pricing for patch, lining, and excavation repairs</p>
+                <CardTitle className="text-2xl">{currentSector.name} Sector Pricing</CardTitle>
+                <p className="text-slate-600">Configure pricing for CCTV surveys, jetting, tankering, and directional water cutting</p>
               </div>
             </div>
           </CardHeader>
