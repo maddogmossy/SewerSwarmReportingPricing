@@ -430,6 +430,28 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Update file upload folder assignment
+  app.put("/api/uploads/:uploadId", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      const { folderId } = req.body;
+      
+      const [updatedUpload] = await db.update(fileUploads)
+        .set({ folderId: folderId || null })
+        .where(and(eq(fileUploads.id, uploadId), eq(fileUploads.userId, "test-user")))
+        .returning();
+        
+      if (!updatedUpload) {
+        return res.status(404).json({ error: "Upload not found" });
+      }
+      
+      res.json(updatedUpload);
+    } catch (error) {
+      console.error("Error updating upload folder:", error);
+      res.status(500).json({ error: "Failed to update upload folder" });
+    }
+  });
+
   // Project folder management endpoints
   app.get("/api/folders", async (req: Request, res: Response) => {
     try {
