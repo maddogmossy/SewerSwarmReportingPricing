@@ -286,9 +286,10 @@ export default function Dashboard() {
   // Filter state
   const [filters, setFilters] = useState({
     severityGrade: '',
-    adoptable: '',
+    adoptable: [] as string[],
     pipeSize: '',
-    pipeMaterial: ''
+    pipeMaterial: '',
+    projectNumber: ''
   });
   const [showFilters, setShowFilters] = useState(false);
 
@@ -528,9 +529,10 @@ export default function Dashboard() {
   // Apply filters to section data
   const sectionData = rawFilteredData.filter(section => {
     if (filters.severityGrade && section.severityGrade !== filters.severityGrade) return false;
-    if (filters.adoptable && section.adoptable !== filters.adoptable) return false;
+    if (filters.adoptable.length > 0 && !filters.adoptable.includes(section.adoptable)) return false;
     if (filters.pipeSize && section.pipeSize !== filters.pipeSize) return false;
     if (filters.pipeMaterial && section.pipeMaterial !== filters.pipeMaterial) return false;
+    if (filters.projectNumber && currentUpload && currentUpload.projectNumber && !currentUpload.projectNumber.includes(filters.projectNumber)) return false;
     return true;
   });
   
@@ -1006,7 +1008,7 @@ export default function Dashboard() {
                 {/* Filter Controls */}
                 {showFilters && (
                   <div className="mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">Severity Grade</label>
                         <select
@@ -1025,17 +1027,38 @@ export default function Dashboard() {
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Adoptable</label>
-                        <select
-                          value={filters.adoptable}
-                          onChange={(e) => setFilters({...filters, adoptable: e.target.value})}
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Project Number</label>
+                        <input
+                          type="text"
+                          value={filters.projectNumber}
+                          onChange={(e) => setFilters({...filters, projectNumber: e.target.value})}
+                          placeholder="e.g. 3588"
                           className="w-full px-3 py-1 text-sm border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="">All Status</option>
-                          <option value="Yes">Yes</option>
-                          <option value="No">No</option>
-                          <option value="Conditional">Conditional</option>
-                        </select>
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Adoptable</label>
+                        <div className="space-y-2">
+                          {['Yes', 'No', 'Conditional'].map((option) => (
+                            <div key={option} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`adoptable-${option}`}
+                                checked={filters.adoptable.includes(option)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setFilters({...filters, adoptable: [...filters.adoptable, option]});
+                                  } else {
+                                    setFilters({...filters, adoptable: filters.adoptable.filter(a => a !== option)});
+                                  }
+                                }}
+                              />
+                              <label htmlFor={`adoptable-${option}`} className="text-sm text-slate-700">
+                                {option}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                       
                       <div>
