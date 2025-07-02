@@ -780,28 +780,28 @@ export async function registerRoutes(app: Express) {
       }
       
       // Delete existing sections for this upload
-      await db.delete(sectionInspectionData)
-        .where(eq(sectionInspectionData.fileUploadId, uploadId));
+      await db.delete(sectionInspections)
+        .where(eq(sectionInspections.fileUploadId, uploadId));
       
       // Re-process the PDF with corrected flow direction logic
-      const pdfBuffer = await fs.readFile(upload.filePath);
-      const pdfText = await pdf(pdfBuffer);
+      const pdfBuffer = await fs.promises.readFile(upload.filePath);
+      const pdfText = await pdfParse(pdfBuffer);
       
-      const extractedSections = extractSectionsFromPDF(pdfText.text, uploadId);
+      const extractedSections = await extractSectionsFromPDF(pdfText.text, uploadId);
       
-      if (extractedSections.length > 0) {
-        await db.insert(sectionInspectionData).values(extractedSections);
+      if (extractedSections && extractedSections.length > 0) {
+        await db.insert(sectionInspections).values(extractedSections);
       }
       
       res.json({ 
         success: true, 
-        message: `Refreshed ${extractedSections.length} sections with corrected flow direction`,
-        sectionsProcessed: extractedSections.length
+        message: `Refreshed ${extractedSections?.length || 0} sections with corrected flow direction`,
+        sectionsProcessed: extractedSections?.length || 0
       });
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error refreshing report flow direction:", error);
-      res.status(500).json({ error: "Failed to refresh report" });
+      res.status(500).json({ error: error.message || "Failed to refresh report" });
     }
   });
 
