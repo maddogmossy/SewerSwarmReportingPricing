@@ -121,7 +121,7 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
     
     createFolderMutation.mutate({
       folderName: newFolderName.trim(),
-      projectAddress: newFolderAddress.trim(),
+      projectAddress: "", // No separate address field
       projectNumber: projectNumber || "",
     });
   };
@@ -139,7 +139,7 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
     updateFolderMutation.mutate({
       id: editingFolder.id,
       folderName: newFolderName.trim(),
-      projectAddress: newFolderAddress.trim(),
+      projectAddress: "", // No separate address field
     });
   };
 
@@ -226,22 +226,12 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="folderName">Folder Name</Label>
+                <Label htmlFor="folderName">Folder Name (Address)</Label>
                 <Input
                   id="folderName"
                   value={newFolderName}
                   onChange={(e) => setNewFolderName(e.target.value)}
                   placeholder="e.g., 3588 - Nine Elms Park"
-                />
-              </div>
-              <div>
-                <Label htmlFor="folderAddress">Project Address</Label>
-                <Textarea
-                  id="folderAddress"
-                  value={newFolderAddress}
-                  onChange={(e) => setNewFolderAddress(e.target.value)}
-                  placeholder="e.g., Nine Elms Park, London"
-                  rows={2}
                 />
               </div>
             </div>
@@ -265,27 +255,17 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
             <DialogHeader>
               <DialogTitle>Edit Folder</DialogTitle>
               <DialogDescription>
-                Update folder name and project address.
+                Update folder name.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="editFolderName">Folder Name</Label>
+                <Label htmlFor="editFolderName">Folder Name (Address)</Label>
                 <Input
                   id="editFolderName"
                   value={newFolderName}
                   onChange={(e) => setNewFolderName(e.target.value)}
                   placeholder="Folder name"
-                />
-              </div>
-              <div>
-                <Label htmlFor="editFolderAddress">Project Address</Label>
-                <Textarea
-                  id="editFolderAddress"
-                  value={newFolderAddress}
-                  onChange={(e) => setNewFolderAddress(e.target.value)}
-                  placeholder="Project address"
-                  rows={2}
                 />
               </div>
             </div>
