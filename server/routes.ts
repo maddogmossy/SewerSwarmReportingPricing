@@ -284,16 +284,31 @@ export async function registerRoutes(app: Express) {
       const userId = "test-user";
       const projectMatch = req.file.originalname.match(/(\d{4})/);
       const projectNo = projectMatch ? projectMatch[1] : "0000";
+      
+      // Handle folder assignment and visit number
+      let folderId = null;
+      let visitNumber = 1;
+      
+      if (req.body.folderId) {
+        folderId = parseInt(req.body.folderId);
+        
+        // Count existing files in this folder to determine visit number
+        const existingFiles = await db.select().from(fileUploads)
+          .where(eq(fileUploads.folderId, folderId));
+        visitNumber = existingFiles.length + 1;
+      }
 
       // Create file upload record
       const [fileUpload] = await db.insert(fileUploads).values({
         userId: userId,
+        folderId: folderId,
         fileName: req.file.originalname,
         fileSize: req.file.size,
         fileType: req.file.mimetype,
         filePath: req.file.path,
         status: "processing",
         projectNumber: projectNo,
+        visitNumber: visitNumber,
         sector: req.body.sector || "utilities"
       }).returning();
 

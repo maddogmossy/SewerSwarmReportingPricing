@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/ui/file-upload";
+import { FolderSelector } from "@/components/folder-selector";
 import { FileUpload as FileUploadType } from "@shared/schema";
 import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House, Settings } from "lucide-react";
 import { Link, useLocation } from "wouter";
@@ -108,6 +109,7 @@ export default function Upload() {
   const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedSector, setSelectedSector] = useState<string>("");
+  const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
   const [, setLocation] = useLocation();
   const [sectorProfiles, setSectorProfiles] = useState<Record<string, any>>({});
 
@@ -158,10 +160,13 @@ export default function Upload() {
   });
 
   const uploadMutation = useMutation({
-    mutationFn: async ({ file, sector }: { file: File; sector: string }) => {
+    mutationFn: async ({ file, sector, folderId }: { file: File; sector: string; folderId: number | null }) => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('sector', sector);
+      if (folderId !== null) {
+        formData.append('folderId', folderId.toString());
+      }
       
       return apiRequest("POST", "/api/upload", formData);
     },
@@ -197,7 +202,7 @@ export default function Upload() {
       });
       return;
     }
-    uploadMutation.mutate({ file: selectedFile, sector: selectedSector });
+    uploadMutation.mutate({ file: selectedFile, sector: selectedSector, folderId: selectedFolderId });
   };
 
   const refreshMutation = useMutation({
