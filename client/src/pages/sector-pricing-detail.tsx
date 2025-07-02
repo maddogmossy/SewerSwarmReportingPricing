@@ -49,7 +49,7 @@ export default function SectorPricingDetail() {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-3">
               <Settings className="h-6 w-6" />
-              Repair Pricing Configuration
+              Work Category Pricing Configuration
             </CardTitle>
             <Button onClick={() => window.location.href = `/repair-pricing/${sector}`}>
               Configure Pricing
