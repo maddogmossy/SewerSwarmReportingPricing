@@ -845,10 +845,8 @@ export default function Dashboard() {
     refetchOnWindowFocus: true,
   });
 
-  // DEDUPLICATE: Remove any duplicate sections by item_no (client-side safety)
-  const rawFilteredData = rawSectionData.filter((section, index, arr) => 
-    arr.findIndex(s => s.itemNo === section.itemNo) === index
-  );
+  // USE ALL SECTIONS: Allow duplicate item numbers for letter suffix functionality
+  const rawFilteredData = rawSectionData; // No deduplication - we want duplicate item numbers
 
   // Combine sections with individual defects - create multiple rows for sections with multiple defects
   const expandedSectionData = rawFilteredData.reduce((acc: any[], section: any) => {
