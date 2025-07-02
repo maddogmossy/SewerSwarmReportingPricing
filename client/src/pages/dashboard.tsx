@@ -577,10 +577,8 @@ export default function Dashboard() {
       { key: 'cost', label: 'Cost', hideable: false }
     ];
     
-    // Filter visible headers
-    const visibleHeaders = allHeaders.filter(header => 
-      !header.hideable || !currentHiddenColumns.has(header.key)
-    );
+    // Include ALL headers in Excel export (don't filter by visibility)
+    const exportHeaders = allHeaders;
     
     const projectNo = currentUpload?.fileName?.match(/^(\d+)/)?.[1] || 'Unknown';
     const reportDate = new Date().toLocaleDateString('en-GB');
@@ -596,14 +594,16 @@ export default function Dashboard() {
       '"Project Reference: ' + projectNo + '"',
       '"Report Date: ' + reportDate + '"',
       '"Sector: ' + (currentSector?.name || 'Utilities') + '"',
+      '"Hidden Columns: ' + (currentHiddenColumns.size > 0 ? Array.from(currentHiddenColumns).join(', ') : 'None') + '"',
+      '"Applied Filters: ' + (Object.values(filters).some(f => f) ? 'Yes' : 'No') + '"',
       '""', // Empty row before data
       '"=== SECTION INSPECTION DATA ==="',
       '""', // Empty row
       
-      // Column headers - visible columns only
-      visibleHeaders.map(h => h.label).join(','),
+      // Column headers - ALL columns included
+      exportHeaders.map(h => h.label).join(','),
       
-      // Data rows - only include visible columns with cost logic applied (filtered data)
+      // Data rows - ALL columns included with cost logic applied (filtered data)
       ...sectionData.map(section => {
         // Apply same cost logic as dashboard
         let costValue = section.cost || '£0.00';
@@ -641,7 +641,7 @@ export default function Dashboard() {
           cost: costValue
         };
         
-        return visibleHeaders.map(header => {
+        return exportHeaders.map(header => {
           const value = rowData[header.key] || '';
           // Wrap text for content-rich columns and escape quotes properly
           return `"${String(value).replace(/"/g, '""')}"`;
