@@ -1096,7 +1096,7 @@ export default function Dashboard() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setFilters({severityGrade: '', adoptable: '', pipeSize: '', pipeMaterial: ''})}
+                        onClick={() => setFilters({severityGrade: '', adoptable: [], pipeSize: '', pipeMaterial: '', projectNumber: ''})}
                         className="text-xs"
                       >
                         Clear All Filters
