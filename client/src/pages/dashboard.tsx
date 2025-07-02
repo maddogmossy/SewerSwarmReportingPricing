@@ -458,7 +458,8 @@ export default function Dashboard() {
               sectionData={{
                 pipeSize: section.pipeSize,
                 sector: currentSector.id,
-                recommendations: section.recommendations
+                recommendations: section.recommendations,
+                defects: section.defects
               }}
               onPricingNeeded={(method, pipeSize, sector) => {
                 // Navigate to repair pricing page for this sector

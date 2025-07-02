@@ -24,12 +24,39 @@ interface RepairOptionsPopoverProps {
     pipeSize: string;
     sector: string;
     recommendations: string;
+    defects?: string; // Add defects to extract meterage
   };
   onPricingNeeded: (method: string, pipeSize: string, sector: string) => void;
 }
 
 export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }: RepairOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
+  
+  // Extract meterage from defects text
+  const extractMeterage = (defectsText: string): string => {
+    if (!defectsText) return "0.00m";
+    
+    // Look for patterns like "10.78m", "7.08m", etc.
+    const meterageMatch = defectsText.match(/(\d+\.?\d*)\s*m/);
+    if (meterageMatch) {
+      return `${meterageMatch[1]}m`;
+    }
+    
+    // If no meterage found, return default
+    return "0.00m";
+  };
+
+  // Populate description template with pipe size and meterage
+  const populateDescription = (template: string, method: string): string => {
+    const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
+    const meterage = extractMeterage(sectionData.defects || '');
+    
+    // Replace () placeholders sequentially - first with pipe size, second with meterage
+    let result = template;
+    result = result.replace(/\(\)/, pipeSize); // First () becomes pipe size
+    result = result.replace(/\(\)/, meterage); // Second () becomes meterage
+    return result;
+  };
   
   // Fetch available repair methods
   const { data: repairMethods = [] } = useQuery({
@@ -51,7 +78,9 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
         return {
           id: method.id,
           name: method.name,
-          description: method.description,
+          description: pricing?.description ? 
+            populateDescription(pricing.description, method.name) : 
+            method.description,
           cost: pricing?.cost,
           rule: pricing?.rule,
           minimumQuantity: pricing?.minimumQuantity || 1,
