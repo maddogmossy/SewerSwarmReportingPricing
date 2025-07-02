@@ -409,7 +409,33 @@ export default function Dashboard() {
       case 'lengthSurveyed':
         return section.lengthSurveyed;
       case 'defects':
-        return section.defects;
+        const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
+        
+        if (hasDefects && section.recommendations && !section.recommendations.includes('No action required')) {
+          return (
+            <RepairOptionsPopover
+              sectionData={{
+                pipeSize: section.pipeSize,
+                sector: currentSector.id,
+                recommendations: section.recommendations,
+                defects: section.defects
+              }}
+              onPricingNeeded={(method, pipeSize, sector) => {
+                window.location.href = `/repair-pricing/${sector}?method=${method}&size=${pipeSize}`;
+              }}
+            >
+              <div className="text-xs max-w-48 cursor-pointer hover:bg-blue-50 p-1 rounded">
+                {section.defects || 'No defects recorded'}
+              </div>
+            </RepairOptionsPopover>
+          );
+        } else {
+          return (
+            <div className="text-xs max-w-48 p-1">
+              {section.defects || 'No defects recorded'}
+            </div>
+          );
+        }
       case 'severityGrade':
         // Handle dual grading for Section 75 (JDM)
         if (section.itemNo === 75) {
