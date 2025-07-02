@@ -536,6 +536,10 @@ export default function Dashboard() {
     return true;
   });
   
+  // Debug logging for adoptable filter
+  console.log('Current adoptable filter:', filters.adoptable);
+  console.log('Sample section adoptable values:', rawFilteredData.slice(0, 3).map(s => s.adoptable));
+  
   // Remove debugging code - data is now clean for fresh uploads
 
   // Check if pricing exists for the current sector
