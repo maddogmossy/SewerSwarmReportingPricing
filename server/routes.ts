@@ -6,7 +6,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { db } from "./db";
-import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders } from "@shared/schema";
+import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing } from "@shared/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
@@ -929,6 +929,160 @@ export async function registerRoutes(app: Express) {
   // Placeholder for defect thresholds
   app.get("/api/defect-thresholds", async (req: Request, res: Response) => {
     res.json([]); // Future implementation
+  });
+
+  // Repair Methods endpoints
+  app.get("/api/repair-methods", async (req: Request, res: Response) => {
+    try {
+      const methods = await db.select().from(repairMethods)
+        .where(eq(repairMethods.isActive, true))
+        .orderBy(asc(repairMethods.name));
+      res.json(methods);
+    } catch (error) {
+      console.error("Error fetching repair methods:", error);
+      res.status(500).json({ error: "Failed to fetch repair methods" });
+    }
+  });
+
+  // Repair Pricing endpoints
+  app.get("/api/repair-pricing/:sector", async (req: Request, res: Response) => {
+    try {
+      const { sector } = req.params;
+      const pricing = await db.select({
+        id: repairPricing.id,
+        sector: repairPricing.sector,
+        repairMethodId: repairPricing.repairMethodId,
+        pipeSize: repairPricing.pipeSize,
+        depth: repairPricing.depth,
+        description: repairPricing.description,
+        cost: repairPricing.cost,
+        rule: repairPricing.rule,
+        minimumQuantity: repairPricing.minimumQuantity,
+        methodName: repairMethods.name,
+        methodDescription: repairMethods.description,
+        category: repairMethods.category
+      })
+      .from(repairPricing)
+      .leftJoin(repairMethods, eq(repairPricing.repairMethodId, repairMethods.id))
+      .where(and(
+        eq(repairPricing.userId, "test-user"),
+        eq(repairPricing.sector, sector),
+        eq(repairPricing.isActive, true)
+      ))
+      .orderBy(asc(repairMethods.name), asc(repairPricing.pipeSize));
+      
+      res.json(pricing);
+    } catch (error) {
+      console.error("Error fetching repair pricing:", error);
+      res.status(500).json({ error: "Failed to fetch repair pricing" });
+    }
+  });
+
+  app.post("/api/repair-pricing", async (req: Request, res: Response) => {
+    try {
+      const { sector, repairMethodId, pipeSize, depth, description, cost, rule, minimumQuantity } = req.body;
+      
+      const [newPricing] = await db.insert(repairPricing).values({
+        userId: "test-user",
+        sector,
+        repairMethodId: parseInt(repairMethodId),
+        pipeSize,
+        depth,
+        description,
+        cost: cost.toString(),
+        rule,
+        minimumQuantity: parseInt(minimumQuantity) || 1,
+      }).returning();
+      
+      res.json(newPricing);
+    } catch (error) {
+      console.error("Error creating repair pricing:", error);
+      res.status(500).json({ error: "Failed to create repair pricing" });
+    }
+  });
+
+  app.put("/api/repair-pricing/:id", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { sector, repairMethodId, pipeSize, depth, description, cost, rule, minimumQuantity } = req.body;
+      
+      const [updatedPricing] = await db.update(repairPricing)
+        .set({
+          sector,
+          repairMethodId: parseInt(repairMethodId),
+          pipeSize,
+          depth,
+          description,
+          cost: parseFloat(cost),
+          rule,
+          minimumQuantity: parseInt(minimumQuantity) || 1,
+          updatedAt: new Date(),
+        })
+        .where(and(eq(repairPricing.id, parseInt(id)), eq(repairPricing.userId, "test-user")))
+        .returning();
+      
+      if (!updatedPricing) {
+        return res.status(404).json({ error: "Repair pricing not found" });
+      }
+      
+      res.json(updatedPricing);
+    } catch (error) {
+      console.error("Error updating repair pricing:", error);
+      res.status(500).json({ error: "Failed to update repair pricing" });
+    }
+  });
+
+  app.delete("/api/repair-pricing/:id", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      
+      const [deletedPricing] = await db.delete(repairPricing)
+        .where(and(eq(repairPricing.id, parseInt(id)), eq(repairPricing.userId, "test-user")))
+        .returning();
+      
+      if (!deletedPricing) {
+        return res.status(404).json({ error: "Repair pricing not found" });
+      }
+      
+      res.json({ message: "Repair pricing deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting repair pricing:", error);
+      res.status(500).json({ error: "Failed to delete repair pricing" });
+    }
+  });
+
+  // Check repair pricing for specific defect
+  app.get("/api/repair-pricing/:sector/:pipeSize/:method", async (req: Request, res: Response) => {
+    try {
+      const { sector, pipeSize, method } = req.params;
+      
+      // Get method ID first
+      const [repairMethod] = await db.select().from(repairMethods).where(eq(repairMethods.name, method));
+      if (!repairMethod) {
+        return res.status(404).json({ error: "Repair method not found" });
+      }
+      
+      const [pricing] = await db.select().from(repairPricing)
+        .where(and(
+          eq(repairPricing.userId, "test-user"),
+          eq(repairPricing.sector, sector),
+          eq(repairPricing.pipeSize, pipeSize),
+          eq(repairPricing.repairMethodId, repairMethod.id),
+          eq(repairPricing.isActive, true)
+        ));
+      
+      if (!pricing) {
+        return res.status(404).json({ 
+          error: "Pricing not configured",
+          message: `Add pricing for ${pipeSize} ${method.toLowerCase()}`
+        });
+      }
+      
+      res.json(pricing);
+    } catch (error) {
+      console.error("Error checking repair pricing:", error);
+      res.status(500).json({ error: "Failed to check repair pricing" });
+    }
   });
 
   // Auth endpoint

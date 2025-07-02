@@ -234,7 +234,7 @@ export const repairPricing = pgTable("repair_pricing", {
   pipeSize: varchar("pipe_size").notNull(), // "150mm", "225mm", "300mm", etc.
   depth: varchar("depth"), // "0-1m", "1-2m", "2-3m", etc.
   description: text("description"), // User's custom description
-  cost: decimal("cost", { precision: 10, scale: 2 }).notNull(),
+  cost: varchar("cost").notNull(), // Store as string to avoid decimal precision issues
   rule: text("rule"), // "Rate based on min of 4 patches"
   minimumQuantity: integer("minimum_quantity").default(1),
   isActive: boolean("is_active").default(true),
