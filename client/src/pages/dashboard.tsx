@@ -1637,7 +1637,7 @@ export default function Dashboard() {
                     </thead>
                     <tbody>
                       {sectionData.map((section, index) => (
-                        <tr key={section.rowId || index} className="hover:bg-slate-50">
+                        <tr key={`${section.id}-${section.itemNo}-${index}`} className="hover:bg-slate-50">
                           {columns.map((column) => {
                             if (hiddenColumns.has(column.key)) return null;
                             return (
