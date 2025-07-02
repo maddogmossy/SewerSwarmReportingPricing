@@ -827,7 +827,7 @@ export default function Dashboard() {
 
   // Fetch real section inspection data from database - ALWAYS AUTHENTIC DATA
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, Date.now()], // Add timestamp to force fresh data
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
     staleTime: 0,
     gcTime: 0, // Prevent caching
