@@ -230,7 +230,7 @@ export const repairPricing = pgTable("repair_pricing", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   sector: varchar("sector").notNull(), // utilities, adoption, highways, etc.
-  workCategoryId: integer("work_category_id").notNull().references(() => workCategories.id),
+  workCategoryId: integer("work_category_id").references(() => workCategories.id),
   repairMethodId: integer("repair_method_id").references(() => repairMethods.id), // Optional, legacy support
   pipeSize: varchar("pipe_size").notNull(), // "150mm", "225mm", "300mm", etc.
   depth: varchar("depth"), // "0-1m", "1-2m", "2-3m", etc.

@@ -963,6 +963,7 @@ export async function registerRoutes(app: Express) {
       const pricing = await db.select({
         id: repairPricing.id,
         sector: repairPricing.sector,
+        workCategoryId: repairPricing.workCategoryId,
         repairMethodId: repairPricing.repairMethodId,
         pipeSize: repairPricing.pipeSize,
         depth: repairPricing.depth,
@@ -970,18 +971,21 @@ export async function registerRoutes(app: Express) {
         cost: repairPricing.cost,
         rule: repairPricing.rule,
         minimumQuantity: repairPricing.minimumQuantity,
+        categoryName: workCategories.name,
+        categoryDescription: workCategories.description,
         methodName: repairMethods.name,
         methodDescription: repairMethods.description,
         category: repairMethods.category
       })
       .from(repairPricing)
+      .leftJoin(workCategories, eq(repairPricing.workCategoryId, workCategories.id))
       .leftJoin(repairMethods, eq(repairPricing.repairMethodId, repairMethods.id))
       .where(and(
         eq(repairPricing.userId, "test-user"),
         eq(repairPricing.sector, sector),
         eq(repairPricing.isActive, true)
       ))
-      .orderBy(asc(repairMethods.name), asc(repairPricing.pipeSize));
+      .orderBy(asc(workCategories.name), asc(repairPricing.pipeSize));
       
       res.json(pricing);
     } catch (error) {
@@ -992,12 +996,13 @@ export async function registerRoutes(app: Express) {
 
   app.post("/api/repair-pricing", async (req: Request, res: Response) => {
     try {
-      const { sector, repairMethodId, pipeSize, depth, description, cost, rule, minimumQuantity } = req.body;
+      const { sector, workCategoryId, repairMethodId, pipeSize, depth, description, cost, rule, minimumQuantity } = req.body;
       
       const [newPricing] = await db.insert(repairPricing).values({
         userId: "test-user",
         sector,
-        repairMethodId: parseInt(repairMethodId),
+        workCategoryId: workCategoryId ? parseInt(workCategoryId) : null,
+        repairMethodId: repairMethodId ? parseInt(repairMethodId) : null,
         pipeSize,
         depth,
         description,

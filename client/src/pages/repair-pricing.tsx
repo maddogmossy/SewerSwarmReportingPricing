@@ -48,7 +48,7 @@ export default function RepairPricing() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [formData, setFormData] = useState({
-    repairMethodId: "",
+    workCategoryId: "",
     pipeSize: "",
     depth: "",
     description: "",
@@ -124,7 +124,7 @@ export default function RepairPricing() {
 
   const resetForm = () => {
     setFormData({
-      repairMethodId: "",
+      workCategoryId: "",
       pipeSize: "",
       depth: "",
       description: "",
@@ -153,7 +153,7 @@ export default function RepairPricing() {
 
   const handleEdit = (item: any) => {
     setFormData({
-      repairMethodId: item.repairMethodId.toString(),
+      workCategoryId: item.workCategoryId?.toString() || "",
       pipeSize: item.pipeSize,
       depth: item.depth || "",
       description: item.description || "",
