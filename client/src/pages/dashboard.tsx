@@ -25,7 +25,13 @@ import {
   Clock,
   AlertCircle,
   Settings,
-  Filter
+  Filter,
+  Folder,
+  FolderOpen,
+  ChevronRight,
+  ChevronDown,
+  Eye,
+  Trash2
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
@@ -292,6 +298,9 @@ export default function Dashboard() {
     projectNumber: ''
   });
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Folder expansion state
+  const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
 
   // Load hidden columns from localStorage on component mount
   useEffect(() => {
@@ -477,6 +486,95 @@ export default function Dashboard() {
   const { data: uploads = [] } = useQuery<FileUploadType[]>({
     queryKey: ["/api/uploads"],
   });
+
+  const { data: folders = [] } = useQuery<any[]>({
+    queryKey: ["/api/folders"],
+  });
+
+  // Auto-expand folders when they're loaded
+  useEffect(() => {
+    if (folders.length > 0) {
+      setExpandedFolders(new Set(folders.map(f => f.id)));
+    }
+  }, [folders]);
+
+  const toggleFolder = (folderId: number) => {
+    setExpandedFolders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(folderId)) {
+        newSet.delete(folderId);
+      } else {
+        newSet.add(folderId);
+      }
+      return newSet;
+    });
+  };
+
+  // Group uploads by folder
+  const groupUploadsByFolder = () => {
+    const grouped: { [key: string]: typeof uploads } = {};
+    
+    uploads.forEach(upload => {
+      const folder = folders.find(f => f.id === upload.folderId);
+      const folderKey = folder ? `${folder.id}` : 'no-folder';
+      if (!grouped[folderKey]) {
+        grouped[folderKey] = [];
+      }
+      grouped[folderKey].push(upload);
+    });
+    
+    return grouped;
+  };
+
+  const handleViewReport = (uploadId: number) => {
+    window.location.href = `/dashboard?reportId=${uploadId}`;
+  };
+
+  const deleteMutation = useMutation({
+    mutationFn: async (uploadId: number) => {
+      return apiRequest("DELETE", `/api/uploads/${uploadId}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Report Deleted",
+        description: "The report has been successfully deleted.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Delete Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-emerald-600" />;
+      case 'processing':
+        return <Clock className="h-4 w-4 text-blue-600" />;
+      case 'failed':
+        return <AlertCircle className="h-4 w-4 text-red-600" />;
+      default:
+        return <Clock className="h-4 w-4 text-slate-400" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'processing':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'failed':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-slate-100 text-slate-800 border-slate-200';
+    }
+  };
 
   const refreshMutation = useMutation({
     mutationFn: () => apiRequest("GET", "/api/uploads"),
@@ -928,24 +1026,67 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold text-slate-900">Section Inspection Data & Analysis</h1>
             {completedUploads.length > 1 && (
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-slate-700">Select Report:</label>
-                <select 
-                  value={currentUpload?.id || ''}
-                  onChange={(e) => {
-                    const selectedId = e.target.value;
-                    if (selectedId) {
-                      window.location.href = `/dashboard?reportId=${selectedId}`;
+              <div className="flex items-center gap-4">
+                <label className="text-sm font-medium text-slate-700">Project Folders:</label>
+                <div className="flex gap-2">
+                  {Object.entries(groupUploadsByFolder()).map(([folderKey, folderUploads]) => {
+                    const folder = folders.find(f => f.id === parseInt(folderKey));
+                    const isExpanded = expandedFolders.has(parseInt(folderKey));
+                    const completedReports = folderUploads.filter(u => u.status === 'completed');
+                    
+                    if (folderKey === 'no-folder' || completedReports.length === 0) {
+                      return null;
                     }
-                  }}
-                  className="px-3 py-1 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {completedUploads.sort((a, b) => b.id - a.id).map(upload => (
-                    <option key={upload.id} value={upload.id}>
-                      {upload.fileName} • {sectors.find(s => s.id === upload.sector)?.name || 'Unknown'} Sector
-                    </option>
-                  ))}
-                </select>
+
+                    return (
+                      <div key={folderKey} className="relative">
+                        <button
+                          onClick={() => toggleFolder(parseInt(folderKey))}
+                          className="flex items-center gap-2 px-3 py-1 border border-slate-300 rounded-md text-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          {isExpanded ? <FolderOpen className="h-4 w-4 text-blue-600" /> : <Folder className="h-4 w-4 text-blue-600" />}
+                          <span>{folder?.folderName || `Folder ${folderKey}`}</span>
+                          <span className="text-xs text-slate-500">({completedReports.length})</span>
+                          {isExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+                        </button>
+                        
+                        {isExpanded && (
+                          <div className="absolute top-full left-0 mt-1 bg-white border border-slate-300 rounded-md shadow-lg z-10 min-w-[300px]">
+                            {completedReports.map((upload) => (
+                              <div key={upload.id} className="flex items-center justify-between p-3 hover:bg-slate-50 border-b last:border-b-0">
+                                <div className="flex items-center gap-2">
+                                  {getStatusIcon(upload.status || 'pending')}
+                                  <div>
+                                    <div className="font-medium text-sm">{upload.fileName}</div>
+                                    <div className="text-xs text-slate-500">
+                                      {sectors.find(s => s.id === upload.sector)?.name || 'Unknown'} Sector
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={() => handleViewReport(upload.id)}
+                                    className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                                    title="View Report"
+                                  >
+                                    <Eye className="h-3 w-3" />
+                                  </button>
+                                  <button
+                                    onClick={() => deleteMutation.mutate(upload.id)}
+                                    className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                    title="Delete Report"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
