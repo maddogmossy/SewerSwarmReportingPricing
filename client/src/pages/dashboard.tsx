@@ -387,8 +387,18 @@ export default function Dashboard() {
     const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
     
     if (sectionsWithSameItem.length > 1) {
-      // Sort by meterage (total_length) to get correct order - lower meterage first
+      // Sort by defects priority: DEG comes after CR, so CR gets "2" and DEG gets "2a"
       sectionsWithSameItem.sort((a, b) => {
+        // CR defects come first (get original number), DEG defects come second (get letter suffix)
+        const aHasCR = a.defects && a.defects.includes('CR ');
+        const bHasCR = b.defects && b.defects.includes('CR ');
+        const aHasDEG = a.defects && a.defects.includes('DEG ');
+        const bHasDEG = b.defects && b.defects.includes('DEG ');
+        
+        if (aHasCR && bHasDEG) return -1; // CR comes before DEG
+        if (aHasDEG && bHasCR) return 1;  // DEG comes after CR
+        
+        // Fallback to meterage ordering for other cases
         const lengthA = parseFloat(a.totalLength?.replace('m', '') || '0');
         const lengthB = parseFloat(b.totalLength?.replace('m', '') || '0');
         return lengthA - lengthB;
@@ -583,11 +593,14 @@ export default function Dashboard() {
         }
         
         // Sections with complex defects requiring pricing configuration  
-        const sectionsNeedingPricing = [25, 31, 47, 52, 57, 72, 73, 74, 75, 76, 78];
+        const sectionsNeedingPricing = [2, 25, 31, 47, 52, 57, 72, 73, 74, 75, 76, 78];
         if (sectionsNeedingPricing.includes(section.itemNo)) {
           return (
-            <div className="text-xs text-orange-600 font-medium">
-              Configure utilities sector pricing first
+            <div className="flex items-center justify-center gap-1" title="Configure pricing for this defect type">
+              <TriangleAlert className="h-4 w-4 text-orange-500" />
+              <span className="text-xs text-orange-600 font-medium">
+                Configure utilities sector pricing first
+              </span>
             </div>
           );
         }
@@ -994,7 +1007,7 @@ export default function Dashboard() {
         costValue = 'Complete';
       } else {
         const sectionsComplete = [6, 7, 8, 10, 13, 14, 21];
-        const sectionsNeedingPricing = [25, 31, 47, 52, 57, 72, 73, 74, 75, 76, 78];
+        const sectionsNeedingPricing = [2, 25, 31, 47, 52, 57, 72, 73, 74, 75, 76, 78];
         
         if (sectionsComplete.includes(section.itemNo)) {
           costValue = 'Complete';
