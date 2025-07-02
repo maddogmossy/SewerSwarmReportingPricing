@@ -376,6 +376,60 @@ export default function Dashboard() {
     { key: 'cost', label: 'Cost (£)', hideable: false, width: 'w-20', priority: 'tight' }
   ];
 
+  // Function to calculate auto-populated cost for defective sections
+  const calculateAutoCost = (section: any) => {
+    // Only calculate for sections with defects
+    if (!section.severityGrade || section.severityGrade === "0" || section.severityGrade === 0) {
+      return null;
+    }
+
+    // Extract meterage from defects
+    const extractMeterage = (defectsText: string): number => {
+      if (!defectsText) return 1;
+      const meterageMatch = defectsText.match(/(\d+\.?\d*)\s*m/);
+      return meterageMatch ? parseFloat(meterageMatch[1]) : 1;
+    };
+
+    // Extract pipe size (remove "mm" and convert to number)
+    const extractPipeSize = (pipeSizeText: string): number => {
+      if (!pipeSizeText) return 150;
+      const sizeMatch = pipeSizeText.match(/(\d+)/);
+      return sizeMatch ? parseInt(sizeMatch[1]) : 150;
+    };
+
+    const meterage = extractMeterage(section.defects || "");
+    const pipeSize = extractPipeSize(section.pipeSize || "");
+    
+    // Base cost calculation (example pricing)
+    let baseCost = 0;
+    
+    // Determine repair type based on defect severity and type
+    if (section.defects?.includes('CR') || section.defects?.includes('FC')) {
+      // Crack repair - patch repair
+      baseCost = 150 + (pipeSize * 0.5); // £150 base + pipe size factor
+    } else if (section.defects?.includes('DER') || section.defects?.includes('DES')) {
+      // Debris - jetting/cleaning
+      baseCost = 80 + (pipeSize * 0.3);
+    } else if (section.defects?.includes('DEF') || section.defects?.includes('FL')) {
+      // Deformation/fracture - lining or excavation
+      baseCost = 300 + (pipeSize * 0.8);
+    } else {
+      // General repair
+      baseCost = 120 + (pipeSize * 0.4);
+    }
+
+    const totalCost = baseCost * meterage;
+    const minQuantity = 5; // Example minimum quantity
+    const isUnderMinimum = meterage < minQuantity;
+
+    return {
+      cost: totalCost,
+      meterage,
+      minQuantity,
+      isUnderMinimum
+    };
+  };
+
   // Function to render cell content based on column key
   const renderCellContent = (columnKey: string, section: any) => {
     switch (columnKey) {
@@ -413,23 +467,23 @@ export default function Dashboard() {
         
         if (hasDefects) {
           return (
-            <div className="relative group">
-              <div className="text-xs max-w-48 cursor-pointer hover:bg-blue-100 hover:border-blue-300 border border-transparent p-2 rounded transition-all duration-200">
-                {section.defects || 'No defects recorded'}
+            <div 
+              className="relative group cursor-pointer"
+              onClick={() => {
+                window.location.href = `/repair-pricing/${currentSector.id}`;
+              }}
+            >
+              <div className="text-xs max-w-48 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
+                <div className="font-medium text-blue-800 mb-1">🔧 REPAIRABLE DEFECT</div>
+                <div className="text-blue-700">{section.defects || 'No defects recorded'}</div>
+                <div className="text-xs text-blue-600 mt-1 font-medium">→ Click for repair options</div>
               </div>
               
-              {/* Simple hover tooltip */}
-              <div className="absolute z-50 invisible group-hover:visible bg-black text-white text-xs rounded p-2 -top-8 left-0 whitespace-nowrap">
-                Click to see repair options
+              {/* Obvious hover tooltip */}
+              <div className="absolute z-50 invisible group-hover:visible bg-blue-600 text-white text-sm rounded-lg p-3 -top-16 left-0 whitespace-nowrap shadow-lg border-2 border-blue-400">
+                <div className="font-bold">💡 REPAIR OPTIONS AVAILABLE</div>
+                <div>Click to configure pricing & methods</div>
               </div>
-              
-              {/* Click handler for repair options */}
-              <div 
-                className="absolute inset-0 cursor-pointer"
-                onClick={() => {
-                  window.location.href = `/repair-pricing/${currentSector.id}`;
-                }}
-              />
             </div>
           );
         } else {
@@ -519,20 +573,26 @@ export default function Dashboard() {
           </span>
         );
       case 'cost':
-        // If section has individual defect cost, use it
-        if (section.estimatedCost) {
-          return (
-            <div className="text-xs text-blue-600 font-medium">
-              {section.estimatedCost}
-            </div>
-          );
-        }
-        
         // Check if section has "No action required" in recommendations (Grade 0 sections only)
         if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
           return (
             <div className="text-xs text-green-600 font-medium">
               Complete
+            </div>
+          );
+        }
+        
+        // Auto-populate cost for defective sections
+        const autoCost = calculateAutoCost(section);
+        if (autoCost) {
+          const costColor = autoCost.isUnderMinimum ? 'text-red-600' : 'text-blue-600';
+          return (
+            <div className={`text-xs ${costColor} font-medium`} title={
+              autoCost.isUnderMinimum 
+                ? `Minimum quantity: ${autoCost.minQuantity}m (Current: ${autoCost.meterage}m)`
+                : `Cost calculated: ${autoCost.meterage}m @ pipe size ${section.pipeSize}`
+            }>
+              £{autoCost.cost.toFixed(2)}
             </div>
           );
         }
