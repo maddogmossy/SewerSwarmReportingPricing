@@ -553,6 +553,14 @@ export default function Dashboard() {
   const exportToExcel = () => {
     if (!sectionData?.length) return;
     
+    // Warn user about hidden columns
+    if (hiddenColumns.size > 0) {
+      const hiddenColumnNames = Array.from(hiddenColumns).join(', ');
+      if (!confirm(`Warning: The following hidden columns will NOT be included in the export:\n\n${hiddenColumnNames}\n\nClick OK to continue with export, or Cancel to go back and unhide columns first.`)) {
+        return;
+      }
+    }
+    
     // Get visible columns based on hiddenColumns state
     const currentHiddenColumns = hiddenColumns;
     
@@ -578,8 +586,10 @@ export default function Dashboard() {
       { key: 'cost', label: 'Cost', hideable: false }
     ];
     
-    // Include ALL headers in Excel export (don't filter by visibility)
-    const exportHeaders = allHeaders;
+    // Filter visible headers (exclude hidden columns from export)
+    const exportHeaders = allHeaders.filter(header => 
+      !header.hideable || !currentHiddenColumns.has(header.key)
+    );
     
     const projectNo = currentUpload?.fileName?.match(/^(\d+)/)?.[1] || 'Unknown';
     const reportDate = new Date().toLocaleDateString('en-GB');
@@ -667,19 +677,7 @@ export default function Dashboard() {
     // Create worksheet
     const ws = XLSX.utils.aoa_to_sheet(allData);
     
-    // Hide columns that were hidden in dashboard
-    if (currentHiddenColumns.size > 0) {
-      const hiddenColIndices = headersWithIndex
-        .filter(header => currentHiddenColumns.has(header.key))
-        .map(header => header.colIndex);
-      
-      // Set column properties for Excel hiding
-      if (!ws['!cols']) ws['!cols'] = [];
-      hiddenColIndices.forEach(colIndex => {
-        if (!ws['!cols']![colIndex]) ws['!cols']![colIndex] = {};
-        ws['!cols']![colIndex]!.hidden = true;
-      });
-    }
+    // Note: Hidden columns are excluded from export (not included in data)
     
     // Add worksheet to workbook
     XLSX.utils.book_append_sheet(wb, ws, 'Inspection Report');
