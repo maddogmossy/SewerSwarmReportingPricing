@@ -34,6 +34,23 @@ const upload = multer({
 
 // PROTECTED FUNCTION: Inspection Direction Logic Validator
 // This function prevents unauthorized modification of critical flow direction logic
+function applyAdoptionFlowDirectionCorrection(upstreamNode: string, downstreamNode: string): { upstream: string, downstream: string, corrected: boolean } {
+  // Apply adoption sector flow direction rules
+  // Rule 1: Longer reference containing shorter reference should be corrected (F01-10A → F01-10 becomes F01-10A → F01-10)
+  if (upstreamNode.length > downstreamNode.length && upstreamNode.includes(downstreamNode)) {
+    return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
+  }
+  
+  // Rule 2: F-pattern nodes with upstream inspection (shorter → longer becomes longer → shorter)
+  if ((upstreamNode.startsWith('F') || downstreamNode.startsWith('F')) && 
+      upstreamNode.length < downstreamNode.length && 
+      downstreamNode.includes(upstreamNode)) {
+    return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
+  }
+  
+  return { upstream: upstreamNode, downstream: downstreamNode, corrected: false };
+}
+
 function validateInspectionDirectionModification(userConfirmation: boolean = false, reason: string = '') {
   if (!userConfirmation) {
     throw new Error(`
@@ -396,7 +413,7 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
           flowDirectionNote = ' (forced: SW10→SW01)';
         } else {
           // ALL OTHER SECTIONS: Apply adoption sector flow direction correction
-          // Example: F01-10A → F01-10 should be F01-10 → F01-10A
+          // Example: F01-10A → F01-10 should be F01-10A → F01-10 (downstream→upstream for upstream inspections)
           // Pattern: longer reference → shorter reference should be shorter → longer
           if (upstreamNode.length > downstreamNode.length && 
               upstreamNode.includes(downstreamNode)) {
@@ -405,6 +422,18 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
             downstreamNode = temp;
             flowDirectionNote = ' (adoption sector: corrected flow direction)';
             console.log(`DEBUG Section ${sectionNum}: ADOPTION SECTOR correction ${upstreamNode}→${downstreamNode}`);
+          }
+          
+          // ADDITIONAL ADOPTION SECTOR RULE: Apply downstream→upstream for upstream inspections
+          // If this looks like an adoption report with F-pattern nodes, apply upstream inspection rule
+          if ((upstreamNode.startsWith('F') || downstreamNode.startsWith('F')) && 
+              upstreamNode.length < downstreamNode.length && 
+              downstreamNode.includes(upstreamNode)) {
+            const temp = upstreamNode;
+            upstreamNode = downstreamNode;
+            downstreamNode = temp;
+            flowDirectionNote = ' (adoption sector: upstream inspection downstream→upstream flow)';
+            console.log(`DEBUG Section ${sectionNum}: ADOPTION UPSTREAM INSPECTION ${upstreamNode}→${downstreamNode}`);
           }
         }
       }
@@ -763,6 +792,46 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error("Error processing multiple defects:", error);
       res.status(500).json({ error: "Failed to process multiple defects" });
+    }
+  });
+
+  // Apply flow direction correction to all sections in a report
+  app.post("/api/uploads/:uploadId/fix-flow-direction", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      
+      // Get all sections for this upload
+      const sections = await db.query.sectionInspections.findMany({
+        where: eq(sectionInspections.fileUploadId, uploadId)
+      });
+      
+      let correctedCount = 0;
+      
+      for (const section of sections) {
+        const correction = applyAdoptionFlowDirectionCorrection(section.startMH, section.finishMH);
+        
+        if (correction.corrected) {
+          await db.update(sectionInspections)
+            .set({
+              startMH: correction.upstream,
+              finishMH: correction.downstream
+            })
+            .where(eq(sectionInspections.id, section.id));
+          
+          correctedCount++;
+          console.log(`Corrected Section ${section.itemNo}: ${section.startMH}→${section.finishMH} to ${correction.upstream}→${correction.downstream}`);
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Applied flow direction correction to ${correctedCount} sections`,
+        sectionsProcessed: correctedCount
+      });
+      
+    } catch (error: any) {
+      console.error("Error applying flow direction correction:", error);
+      res.status(500).json({ error: error.message || "Failed to apply flow direction correction" });
     }
   });
 
