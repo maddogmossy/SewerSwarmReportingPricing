@@ -118,7 +118,7 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     type: 'service',
     default_grade: 5,
     risk: 'Service & operational observation requiring assessment',
-    recommended_action: 'Obstacle removal and repair required',
+    recommended_action: 'IMS cutting to cut the rebar top and bottom and install a patch repair',
     action_type: 2
   },
   DEF: {
@@ -152,9 +152,9 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
     code: 'JDM',
     description: 'Joint displacement - major',
     type: 'structural',
-    default_grade: 4,
+    default_grade: 1,
     risk: 'Major joint misalignment causing structural instability and infiltration',
-    recommended_action: 'Immediate joint repair or pipe realignment',
+    recommended_action: 'First consideration should be given to a patch repair for joint displacement',
     action_type: 1
   },
   SA: {
