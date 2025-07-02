@@ -394,13 +394,23 @@ export default function Dashboard() {
         return lengthA - lengthB;
       });
       
-      // Find the index of this section among sections with the same item number
-      const indexInGroup = sectionsWithSameItem.findIndex(s => s.id === section.id);
+      // Find the index of this section by using a unique identifier
+      // Use combination of ID and defects to ensure proper identification
+      const sectionIdentifier = `${section.id}-${section.defects}`;
+      let indexInGroup = -1;
+      
+      for (let i = 0; i < sectionsWithSameItem.length; i++) {
+        const compareIdentifier = `${sectionsWithSameItem[i].id}-${sectionsWithSameItem[i].defects}`;
+        if (compareIdentifier === sectionIdentifier) {
+          indexInGroup = i;
+          break;
+        }
+      }
       
       // First occurrence shows original number (e.g., "2"), subsequent get letters (e.g., "2a", "2b")
       if (indexInGroup === 0) {
         return currentItemNo; // First occurrence shows "2"
-      } else {
+      } else if (indexInGroup > 0) {
         const suffix = String.fromCharCode(96 + indexInGroup); // 96 + 1 = 97 ('a'), 96 + 2 = 98 ('b')
         return `${currentItemNo}${suffix}`;
       }
