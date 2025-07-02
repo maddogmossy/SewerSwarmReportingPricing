@@ -411,7 +411,7 @@ export default function Dashboard() {
       case 'defects':
         const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
         
-        if (hasDefects && section.recommendations && !section.recommendations.includes('No action required')) {
+        if (hasDefects) {
           return (
             <RepairOptionsPopover
               sectionData={{
@@ -424,7 +424,7 @@ export default function Dashboard() {
                 window.location.href = `/repair-pricing/${sector}?method=${method}&size=${pipeSize}`;
               }}
             >
-              <div className="text-xs max-w-48 cursor-pointer hover:bg-blue-50 p-1 rounded">
+              <div className="text-xs max-w-48 cursor-pointer hover:bg-blue-100 hover:border-blue-300 border border-transparent p-2 rounded transition-all duration-200">
                 {section.defects || 'No defects recorded'}
               </div>
             </RepairOptionsPopover>
