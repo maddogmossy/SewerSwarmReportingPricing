@@ -327,10 +327,10 @@ export default function RepairPricing() {
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="repairMethodId">Repair Method</Label>
+                <Label htmlFor="workCategoryId">Work Category</Label>
                 <Select
-                  value={formData.repairMethodId}
-                  onValueChange={(value) => setFormData({ ...formData, repairMethodId: value })}
+                  value={formData.workCategoryId}
+                  onValueChange={(value) => setFormData({ ...formData, workCategoryId: value })}
                   required
                 >
                   <SelectTrigger>

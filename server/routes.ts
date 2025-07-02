@@ -1021,12 +1021,13 @@ export async function registerRoutes(app: Express) {
   app.put("/api/repair-pricing/:id", async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const { sector, repairMethodId, pipeSize, depth, description, cost, rule, minimumQuantity } = req.body;
+      const { sector, workCategoryId, repairMethodId, pipeSize, depth, description, cost, rule, minimumQuantity } = req.body;
       
       const [updatedPricing] = await db.update(repairPricing)
         .set({
           sector,
-          repairMethodId: parseInt(repairMethodId),
+          workCategoryId: workCategoryId ? parseInt(workCategoryId) : null,
+          repairMethodId: repairMethodId ? parseInt(repairMethodId) : null,
           pipeSize,
           depth,
           description,
