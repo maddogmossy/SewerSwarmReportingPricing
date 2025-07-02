@@ -1013,7 +1013,7 @@ export async function registerRoutes(app: Express) {
           pipeSize,
           depth,
           description,
-          cost: parseFloat(cost),
+          cost: cost.toString(),
           rule,
           minimumQuantity: parseInt(minimumQuantity) || 1,
           updatedAt: new Date(),

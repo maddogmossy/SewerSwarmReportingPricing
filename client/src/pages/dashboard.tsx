@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { DataIntegrityWarning } from "@/components/data-integrity-warning";
+import { RepairOptionsPopover } from "@/components/repair-options-popover";
 import * as XLSX from 'xlsx';
 
 import { 
@@ -448,13 +449,35 @@ export default function Dashboard() {
           </div>
         );
       case 'recommendations':
-        // User-friendly recommendations without grade references
-        // Use the recommendations directly from the database
-        return (
-          <div className="text-xs max-w-48">
-            {section.recommendations || 'No recommendations available'}
-          </div>
-        );
+        // Check if section has defects requiring repair (not Grade 0)
+        const hasRepairableDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
+        
+        if (hasRepairableDefects && section.recommendations && !section.recommendations.includes('No action required')) {
+          return (
+            <RepairOptionsPopover
+              sectionData={{
+                pipeSize: section.pipeSize,
+                sector: currentSector.id,
+                recommendations: section.recommendations
+              }}
+              onPricingNeeded={(method, pipeSize, sector) => {
+                // Navigate to repair pricing page for this sector
+                window.location.href = `/repair-pricing/${sector}?method=${method}&size=${pipeSize}`;
+              }}
+            >
+              <div className="text-xs max-w-48 cursor-pointer">
+                {section.recommendations || 'No recommendations available'}
+              </div>
+            </RepairOptionsPopover>
+          );
+        } else {
+          // Grade 0 sections or sections without repairable defects - no hover needed
+          return (
+            <div className="text-xs max-w-48">
+              {section.recommendations || 'No recommendations available'}
+            </div>
+          );
+        }
       case 'adoptable':
         return (
           <span className={`px-1 py-0.5 rounded text-xs font-semibold ${

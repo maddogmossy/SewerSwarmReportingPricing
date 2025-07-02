@@ -14,6 +14,7 @@ import SectorPricingDetail from "@/pages/sector-pricing-detail";
 import SurveyPricing from "@/pages/survey-pricing";
 import CleansingPricing from "@/pages/cleansing-pricing";
 import JettingPricing from "@/pages/jetting-pricing";
+import RepairPricing from "@/pages/repair-pricing";
 import StandardsConfig from "@/pages/standards-config";
 import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
@@ -62,6 +63,7 @@ function Router() {
           <Route path="/pricing/surveys" component={SurveyPricing} />
           <Route path="/pricing/cleansing" component={CleansingPricing} />
           <Route path="/pricing/jetting" component={JettingPricing} />
+          <Route path="/repair-pricing/:sector" component={RepairPricing} />
           <Route path="/standards-config" component={StandardsConfig} />
           <Route path="/checkout" component={Checkout} />
         </>
