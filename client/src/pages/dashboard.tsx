@@ -1040,7 +1040,7 @@ export default function Dashboard() {
             {completedUploads.length > 1 && (
               <div className="flex items-center gap-4">
                 <label className="text-sm font-medium text-slate-700">Project Folders:</label>
-                <div className="relative">
+                <div className="relative" id="folder-dropdown">
                   {/* Compact Folder Selector */}
                   <button
                     onClick={() => setShowFolderDropdown(!showFolderDropdown)}
