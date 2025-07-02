@@ -685,6 +685,32 @@ export default function Dashboard() {
     // Create worksheet
     const ws = XLSX.utils.aoa_to_sheet(allData);
     
+    // Set column widths and cell formatting for text wrapping
+    const colWidths = exportHeaders.map((header, index) => {
+      // Set appropriate column widths based on content
+      return { 
+        wch: header.key === 'defects' || header.key === 'recommendations' ? 40 : 
+             header.key === 'itemNo' || header.key === 'severityGrade' || header.key === 'adoptable' ? 8 : 15 
+      };
+    });
+    ws['!cols'] = colWidths;
+    
+    // Set text wrapping for all cells
+    const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+    for (let row = range.s.r; row <= range.e.r; row++) {
+      for (let col = range.s.c; col <= range.e.c; col++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
+        if (ws[cellAddress]) {
+          if (!ws[cellAddress].s) ws[cellAddress].s = {};
+          ws[cellAddress].s.alignment = { 
+            wrapText: true, 
+            horizontal: 'center', 
+            vertical: 'middle' 
+          };
+        }
+      }
+    }
+    
     // Note: Hidden columns are excluded from export (not included in data)
     
     // Add worksheet to workbook
@@ -1075,7 +1101,7 @@ export default function Dashboard() {
                                 }
                               }}
                               className={`
-                                ${column.width} border border-slate-300 text-left font-semibold text-xs
+                                ${column.width} border border-slate-300 text-center font-semibold text-xs align-middle
                                 ${column.priority === 'pretty' ? 'px-2 py-2' : 'px-1 py-1'}
                                 ${showColumnSelector && !canBeHidden 
                                   ? 'bg-slate-200 cursor-not-allowed opacity-60'
@@ -1084,6 +1110,7 @@ export default function Dashboard() {
                                   : ''
                                 }
                               `}
+                              style={{ wordWrap: 'break-word', whiteSpace: 'normal' }}
                               title={showColumnSelector ? (canBeHidden ? 'Click to hide this column' : 'Essential column - cannot be hidden') : ''}
                             >
                               {column.label}
@@ -1098,10 +1125,14 @@ export default function Dashboard() {
                           {columns.map((column) => {
                             if (hiddenColumns.has(column.key)) return null;
                             return (
-                              <td key={column.key} className={`
-                                ${column.width} border border-slate-300 text-xs
-                                ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
-                              `}>
+                              <td 
+                                key={column.key} 
+                                className={`
+                                  ${column.width} border border-slate-300 text-xs text-center align-middle
+                                  ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
+                                `}
+                                style={{ wordWrap: 'break-word', whiteSpace: 'normal' }}
+                              >
                                 {renderCellContent(column.key, section)}
                               </td>
                             );
