@@ -110,6 +110,7 @@ export default function Upload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
   const [, setLocation] = useLocation();
   const [sectorProfiles, setSectorProfiles] = useState<Record<string, any>>({});
 
@@ -157,6 +158,10 @@ export default function Upload() {
 
   const { data: uploads = [], refetch } = useQuery<FileUploadType[]>({
     queryKey: ["/api/uploads"],
+  });
+
+  const { data: folders = [] } = useQuery<any[]>({
+    queryKey: ["/api/folders"],
   });
 
   const uploadMutation = useMutation({
