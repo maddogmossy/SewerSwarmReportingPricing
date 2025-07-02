@@ -381,6 +381,21 @@ export default function Dashboard() {
 
 
 
+  // Helper function to get item number with letter suffix for duplicates
+  const getItemNumberWithSuffix = (section: any, allSections: any[]) => {
+    const currentItemNo = section.itemNo;
+    const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
+    
+    if (sectionsWithSameItem.length > 1) {
+      // Find the index of this section among sections with the same item number
+      const indexInGroup = sectionsWithSameItem.findIndex(s => s.id === section.id);
+      const suffix = String.fromCharCode(97 + indexInGroup); // 97 is 'a' in ASCII
+      return `${currentItemNo}${suffix}`;
+    }
+    
+    return currentItemNo;
+  };
+
   // Function to render cell content based on column key
   const renderCellContent = (columnKey: string, section: any) => {
     switch (columnKey) {
@@ -390,7 +405,7 @@ export default function Dashboard() {
         const projectMatch = fileName.match(/^(\d+)/);
         return projectMatch ? projectMatch[1] : 'Unknown';
       case 'itemNo':
-        return section.itemNo;
+        return getItemNumberWithSuffix(section, sectionData);
       case 'inspectionNo':
         return section.inspectionNo;
       case 'date':
@@ -967,7 +982,7 @@ export default function Dashboard() {
       
       const rowData: { [key: string]: any } = {
         projectNumber: projectNo,
-        itemNo: section.itemNo,
+        itemNo: getItemNumberWithSuffix(section, sectionData),
         inspectionNo: section.inspectionNo,
         date: section.date,
         time: section.time,
