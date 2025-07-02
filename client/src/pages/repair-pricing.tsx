@@ -242,7 +242,7 @@ export default function RepairPricing() {
                 </CardHeader>
                 
                 <CardContent className="space-y-3">
-                  {methodPricing.length === 0 ? (
+                  {categoryPricing.length === 0 ? (
                     <div className="text-center py-6 text-slate-500">
                       <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-orange-400" />
                       <p className="text-sm">No pricing configured</p>
@@ -250,7 +250,7 @@ export default function RepairPricing() {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      {methodPricing.map((item: any) => (
+                      {categoryPricing.map((item: any) => (
                         <div key={item.id} className="p-3 border rounded-lg bg-white">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -337,9 +337,9 @@ export default function RepairPricing() {
                     <SelectValue placeholder="Select method" />
                   </SelectTrigger>
                   <SelectContent>
-                    {repairMethods.map((method: any) => (
-                      <SelectItem key={method.id} value={method.id.toString()}>
-                        {method.name}
+                    {workCategories.map((category: any) => (
+                      <SelectItem key={category.id} value={category.id.toString()}>
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

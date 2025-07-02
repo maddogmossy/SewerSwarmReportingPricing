@@ -6,7 +6,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { db } from "./db";
-import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing } from "@shared/schema";
+import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing, workCategories } from "@shared/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
@@ -929,6 +929,18 @@ export async function registerRoutes(app: Express) {
   // Placeholder for defect thresholds
   app.get("/api/defect-thresholds", async (req: Request, res: Response) => {
     res.json([]); // Future implementation
+  });
+
+  // Work Categories endpoints
+  app.get("/api/work-categories", async (req: Request, res: Response) => {
+    try {
+      const categories = await db.select().from(workCategories)
+        .orderBy(asc(workCategories.sortOrder));
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching work categories:", error);
+      res.status(500).json({ error: "Failed to fetch work categories" });
+    }
   });
 
   // Repair Methods endpoints
