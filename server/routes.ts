@@ -412,28 +412,13 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
           downstreamNode = 'SW01';
           flowDirectionNote = ' (forced: SW10→SW01)';
         } else {
-          // ALL OTHER SECTIONS: Apply adoption sector flow direction correction
-          // Example: F01-10A → F01-10 should be F01-10A → F01-10 (downstream→upstream for upstream inspections)
-          // Pattern: longer reference → shorter reference should be shorter → longer
-          if (upstreamNode.length > downstreamNode.length && 
-              upstreamNode.includes(downstreamNode)) {
-            const temp = upstreamNode;
-            upstreamNode = downstreamNode;
-            downstreamNode = temp;
-            flowDirectionNote = ' (adoption sector: corrected flow direction)';
-            console.log(`DEBUG Section ${sectionNum}: ADOPTION SECTOR correction ${upstreamNode}→${downstreamNode}`);
-          }
-          
-          // ADDITIONAL ADOPTION SECTOR RULE: Apply downstream→upstream for upstream inspections
-          // If this looks like an adoption report with F-pattern nodes, apply upstream inspection rule
-          if ((upstreamNode.startsWith('F') || downstreamNode.startsWith('F')) && 
-              upstreamNode.length < downstreamNode.length && 
-              downstreamNode.includes(upstreamNode)) {
-            const temp = upstreamNode;
-            upstreamNode = downstreamNode;
-            downstreamNode = temp;
-            flowDirectionNote = ' (adoption sector: upstream inspection downstream→upstream flow)';
-            console.log(`DEBUG Section ${sectionNum}: ADOPTION UPSTREAM INSPECTION ${upstreamNode}→${downstreamNode}`);
+          // ALL OTHER SECTIONS: Apply comprehensive adoption sector flow direction correction
+          const correction = applyAdoptionFlowDirectionCorrection(upstreamNode, downstreamNode);
+          if (correction.corrected) {
+            upstreamNode = correction.upstream;
+            downstreamNode = correction.downstream;
+            flowDirectionNote = ' (adoption sector: flow direction auto-corrected)';
+            console.log(`DEBUG Section ${sectionNum}: ADOPTION FLOW CORRECTED ${upstreamNode}→${downstreamNode}`);
           }
         }
       }
@@ -808,7 +793,9 @@ export async function registerRoutes(app: Express) {
       let correctedCount = 0;
       
       for (const section of sections) {
-        const correction = applyAdoptionFlowDirectionCorrection(section.startMH, section.finishMH);
+        const startMH = section.startMH || '';
+        const finishMH = section.finishMH || '';
+        const correction = applyAdoptionFlowDirectionCorrection(startMH, finishMH);
         
         if (correction.corrected) {
           await db.update(sectionInspections)
