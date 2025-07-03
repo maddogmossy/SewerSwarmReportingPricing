@@ -383,35 +383,24 @@ export default function Dashboard() {
 
   // Helper function to get item number with letter suffix for duplicates
   const getItemNumberWithSuffix = (section: any, allSections: any[]) => {
-    // For item 2 specifically, handle it based on defect code
-    if (section.itemNo === 2) {
-      // Use defectCode to distinguish between DEG and CR
-      if (section.defectCode === 'DEG') {
-        return "2"; // DEG section shows as "2"
-      } else if (section.defectCode === 'CR') {
-        return "2a"; // CR section shows as "2a"
-      }
-      
-      // Fallback based on defect content if defectCode is missing
-      if (section.defects && section.defects.includes('DEG')) {
-        return "2";
-      } else if (section.defects && section.defects.includes('CR')) {
-        return "2a";
-      }
-      
-      return section.itemNo.toString();
-    }
-    
-    // For other items, use the existing logic
     const currentItemNo = section.itemNo;
-    const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo && s.id !== section.id);
+    const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
     
-    if (sectionsWithSameItem.length > 0) {
-      // Simple alphabetical suffix for other duplicates
-      return `${currentItemNo}a`;
+    // If only one section with this item number, show it as original number
+    if (sectionsWithSameItem.length === 1) {
+      return currentItemNo.toString();
     }
     
-    return currentItemNo.toString();
+    // Multiple sections with same item number - assign letters based on database ID order
+    sectionsWithSameItem.sort((a, b) => a.id - b.id);
+    const index = sectionsWithSameItem.findIndex(s => s.id === section.id);
+    
+    if (index === 0) {
+      return currentItemNo.toString(); // First occurrence gets original number
+    } else {
+      const letter = String.fromCharCode(97 + index - 1); // a, b, c, etc.
+      return `${currentItemNo}${letter}`;
+    }
   };
 
   // Function to render cell content based on column key
