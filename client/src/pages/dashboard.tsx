@@ -383,25 +383,22 @@ export default function Dashboard() {
 
   // Helper function to get item number with letter suffix for duplicates
   const getItemNumberWithSuffix = (section: any, allSections: any[]) => {
-    // For item 2 specifically, handle it based on database ID
+    // For item 2 specifically, handle it based on defect code
     if (section.itemNo === 2) {
-      // Debug logging for item 2
-      console.log('Section 2 debug:', { 
-        sectionId: section.id, 
-        defects: section.defects,
-        fullSection: section 
-      });
-      
-      if (section.id === 4731) {
-        console.log('Returning "2" for ID 4731');
+      // Use defectCode to distinguish between DEG and CR
+      if (section.defectCode === 'DEG') {
         return "2"; // DEG section shows as "2"
-      } else if (section.id === 4732) {
-        console.log('Returning "2a" for ID 4732');
+      } else if (section.defectCode === 'CR') {
         return "2a"; // CR section shows as "2a"
       }
       
-      // Fallback
-      console.log('Fallback for unknown ID:', section.id);
+      // Fallback based on defect content if defectCode is missing
+      if (section.defects && section.defects.includes('DEG')) {
+        return "2";
+      } else if (section.defects && section.defects.includes('CR')) {
+        return "2a";
+      }
+      
       return section.itemNo.toString();
     }
     
