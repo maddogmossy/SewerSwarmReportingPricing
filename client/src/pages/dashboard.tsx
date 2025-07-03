@@ -563,13 +563,15 @@ export default function Dashboard() {
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
           const autoCost = calculateAutoCost(section);
           
-          // Debug logging for defective sections
-          if (section.itemNo && [3, 6, 7, 8].includes(section.itemNo)) {
-            console.log(`Section ${section.itemNo} debug:`, {
+          // Debug logging for ALL defective sections  
+          if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
+            console.log(`Section ${section.itemNo} cost debug:`, {
+              itemNo: section.itemNo,
               severityGrade: section.severityGrade,
               autoCost: autoCost,
               repairPricingLength: Array.isArray(repairPricingData) ? repairPricingData.length : 'not array',
-              defects: section.defects
+              defects: section.defects,
+              willShowTriangle: !autoCost
             });
           }
           
