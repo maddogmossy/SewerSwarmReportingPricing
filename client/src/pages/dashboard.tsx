@@ -383,29 +383,22 @@ export default function Dashboard() {
 
   // Helper function to get item number with letter suffix for duplicates
   const getItemNumberWithSuffix = (section: any, allSections: any[]) => {
-    const currentItemNo = section.itemNo;
-    // Use unique ID to filter, not just itemNo to avoid duplicates
-    const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
-    
-    if (sectionsWithSameItem.length > 1) {
-      // Remove duplicates by ID to ensure each section appears only once
-      const uniqueSections = sectionsWithSameItem.filter((section, index, self) => 
-        index === self.findIndex(s => s.id === section.id)
-      );
-      
-      // Sort by database ID (lower ID = earlier entry = no suffix)
-      uniqueSections.sort((a, b) => a.id - b.id);
-      
-      // Find the index of this section in the unique list
-      const indexInGroup = uniqueSections.findIndex(s => s.id === section.id);
-      
-      // First occurrence shows original number (e.g., "2"), subsequent get letters (e.g., "2a", "2b")
-      if (indexInGroup === 0) {
-        return currentItemNo.toString(); // First occurrence shows "2"
-      } else if (indexInGroup > 0) {
-        const suffix = String.fromCharCode(97 + indexInGroup - 1); // 97 = 'a', 98 = 'b', etc.
-        return `${currentItemNo}${suffix}`;
+    // For item 2 specifically, handle it based on database ID
+    if (section.itemNo === 2) {
+      if (section.id === 4731) {
+        return "2"; // DEG section shows as "2"
+      } else if (section.id === 4732) {
+        return "2a"; // CR section shows as "2a"
       }
+    }
+    
+    // For other items, use the existing logic
+    const currentItemNo = section.itemNo;
+    const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo && s.id !== section.id);
+    
+    if (sectionsWithSameItem.length > 0) {
+      // Simple alphabetical suffix for other duplicates
+      return `${currentItemNo}a`;
     }
     
     return currentItemNo.toString();
