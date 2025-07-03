@@ -132,8 +132,8 @@ function validateInspectionDirectionModification(userConfirmation: boolean = fal
 async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: number) {
   console.log('Processing adoption sector PDF with authentic data extraction...');
   
-  // Extract adoption sector sections from E.C.L.BOWBRIDGE LANE_NEWARK format
-  const sectionPattern = /Section Item (\d+):\s+([A-Z0-9-]+)\s*>\s*([A-Z0-9-]+)\s*\(([A-Z0-9-]+)\)/g;
+  // Updated pattern to match the actual ECL format: "Section Item 1:  F01-10A  >  F01-10  (F01-10AX)"
+  const sectionPattern = /Section Item (\d+):\s+([A-Z0-9\-\/]+)\s+>\s+([A-Z0-9\-\/]+)\s+\(([A-Z0-9\-\/]+)\)/g;
   const sections = [];
   let match;
   
@@ -144,6 +144,10 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     const sectionId = match[4];
     
     console.log(`✓ Found Section ${itemNo}: ${startMH} → ${finishMH} (${sectionId})`);
+    
+    // Apply adoption flow direction correction
+    const correction = applyAdoptionFlowDirectionCorrection(startMH, finishMH);
+    console.log(`✓ Section ${itemNo} correction: ${startMH} → ${finishMH} became ${correction.upstream} → ${correction.downstream}`);
     
     // Extract authentic pipe specifications and measurements for adoption sector
     const pipeSize = getAdoptionPipeSize(itemNo);
@@ -160,10 +164,10 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
       inspectionNo: '1',
       date: '10/02/2025',
       time: getAdoptionInspectionTime(itemNo),
-      startMh: startMH,
-      finishMh: finishMH,
-      startMhDepth: getAdoptionMHDepth(itemNo, 'start'),
-      finishMhDepth: getAdoptionMHDepth(itemNo, 'finish'),
+      startMH: correction.upstream,
+      finishMH: correction.downstream,
+      startMHDepth: 'no data recorded',  // Always use this for missing depth data
+      finishMHDepth: 'no data recorded', // Always use this for missing depth data
       pipeSize,
       pipeMaterial,
       totalLength,
@@ -611,6 +615,7 @@ export async function registerRoutes(app: Express) {
                   throw new Error(`Data integrity violation in Section ${section.itemNo}: ${validation.errors.join('; ')}`);
                 }
                 
+                console.log(`DB Insert Section ${section.itemNo}: ${section.startMH} → ${section.finishMH}`);
                 await db.insert(sectionInspections).values(section);
               }
               console.log(`✓ Successfully extracted ${sections.length} authentic sections from PDF`);
