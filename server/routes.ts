@@ -128,9 +128,51 @@ function validateInspectionDirectionModification(userConfirmation: boolean = fal
   return true;
 }
 
+// MANDATORY INSPECTION DIRECTION EXTRACTION FOR ECL ADOPTION REPORTS
+// This function extracts inspection direction for each section to ensure proper upstream/downstream flow
+function extractInspectionDirectionFromECL(pdfText: string): { [itemNo: number]: string } {
+  const directions: { [itemNo: number]: string } = {};
+  
+  // Pattern to match ECL inspection direction headers
+  // Example: "Town or Village:Inspection Direction:DownstreamUpstream Node:G74"
+  const directionPattern = /Inspection Direction:(Upstream|Downstream)Upstream Node:([A-Z0-9\-\/]+)/g;
+  let match;
+  
+  while ((match = directionPattern.exec(pdfText)) !== null) {
+    const direction = match[1];
+    const upstreamNode = match[2];
+    
+    // Find the corresponding section item number by looking for the node in section patterns
+    const sectionPattern = new RegExp(`Section Item (\\d+):\\s+([A-Z0-9\\-\\/]+)\\s+>\\s+([A-Z0-9\\-\\/]+)\\s+\\(([A-Z0-9\\-\\/]+)\\)`, 'g');
+    let sectionMatch;
+    
+    while ((sectionMatch = sectionPattern.exec(pdfText)) !== null) {
+      const itemNo = parseInt(sectionMatch[1]);
+      const startMH = sectionMatch[2];
+      const finishMH = sectionMatch[3];
+      
+      if (startMH === upstreamNode || finishMH === upstreamNode) {
+        directions[itemNo] = direction;
+        console.log(`✓ ECL Section ${itemNo}: ${direction} inspection (${startMH} → ${finishMH})`);
+        break;
+      }
+    }
+    
+    // Reset regex lastIndex to avoid conflicts
+    sectionPattern.lastIndex = 0;
+  }
+  
+  return directions;
+}
+
 // Function to extract ALL sections from PDF text - USING YOUR HIGHLIGHTED STRUCTURE
 async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: number) {
   console.log('Processing adoption sector PDF with authentic data extraction...');
+  
+  // MANDATORY INSPECTION DIRECTION LOGIC - NEVER REMOVE OR MODIFY WITHOUT EXPLICIT USER CONFIRMATION
+  // Extract inspection direction for each section from ECL report headers
+  const inspectionDirections = extractInspectionDirectionFromECL(pdfText);
+  console.log(`✓ Extracted inspection directions for ${Object.keys(inspectionDirections).length} sections`);
   
   // Updated pattern to match the actual ECL format: "Section Item 1:  F01-10A  >  F01-10  (F01-10AX)"
   const sectionPattern = /Section Item (\d+):\s+([A-Z0-9\-\/]+)\s+>\s+([A-Z0-9\-\/]+)\s+\(([A-Z0-9\-\/]+)\)/g;
@@ -139,15 +181,33 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   
   while ((match = sectionPattern.exec(pdfText)) !== null) {
     const itemNo = parseInt(match[1]);
-    const startMH = match[2];
-    const finishMH = match[3];
+    const originalStartMH = match[2];
+    const originalFinishMH = match[3];
     const sectionId = match[4];
     
-    console.log(`✓ Found Section ${itemNo}: ${startMH} → ${finishMH} (${sectionId})`);
+    console.log(`✓ Found Section ${itemNo}: ${originalStartMH} → ${originalFinishMH} (${sectionId})`);
     
-    // Apply adoption flow direction correction
+    // CRITICAL: Apply inspection direction logic for ECL adoption reports
+    const inspectionDirection = inspectionDirections[itemNo] || 'Downstream'; // Default to downstream if not found
+    let startMH = originalStartMH;
+    let finishMH = originalFinishMH;
+    
+    // Apply inspection direction rule:
+    // Downstream inspection: use original flow (upstream → downstream)
+    // Upstream inspection: reverse flow (downstream → upstream)  
+    if (inspectionDirection === 'Upstream') {
+      startMH = originalFinishMH;
+      finishMH = originalStartMH;
+      console.log(`✓ Section ${itemNo} UPSTREAM inspection: ${originalStartMH} → ${originalFinishMH} became ${startMH} → ${finishMH}`);
+    } else {
+      console.log(`✓ Section ${itemNo} DOWNSTREAM inspection: maintaining ${startMH} → ${finishMH}`);
+    }
+    
+    // Apply additional adoption flow direction correction if needed
     const correction = applyAdoptionFlowDirectionCorrection(startMH, finishMH);
-    console.log(`✓ Section ${itemNo} correction: ${startMH} → ${finishMH} became ${correction.upstream} → ${correction.downstream}`);
+    if (correction.corrected) {
+      console.log(`✓ Section ${itemNo} additional correction: ${startMH} → ${finishMH} became ${correction.upstream} → ${correction.downstream}`);
+    }
     
     // Extract authentic pipe specifications and measurements for adoption sector
     const pipeSize = getAdoptionPipeSize(itemNo);
@@ -164,8 +224,8 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
       inspectionNo: '1',
       date: '10/02/2025',
       time: getAdoptionInspectionTime(itemNo),
-      startMH: correction.upstream,
-      finishMH: correction.downstream,
+      startMH: correction.corrected ? correction.upstream : startMH,
+      finishMH: correction.corrected ? correction.downstream : finishMH,
       startMHDepth: 'no data recorded',  // Always use this for missing depth data
       finishMHDepth: 'no data recorded', // Always use this for missing depth data
       pipeSize,
