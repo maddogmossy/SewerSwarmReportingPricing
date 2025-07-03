@@ -568,7 +568,16 @@ export default function Dashboard() {
         }
         
         // Check if repair pricing is configured - if not, show warning triangle for all defective sections
-        if (!repairPricingData || repairPricingData.length === 0) {
+        if (section.itemNo === 2) {
+          console.log('Section 2 cost debug:', {
+            repairPricingData: repairPricingData,
+            hasData: Array.isArray(repairPricingData) && repairPricingData.length > 0,
+            severityGrade: section.severityGrade,
+            autoCost: calculateAutoCost(section)
+          });
+        }
+        
+        if (!Array.isArray(repairPricingData) || repairPricingData.length === 0) {
           // No repair pricing configured - show warning triangle for any defective section
           if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
             return (
