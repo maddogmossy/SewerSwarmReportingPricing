@@ -559,39 +559,12 @@ export default function Dashboard() {
         }
         
         // Show warning triangle when no pricing is configured for defective sections
+        // Only show warning triangle if section has defects AND no pricing is available
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
-          return (
-            <div className="flex items-center justify-center" title="No pricing configured for this repair type">
-              <TriangleAlert className="h-4 w-4 text-orange-500" />
-            </div>
-          );
-        }
-        
-        // Check if repair pricing is configured - if not, show warning triangle for all defective sections
-        if (section.itemNo === 2) {
-          console.log('Section 2 cost debug:', {
-            repairPricingData: repairPricingData,
-            hasData: Array.isArray(repairPricingData) && repairPricingData.length > 0,
-            severityGrade: section.severityGrade,
-            autoCost: calculateAutoCost(section)
-          });
-        }
-        
-        if (!Array.isArray(repairPricingData) || repairPricingData.length === 0) {
-          // No repair pricing configured - show warning triangle for any defective section
-          if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
+          const autoCost = calculateAutoCost(section);
+          if (!autoCost) {
             return (
               <div className="flex items-center justify-center" title="No pricing configured for this repair type">
-                <TriangleAlert className="h-4 w-4 text-orange-500" />
-              </div>
-            );
-          }
-        } else {
-          // Repair pricing is configured, but check if this specific section has pricing available
-          const autoCost = calculateAutoCost(section);
-          if (!autoCost && section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
-            return (
-              <div className="flex items-center justify-center" title="No pricing configured for this pipe size">
                 <TriangleAlert className="h-4 w-4 text-orange-500" />
               </div>
             );
