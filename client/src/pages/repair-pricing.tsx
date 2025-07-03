@@ -151,6 +151,22 @@ export default function RepairPricing() {
       // Update existing item
       const submitData = { ...baseData, sector };
       updatePricing.mutate({ id: editingItem.id, ...submitData });
+      
+      // Create pricing for additional selected sectors (if any)
+      if (applySectors.length > 0) {
+        applySectors.forEach(targetSector => {
+          const additionalData = { ...baseData, sector: targetSector };
+          createPricing.mutate(additionalData);
+        });
+        
+        toast({ 
+          title: `Pricing updated and copied to ${applySectors.length} sectors`, 
+          description: `Copied to: ${applySectors.map(s => SECTORS.find(sec => sec.id === s)?.name).join(', ')}`
+        });
+      }
+      
+      // Reset apply sectors after submission
+      setApplySectors([]);
     } else {
       // Create new pricing rule(s)
       const sectorsToApply = [sector, ...applySectors];
