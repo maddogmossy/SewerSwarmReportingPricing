@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useParams, Link } from "wouter";
+import { useParams, Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -45,6 +45,7 @@ const SECTORS = [
 
 export default function RepairPricing() {
   const { sector } = useParams<{ sector: string }>();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
@@ -117,6 +118,8 @@ export default function RepairPricing() {
       toast({ title: "Pricing added successfully" });
       resetForm();
       setIsAddDialogOpen(false);
+      // Navigate back to dashboard after successful save
+      setTimeout(() => setLocation('/dashboard'), 1000);
     },
     onError: (error: any) => {
       toast({ 
@@ -135,6 +138,8 @@ export default function RepairPricing() {
       toast({ title: "Pricing updated successfully" });
       resetForm();
       setEditingItem(null);
+      // Navigate back to dashboard after successful save
+      setTimeout(() => setLocation('/dashboard'), 1000);
     },
     onError: (error: any) => {
       toast({ 
