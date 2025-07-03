@@ -386,19 +386,32 @@ export default function Dashboard() {
     const currentItemNo = section.itemNo;
     const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
     
-    if (sectionsWithSameItem.length > 1) {
+    if (sectionsWithSameItem.length > 1 && currentItemNo === 2) {
+      // Debug logging for section 2 only
+      console.log('Section 2 processing:', {
+        currentSection: { id: section.id, defects: section.defects },
+        allSections: sectionsWithSameItem.map(s => ({ id: s.id, defects: s.defects }))
+      });
+      
       // Sort by database ID (lower ID = earlier entry = no suffix)
       sectionsWithSameItem.sort((a, b) => a.id - b.id);
+      
+      console.log('After sorting:', sectionsWithSameItem.map(s => ({ id: s.id, defects: s.defects })));
       
       // Find the index of this section
       const indexInGroup = sectionsWithSameItem.findIndex(s => s.id === section.id);
       
+      console.log('Index in group for section', section.id, ':', indexInGroup);
+      
       // First occurrence shows original number (e.g., "2"), subsequent get letters (e.g., "2a", "2b")
       if (indexInGroup === 0) {
+        console.log('Returning original number:', currentItemNo);
         return currentItemNo.toString(); // First occurrence shows "2"
       } else if (indexInGroup > 0) {
         const suffix = String.fromCharCode(97 + indexInGroup - 1); // 97 = 'a', 98 = 'b', etc.
-        return `${currentItemNo}${suffix}`;
+        const result = `${currentItemNo}${suffix}`;
+        console.log('Returning with suffix:', result);
+        return result;
       }
     }
     
