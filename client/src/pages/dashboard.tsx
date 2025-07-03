@@ -395,14 +395,14 @@ export default function Dashboard() {
       
       // First occurrence shows original number (e.g., "2"), subsequent get letters (e.g., "2a", "2b")
       if (indexInGroup === 0) {
-        return currentItemNo; // First occurrence shows "2"
-      } else {
-        const suffix = String.fromCharCode(96 + indexInGroup); // 96 + 1 = 97 ('a'), 96 + 2 = 98 ('b'), etc.
+        return currentItemNo.toString(); // First occurrence shows "2"
+      } else if (indexInGroup > 0) {
+        const suffix = String.fromCharCode(97 + indexInGroup - 1); // 97 = 'a', 98 = 'b', etc.
         return `${currentItemNo}${suffix}`;
       }
     }
     
-    return currentItemNo;
+    return currentItemNo.toString();
   };
 
   // Function to render cell content based on column key
