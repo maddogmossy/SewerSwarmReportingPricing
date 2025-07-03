@@ -567,27 +567,26 @@ export default function Dashboard() {
           );
         }
         
-        // Sections that can show "Complete" (sections with manageable defects)
-        const sectionsComplete = [6, 7, 8, 10, 13, 14, 21];
-        if (sectionsComplete.includes(section.itemNo)) {
-          return (
-            <div className="text-xs text-green-600 font-medium">
-              Complete
-            </div>
-          );
-        }
-        
-        // Sections with complex defects requiring pricing configuration  
-        const sectionsNeedingPricing = [2, 25, 31, 47, 52, 57, 72, 73, 74, 75, 76, 78];
-        if (sectionsNeedingPricing.includes(section.itemNo)) {
-          return (
-            <div className="flex items-center justify-center gap-1" title="Configure pricing for this defect type">
-              <TriangleAlert className="h-4 w-4 text-orange-500" />
-              <span className="text-xs text-orange-600 font-medium">
-                Configure utilities sector pricing first
-              </span>
-            </div>
-          );
+        // Check if repair pricing is configured - if not, show warning triangle for all defective sections
+        if (!repairPricingData || repairPricingData.length === 0) {
+          // No repair pricing configured - show warning triangle for any defective section
+          if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
+            return (
+              <div className="flex items-center justify-center" title="No pricing configured for this repair type">
+                <TriangleAlert className="h-4 w-4 text-orange-500" />
+              </div>
+            );
+          }
+        } else {
+          // Repair pricing is configured, but check if this specific section has pricing available
+          const autoCost = calculateAutoCost(section);
+          if (!autoCost && section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
+            return (
+              <div className="flex items-center justify-center" title="No pricing configured for this pipe size">
+                <TriangleAlert className="h-4 w-4 text-orange-500" />
+              </div>
+            );
+          }
         }
         
         // Fallback for any other sections
