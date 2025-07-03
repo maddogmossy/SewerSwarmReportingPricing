@@ -563,17 +563,18 @@ export default function Dashboard() {
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
           const autoCost = calculateAutoCost(section);
           
-          // Debug logging for ALL defective sections  
-          if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
-            console.log(`Section ${section.itemNo} cost debug:`, {
-              itemNo: section.itemNo,
-              severityGrade: section.severityGrade,
-              autoCost: autoCost,
-              repairPricingLength: Array.isArray(repairPricingData) ? repairPricingData.length : 'not array',
-              defects: section.defects,
-              willShowTriangle: !autoCost
-            });
-          }
+          // Debug logging for ALL defective sections with enhanced data  
+          console.log(`Section ${section.itemNo} cost debug:`, {
+            itemNo: section.itemNo,
+            severityGrade: section.severityGrade,
+            autoCost: autoCost,
+            repairPricingLength: Array.isArray(repairPricingData) ? repairPricingData.length : 'not array',
+            defects: section.defects?.substring(0, 30) + '...',
+            willShowTriangle: !autoCost,
+            hasDefectCode: !!section.defectCode,
+            isMultiDefect: section.isMultiDefect,
+            recommendations: section.recommendations?.substring(0, 30) + '...'
+          });
           
           if (!autoCost) {
             return (
