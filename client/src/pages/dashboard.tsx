@@ -856,7 +856,7 @@ export default function Dashboard() {
           meterage: defect.meterage,
           percentage: defect.percentage,
           defects: `${defect.defectCode} ${defect.meterage} (${defect.description})`,
-          severityGrade: defect.mscc5Grade.toString(),
+          severityGrade: section.severityGrade, // Keep original section severity grade for cost calculation
           recommendations: defect.recommendation,
           operationType: defect.operationType,
           estimatedCost: defect.estimatedCost,
