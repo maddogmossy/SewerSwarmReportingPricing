@@ -394,13 +394,11 @@ export default function Dashboard() {
         const aHasDEG = a.defects && (a.defects.includes('DEG ') || a.defects.includes('DER '));
         const bHasDEG = b.defects && (b.defects.includes('DEG ') || b.defects.includes('DER '));
         
-        // DEG defects get priority (show as "2"), CR defects get letter suffix (show as "2a")
-        if (aHasDEG && !bHasDEG) return -1; // DEG comes first
-        if (!aHasDEG && bHasDEG) return 1;  // DEG comes first
-        if (aHasCR && !bHasCR) return 1; // CR comes second
-        if (!aHasCR && bHasCR) return -1; // CR comes second
+        // Priority: DEG first, then CR, then by ID
+        if (aHasDEG && bHasCR) return -1; // DEG before CR
+        if (aHasCR && bHasDEG) return 1;  // CR after DEG
         
-        // Fallback to ID ordering for identical defect types
+        // If both same type, sort by ID (lower ID first)
         return a.id - b.id;
       });
       
