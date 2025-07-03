@@ -761,26 +761,10 @@ export default function Dashboard() {
     let matchingPricing = null;
     
     if (Array.isArray(repairPricingData) && repairPricingData.length > 0) {
-      // Look for exact pipe size match first
+      // Look for exact pipe size match ONLY - no fallback to closest size
       matchingPricing = repairPricingData.find((pricing: any) => 
         pricing.pipeSize === `${pipeSize}mm`
       );
-      
-      // If no exact match, find closest pipe size
-      if (!matchingPricing) {
-        const pipeSizes = repairPricingData.map((p: any) => {
-          const match = p.pipeSize?.match(/(\d+)/);
-          return match ? parseInt(match[1]) : 0;
-        });
-        
-        const closestSize = pipeSizes.reduce((prev: number, curr: number) => 
-          Math.abs(curr - pipeSize) < Math.abs(prev - pipeSize) ? curr : prev
-        );
-        
-        matchingPricing = repairPricingData.find((pricing: any) => 
-          pricing.pipeSize === `${closestSize}mm`
-        );
-      }
     }
 
     // Return null if no pricing data is available - triggers warning triangle display
