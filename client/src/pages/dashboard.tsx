@@ -823,7 +823,13 @@ export default function Dashboard() {
   });
 
   // USE ALL SECTIONS: Allow duplicate item numbers for letter suffix functionality
-  const rawFilteredData = rawSectionData; // No deduplication - we want duplicate item numbers
+  const rawFilteredData = rawSectionData; // No deduplication - we want all sections for letter suffixes
+  
+  // Debug logging for Section 2 data duplication
+  const section2Data = rawSectionData.filter(s => s.itemNo === 2);
+  if (section2Data.length > 0) {
+    console.log('Section 2 raw data:', section2Data.map(s => ({ id: s.id, itemNo: s.itemNo, defects: s.defects, defectCode: s.defectCode })));
+  }
 
   // Combine sections with individual defects - create multiple rows for sections with multiple defects
   const expandedSectionData = rawFilteredData.reduce((acc: any[], section: any) => {
