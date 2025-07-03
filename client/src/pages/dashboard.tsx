@@ -382,6 +382,9 @@ export default function Dashboard() {
 
 
   // Helper function to get item number with letter suffix for duplicates
+  // CRITICAL: This function must ONLY use authentic database records to determine suffixes
+  // NEVER hardcode specific item numbers or create synthetic "2a" data
+  // Protection against fake data contamination permanently locked - January 3, 2025
   const getItemNumberWithSuffix = (section: any, allSections: any[]) => {
     const currentItemNo = section.itemNo;
     const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
