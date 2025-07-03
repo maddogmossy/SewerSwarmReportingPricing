@@ -562,6 +562,17 @@ export default function Dashboard() {
         // Only show warning triangle if section has defects AND no pricing is available
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
           const autoCost = calculateAutoCost(section);
+          
+          // Debug logging for defective sections
+          if (section.itemNo && [3, 6, 7, 8].includes(section.itemNo)) {
+            console.log(`Section ${section.itemNo} debug:`, {
+              severityGrade: section.severityGrade,
+              autoCost: autoCost,
+              repairPricingLength: Array.isArray(repairPricingData) ? repairPricingData.length : 'not array',
+              defects: section.defects
+            });
+          }
+          
           if (!autoCost) {
             return (
               <div className="flex items-center justify-center" title="No pricing configured for this repair type">
