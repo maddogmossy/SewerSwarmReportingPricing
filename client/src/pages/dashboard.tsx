@@ -841,6 +841,12 @@ export default function Dashboard() {
     severityGrade: s.severityGrade, 
     defects: s.defects?.substring(0, 50) + '...'
   })));
+  
+  // Debug individual defects data
+  console.log('Individual defects count:', individualDefects?.length || 0);
+  if (individualDefects?.length > 0) {
+    console.log('Sample individual defects:', individualDefects.slice(0, 3));
+  }
 
   // Combine sections with individual defects - create multiple rows for sections with multiple defects
   const expandedSectionData = rawFilteredData.reduce((acc: any[], section: any) => {
