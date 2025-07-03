@@ -59,6 +59,7 @@ export default function RepairPricing() {
   });
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
+  const [originalApplySectors, setOriginalApplySectors] = useState<string[]>([]);
 
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
 
@@ -72,6 +73,41 @@ export default function RepairPricing() {
     queryKey: [`/api/repair-pricing/${sector}`],
     enabled: !!sector,
   });
+
+  // Fetch pricing data from all sectors for cross-sector comparison
+  const { data: utilitiesPricing = [] } = useQuery({
+    queryKey: ['/api/repair-pricing/utilities'],
+    enabled: !!sector,
+  });
+  const { data: adoptionPricing = [] } = useQuery({
+    queryKey: ['/api/repair-pricing/adoption'],
+    enabled: !!sector,
+  });
+  const { data: highwaysPricing = [] } = useQuery({
+    queryKey: ['/api/repair-pricing/highways'],
+    enabled: !!sector,
+  });
+  const { data: insurancePricing = [] } = useQuery({
+    queryKey: ['/api/repair-pricing/insurance'],
+    enabled: !!sector,
+  });
+  const { data: constructionPricing = [] } = useQuery({
+    queryKey: ['/api/repair-pricing/construction'],
+    enabled: !!sector,
+  });
+  const { data: domesticPricing = [] } = useQuery({
+    queryKey: ['/api/repair-pricing/domestic'],
+    enabled: !!sector,
+  });
+
+  const allSectorPricing = {
+    utilities: utilitiesPricing,
+    adoption: adoptionPricing,
+    highways: highwaysPricing,
+    insurance: insurancePricing,
+    construction: constructionPricing,
+    domestic: domesticPricing,
+  };
 
   // Create pricing mutation
   const createPricing = useMutation({
@@ -136,6 +172,7 @@ export default function RepairPricing() {
       minimumQuantity: "1"
     });
     setApplySectors([]);
+    setOriginalApplySectors([]);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -152,21 +189,54 @@ export default function RepairPricing() {
       const submitData = { ...baseData, sector };
       updatePricing.mutate({ id: editingItem.id, ...submitData });
       
-      // Create pricing for additional selected sectors (if any)
-      if (applySectors.length > 0) {
-        applySectors.forEach(targetSector => {
+      // Handle sectors that were added (new selections)
+      const sectorsToAdd = applySectors.filter(s => !originalApplySectors.includes(s));
+      if (sectorsToAdd.length > 0) {
+        sectorsToAdd.forEach(targetSector => {
           const additionalData = { ...baseData, sector: targetSector };
           createPricing.mutate(additionalData);
         });
+      }
+
+      // Handle sectors that were removed (unchecked)
+      const sectorsToRemove = originalApplySectors.filter(s => !applySectors.includes(s));
+      if (sectorsToRemove.length > 0) {
+        sectorsToRemove.forEach(targetSector => {
+          // Find and delete the matching pricing rule in that sector
+          const targetSectorPricing = (allSectorPricing as any)[targetSector] || [];
+          const matchingRule = targetSectorPricing.find((pricing: any) => 
+            pricing.workCategoryId === editingItem.workCategoryId &&
+            pricing.pipeSize === editingItem.pipeSize &&
+            pricing.depth === editingItem.depth &&
+            pricing.cost === editingItem.cost &&
+            pricing.minimumQuantity === editingItem.minimumQuantity
+          );
+          
+          if (matchingRule) {
+            deletePricing.mutate(matchingRule.id);
+          }
+        });
+      }
+      
+      // Show appropriate notification
+      if (sectorsToAdd.length > 0 || sectorsToRemove.length > 0) {
+        const messages = [];
+        if (sectorsToAdd.length > 0) {
+          messages.push(`Added to: ${sectorsToAdd.map(s => SECTORS.find(sec => sec.id === s)?.name).join(', ')}`);
+        }
+        if (sectorsToRemove.length > 0) {
+          messages.push(`Removed from: ${sectorsToRemove.map(s => SECTORS.find(sec => sec.id === s)?.name).join(', ')}`);
+        }
         
         toast({ 
-          title: `Pricing updated and copied to ${applySectors.length} sectors`, 
-          description: `Copied to: ${applySectors.map(s => SECTORS.find(sec => sec.id === s)?.name).join(', ')}`
+          title: "Pricing updated across sectors", 
+          description: messages.join(' | ')
         });
       }
       
       // Reset apply sectors after submission
       setApplySectors([]);
+      setOriginalApplySectors([]);
     } else {
       // Create new pricing rule(s)
       const sectorsToApply = [sector, ...applySectors];
@@ -193,6 +263,30 @@ export default function RepairPricing() {
     }
   };
 
+  // Find sectors that have matching pricing rules
+  const findMatchingSectors = (item: any) => {
+    const matchingSectors: string[] = [];
+    
+    SECTORS.forEach(s => {
+      if (s.id === sector) return; // Skip current sector
+      
+      const sectorPricing = (allSectorPricing as any)[s.id] || [];
+      const hasMatching = sectorPricing.some((pricing: any) => 
+        pricing.workCategoryId === item.workCategoryId &&
+        pricing.pipeSize === item.pipeSize &&
+        pricing.depth === item.depth &&
+        pricing.cost === item.cost &&
+        pricing.minimumQuantity === item.minimumQuantity
+      );
+      
+      if (hasMatching) {
+        matchingSectors.push(s.id);
+      }
+    });
+    
+    return matchingSectors;
+  };
+
   const handleEdit = (item: any) => {
     setFormData({
       workCategoryId: item.workCategoryId?.toString() || "",
@@ -203,8 +297,35 @@ export default function RepairPricing() {
       rule: item.rule || "",
       minimumQuantity: item.minimumQuantity?.toString() || "1"
     });
+    
+    // Pre-select sectors that already have this pricing rule
+    const matchingSectors = findMatchingSectors(item);
+    setApplySectors(matchingSectors);
+    setOriginalApplySectors(matchingSectors); // Track original state
+    
     setEditingItem(item);
     setIsAddDialogOpen(true);
+  };
+
+  // Handle checkbox changes with warnings for removal
+  const handleSectorCheckboxChange = (sectorId: string, checked: boolean) => {
+    if (!checked && originalApplySectors.includes(sectorId)) {
+      // User is trying to uncheck a sector that originally had this pricing
+      const sectorName = SECTORS.find(s => s.id === sectorId)?.name;
+      const shouldRemove = confirm(
+        `This will remove pricing from the ${sectorName} sector. Are you sure?`
+      );
+      
+      if (!shouldRemove) {
+        return; // Don't update if user cancels
+      }
+    }
+    
+    setApplySectors(prev => 
+      checked 
+        ? [...prev, sectorId]
+        : prev.filter(id => id !== sectorId)
+    );
   };
 
   const handleDelete = (id: number) => {
@@ -486,13 +607,7 @@ export default function RepairPricing() {
                         type="checkbox"
                         id={sectorOption.id}
                         checked={applySectors.includes(sectorOption.id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setApplySectors([...applySectors, sectorOption.id]);
-                          } else {
-                            setApplySectors(applySectors.filter(s => s !== sectorOption.id));
-                          }
-                        }}
+                        onChange={(e) => handleSectorCheckboxChange(sectorOption.id, e.target.checked)}
                         className="rounded border-gray-300"
                       />
                       <Label 
