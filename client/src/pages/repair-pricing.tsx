@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -56,6 +57,8 @@ export default function RepairPricing() {
     rule: "",
     minimumQuantity: "1"
   });
+
+  const [applySectors, setApplySectors] = useState<string[]>([]);
 
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
 
@@ -132,22 +135,45 @@ export default function RepairPricing() {
       rule: "",
       minimumQuantity: "1"
     });
+    setApplySectors([]);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const submitData = {
+    const baseData = {
       ...formData,
-      sector,
       cost: parseFloat(formData.cost),
       minimumQuantity: parseInt(formData.minimumQuantity)
     };
 
     if (editingItem) {
+      // Update existing item
+      const submitData = { ...baseData, sector };
       updatePricing.mutate({ id: editingItem.id, ...submitData });
     } else {
+      // Create new pricing rule(s)
+      const sectorsToApply = [sector, ...applySectors];
+      
+      // Create pricing for current sector first
+      const submitData = { ...baseData, sector };
       createPricing.mutate(submitData);
+      
+      // Create pricing for additional selected sectors
+      if (applySectors.length > 0) {
+        applySectors.forEach(targetSector => {
+          const additionalData = { ...baseData, sector: targetSector };
+          createPricing.mutate(additionalData);
+        });
+        
+        toast({ 
+          title: `Pricing added to ${sectorsToApply.length} sectors`, 
+          description: `Applied to: ${sectorsToApply.map(s => SECTORS.find(sec => sec.id === s)?.name).join(', ')}`
+        });
+      }
+      
+      // Reset apply sectors after submission
+      setApplySectors([]);
     }
   };
 
@@ -433,6 +459,38 @@ export default function RepairPricing() {
                   placeholder="e.g., Rate based on min of 4 patches"
                   rows={2}
                 />
+              </div>
+
+              <div>
+                <Label>Apply to Other Sectors</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {SECTORS.filter(s => s.id !== sector).map((sectorOption) => (
+                    <div key={sectorOption.id} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={sectorOption.id}
+                        checked={applySectors.includes(sectorOption.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setApplySectors([...applySectors, sectorOption.id]);
+                          } else {
+                            setApplySectors(applySectors.filter(s => s !== sectorOption.id));
+                          }
+                        }}
+                        className="rounded border-gray-300"
+                      />
+                      <Label 
+                        htmlFor={sectorOption.id}
+                        className={`text-sm text-${sectorOption.color}-600 cursor-pointer`}
+                      >
+                        {sectorOption.name}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Tick boxes to copy this pricing rule to other sectors
+                </p>
               </div>
 
               <DialogFooter>
