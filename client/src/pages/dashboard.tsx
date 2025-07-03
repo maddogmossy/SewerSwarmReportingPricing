@@ -832,6 +832,15 @@ export default function Dashboard() {
   if (section2Data.length > 0) {
     console.log('Section 2 raw data:', section2Data.map(s => ({ id: s.id, itemNo: s.itemNo, defects: s.defects, defectCode: s.defectCode })));
   }
+  
+  // Debug all sections with defects
+  const allDefectiveSections = rawSectionData.filter(s => s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0);
+  console.log('All defective sections:', allDefectiveSections.map(s => ({ 
+    id: s.id, 
+    itemNo: s.itemNo, 
+    severityGrade: s.severityGrade, 
+    defects: s.defects?.substring(0, 50) + '...'
+  })));
 
   // Combine sections with individual defects - create multiple rows for sections with multiple defects
   const expandedSectionData = rawFilteredData.reduce((acc: any[], section: any) => {
