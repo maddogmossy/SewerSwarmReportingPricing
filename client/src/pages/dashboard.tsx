@@ -1156,60 +1156,21 @@ export default function Dashboard() {
 
   // Cost calculation function for enhanced table
   const calculateCost = (section: any): string => {
-    const hasNoDefects = [1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24].includes(section.itemNo);
+    // Check if section actually has defects based on severity grade
+    const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
     
-    if (hasNoDefects) {
+    if (!hasDefects) {
       return "£0.00";
     }
-
-    if (!section.recommendations || section.recommendations === "No action required pipe observed in acceptable structural and service condition") {
-      return "£0.00";
-    }
-
-    const reportSector = currentSector?.id || 'utilities';
     
-    // Check if user has sector-specific pricing
-    const sectorPricing = userPricing.filter((pricing: any) => 
-      pricing.sectors && 
-      pricing.sectors.includes(reportSector) &&
-      pricing.sectors.length === 1 && 
-      pricing.sectors[0] === reportSector
-    );
-
-    if (!sectorPricing.length || !equipmentTypes.length) {
-      return "Configure pricing";
+    // For defective sections, use the repair pricing logic instead of old hardcoded logic
+    const autoCost = calculateAutoCost(section);
+    if (autoCost) {
+      return `£${autoCost.cost.toFixed(2)}`;
     }
-
-    // Check if there are any completed sector pricing configurations
-    const validSectorPricing = sectorPricing.filter((pricing: any) => 
-      pricing.costPerDay && 
-      parseFloat(pricing.costPerDay) > 0 &&
-      pricing.sectionsPerDay &&
-      parseFloat(pricing.sectionsPerDay) > 0
-    );
-
-    if (!validSectorPricing.length) {
-      return "Configure pricing";
-    }
-
-    // Find appropriate sector equipment pricing based on section length
-    const sectionLength = parseFloat(section.totalLength) || 0;
-    const appropriatePricing = validSectorPricing.find((pricing: any) => {
-      const minRange = parseFloat(pricing.meterageRangeMin) || 0;
-      const maxRange = parseFloat(pricing.meterageRangeMax) || 100;
-      return sectionLength >= minRange && sectionLength <= maxRange;
-    });
-
-    if (!appropriatePricing) {
-      return "Configure pricing";
-    }
-
-    // Calculate based on daily rate and sections per day
-    const dailyRate = parseFloat(appropriatePricing.costPerDay) || 0;
-    const sectionsPerDay = parseFloat(appropriatePricing.sectionsPerDay) || 1;
-    const costPerSection = dailyRate / sectionsPerDay;
     
-    return `£${costPerSection.toFixed(2)}`;
+    // Show warning triangle icon for sections without pricing
+    return "⚠️";
   };
 
   return (

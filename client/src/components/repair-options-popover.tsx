@@ -95,16 +95,34 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
 
   const handleOptionClick = (option: RepairOption) => {
     if (!option.configured) {
-      onPricingNeeded(option.name, sectionData.pipeSize, sectionData.sector);
+      // Route to specific pricing configuration page based on repair method
+      if (option.name === 'Jetting') {
+        // Navigate to jetting pricing page with auto-populated data
+        const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
+        const meterage = extractMeterage(sectionData.defects || '');
+        
+        // Navigate to jetting pricing configuration
+        window.location.href = `/jetting-pricing?sector=${sectionData.sector}&pipeSize=${pipeSize}&meterage=${meterage}&autoOpen=true`;
+      } else {
+        // For other methods, use the existing callback
+        onPricingNeeded(option.name, sectionData.pipeSize, sectionData.sector);
+      }
     }
     setIsOpen(false);
   };
 
   const getRecommendedOptions = () => {
     const recommendations = sectionData.recommendations.toLowerCase();
+    const defects = sectionData.defects?.toLowerCase() || '';
     
-    // Determine which repair methods are most suitable based on recommendations
-    if (recommendations.includes('patch') || recommendations.includes('structural')) {
+    // Check for cleaning-related defects (DER, debris) - should use Jetting first
+    if (recommendations.includes('cleanse') || recommendations.includes('jetting') || 
+        defects.includes('der') || defects.includes('debris') || 
+        recommendations.includes('cleaning')) {
+      return ['Jetting', 'Patch', 'Lining', 'Excavation'];
+    }
+    // Structural defects need patch/lining
+    else if (recommendations.includes('patch') || recommendations.includes('structural')) {
       return ['Patch', 'Lining', 'Excavation'];
     } else if (recommendations.includes('lining')) {
       return ['Lining', 'Patch', 'Excavation'];

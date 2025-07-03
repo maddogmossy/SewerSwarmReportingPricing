@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -45,9 +46,39 @@ const PIPE_SIZES = [75, 100, 150, 225, 300, 375, 450, 525, 600, 675, 750, 900, 1
 
 export default function JettingPricing() {
   const { toast } = useToast();
+  const [location] = useLocation();
   const [editingPricing, setEditingPricing] = useState<{ [key: number]: UserPricing }>({});
   const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
   const [showEquipmentDialog, setShowEquipmentDialog] = useState(false);
+  const [lengthRange, setLengthRange] = useState({ min: '', max: '' });
+  
+  // Parse URL parameters for auto-population
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pipeSize = urlParams.get('pipeSize');
+    const meterage = urlParams.get('meterage');
+    const autoOpen = urlParams.get('autoOpen');
+    
+    if (pipeSize && editingEquipment) {
+      setEditingEquipment(prev => prev ? { 
+        ...prev, 
+        minPipeSize: parseInt(pipeSize),
+        maxPipeSize: parseInt(pipeSize)
+      } : null);
+    }
+    
+    if (meterage) {
+      const meterageNum = parseFloat(meterage.replace('m', ''));
+      setLengthRange({ 
+        min: Math.max(0, meterageNum - 5).toString(), 
+        max: (meterageNum + 5).toString() 
+      });
+    }
+    
+    if (autoOpen === 'true') {
+      setShowEquipmentDialog(true);
+    }
+  }, [editingEquipment]);
   const [showDeleteDialog, setShowDeleteDialog] = useState<{ id: number; name: string } | null>(null);
 
   // Get equipment for Directional Water Cutting category (ID: 4)
@@ -524,6 +555,45 @@ export default function JettingPricing() {
                   </Select>
                 </div>
               </div>
+              
+              {/* Length Range Inputs */}
+              <div>
+                <Label className="text-sm font-medium text-gray-700 mb-3 block">Effective Length Range (meters)</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="min-length" className="text-xs text-gray-600">
+                      Min Length (m)
+                    </Label>
+                    <Input
+                      id="min-length"
+                      type="number"
+                      step="0.1"
+                      placeholder="0.0"
+                      value={lengthRange.min}
+                      onChange={(e) => setLengthRange(prev => ({ ...prev, min: e.target.value }))}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="max-length" className="text-xs text-gray-600">
+                      Max Length (m)
+                    </Label>
+                    <Input
+                      id="max-length"
+                      type="number"
+                      step="0.1"
+                      placeholder="100.0"
+                      value={lengthRange.max}
+                      onChange={(e) => setLengthRange(prev => ({ ...prev, max: e.target.value }))}
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Specify the length range where this equipment is most effective for jetting operations
+                </p>
+              </div>
+              
               <div className="flex gap-2 pt-4">
                 <Button
                   onClick={handleSaveEquipment}
