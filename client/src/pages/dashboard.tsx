@@ -387,38 +387,16 @@ export default function Dashboard() {
     const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
     
     if (sectionsWithSameItem.length > 1) {
-      // Sort by defects priority: DEG comes first (gets "2"), CR comes second (gets "2a")
-      sectionsWithSameItem.sort((a, b) => {
-        const aHasCR = a.defects && a.defects.includes('CR ');
-        const bHasCR = b.defects && b.defects.includes('CR ');
-        const aHasDEG = a.defects && (a.defects.includes('DEG ') || a.defects.includes('DER '));
-        const bHasDEG = b.defects && (b.defects.includes('DEG ') || b.defects.includes('DER '));
-        
-        // Priority: DEG first, then CR, then by ID
-        if (aHasDEG && bHasCR) return -1; // DEG before CR
-        if (aHasCR && bHasDEG) return 1;  // CR after DEG
-        
-        // If both same type, sort by ID (lower ID first)
-        return a.id - b.id;
-      });
+      // Sort by database ID (lower ID = earlier entry = no suffix)
+      sectionsWithSameItem.sort((a, b) => a.id - b.id);
       
-      // Find the index of this section by using a unique identifier
-      // Use combination of ID and defects to ensure proper identification
-      const sectionIdentifier = `${section.id}-${section.defects}`;
-      let indexInGroup = -1;
-      
-      for (let i = 0; i < sectionsWithSameItem.length; i++) {
-        const compareIdentifier = `${sectionsWithSameItem[i].id}-${sectionsWithSameItem[i].defects}`;
-        if (compareIdentifier === sectionIdentifier) {
-          indexInGroup = i;
-          break;
-        }
-      }
+      // Find the index of this section
+      const indexInGroup = sectionsWithSameItem.findIndex(s => s.id === section.id);
       
       // First occurrence shows original number (e.g., "2"), subsequent get letters (e.g., "2a", "2b")
       if (indexInGroup === 0) {
         return currentItemNo; // First occurrence shows "2"
-      } else if (indexInGroup > 0) {
+      } else {
         const suffix = String.fromCharCode(96 + indexInGroup); // 96 + 1 = 97 ('a'), 96 + 2 = 98 ('b'), etc.
         return `${currentItemNo}${suffix}`;
       }
