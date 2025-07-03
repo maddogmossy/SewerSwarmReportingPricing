@@ -385,11 +385,24 @@ export default function Dashboard() {
   const getItemNumberWithSuffix = (section: any, allSections: any[]) => {
     // For item 2 specifically, handle it based on database ID
     if (section.itemNo === 2) {
+      // Debug logging for item 2
+      console.log('Section 2 debug:', { 
+        sectionId: section.id, 
+        defects: section.defects,
+        fullSection: section 
+      });
+      
       if (section.id === 4731) {
+        console.log('Returning "2" for ID 4731');
         return "2"; // DEG section shows as "2"
       } else if (section.id === 4732) {
+        console.log('Returning "2a" for ID 4732');
         return "2a"; // CR section shows as "2a"
       }
+      
+      // Fallback
+      console.log('Fallback for unknown ID:', section.id);
+      return section.itemNo.toString();
     }
     
     // For other items, use the existing logic
