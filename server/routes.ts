@@ -13,6 +13,7 @@ import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
 import { DataIntegrityValidator, validateBeforeInsert } from "./data-integrity";
 import pdfParse from "pdf-parse";
 import Stripe from "stripe";
+import { setupAuth } from "./replitAuth";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -675,6 +676,9 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
 
 export async function registerRoutes(app: Express) {
   const server = createServer(app);
+
+  // Setup authentication middleware
+  await setupAuth(app);
 
   // File upload endpoint with actual PDF parsing
   app.post("/api/upload", upload.single("file"), async (req: Request, res: Response) => {
