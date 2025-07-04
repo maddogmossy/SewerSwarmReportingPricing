@@ -36,6 +36,8 @@ interface RepairOptionsPopoverProps {
 export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }: RepairOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   
+  console.log('RepairOptionsPopover rendered with:', { sectionData, isOpen });
+  
   // Extract meterage from defects text
   const extractMeterage = (defectsText: string): string => {
     if (!defectsText) return "0.00m";

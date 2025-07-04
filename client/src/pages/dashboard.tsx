@@ -586,7 +586,14 @@ export default function Dashboard() {
                   window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
                 }}
               >
-                <div className="flex items-center justify-center cursor-pointer hover:bg-orange-50 p-1 rounded" title="Click to configure pricing for this repair type">
+                <div 
+                  className="flex items-center justify-center cursor-pointer hover:bg-orange-50 p-1 rounded" 
+                  title="Click to configure pricing for this repair type"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log('Warning triangle clicked for section:', section.itemNo);
+                  }}
+                >
                   <TriangleAlert className="h-4 w-4 text-orange-500 hover:text-orange-600" />
                 </div>
               </RepairOptionsPopover>
