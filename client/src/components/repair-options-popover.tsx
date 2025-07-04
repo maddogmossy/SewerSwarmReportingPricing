@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Settings, AlertTriangle, CheckCircle } from "lucide-react";
+import { Settings, AlertTriangle, CheckCircle, Calculator } from "lucide-react";
+import { PatchRepairGenerator } from "./PatchRepairGenerator";
 
 interface RepairOption {
   id: number;
@@ -25,6 +26,9 @@ interface RepairOptionsPopoverProps {
     sector: string;
     recommendations: string;
     defects?: string; // Add defects to extract meterage
+    itemNo?: number;
+    pipeMaterial?: string;
+    pipeDepth?: string;
   };
   onPricingNeeded: (method: string, pipeSize: string, sector: string) => void;
 }
@@ -235,6 +239,25 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
               )}
             </div>
           ))}
+        </div>
+        
+        {/* Patch Repair Generator Section */}
+        <div className="p-3 border-t bg-blue-50">
+          <div className="flex items-center gap-2 mb-2">
+            <Calculator className="h-4 w-4 text-blue-600" />
+            <span className="font-semibold text-sm text-blue-800">Advanced Patch Generator</span>
+          </div>
+          <p className="text-xs text-blue-700 mb-3">
+            Generate WRc/CESWI-compliant patch repair specifications automatically
+          </p>
+          <PatchRepairGenerator 
+            sectionData={{
+              pipeSize: sectionData.pipeSize,
+              defects: sectionData.defects,
+              itemNo: (sectionData as any).itemNo,
+              pipeMaterial: (sectionData as any).pipeMaterial
+            }}
+          />
         </div>
         
         <div className="p-3 border-t bg-slate-50">

@@ -31,19 +31,96 @@ interface PatchRepairResult {
   };
 }
 
-export function PatchRepairGenerator() {
+interface SectionData {
+  pipeSize?: string;
+  pipeDepth?: string;
+  defects?: string;
+  itemNo?: number;
+  pipeMaterial?: string;
+}
+
+interface PatchRepairGeneratorProps {
+  sectionData?: SectionData;
+}
+
+export function PatchRepairGenerator({ sectionData }: PatchRepairGeneratorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [result, setResult] = useState<PatchRepairResult | null>(null);
   const { toast } = useToast();
 
-  const [formData, setFormData] = useState({
-    pipeSize: "150mm",
-    pipeDepth: "",
-    defectDescription: "",
-    chainage: "",
-    requiredThickness: "",
-    baseCost: "450"
-  });
+  // Extract meterage from defects text
+  const extractMeterage = (defectsText: string): string => {
+    if (!defectsText) return "";
+    
+    // Look for patterns like "10.78m", "7.08m", "CR 15.2m", "DER 8.4m"
+    const meterageMatch = defectsText.match(/(\d+\.?\d*)\s*m/);
+    if (meterageMatch) {
+      return meterageMatch[1];
+    }
+    
+    return "";
+  };
+
+  // Extract defect type and description
+  const extractDefectDescription = (defectsText: string): string => {
+    if (!defectsText) return "";
+    
+    // Remove the meterage and parenthetical content to get clean description
+    let description = defectsText;
+    
+    // Extract defect type (CR, DER, DEF, etc.) and description
+    const defectMatch = defectsText.match(/(\w+)\s+\d+\.?\d*m\s*\(([^)]+)\)/);
+    if (defectMatch) {
+      const defectCode = defectMatch[1];
+      const defectDesc = defectMatch[2];
+      
+      // Map common defect codes to descriptions
+      const defectMap: { [key: string]: string } = {
+        'CR': 'longitudinal cracking',
+        'FC': 'circumferential cracking', 
+        'DER': 'debris deposits',
+        'DEF': 'pipe deformation',
+        'JDL': 'joint displacement',
+        'JDM': 'major joint displacement',
+        'OJM': 'open joint',
+        'RI': 'root intrusion',
+        'FL': 'fractured lining'
+      };
+      
+      return defectMap[defectCode] || defectDesc.toLowerCase();
+    }
+    
+    return "structural defect";
+  };
+
+  // Initialize form data with section data if provided
+  const initializeFormData = () => {
+    if (sectionData) {
+      const meterage = extractMeterage(sectionData.defects || "");
+      const defectDesc = extractDefectDescription(sectionData.defects || "");
+      const pipeSize = sectionData.pipeSize?.replace('mm', '') || "150";
+      
+      return {
+        pipeSize: `${pipeSize}mm`,
+        pipeDepth: sectionData.pipeDepth || "",
+        defectDescription: defectDesc,
+        chainage: meterage,
+        requiredThickness: "",
+        baseCost: "450"
+      };
+    }
+    
+    return {
+      pipeSize: "150mm",
+      pipeDepth: "",
+      defectDescription: "",
+      chainage: "",
+      requiredThickness: "",
+      baseCost: "450"
+    };
+  };
+
+  const [formData, setFormData] = useState(initializeFormData());
 
   const generateMutation = useMutation({
     mutationFn: async (data: any): Promise<PatchRepairResult> => {

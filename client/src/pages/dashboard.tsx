@@ -488,10 +488,18 @@ export default function Dashboard() {
         
         if (hasRepairableDefects && section.recommendations && !section.recommendations.includes('No action required')) {
           return (
-            <div 
-              className="relative group cursor-pointer"
-              onClick={() => {
-                window.location.href = `/repair-pricing/${currentSector.id}`;
+            <RepairOptionsPopover 
+              sectionData={{
+                pipeSize: section.pipeSize,
+                sector: currentSector.id,
+                recommendations: section.recommendations,
+                defects: section.defects,
+                itemNo: section.itemNo,
+                pipeMaterial: section.pipeMaterial,
+                pipeDepth: section.pipeDepth
+              }}
+              onPricingNeeded={(method, pipeSize, sector) => {
+                window.location.href = `/repair-pricing/${sector}`;
               }}
             >
               <div className="text-xs max-w-48 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
@@ -499,13 +507,7 @@ export default function Dashboard() {
                 <div className="text-blue-700">{section.recommendations || 'No recommendations available'}</div>
                 <div className="text-xs text-blue-600 mt-1 font-medium">→ Click for pricing options</div>
               </div>
-              
-              {/* Obvious hover tooltip */}
-              <div className="absolute z-50 invisible group-hover:visible bg-blue-600 text-white text-sm rounded-lg p-3 -top-16 left-0 whitespace-nowrap shadow-lg border-2 border-blue-400">
-                <div className="font-bold">💡 REPAIR OPTIONS AVAILABLE</div>
-                <div>Click to configure pricing & methods</div>
-              </div>
-            </div>
+            </RepairOptionsPopover>
           );
         } else {
           // Grade 0 sections or sections without repairable defects - no hover needed
