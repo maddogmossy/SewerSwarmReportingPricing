@@ -1282,13 +1282,11 @@ export default function RepairPricing() {
                   </select>
                 </div>
 
-                {/* Four Costing Options - Alternative Dialog Section */}
-                <div className="space-y-3">
+                <div>
                   <label className="text-sm font-medium">Costing Options</label>
-                  
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-4 mt-2">
                     <div>
-                      <label className="text-xs">1. Single Layer (£)</label>
+                      <label className="text-sm font-medium">1. Single Layer (£)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -1300,7 +1298,7 @@ export default function RepairPricing() {
                     </div>
                     
                     <div>
-                      <label className="text-xs">2. Double Layer (£)</label>
+                      <label className="text-sm font-medium">2. Double Layer (£)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -1312,7 +1310,7 @@ export default function RepairPricing() {
                     </div>
                     
                     <div>
-                      <label className="text-xs">3. Triple Layer (£)</label>
+                      <label className="text-sm font-medium">3. Triple Layer (£)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -1324,7 +1322,7 @@ export default function RepairPricing() {
                     </div>
                     
                     <div>
-                      <label className="text-xs">4. Triple Layer + Extra Long Cure Time (£)</label>
+                      <label className="text-sm font-medium">4. Triple Layer + Extra Long Cure Time (£)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -1335,16 +1333,16 @@ export default function RepairPricing() {
                       />
                     </div>
                   </div>
-                  
-                  <div className="mt-3">
-                    <label className="text-xs">Selected Option</label>
-                    <input
-                      type="text"
-                      value={formData.selectedOption || "Auto-selected based on description"}
-                      readOnly
-                      className="w-full mt-1 p-2 border rounded-md bg-gray-50 text-xs"
-                    />
-                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Selected Option</label>
+                  <input
+                    type="text"
+                    value={formData.selectedOption || "Auto-selected based on description"}
+                    readOnly
+                    className="w-full mt-1 p-2 border rounded-md bg-gray-50"
+                  />
                 </div>
               </div>
 
