@@ -36,7 +36,7 @@ export default function Home() {
   const [showPricing, setShowPricing] = useState(false);
   const [isYearlyPricing, setIsYearlyPricing] = useState(false);
   const { toast } = useToast();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   const handleTestAccess = async () => {
     try {
@@ -217,6 +217,18 @@ export default function Home() {
       onClick: () => setShowRegistration(true)
     }
   ];
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Show authenticated user dashboard if logged in
   if (isAuthenticated && user) {
