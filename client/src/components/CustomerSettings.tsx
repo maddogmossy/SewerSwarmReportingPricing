@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,9 +17,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, CreditCard, User, Users, Building } from "lucide-react";
+import { Settings, CreditCard, User, Users, Building, MapPin } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -39,10 +40,20 @@ interface CompanySettings {
   companyName: string;
   companyLogo?: string;
   address?: string;
+  postcode?: string;
   phoneNumber?: string;
   maxUsers: number;
   currentUsers: number;
   pricePerUser: string;
+}
+
+interface DepotSettings {
+  id?: number;
+  depotName: string;
+  sameAsCompany: boolean;
+  address?: string;
+  postcode: string;
+  phoneNumber?: string;
 }
 
 interface TeamMember {
@@ -61,6 +72,7 @@ export function CustomerSettings() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
+  const [sameAsCompany, setSameAsCompany] = useState(false);
 
   // Fetch payment methods
   const { data: paymentMethods = [], isLoading: paymentMethodsLoading } = useQuery<PaymentMethod[]>({
@@ -73,6 +85,19 @@ export function CustomerSettings() {
     queryKey: ['/api/company-settings'],
     enabled: isOpen && !!user && user?.role === 'admin',
   });
+
+  // Fetch depot settings (for admin users)
+  const { data: depotSettings, isLoading: depotLoading } = useQuery<DepotSettings>({
+    queryKey: ['/api/depot-settings'],
+    enabled: isOpen && !!user && user?.role === 'admin',
+  });
+
+  // Initialize sameAsCompany state when depot settings load
+  useEffect(() => {
+    if (depotSettings) {
+      setSameAsCompany(depotSettings.sameAsCompany || false);
+    }
+  }, [depotSettings]);
 
   // Fetch team members (for admin users)
   const { data: teamMembers = [], isLoading: teamLoading } = useQuery<TeamMember[]>({
@@ -120,6 +145,26 @@ export function CustomerSettings() {
     },
   });
 
+  // Update depot settings mutation
+  const updateDepotMutation = useMutation({
+    mutationFn: (data: Partial<DepotSettings>) =>
+      apiRequest('PUT', '/api/depot-settings', data),
+    onSuccess: () => {
+      toast({
+        title: "Depot settings updated",
+        description: "Your depot settings have been saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/depot-settings'] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update depot settings. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Invite team member mutation
   const inviteTeamMemberMutation = useMutation({
     mutationFn: (email: string) =>
@@ -147,8 +192,39 @@ export function CustomerSettings() {
       companyName: formData.get('companyName') as string,
       address: formData.get('address') as string,
       phoneNumber: formData.get('phoneNumber') as string,
+      postcode: formData.get('postcode') as string,
     };
     updateCompanyMutation.mutate(data);
+  };
+
+  const handleDepotSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const sameAsCompany = formData.get('sameAsCompany') === 'on';
+    
+    let data: Partial<DepotSettings>;
+    
+    if (sameAsCompany && companySettings) {
+      // Use company details when "same as company" is checked
+      data = {
+        depotName: formData.get('depotName') as string,
+        sameAsCompany: true,
+        address: companySettings.address,
+        postcode: companySettings.postcode || '',
+        phoneNumber: companySettings.phoneNumber,
+      };
+    } else {
+      // Use depot-specific details
+      data = {
+        depotName: formData.get('depotName') as string,
+        sameAsCompany: false,
+        address: formData.get('address') as string,
+        postcode: formData.get('postcode') as string,
+        phoneNumber: formData.get('phoneNumber') as string,
+      };
+    }
+    
+    updateDepotMutation.mutate(data);
   };
 
   const handleInviteSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -178,7 +254,7 @@ export function CustomerSettings() {
         </DialogHeader>
 
         <Tabs defaultValue="account" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className={`grid w-full ${user.role === 'admin' ? 'grid-cols-6' : 'grid-cols-2'}`}>
             <TabsTrigger value="account">
               <User className="h-4 w-4 mr-2" />
               Account
@@ -192,6 +268,10 @@ export function CustomerSettings() {
                 <TabsTrigger value="company">
                   <Building className="h-4 w-4 mr-2" />
                   Company
+                </TabsTrigger>
+                <TabsTrigger value="depot">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  Depot
                 </TabsTrigger>
                 <TabsTrigger value="team">
                   <Users className="h-4 w-4 mr-2" />
@@ -321,13 +401,24 @@ export function CustomerSettings() {
                             defaultValue={companySettings?.address || ''}
                           />
                         </div>
-                        <div>
-                          <Label htmlFor="phoneNumber">Phone Number</Label>
-                          <Input
-                            id="phoneNumber"
-                            name="phoneNumber"
-                            defaultValue={companySettings?.phoneNumber || ''}
-                          />
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="phoneNumber">Phone Number</Label>
+                            <Input
+                              id="phoneNumber"
+                              name="phoneNumber"
+                              defaultValue={companySettings?.phoneNumber || ''}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="postcode">Postcode</Label>
+                            <Input
+                              id="postcode"
+                              name="postcode"
+                              defaultValue={companySettings?.postcode || ''}
+                              placeholder="e.g. SW1A 1AA"
+                            />
+                          </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div>
@@ -350,6 +441,117 @@ export function CustomerSettings() {
                           disabled={updateCompanyMutation.isPending}
                         >
                           Save Company Settings
+                        </Button>
+                      </form>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="depot" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Depot Settings</CardTitle>
+                    <CardDescription>
+                      Configure your depot location for travel time calculations and automatic file naming with site addresses.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {depotLoading ? (
+                      <div className="text-center py-4">Loading depot settings...</div>
+                    ) : (
+                      <form onSubmit={handleDepotSubmit} className="space-y-4">
+                        <div>
+                          <Label htmlFor="depotName">Depot Name</Label>
+                          <Input
+                            id="depotName"
+                            name="depotName"
+                            defaultValue={depotSettings?.depotName || ''}
+                            placeholder="e.g. Main Depot, Birmingham Depot"
+                            required
+                          />
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="sameAsCompany"
+                            name="sameAsCompany"
+                            checked={sameAsCompany}
+                            onCheckedChange={(checked) => setSameAsCompany(checked as boolean)}
+                          />
+                          <Label htmlFor="sameAsCompany">
+                            Use same details as company (address, postcode, phone)
+                          </Label>
+                        </div>
+
+                        {!sameAsCompany && (
+                          <div className="space-y-4" id="depot-details">
+                            <div>
+                              <Label htmlFor="depot-address">Depot Address</Label>
+                              <Input
+                                id="depot-address"
+                                name="address"
+                                defaultValue={depotSettings?.address || ''}
+                                placeholder="Enter depot address if different from company"
+                              />
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="depot-phoneNumber">Phone Number</Label>
+                                <Input
+                                  id="depot-phoneNumber"
+                                  name="phoneNumber"
+                                  defaultValue={depotSettings?.phoneNumber || ''}
+                                  placeholder="Depot phone number"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="depot-postcode">Postcode *</Label>
+                                <Input
+                                  id="depot-postcode"
+                                  name="postcode"
+                                  defaultValue={depotSettings?.postcode || ''}
+                                  placeholder="e.g. B1 1AA"
+                                  required
+                                />
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  Required for calculating travel time to site locations
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {sameAsCompany && companySettings && (
+                          <div className="space-y-4 bg-muted p-4 rounded-lg">
+                            <p className="text-sm text-muted-foreground">
+                              Using company details for depot:
+                            </p>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <strong>Address:</strong> {companySettings.address || 'Not set'}
+                              </div>
+                              <div>
+                                <strong>Phone:</strong> {companySettings.phoneNumber || 'Not set'}
+                              </div>
+                              <div>
+                                <strong>Postcode:</strong> {companySettings.postcode || 'Not set'}
+                              </div>
+                            </div>
+                            {!companySettings.postcode && (
+                              <p className="text-sm text-destructive">
+                                Warning: Company postcode is required for travel calculations. Please set it in Company settings.
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        <Button
+                          type="submit"
+                          disabled={updateDepotMutation.isPending}
+                        >
+                          Save Depot Settings
                         </Button>
                       </form>
                     )}

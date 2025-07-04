@@ -74,6 +74,8 @@ export const fileUploads = pgTable("file_uploads", {
   reportUrl: varchar("report_url"),
   projectNumber: varchar("project_number"),
   visitNumber: integer("visit_number").default(1), // Track multiple visits to same project
+  siteAddress: text("site_address"), // Site address for travel calculations
+  sitePostcode: varchar("site_postcode", { length: 10 }), // Site postcode for travel calculations
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -243,6 +245,11 @@ export const repairPricing = pgTable("repair_pricing", {
   cost: varchar("cost").notNull(), // Store as string to avoid decimal precision issues
   rule: text("rule"), // "Rate based on min of 4 patches"
   minimumQuantity: integer("minimum_quantity").default(1),
+  // Travel and crew pricing fields
+  travelIncludedHours: decimal("travel_included_hours", { precision: 4, scale: 2 }).default("0.00"), // Hours of travel included in base cost
+  additionalTravelRate: decimal("additional_travel_rate", { precision: 8, scale: 2 }).default("0.00"), // Cost per additional travel hour
+  dayRate: decimal("day_rate", { precision: 10, scale: 2 }).default("0.00"), // Day rate for crew
+  hourlyRate: decimal("hourly_rate", { precision: 8, scale: 2 }).default("0.00"), // Calculated as dayRate / 8
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -255,11 +262,25 @@ export const companySettings = pgTable("company_settings", {
   companyName: varchar("company_name").notNull(),
   companyLogo: text("company_logo"), // Base64 or URL
   address: text("address"),
+  postcode: varchar("postcode", { length: 10 }), // Company postcode
   phoneNumber: varchar("phone_number"),
   emailDomain: varchar("email_domain"), // For auto-assigning team members
   maxUsers: integer("max_users").default(1), // How many users they've paid for
   currentUsers: integer("current_users").default(1), // How many users they currently have
   pricePerUser: decimal("price_per_user", { precision: 10, scale: 2 }).default("25.00"), // Monthly cost per additional user
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Depot settings for admin users
+export const depotSettings = pgTable("depot_settings", {
+  id: serial("id").primaryKey(),
+  adminUserId: varchar("admin_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  depotName: varchar("depot_name").notNull(),
+  sameAsCompany: boolean("same_as_company").default(false), // If true, copies company details
+  address: text("address"),
+  postcode: varchar("postcode", { length: 10 }).notNull(), // Depot postcode for travel calculations
+  phoneNumber: varchar("phone_number"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -320,6 +341,8 @@ export type InsertRepairPricing = typeof repairPricing.$inferInsert;
 
 export type CompanySettings = typeof companySettings.$inferSelect;
 export type InsertCompanySettings = typeof companySettings.$inferInsert;
+export type DepotSettings = typeof depotSettings.$inferSelect;
+export type InsertDepotSettings = typeof depotSettings.$inferInsert;
 export type TeamInvitation = typeof teamInvitations.$inferSelect;
 export type InsertTeamInvitation = typeof teamInvitations.$inferInsert;
 export type TeamBillingRecord = typeof teamBillingRecords.$inferSelect;

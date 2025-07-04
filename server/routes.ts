@@ -1698,6 +1698,36 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Depot settings routes (admin only)
+  app.get("/api/depot-settings", async (req, res) => {
+    try {
+      // For demo, return mock depot settings
+      const mockSettings = {
+        id: 1,
+        depotName: "Main Depot",
+        sameAsCompany: false,
+        address: "456 Depot Road, Birmingham, UK",
+        postcode: "B1 1AA",
+        phoneNumber: "+44 121 123 4567"
+      };
+      res.json(mockSettings);
+    } catch (error: any) {
+      console.error('Error fetching depot settings:', error);
+      res.status(500).json({ error: "Failed to fetch depot settings" });
+    }
+  });
+
+  app.put("/api/depot-settings", async (req, res) => {
+    try {
+      const updates = req.body;
+      // For demo, just return the updated data
+      res.json({ ...updates, id: 1 });
+    } catch (error: any) {
+      console.error('Error updating depot settings:', error);
+      res.status(500).json({ error: "Failed to update depot settings" });
+    }
+  });
+
   // Team management routes (admin only)
   app.get("/api/team-members", async (req, res) => {
     try {
