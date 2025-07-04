@@ -52,6 +52,7 @@ export default function RepairPricing() {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<any>(null);
+  const [deleteScope, setDeleteScope] = useState<'current' | 'all'>('current');
   const [sectorWarningOpen, setSectorWarningOpen] = useState(false);
   const [pendingSectorChange, setPendingSectorChange] = useState<{sectorId: string, checked: boolean} | null>(null);
   const [formData, setFormData] = useState({
@@ -157,10 +158,19 @@ export default function RepairPricing() {
 
   // Delete pricing mutation
   const deletePricing = useMutation({
-    mutationFn: (id: number) => apiRequest('DELETE', `/api/repair-pricing/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
-      toast({ title: "Pricing deleted successfully" });
+    mutationFn: ({ id, scope }: { id: number; scope: 'current' | 'all' }) => 
+      apiRequest('DELETE', `/api/repair-pricing/${id}?scope=${scope}&currentSector=${sector}`),
+    onSuccess: (_, variables) => {
+      if (variables.scope === 'all') {
+        // Invalidate all sector queries when deleting from all sectors
+        SECTORS.forEach(s => {
+          queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${s.id}`] });
+        });
+        toast({ title: "Pricing deleted from all sectors successfully" });
+      } else {
+        queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
+        toast({ title: "Pricing deleted from current sector successfully" });
+      }
     },
     onError: (error: any) => {
       toast({ 
@@ -352,9 +362,10 @@ export default function RepairPricing() {
 
   const confirmDelete = () => {
     if (itemToDelete) {
-      deletePricing.mutate(itemToDelete.id);
+      deletePricing.mutate({ id: itemToDelete.id, scope: deleteScope });
       setDeleteDialogOpen(false);
       setItemToDelete(null);
+      setDeleteScope('current'); // Reset to default
     }
   };
 
@@ -683,9 +694,54 @@ export default function RepairPricing() {
                     <strong>{itemToDelete.description}</strong> - {itemToDelete.pipeSize} - £{itemToDelete.cost}
                   </div>
                 )}
-                This action cannot be undone.
               </DialogDescription>
             </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <p className="text-sm font-medium text-gray-700">Delete scope:</p>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id="delete-current"
+                      name="delete-scope"
+                      value="current"
+                      checked={deleteScope === 'current'}
+                      onChange={(e) => setDeleteScope(e.target.value as 'current' | 'all')}
+                      className="h-4 w-4 text-blue-600"
+                    />
+                    <Label htmlFor="delete-current" className="text-sm">
+                      Delete from <strong>{SECTORS.find(s => s.id === sector)?.name || sector}</strong> sector only
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id="delete-all"
+                      name="delete-scope"
+                      value="all"
+                      checked={deleteScope === 'all'}
+                      onChange={(e) => setDeleteScope(e.target.value as 'current' | 'all')}
+                      className="h-4 w-4 text-red-600"
+                    />
+                    <Label htmlFor="delete-all" className="text-sm">
+                      Delete from <strong>all sectors</strong> (utilities, adoption, highways, insurance, construction, domestic)
+                    </Label>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p className="text-xs text-yellow-800">
+                  {deleteScope === 'current' 
+                    ? `This will only remove the pricing from the ${SECTORS.find(s => s.id === sector)?.name || sector} sector. Other sectors will keep this pricing.`
+                    : 'This will remove the pricing configuration from ALL sectors where it exists. This action cannot be undone.'
+                  }
+                </p>
+              </div>
+            </div>
+
             <DialogFooter>
               <Button
                 variant="outline"
@@ -699,7 +755,9 @@ export default function RepairPricing() {
                 onClick={confirmDelete}
                 disabled={deletePricing.isPending}
               >
-                {deletePricing.isPending ? 'Deleting...' : 'Delete'}
+                {deletePricing.isPending ? "Deleting..." : 
+                  deleteScope === 'all' ? "Delete from All Sectors" : "Delete from Current Sector"
+                }
               </Button>
             </DialogFooter>
           </DialogContent>

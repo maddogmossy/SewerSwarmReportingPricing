@@ -1492,16 +1492,46 @@ export async function registerRoutes(app: Express) {
   app.delete("/api/repair-pricing/:id", async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
+      const { scope, currentSector } = req.query;
       
-      const [deletedPricing] = await db.delete(repairPricing)
-        .where(and(eq(repairPricing.id, parseInt(id)), eq(repairPricing.userId, "test-user")))
-        .returning();
-      
-      if (!deletedPricing) {
-        return res.status(404).json({ error: "Repair pricing not found" });
+      if (scope === 'all') {
+        // First, get the pricing details to identify similar pricing across sectors
+        const pricingToDelete = await db.select()
+          .from(repairPricing)
+          .where(and(eq(repairPricing.id, parseInt(id)), eq(repairPricing.userId, "test-user")));
+        
+        if (pricingToDelete.length === 0) {
+          return res.status(404).json({ error: "Repair pricing not found" });
+        }
+        
+        const baseItem = pricingToDelete[0];
+        
+        // Delete all pricing with the same description, pipe size, and cost across all sectors
+        const deletedItems = await db.delete(repairPricing)
+          .where(and(
+            eq(repairPricing.userId, "test-user"),
+            eq(repairPricing.description, baseItem.description),
+            eq(repairPricing.pipeSize, baseItem.pipeSize),
+            eq(repairPricing.cost, baseItem.cost)
+          ))
+          .returning();
+        
+        res.json({ 
+          message: `Repair pricing deleted from ${deletedItems.length} sector(s) successfully`,
+          deletedCount: deletedItems.length
+        });
+      } else {
+        // Delete only from current sector (existing behavior)
+        const [deletedPricing] = await db.delete(repairPricing)
+          .where(and(eq(repairPricing.id, parseInt(id)), eq(repairPricing.userId, "test-user")))
+          .returning();
+        
+        if (!deletedPricing) {
+          return res.status(404).json({ error: "Repair pricing not found" });
+        }
+        
+        res.json({ message: "Repair pricing deleted from current sector successfully" });
       }
-      
-      res.json({ message: "Repair pricing deleted successfully" });
     } catch (error) {
       console.error("Error deleting repair pricing:", error);
       res.status(500).json({ error: "Failed to delete repair pricing" });
