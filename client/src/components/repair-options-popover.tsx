@@ -118,6 +118,18 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
         pipeMaterial: sectionData.pipeMaterial || ''
       });
       
+      console.log('Navigating with params:', {
+        pipeSize,
+        pipeDepth: sectionData.pipeDepth,
+        meterage,
+        autoFocus: option.name.toLowerCase(),
+        itemNo: sectionData.itemNo,
+        defects: sectionData.defects,
+        recommendations: sectionData.recommendations,
+        pipeMaterial: sectionData.pipeMaterial,
+        url: `/repair-pricing/${sector}?${params.toString()}`
+      });
+      
       // Navigate to the sector-specific pricing page
       window.location.href = `/repair-pricing/${sector}?${params.toString()}`;
     }

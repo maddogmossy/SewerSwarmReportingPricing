@@ -99,6 +99,17 @@ export default function RepairPricing() {
     const recommendations = urlParams.get('recommendations');
     const pipeMaterial = urlParams.get('pipeMaterial');
     
+    console.log('URL Parameters received:', {
+      autoFocus,
+      pipeSize,
+      pipeDepth,
+      meterage,
+      itemNo,
+      defects,
+      recommendations,
+      pipeMaterial
+    });
+    
     if (autoFocus && workCategories && workCategories.length > 0 && pricingData !== undefined) {
       // Extract defect code and location from defects string
       const defectMatch = defects?.match(/^([A-Z]+)\s+([\d.]+)m/);
@@ -140,24 +151,49 @@ export default function RepairPricing() {
             targetCard.classList.remove('ring-4', 'ring-blue-500', 'ring-opacity-50');
           }, 3000);
           
-          // Auto-open the add pricing dialog
+          // Always auto-open the add pricing dialog when coming from dashboard
+          console.log('Looking for category:', autoFocus, 'in categories:', workCategories);
+          
+          // Map repair method names to work category names
+          const categoryMapping: { [key: string]: string } = {
+            'patching': 'patching',
+            'patch': 'patching', 
+            'jetting': 'jetting',
+            'cleaning': 'jetting',
+            'lining': 'lining',
+            'excavation': 'excavation'
+          };
+          
+          const mappedCategory = categoryMapping[autoFocus.toLowerCase()] || autoFocus.toLowerCase();
           const matchingCategory = workCategories.find((cat: any) => 
-            cat.name.toLowerCase() === autoFocus.toLowerCase()
+            cat.name.toLowerCase().includes(mappedCategory) || mappedCategory.includes(cat.name.toLowerCase())
           );
           
           if (matchingCategory) {
             setTimeout(() => {
+              const comprehensiveDescription = createDescription(autoFocus);
+              console.log('Auto-opening dialog with data:', {
+                workCategoryId: matchingCategory.id,
+                pipeSize: pipeSize ? `${pipeSize}mm` : '',
+                depth: pipeDepth || '',
+                description: comprehensiveDescription,
+                defectCode,
+                defectLocation,
+                recommendations
+              });
+              
               setFormData(prev => ({ 
                 ...prev, 
                 workCategoryId: matchingCategory.id.toString(),
                 pipeSize: pipeSize ? `${pipeSize}mm` : prev.pipeSize,
                 depth: pipeDepth || prev.depth,
-                description: createDescription(autoFocus),
+                description: comprehensiveDescription,
                 lengthOfRepair: "1000mm",
                 unitCost: "",
                 minInstallationPerDay: "5",
                 dayRate: "800.00", 
-                travelTimeAllowance: "2.0"
+                travelTimeAllowance: "2.0",
+                rule: ""
               }));
               setIsAddDialogOpen(true);
             }, 1000);
