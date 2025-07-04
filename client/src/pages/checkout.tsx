@@ -21,7 +21,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 const subscriptionPlans = [
   {
     name: "Monthly Pro",
-    stripePriceId: "price_monthly", // This should be set from environment or API
+    stripePriceId: import.meta.env.VITE_STRIPE_MONTHLY_PRICE_ID || "price_1234567890", 
     price: 89,
     period: "month",
     features: [
@@ -33,7 +33,7 @@ const subscriptionPlans = [
   },
   {
     name: "Yearly Pro",
-    stripePriceId: "price_yearly", // This should be set from environment or API
+    stripePriceId: import.meta.env.VITE_STRIPE_YEARLY_PRICE_ID || "price_0987654321",
     price: 71,
     period: "month",
     originalPrice: 89,
@@ -79,12 +79,27 @@ export default function Checkout() {
   }, [user, authLoading, toast, setLocation]);
 
   const handleSubscriptionPayment = async (planId: string) => {
+    // Check if this is a demo price ID
+    if (planId.startsWith("price_") && planId.length < 20) {
+      toast({
+        title: "Demo Mode",
+        description: "This is a demo version. Stripe price IDs need to be configured for live payments.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await apiRequest("POST", "/api/create-subscription", { 
         priceId: planId 
       });
       const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create subscription");
+      }
+      
       setClientSecret(data.clientSecret);
       setSelectedPlan(planId);
     } catch (error: any) {

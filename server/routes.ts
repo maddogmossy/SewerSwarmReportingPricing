@@ -12,9 +12,16 @@ import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
 import { DataIntegrityValidator, validateBeforeInsert } from "./data-integrity";
 import pdfParse from "pdf-parse";
+import Stripe from "stripe";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Initialize Stripe
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const upload = multer({
   dest: "uploads/",
@@ -1527,6 +1534,64 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error("Error checking repair pricing:", error);
       res.status(500).json({ error: "Failed to check repair pricing" });
+    }
+  });
+
+  // Stripe payment endpoints
+  app.post("/api/create-payment-intent", async (req: Request, res: Response) => {
+    try {
+      const { amount } = req.body;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: "gbp",
+        metadata: {
+          userId: "test-user",
+          reportSections: req.body.reportSections || "unknown"
+        }
+      });
+      res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (error: any) {
+      console.error("Payment intent error:", error);
+      res.status(500).json({ 
+        message: "Error creating payment intent: " + error.message 
+      });
+    }
+  });
+
+  app.post("/api/create-subscription", async (req: Request, res: Response) => {
+    try {
+      const { priceId } = req.body;
+      
+      // Create a customer first
+      const customer = await stripe.customers.create({
+        email: "test@example.com",
+        name: "Test User",
+      });
+
+      // Create the subscription
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{
+          price: priceId,
+        }],
+        payment_behavior: 'default_incomplete',
+        expand: ['latest_invoice.payment_intent'],
+      });
+
+      const invoice = subscription.latest_invoice;
+      const clientSecret = invoice && typeof invoice !== 'string' && invoice.payment_intent && typeof invoice.payment_intent !== 'string' 
+        ? invoice.payment_intent.client_secret 
+        : null;
+      
+      res.json({
+        subscriptionId: subscription.id,
+        clientSecret: clientSecret,
+      });
+    } catch (error: any) {
+      console.error("Subscription error:", error);
+      res.status(500).json({ 
+        message: "Error creating subscription: " + error.message 
+      });
     }
   });
 
