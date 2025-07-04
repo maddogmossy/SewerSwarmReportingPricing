@@ -173,9 +173,12 @@ export default function RepairPricing() {
           };
           
           const mappedCategory = categoryMapping[autoFocus.toLowerCase()] || autoFocus.toLowerCase();
+          console.log('Mapped category:', mappedCategory, 'from autoFocus:', autoFocus);
+          
           const matchingCategory = workCategories.find((cat: any) => 
             cat.name.toLowerCase().includes(mappedCategory) || mappedCategory.includes(cat.name.toLowerCase())
           );
+          console.log('Found matching category:', matchingCategory);
           
           if (matchingCategory) {
             setTimeout(() => {
