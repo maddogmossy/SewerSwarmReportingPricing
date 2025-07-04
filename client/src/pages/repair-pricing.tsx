@@ -1126,14 +1126,53 @@ export default function RepairPricing() {
               </div>
 
               <div>
-                <label className="text-sm font-medium">Description</label>
-                <input
-                  type="text"
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full mt-1 p-2 border rounded-md"
-                  placeholder="e.g., Patch repair for structural defects"
-                />
+                <div className="flex items-center gap-2 mb-2">
+                  <label className="text-sm font-medium">Description</label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-slate-500 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-md">
+                        <p className="text-sm">{formData.description || "Description will be auto-generated based on pipe size, depth, and defect type for standards compliance"}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setTempDescription(formData.description);
+                      setIsDescriptionEditOpen(true);
+                    }}
+                    className="h-6 px-2 text-xs"
+                  >
+                    <Edit className="h-3 w-3 mr-1" />
+                    Edit
+                  </Button>
+                </div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md pr-8"
+                    placeholder="e.g., Patch repair for structural defects"
+                  />
+                  {formData.description.includes('patch') && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Standards compliant</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
               </div>
 
               <div>
