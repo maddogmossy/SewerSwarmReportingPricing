@@ -35,11 +35,16 @@ export const users = pgTable("users", {
   company: varchar("company"),
   companyAddress: text("company_address"),
   phoneNumber: varchar("phone_number"),
+  role: varchar("role").default("user"), // admin, user
+  adminId: varchar("admin_id").references(() => users.id), // Reference to admin user for team members
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
   subscriptionStatus: varchar("subscription_status").default("none"), // none, trial, active, cancelled
+  paymentMethodId: varchar("payment_method_id"), // Stripe payment method ID
   trialReportsUsed: integer("trial_reports_used").default(0),
   isTestUser: boolean("is_test_user").default(false),
+  isActive: boolean("is_active").default(true),
+  lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -243,6 +248,49 @@ export const repairPricing = pgTable("repair_pricing", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Company settings for admin users
+export const companySettings = pgTable("company_settings", {
+  id: serial("id").primaryKey(),
+  adminUserId: varchar("admin_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  companyName: varchar("company_name").notNull(),
+  companyLogo: text("company_logo"), // Base64 or URL
+  address: text("address"),
+  phoneNumber: varchar("phone_number"),
+  emailDomain: varchar("email_domain"), // For auto-assigning team members
+  maxUsers: integer("max_users").default(1), // How many users they've paid for
+  currentUsers: integer("current_users").default(1), // How many users they currently have
+  pricePerUser: decimal("price_per_user", { precision: 10, scale: 2 }).default("25.00"), // Monthly cost per additional user
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Team member invitations
+export const teamInvitations = pgTable("team_invitations", {
+  id: serial("id").primaryKey(),
+  adminUserId: varchar("admin_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  email: varchar("email").notNull(),
+  role: varchar("role").default("user"), // user (can only upload/export)
+  token: varchar("token").notNull().unique(), // UUID for invitation link
+  expiresAt: timestamp("expires_at").notNull(),
+  acceptedAt: timestamp("accepted_at"),
+  isAccepted: boolean("is_accepted").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Billing records for team member additions
+export const teamBillingRecords = pgTable("team_billing_records", {
+  id: serial("id").primaryKey(),
+  adminUserId: varchar("admin_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  teamMemberUserId: varchar("team_member_user_id").references(() => users.id),
+  action: varchar("action").notNull(), // "add_user", "remove_user"
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  stripePaymentIntentId: varchar("stripe_payment_intent_id"),
+  description: text("description"),
+  status: varchar("status").default("pending"), // pending, completed, failed
+  billingDate: timestamp("billing_date").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type FileUpload = typeof fileUploads.$inferSelect;
@@ -269,6 +317,13 @@ export type RepairMethod = typeof repairMethods.$inferSelect;
 export type InsertRepairMethod = typeof repairMethods.$inferInsert;
 export type RepairPricing = typeof repairPricing.$inferSelect;
 export type InsertRepairPricing = typeof repairPricing.$inferInsert;
+
+export type CompanySettings = typeof companySettings.$inferSelect;
+export type InsertCompanySettings = typeof companySettings.$inferInsert;
+export type TeamInvitation = typeof teamInvitations.$inferSelect;
+export type InsertTeamInvitation = typeof teamInvitations.$inferInsert;
+export type TeamBillingRecord = typeof teamBillingRecords.$inferSelect;
+export type InsertTeamBillingRecord = typeof teamBillingRecords.$inferInsert;
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,

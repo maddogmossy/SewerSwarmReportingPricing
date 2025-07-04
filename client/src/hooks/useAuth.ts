@@ -1,9 +1,22 @@
 import { useState, useEffect } from "react";
 
+interface AuthUser {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+  role?: 'admin' | 'user';
+  subscriptionStatus?: string;
+  company?: string;
+  stripeCustomerId?: string;
+  paymentMethodId?: string;
+}
+
 export function useAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
 
   useEffect(() => {
     let mounted = true;

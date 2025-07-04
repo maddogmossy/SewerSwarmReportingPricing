@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
+import { CustomerSettings } from "@/components/CustomerSettings";
 import { 
   Shield, 
   Upload, 
@@ -255,17 +256,20 @@ export default function Home() {
                         Choose your next action to manage your sewer inspection reports
                       </CardDescription>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        // Clear authentication and reload page
-                        fetch("/api/auth/logout", { method: "POST", credentials: "include" })
-                          .then(() => window.location.reload());
-                      }}
-                    >
-                      Sign Out
-                    </Button>
+                    <div className="flex gap-2">
+                      <CustomerSettings />
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          // Clear authentication and reload page
+                          fetch("/api/auth/logout", { method: "POST", credentials: "include" })
+                            .then(() => window.location.reload());
+                        }}
+                      >
+                        Sign Out
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
               </Card>

@@ -9,6 +9,9 @@ import {
   equipmentTypes,
   userPricing,
   pricingRules,
+  companySettings,
+  teamInvitations,
+  teamBillingRecords,
   type User,
   type UpsertUser,
   type FileUpload,
@@ -27,6 +30,12 @@ import {
   type InsertUserPricing,
   type PricingRule,
   type InsertPricingRule,
+  type CompanySettings,
+  type InsertCompanySettings,
+  type TeamInvitation,
+  type InsertTeamInvitation,
+  type TeamBillingRecord,
+  type InsertTeamBillingRecord,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, isNull } from "drizzle-orm";
@@ -86,6 +95,21 @@ export interface IStorage {
   
   // Sector-specific pricing rules
   getPricingRulesBySector(userId: string, sector: string): Promise<PricingRule[]>;
+  
+  // Company settings for admin users
+  getCompanySettings(adminUserId: string): Promise<CompanySettings | undefined>;
+  createCompanySettings(settings: InsertCompanySettings): Promise<CompanySettings>;
+  updateCompanySettings(adminUserId: string, settings: Partial<CompanySettings>): Promise<CompanySettings>;
+  
+  // Team management
+  getTeamMembers(adminUserId: string): Promise<User[]>;
+  createTeamInvitation(invitation: InsertTeamInvitation): Promise<TeamInvitation>;
+  getTeamInvitation(token: string): Promise<TeamInvitation | undefined>;
+  acceptTeamInvitation(token: string, userId: string): Promise<void>;
+  createTeamBillingRecord(record: InsertTeamBillingRecord): Promise<TeamBillingRecord>;
+  
+  // Payment method management
+  updateUserPaymentMethod(userId: string, paymentMethodId: string): Promise<User>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -391,6 +415,78 @@ export class DatabaseStorage implements IStorage {
     } else {
       await db.delete(pricingRules).where(eq(pricingRules.id, id));
     }
+  }
+
+  // Company settings implementation
+  async getCompanySettings(adminUserId: string): Promise<CompanySettings | undefined> {
+    const [settings] = await db.select()
+      .from(companySettings)
+      .where(eq(companySettings.adminUserId, adminUserId));
+    return settings;
+  }
+
+  async createCompanySettings(settings: InsertCompanySettings): Promise<CompanySettings> {
+    const [created] = await db.insert(companySettings)
+      .values(settings)
+      .returning();
+    return created;
+  }
+
+  async updateCompanySettings(adminUserId: string, updates: Partial<CompanySettings>): Promise<CompanySettings> {
+    const [updated] = await db.update(companySettings)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(companySettings.adminUserId, adminUserId))
+      .returning();
+    return updated;
+  }
+
+  // Team management implementation
+  async getTeamMembers(adminUserId: string): Promise<User[]> {
+    return await db.select()
+      .from(users)
+      .where(eq(users.adminId, adminUserId));
+  }
+
+  async createTeamInvitation(invitation: InsertTeamInvitation): Promise<TeamInvitation> {
+    const [created] = await db.insert(teamInvitations)
+      .values(invitation)
+      .returning();
+    return created;
+  }
+
+  async getTeamInvitation(token: string): Promise<TeamInvitation | undefined> {
+    const [invitation] = await db.select()
+      .from(teamInvitations)
+      .where(eq(teamInvitations.token, token));
+    return invitation;
+  }
+
+  async acceptTeamInvitation(token: string, userId: string): Promise<void> {
+    await db.update(teamInvitations)
+      .set({ 
+        isAccepted: true, 
+        acceptedAt: new Date() 
+      })
+      .where(eq(teamInvitations.token, token));
+  }
+
+  async createTeamBillingRecord(record: InsertTeamBillingRecord): Promise<TeamBillingRecord> {
+    const [created] = await db.insert(teamBillingRecords)
+      .values(record)
+      .returning();
+    return created;
+  }
+
+  // Payment method management
+  async updateUserPaymentMethod(userId: string, paymentMethodId: string): Promise<User> {
+    const [updated] = await db.update(users)
+      .set({ 
+        paymentMethodId,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return updated;
   }
 }
 

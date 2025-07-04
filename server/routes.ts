@@ -1600,8 +1600,140 @@ export async function registerRoutes(app: Express) {
     res.json({
       id: "test-user",
       email: "test@example.com",
-      name: "Test User"
+      name: "Test User",
+      role: "admin",
+      firstName: "Test",
+      lastName: "User",
+      subscriptionStatus: "active"
     });
+  });
+
+  // Customer settings API routes
+  app.get("/api/payment-methods", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    try {
+      const user = req.user;
+      if (!user.stripeCustomerId) {
+        return res.json([]);
+      }
+
+      const paymentMethods = await stripe.paymentMethods.list({
+        customer: user.stripeCustomerId,
+        type: 'card',
+      });
+
+      res.json(paymentMethods.data);
+    } catch (error: any) {
+      console.error('Error fetching payment methods:', error);
+      res.status(500).json({ error: "Failed to fetch payment methods" });
+    }
+  });
+
+  app.post("/api/update-payment-method", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    try {
+      const { paymentMethodId } = req.body;
+      const user = req.user;
+
+      if (!user.stripeCustomerId) {
+        return res.status(400).json({ error: "No Stripe customer found" });
+      }
+
+      // Update default payment method
+      await stripe.customers.update(user.stripeCustomerId, {
+        invoice_settings: {
+          default_payment_method: paymentMethodId,
+        },
+      });
+
+      // Update user record
+      const updatedUser = await storage.updateUserPaymentMethod(user.id, paymentMethodId);
+
+      res.json({ message: "Payment method updated successfully", user: updatedUser });
+    } catch (error: any) {
+      console.error('Error updating payment method:', error);
+      res.status(500).json({ error: "Failed to update payment method" });
+    }
+  });
+
+  // Company settings routes (admin only)
+  app.get("/api/company-settings", async (req, res) => {
+    try {
+      // For demo, return mock company settings
+      const mockSettings = {
+        id: 1,
+        companyName: "Sewer Inspection Co.",
+        companyLogo: null,
+        address: "123 Infrastructure St, London, UK",
+        phoneNumber: "+44 20 1234 5678",
+        maxUsers: 5,
+        currentUsers: 1,
+        pricePerUser: "25.00"
+      };
+      res.json(mockSettings);
+    } catch (error: any) {
+      console.error('Error fetching company settings:', error);
+      res.status(500).json({ error: "Failed to fetch company settings" });
+    }
+  });
+
+  app.put("/api/company-settings", async (req, res) => {
+    try {
+      const updates = req.body;
+      // For demo, just return the updated data
+      res.json({ ...updates, id: 1 });
+    } catch (error: any) {
+      console.error('Error updating company settings:', error);
+      res.status(500).json({ error: "Failed to update company settings" });
+    }
+  });
+
+  // Team management routes (admin only)
+  app.get("/api/team-members", async (req, res) => {
+    try {
+      // For demo, return mock team members
+      const mockTeamMembers = [
+        {
+          id: "team-member-1",
+          email: "engineer@company.com",
+          firstName: "John",
+          lastName: "Engineer",
+          role: "user",
+          isActive: true,
+          lastLoginAt: "2025-01-01T10:00:00Z",
+          createdAt: "2024-12-01T10:00:00Z"
+        }
+      ];
+      res.json(mockTeamMembers);
+    } catch (error: any) {
+      console.error('Error fetching team members:', error);
+      res.status(500).json({ error: "Failed to fetch team members" });
+    }
+  });
+
+  app.post("/api/invite-team-member", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      // For demo, simulate successful invitation
+      res.json({ 
+        message: "Invitation sent successfully",
+        invitation: {
+          id: 1,
+          email,
+          status: "pending"
+        }
+      });
+    } catch (error: any) {
+      console.error('Error inviting team member:', error);
+      res.status(500).json({ error: "Failed to send invitation" });
+    }
   });
 
   return server;
