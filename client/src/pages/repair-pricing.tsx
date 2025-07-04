@@ -71,6 +71,17 @@ export default function RepairPricing() {
 
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
 
+  // Fetch repair methods
+  const { data: workCategories = [] } = useQuery({
+    queryKey: ['/api/work-categories'],
+  });
+
+  // Fetch existing pricing for this sector
+  const { data: pricingData = [], refetch } = useQuery({
+    queryKey: [`/api/repair-pricing/${sector}`],
+    enabled: !!sector,
+  });
+
   // Auto-focus functionality for navigation from repair options
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
@@ -79,7 +90,7 @@ export default function RepairPricing() {
     const meterage = urlParams.get('meterage');
     const itemNo = urlParams.get('itemNo');
     
-    if (autoFocus) {
+    if (autoFocus && workCategories && workCategories.length > 0 && pricingData !== undefined) {
       // Pre-populate form with data from repair options
       if (pipeSize) {
         setFormData(prev => ({ ...prev, pipeSize: `${pipeSize}mm` }));
@@ -98,15 +109,14 @@ export default function RepairPricing() {
           }, 3000);
           
           // Auto-open the add pricing dialog if no pricing exists for this category
-          const categoryName = autoFocus.charAt(0).toUpperCase() + autoFocus.slice(1);
-          const matchingCategory = workCategories?.find((cat: any) => 
+          const matchingCategory = workCategories.find((cat: any) => 
             cat.name.toLowerCase() === autoFocus.toLowerCase()
           );
           
           if (matchingCategory) {
-            const categoryPricing = pricingData?.filter((item: any) => 
+            const categoryPricing = pricingData.filter((item: any) => 
               item.workCategoryId === matchingCategory.id
-            ) || [];
+            );
             
             // If no pricing exists for this category, auto-open the dialog
             if (categoryPricing.length === 0) {
@@ -123,18 +133,7 @@ export default function RepairPricing() {
         }
       }, 500);
     }
-  }, [location]);
-
-  // Fetch repair methods
-  const { data: workCategories = [] } = useQuery({
-    queryKey: ['/api/work-categories'],
-  });
-
-  // Fetch existing pricing for this sector
-  const { data: pricingData = [], refetch } = useQuery({
-    queryKey: [`/api/repair-pricing/${sector}`],
-    enabled: !!sector,
-  });
+  }, [location, workCategories, pricingData]);
 
   // Fetch pricing data from all sectors for cross-sector comparison
   const { data: utilitiesPricing = [] } = useQuery({

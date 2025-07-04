@@ -572,9 +572,14 @@ export default function Dashboard() {
           
           if (!autoCost) {
             return (
-              <div className="flex items-center justify-center" title="No pricing configured for this repair type">
-                <TriangleAlert className="h-4 w-4 text-orange-500" />
-              </div>
+              <RepairOptionsPopover 
+                section={section} 
+                uploadSector={currentUpload?.sector || 'utilities'}
+              >
+                <div className="flex items-center justify-center cursor-pointer hover:bg-orange-50 p-1 rounded" title="Click to configure pricing for this repair type">
+                  <TriangleAlert className="h-4 w-4 text-orange-500 hover:text-orange-600" />
+                </div>
+              </RepairOptionsPopover>
             );
           }
         }
