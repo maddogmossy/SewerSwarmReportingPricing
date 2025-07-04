@@ -89,7 +89,7 @@ export default function RepairPricing() {
 
   // Auto-focus functionality for navigation from repair options
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.split('?')[1] || '');
+    const urlParams = new URLSearchParams(window.location.search);
     const autoFocus = urlParams.get('autoFocus');
     const pipeSize = urlParams.get('pipeSize');
     const pipeDepth = urlParams.get('pipeDepth');
