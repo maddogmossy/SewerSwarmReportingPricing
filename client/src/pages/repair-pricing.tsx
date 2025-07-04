@@ -117,6 +117,19 @@ export default function RepairPricing() {
         setIsAddDialogOpen(true);
       }, 1000);
     }
+  }, [location]);
+
+  // Separate useEffect for auto-selection when data is loaded
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const autoFocus = urlParams.get('autoFocus');
+    const pipeSize = urlParams.get('pipeSize');
+    const pipeDepth = urlParams.get('pipeDepth');
+    const meterage = urlParams.get('meterage');
+    const itemNo = urlParams.get('itemNo');
+    const defects = urlParams.get('defects');
+    const recommendations = urlParams.get('recommendations');
+    const pipeMaterial = urlParams.get('pipeMaterial');
     
     if (autoFocus && workCategories && workCategories.length > 0 && pricingData !== undefined) {
       // Extract defect code and location from defects string
