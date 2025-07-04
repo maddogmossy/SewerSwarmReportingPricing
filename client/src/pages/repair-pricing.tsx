@@ -222,6 +222,11 @@ export default function RepairPricing() {
           ? `To install a ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs (depth: ${depthRange}) for ${defects}`
           : `To install a ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs for ${defects}`;
         
+        // Set rule based on whether depth was specified
+        const rule = depthRange 
+          ? "" 
+          : "No depth specified - consider selecting depth range for optimal patch thickness calculation";
+        
         // Set form data and open dialog
         setTimeout(() => {
           setFormData(prev => ({
@@ -235,7 +240,7 @@ export default function RepairPricing() {
             minInstallationPerDay: "",
             dayRate: "800.00",
             travelTimeAllowance: "2.0",
-            rule: ""
+            rule: rule
           }));
           setIsAddDialogOpen(true);
         }, 500);
@@ -835,10 +840,16 @@ export default function RepairPricing() {
                         updatedDescription = `To install a ${newPatchThickness} (depth: ${value})`;
                       }
                       
+                      // Update rule based on depth selection
+                      const newRule = value 
+                        ? "" 
+                        : "No depth specified - consider selecting depth range for optimal patch thickness calculation";
+                      
                       setFormData({ 
                         ...formData, 
                         depth: value,
-                        description: updatedDescription
+                        description: updatedDescription,
+                        rule: newRule
                       });
                     }}
                   >
