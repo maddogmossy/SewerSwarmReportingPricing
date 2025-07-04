@@ -272,10 +272,8 @@ export default function RepairPricing() {
           ? `To install a ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs (depth: ${depthRange}) for ${defects}`
           : `To install a ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs for ${defects}`;
         
-        // Set rule based on whether depth was specified
-        const rule = depthRange 
-          ? "" 
-          : "No depth specified - consider selecting depth range for optimal patch thickness calculation";
+        // Set rule - removed depth warning
+        const rule = "";
         
         // Set form data and open dialog
         setTimeout(() => {
@@ -953,9 +951,7 @@ export default function RepairPricing() {
                       }
                       
                       // Update rule based on depth selection
-                      const newRule = value 
-                        ? "" 
-                        : "No depth specified - consider selecting depth range for optimal patch thickness calculation";
+                      const newRule = "";
                       
                       setFormData({ 
                         ...formData, 
@@ -1315,16 +1311,7 @@ export default function RepairPricing() {
                 </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium">Pricing Rule (Optional)</label>
-                <input
-                  type="text"
-                  value={formData.rule}
-                  onChange={(e) => setFormData({...formData, rule: e.target.value})}
-                  className="w-full mt-1 p-2 border rounded-md"
-                  placeholder="e.g., Minimum 2 units per job"
-                />
-              </div>
+
 
               {/* COSTING OPTIONS - ADDED TO CORRECT DIALOG */}
               <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
