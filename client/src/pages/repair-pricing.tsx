@@ -131,99 +131,54 @@ export default function RepairPricing() {
     const recommendations = urlParams.get('recommendations');
     const pipeMaterial = urlParams.get('pipeMaterial');
     
-    if (autoFocus && workCategories && workCategories.length > 0 && pricingData !== undefined) {
-      // Extract defect code and location from defects string
-      const defectMatch = defects?.match(/^([A-Z]+)\s+([\d.]+)m/);
-      const defectCode = defectMatch ? defectMatch[1] : '';
-      const defectLocation = defectMatch ? defectMatch[2] : meterage?.replace('m', '') || '';
+    console.log('Auto-selection check:', { 
+      autoFocus, 
+      hasWorkCategories: workCategories && workCategories.length > 0,
+      workCategories,
+      pricingDataLoaded: pricingData !== undefined 
+    });
+    
+    console.log('Full condition check:', {
+      autoFocus,
+      workCategoriesExists: !!workCategories,
+      workCategoriesLength: workCategories?.length,
+      pricingDataUndefined: pricingData !== undefined,
+      fullCondition: autoFocus && workCategories && workCategories.length > 0 && pricingData !== undefined
+    });
+    
+    if (autoFocus && workCategories && Array.isArray(workCategories) && workCategories.length > 0) {
+      console.log('Auto-selection triggered for:', autoFocus);
       
-      // Create comprehensive description combining standards recommendations with defect location
-      const createDescription = (repairType: string) => {
-        const baseDescription = recommendations || `Standard ${repairType} repair`;
-        const locationInfo = defectLocation ? ` at ${defectLocation}m` : '';
-        const defectInfo = defectCode ? ` for ${defectCode} defect` : '';
-        const pipeInfo = pipeSize ? ` on ${pipeSize}mm ${pipeMaterial || 'pipe'}` : '';
+      // Find matching work category
+      const matchingCategory = workCategories.find((cat: any) => 
+        cat.name.toLowerCase().includes('patch') && autoFocus.toLowerCase().includes('patch')
+      ) || workCategories.find((cat: any) => 
+        cat.name.toLowerCase().includes(autoFocus.toLowerCase())
+      );
+      
+      if (matchingCategory) {
+        console.log('Found matching category:', matchingCategory.name);
         
-        return `${baseDescription}${defectInfo}${locationInfo}${pipeInfo} - Section ${itemNo}`;
-      };
-      
-      // Pre-populate form with comprehensive data from repair options
-      setFormData(prev => ({ 
-        ...prev, 
-        pipeSize: pipeSize ? `${pipeSize}mm` : prev.pipeSize,
-        depth: pipeDepth || prev.depth,
-        description: createDescription(autoFocus),
-        lengthOfRepair: "1000mm", // Default repair length
-        unitCost: "", // To be filled by user
-        minInstallationPerDay: "5", // Default daily installation
-        dayRate: "800.00", // Default day rate
-        travelTimeAllowance: "2.0" // Default travel time
-      }));
-      
-      // Scroll to and highlight the relevant work category card
-      setTimeout(() => {
-        const targetCard = document.querySelector(`[data-category="${autoFocus}"]`);
-        if (targetCard) {
-          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          targetCard.classList.add('ring-4', 'ring-blue-500', 'ring-opacity-50');
-          
-          // Remove highlight after 3 seconds
-          setTimeout(() => {
-            targetCard.classList.remove('ring-4', 'ring-blue-500', 'ring-opacity-50');
-          }, 3000);
-          
-          // Always auto-open the add pricing dialog when coming from dashboard
-          console.log('Looking for category:', autoFocus, 'in categories:', workCategories);
-          
-          // Map repair method names to work category names
-          const categoryMapping: { [key: string]: string } = {
-            'patching': 'patching',
-            'patch': 'patching', 
-            'jetting': 'jetting',
-            'cleaning': 'jetting',
-            'lining': 'lining',
-            'excavation': 'excavation'
-          };
-          
-          const mappedCategory = categoryMapping[autoFocus.toLowerCase()] || autoFocus.toLowerCase();
-          console.log('Mapped category:', mappedCategory, 'from autoFocus:', autoFocus);
-          
-          const matchingCategory = workCategories.find((cat: any) => 
-            cat.name.toLowerCase().includes(mappedCategory) || mappedCategory.includes(cat.name.toLowerCase())
-          );
-          console.log('Found matching category:', matchingCategory);
-          
-          if (matchingCategory) {
-            setTimeout(() => {
-              const comprehensiveDescription = createDescription(autoFocus);
-              console.log('Auto-opening dialog with data:', {
-                workCategoryId: matchingCategory.id,
-                pipeSize: pipeSize ? `${pipeSize}mm` : '',
-                depth: pipeDepth || '',
-                description: comprehensiveDescription,
-                defectCode,
-                defectLocation,
-                recommendations
-              });
-              
-              setFormData(prev => ({ 
-                ...prev, 
-                workCategoryId: matchingCategory.id.toString(),
-                pipeSize: pipeSize ? `${pipeSize}mm` : prev.pipeSize,
-                depth: pipeDepth || prev.depth,
-                description: comprehensiveDescription,
-                lengthOfRepair: "1000mm",
-                unitCost: "",
-                minInstallationPerDay: "5",
-                dayRate: "800.00", 
-                travelTimeAllowance: "2.0",
-                rule: ""
-              }));
-              setIsAddDialogOpen(true);
-            }, 1000);
-          }
-        }
-      }, 500);
+        // Create description from URL parameters
+        const description = `To install a ${pipeSize}mm patch at ${meterage?.replace('m', '')}mtrs for ${defects} (Item No: ${itemNo})`;
+        
+        // Set form data and open dialog
+        setTimeout(() => {
+          setFormData(prev => ({
+            ...prev,
+            workCategoryId: matchingCategory.id.toString(),
+            pipeSize: pipeSize ? `${pipeSize}mm` : prev.pipeSize,
+            description: description,
+            lengthOfRepair: "1000mm",
+            unitCost: "",
+            minInstallationPerDay: "5",
+            dayRate: "800.00",
+            travelTimeAllowance: "2.0",
+            rule: ""
+          }));
+          setIsAddDialogOpen(true);
+        }, 500);
+      }
     }
   }, [location, workCategories, pricingData]);
 
@@ -584,7 +539,7 @@ export default function RepairPricing() {
         </Card>
 
         {/* Repair Methods Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           {workCategories.map((category: any) => {
             const categoryPricing = groupedData[category.name] || [];
             
@@ -603,68 +558,65 @@ export default function RepairPricing() {
                   <p className="text-sm text-slate-600">{category.description}</p>
                 </CardHeader>
                 
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-2">
                   {categoryPricing.length === 0 ? (
-                    <div className="text-center py-6 text-slate-500">
-                      <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-orange-400" />
-                      <p className="text-sm">No pricing configured</p>
+                    <div className="text-center py-4 text-slate-500">
+                      <AlertTriangle className="h-6 w-6 mx-auto mb-2 text-orange-400" />
+                      <p className="text-xs">No pricing configured</p>
                       <p className="text-xs">Click "Add Pricing" to configure</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
                       {categoryPricing.map((item: any) => (
-                        <div key={item.id} className="p-3 border rounded-lg bg-white">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Badge variant="outline" className="text-xs">
-                                  {item.pipeSize}
+                        <div key={item.id} className="p-2 border rounded bg-white text-xs">
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-1">
+                              <Badge variant="outline" className="text-xs px-1 py-0">
+                                {item.pipeSize}
+                              </Badge>
+                              {item.depth && (
+                                <Badge variant="outline" className="text-xs px-1 py-0">
+                                  {item.depth}
                                 </Badge>
-                                {item.depth && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {item.depth}
-                                  </Badge>
-                                )}
-                              </div>
-                              
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="font-medium text-sm">
-                                  £{parseFloat(item.cost).toFixed(2)}
-                                </span>
-                                <div className="flex gap-1">
-                                  <button
-                                    onClick={() => handleEdit(item)}
-                                    className="p-1 hover:bg-slate-100 rounded"
-                                  >
-                                    <Edit className="h-3 w-3" />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDelete(item)}
-                                    className="p-1 hover:bg-red-100 rounded"
-                                  >
-                                    <Trash2 className="h-3 w-3 text-red-600" />
-                                  </button>
-                                </div>
-                              </div>
-                              
-                              {item.description && (
-                                <p className="text-xs text-slate-600 mb-1">
-                                  {item.description}
-                                </p>
-                              )}
-                              
-                              {item.rule && (
-                                <div className="text-xs p-2 bg-yellow-50 border border-yellow-200 rounded">
-                                  <span className="font-medium">Rule:</span> {item.rule}
-                                  {item.minimumQuantity > 1 && (
-                                    <span className="ml-2 text-yellow-700">
-                                      (Min: {item.minimumQuantity})
-                                    </span>
-                                  )}
-                                </div>
                               )}
                             </div>
+                            <span className="font-medium text-sm">
+                              £{parseFloat(item.cost).toFixed(2)}
+                            </span>
                           </div>
+                          
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 mr-2">
+                              <p className="text-xs text-slate-600 leading-tight line-clamp-2">
+                                {item.description}
+                              </p>
+                            </div>
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => handleEdit(item)}
+                                className="p-1 hover:bg-slate-100 rounded"
+                              >
+                                <Edit className="h-3 w-3" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(item)}
+                                className="p-1 hover:bg-red-100 rounded"
+                              >
+                                <Trash2 className="h-3 w-3 text-red-600" />
+                              </button>
+                            </div>
+                          </div>
+                          
+                          {item.rule && (
+                            <div className="text-xs p-1 mt-1 bg-yellow-50 border border-yellow-200 rounded">
+                              <span className="font-medium">Rule:</span> {item.rule}
+                              {item.minimumQuantity > 1 && (
+                                <span className="ml-2 text-yellow-700">
+                                  (Min: {item.minimumQuantity})
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
