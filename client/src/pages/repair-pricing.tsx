@@ -155,6 +155,7 @@ export default function RepairPricing() {
   const [pendingEditItem, setPendingEditItem] = useState<any>(null);
   const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
   const [tempDescription, setTempDescription] = useState("");
+  const [isDescriptionEditable, setIsDescriptionEditable] = useState(false);
   const [formData, setFormData] = useState({
     workCategoryId: "",
     pipeSize: "",
@@ -475,6 +476,7 @@ export default function RepairPricing() {
     });
     setApplySectors([]);
     setOriginalApplySectors([]);
+    setIsDescriptionEditable(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -1283,27 +1285,42 @@ export default function RepairPricing() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-medium">Description</label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setTempDescription(formData.description);
-                      setIsDescriptionEditOpen(true);
-                    }}
-                    className="h-6 px-2 text-xs"
-                  >
-                    <Edit className="h-3 w-3 mr-1" />
-                    Edit
-                  </Button>
+                  {!isDescriptionEditable ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setIsDescriptionEditable(true);
+                        setIsComplianceWarningOpen(true);
+                      }}
+                      className="h-6 px-2 text-xs"
+                    >
+                      <Edit className="h-3 w-3 mr-1" />
+                      Edit
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsDescriptionEditable(false)}
+                      className="h-6 px-2 text-xs text-gray-600"
+                    >
+                      Lock
+                    </Button>
+                  )}
                 </div>
                 <div className="relative">
                   <input
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="w-full mt-1 p-2 border rounded-md pr-8"
+                    className={`w-full mt-1 p-2 border rounded-md pr-8 ${
+                      !isDescriptionEditable ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     placeholder="e.g., Patch repair for structural defects"
+                    readOnly={!isDescriptionEditable}
                   />
                   {formData.description.includes('patch') && (
                     <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
