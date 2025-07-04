@@ -160,7 +160,11 @@ export default function RepairPricing() {
     pipeSize: "",
     depth: "",
     description: "",
-    cost: "",
+    option1Cost: "",
+    option2Cost: "",
+    option3Cost: "",
+    option4Cost: "",
+    selectedOption: "",
     rule: "",
     minimumQuantity: "1",
     lengthOfRepair: "1000mm",
@@ -329,17 +333,26 @@ export default function RepairPricing() {
     return "450";
   };
 
-  // Auto-update cost when description changes
+  // Auto-update selected option when description changes
   useEffect(() => {
     if (formData.description) {
       const urlParams = new URLSearchParams(window.location.search);
       const defects = urlParams.get('defects');
       
       const selectedCost = selectCostFromDescription(formData.description, defects || "");
+      let optionText = "";
       
-      if (selectedCost && selectedCost !== formData.cost) {
-        setFormData(prev => ({ ...prev, cost: selectedCost }));
+      if (selectedCost === "750") {
+        optionText = "Option 4 (Triple Layer + Extra Long Cure Time)";
+      } else if (selectedCost === "600") {
+        optionText = "Option 3 (Triple Layer)";
+      } else if (selectedCost === "450") {
+        optionText = "Option 2 (Double Layer)";
+      } else {
+        optionText = "Auto-selected based on description";
       }
+      
+      setFormData(prev => ({ ...prev, selectedOption: optionText }));
     }
   }, [formData.description]);
 
@@ -449,7 +462,11 @@ export default function RepairPricing() {
       pipeSize: "",
       depth: "",
       description: "",
-      cost: "",
+      option1Cost: "",
+      option2Cost: "",
+      option3Cost: "",
+      option4Cost: "",
+      selectedOption: "",
       rule: "",
       minimumQuantity: "1",
       lengthOfRepair: "1000mm",
@@ -993,20 +1010,62 @@ export default function RepairPricing() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="cost">Cost (£)</Label>
-                  <Input
-                    id="cost"
-                    type="number"
-                    step="0.01"
-                    value={formData.cost}
-                    onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-                    placeholder="0.00"
-                    required
-                  />
+              {/* Four Costing Options */}
+              <div className="space-y-4">
+                <Label className="text-sm font-medium">Costing Options</Label>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="option1Cost" className="text-xs">1. Single Layer (£)</Label>
+                    <Input
+                      id="option1Cost"
+                      type="number"
+                      step="0.01"
+                      value={formData.option1Cost}
+                      onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="option2Cost" className="text-xs">2. Double Layer (£)</Label>
+                    <Input
+                      id="option2Cost"
+                      type="number"
+                      step="0.01"
+                      value={formData.option2Cost}
+                      onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="option3Cost" className="text-xs">3. Triple Layer (£)</Label>
+                    <Input
+                      id="option3Cost"
+                      type="number"
+                      step="0.01"
+                      value={formData.option3Cost}
+                      onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="option4Cost" className="text-xs">4. Triple Layer + Extra Long Cure Time (£)</Label>
+                    <Input
+                      id="option4Cost"
+                      type="number"
+                      step="0.01"
+                      value={formData.option4Cost}
+                      onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                      placeholder="0.00"
+                    />
+                  </div>
                 </div>
+              </div>
 
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="minimumQuantity">Min Quantity</Label>
                   <Input
@@ -1016,6 +1075,16 @@ export default function RepairPricing() {
                     value={formData.minimumQuantity}
                     onChange={(e) => setFormData({ ...formData, minimumQuantity: e.target.value })}
                     required
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="selectedOption" className="text-xs">Selected Option</Label>
+                  <Input
+                    id="selectedOption"
+                    value={formData.selectedOption || "Auto-selected based on description"}
+                    readOnly
+                    className="bg-gray-50 text-xs"
                   />
                 </div>
               </div>
