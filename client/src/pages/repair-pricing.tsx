@@ -230,7 +230,7 @@ export default function RepairPricing() {
             description: description,
             lengthOfRepair: "1000mm",
             unitCost: "",
-            minInstallationPerDay: "5",
+            minInstallationPerDay: "",
             dayRate: "800.00",
             travelTimeAllowance: "2.0",
             rule: ""
@@ -1153,24 +1153,24 @@ export default function RepairPricing() {
                   </Button>
                 </div>
                 <div className="relative">
-                  <input
-                    type="text"
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="w-full mt-1 p-2 border rounded-md pr-8"
-                    placeholder="e.g., Patch repair for structural defects"
-                  />
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <input
+                          type="text"
+                          value={formData.description}
+                          onChange={(e) => setFormData({...formData, description: e.target.value})}
+                          className="w-full mt-1 p-2 border rounded-md pr-8"
+                          placeholder="e.g., Patch repair for structural defects"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-md">
+                        <p className="text-sm">{formData.description || "Description will be auto-generated based on pipe size, depth, and defect type for standards compliance"}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   {formData.description.includes('patch') && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600 cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Standards compliant</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
                   )}
                 </div>
               </div>
