@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Settings, AlertTriangle, CheckCircle, Calculator } from "lucide-react";
+import { useLocation } from "wouter";
 
 
 interface RepairOption {
@@ -35,6 +36,7 @@ interface RepairOptionsPopoverProps {
 
 export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }: RepairOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [, setLocation] = useLocation();
   
   console.log('RepairOptionsPopover rendered with:', { sectionData, isOpen });
   
@@ -132,9 +134,9 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
         url: `/repair-pricing/${sector}?${params.toString()}`
       });
       
-      // Navigate to the sector-specific pricing page
+      // Navigate to the sector-specific pricing page using React Router
       console.log('About to navigate to:', `/repair-pricing/${sector}?${params.toString()}`);
-      window.location.href = `/repair-pricing/${sector}?${params.toString()}`;
+      setLocation(`/repair-pricing/${sector}?${params.toString()}`);
     }
     setIsOpen(false);
   };
