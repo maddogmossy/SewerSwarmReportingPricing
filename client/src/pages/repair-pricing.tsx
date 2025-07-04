@@ -449,11 +449,15 @@ export default function RepairPricing() {
 
           </div>
           
-          <Button onClick={() => { 
-            resetForm(); 
-            setEditingItem(null); 
-            setIsAddDialogOpen(true);
-          }}>
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => { 
+              console.log('Add Pricing button clicked');
+              resetForm(); 
+              setEditingItem(null); 
+              setIsAddDialogOpen(true);
+            }}
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Pricing
           </Button>
