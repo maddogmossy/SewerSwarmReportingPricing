@@ -99,18 +99,21 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
 
   const handleOptionClick = (option: RepairOption) => {
     if (!option.configured) {
-      // Route to specific pricing configuration page based on repair method
-      if (option.name === 'Jetting') {
-        // Navigate to jetting pricing page with auto-populated data
-        const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
-        const meterage = extractMeterage(sectionData.defects || '');
-        
-        // Navigate to jetting pricing configuration
-        window.location.href = `/jetting-pricing?sector=${sectionData.sector}&pipeSize=${pipeSize}&meterage=${meterage}&autoOpen=true`;
-      } else {
-        // For other methods, use the existing callback
-        onPricingNeeded(option.name, sectionData.pipeSize, sectionData.sector);
-      }
+      // Navigate to sector-specific pricing configuration page
+      const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
+      const meterage = extractMeterage(sectionData.defects || '');
+      const sector = sectionData.sector || 'utilities';
+      
+      // Create URL with auto-focus parameters for the specific repair method
+      const params = new URLSearchParams({
+        pipeSize,
+        meterage: meterage.toString(),
+        autoFocus: option.name.toLowerCase(), // This will auto-expand the relevant pricing box
+        itemNo: sectionData.itemNo?.toString() || '1'
+      });
+      
+      // Navigate to the sector-specific pricing page
+      window.location.href = `/repair-pricing/${sector}?${params.toString()}`;
     }
     setIsOpen(false);
   };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -67,8 +67,63 @@ export default function RepairPricing() {
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
   const [originalApplySectors, setOriginalApplySectors] = useState<string[]>([]);
+  const [location] = useLocation();
 
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
+
+  // Auto-focus functionality for navigation from repair options
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.split('?')[1] || '');
+    const autoFocus = urlParams.get('autoFocus');
+    const pipeSize = urlParams.get('pipeSize');
+    const meterage = urlParams.get('meterage');
+    const itemNo = urlParams.get('itemNo');
+    
+    if (autoFocus) {
+      // Pre-populate form with data from repair options
+      if (pipeSize) {
+        setFormData(prev => ({ ...prev, pipeSize: `${pipeSize}mm` }));
+      }
+      
+      // Scroll to and highlight the relevant work category card
+      setTimeout(() => {
+        const targetCard = document.querySelector(`[data-category="${autoFocus}"]`);
+        if (targetCard) {
+          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetCard.classList.add('ring-4', 'ring-blue-500', 'ring-opacity-50');
+          
+          // Remove highlight after 3 seconds
+          setTimeout(() => {
+            targetCard.classList.remove('ring-4', 'ring-blue-500', 'ring-opacity-50');
+          }, 3000);
+          
+          // Auto-open the add pricing dialog if no pricing exists for this category
+          const categoryName = autoFocus.charAt(0).toUpperCase() + autoFocus.slice(1);
+          const matchingCategory = workCategories?.find((cat: any) => 
+            cat.name.toLowerCase() === autoFocus.toLowerCase()
+          );
+          
+          if (matchingCategory) {
+            const categoryPricing = pricingData?.filter((item: any) => 
+              item.workCategoryId === matchingCategory.id
+            ) || [];
+            
+            // If no pricing exists for this category, auto-open the dialog
+            if (categoryPricing.length === 0) {
+              setTimeout(() => {
+                setFormData(prev => ({ 
+                  ...prev, 
+                  workCategoryId: matchingCategory.id.toString(),
+                  description: `Standard ${autoFocus} for Section ${itemNo}`
+                }));
+                setIsAddDialogOpen(true);
+              }, 1000);
+            }
+          }
+        }
+      }, 500);
+    }
+  }, [location]);
 
   // Fetch repair methods
   const { data: workCategories = [] } = useQuery({
@@ -426,7 +481,7 @@ export default function RepairPricing() {
             const categoryPricing = groupedData[category.name] || [];
             
             return (
-              <Card key={category.id}>
+              <Card key={category.id} data-category={category.name.toLowerCase()}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg flex items-center gap-2">
