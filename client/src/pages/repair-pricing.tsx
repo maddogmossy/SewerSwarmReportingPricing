@@ -62,7 +62,12 @@ export default function RepairPricing() {
     description: "",
     cost: "",
     rule: "",
-    minimumQuantity: "1"
+    minimumQuantity: "1",
+    lengthOfRepair: "1000mm",
+    unitCost: "",
+    minInstallationPerDay: "",
+    dayRate: "",
+    travelTimeAllowance: "2.0"
   });
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
@@ -87,14 +92,41 @@ export default function RepairPricing() {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
     const autoFocus = urlParams.get('autoFocus');
     const pipeSize = urlParams.get('pipeSize');
+    const pipeDepth = urlParams.get('pipeDepth');
     const meterage = urlParams.get('meterage');
     const itemNo = urlParams.get('itemNo');
+    const defects = urlParams.get('defects');
+    const recommendations = urlParams.get('recommendations');
+    const pipeMaterial = urlParams.get('pipeMaterial');
     
     if (autoFocus && workCategories && workCategories.length > 0 && pricingData !== undefined) {
-      // Pre-populate form with data from repair options
-      if (pipeSize) {
-        setFormData(prev => ({ ...prev, pipeSize: `${pipeSize}mm` }));
-      }
+      // Extract defect code and location from defects string
+      const defectMatch = defects?.match(/^([A-Z]+)\s+([\d.]+)m/);
+      const defectCode = defectMatch ? defectMatch[1] : '';
+      const defectLocation = defectMatch ? defectMatch[2] : meterage?.replace('m', '') || '';
+      
+      // Create comprehensive description combining standards recommendations with defect location
+      const createDescription = (repairType: string) => {
+        const baseDescription = recommendations || `Standard ${repairType} repair`;
+        const locationInfo = defectLocation ? ` at ${defectLocation}m` : '';
+        const defectInfo = defectCode ? ` for ${defectCode} defect` : '';
+        const pipeInfo = pipeSize ? ` on ${pipeSize}mm ${pipeMaterial || 'pipe'}` : '';
+        
+        return `${baseDescription}${defectInfo}${locationInfo}${pipeInfo} - Section ${itemNo}`;
+      };
+      
+      // Pre-populate form with comprehensive data from repair options
+      setFormData(prev => ({ 
+        ...prev, 
+        pipeSize: pipeSize ? `${pipeSize}mm` : prev.pipeSize,
+        depth: pipeDepth || prev.depth,
+        description: createDescription(autoFocus),
+        lengthOfRepair: "1000mm", // Default repair length
+        unitCost: "", // To be filled by user
+        minInstallationPerDay: "5", // Default daily installation
+        dayRate: "800.00", // Default day rate
+        travelTimeAllowance: "2.0" // Default travel time
+      }));
       
       // Scroll to and highlight the relevant work category card
       setTimeout(() => {
@@ -108,27 +140,27 @@ export default function RepairPricing() {
             targetCard.classList.remove('ring-4', 'ring-blue-500', 'ring-opacity-50');
           }, 3000);
           
-          // Auto-open the add pricing dialog if no pricing exists for this category
+          // Auto-open the add pricing dialog
           const matchingCategory = workCategories.find((cat: any) => 
             cat.name.toLowerCase() === autoFocus.toLowerCase()
           );
           
           if (matchingCategory) {
-            const categoryPricing = pricingData.filter((item: any) => 
-              item.workCategoryId === matchingCategory.id
-            );
-            
-            // If no pricing exists for this category, auto-open the dialog
-            if (categoryPricing.length === 0) {
-              setTimeout(() => {
-                setFormData(prev => ({ 
-                  ...prev, 
-                  workCategoryId: matchingCategory.id.toString(),
-                  description: `Standard ${autoFocus} for Section ${itemNo}`
-                }));
-                setIsAddDialogOpen(true);
-              }, 1000);
-            }
+            setTimeout(() => {
+              setFormData(prev => ({ 
+                ...prev, 
+                workCategoryId: matchingCategory.id.toString(),
+                pipeSize: pipeSize ? `${pipeSize}mm` : prev.pipeSize,
+                depth: pipeDepth || prev.depth,
+                description: createDescription(autoFocus),
+                lengthOfRepair: "1000mm",
+                unitCost: "",
+                minInstallationPerDay: "5",
+                dayRate: "800.00", 
+                travelTimeAllowance: "2.0"
+              }));
+              setIsAddDialogOpen(true);
+            }, 1000);
           }
         }
       }, 500);
@@ -243,7 +275,12 @@ export default function RepairPricing() {
       description: "",
       cost: "",
       rule: "",
-      minimumQuantity: "1"
+      minimumQuantity: "1",
+      lengthOfRepair: "1000mm",
+      unitCost: "",
+      minInstallationPerDay: "",
+      dayRate: "",
+      travelTimeAllowance: "2.0"
     });
     setApplySectors([]);
     setOriginalApplySectors([]);
@@ -369,7 +406,12 @@ export default function RepairPricing() {
       description: item.description || "",
       cost: item.cost.toString(),
       rule: item.rule || "",
-      minimumQuantity: item.minimumQuantity?.toString() || "1"
+      minimumQuantity: item.minimumQuantity?.toString() || "1",
+      lengthOfRepair: item.lengthOfRepair || "1000mm",
+      unitCost: item.unitCost?.toString() || "",
+      minInstallationPerDay: item.minInstallationPerDay?.toString() || "",
+      dayRate: item.dayRate?.toString() || "",
+      travelTimeAllowance: item.travelTimeAllowance?.toString() || "2.0"
     });
     
     // Pre-select sectors that already have this pricing rule
@@ -921,14 +963,85 @@ export default function RepairPricing() {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Length of Repair</label>
+                  <input
+                    type="text"
+                    value={formData.lengthOfRepair}
+                    onChange={(e) => setFormData({...formData, lengthOfRepair: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md"
+                    placeholder="1000mm"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Unit Cost per Patch (£)</label>
+                  <input
+                    type="text"
+                    value={formData.unitCost}
+                    onChange={(e) => setFormData({...formData, unitCost: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md"
+                    placeholder="450.00"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Min Installation per Day</label>
+                  <input
+                    type="text"
+                    value={formData.minInstallationPerDay}
+                    onChange={(e) => setFormData({...formData, minInstallationPerDay: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md"
+                    placeholder="5"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Day Rate (£)</label>
+                  <input
+                    type="text"
+                    value={formData.dayRate}
+                    onChange={(e) => setFormData({...formData, dayRate: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md"
+                    placeholder="800.00"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Travel Time Allowance (hours)</label>
+                  <input
+                    type="text"
+                    value={formData.travelTimeAllowance}
+                    onChange={(e) => setFormData({...formData, travelTimeAllowance: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md"
+                    placeholder="2.0"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Minimum Quantity</label>
+                  <input
+                    type="text"
+                    value={formData.minimumQuantity}
+                    onChange={(e) => setFormData({...formData, minimumQuantity: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md"
+                    placeholder="1"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="text-sm font-medium">Minimum Quantity</label>
-                <input
-                  type="text"
-                  value={formData.minimumQuantity}
-                  onChange={(e) => setFormData({...formData, minimumQuantity: e.target.value})}
-                  className="w-full mt-1 p-2 border rounded-md"
-                  placeholder="1"
+                <label className="text-sm font-medium">Rules</label>
+                <textarea
+                  value={formData.rule}
+                  onChange={(e) => setFormData({...formData, rule: e.target.value})}
+                  className="w-full mt-1 p-2 border rounded-md h-20"
+                  placeholder="e.g., Minimum 2 units per job, Site access restrictions, Equipment requirements, etc."
                 />
               </div>
 

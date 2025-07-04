@@ -109,9 +109,13 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
       // Create URL with auto-focus parameters for the specific repair method
       const params = new URLSearchParams({
         pipeSize,
+        pipeDepth: sectionData.pipeDepth || '',
         meterage: meterage.toString(),
-        autoFocus: option.name.toLowerCase(), // This will auto-expand the relevant pricing box
-        itemNo: sectionData.itemNo?.toString() || '1'
+        autoFocus: option.name.toLowerCase(),
+        itemNo: sectionData.itemNo?.toString() || '1',
+        defects: sectionData.defects || '',
+        recommendations: sectionData.recommendations || '',
+        pipeMaterial: sectionData.pipeMaterial || ''
       });
       
       // Navigate to the sector-specific pricing page
