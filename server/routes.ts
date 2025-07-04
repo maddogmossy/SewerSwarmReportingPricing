@@ -1667,20 +1667,21 @@ export async function registerRoutes(app: Express) {
   });
 
   // Company settings routes (admin only)
+  let companySettingsData = {
+    id: 1,
+    companyName: "Sewer Inspection Co.",
+    companyLogo: null,
+    address: "123 Infrastructure St, London, UK",
+    postcode: "SW1A 1AA",
+    phoneNumber: "+44 20 1234 5678",
+    maxUsers: 5,
+    currentUsers: 1,
+    pricePerUser: "25.00"
+  };
+
   app.get("/api/company-settings", async (req, res) => {
     try {
-      // For demo, return mock company settings
-      const mockSettings = {
-        id: 1,
-        companyName: "Sewer Inspection Co.",
-        companyLogo: null,
-        address: "123 Infrastructure St, London, UK",
-        phoneNumber: "+44 20 1234 5678",
-        maxUsers: 5,
-        currentUsers: 1,
-        pricePerUser: "25.00"
-      };
-      res.json(mockSettings);
+      res.json(companySettingsData);
     } catch (error: any) {
       console.error('Error fetching company settings:', error);
       res.status(500).json({ error: "Failed to fetch company settings" });
@@ -1690,8 +1691,10 @@ export async function registerRoutes(app: Express) {
   app.put("/api/company-settings", async (req, res) => {
     try {
       const updates = req.body;
-      // For demo, just return the updated data
-      res.json({ ...updates, id: 1 });
+      // Update the stored data
+      companySettingsData = { ...companySettingsData, ...updates };
+      console.log('Updated company settings:', companySettingsData);
+      res.json(companySettingsData);
     } catch (error: any) {
       console.error('Error updating company settings:', error);
       res.status(500).json({ error: "Failed to update company settings" });
@@ -1699,18 +1702,18 @@ export async function registerRoutes(app: Express) {
   });
 
   // Depot settings routes (admin only)
+  let depotSettingsData = {
+    id: 1,
+    depotName: "Main Depot",
+    sameAsCompany: false,
+    address: "456 Depot Road, Birmingham, UK",
+    postcode: "B1 1AA",
+    phoneNumber: "+44 121 123 4567"
+  };
+
   app.get("/api/depot-settings", async (req, res) => {
     try {
-      // For demo, return mock depot settings
-      const mockSettings = {
-        id: 1,
-        depotName: "Main Depot",
-        sameAsCompany: false,
-        address: "456 Depot Road, Birmingham, UK",
-        postcode: "B1 1AA",
-        phoneNumber: "+44 121 123 4567"
-      };
-      res.json(mockSettings);
+      res.json(depotSettingsData);
     } catch (error: any) {
       console.error('Error fetching depot settings:', error);
       res.status(500).json({ error: "Failed to fetch depot settings" });
@@ -1720,8 +1723,10 @@ export async function registerRoutes(app: Express) {
   app.put("/api/depot-settings", async (req, res) => {
     try {
       const updates = req.body;
-      // For demo, just return the updated data
-      res.json({ ...updates, id: 1 });
+      // Update the stored data
+      depotSettingsData = { ...depotSettingsData, ...updates };
+      console.log('Updated depot settings:', depotSettingsData);
+      res.json(depotSettingsData);
     } catch (error: any) {
       console.error('Error updating depot settings:', error);
       res.status(500).json({ error: "Failed to update depot settings" });
