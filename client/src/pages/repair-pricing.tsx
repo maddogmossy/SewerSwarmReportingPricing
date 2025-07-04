@@ -973,19 +973,6 @@ export default function RepairPricing() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Label htmlFor="description">Description</Label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setTempDescription(formData.description);
-                      setIsDescriptionEditOpen(true);
-                    }}
-                    className="h-6 px-2 text-xs"
-                  >
-                    <Edit className="h-3 w-3 mr-1" />
-                    Edit
-                  </Button>
                 </div>
                 <div className="relative">
                   <Input
@@ -1100,6 +1087,17 @@ export default function RepairPricing() {
                   onClick={() => setIsAddDialogOpen(false)}
                 >
                   Cancel
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setIsComplianceWarningOpen(true);
+                  }}
+                  className="h-8 px-3 text-xs"
+                >
+                  <Edit className="h-3 w-3 mr-1" />
+                  Edit
                 </Button>
                 <Button
                   type="submit"
@@ -1264,42 +1262,14 @@ export default function RepairPricing() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-medium">Description</label>
-                  {!isDescriptionEditable ? (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setIsDescriptionEditable(true);
-                        setIsComplianceWarningOpen(true);
-                      }}
-                      className="h-6 px-2 text-xs"
-                    >
-                      <Edit className="h-3 w-3 mr-1" />
-                      Edit
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setIsDescriptionEditable(false)}
-                      className="h-6 px-2 text-xs text-gray-600"
-                    >
-                      Lock
-                    </Button>
-                  )}
                 </div>
                 <div className="relative">
                   <input
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className={`w-full mt-1 p-2 border rounded-md pr-8 ${
-                      !isDescriptionEditable ? 'bg-gray-100 cursor-not-allowed' : ''
-                    }`}
+                    className="w-full mt-1 p-2 border rounded-md pr-8"
                     placeholder="e.g., Patch repair for structural defects"
-                    readOnly={!isDescriptionEditable}
                   />
                   {formData.description.includes('patch') && (
                     <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
