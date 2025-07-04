@@ -1012,7 +1012,8 @@ export default function RepairPricing() {
 
               {/* COSTING OPTIONS - MOVED TO PROMINENT POSITION */}
               <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
-                <Label className="text-lg font-bold text-blue-800">Costing Options</Label>
+                <Label className="text-lg font-bold text-blue-800">🔹 COSTING OPTIONS 🔹</Label>
+                {console.log("COSTING OPTIONS SECTION RENDERING")}
                 <div className="grid grid-cols-2 gap-4 mt-3">
                   <div>
                     <Label htmlFor="option1Cost" className="text-sm font-semibold">1. Single Layer (£)</Label>
