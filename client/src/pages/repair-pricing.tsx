@@ -796,17 +796,22 @@ export default function RepairPricing() {
                   <Select
                     value={formData.depth}
                     onValueChange={(value) => {
+                      console.log('Depth changed to:', value);
                       // Get current defects from URL parameters for patch thickness calculation
                       const urlParams = new URLSearchParams(window.location.search);
                       const defects = urlParams.get('defects') || '';
+                      console.log('Defects from URL:', defects);
                       
                       // Update depth and recalculate description with patch thickness
                       const newPatchThickness = calculatePatchThickness(value, formData.pipeSize, defects);
+                      console.log('New patch thickness:', newPatchThickness);
                       const currentDesc = formData.description;
+                      console.log('Current description:', currentDesc);
                       
                       // Update patch thickness in description if it contains patch-related terms
                       let updatedDescription = currentDesc;
                       if (currentDesc.includes('patch') || currentDesc.includes('To install')) {
+                        console.log('Description contains patch terms, updating...');
                         // Replace any existing patch thickness terms with new calculation
                         updatedDescription = currentDesc
                           .replace(/single skin patch|standard patch|double skin patch/g, newPatchThickness)
@@ -819,6 +824,9 @@ export default function RepairPricing() {
                             `$1 (depth: ${value})`
                           );
                         }
+                        console.log('Updated description:', updatedDescription);
+                      } else {
+                        console.log('Description does not contain patch terms');
                       }
                       
                       setFormData({ 
