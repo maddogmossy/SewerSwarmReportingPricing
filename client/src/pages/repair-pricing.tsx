@@ -1308,7 +1308,6 @@ export default function RepairPricing() {
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                     className="w-full mt-1 p-2 border rounded-md pr-8"
                     placeholder="e.g., Patch repair for structural defects"
-                    title={formData.description || "Description will be auto-generated based on pipe size, depth, and defect type for standards compliance"}
                   />
                   {formData.description.includes('patch') && (
                     <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
