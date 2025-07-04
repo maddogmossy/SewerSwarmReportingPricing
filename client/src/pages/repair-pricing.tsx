@@ -449,14 +449,14 @@ export default function RepairPricing() {
 
           </div>
           
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => { resetForm(); setEditingItem(null); }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Pricing
-              </Button>
-            </DialogTrigger>
-          </Dialog>
+          <Button onClick={() => { 
+            resetForm(); 
+            setEditingItem(null); 
+            setIsAddDialogOpen(true);
+          }}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Pricing
+          </Button>
         </div>
 
         {/* Sector Header */}
