@@ -160,7 +160,7 @@ export default function RepairPricing() {
     pipeSize: "",
     depth: "",
     description: "",
-    option1Cost: "",
+    option1Cost: "N/A",
     option2Cost: "",
     option3Cost: "",
     option4Cost: "",
@@ -460,7 +460,7 @@ export default function RepairPricing() {
       pipeSize: "",
       depth: "",
       description: "",
-      option1Cost: "",
+      option1Cost: "N/A",
       option2Cost: "",
       option3Cost: "",
       option4Cost: "",
@@ -1313,18 +1313,17 @@ export default function RepairPricing() {
 
 
 
-              {/* COSTING OPTIONS - ADDED TO CORRECT DIALOG */}
+              {/* COSTING OPTIONS - SIMPLE VALUE ENTRY BOXES */}
               <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
                 <label className="text-lg font-bold text-blue-800">🔹 COSTING OPTIONS 🔹</label>
                 <div className="grid grid-cols-2 gap-4 mt-3">
                   <div>
                     <label className="text-sm font-medium">1. Single Layer (£)</label>
                     <input
-                      type="number"
-                      step="0.01"
+                      type="text"
                       value={formData.option1Cost}
                       onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
-                      placeholder="0.00"
+                      placeholder="N/A"
                       className="w-full mt-1 p-2 border rounded-md border-blue-300"
                     />
                   </div>
@@ -1332,8 +1331,7 @@ export default function RepairPricing() {
                   <div>
                     <label className="text-sm font-medium">2. Double Layer (£)</label>
                     <input
-                      type="number"
-                      step="0.01"
+                      type="text"
                       value={formData.option2Cost}
                       onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
                       placeholder="0.00"
@@ -1344,8 +1342,7 @@ export default function RepairPricing() {
                   <div>
                     <label className="text-sm font-medium">3. Triple Layer (£)</label>
                     <input
-                      type="number"
-                      step="0.01"
+                      type="text"
                       value={formData.option3Cost}
                       onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
                       placeholder="0.00"
@@ -1356,8 +1353,7 @@ export default function RepairPricing() {
                   <div>
                     <label className="text-sm font-medium">4. Triple Layer + Extra Long Cure Time (£)</label>
                     <input
-                      type="number"
-                      step="0.01"
+                      type="text"
                       value={formData.option4Cost}
                       onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
                       placeholder="0.00"
