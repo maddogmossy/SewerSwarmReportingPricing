@@ -110,6 +110,14 @@ export default function RepairPricing() {
       pipeMaterial
     });
     
+    // Auto-open dialog immediately if autoFocus is present
+    if (autoFocus) {
+      console.log('Auto-focus detected, opening dialog in 1 second...');
+      setTimeout(() => {
+        setIsAddDialogOpen(true);
+      }, 1000);
+    }
+    
     if (autoFocus && workCategories && workCategories.length > 0 && pricingData !== undefined) {
       // Extract defect code and location from defects string
       const defectMatch = defects?.match(/^([A-Z]+)\s+([\d.]+)m/);
