@@ -11,7 +11,7 @@ import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
 import { DataIntegrityValidator, validateBeforeInsert } from "./data-integrity";
-import { generatePatchRepairWithCost, PatchRepairInput } from "./patch-repair-generator";
+
 import pdfParse from "pdf-parse";
 import Stripe from "stripe";
 import { setupAuth } from "./replitAuth";
@@ -1542,40 +1542,7 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Advanced patch repair generator endpoint
-  app.post("/api/generate-patch-repair", async (req: Request, res: Response) => {
-    try {
-      const {
-        pipeSize,
-        pipeDepth,
-        defectDescription,
-        chainage,
-        requiredThickness,
-        baseCost = 450
-      } = req.body;
 
-      // Validate required fields
-      if (!pipeSize || !defectDescription || chainage === undefined) {
-        return res.status(400).json({
-          error: "Missing required fields: pipeSize, defectDescription, and chainage are required"
-        });
-      }
-
-      const patchRepair = generatePatchRepairWithCost({
-        pipeSize,
-        pipeDepth: pipeDepth || null,
-        defectDescription,
-        chainage: parseFloat(chainage),
-        requiredThickness: requiredThickness ? parseFloat(requiredThickness) : null,
-        baseCost: parseFloat(baseCost)
-      });
-
-      res.json(patchRepair);
-    } catch (error: any) {
-      console.error('Error generating patch repair:', error);
-      res.status(500).json({ error: "Failed to generate patch repair description" });
-    }
-  });
 
   // Stripe payment endpoints
   app.post("/api/create-payment-intent", async (req: Request, res: Response) => {
