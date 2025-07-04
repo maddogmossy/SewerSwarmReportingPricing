@@ -22,7 +22,9 @@ import {
   AlertTriangle, 
   CheckCircle,
   Wrench,
-  BarChart3
+  BarChart3,
+  Shield,
+  AlertCircle
 } from "lucide-react";
 
 const PIPE_SIZES = [
@@ -55,6 +57,8 @@ export default function RepairPricing() {
   const [deleteScope, setDeleteScope] = useState<'current' | 'all'>('current');
   const [sectorWarningOpen, setSectorWarningOpen] = useState(false);
   const [pendingSectorChange, setPendingSectorChange] = useState<{sectorId: string, checked: boolean} | null>(null);
+  const [isComplianceWarningOpen, setIsComplianceWarningOpen] = useState(false);
+  const [pendingEditItem, setPendingEditItem] = useState<any>(null);
   const [formData, setFormData] = useState({
     workCategoryId: "",
     pipeSize: "",
@@ -414,6 +418,16 @@ export default function RepairPricing() {
   };
 
   const handleEdit = (item: any) => {
+    // Show compliance warning first
+    setPendingEditItem(item);
+    setIsComplianceWarningOpen(true);
+  };
+
+  // Proceed with edit after compliance warning
+  const proceedWithEdit = () => {
+    const item = pendingEditItem;
+    if (!item) return;
+
     setFormData({
       workCategoryId: item.workCategoryId?.toString() || "",
       pipeSize: item.pipeSize,
@@ -436,6 +450,8 @@ export default function RepairPricing() {
     
     setEditingItem(item);
     setIsAddDialogOpen(true);
+    setIsComplianceWarningOpen(false);
+    setPendingEditItem(null);
   };
 
   // Handle checkbox changes with warnings for removal
@@ -568,47 +584,67 @@ export default function RepairPricing() {
                   ) : (
                     <div className="space-y-2">
                       {categoryPricing.map((item: any) => (
-                        <div key={item.id} className="p-2 border rounded bg-white text-xs">
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-1">
-                              <Badge variant="outline" className="text-xs px-1 py-0">
+                        <div key={item.id} className="p-3 border rounded bg-white">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs">
                                 {item.pipeSize}
                               </Badge>
                               {item.depth && (
-                                <Badge variant="outline" className="text-xs px-1 py-0">
+                                <Badge variant="outline" className="text-xs">
                                   {item.depth}
                                 </Badge>
                               )}
                             </div>
-                            <span className="font-medium text-sm">
+                            <span className="font-medium text-lg">
                               £{parseFloat(item.cost).toFixed(2)}
                             </span>
                           </div>
                           
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1 mr-2">
-                              <p className="text-xs text-slate-600 leading-tight line-clamp-2">
-                                {item.description}
-                              </p>
-                            </div>
-                            <div className="flex gap-1">
-                              <button
-                                onClick={() => handleEdit(item)}
-                                className="p-1 hover:bg-slate-100 rounded"
-                              >
-                                <Edit className="h-3 w-3" />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(item)}
-                                className="p-1 hover:bg-red-100 rounded"
-                              >
-                                <Trash2 className="h-3 w-3 text-red-600" />
-                              </button>
+                          {/* Description - Full height for readability */}
+                          <div className="mb-3">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1 mr-3">
+                                <p className="text-sm text-slate-700 leading-relaxed min-h-[3rem]">
+                                  {item.description}
+                                </p>
+                              </div>
+                              <div className="flex gap-1 flex-shrink-0">
+                                <button
+                                  onClick={() => handleEdit(item)}
+                                  className="p-2 hover:bg-slate-100 rounded text-slate-600"
+                                  title="Edit pricing"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(item)}
+                                  className="p-2 hover:bg-red-100 rounded text-red-600"
+                                  title="Delete pricing"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
                             </div>
                           </div>
                           
+                          {/* Standards compliance warning */}
+                          <div className="text-xs p-2 bg-blue-50 border border-blue-200 rounded mb-2">
+                            <div className="flex items-center gap-2">
+                              <Shield className="h-3 w-3 text-blue-600" />
+                              <span className="font-medium text-blue-800">Standards Compliant</span>
+                            </div>
+                            <p className="text-blue-700 mt-1">
+                              This pricing follows {sector === 'utilities' ? 'WRc/MSCC5' : 
+                                                sector === 'adoption' ? 'OS20x Adoption' :
+                                                sector === 'highways' ? 'HADDMS' :
+                                                sector === 'construction' ? 'BS EN 1610:2015' :
+                                                sector === 'insurance' ? 'ABI Guidelines' : 'Trading Standards'} requirements
+                            </p>
+                          </div>
+                          
                           {item.rule && (
-                            <div className="text-xs p-1 mt-1 bg-yellow-50 border border-yellow-200 rounded">
+                            <div className="text-xs p-2 bg-yellow-50 border border-yellow-200 rounded">
                               <span className="font-medium">Rule:</span> {item.rule}
                               {item.minimumQuantity > 1 && (
                                 <span className="ml-2 text-yellow-700">
@@ -1107,6 +1143,57 @@ export default function RepairPricing() {
                 onClick={confirmSectorChange}
               >
                 Remove Sector
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Standards Compliance Warning Dialog */}
+        <Dialog open={isComplianceWarningOpen} onOpenChange={setIsComplianceWarningOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-amber-600" />
+                Standards Compliance Warning
+              </DialogTitle>
+              <DialogDescription className="space-y-3">
+                <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded">
+                  <Shield className="h-4 w-4 text-blue-600" />
+                  <span className="font-medium text-blue-800">This pricing follows {
+                    sector === 'utilities' ? 'WRc/MSCC5' : 
+                    sector === 'adoption' ? 'OS20x Adoption' :
+                    sector === 'highways' ? 'HADDMS' :
+                    sector === 'construction' ? 'BS EN 1610:2015' :
+                    sector === 'insurance' ? 'ABI Guidelines' : 'Trading Standards'
+                  } standards</span>
+                </div>
+                
+                <p>
+                  Editing this pricing may affect compliance with industry standards. 
+                  The description and costs are locked to ensure standards compliance.
+                </p>
+                
+                <p className="text-sm text-slate-600">
+                  Are you sure you want to edit this standards-compliant pricing configuration?
+                </p>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsComplianceWarningOpen(false);
+                  setPendingEditItem(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="default"
+                onClick={proceedWithEdit}
+                className="bg-amber-600 hover:bg-amber-700"
+              >
+                Proceed with Edit
               </Button>
             </DialogFooter>
           </DialogContent>
