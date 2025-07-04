@@ -1010,13 +1010,11 @@ export default function RepairPricing() {
                 </div>
               </div>
 
-              {/* Four Costing Options */}
-              <div className="space-y-4">
+              <div>
                 <Label className="text-sm font-medium">Costing Options</Label>
-                
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4 mt-2">
                   <div>
-                    <Label htmlFor="option1Cost" className="text-xs">1. Single Layer (£)</Label>
+                    <Label htmlFor="option1Cost" className="text-sm font-medium">1. Single Layer (£)</Label>
                     <Input
                       id="option1Cost"
                       type="number"
@@ -1024,11 +1022,12 @@ export default function RepairPricing() {
                       value={formData.option1Cost}
                       onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
                       placeholder="0.00"
+                      className="mt-1"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="option2Cost" className="text-xs">2. Double Layer (£)</Label>
+                    <Label htmlFor="option2Cost" className="text-sm font-medium">2. Double Layer (£)</Label>
                     <Input
                       id="option2Cost"
                       type="number"
@@ -1036,11 +1035,12 @@ export default function RepairPricing() {
                       value={formData.option2Cost}
                       onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
                       placeholder="0.00"
+                      className="mt-1"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="option3Cost" className="text-xs">3. Triple Layer (£)</Label>
+                    <Label htmlFor="option3Cost" className="text-sm font-medium">3. Triple Layer (£)</Label>
                     <Input
                       id="option3Cost"
                       type="number"
@@ -1048,11 +1048,12 @@ export default function RepairPricing() {
                       value={formData.option3Cost}
                       onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
                       placeholder="0.00"
+                      className="mt-1"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="option4Cost" className="text-xs">4. Triple Layer + Extra Long Cure Time (£)</Label>
+                    <Label htmlFor="option4Cost" className="text-sm font-medium">4. Triple Layer + Extra Long Cure Time (£)</Label>
                     <Input
                       id="option4Cost"
                       type="number"
@@ -1060,6 +1061,7 @@ export default function RepairPricing() {
                       value={formData.option4Cost}
                       onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
                       placeholder="0.00"
+                      className="mt-1"
                     />
                   </div>
                 </div>
