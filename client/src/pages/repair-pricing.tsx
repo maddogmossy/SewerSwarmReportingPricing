@@ -41,7 +41,7 @@ const DEPTH_RANGES = [
 
 // Calculate patch thickness based on depth, pipe size, and defect type (RSM/WRc guidelines)
 const calculatePatchThickness = (depthRange: string, pipeSize?: string, defects?: string): string => {
-  if (!depthRange) return "standard patch"; // Default when no depth specified
+  if (!depthRange) return "double skin patch"; // Default to double layer when no depth specified
   
   const depth = depthRange.toLowerCase();
   const pipeSizeNum = pipeSize ? parseFloat(pipeSize.replace('mm', '')) : 0;
