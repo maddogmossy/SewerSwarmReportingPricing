@@ -1079,12 +1079,12 @@ export default function RepairPricing() {
                 </div>
                 
                 <div>
-                  <Label htmlFor="selectedOption" className="text-xs">Selected Option</Label>
+                  <Label htmlFor="selectedOption">Selected Option</Label>
                   <Input
                     id="selectedOption"
                     value={formData.selectedOption || "Auto-selected based on description"}
                     readOnly
-                    className="bg-gray-50 text-xs"
+                    className="bg-gray-50"
                   />
                 </div>
               </div>
@@ -1282,68 +1282,7 @@ export default function RepairPricing() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium">Costing Options</label>
-                  <div className="grid grid-cols-2 gap-4 mt-2">
-                    <div>
-                      <label className="text-sm font-medium">1. Single Layer (£)</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={formData.option1Cost}
-                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
-                        className="w-full mt-1 p-2 border rounded-md"
-                        placeholder="0.00"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium">2. Double Layer (£)</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={formData.option2Cost}
-                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
-                        className="w-full mt-1 p-2 border rounded-md"
-                        placeholder="0.00"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium">3. Triple Layer (£)</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={formData.option3Cost}
-                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
-                        className="w-full mt-1 p-2 border rounded-md"
-                        placeholder="0.00"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium">4. Triple Layer + Extra Long Cure Time (£)</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={formData.option4Cost}
-                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
-                        className="w-full mt-1 p-2 border rounded-md"
-                        placeholder="0.00"
-                      />
-                    </div>
-                  </div>
-                </div>
 
-                <div>
-                  <label className="text-sm font-medium">Selected Option</label>
-                  <input
-                    type="text"
-                    value={formData.selectedOption || "Auto-selected based on description"}
-                    readOnly
-                    className="w-full mt-1 p-2 border rounded-md bg-gray-50"
-                  />
-                </div>
               </div>
 
               <div>
