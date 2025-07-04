@@ -1224,7 +1224,7 @@ export default function RepairPricing() {
 
         {/* Add Pricing Dialog */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingItem ? 'Edit Pricing' : 'Add New Pricing Configuration'}
