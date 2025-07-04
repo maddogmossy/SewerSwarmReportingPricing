@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { PatchRepairGenerator } from "@/components/PatchRepairGenerator";
 import { 
   ArrowLeft, 
   Plus, 
@@ -362,6 +363,7 @@ export default function RepairPricing() {
                 Dashboard
               </Button>
             </Link>
+            <PatchRepairGenerator />
           </div>
           
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
