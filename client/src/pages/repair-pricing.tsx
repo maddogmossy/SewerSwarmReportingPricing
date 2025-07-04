@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
@@ -24,6 +26,7 @@ import {
   Wrench,
   BarChart3,
   Shield,
+  Info,
   AlertCircle
 } from "lucide-react";
 
@@ -37,26 +40,47 @@ const DEPTH_RANGES = [
   "0-1m", "1-2m", "2-3m", "3-4m", "4-5m", "5m+"
 ];
 
-// Calculate patch thickness based on depth and industry standards (RSM/WRc guidelines)
-const calculatePatchThickness = (depthRange: string): string => {
+// Calculate patch thickness based on depth, pipe size, and defect type (RSM/WRc guidelines)
+const calculatePatchThickness = (depthRange: string, pipeSize?: string, defects?: string): string => {
   if (!depthRange) return "double skin patch"; // Default when no depth specified
   
   const depth = depthRange.toLowerCase();
+  const pipeSizeNum = pipeSize ? parseFloat(pipeSize.replace('mm', '')) : 0;
   
-  // Industry standard patch thickness based on depth:
+  // Check for deformity codes that require thicker patches
+  const hasDeformity = defects && (
+    defects.includes('DEF') || 
+    defects.includes('Deformation') ||
+    defects.includes('CR') ||
+    defects.includes('Crack') ||
+    defects.includes('FC') ||
+    defects.includes('Fracture')
+  );
+  
+  // Base calculation by depth:
   // 0-2m: Single skin patch (lighter load, easier access)
   // 2-4m: Standard patch (moderate load)
   // 4m+: Double skin patch (heavy load, deep excavation requirements)
   
+  let baseThickness = "double skin patch";
   if (depth.includes("0-1m") || depth.includes("1-2m")) {
-    return "single skin patch";
+    baseThickness = "single skin patch";
   } else if (depth.includes("2-3m") || depth.includes("3-4m")) {
-    return "standard patch";
+    baseThickness = "standard patch";
   } else if (depth.includes("4-5m") || depth.includes("5m+")) {
-    return "double skin patch";
+    baseThickness = "double skin patch";
   }
   
-  return "double skin patch"; // Default for any unrecognized depth
+  // Upgrade thickness for large pipes (≥300mm) with structural defects
+  if (hasDeformity && pipeSizeNum >= 300) {
+    if (baseThickness === "single skin patch") {
+      return "standard patch";
+    } else if (baseThickness === "standard patch") {
+      return "double skin patch";
+    }
+  }
+  
+  return baseThickness;
 };
 
 const SECTORS = [
@@ -81,6 +105,8 @@ export default function RepairPricing() {
   const [pendingSectorChange, setPendingSectorChange] = useState<{sectorId: string, checked: boolean} | null>(null);
   const [isComplianceWarningOpen, setIsComplianceWarningOpen] = useState(false);
   const [pendingEditItem, setPendingEditItem] = useState<any>(null);
+  const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
+  const [tempDescription, setTempDescription] = useState("");
   const [formData, setFormData] = useState({
     workCategoryId: "",
     pipeSize: "",
@@ -187,7 +213,7 @@ export default function RepairPricing() {
         
         // Calculate depth range from dashboard MH depths or use pipeDepth parameter
         const depthRange = pipeDepth || ""; // Use depth from dashboard if available
-        const patchThickness = calculatePatchThickness(depthRange);
+        const patchThickness = calculatePatchThickness(depthRange, pipeSize, defects);
         
         // Create description with patch thickness based on depth
         const description = depthRange 
@@ -730,7 +756,26 @@ export default function RepairPricing() {
                   <Label htmlFor="pipeSize">Pipe Size</Label>
                   <Select
                     value={formData.pipeSize}
-                    onValueChange={(value) => setFormData({ ...formData, pipeSize: value })}
+                    onValueChange={(value) => {
+                      // Get current defects from URL parameters for patch thickness calculation
+                      const urlParams = new URLSearchParams(window.location.search);
+                      const defects = urlParams.get('defects') || '';
+                      
+                      // Recalculate patch thickness when pipe size changes
+                      const newPatchThickness = calculatePatchThickness(formData.depth, value, defects);
+                      const currentDesc = formData.description;
+                      
+                      // Update patch thickness in description if it contains patch-related terms
+                      let updatedDescription = currentDesc;
+                      if (currentDesc.includes('patch') || currentDesc.includes('To install')) {
+                        // Update pipe size in description
+                        updatedDescription = currentDesc
+                          .replace(/\d+mm/g, value) // Replace pipe size
+                          .replace(/single skin patch|standard patch|double skin patch/g, newPatchThickness); // Update patch thickness
+                      }
+                      
+                      setFormData({ ...formData, pipeSize: value, description: updatedDescription });
+                    }}
                     required
                   >
                     <SelectTrigger>
@@ -751,8 +796,12 @@ export default function RepairPricing() {
                   <Select
                     value={formData.depth}
                     onValueChange={(value) => {
+                      // Get current defects from URL parameters for patch thickness calculation
+                      const urlParams = new URLSearchParams(window.location.search);
+                      const defects = urlParams.get('defects') || '';
+                      
                       // Update depth and recalculate description with patch thickness
-                      const newPatchThickness = calculatePatchThickness(value);
+                      const newPatchThickness = calculatePatchThickness(value, formData.pipeSize, defects);
                       const currentDesc = formData.description;
                       
                       // Update patch thickness in description if it contains patch-related terms
@@ -794,13 +843,53 @@ export default function RepairPricing() {
               </div>
 
               <div>
-                <Label htmlFor="description">Description</Label>
-                <Input
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="e.g., Standard structural patch repair"
-                />
+                <div className="flex items-center gap-2 mb-2">
+                  <Label htmlFor="description">Description</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-slate-500 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-md">
+                        <p className="text-sm">{formData.description || "Description will be auto-generated based on pipe size, depth, and defect type for standards compliance"}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setTempDescription(formData.description);
+                      setIsDescriptionEditOpen(true);
+                    }}
+                    className="h-6 px-2 text-xs"
+                  >
+                    <Edit className="h-3 w-3 mr-1" />
+                    Edit
+                  </Button>
+                </div>
+                <div className="relative">
+                  <Input
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="e.g., Standard structural patch repair"
+                    className="pr-8"
+                  />
+                  {formData.description.includes('patch') && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Standards compliant</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -1238,6 +1327,83 @@ export default function RepairPricing() {
                 className="bg-amber-600 hover:bg-amber-700"
               >
                 Proceed with Edit
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Description Edit Dialog */}
+        <Dialog open={isDescriptionEditOpen} onOpenChange={setIsDescriptionEditOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Edit className="h-5 w-5" />
+                Edit Description
+              </DialogTitle>
+              <DialogDescription>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded">
+                    <Shield className="h-4 w-4 text-amber-600" />
+                    <span className="font-medium text-amber-800">Standards Compliance Warning</span>
+                  </div>
+                  
+                  <p>
+                    This description is auto-generated based on industry standards. 
+                    Manual edits may affect compliance with {
+                      sector === 'utilities' ? 'WRc/MSCC5' : 
+                      sector === 'adoption' ? 'OS20x Adoption' :
+                      sector === 'highways' ? 'HADDMS' :
+                      sector === 'construction' ? 'BS EN 1610:2015' :
+                      sector === 'insurance' ? 'ABI Guidelines' : 'Trading Standards'
+                    } standards.
+                  </p>
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="tempDescription">Description</Label>
+                <Textarea
+                  id="tempDescription"
+                  value={tempDescription}
+                  onChange={(e) => setTempDescription(e.target.value)}
+                  placeholder="Enter detailed repair description..."
+                  rows={4}
+                  className="mt-1"
+                />
+              </div>
+              
+              <div className="text-sm text-slate-600">
+                <p className="font-medium mb-2">Description should include:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Pipe size and material specifications</li>
+                  <li>Repair method and patch type</li>
+                  <li>Installation depth and location</li>
+                  <li>Defect type being addressed</li>
+                </ul>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsDescriptionEditOpen(false);
+                  setTempDescription("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  setFormData({ ...formData, description: tempDescription });
+                  setIsDescriptionEditOpen(false);
+                  setTempDescription("");
+                }}
+                className="bg-amber-600 hover:bg-amber-700"
+              >
+                Save Changes
               </Button>
             </DialogFooter>
           </DialogContent>
