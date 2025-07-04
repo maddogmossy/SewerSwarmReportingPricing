@@ -1320,16 +1320,37 @@ export default function RepairPricing() {
                   <div>
                     <label className="text-sm font-medium">1. Single Layer (£)</label>
                     <div className="flex items-center gap-2 mt-1">
-                      <div className="bg-gray-100 border rounded-md px-3 py-2 text-gray-600 font-medium">
-                        N/A
-                      </div>
-                      <input
-                        type="text"
-                        value={formData.option1Cost === "N/A" ? "" : formData.option1Cost}
-                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value || "N/A" })}
-                        placeholder="Add price"
-                        className="flex-1 p-2 border rounded-md border-blue-300 text-sm"
-                      />
+                      {formData.option1Cost === "N/A" ? (
+                        <>
+                          <div className="bg-gray-100 border rounded-md px-3 py-2 text-gray-600 font-medium flex-1">
+                            N/A
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, option1Cost: "" })}
+                            className="px-3 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                          >
+                            Edit
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <input
+                            type="text"
+                            value={formData.option1Cost}
+                            onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                            placeholder="Enter price"
+                            className="flex-1 p-2 border rounded-md border-blue-300"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, option1Cost: "N/A" })}
+                            className="px-3 py-2 text-sm bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                          >
+                            Reset
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                   
