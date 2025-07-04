@@ -942,10 +942,10 @@ export default function RepairPricing() {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={addPricing.isPending}
+                  disabled={createPricing.isPending}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
-                  {addPricing.isPending ? "Saving..." : (editingItem ? "Update Pricing" : "Add Pricing")}
+                  {createPricing.isPending ? "Saving..." : (editingItem ? "Update Pricing" : "Add Pricing")}
                 </Button>
               </DialogFooter>
             </form>
