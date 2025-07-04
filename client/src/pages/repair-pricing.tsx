@@ -1319,13 +1319,18 @@ export default function RepairPricing() {
                 <div className="grid grid-cols-2 gap-4 mt-3">
                   <div>
                     <label className="text-sm font-medium">1. Single Layer (£)</label>
-                    <input
-                      type="text"
-                      value={formData.option1Cost}
-                      onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
-                      placeholder="N/A"
-                      className="w-full mt-1 p-2 border rounded-md border-blue-300"
-                    />
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="bg-gray-100 border rounded-md px-3 py-2 text-gray-600 font-medium">
+                        N/A
+                      </div>
+                      <input
+                        type="text"
+                        value={formData.option1Cost === "N/A" ? "" : formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value || "N/A" })}
+                        placeholder="Add price"
+                        className="flex-1 p-2 border rounded-md border-blue-300 text-sm"
+                      />
+                    </div>
                   </div>
                   
                   <div>
