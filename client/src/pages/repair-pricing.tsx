@@ -824,6 +824,134 @@ export default function RepairPricing() {
           </DialogContent>
         </Dialog>
 
+        {/* Add Pricing Dialog */}
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                {editingItem ? 'Edit Pricing' : 'Add New Pricing Configuration'}
+              </DialogTitle>
+              <DialogDescription>
+                Configure pricing for {currentSector.name.toLowerCase()} sector repairs and maintenance work.
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Work Category</label>
+                  <select
+                    value={formData.workCategoryId}
+                    onChange={(e) => setFormData({...formData, workCategoryId: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md"
+                    required
+                  >
+                    <option value="">Select category...</option>
+                    {workCategories && workCategories.map((cat: any) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Pipe Size</label>
+                  <select
+                    value={formData.pipeSize}
+                    onChange={(e) => setFormData({...formData, pipeSize: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md"
+                    required
+                  >
+                    <option value="">Select size...</option>
+                    {PIPE_SIZES.map(size => (
+                      <option key={size} value={size}>{size}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Depth Range (Optional)</label>
+                  <select
+                    value={formData.depth}
+                    onChange={(e) => setFormData({...formData, depth: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md"
+                  >
+                    <option value="">No depth specification</option>
+                    {DEPTH_RANGES.map(depth => (
+                      <option key={depth} value={depth}>{depth}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Cost (£)</label>
+                  <input
+                    type="text"
+                    value={formData.cost}
+                    onChange={(e) => setFormData({...formData, cost: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md"
+                    placeholder="450.00"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Description</label>
+                <input
+                  type="text"
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  className="w-full mt-1 p-2 border rounded-md"
+                  placeholder="e.g., Patch repair for structural defects"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Pricing Rule (Optional)</label>
+                <input
+                  type="text"
+                  value={formData.rule}
+                  onChange={(e) => setFormData({...formData, rule: e.target.value})}
+                  className="w-full mt-1 p-2 border rounded-md"
+                  placeholder="e.g., Minimum 2 units per job"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Minimum Quantity</label>
+                <input
+                  type="text"
+                  value={formData.minimumQuantity}
+                  onChange={(e) => setFormData({...formData, minimumQuantity: e.target.value})}
+                  className="w-full mt-1 p-2 border rounded-md"
+                  placeholder="1"
+                />
+              </div>
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsAddDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={addPricing.isPending}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {addPricing.isPending ? "Saving..." : (editingItem ? "Update Pricing" : "Add Pricing")}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
         {/* Sector Removal Warning Dialog */}
         <Dialog open={sectorWarningOpen} onOpenChange={setSectorWarningOpen}>
           <DialogContent>
