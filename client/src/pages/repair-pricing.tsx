@@ -830,16 +830,7 @@ export default function RepairPricing() {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="rule">Rule (optional)</Label>
-                <Textarea
-                  id="rule"
-                  value={formData.rule}
-                  onChange={(e) => setFormData({ ...formData, rule: e.target.value })}
-                  placeholder="e.g., Rate based on min of 4 patches"
-                  rows={2}
-                />
-              </div>
+
 
               <div>
                 <Label>Apply to Other Sectors</Label>
@@ -972,7 +963,7 @@ export default function RepairPricing() {
 
         {/* Add Pricing Dialog */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingItem ? 'Edit Pricing' : 'Add New Pricing Configuration'}
@@ -1144,15 +1135,7 @@ export default function RepairPricing() {
                 </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium">Rules</label>
-                <textarea
-                  value={formData.rule}
-                  onChange={(e) => setFormData({...formData, rule: e.target.value})}
-                  className="w-full mt-1 p-2 border rounded-md h-20"
-                  placeholder="e.g., Minimum 2 units per job, Site access restrictions, Equipment requirements, etc."
-                />
-              </div>
+
 
               <DialogFooter>
                 <Button
