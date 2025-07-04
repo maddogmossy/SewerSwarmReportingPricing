@@ -85,6 +85,52 @@ const calculatePatchThickness = (depthRange: string, pipeSize?: string, defects?
   return baseThickness;
 };
 
+// Auto-select cost based on description content
+const selectCostFromDescription = (description: string, costValues: {
+  singleLayerCost: string;
+  doubleLayerCost: string;
+  tripleLayerCost: string;
+  tripleLayerInfiltrationCost: string;
+}, defects?: string): string => {
+  if (!description) return "";
+  
+  const desc = description.toLowerCase();
+  
+  // Option 4: Triple layer with extra long cure time (when infiltration detected at same point)
+  const hasInfiltration = defects && (
+    defects.includes('INF') || 
+    defects.includes('infiltration') ||
+    defects.includes('IN') ||
+    defects.includes('water ingress')
+  );
+  
+  if ((desc.includes("triple layer") || desc.includes("triple")) && hasInfiltration) {
+    return costValues.tripleLayerInfiltrationCost !== "N/A" ? costValues.tripleLayerInfiltrationCost : "";
+  }
+  
+  // Option 3: Triple layer
+  if (desc.includes("triple layer") || desc.includes("triple")) {
+    return costValues.tripleLayerCost !== "N/A" ? costValues.tripleLayerCost : "";
+  }
+  
+  // Option 2: Double layer
+  if (desc.includes("double") || desc.includes("double skin")) {
+    return costValues.doubleLayerCost !== "N/A" ? costValues.doubleLayerCost : "";
+  }
+  
+  // Option 1: Single layer
+  if (desc.includes("single") || desc.includes("single skin")) {
+    return costValues.singleLayerCost !== "N/A" ? costValues.singleLayerCost : "";
+  }
+  
+  // Default to standard patch (double layer equivalent)
+  if (desc.includes("standard patch")) {
+    return costValues.doubleLayerCost !== "N/A" ? costValues.doubleLayerCost : "";
+  }
+  
+  return "";
+};
+
 const SECTORS = [
   { id: 'utilities', name: 'Utilities', color: 'blue' },
   { id: 'adoption', name: 'Adoption', color: 'green' },
@@ -115,6 +161,10 @@ export default function RepairPricing() {
     depth: "",
     description: "",
     cost: "",
+    singleLayerCost: "N/A",
+    doubleLayerCost: "N/A", 
+    tripleLayerCost: "N/A",
+    tripleLayerInfiltrationCost: "N/A",
     rule: "",
     minimumQuantity: "1",
     lengthOfRepair: "1000mm",
@@ -248,6 +298,35 @@ export default function RepairPricing() {
     }
   }, [location, workCategories, pricingData]);
 
+  // Auto-select cost based on description changes and cost values
+  useEffect(() => {
+    if (formData.description) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const defects = urlParams.get('defects');
+      
+      const selectedCost = selectCostFromDescription(
+        formData.description,
+        {
+          singleLayerCost: formData.singleLayerCost,
+          doubleLayerCost: formData.doubleLayerCost,
+          tripleLayerCost: formData.tripleLayerCost,
+          tripleLayerInfiltrationCost: formData.tripleLayerInfiltrationCost,
+        },
+        defects || ""
+      );
+      
+      if (selectedCost && selectedCost !== formData.cost) {
+        setFormData(prev => ({ ...prev, cost: selectedCost }));
+      }
+    }
+  }, [
+    formData.description,
+    formData.singleLayerCost,
+    formData.doubleLayerCost,
+    formData.tripleLayerCost,
+    formData.tripleLayerInfiltrationCost
+  ]);
+
   // Fetch pricing data from all sectors for cross-sector comparison
   const { data: utilitiesPricing = [] } = useQuery({
     queryKey: ['/api/repair-pricing/utilities'],
@@ -355,6 +434,10 @@ export default function RepairPricing() {
       depth: "",
       description: "",
       cost: "",
+      singleLayerCost: "N/A",
+      doubleLayerCost: "N/A", 
+      tripleLayerCost: "N/A",
+      tripleLayerInfiltrationCost: "N/A",
       rule: "",
       minimumQuantity: "1",
       lengthOfRepair: "1000mm",
@@ -496,6 +579,10 @@ export default function RepairPricing() {
       depth: item.depth || "",
       description: item.description || "",
       cost: item.cost.toString(),
+      singleLayerCost: item.singleLayerCost || "N/A",
+      doubleLayerCost: item.doubleLayerCost || "N/A", 
+      tripleLayerCost: item.tripleLayerCost || "N/A",
+      tripleLayerInfiltrationCost: item.tripleLayerInfiltrationCost || "N/A",
       rule: item.rule || "",
       minimumQuantity: item.minimumQuantity?.toString() || "1",
       lengthOfRepair: item.lengthOfRepair || "1000mm",
@@ -898,17 +985,69 @@ export default function RepairPricing() {
                 </div>
               </div>
 
+              {/* Patch Thickness Costing */}
+              <div className="space-y-4">
+                <Label className="text-sm font-medium">Patch Thickness Pricing</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="singleLayerCost" className="text-xs">1. Single Layer (£)</Label>
+                    <Input
+                      id="singleLayerCost"
+                      value={formData.singleLayerCost}
+                      onChange={(e) => setFormData({ ...formData, singleLayerCost: e.target.value })}
+                      placeholder="N/A"
+                      className="text-sm"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="doubleLayerCost" className="text-xs">2. Double Layer (£)</Label>
+                    <Input
+                      id="doubleLayerCost"
+                      value={formData.doubleLayerCost}
+                      onChange={(e) => setFormData({ ...formData, doubleLayerCost: e.target.value })}
+                      placeholder="N/A"
+                      className="text-sm"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="tripleLayerCost" className="text-xs">3. Triple Layer (£)</Label>
+                    <Input
+                      id="tripleLayerCost"
+                      value={formData.tripleLayerCost}
+                      onChange={(e) => setFormData({ ...formData, tripleLayerCost: e.target.value })}
+                      placeholder="N/A"
+                      className="text-sm"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="tripleLayerInfiltrationCost" className="text-xs">4. Triple Layer + Long Cure (£)</Label>
+                    <Input
+                      id="tripleLayerInfiltrationCost"
+                      value={formData.tripleLayerInfiltrationCost}
+                      onChange={(e) => setFormData({ ...formData, tripleLayerInfiltrationCost: e.target.value })}
+                      placeholder="N/A"
+                      className="text-sm"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500">
+                  Option 4 is used when infiltration is detected at the same point as the defect
+                </p>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="cost">Cost (£)</Label>
+                  <Label htmlFor="cost">Selected Cost (£)</Label>
                   <Input
                     id="cost"
-                    type="number"
-                    step="0.01"
                     value={formData.cost}
                     onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-                    placeholder="0.00"
-                    required
+                    placeholder="Auto-selected based on description"
+                    className="bg-gray-50"
+                    readOnly
                   />
                 </div>
 
