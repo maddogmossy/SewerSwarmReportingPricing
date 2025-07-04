@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -26,7 +26,6 @@ import {
   Wrench,
   BarChart3,
   Shield,
-  Info,
   AlertCircle
 } from "lucide-react";
 
@@ -60,15 +59,18 @@ const calculatePatchThickness = (depthRange: string, pipeSize?: string, defects?
   // Base calculation by depth:
   // 0-2m: Single skin patch (lighter load, easier access)
   // 2-4m: Standard patch (moderate load)
-  // 4m+: Double skin patch (heavy load, deep excavation requirements)
+  // 4-5m: Double skin patch (heavy load, deep excavation requirements)
+  // 5m+: Triple layer patch (extreme depth, maximum reinforcement)
   
-  let baseThickness = "double skin patch";
+  let baseThickness = "triple layer patch";
   if (depth.includes("0-1m") || depth.includes("1-2m")) {
     baseThickness = "single skin patch";
   } else if (depth.includes("2-3m") || depth.includes("3-4m")) {
     baseThickness = "standard patch";
-  } else if (depth.includes("4-5m") || depth.includes("5m+")) {
+  } else if (depth.includes("4-5m")) {
     baseThickness = "double skin patch";
+  } else if (depth.includes("5m+")) {
+    baseThickness = "triple layer patch";
   }
   
   // Upgrade thickness for large pipes (≥300mm) with structural defects
@@ -796,25 +798,20 @@ export default function RepairPricing() {
                   <Select
                     value={formData.depth}
                     onValueChange={(value) => {
-                      console.log('Depth changed to:', value);
                       // Get current defects from URL parameters for patch thickness calculation
                       const urlParams = new URLSearchParams(window.location.search);
                       const defects = urlParams.get('defects') || '';
-                      console.log('Defects from URL:', defects);
                       
                       // Update depth and recalculate description with patch thickness
                       const newPatchThickness = calculatePatchThickness(value, formData.pipeSize, defects);
-                      console.log('New patch thickness:', newPatchThickness);
                       const currentDesc = formData.description;
-                      console.log('Current description:', currentDesc);
                       
                       // Update patch thickness in description if it contains patch-related terms
                       let updatedDescription = currentDesc;
                       if (currentDesc.includes('patch') || currentDesc.includes('To install')) {
-                        console.log('Description contains patch terms, updating...');
                         // Replace any existing patch thickness terms with new calculation
                         updatedDescription = currentDesc
-                          .replace(/single skin patch|standard patch|double skin patch/g, newPatchThickness)
+                          .replace(/single skin patch|standard patch|double skin patch|triple layer patch/g, newPatchThickness)
                           .replace(/\(depth: [^)]*\)/g, value ? `(depth: ${value})` : '');
                         
                         // If no depth info was in description but value is provided, add it
@@ -824,9 +821,6 @@ export default function RepairPricing() {
                             `$1 (depth: ${value})`
                           );
                         }
-                        console.log('Updated description:', updatedDescription);
-                      } else {
-                        console.log('Description does not contain patch terms');
                       }
                       
                       setFormData({ 
@@ -853,16 +847,6 @@ export default function RepairPricing() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Label htmlFor="description">Description</Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-slate-500 cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-md">
-                        <p className="text-sm">{formData.description || "Description will be auto-generated based on pipe size, depth, and defect type for standards compliance"}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
                   <Button
                     type="button"
                     variant="ghost"
@@ -886,16 +870,7 @@ export default function RepairPricing() {
                     className="pr-8"
                   />
                   {formData.description.includes('patch') && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600 cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Standards compliant</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
                   )}
                 </div>
               </div>
@@ -1136,16 +1111,6 @@ export default function RepairPricing() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-medium">Description</label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-slate-500 cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-md">
-                        <p className="text-sm">{formData.description || "Description will be auto-generated based on pipe size, depth, and defect type for standards compliance"}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
                   <Button
                     type="button"
                     variant="ghost"
@@ -1161,22 +1126,14 @@ export default function RepairPricing() {
                   </Button>
                 </div>
                 <div className="relative">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <input
-                          type="text"
-                          value={formData.description}
-                          onChange={(e) => setFormData({...formData, description: e.target.value})}
-                          className="w-full mt-1 p-2 border rounded-md pr-8"
-                          placeholder="e.g., Patch repair for structural defects"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-md">
-                        <p className="text-sm">{formData.description || "Description will be auto-generated based on pipe size, depth, and defect type for standards compliance"}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <input
+                    type="text"
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    className="w-full mt-1 p-2 border rounded-md pr-8"
+                    placeholder="e.g., Patch repair for structural defects"
+                    title={formData.description || "Description will be auto-generated based on pipe size, depth, and defect type for standards compliance"}
+                  />
                   {formData.description.includes('patch') && (
                     <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
                   )}
