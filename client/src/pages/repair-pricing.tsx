@@ -584,7 +584,7 @@ export default function RepairPricing() {
                   ) : (
                     <div className="space-y-2">
                       {categoryPricing.map((item: any) => (
-                        <div key={item.id} className="p-3 border rounded bg-white">
+                        <div key={item.id} className="p-2 border rounded bg-white">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                               <Badge variant="outline" className="text-xs">
@@ -601,12 +601,12 @@ export default function RepairPricing() {
                             </span>
                           </div>
                           
-                          {/* Description - Full height for readability */}
-                          <div className="mb-3">
+                          {/* Description - Compact layout */}
+                          <div className="mb-2">
                             <div className="flex items-start justify-between">
                               <div className="flex-1 mr-3">
-                                <p className="text-sm text-slate-700 leading-relaxed min-h-[3rem]">
-                                  {item.description}
+                                <p className="text-sm text-slate-700 leading-relaxed">
+                                  {item.description?.replace(/\s*\(Item No:\s*\d+\)\s*/g, '').trim()}
                                 </p>
                               </div>
                               <div className="flex gap-1 flex-shrink-0">
@@ -1013,14 +1013,19 @@ export default function RepairPricing() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Length of Repair</label>
-                  <input
-                    type="text"
+                  <Label htmlFor="lengthOfRepair">Length of Repair</Label>
+                  <Select
                     value={formData.lengthOfRepair}
-                    onChange={(e) => setFormData({...formData, lengthOfRepair: e.target.value})}
-                    className="w-full mt-1 p-2 border rounded-md"
-                    placeholder="1000mm"
-                  />
+                    onValueChange={(value) => setFormData({...formData, lengthOfRepair: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select length" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="600mm">600mm</SelectItem>
+                      <SelectItem value="1000mm">1000mm</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
