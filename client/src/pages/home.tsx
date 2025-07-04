@@ -248,10 +248,25 @@ export default function Home() {
             <div className="mb-8">
               <Card>
                 <CardHeader>
-                  <CardTitle>Welcome back, {user.firstName || user.email}!</CardTitle>
-                  <CardDescription>
-                    Choose your next action to manage your sewer inspection reports
-                  </CardDescription>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle>Welcome back, {user.firstName || user.email}!</CardTitle>
+                      <CardDescription>
+                        Choose your next action to manage your sewer inspection reports
+                      </CardDescription>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        // Clear authentication and reload page
+                        fetch("/api/auth/logout", { method: "POST", credentials: "include" })
+                          .then(() => window.location.reload());
+                      }}
+                    >
+                      Sign Out
+                    </Button>
+                  </div>
                 </CardHeader>
               </Card>
             </div>
