@@ -41,7 +41,7 @@ const DEPTH_RANGES = [
 
 // Calculate patch thickness based on depth, pipe size, and defect type (RSM/WRc guidelines)
 const calculatePatchThickness = (depthRange: string, pipeSize?: string, defects?: string): string => {
-  if (!depthRange) return "double skin patch"; // Default when no depth specified
+  if (!depthRange) return "standard patch"; // Default when no depth specified
   
   const depth = depthRange.toLowerCase();
   const pipeSizeNum = pipeSize ? parseFloat(pipeSize.replace('mm', '')) : 0;
@@ -773,7 +773,7 @@ export default function RepairPricing() {
                         // Update pipe size in description
                         updatedDescription = currentDesc
                           .replace(/\d+mm/g, value) // Replace pipe size
-                          .replace(/single skin patch|standard patch|double skin patch/g, newPatchThickness); // Update patch thickness
+                          .replace(/single skin patch|standard patch|double skin patch|triple layer patch/g, newPatchThickness); // Update patch thickness
                       }
                       
                       setFormData({ ...formData, pipeSize: value, description: updatedDescription });
