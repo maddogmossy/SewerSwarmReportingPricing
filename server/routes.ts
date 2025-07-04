@@ -1435,7 +1435,14 @@ export async function registerRoutes(app: Express) {
 
   app.post("/api/repair-pricing", async (req: Request, res: Response) => {
     try {
-      const { sector, workCategoryId, repairMethodId, pipeSize, depth, description, cost, rule, minimumQuantity } = req.body;
+      const { sector, workCategoryId, repairMethodId, pipeSize, depth, description, selectedOption, option1Cost, option2Cost, option3Cost, option4Cost, rule } = req.body;
+      
+      // Get the cost from the selected option
+      let cost = "0";
+      if (selectedOption === "1") cost = option1Cost || "0";
+      else if (selectedOption === "2") cost = option2Cost || "0";
+      else if (selectedOption === "3") cost = option3Cost || "0";
+      else if (selectedOption === "4") cost = option4Cost || "0";
       
       const [newPricing] = await db.insert(repairPricing).values({
         userId: "test-user",
@@ -1445,9 +1452,9 @@ export async function registerRoutes(app: Express) {
         pipeSize,
         depth,
         description,
-        cost: cost.toString(),
+        cost: cost,
         rule,
-        minimumQuantity: parseInt(minimumQuantity) || 1,
+        minimumQuantity: 1,
       }).returning();
       
       res.json(newPricing);

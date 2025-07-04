@@ -167,9 +167,7 @@ export default function RepairPricing() {
     option4Cost: "",
     selectedOption: "",
     rule: "",
-    minimumQuantity: "1",
     lengthOfRepair: "1000mm",
-    unitCost: "",
     minInstallationPerDay: "",
     dayRate: "",
     travelTimeAllowance: "2.0"
@@ -285,7 +283,6 @@ export default function RepairPricing() {
             depth: depthRange, // Auto-populate depth from dashboard
             description: description,
             lengthOfRepair: "1000mm",
-            unitCost: "",
             minInstallationPerDay: "",
             dayRate: "800.00",
             travelTimeAllowance: "2.0",
@@ -467,9 +464,7 @@ export default function RepairPricing() {
       option4Cost: "",
       selectedOption: "",
       rule: "",
-      minimumQuantity: "1",
       lengthOfRepair: "1000mm",
-      unitCost: "",
       minInstallationPerDay: "",
       dayRate: "",
       travelTimeAllowance: "2.0"
@@ -484,8 +479,11 @@ export default function RepairPricing() {
     
     const baseData = {
       ...formData,
-      cost: parseFloat(formData.cost),
-      minimumQuantity: parseInt(formData.minimumQuantity)
+      selectedOption: formData.selectedOption,
+      option1Cost: formData.option1Cost,
+      option2Cost: formData.option2Cost,
+      option3Cost: formData.option3Cost,
+      option4Cost: formData.option4Cost
     };
 
     if (editingItem) {
@@ -512,8 +510,7 @@ export default function RepairPricing() {
             pricing.workCategoryId === editingItem.workCategoryId &&
             pricing.pipeSize === editingItem.pipeSize &&
             pricing.depth === editingItem.depth &&
-            pricing.cost === editingItem.cost &&
-            pricing.minimumQuantity === editingItem.minimumQuantity
+            pricing.cost === editingItem.cost
           );
           
           if (matchingRule) {
@@ -579,8 +576,7 @@ export default function RepairPricing() {
         pricing.workCategoryId === item.workCategoryId &&
         pricing.pipeSize === item.pipeSize &&
         pricing.depth === item.depth &&
-        pricing.cost === item.cost &&
-        pricing.minimumQuantity === item.minimumQuantity
+        pricing.cost === item.cost
       );
       
       if (hasMatching) {
@@ -607,14 +603,16 @@ export default function RepairPricing() {
       pipeSize: item.pipeSize,
       depth: item.depth || "",
       description: item.description || "",
-      cost: item.cost.toString(),
       rule: item.rule || "",
-      minimumQuantity: item.minimumQuantity?.toString() || "1",
       lengthOfRepair: item.lengthOfRepair || "1000mm",
-      unitCost: item.unitCost?.toString() || "",
       minInstallationPerDay: item.minInstallationPerDay?.toString() || "",
       dayRate: item.dayRate?.toString() || "",
-      travelTimeAllowance: item.travelTimeAllowance?.toString() || "2.0"
+      travelTimeAllowance: item.travelTimeAllowance?.toString() || "2.0",
+      option1Cost: item.option1Cost?.toString() || "",
+      option2Cost: item.option2Cost?.toString() || "",
+      option3Cost: item.option3Cost?.toString() || "",
+      option4Cost: item.option4Cost?.toString() || "",
+      selectedOption: item.selectedOption || ""
     });
     
     // Pre-select sectors that already have this pricing rule
@@ -820,11 +818,6 @@ export default function RepairPricing() {
                           {item.rule && (
                             <div className="text-xs p-2 bg-yellow-50 border border-yellow-200 rounded">
                               <span className="font-medium">Rule:</span> {item.rule}
-                              {item.minimumQuantity > 1 && (
-                                <span className="ml-2 text-yellow-700">
-                                  (Min: {item.minimumQuantity})
-                                </span>
-                              )}
                             </div>
                           )}
                         </div>
@@ -1062,28 +1055,14 @@ export default function RepairPricing() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="minimumQuantity">Min Quantity</Label>
-                  <Input
-                    id="minimumQuantity"
-                    type="number"
-                    min="1"
-                    value={formData.minimumQuantity}
-                    onChange={(e) => setFormData({ ...formData, minimumQuantity: e.target.value })}
-                    required
+              <div>
+                <Label htmlFor="selectedOption">Selected Option</Label>
+                <Input
+                  id="selectedOption"
+                  value={formData.selectedOption || "Auto-selected based on description"}
+                  readOnly
+                  className="bg-gray-50"
                   />
-                </div>
-                
-                <div>
-                  <Label htmlFor="selectedOption">Selected Option</Label>
-                  <Input
-                    id="selectedOption"
-                    value={formData.selectedOption || "Auto-selected based on description"}
-                    readOnly
-                    className="bg-gray-50"
-                  />
-                </div>
               </div>
 
 
@@ -1423,16 +1402,7 @@ export default function RepairPricing() {
                   </Select>
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium">Unit Cost per Patch (£)</label>
-                  <input
-                    type="text"
-                    value={formData.unitCost}
-                    onChange={(e) => setFormData({...formData, unitCost: e.target.value})}
-                    className="w-full mt-1 p-2 border rounded-md"
-                    placeholder="450.00"
-                  />
-                </div>
+
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -1471,16 +1441,7 @@ export default function RepairPricing() {
                   />
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium">Minimum Quantity</label>
-                  <input
-                    type="text"
-                    value={formData.minimumQuantity}
-                    onChange={(e) => setFormData({...formData, minimumQuantity: e.target.value})}
-                    className="w-full mt-1 p-2 border rounded-md"
-                    placeholder="1"
-                  />
-                </div>
+
               </div>
 
 
