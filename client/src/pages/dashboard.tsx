@@ -573,8 +573,18 @@ export default function Dashboard() {
           if (!autoCost) {
             return (
               <RepairOptionsPopover 
-                section={section} 
-                uploadSector={currentUpload?.sector || 'utilities'}
+                sectionData={{
+                  pipeSize: section.pipeSize || '150mm',
+                  sector: currentSector.id,
+                  recommendations: section.recommendations || '',
+                  defects: section.defects || '',
+                  itemNo: section.itemNo,
+                  pipeMaterial: section.pipeMaterial
+                }}
+                onPricingNeeded={(method: string, pipeSize: string, sector: string) => {
+                  // Navigate to pricing configuration
+                  window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
+                }}
               >
                 <div className="flex items-center justify-center cursor-pointer hover:bg-orange-50 p-1 rounded" title="Click to configure pricing for this repair type">
                   <TriangleAlert className="h-4 w-4 text-orange-500 hover:text-orange-600" />
