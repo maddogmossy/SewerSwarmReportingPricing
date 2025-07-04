@@ -100,6 +100,8 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
   });
 
   const handleOptionClick = (option: RepairOption) => {
+    console.log('Repair option clicked:', option.name, 'configured:', option.configured);
+    
     if (!option.configured) {
       // Navigate to sector-specific pricing configuration page
       const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
@@ -131,6 +133,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
       });
       
       // Navigate to the sector-specific pricing page
+      console.log('About to navigate to:', `/repair-pricing/${sector}?${params.toString()}`);
       window.location.href = `/repair-pricing/${sector}?${params.toString()}`;
     }
     setIsOpen(false);
