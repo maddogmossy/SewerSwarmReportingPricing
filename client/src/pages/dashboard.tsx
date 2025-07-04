@@ -39,6 +39,35 @@ import {
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
 
+// Calculate depth range from MH depths for pricing calculations
+const calculateDepthRangeFromMHDepths = (startDepth: string, finishDepth: string): string => {
+  // Handle 'no data recorded' or empty values
+  if (!startDepth || !finishDepth || 
+      startDepth === 'no data recorded' || finishDepth === 'no data recorded' ||
+      startDepth === 'Not Specified' || finishDepth === 'Not Specified') {
+    return "";
+  }
+  
+  // Extract numeric values from depth strings (e.g., "2.5m" -> 2.5)
+  const startNumeric = parseFloat(startDepth.replace(/[^0-9.]/g, ''));
+  const finishNumeric = parseFloat(finishDepth.replace(/[^0-9.]/g, ''));
+  
+  if (isNaN(startNumeric) || isNaN(finishNumeric)) {
+    return "";
+  }
+  
+  // Get the average depth for pipe level calculation
+  const avgDepth = (startNumeric + finishNumeric) / 2;
+  
+  // Return appropriate depth range based on industry standards
+  if (avgDepth <= 1) return "0-1m";
+  if (avgDepth <= 2) return "1-2m"; 
+  if (avgDepth <= 3) return "2-3m";
+  if (avgDepth <= 4) return "3-4m";
+  if (avgDepth <= 5) return "4-5m";
+  return "5m+";
+};
+
 
 const sectors = [
   {
@@ -496,7 +525,7 @@ export default function Dashboard() {
                 defects: section.defects,
                 itemNo: section.itemNo,
                 pipeMaterial: section.pipeMaterial,
-                pipeDepth: section.pipeDepth
+                pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth)
               }}
               onPricingNeeded={(method, pipeSize, sector) => {
                 window.location.href = `/repair-pricing/${sector}`;

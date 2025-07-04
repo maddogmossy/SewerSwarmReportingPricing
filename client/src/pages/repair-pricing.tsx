@@ -37,6 +37,28 @@ const DEPTH_RANGES = [
   "0-1m", "1-2m", "2-3m", "3-4m", "4-5m", "5m+"
 ];
 
+// Calculate patch thickness based on depth and industry standards (RSM/WRc guidelines)
+const calculatePatchThickness = (depthRange: string): string => {
+  if (!depthRange) return "double skin patch"; // Default when no depth specified
+  
+  const depth = depthRange.toLowerCase();
+  
+  // Industry standard patch thickness based on depth:
+  // 0-2m: Single skin patch (lighter load, easier access)
+  // 2-4m: Standard patch (moderate load)
+  // 4m+: Double skin patch (heavy load, deep excavation requirements)
+  
+  if (depth.includes("0-1m") || depth.includes("1-2m")) {
+    return "single skin patch";
+  } else if (depth.includes("2-3m") || depth.includes("3-4m")) {
+    return "standard patch";
+  } else if (depth.includes("4-5m") || depth.includes("5m+")) {
+    return "double skin patch";
+  }
+  
+  return "double skin patch"; // Default for any unrecognized depth
+};
+
 const SECTORS = [
   { id: 'utilities', name: 'Utilities', color: 'blue' },
   { id: 'adoption', name: 'Adoption', color: 'green' },
@@ -163,8 +185,14 @@ export default function RepairPricing() {
       if (matchingCategory) {
         console.log('Found matching category:', matchingCategory.name);
         
-        // Create description from URL parameters
-        const description = `To install a ${pipeSize}mm patch at ${meterage?.replace('m', '')}mtrs for ${defects} (Item No: ${itemNo})`;
+        // Calculate depth range from dashboard MH depths or use pipeDepth parameter
+        const depthRange = pipeDepth || ""; // Use depth from dashboard if available
+        const patchThickness = calculatePatchThickness(depthRange);
+        
+        // Create description with patch thickness based on depth
+        const description = depthRange 
+          ? `To install a ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs (depth: ${depthRange}) for ${defects}`
+          : `To install a ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs for ${defects}`;
         
         // Set form data and open dialog
         setTimeout(() => {
@@ -172,6 +200,7 @@ export default function RepairPricing() {
             ...prev,
             workCategoryId: matchingCategory.id.toString(),
             pipeSize: pipeSize ? `${pipeSize}mm` : prev.pipeSize,
+            depth: depthRange, // Auto-populate depth from dashboard
             description: description,
             lengthOfRepair: "1000mm",
             unitCost: "",
@@ -721,7 +750,34 @@ export default function RepairPricing() {
                   <Label htmlFor="depth">Depth (optional)</Label>
                   <Select
                     value={formData.depth}
-                    onValueChange={(value) => setFormData({ ...formData, depth: value })}
+                    onValueChange={(value) => {
+                      // Update depth and recalculate description with patch thickness
+                      const newPatchThickness = calculatePatchThickness(value);
+                      const currentDesc = formData.description;
+                      
+                      // Update patch thickness in description if it contains patch-related terms
+                      let updatedDescription = currentDesc;
+                      if (currentDesc.includes('patch') || currentDesc.includes('To install')) {
+                        // Replace any existing patch thickness terms with new calculation
+                        updatedDescription = currentDesc
+                          .replace(/single skin patch|standard patch|double skin patch/g, newPatchThickness)
+                          .replace(/\(depth: [^)]*\)/g, value ? `(depth: ${value})` : '');
+                        
+                        // If no depth info was in description but value is provided, add it
+                        if (value && !currentDesc.includes('(depth:')) {
+                          updatedDescription = updatedDescription.replace(
+                            /(patch at [^)]*)/,
+                            `$1 (depth: ${value})`
+                          );
+                        }
+                      }
+                      
+                      setFormData({ 
+                        ...formData, 
+                        depth: value,
+                        description: updatedDescription
+                      });
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Depth" />
