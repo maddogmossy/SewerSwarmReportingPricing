@@ -50,6 +50,10 @@ export default function RepairPricing() {
   const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<any>(null);
+  const [sectorWarningOpen, setSectorWarningOpen] = useState(false);
+  const [pendingSectorChange, setPendingSectorChange] = useState<{sectorId: string, checked: boolean} | null>(null);
   const [formData, setFormData] = useState({
     workCategoryId: "",
     pipeSize: "",
@@ -317,14 +321,9 @@ export default function RepairPricing() {
   const handleSectorCheckboxChange = (sectorId: string, checked: boolean) => {
     if (!checked && originalApplySectors.includes(sectorId)) {
       // User is trying to uncheck a sector that originally had this pricing
-      const sectorName = SECTORS.find(s => s.id === sectorId)?.name;
-      const shouldRemove = confirm(
-        `This will remove pricing from the ${sectorName} sector. Are you sure?`
-      );
-      
-      if (!shouldRemove) {
-        return; // Don't update if user cancels
-      }
+      setPendingSectorChange({ sectorId, checked });
+      setSectorWarningOpen(true);
+      return;
     }
     
     setApplySectors(prev => 
@@ -334,9 +333,28 @@ export default function RepairPricing() {
     );
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this pricing configuration?")) {
-      deletePricing.mutate(id);
+  const confirmSectorChange = () => {
+    if (pendingSectorChange) {
+      setApplySectors(prev => 
+        pendingSectorChange.checked 
+          ? [...prev, pendingSectorChange.sectorId]
+          : prev.filter(id => id !== pendingSectorChange.sectorId)
+      );
+      setSectorWarningOpen(false);
+      setPendingSectorChange(null);
+    }
+  };
+
+  const handleDelete = (item: any) => {
+    setItemToDelete(item);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      deletePricing.mutate(itemToDelete.id);
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
     }
   };
 
@@ -447,7 +465,7 @@ export default function RepairPricing() {
                                     <Edit className="h-3 w-3" />
                                   </button>
                                   <button
-                                    onClick={() => handleDelete(item.id)}
+                                    onClick={() => handleDelete(item)}
                                     className="p-1 hover:bg-red-100 rounded"
                                   >
                                     <Trash2 className="h-3 w-3 text-red-600" />
@@ -647,6 +665,78 @@ export default function RepairPricing() {
                 </Button>
               </DialogFooter>
             </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+                Delete Pricing Configuration
+              </DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this pricing configuration?
+                {itemToDelete && (
+                  <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
+                    <strong>{itemToDelete.description}</strong> - {itemToDelete.pipeSize} - £{itemToDelete.cost}
+                  </div>
+                )}
+                This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setDeleteDialogOpen(false)}
+                disabled={deletePricing.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmDelete}
+                disabled={deletePricing.isPending}
+              >
+                {deletePricing.isPending ? 'Deleting...' : 'Delete'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Sector Removal Warning Dialog */}
+        <Dialog open={sectorWarningOpen} onOpenChange={setSectorWarningOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-amber-600" />
+                Remove Sector Pricing
+              </DialogTitle>
+              <DialogDescription>
+                {pendingSectorChange && (
+                  <>
+                    This will remove pricing from the <strong>{SECTORS.find(s => s.id === pendingSectorChange.sectorId)?.name}</strong> sector. 
+                    <br />
+                    Are you sure you want to continue?
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setSectorWarningOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmSectorChange}
+              >
+                Remove Sector
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
