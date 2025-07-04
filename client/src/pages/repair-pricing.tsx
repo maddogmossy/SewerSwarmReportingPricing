@@ -774,6 +774,12 @@ export default function RepairPricing() {
                         updatedDescription = currentDesc
                           .replace(/\d+mm/g, value) // Replace pipe size
                           .replace(/single skin patch|standard patch|double skin patch|triple layer patch/g, newPatchThickness); // Update patch thickness
+                      } else if (currentDesc) {
+                        // If no patch terms but description exists, try to add patch info
+                        updatedDescription = currentDesc + ` - ${newPatchThickness} at ${value}`;
+                      } else {
+                        // If no description at all, create one
+                        updatedDescription = `To install a ${newPatchThickness} at ${value}`;
                       }
                       
                       setFormData({ ...formData, pipeSize: value, description: updatedDescription });
@@ -821,6 +827,12 @@ export default function RepairPricing() {
                             `$1 (depth: ${value})`
                           );
                         }
+                      } else if (currentDesc && value) {
+                        // If no patch terms but description exists, try to add patch info
+                        updatedDescription = currentDesc + ` - ${newPatchThickness} (depth: ${value})`;
+                      } else if (value) {
+                        // If no description at all but depth is selected, create one
+                        updatedDescription = `To install a ${newPatchThickness} (depth: ${value})`;
                       }
                       
                       setFormData({ 
