@@ -245,6 +245,21 @@ export const repairPricing = pgTable("repair_pricing", {
   cost: varchar("cost").notNull(), // Store as string to avoid decimal precision issues
   rule: text("rule"), // "Rate based on min of 4 patches"
   minimumQuantity: integer("minimum_quantity").default(1),
+  // Option costs for different patch types
+  option1Cost: varchar("option1_cost"), // Single layer cost
+  option2Cost: varchar("option2_cost"), // Double layer cost  
+  option3Cost: varchar("option3_cost"), // Triple layer cost
+  option4Cost: varchar("option4_cost"), // Triple layer with extra cure time
+  selectedOption: varchar("selected_option"), // Which option was selected
+  // Per shift rates
+  option1PerShift: varchar("option1_per_shift"),
+  option2PerShift: varchar("option2_per_shift"), 
+  option3PerShift: varchar("option3_per_shift"),
+  option4PerShift: varchar("option4_per_shift"),
+  // Length and installation settings
+  lengthOfRepair: varchar("length_of_repair").default("1000mm"),
+  minInstallationPerDay: varchar("min_installation_per_day"),
+  travelTimeAllowance: varchar("travel_time_allowance").default("2.0"),
   // Travel and crew pricing fields
   travelIncludedHours: decimal("travel_included_hours", { precision: 4, scale: 2 }).default("0.00"), // Hours of travel included in base cost
   additionalTravelRate: decimal("additional_travel_rate", { precision: 8, scale: 2 }).default("0.00"), // Cost per additional travel hour

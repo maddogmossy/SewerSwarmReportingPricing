@@ -675,7 +675,7 @@ export default function RepairPricing() {
       dayRate: item.dayRate?.toString() || "",
       travelTimeAllowance: item.travelTimeAllowance?.toString() || "2.0",
       option1Cost: item.option1Cost?.toString() || "N/A",
-      option2Cost: item.option2Cost?.toString() || item.cost?.toString() || "",
+      option2Cost: item.option2Cost?.toString() || "",
       option3Cost: item.option3Cost?.toString() || "",
       option4Cost: item.option4Cost?.toString() || "",
       option1PerShift: item.option1PerShift?.toString() || "",

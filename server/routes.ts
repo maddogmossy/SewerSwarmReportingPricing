@@ -1410,6 +1410,22 @@ export async function registerRoutes(app: Express) {
         cost: repairPricing.cost,
         rule: repairPricing.rule,
         minimumQuantity: repairPricing.minimumQuantity,
+        // Include new option cost fields
+        option1Cost: repairPricing.option1Cost,
+        option2Cost: repairPricing.option2Cost,
+        option3Cost: repairPricing.option3Cost,
+        option4Cost: repairPricing.option4Cost,
+        selectedOption: repairPricing.selectedOption,
+        // Include per shift rates
+        option1PerShift: repairPricing.option1PerShift,
+        option2PerShift: repairPricing.option2PerShift,
+        option3PerShift: repairPricing.option3PerShift,
+        option4PerShift: repairPricing.option4PerShift,
+        // Include other fields
+        lengthOfRepair: repairPricing.lengthOfRepair,
+        minInstallationPerDay: repairPricing.minInstallationPerDay,
+        dayRate: repairPricing.dayRate,
+        travelTimeAllowance: repairPricing.travelTimeAllowance,
         categoryName: workCategories.name,
         categoryDescription: workCategories.description,
         methodName: repairMethods.name,
@@ -1435,7 +1451,13 @@ export async function registerRoutes(app: Express) {
 
   app.post("/api/repair-pricing", async (req: Request, res: Response) => {
     try {
-      const { sector, workCategoryId, repairMethodId, pipeSize, depth, description, selectedOption, option1Cost, option2Cost, option3Cost, option4Cost, rule } = req.body;
+      const { 
+        sector, workCategoryId, repairMethodId, pipeSize, depth, description, 
+        selectedOption, option1Cost, option2Cost, option3Cost, option4Cost, 
+        option1PerShift, option2PerShift, option3PerShift, option4PerShift,
+        lengthOfRepair, minInstallationPerDay, dayRate, travelTimeAllowance,
+        rule 
+      } = req.body;
       
       // Get the cost from the selected option - handle frontend text format
       let cost = req.body.cost || "0"; // Use cost field directly from frontend
@@ -1448,6 +1470,7 @@ export async function registerRoutes(app: Express) {
         option2Cost,
         option3Cost,
         option4Cost,
+        dayRate,
         finalCost: cost
       });
       
@@ -1462,6 +1485,23 @@ export async function registerRoutes(app: Express) {
         cost: cost,
         rule,
         minimumQuantity: 1,
+        // Save all option costs
+        option1Cost: option1Cost || null,
+        option2Cost: option2Cost || null,
+        option3Cost: option3Cost || null,
+        option4Cost: option4Cost || null,
+        selectedOption: selectedOption || null,
+        // Save per shift rates
+        option1PerShift: option1PerShift || null,
+        option2PerShift: option2PerShift || null,
+        option3PerShift: option3PerShift || null,
+        option4PerShift: option4PerShift || null,
+        // Save other fields
+        lengthOfRepair: lengthOfRepair || "1000mm",
+        minInstallationPerDay: minInstallationPerDay || null,
+        travelTimeAllowance: travelTimeAllowance || "2.0",
+        // Save day rate if provided
+        dayRate: dayRate ? dayRate.toString() : "0.00",
       }).returning();
       
       res.json(newPricing);
@@ -1474,7 +1514,13 @@ export async function registerRoutes(app: Express) {
   app.put("/api/repair-pricing/:id", async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const { sector, workCategoryId, repairMethodId, pipeSize, depth, description, cost, rule, minimumQuantity } = req.body;
+      const { 
+        sector, workCategoryId, repairMethodId, pipeSize, depth, description, 
+        cost, rule, minimumQuantity,
+        option1Cost, option2Cost, option3Cost, option4Cost, selectedOption,
+        option1PerShift, option2PerShift, option3PerShift, option4PerShift,
+        lengthOfRepair, minInstallationPerDay, dayRate, travelTimeAllowance
+      } = req.body;
       
       const [updatedPricing] = await db.update(repairPricing)
         .set({
@@ -1484,9 +1530,26 @@ export async function registerRoutes(app: Express) {
           pipeSize,
           depth,
           description,
-          cost: cost.toString(),
+          cost: cost?.toString() || "0",
           rule,
           minimumQuantity: parseInt(minimumQuantity) || 1,
+          // Update all option costs
+          option1Cost: option1Cost || null,
+          option2Cost: option2Cost || null,
+          option3Cost: option3Cost || null,
+          option4Cost: option4Cost || null,
+          selectedOption: selectedOption || null,
+          // Update per shift rates
+          option1PerShift: option1PerShift || null,
+          option2PerShift: option2PerShift || null,
+          option3PerShift: option3PerShift || null,
+          option4PerShift: option4PerShift || null,
+          // Update other fields
+          lengthOfRepair: lengthOfRepair || "1000mm",
+          minInstallationPerDay: minInstallationPerDay || null,
+          travelTimeAllowance: travelTimeAllowance || "2.0",
+          // Update day rate if provided
+          dayRate: dayRate ? dayRate.toString() : "0.00",
           updatedAt: new Date(),
         })
         .where(and(eq(repairPricing.id, parseInt(id)), eq(repairPricing.userId, "test-user")))
