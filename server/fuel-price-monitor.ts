@@ -122,6 +122,19 @@ export class FuelPriceMonitor {
     return weight >= 3.5 ? 'diesel' : 'petrol';
   }
 
+  // Get category-based assistant requirements
+  private static getVehicleCategory(vehicleType: string): 'van_pack' | 'cctv' | 'jet_vac' | 'patching' | 'combination' | 'standard' {
+    const type = vehicleType.toLowerCase();
+    
+    if (type.includes('van pack') || type.includes('van-pack')) return 'van_pack';
+    if (type.includes('cctv') || type.includes('survey')) return 'cctv';
+    if (type.includes('jet vac') || type.includes('jet-vac') || type.includes('jetting')) return 'jet_vac';
+    if (type.includes('patch') || type.includes('repair')) return 'patching';
+    if (type.includes('combination') || type.includes('combi')) return 'combination';
+    
+    return 'standard';
+  }
+
   // Get default values for new vehicle setup
   static async getDefaultVehicleSettings(vehicleType: string): Promise<{
     fuelType: 'diesel' | 'petrol';
@@ -132,6 +145,8 @@ export class FuelPriceMonitor {
     hasAssistant: boolean;
     assistantWagePerHour: number;
     autoUpdateFuelPrice: boolean;
+    workCategory: string;
+    assistantReason: string;
   }> {
     const currentPrices = await this.getCurrentFuelPrices();
     const fuelType = this.getFuelTypeForVehicle(vehicleType);
@@ -140,38 +155,78 @@ export class FuelPriceMonitor {
     // Set realistic fuel consumption based on vehicle type
     const weightMatch = vehicleType.match(/(\d+(?:\.\d+)?)[t]/i);
     const weight = weightMatch ? parseFloat(weightMatch[1]) : 3.5;
+    const category = this.getVehicleCategory(vehicleType);
     
     let fuelConsumptionMpg: number;
     let driverWagePerHour: number;
     let vehicleRunningCostPerMile: number;
     let hasAssistant: boolean;
     let assistantWagePerHour: number;
+    let workCategory: string;
+    let assistantReason: string;
     
-    // Realistic MPG and assistant requirements based on vehicle size
+    // Category-based assistant requirements
+    switch (category) {
+      case 'van_pack':
+        hasAssistant = false;
+        assistantWagePerHour = 0;
+        workCategory = 'CCTV Survey';
+        assistantReason = 'Van Pack units are designed for single operator use';
+        break;
+        
+      case 'cctv':
+        hasAssistant = weight > 7.5; // Large CCTV units need assistant for equipment handling
+        assistantWagePerHour = hasAssistant ? 12.50 : 0;
+        workCategory = 'CCTV Survey';
+        assistantReason = hasAssistant ? 'Large CCTV equipment requires assistant for cable handling and monitoring' : 'Standard CCTV operation - single operator';
+        break;
+        
+      case 'jet_vac':
+        hasAssistant = true; // Jet Vac always needs assistant for safety and efficiency
+        assistantWagePerHour = 12.50;
+        workCategory = 'Jetting & Cleaning';
+        assistantReason = 'Jet Vac operations require assistant for hose management and safety monitoring';
+        break;
+        
+      case 'patching':
+        hasAssistant = weight > 12; // Large patching units need assistant for equipment setup
+        assistantWagePerHour = hasAssistant ? 12.50 : 0;
+        workCategory = 'Patching & Repair';
+        assistantReason = hasAssistant ? 'Large patching equipment requires assistant for liner installation and curing setup' : 'Standard patching - single operator';
+        break;
+        
+      case 'combination':
+        hasAssistant = true; // Combination units always need assistant due to complexity
+        assistantWagePerHour = 12.50;
+        workCategory = 'Multi-Service';
+        assistantReason = 'Combination units require assistant for multi-service operations and equipment coordination';
+        break;
+        
+      default: // standard
+        hasAssistant = weight > 18; // Only very large standard vehicles need assistant
+        assistantWagePerHour = hasAssistant ? 12.50 : 0;
+        workCategory = 'General';
+        assistantReason = hasAssistant ? 'Large vehicle operations require assistant for safety and efficiency' : 'Standard single operator vehicle';
+        break;
+    }
+    
+    // Vehicle size-based specifications
     if (weight <= 3.5) {
       fuelConsumptionMpg = 30; // Small van
       driverWagePerHour = 15.50; // Standard van driver wage
       vehicleRunningCostPerMile = 0.45; // Van running costs
-      hasAssistant = false;
-      assistantWagePerHour = 0;
     } else if (weight <= 7.5) {
       fuelConsumptionMpg = 25; // Medium truck
       driverWagePerHour = 16.50; // Medium truck driver wage
       vehicleRunningCostPerMile = 0.65; // Medium truck running costs
-      hasAssistant = false;
-      assistantWagePerHour = 0;
     } else if (weight <= 18) {
       fuelConsumptionMpg = 12; // Large truck
       driverWagePerHour = 18.00; // HGV driver wage
       vehicleRunningCostPerMile = 1.20; // Large truck running costs
-      hasAssistant = true; // Larger vehicles often need assistant
-      assistantWagePerHour = 12.50; // UK minimum wage for assistant
     } else {
       fuelConsumptionMpg = 8; // Very large truck
       driverWagePerHour = 20.00; // Large HGV driver wage
       vehicleRunningCostPerMile = 1.80; // Very large truck running costs
-      hasAssistant = true;
-      assistantWagePerHour = 12.50;
     }
     
     return {
@@ -182,7 +237,9 @@ export class FuelPriceMonitor {
       vehicleRunningCostPerMile,
       hasAssistant,
       assistantWagePerHour,
-      autoUpdateFuelPrice: true // Default to enabling automatic fuel price updates
+      autoUpdateFuelPrice: true, // Default to enabling automatic fuel price updates
+      workCategory,
+      assistantReason
     };
   }
 }

@@ -118,6 +118,27 @@ const vehicleTravelRateSchema = z.object({
 type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
 
 const vehicleTypes = [
+  // CCTV Vehicles
+  "3.5t Van Pack",
+  "7.5t CCTV Survey",
+  "12t CCTV Unit",
+  
+  // Jetting Vehicles  
+  "7.5t Jet Vac",
+  "18t Jet Vac",
+  "26t Jet Vac",
+  
+  // Patching Vehicles
+  "3.5t Patch Repair",
+  "7.5t Patching Unit", 
+  "12t Patching Unit",
+  
+  // Combination Vehicles
+  "18t Combination Unit",
+  "26t Combination Unit",
+  "32t Combination Unit",
+  
+  // Standard Vehicles
   "3.5t Van",
   "5t Van", 
   "7.5t Truck",
@@ -303,9 +324,15 @@ export function CustomerSettings() {
           vehicleForm.setValue('autoUpdateFuelPrice', defaults.autoUpdateFuelPrice || false);
           
           console.log('All form values set successfully');
+          
+          // Show enhanced toast with work category and assistant reasoning
+          const assistantInfo = defaults.hasAssistant 
+            ? `Assistant required: ${defaults.assistantReason}`
+            : `Single operator: ${defaults.assistantReason}`;
+            
           toast({
             title: "Auto-populated",
-            description: `Default values loaded for ${vehicleType}`,
+            description: `${defaults.workCategory} vehicle configured. ${assistantInfo}`,
           });
         } catch (error) {
           console.error('Error setting form values:', error);
