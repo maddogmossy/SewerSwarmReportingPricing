@@ -38,8 +38,6 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
   
-  console.log('RepairOptionsPopover rendered with:', { sectionData, isOpen });
-  
   // Extract meterage from defects text
   const extractMeterage = (defectsText: string): string => {
     if (!defectsText) return "0.00m";
@@ -77,13 +75,6 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     queryKey: [`/api/repair-pricing/${sectionData.sector}`],
     enabled: isOpen && repairMethods.length > 0,
     select: (pricingData) => {
-      console.log('RepairOptionsPopover - Debug data:', {
-        pricingData: pricingData,
-        repairMethods: repairMethods,
-        sectionPipeSize: sectionData.pipeSize,
-        sector: sectionData.sector
-      });
-      
       return repairMethods.map((method: any) => {
         // Try multiple matching strategies - but ONLY for exact matches
         let pricing = pricingData.find((p: any) => 
@@ -109,15 +100,6 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
         
         // Do NOT use fallback matching by pipe size alone - this was causing all options to show as configured
         
-        console.log(`Method ${method.name} (ID: ${method.id}) pricing match:`, {
-          pricing: pricing,
-          hasPricing: !!pricing,
-          matchedBy: pricing ? 
-            (pricing.repairMethodId === method.id ? 'methodId' : 
-             pricing.methodName === method.name ? 'methodName' :
-             pricing.categoryName === method.name ? 'categoryName' : 'pipeSize') : 'none'
-        });
-        
         const option = {
           id: pricing ? pricing.id : method.id, // Use pricing ID if configured, method ID if not
           name: method.name,
@@ -133,13 +115,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
             `Add pricing for ${sectionData.pipeSize} ${method.name.toLowerCase()}`
         };
         
-        console.log(`Final option for ${method.name}:`, {
-          configured: option.configured,
-          cost: option.cost,
-          rule: option.rule,
-          minimumQuantity: option.minimumQuantity,
-          hasPricingObject: !!pricing
-        });
+
         
         return option;
       });
@@ -147,7 +123,6 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
   });
 
   const handleOptionClick = (option: RepairOption) => {
-    console.log('Repair option clicked:', option.name, 'configured:', option.configured);
     
     // For both configured and unconfigured options, navigate to the pricing page
     const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
@@ -172,22 +147,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
       params.set('editId', option.id.toString());
     }
     
-    console.log('Navigating with params:', {
-      pipeSize,
-      pipeDepth: sectionData.pipeDepth,
-      meterage,
-      autoFocus: option.name.toLowerCase(),
-      itemNo: sectionData.itemNo,
-      defects: sectionData.defects,
-      recommendations: sectionData.recommendations,
-      pipeMaterial: sectionData.pipeMaterial,
-      configured: option.configured,
-      editId: option.configured ? option.id : undefined,
-      url: `/repair-pricing/${sector}?${params.toString()}`
-    });
-    
     // Navigate to the sector-specific pricing page
-    console.log('About to navigate to:', `/repair-pricing/${sector}?${params.toString()}`);
     setLocation(`/repair-pricing/${sector}?${params.toString()}`);
     setIsOpen(false);
   };
