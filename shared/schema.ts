@@ -278,9 +278,19 @@ export const companySettings = pgTable("company_settings", {
   adminUserId: varchar("admin_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   companyName: varchar("company_name").notNull(),
   companyLogo: text("company_logo"), // Base64 or URL
-  address: text("address"),
+  // Detailed address fields
+  streetAddress: text("street_address"),
+  town: varchar("town", { length: 100 }),
+  city: varchar("city", { length: 100 }),
+  county: varchar("county", { length: 100 }),
   postcode: varchar("postcode", { length: 10 }), // Company postcode
+  country: varchar("country", { length: 100 }).default("United Kingdom"),
+  // Contact information
   phoneNumber: varchar("phone_number"),
+  email: varchar("email"),
+  website: varchar("website"),
+  // Legacy address field for backward compatibility
+  address: text("address"),
   emailDomain: varchar("email_domain"), // For auto-assigning team members
   maxUsers: integer("max_users").default(1), // How many users they've paid for
   currentUsers: integer("current_users").default(1), // How many users they currently have
@@ -295,9 +305,18 @@ export const depotSettings = pgTable("depot_settings", {
   adminUserId: varchar("admin_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   depotName: varchar("depot_name").notNull(),
   sameAsCompany: boolean("same_as_company").default(false), // If true, copies company details
-  address: text("address"),
+  // Detailed address fields
+  streetAddress: text("street_address"),
+  town: varchar("town", { length: 100 }),
+  city: varchar("city", { length: 100 }),
+  county: varchar("county", { length: 100 }),
   postcode: varchar("postcode", { length: 10 }).notNull(), // Depot postcode for travel calculations
+  country: varchar("country", { length: 100 }).default("United Kingdom"),
+  // Contact information
   phoneNumber: varchar("phone_number"),
+  email: varchar("email"),
+  // Legacy address field for backward compatibility
+  address: text("address"),
   // Travel calculation settings
   travelRatePerMile: decimal("travel_rate_per_mile", { precision: 10, scale: 2 }).default("0.45"),
   standardTravelTime: decimal("standard_travel_time", { precision: 5, scale: 2 }).default("30.0"),

@@ -46,9 +46,19 @@ interface CompanySettings {
   id: number;
   companyName: string;
   companyLogo?: string;
-  address?: string;
+  // Detailed address fields
+  streetAddress?: string;
+  town?: string;
+  city?: string;
+  county?: string;
   postcode?: string;
+  country?: string;
+  // Contact information
   phoneNumber?: string;
+  email?: string;
+  website?: string;
+  // Legacy field for backward compatibility
+  address?: string;
   maxUsers: number;
   currentUsers: number;
   pricePerUser: string;
@@ -58,9 +68,18 @@ interface DepotSettings {
   id?: number;
   depotName: string;
   sameAsCompany: boolean;
-  address?: string;
+  // Detailed address fields
+  streetAddress?: string;
+  town?: string;
+  city?: string;
+  county?: string;
   postcode: string;
+  country?: string;
+  // Contact information
   phoneNumber?: string;
+  email?: string;
+  // Legacy field for backward compatibility
+  address?: string;
   travelRatePerMile?: string;
   standardTravelTime?: string;
   maxTravelDistance?: string;
@@ -359,9 +378,15 @@ export function CustomerSettings() {
     const formData = new FormData(e.currentTarget);
     const data = {
       companyName: formData.get('companyName') as string,
-      address: formData.get('address') as string,
-      phoneNumber: formData.get('phoneNumber') as string,
+      streetAddress: formData.get('streetAddress') as string,
+      town: formData.get('town') as string,
+      city: formData.get('city') as string,
+      county: formData.get('county') as string,
       postcode: formData.get('postcode') as string,
+      country: formData.get('country') as string,
+      phoneNumber: formData.get('phoneNumber') as string,
+      email: formData.get('email') as string,
+      website: formData.get('website') as string,
     };
     updateCompanyMutation.mutate(data);
   };
@@ -378,9 +403,16 @@ export function CustomerSettings() {
       data = {
         depotName: formData.get('depotName') as string,
         sameAsCompany: true,
-        address: companySettings.address,
+        streetAddress: companySettings.streetAddress,
+        town: companySettings.town,
+        city: companySettings.city,
+        county: companySettings.county,
         postcode: companySettings.postcode || '',
+        country: companySettings.country,
         phoneNumber: companySettings.phoneNumber,
+        email: companySettings.email,
+        // Legacy field for backward compatibility
+        address: companySettings.address,
         travelRatePerMile: formData.get('travelRatePerMile') as string,
         standardTravelTime: formData.get('standardTravelTime') as string,
         maxTravelDistance: formData.get('maxTravelDistance') as string,
@@ -391,9 +423,16 @@ export function CustomerSettings() {
       data = {
         depotName: formData.get('depotName') as string,
         sameAsCompany: false,
-        address: formData.get('address') as string,
+        streetAddress: formData.get('streetAddress') as string,
+        town: formData.get('town') as string,
+        city: formData.get('city') as string,
+        county: formData.get('county') as string,
         postcode: formData.get('postcode') as string,
+        country: formData.get('country') as string,
         phoneNumber: formData.get('phoneNumber') as string,
+        email: formData.get('email') as string,
+        // Legacy field for backward compatibility
+        address: formData.get('address') as string,
         travelRatePerMile: formData.get('travelRatePerMile') as string,
         standardTravelTime: formData.get('standardTravelTime') as string,
         maxTravelDistance: formData.get('maxTravelDistance') as string,
@@ -571,22 +610,44 @@ export function CustomerSettings() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="address">Address</Label>
+                          <Label htmlFor="streetAddress">Street Address</Label>
                           <Input
-                            id="address"
-                            name="address"
-                            defaultValue={companySettings?.address || ''}
+                            id="streetAddress"
+                            name="streetAddress"
+                            defaultValue={companySettings?.streetAddress || ''}
+                            placeholder="e.g. 123 Business Street"
                           />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                           <div>
-                            <Label htmlFor="phoneNumber">Phone Number</Label>
+                            <Label htmlFor="town">Town</Label>
                             <Input
-                              id="phoneNumber"
-                              name="phoneNumber"
-                              defaultValue={companySettings?.phoneNumber || ''}
+                              id="town"
+                              name="town"
+                              defaultValue={companySettings?.town || ''}
+                              placeholder="e.g. Maidenhead"
                             />
                           </div>
+                          <div>
+                            <Label htmlFor="city">City</Label>
+                            <Input
+                              id="city"
+                              name="city"
+                              defaultValue={companySettings?.city || ''}
+                              placeholder="e.g. London"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="county">County</Label>
+                            <Input
+                              id="county"
+                              name="county"
+                              defaultValue={companySettings?.county || ''}
+                              placeholder="e.g. Berkshire"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="postcode">Postcode</Label>
                             <Input
@@ -594,6 +655,44 @@ export function CustomerSettings() {
                               name="postcode"
                               defaultValue={companySettings?.postcode || ''}
                               placeholder="e.g. SW1A 1AA"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="country">Country</Label>
+                            <Input
+                              id="country"
+                              name="country"
+                              defaultValue={companySettings?.country || 'United Kingdom'}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <Label htmlFor="phoneNumber">Phone Number</Label>
+                            <Input
+                              id="phoneNumber"
+                              name="phoneNumber"
+                              defaultValue={companySettings?.phoneNumber || ''}
+                              placeholder="e.g. +44 20 1234 5678"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="email">Email Address</Label>
+                            <Input
+                              id="email"
+                              name="email"
+                              type="email"
+                              defaultValue={companySettings?.email || ''}
+                              placeholder="e.g. info@company.com"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="website">Website</Label>
+                            <Input
+                              id="website"
+                              name="website"
+                              defaultValue={companySettings?.website || ''}
+                              placeholder="e.g. www.company.com"
                             />
                           </div>
                         </div>
@@ -664,25 +763,46 @@ export function CustomerSettings() {
                         {!sameAsCompany && (
                           <div className="space-y-4" id="depot-details">
                             <div>
-                              <Label htmlFor="depot-address">Depot Address</Label>
+                              <Label htmlFor="depot-streetAddress">Street Address</Label>
                               <Input
-                                id="depot-address"
-                                name="address"
-                                defaultValue={depotSettings?.address || ''}
-                                placeholder="Enter depot address if different from company"
+                                id="depot-streetAddress"
+                                name="streetAddress"
+                                defaultValue={depotSettings?.streetAddress || ''}
+                                placeholder="e.g. 456 Industrial Road"
                               />
                             </div>
                             
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                               <div>
-                                <Label htmlFor="depot-phoneNumber">Phone Number</Label>
+                                <Label htmlFor="depot-town">Town</Label>
                                 <Input
-                                  id="depot-phoneNumber"
-                                  name="phoneNumber"
-                                  defaultValue={depotSettings?.phoneNumber || ''}
-                                  placeholder="Depot phone number"
+                                  id="depot-town"
+                                  name="town"
+                                  defaultValue={depotSettings?.town || ''}
+                                  placeholder="e.g. Birmingham"
                                 />
                               </div>
+                              <div>
+                                <Label htmlFor="depot-city">City</Label>
+                                <Input
+                                  id="depot-city"
+                                  name="city"
+                                  defaultValue={depotSettings?.city || ''}
+                                  placeholder="e.g. Birmingham"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="depot-county">County</Label>
+                                <Input
+                                  id="depot-county"
+                                  name="county"
+                                  defaultValue={depotSettings?.county || ''}
+                                  placeholder="e.g. West Midlands"
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <Label htmlFor="depot-postcode">Postcode *</Label>
                                 <Input
@@ -696,6 +816,36 @@ export function CustomerSettings() {
                                   Required for calculating travel time to site locations
                                 </p>
                               </div>
+                              <div>
+                                <Label htmlFor="depot-country">Country</Label>
+                                <Input
+                                  id="depot-country"
+                                  name="country"
+                                  defaultValue={depotSettings?.country || 'United Kingdom'}
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="depot-phoneNumber">Phone Number</Label>
+                                <Input
+                                  id="depot-phoneNumber"
+                                  name="phoneNumber"
+                                  defaultValue={depotSettings?.phoneNumber || ''}
+                                  placeholder="e.g. +44 121 234 5678"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="depot-email">Email Address</Label>
+                                <Input
+                                  id="depot-email"
+                                  name="email"
+                                  type="email"
+                                  defaultValue={depotSettings?.email || ''}
+                                  placeholder="e.g. depot@company.com"
+                                />
+                              </div>
                             </div>
                           </div>
                         )}
@@ -707,13 +857,21 @@ export function CustomerSettings() {
                             </p>
                             <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
-                                <strong>Address:</strong> {companySettings.address || 'Not set'}
+                                <strong>Address:</strong> {[
+                                  companySettings.streetAddress,
+                                  companySettings.town,
+                                  companySettings.city,
+                                  companySettings.county
+                                ].filter(Boolean).join(', ') || 'Not set'}
                               </div>
                               <div>
                                 <strong>Phone:</strong> {companySettings.phoneNumber || 'Not set'}
                               </div>
                               <div>
                                 <strong>Postcode:</strong> {companySettings.postcode || 'Not set'}
+                              </div>
+                              <div>
+                                <strong>Email:</strong> {companySettings.email || 'Not set'}
                               </div>
                             </div>
                             {!companySettings.postcode && (
