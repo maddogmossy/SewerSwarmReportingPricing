@@ -1362,8 +1362,13 @@ export default function RepairPricing() {
                     type="button"
                     variant="outline"
                     onClick={() => {
-                      setIsDescriptionEditable(true);
-                      setIsComplianceWarningOpen(true);
+                      if (editingItem) {
+                        setPendingEditItem(editingItem);
+                        setIsComplianceWarningOpen(true);
+                      } else {
+                        // If no editingItem, just enable editing directly
+                        setIsDescriptionEditable(true);
+                      }
                     }}
                     className="h-10 px-3 text-xs"
                   >
