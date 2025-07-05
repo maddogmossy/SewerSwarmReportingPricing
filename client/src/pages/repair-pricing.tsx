@@ -270,10 +270,11 @@ export default function RepairPricing() {
         const depthRange = pipeDepth || ""; // Use depth from dashboard if available
         const patchThickness = calculatePatchThickness(depthRange, pipeSize, defects);
         
-        // Create description with patch thickness based on depth
+        // Create description with patch thickness and length based on depth
+        const patchLength = "1000mm"; // Default patch length (will be updated based on Length of Repair field)
         const description = depthRange 
-          ? `To install a ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs (depth: ${depthRange}) for ${defects}`
-          : `To install a ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs for ${defects}`;
+          ? `To install a ${patchLength} x ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs (depth: ${depthRange}) for ${defects}`
+          : `To install a ${patchLength} x ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs for ${defects}`;
         
         // Set rule - removed depth warning
         const rule = "";
@@ -360,6 +361,25 @@ export default function RepairPricing() {
       setFormData(prev => ({ ...prev, selectedOption: optionText }));
     }
   }, [formData.description]);
+
+  // Update description when Length of Repair changes
+  useEffect(() => {
+    if (formData.description && formData.lengthOfRepair && isDescriptionEditable) {
+      // Extract current description parts to rebuild with new length
+      const regex = /To install a (\d+mm) x (\d+mm) (.+?) at (.+?) for (.+)/;
+      const match = formData.description.match(regex);
+      
+      if (match) {
+        const [, , pipeSize, patchType, meterage, defects] = match;
+        const updatedDescription = `To install a ${formData.lengthOfRepair} x ${pipeSize} ${patchType} at ${meterage} for ${defects}`;
+        
+        setFormData(prev => ({
+          ...prev,
+          description: updatedDescription
+        }));
+      }
+    }
+  }, [formData.lengthOfRepair, isDescriptionEditable]);
 
   // Fetch pricing data from all sectors for cross-sector comparison
   const { data: utilitiesPricing = [] } = useQuery({
@@ -638,6 +658,7 @@ export default function RepairPricing() {
     setOriginalApplySectors(matchingSectors); // Track original state
     
     setEditingItem(item);
+    setIsDescriptionEditable(true); // Enable description editing when proceeding with edit
     setIsAddDialogOpen(true);
     setIsComplianceWarningOpen(false);
     setPendingEditItem(null);
