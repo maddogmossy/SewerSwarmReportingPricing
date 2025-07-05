@@ -419,6 +419,8 @@ export default function Dashboard() {
     const currentItemNo = section.itemNo;
     const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
     
+
+    
     // If only one section with this item number, show it as original number
     if (sectionsWithSameItem.length === 1) {
       return currentItemNo.toString();
@@ -437,8 +439,10 @@ export default function Dashboard() {
       
       const meterageA = getMeterageFromDefects(a.defects || "");
       const meterageB = getMeterageFromDefects(b.defects || "");
+
       return meterageA - meterageB; // Sort by ascending meterage
     });
+    
     const index = sortedSections.findIndex(s => s.id === section.id);
     
     if (index === 0) {
