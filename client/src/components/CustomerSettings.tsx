@@ -653,8 +653,10 @@ export function CustomerSettings() {
                                   alt="Company Logo"
                                   className="h-16 w-16 object-contain bg-white border rounded"
                                   onError={(e) => {
-                                    e.currentTarget.style.display = 'none';
-                                    e.currentTarget.nextElementSibling!.style.display = 'block';
+                                    const target = e.currentTarget as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const fallback = target.nextElementSibling as HTMLElement;
+                                    if (fallback) fallback.style.display = 'block';
                                   }}
                                 />
                                 <div style={{ display: 'none' }} className="h-16 w-16 bg-gray-200 border rounded flex items-center justify-center">

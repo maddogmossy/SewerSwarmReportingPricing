@@ -1,4 +1,4 @@
-import { type Express, type Request, type Response } from "express";
+import express, { type Express, type Request, type Response } from "express";
 import { createServer } from "http";
 import multer from "multer";
 import path from "path";
@@ -2308,6 +2308,9 @@ export async function registerRoutes(app: Express) {
       res.status(500).json({ error: "Failed to send invitation" });
     }
   });
+
+  // Serve static files for uploaded logos
+  app.use('/uploads', express.static('uploads'));
 
   return server;
 }
