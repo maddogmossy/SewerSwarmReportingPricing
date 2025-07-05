@@ -631,6 +631,8 @@ export default function RepairPricing() {
     const item = pendingEditItem;
     if (!item) return;
 
+    console.log("proceedWithEdit called, setting isDescriptionEditable to true");
+    
     setFormData({
       workCategoryId: item.workCategoryId?.toString() || "",
       pipeSize: item.pipeSize,
@@ -659,6 +661,7 @@ export default function RepairPricing() {
     
     setEditingItem(item);
     setIsDescriptionEditable(true); // Enable description editing when proceeding with edit
+    console.log("Set isDescriptionEditable to true");
     setIsAddDialogOpen(true);
     setIsComplianceWarningOpen(false);
     setPendingEditItem(null);
@@ -1019,11 +1022,18 @@ export default function RepairPricing() {
                   <Input
                     id="description"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={(e) => {
+                      console.log("Description field onChange triggered");
+                      setFormData({ ...formData, description: e.target.value });
+                    }}
                     placeholder="e.g., Standard structural patch repair"
                     className={`pr-8 ${!isDescriptionEditable ? 'bg-gray-100 text-gray-500' : ''}`}
                     disabled={!isDescriptionEditable}
                   />
+                  {/* Debug info */}
+                  <div className="text-xs text-red-500 mt-1">
+                    Debug: isDescriptionEditable = {isDescriptionEditable.toString()}
+                  </div>
                   {formData.description.includes('patch') && (
                     <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
                   )}
