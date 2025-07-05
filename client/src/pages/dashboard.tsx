@@ -828,28 +828,11 @@ export default function Dashboard() {
 
     
     if (Array.isArray(repairPricingData) && repairPricingData.length > 0) {
-      // First, try exact pipe size match
+      // Only use exact pipe size match - no fallback to closest size
+      // This prevents confusion like using 300mm pricing for 225mm pipes
       matchingPricing = repairPricingData.find((pricing: any) => 
         pricing.pipeSize === `${pipeSize}mm`
       );
-      
-      // If no exact match, find the closest pipe size
-      if (!matchingPricing) {
-        const availableSizes = repairPricingData.map((pricing: any) => {
-          const size = parseInt(pricing.pipeSize.replace('mm', ''));
-          return { size, pricing };
-        }).filter(item => !isNaN(item.size));
-        
-        if (availableSizes.length > 0) {
-          // Find the closest pipe size
-          const closest = availableSizes.reduce((prev, curr) => {
-            return Math.abs(curr.size - pipeSize) < Math.abs(prev.size - pipeSize) ? curr : prev;
-          });
-          
-          matchingPricing = closest.pricing;
-
-        }
-      }
     }
 
     // Return null if no pricing data is available - triggers warning triangle display
