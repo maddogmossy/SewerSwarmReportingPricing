@@ -724,133 +724,23 @@ export function CustomerSettings() {
                           </div>
                         )}
 
-                        {/* Travel Calculation Settings */}
+                        {/* Operating Hours */}
                         <div className="space-y-4 border-t pt-4">
-                          <h4 className="font-semibold text-sm">Travel Calculation Settings</h4>
+                          <h4 className="font-semibold text-sm">Operating Hours</h4>
                           
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <Label htmlFor="travelRatePerMile">Travel Rate per Mile (£)</Label>
-                              <Input
-                                id="travelRatePerMile"
-                                name="travelRatePerMile"
-                                type="number"
-                                step="0.01"
-                                defaultValue={depotSettings?.travelRatePerMile || "0.45"}
-                                placeholder="0.45"
-                                required
-                              />
-                              <p className="text-sm text-muted-foreground mt-1">
-                                Cost per mile for travel calculations
-                              </p>
-                            </div>
-                            
-                            <div>
-                              <Label htmlFor="standardTravelTime">Standard Travel Time (minutes)</Label>
-                              <Input
-                                id="standardTravelTime"
-                                name="standardTravelTime"
-                                type="number"
-                                step="0.1"
-                                defaultValue={depotSettings?.standardTravelTime || "30.0"}
-                                placeholder="30.0"
-                                required
-                              />
-                              <p className="text-sm text-muted-foreground mt-1">
-                                Average travel time for typical jobs
-                              </p>
-                            </div>
-                          </div>
-                          
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <Label htmlFor="maxTravelDistance">Max Travel Distance (miles)</Label>
-                              <Input
-                                id="maxTravelDistance"
-                                name="maxTravelDistance"
-                                type="number"
-                                step="0.1"
-                                defaultValue={depotSettings?.maxTravelDistance || "50.0"}
-                                placeholder="50.0"
-                                required
-                              />
-                              <p className="text-sm text-muted-foreground mt-1">
-                                Maximum distance for travel calculations
-                              </p>
-                            </div>
-                            
-                            <div>
-                              <Label htmlFor="operatingHours">Operating Hours</Label>
-                              <Input
-                                id="operatingHours"
-                                name="operatingHours"
-                                defaultValue={depotSettings?.operatingHours || ""}
-                                placeholder="e.g. 8:00 AM - 6:00 PM"
-                              />
-                              <p className="text-sm text-muted-foreground mt-1">
-                                Normal operating hours for scheduling
-                              </p>
-                            </div>
+                          <div>
+                            <Label htmlFor="operatingHours">Operating Hours</Label>
+                            <Input
+                              id="operatingHours"
+                              name="operatingHours"
+                              defaultValue={depotSettings?.operatingHours || ""}
+                              placeholder="e.g. 8:00 AM - 6:00 PM"
+                            />
+                            <p className="text-sm text-muted-foreground mt-1">
+                              Normal operating hours for scheduling
+                            </p>
                           </div>
                         </div>
-
-                        {/* Travel Cost Calculator */}
-                        {depotSettings && (
-                          <div className="space-y-4 border-t pt-4">
-                            <h4 className="font-semibold text-sm flex items-center gap-2">
-                              <Calculator className="h-4 w-4" />
-                              Travel Cost Calculator
-                            </h4>
-                            
-                            <div className="grid grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
-                              <div className="text-center">
-                                <Car className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-                                <div className="text-sm font-medium">Rate per Mile</div>
-                                <div className="text-lg font-bold">£{depotSettings.travelRatePerMile || "0.45"}</div>
-                              </div>
-                              
-                              <div className="text-center">
-                                <Clock className="h-6 w-6 mx-auto mb-2 text-green-600" />
-                                <div className="text-sm font-medium">Standard Time</div>
-                                <div className="text-lg font-bold">{depotSettings.standardTravelTime || "30"} min</div>
-                              </div>
-                              
-                              <div className="text-center">
-                                <MapPin className="h-6 w-6 mx-auto mb-2 text-orange-600" />
-                                <div className="text-sm font-medium">Max Distance</div>
-                                <div className="text-lg font-bold">{depotSettings.maxTravelDistance || "50"} miles</div>
-                              </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <Label htmlFor="calc-distance">Distance (miles)</Label>
-                                <Input
-                                  id="calc-distance"
-                                  type="number"
-                                  step="0.1"
-                                  placeholder="Enter distance"
-                                  onChange={(e) => {
-                                    const distance = parseFloat(e.target.value) || 0;
-                                    const rate = parseFloat(depotSettings.travelRatePerMile || "0.45");
-                                    const cost = (distance * rate).toFixed(2);
-                                    const costElement = document.getElementById("calc-cost");
-                                    if (costElement) {
-                                      costElement.textContent = `£${cost}`;
-                                    }
-                                  }}
-                                />
-                              </div>
-                              
-                              <div>
-                                <Label>Estimated Cost</Label>
-                                <div className="h-10 flex items-center px-3 bg-muted rounded-md">
-                                  <span id="calc-cost" className="font-semibold text-lg">£0.00</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
 
                         <Button
                           type="submit"

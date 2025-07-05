@@ -173,7 +173,8 @@ export default function RepairPricing() {
     rule: "",
     lengthOfRepair: "1000mm",
     minInstallationPerDay: "",
-    dayRate: ""
+    dayRate: "",
+    vehicleId: "" // Add vehicle selection
   });
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
@@ -185,6 +186,11 @@ export default function RepairPricing() {
   // Fetch repair methods
   const { data: workCategories = [] } = useQuery({
     queryKey: ['/api/work-categories'],
+  });
+
+  // Fetch vehicle travel rates for vehicle selection
+  const { data: vehicleRates = [] } = useQuery({
+    queryKey: ['/api/vehicle-travel-rates'],
   });
 
   // Fetch existing pricing for this sector
@@ -507,7 +513,8 @@ export default function RepairPricing() {
       rule: "",
       lengthOfRepair: "1000mm",
       minInstallationPerDay: "",
-      dayRate: ""
+      dayRate: "",
+      vehicleId: ""
     });
     setApplySectors([]);
     setOriginalApplySectors([]);
@@ -680,7 +687,8 @@ export default function RepairPricing() {
       option2PerShift: item.option2PerShift?.toString() || "",
       option3PerShift: item.option3PerShift?.toString() || "",
       option4PerShift: item.option4PerShift?.toString() || "",
-      selectedOption: item.selectedOption || ""
+      selectedOption: item.selectedOption || "",
+      vehicleId: item.vehicleId?.toString() || ""
     });
     
     // Pre-select sectors that already have this pricing rule
@@ -717,7 +725,8 @@ export default function RepairPricing() {
       option2PerShift: item.option2PerShift?.toString() || "",
       option3PerShift: item.option3PerShift?.toString() || "",
       option4PerShift: item.option4PerShift?.toString() || "",
-      selectedOption: item.selectedOption || ""
+      selectedOption: item.selectedOption || "",
+      vehicleId: item.vehicleId?.toString() || ""
     });
     
     // Pre-select sectors that already have this pricing rule
@@ -958,6 +967,28 @@ export default function RepairPricing() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="vehicleId">Vehicle for Travel Costs</Label>
+                <Select
+                  value={formData.vehicleId}
+                  onValueChange={(value) => setFormData({ ...formData, vehicleId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select vehicle (optional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vehicleRates.map((vehicle: any) => (
+                      <SelectItem key={vehicle.id} value={vehicle.id.toString()}>
+                        {vehicle.vehicleType} - £{(vehicle.vehicleRunningCostPerMile || 0).toFixed(2)}/mile
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Select a vehicle to include travel costs in pricing calculations
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

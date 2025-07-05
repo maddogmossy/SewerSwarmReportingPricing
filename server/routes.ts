@@ -1456,7 +1456,7 @@ export async function registerRoutes(app: Express) {
         selectedOption, option1Cost, option2Cost, option3Cost, option4Cost, 
         option1PerShift, option2PerShift, option3PerShift, option4PerShift,
         lengthOfRepair, minInstallationPerDay, dayRate, travelTimeAllowance,
-        rule 
+        rule, vehicleId 
       } = req.body;
       
       // Get the cost from the selected option - handle frontend text format
@@ -1502,6 +1502,8 @@ export async function registerRoutes(app: Express) {
         travelTimeAllowance: travelTimeAllowance || "2.0",
         // Save day rate if provided
         dayRate: dayRate ? dayRate.toString() : "0.00",
+        // Save vehicle selection
+        vehicleId: vehicleId ? parseInt(vehicleId) : null,
       }).returning();
       
       res.json(newPricing);
@@ -1519,7 +1521,7 @@ export async function registerRoutes(app: Express) {
         cost, rule, minimumQuantity,
         option1Cost, option2Cost, option3Cost, option4Cost, selectedOption,
         option1PerShift, option2PerShift, option3PerShift, option4PerShift,
-        lengthOfRepair, minInstallationPerDay, dayRate, travelTimeAllowance
+        lengthOfRepair, minInstallationPerDay, dayRate, travelTimeAllowance, vehicleId
       } = req.body;
       
       const [updatedPricing] = await db.update(repairPricing)
@@ -1550,6 +1552,8 @@ export async function registerRoutes(app: Express) {
           travelTimeAllowance: travelTimeAllowance || "2.0",
           // Update day rate if provided
           dayRate: dayRate ? dayRate.toString() : "0.00",
+          // Update vehicle selection
+          vehicleId: vehicleId ? parseInt(vehicleId) : null,
           updatedAt: new Date(),
         })
         .where(and(eq(repairPricing.id, parseInt(id)), eq(repairPricing.userId, "test-user")))
@@ -1977,7 +1981,7 @@ export async function registerRoutes(app: Express) {
   // Vehicle Travel Rates API endpoints
   app.get("/api/vehicle-travel-rates", async (req: Request, res: Response) => {
     try {
-      const userId = req.user?.id;
+      const userId = req.user?.id || "test-user";
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
       }
@@ -1996,7 +2000,7 @@ export async function registerRoutes(app: Express) {
 
   app.post("/api/vehicle-travel-rates", async (req: Request, res: Response) => {
     try {
-      const userId = req.user?.id;
+      const userId = req.user?.id || "test-user";
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
       }
@@ -2021,7 +2025,7 @@ export async function registerRoutes(app: Express) {
 
   app.put("/api/vehicle-travel-rates/:id", async (req: Request, res: Response) => {
     try {
-      const userId = req.user?.id;
+      const userId = req.user?.id || "test-user";
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
       }
@@ -2057,7 +2061,7 @@ export async function registerRoutes(app: Express) {
 
   app.delete("/api/vehicle-travel-rates/:id", async (req: Request, res: Response) => {
     try {
-      const userId = req.user?.id;
+      const userId = req.user?.id || "test-user";
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
       }

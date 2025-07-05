@@ -265,6 +265,8 @@ export const repairPricing = pgTable("repair_pricing", {
   additionalTravelRate: decimal("additional_travel_rate", { precision: 8, scale: 2 }).default("0.00"), // Cost per additional travel hour
   dayRate: decimal("day_rate", { precision: 10, scale: 2 }).default("0.00"), // Day rate for crew
   hourlyRate: decimal("hourly_rate", { precision: 8, scale: 2 }).default("0.00"), // Calculated as dayRate / 8
+  // Vehicle selection for travel costs
+  vehicleId: integer("vehicle_id").references(() => vehicleTravelRates.id),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
