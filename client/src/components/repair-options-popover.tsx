@@ -77,13 +77,54 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     queryKey: [`/api/repair-pricing/${sectionData.sector}`],
     enabled: isOpen && repairMethods.length > 0,
     select: (pricingData) => {
+      console.log('RepairOptionsPopover - Debug data:', {
+        pricingData: pricingData,
+        repairMethods: repairMethods,
+        sectionPipeSize: sectionData.pipeSize,
+        sector: sectionData.sector
+      });
+      
       return repairMethods.map((method: any) => {
-        const pricing = pricingData.find((p: any) => 
+        // Try multiple matching strategies
+        let pricing = pricingData.find((p: any) => 
           p.repairMethodId === method.id && 
           p.pipeSize === sectionData.pipeSize
         );
         
-        return {
+        // If no exact match, try matching by method name
+        if (!pricing) {
+          pricing = pricingData.find((p: any) => 
+            p.methodName === method.name && 
+            p.pipeSize === sectionData.pipeSize
+          );
+        }
+        
+        // Try matching by category name (the new system uses work categories like "Patching")
+        if (!pricing) {
+          pricing = pricingData.find((p: any) => 
+            p.categoryName === method.name && 
+            p.pipeSize === sectionData.pipeSize
+          );
+        }
+        
+        // If still no match, try matching just by pipe size for any repair method
+        // This allows showing existing pricing even if method doesn't exactly match
+        if (!pricing) {
+          pricing = pricingData.find((p: any) => 
+            p.pipeSize === sectionData.pipeSize
+          );
+        }
+        
+        console.log(`Method ${method.name} (ID: ${method.id}) pricing match:`, {
+          pricing: pricing,
+          hasPricing: !!pricing,
+          matchedBy: pricing ? 
+            (pricing.repairMethodId === method.id ? 'methodId' : 
+             pricing.methodName === method.name ? 'methodName' :
+             pricing.categoryName === method.name ? 'categoryName' : 'pipeSize') : 'none'
+        });
+        
+        const option = {
           id: pricing ? pricing.id : method.id, // Use pricing ID if configured, method ID if not
           name: method.name,
           description: pricing?.description ? 
@@ -97,6 +138,16 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
             undefined : 
             `Add pricing for ${sectionData.pipeSize} ${method.name.toLowerCase()}`
         };
+        
+        console.log(`Final option for ${method.name}:`, {
+          configured: option.configured,
+          cost: option.cost,
+          rule: option.rule,
+          minimumQuantity: option.minimumQuantity,
+          hasPricingObject: !!pricing
+        });
+        
+        return option;
       });
     }
   });
