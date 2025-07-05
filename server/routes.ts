@@ -16,6 +16,7 @@ import { DataIntegrityValidator, validateBeforeInsert } from "./data-integrity";
 import pdfParse from "pdf-parse";
 import Stripe from "stripe";
 import { setupAuth } from "./replitAuth";
+import fetch from "node-fetch";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,6 +59,140 @@ const logoUpload = multer({
     }
   }
 });
+
+// Function to automatically fetch logo from company website
+async function fetchLogoFromWebsite(websiteUrl: string): Promise<string | null> {
+  try {
+    // Normalize the URL
+    let url = websiteUrl.trim();
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+
+    // Try multiple common logo paths
+    const logoUrls = [
+      `${url}/favicon.ico`,
+      `${url}/logo.png`,
+      `${url}/logo.jpg`,
+      `${url}/images/logo.png`,
+      `${url}/assets/logo.png`,
+      `${url}/static/logo.png`,
+      `${url}/wp-content/uploads/logo.png`, // WordPress sites
+    ];
+
+    for (const logoUrl of logoUrls) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch(logoUrl, { 
+          signal: controller.signal,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; SewerAI/1.0)'
+          }
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok && response.headers.get('content-type')?.startsWith('image/')) {
+          const buffer = await response.buffer();
+          
+          // Save the logo to our uploads directory
+          const fileExtension = logoUrl.split('.').pop() || 'png';
+          const filename = `auto-logo-${Date.now()}.${fileExtension}`;
+          const filepath = path.join('uploads/logos', filename);
+          
+          // Ensure directory exists
+          await fs.promises.mkdir('uploads/logos', { recursive: true });
+          await fs.promises.writeFile(filepath, buffer);
+          
+          console.log(`Successfully fetched logo from ${logoUrl}`);
+          return filepath;
+        }
+      } catch (error) {
+        // Continue to next URL if this one fails
+        continue;
+      }
+    }
+
+    // If no direct logo found, try to parse HTML for logo meta tags
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const response = await fetch(url, { 
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; SewerAI/1.0)'
+        }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        const html = await response.text();
+        
+        // Look for common logo meta tags
+        const logoPatterns = [
+          /<link[^>]+rel="icon"[^>]+href="([^"]+)"/i,
+          /<link[^>]+rel="shortcut icon"[^>]+href="([^"]+)"/i,
+          /<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i,
+          /<meta[^>]+name="twitter:image"[^>]+content="([^"]+)"/i,
+        ];
+
+        for (const pattern of logoPatterns) {
+          const match = html.match(pattern);
+          if (match && match[1]) {
+            let logoUrl = match[1];
+            
+            // Handle relative URLs
+            if (logoUrl.startsWith('/')) {
+              logoUrl = url + logoUrl;
+            } else if (!logoUrl.startsWith('http')) {
+              logoUrl = url + '/' + logoUrl;
+            }
+
+            try {
+              const logoController = new AbortController();
+              const logoTimeoutId = setTimeout(() => logoController.abort(), 5000);
+              
+              const logoResponse = await fetch(logoUrl, { 
+                signal: logoController.signal,
+                headers: {
+                  'User-Agent': 'Mozilla/5.0 (compatible; SewerAI/1.0)'
+                }
+              });
+              
+              clearTimeout(logoTimeoutId);
+              
+              if (logoResponse.ok && logoResponse.headers.get('content-type')?.startsWith('image/')) {
+                const buffer = await logoResponse.buffer();
+                const fileExtension = logoUrl.split('.').pop()?.split('?')[0] || 'png';
+                const filename = `auto-logo-${Date.now()}.${fileExtension}`;
+                const filepath = path.join('uploads/logos', filename);
+                
+                await fs.promises.mkdir('uploads/logos', { recursive: true });
+                await fs.promises.writeFile(filepath, buffer);
+                
+                console.log(`Successfully fetched logo from meta tag: ${logoUrl}`);
+                return filepath;
+              }
+            } catch (error) {
+              continue;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.log(`Failed to fetch HTML from ${url}:`, error);
+    }
+
+    return null;
+  } catch (error) {
+    console.log(`Failed to fetch logo from website ${websiteUrl}:`, error);
+    return null;
+  }
+}
 
 // Extract specific section data from PDF
 async function extractSpecificSectionFromPDF(pdfText: string, fileUploadId: number, sectionNumber: number) {
@@ -1839,6 +1974,18 @@ export async function registerRoutes(app: Express) {
       }
       
       console.log('Updating company settings with:', updates);
+      
+      // Try to automatically fetch logo from website if no logo uploaded and website provided
+      if (!updates.companyLogo && updates.website && updates.website.trim()) {
+        console.log('Attempting to fetch logo from website:', updates.website);
+        const autoLogo = await fetchLogoFromWebsite(updates.website);
+        if (autoLogo) {
+          updates.companyLogo = autoLogo;
+          console.log('Successfully auto-fetched logo:', autoLogo);
+        } else {
+          console.log('Could not auto-fetch logo from website');
+        }
+      }
       
       // Update company settings in database
       const updatedSettings = await storage.updateCompanySettings(userId, updates);
