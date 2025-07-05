@@ -1692,17 +1692,7 @@ export default function Dashboard() {
                       </tr>
                     </thead>
                     <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
-                      {sectionData.map((section, index) => {
-                        // Debug logging for first few sections
-                        if (index < 3) {
-                          console.log(`Section ${section.itemNo}:`, {
-                            severityGrade: section.severityGrade,
-                            severityGradeType: typeof section.severityGrade,
-                            adoptable: section.adoptable,
-                            shouldHighlight: (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes'
-                          });
-                        }
-                        return (
+                      {sectionData.map((section, index) => (
                         <tr key={`${section.id}-${section.itemNo}-${index}-${section.defects?.substring(0, 10)}`} className={`${
                           (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
                             ? 'bg-green-200 hover:bg-green-300' 
@@ -1725,8 +1715,7 @@ export default function Dashboard() {
                             );
                           })}
                         </tr>
-                        );
-                      })}
+                      ))}
                     </tbody>
                   </table>
                 </div>
