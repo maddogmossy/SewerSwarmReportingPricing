@@ -173,8 +173,7 @@ export default function RepairPricing() {
     rule: "",
     lengthOfRepair: "1000mm",
     minInstallationPerDay: "",
-    dayRate: "",
-    travelTimeAllowance: "2.0"
+    dayRate: ""
   });
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
@@ -508,8 +507,7 @@ export default function RepairPricing() {
       rule: "",
       lengthOfRepair: "1000mm",
       minInstallationPerDay: "",
-      dayRate: "",
-      travelTimeAllowance: "2.0"
+      dayRate: ""
     });
     setApplySectors([]);
     setOriginalApplySectors([]);
@@ -674,7 +672,6 @@ export default function RepairPricing() {
       lengthOfRepair: item.lengthOfRepair || "1000mm",
       minInstallationPerDay: item.minInstallationPerDay?.toString() || "",
       dayRate: item.dayRate?.toString() || "",
-      travelTimeAllowance: item.travelTimeAllowance?.toString() || "2.0",
       option1Cost: item.option1Cost?.toString() || "N/A",
       option2Cost: item.option2Cost?.toString() || "",
       option3Cost: item.option3Cost?.toString() || "",
@@ -712,7 +709,6 @@ export default function RepairPricing() {
       lengthOfRepair: item.lengthOfRepair || "1000mm",
       minInstallationPerDay: item.minInstallationPerDay?.toString() || "",
       dayRate: item.dayRate?.toString() || "",
-      travelTimeAllowance: item.travelTimeAllowance?.toString() || "2.0",
       option1Cost: item.option1Cost?.toString() || "N/A",
       option2Cost: item.option2Cost?.toString() || "",
       option3Cost: item.option3Cost?.toString() || "",
@@ -1563,16 +1559,7 @@ export default function RepairPricing() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium">Travel Time Allowance (hours)</label>
-                  <input
-                    type="text"
-                    value={formData.travelTimeAllowance}
-                    onChange={(e) => setFormData({...formData, travelTimeAllowance: e.target.value})}
-                    className="w-full mt-1 p-2 border rounded-md"
-                    placeholder="2.0"
-                  />
-                </div>
+
 
 
               </div>

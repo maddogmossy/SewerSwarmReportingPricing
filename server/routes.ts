@@ -6,7 +6,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { db } from "./db";
-import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing, workCategories, depotSettings, travelCalculations } from "@shared/schema";
+import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing, workCategories, depotSettings, travelCalculations, vehicleTravelRates } from "@shared/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
@@ -1971,6 +1971,114 @@ export async function registerRoutes(app: Express) {
     } catch (error: any) {
       console.error('Error calculating travel:', error);
       res.status(500).json({ error: "Failed to calculate travel" });
+    }
+  });
+
+  // Vehicle Travel Rates API endpoints
+  app.get("/api/vehicle-travel-rates", async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const rates = await db.select()
+        .from(vehicleTravelRates)
+        .where(eq(vehicleTravelRates.userId, userId))
+        .orderBy(asc(vehicleTravelRates.vehicleType));
+
+      res.json(rates);
+    } catch (error: any) {
+      console.error("Error fetching vehicle travel rates:", error);
+      res.status(500).json({ error: "Failed to fetch vehicle travel rates" });
+    }
+  });
+
+  app.post("/api/vehicle-travel-rates", async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { vehicleType, fuelConsumptionMpg, fuelCostPerLitre, driverWagePerHour, vehicleRunningCostPerMile } = req.body;
+
+      const [newRate] = await db.insert(vehicleTravelRates).values({
+        userId,
+        vehicleType,
+        fuelConsumptionMpg,
+        fuelCostPerLitre,
+        driverWagePerHour,
+        vehicleRunningCostPerMile
+      }).returning();
+
+      res.json(newRate);
+    } catch (error: any) {
+      console.error("Error creating vehicle travel rate:", error);
+      res.status(500).json({ error: "Failed to create vehicle travel rate" });
+    }
+  });
+
+  app.put("/api/vehicle-travel-rates/:id", async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+      const { vehicleType, fuelConsumptionMpg, fuelCostPerLitre, driverWagePerHour, vehicleRunningCostPerMile } = req.body;
+
+      const [updatedRate] = await db.update(vehicleTravelRates)
+        .set({
+          vehicleType,
+          fuelConsumptionMpg,
+          fuelCostPerLitre,
+          driverWagePerHour,
+          vehicleRunningCostPerMile,
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(vehicleTravelRates.id, parseInt(id)),
+          eq(vehicleTravelRates.userId, userId)
+        ))
+        .returning();
+
+      if (!updatedRate) {
+        return res.status(404).json({ error: "Vehicle travel rate not found" });
+      }
+
+      res.json(updatedRate);
+    } catch (error: any) {
+      console.error("Error updating vehicle travel rate:", error);
+      res.status(500).json({ error: "Failed to update vehicle travel rate" });
+    }
+  });
+
+  app.delete("/api/vehicle-travel-rates/:id", async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { id } = req.params;
+
+      const [deletedRate] = await db.delete(vehicleTravelRates)
+        .where(and(
+          eq(vehicleTravelRates.id, parseInt(id)),
+          eq(vehicleTravelRates.userId, userId)
+        ))
+        .returning();
+
+      if (!deletedRate) {
+        return res.status(404).json({ error: "Vehicle travel rate not found" });
+      }
+
+      res.json({ message: "Vehicle travel rate deleted successfully" });
+    } catch (error: any) {
+      console.error("Error deleting vehicle travel rate:", error);
+      res.status(500).json({ error: "Failed to delete vehicle travel rate" });
     }
   });
 

@@ -1255,12 +1255,13 @@ export default function Dashboard() {
               Pricing
             </Button>
           </Link>
-          <Link to="/depot-management">
+          <Link to="/vehicle-travel-rates">
             <Button variant="outline" size="sm">
-              <Building2 className="h-4 w-4 mr-2 text-purple-600" />
-              Depots
+              <Car className="h-4 w-4 mr-2 text-green-600" />
+              Vehicle Rates
             </Button>
           </Link>
+
           <div className="ml-auto flex gap-2">
 
             <Button

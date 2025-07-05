@@ -318,6 +318,19 @@ export const travelCalculations = pgTable("travel_calculations", {
   isActive: boolean("is_active").notNull().default(true),
 });
 
+// Vehicle travel rates for different vehicle types
+export const vehicleTravelRates = pgTable("vehicle_travel_rates", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  vehicleType: varchar("vehicle_type").notNull(), // "3.5t", "5t", "7.5t", "18t", "26t", "32t"
+  fuelConsumptionMpg: decimal("fuel_consumption_mpg", { precision: 5, scale: 2 }).notNull(), // Miles per gallon
+  fuelCostPerLitre: decimal("fuel_cost_per_litre", { precision: 5, scale: 2 }).notNull(), // Cost per litre
+  driverWagePerHour: decimal("driver_wage_per_hour", { precision: 8, scale: 2 }).notNull(), // Driver wage per hour
+  vehicleRunningCostPerMile: decimal("vehicle_running_cost_per_mile", { precision: 8, scale: 2 }).notNull(), // Additional running costs
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Team member invitations
 export const teamInvitations = pgTable("team_invitations", {
   id: serial("id").primaryKey(),
@@ -378,6 +391,8 @@ export type DepotSettings = typeof depotSettings.$inferSelect;
 export type InsertDepotSettings = typeof depotSettings.$inferInsert;
 export type TravelCalculation = typeof travelCalculations.$inferSelect;
 export type InsertTravelCalculation = typeof travelCalculations.$inferInsert;
+export type VehicleTravelRate = typeof vehicleTravelRates.$inferSelect;
+export type InsertVehicleTravelRate = typeof vehicleTravelRates.$inferInsert;
 export type TeamInvitation = typeof teamInvitations.$inferSelect;
 export type InsertTeamInvitation = typeof teamInvitations.$inferInsert;
 export type TeamBillingRecord = typeof teamBillingRecords.$inferSelect;

@@ -17,6 +17,7 @@ import JettingPricing from "@/pages/jetting-pricing";
 import RepairPricing from "@/pages/repair-pricing";
 import StandardsConfig from "@/pages/standards-config";
 import DepotManagement from "@/pages/depot-management";
+import VehicleTravelRates from "@/pages/vehicle-travel-rates";
 import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 
@@ -67,6 +68,7 @@ function Router() {
           <Route path="/repair-pricing/:sector" component={RepairPricing} />
           <Route path="/standards-config" component={StandardsConfig} />
           <Route path="/depot-management" component={DepotManagement} />
+          <Route path="/vehicle-travel-rates" component={VehicleTravelRates} />
           <Route path="/checkout" component={Checkout} />
         </>
       )}
