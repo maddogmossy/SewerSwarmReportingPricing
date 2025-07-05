@@ -214,43 +214,9 @@ function getFinishMH(itemNumber: number): string {
 // REMOVED: getTotalLength and getLengthSurveyed functions contained false hardcoded data
 // All length data now comes directly from authentic database records
 
-// Mock data for multiple sections in the same report
-const generateSectionData = (itemNumber: number, sector: any, pricingAvailable: boolean = false) => {
-  // Items with no defects: 1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24
-  const noDefectItems = [1, 2, 4, 5, 9, 11, 12, 16, 17, 18, 24];
-  const hasNoDefects = noDefectItems.includes(itemNumber);
-  
-  // Determine cost based on pricing availability
-  const getCostValue = () => {
-    if (hasNoDefects) return "£0.00";
-    if (!pricingAvailable) return "Rule Needed";
-    return itemNumber === 3 ? "£450.00" : itemNumber === 6 ? "£1,200.00" : "£300.00";
-  };
-  
-  return {
-    itemNo: itemNumber,
-    inspectionNo: 1, // Always 1 for first survey - would be 2, 3, etc. for repeat surveys of same section
-    date: new Date().toLocaleDateString('en-GB'),
-    time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
-    projectNumber: "GR7188",
-    startMH: getStartMH(itemNumber),
-    startMHDepth: 'no data recorded',
-    finishMH: getFinishMH(itemNumber),
-    finishMHDepth: 'no data recorded',
-    pipeSize: "Data from database", // Using real database data
-    pipeMaterial: "Data from database", // Using real database data
-    totalLength: "Data from database", // Using real database data
-    lengthSurveyed: "Data from database", // Using real database data
-    defects: hasNoDefects ? "No action required pipe observed in acceptable structural and service condition" : 
-             (itemNumber === 3 ? "Minor crack" : itemNumber === 6 ? "Root intrusion" : "Joint displacement"),
-    severityGrade: hasNoDefects ? "0" : (itemNumber === 3 ? "2" : itemNumber === 6 ? "3" : "2"),
-    sectorType: sector.name,
-    recommendations: hasNoDefects ? "No action required pipe observed in acceptable structural and service condition" : 
-                    (itemNumber === 3 ? "Schedule repair" : itemNumber === 6 ? "Urgent repair" : "Monitor"),
-    adoptable: hasNoDefects ? "Yes" : (sector.id === 'adoption' ? "No" : "N/A"),
-    cost: getCostValue()
-  };
-};
+// PERMANENTLY REMOVED: All mock data generation functions
+// ZERO TOLERANCE POLICY: Only authentic data from user-uploaded PDFs allowed
+// If no authentic data exists, display error message requesting user upload
 
 // Column definitions for the enhanced table
 const tableColumns = [
@@ -880,14 +846,30 @@ export default function Dashboard() {
     };
   };
 
-  // Fetch real section inspection data from database - ALWAYS AUTHENTIC DATA
-  const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections } = useQuery<any[]>({
+  // ZERO TOLERANCE POLICY: Only authentic data from user-uploaded PDFs
+  const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!currentUpload?.id && currentUpload?.status === "completed",
     staleTime: 0,
     gcTime: 0, // Prevent caching
     refetchOnMount: true, // Always refetch on mount
     refetchOnWindowFocus: true, // Refetch when window gains focus
+    retry: false, // Don't retry failed requests to avoid cached fake data
+  });
+
+  // CRITICAL: If API fails or returns empty data, NEVER show fake data
+  const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
+  const apiFailure = sectionsError || (!sectionsLoading && !hasAuthenticData && currentUpload?.status === "completed");
+
+  // AUDIT TRAIL: Log data source for verification
+  console.log("AUDIT TRAIL:", {
+    dataSource: hasAuthenticData ? "AUTHENTIC_DATABASE" : "NO_DATA",
+    sectionCount: rawSectionData?.length || 0,
+    uploadId: currentUpload?.id,
+    uploadStatus: currentUpload?.status,
+    hasError: !!sectionsError,
+    errorMessage: sectionsError?.message || null,
+    timestamp: new Date().toISOString()
   });
 
   // Fetch individual defects for multiple defects per section
