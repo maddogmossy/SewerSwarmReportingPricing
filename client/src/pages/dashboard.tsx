@@ -527,7 +527,7 @@ export default function Dashboard() {
           // Only show red for single 300mm patch sections or sections under minimum quantity
           // Check if this is a 300mm pipe with single patch (not debris sections)
           const is300mmSinglePatch = section.pipeSize === "300mm" && 
-                                   autoCost.numberOfDefects === 1 && 
+                                   autoCost.numberOfPatches === 1 && 
                                    section.defects && 
                                    !section.defects.toLowerCase().includes('debris') &&
                                    !section.defects.toLowerCase().includes('der') &&
@@ -537,8 +537,8 @@ export default function Dashboard() {
           return (
             <div className={`text-xs ${costColor} font-medium`} title={
               autoCost.isUnderMinimum 
-                ? `Minimum quantity: ${autoCost.minQuantity} repairs (Current: ${autoCost.numberOfDefects} repair${autoCost.numberOfDefects !== 1 ? 's' : ''}) - £${autoCost.unitCost} per repair`
-                : `${autoCost.numberOfDefects} repair${autoCost.numberOfDefects !== 1 ? 's' : ''} × £${autoCost.unitCost} = £${autoCost.cost.toFixed(2)} (${section.pipeSize})`
+                ? `Minimum quantity: ${autoCost.minQuantity} patches (Current: ${autoCost.numberOfPatches} patch${autoCost.numberOfPatches !== 1 ? 'es' : ''}) - £${autoCost.unitCost} per patch`
+                : `${autoCost.numberOfPatches} patch${autoCost.numberOfPatches !== 1 ? 'es' : ''} × £${autoCost.unitCost} = £${autoCost.cost.toFixed(2)} (${section.pipeSize})`
             }>
               £{autoCost.cost.toFixed(2)}
             </div>
@@ -754,16 +754,41 @@ export default function Dashboard() {
       return null;
     }
 
-    // Count number of defects (repair locations) in the section
-    const countDefects = (defectsText: string): number => {
+    // Count number of repair patches needed (group defects by proximity)
+    const countRepairPatches = (defectsText: string): number => {
       if (!defectsText) return 1;
       
-      // Count actual meterage references (not measurements in descriptions like "2-5mm")
-      // Look for patterns like "15.2m", "8.4m" but exclude "5mm", "2mm" etc.
-      const defectPatterns = defectsText.match(/\b\d+\.?\d*m\b(?!\s*m)/g);
-      const count = defectPatterns ? defectPatterns.length : 1;
+      // Extract meterage values from defects
+      const meterageMatches = defectsText.match(/\b(\d+\.?\d*)m\b(?!\s*m)/g);
+      if (!meterageMatches) return 1;
       
-      return count;
+      // Convert to numbers and remove duplicates
+      const meterages = [...new Set(meterageMatches.map(m => parseFloat(m.replace('m', ''))))];
+      
+      // Group defects that are within 1000mm (1m) of each other - single patch covers both
+      // This follows standards where patch must extend beyond defect by minimum distance
+      const patchGroups = [];
+      const sortedMeterages = meterages.sort((a, b) => a - b);
+      
+      for (const meterage of sortedMeterages) {
+        // Check if this meterage can be covered by an existing patch group
+        let addedToGroup = false;
+        for (const group of patchGroups) {
+          // If meterage is within 1m of any meterage in the group, add to that group
+          if (group.some(existingMeterage => Math.abs(existingMeterage - meterage) <= 1.0)) {
+            group.push(meterage);
+            addedToGroup = true;
+            break;
+          }
+        }
+        
+        // If not added to any existing group, create new group
+        if (!addedToGroup) {
+          patchGroups.push([meterage]);
+        }
+      }
+      
+      return patchGroups.length;
     };
 
     // Extract pipe size (remove "mm" and convert to number)
@@ -773,7 +798,7 @@ export default function Dashboard() {
       return sizeMatch ? parseInt(sizeMatch[1]) : 150;
     };
 
-    const numberOfDefects = countDefects(section.defects || "");
+    const numberOfPatches = countRepairPatches(section.defects || "");
     const pipeSize = extractPipeSize(section.pipeSize || "");
     
     // Find matching repair pricing from database
@@ -831,15 +856,13 @@ export default function Dashboard() {
     
     const minQuantity = parseInt(matchingPricing.minimumQuantity) || 2;
 
-    // Total cost = number of defects × cost per repair
-    const totalCost = numberOfDefects * unitCost;
-    const isUnderMinimum = numberOfDefects < minQuantity;
-
-
+    // Total cost = number of patches × cost per patch
+    const totalCost = numberOfPatches * unitCost;
+    const isUnderMinimum = numberOfPatches < minQuantity;
 
     return {
       cost: totalCost,
-      numberOfDefects,
+      numberOfPatches,
       minQuantity,
       isUnderMinimum,
       unitCost
