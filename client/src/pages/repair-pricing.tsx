@@ -571,6 +571,13 @@ export default function RepairPricing() {
         option3: formData.option3Cost,
         option4: formData.option4Cost
       },
+      allShiftRates: {
+        option1PerShift: formData.option1PerShift,
+        option2PerShift: formData.option2PerShift,
+        option3PerShift: formData.option3PerShift,
+        option4PerShift: formData.option4PerShift
+      },
+      dayRate: formData.dayRate,
       description: formData.description,
       pipeSize: formData.pipeSize
     });
@@ -582,7 +589,15 @@ export default function RepairPricing() {
       option1Cost: formData.option1Cost,
       option2Cost: formData.option2Cost,
       option3Cost: formData.option3Cost,
-      option4Cost: formData.option4Cost
+      option4Cost: formData.option4Cost,
+      option1PerShift: formData.option1PerShift,
+      option2PerShift: formData.option2PerShift,
+      option3PerShift: formData.option3PerShift,
+      option4PerShift: formData.option4PerShift,
+      dayRate: formData.dayRate,
+      lengthOfRepair: formData.lengthOfRepair,
+      minInstallationPerDay: formData.minInstallationPerDay,
+      vehicleId: formData.vehicleId
     };
 
     if (editingItem) {

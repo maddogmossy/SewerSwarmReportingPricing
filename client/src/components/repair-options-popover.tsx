@@ -85,7 +85,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
       });
       
       return repairMethods.map((method: any) => {
-        // Try multiple matching strategies
+        // Try multiple matching strategies - but ONLY for exact matches
         let pricing = pricingData.find((p: any) => 
           p.repairMethodId === method.id && 
           p.pipeSize === sectionData.pipeSize
@@ -99,21 +99,15 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
           );
         }
         
-        // Try matching by category name (the new system uses work categories like "Patching")
-        if (!pricing) {
+        // Try matching by category name ONLY for exact matches (Patch -> Patching)
+        if (!pricing && method.name === "Patch") {
           pricing = pricingData.find((p: any) => 
-            p.categoryName === method.name && 
+            p.categoryName === "Patching" && 
             p.pipeSize === sectionData.pipeSize
           );
         }
         
-        // If still no match, try matching just by pipe size for any repair method
-        // This allows showing existing pricing even if method doesn't exactly match
-        if (!pricing) {
-          pricing = pricingData.find((p: any) => 
-            p.pipeSize === sectionData.pipeSize
-          );
-        }
+        // Do NOT use fallback matching by pipe size alone - this was causing all options to show as configured
         
         console.log(`Method ${method.name} (ID: ${method.id}) pricing match:`, {
           pricing: pricing,

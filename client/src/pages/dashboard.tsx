@@ -558,6 +558,18 @@ export default function Dashboard() {
           </span>
         );
       case 'cost':
+        // Debug specific sections that are showing "Complete" when they shouldn't
+        if (section.itemNo === 2 || section.itemNo === 3) {
+          console.log(`COST DEBUG - Section ${section.itemNo}:`, {
+            severityGrade: section.severityGrade,
+            defects: section.defects,
+            recommendations: section.recommendations,
+            hasNoActionRequired: section.recommendations?.includes('No action required pipe observed in acceptable structural and service condition'),
+            isGradeZero: section.severityGrade === 0,
+            willShowComplete: section.recommendations?.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0
+          });
+        }
+        
         // Check if section has "No action required" in recommendations (Grade 0 sections only)
         if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
           return (
