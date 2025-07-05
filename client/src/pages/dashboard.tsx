@@ -998,6 +998,18 @@ export default function Dashboard() {
     if (filters.projectNumber && currentUpload && currentUpload.projectNumber && !currentUpload.projectNumber.includes(filters.projectNumber)) return false;
     return true;
   });
+
+  // DEBUG: Log the final display order for Item 2 sections
+  React.useEffect(() => {
+    const item2Sections = sectionData.filter(s => s.itemNo === 2);
+    if (item2Sections.length > 0) {
+      console.log("FINAL DISPLAY ORDER for Item 2:");
+      item2Sections.forEach((section, index) => {
+        const suffix = getItemNumberWithSuffix(section, sectionData);
+        console.log(`${index + 1}. Section ID ${section.id} → Display as "${suffix}" → Defects: ${section.defects?.substring(0, 30)}...`);
+      });
+    }
+  }, [sectionData]);
   
 
   
