@@ -232,8 +232,9 @@ export default function RepairPricing() {
       const pricingToEdit = pricingData.find(pricing => pricing.id === parseInt(editId));
       if (pricingToEdit) {
         console.log('Found pricing to edit:', pricingToEdit);
-        // Set the editing item and open dialog
+        // Set the editing item and populate form data
         setEditingItem(pricingToEdit);
+        proceedWithEditDirectly(pricingToEdit);
         setTimeout(() => {
           setIsAddDialogOpen(true);
         }, 1000);
