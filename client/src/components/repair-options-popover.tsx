@@ -84,7 +84,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
         );
         
         return {
-          id: method.id,
+          id: pricing ? pricing.id : method.id, // Use pricing ID if configured, method ID if not
           name: method.name,
           description: pricing?.description ? 
             populateDescription(pricing.description, method.name) : 
