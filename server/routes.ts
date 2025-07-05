@@ -1437,12 +1437,19 @@ export async function registerRoutes(app: Express) {
     try {
       const { sector, workCategoryId, repairMethodId, pipeSize, depth, description, selectedOption, option1Cost, option2Cost, option3Cost, option4Cost, rule } = req.body;
       
-      // Get the cost from the selected option
-      let cost = "0";
-      if (selectedOption === "1") cost = option1Cost || "0";
-      else if (selectedOption === "2") cost = option2Cost || "0";
-      else if (selectedOption === "3") cost = option3Cost || "0";
-      else if (selectedOption === "4") cost = option4Cost || "0";
+      // Get the cost from the selected option - handle frontend text format
+      let cost = req.body.cost || "0"; // Use cost field directly from frontend
+      
+      // Debug logging to track cost issues
+      console.log('Repair pricing creation debug:', {
+        receivedCost: req.body.cost,
+        selectedOption,
+        option1Cost,
+        option2Cost,
+        option3Cost,
+        option4Cost,
+        finalCost: cost
+      });
       
       const [newPricing] = await db.insert(repairPricing).values({
         userId: "test-user",
