@@ -1381,9 +1381,6 @@ export default function RepairPricing() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-medium">Description</label>
-                  <span className="text-xs text-gray-500">
-                    (Editable: {isDescriptionEditable ? 'Yes' : 'No'})
-                  </span>
                 </div>
                 <div className="relative">
                   <input
