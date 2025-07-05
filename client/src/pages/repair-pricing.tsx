@@ -276,7 +276,11 @@ export default function RepairPricing() {
       fullCondition: autoFocus && workCategories && workCategories.length > 0 && pricingData !== undefined
     });
     
-    if (autoFocus && workCategories && Array.isArray(workCategories) && workCategories.length > 0) {
+    // Skip auto-selection if we're in edit mode to prevent overwriting edit data
+    const editMode = urlParams.get('edit');
+    const editId = urlParams.get('editId');
+    
+    if (autoFocus && workCategories && Array.isArray(workCategories) && workCategories.length > 0 && !(editMode === 'true' && editId)) {
       console.log('Auto-selection triggered for:', autoFocus);
       
       // Find matching work category
