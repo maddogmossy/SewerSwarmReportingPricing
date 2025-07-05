@@ -142,7 +142,7 @@ const SECTORS = [
 
 export default function RepairPricing() {
   const { sector } = useParams<{ sector: string }>();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
@@ -179,7 +179,6 @@ export default function RepairPricing() {
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
   const [originalApplySectors, setOriginalApplySectors] = useState<string[]>([]);
-  const [location] = useLocation();
 
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
 
@@ -487,7 +486,7 @@ export default function RepairPricing() {
       const itemNo = urlParams.get('itemNo');
       if (itemNo) {
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          setLocation('/dashboard');
         }, 500);
       }
     },

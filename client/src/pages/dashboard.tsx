@@ -865,7 +865,9 @@ export default function Dashboard() {
       option1Cost: matchingPricing.option1Cost,
       option2Cost: matchingPricing.option2Cost,
       option3Cost: matchingPricing.option3Cost,
-      option4Cost: matchingPricing.option4Cost
+      option4Cost: matchingPricing.option4Cost,
+      cost: matchingPricing.cost,
+      descriptionLower: description
     });
     
     if (description.includes('single') && matchingPricing.option1Cost && matchingPricing.option1Cost !== 'N/A') {
