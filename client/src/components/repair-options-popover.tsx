@@ -104,40 +104,46 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
   const handleOptionClick = (option: RepairOption) => {
     console.log('Repair option clicked:', option.name, 'configured:', option.configured);
     
-    if (!option.configured) {
-      // Navigate to sector-specific pricing configuration page
-      const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
-      const meterage = extractMeterage(sectionData.defects || '');
-      const sector = sectionData.sector || 'utilities';
-      
-      // Create URL with auto-focus parameters for the specific repair method
-      const params = new URLSearchParams({
-        pipeSize,
-        pipeDepth: sectionData.pipeDepth || '',
-        meterage: meterage.toString(),
-        autoFocus: option.name.toLowerCase(),
-        itemNo: sectionData.itemNo?.toString() || '1',
-        defects: sectionData.defects || '',
-        recommendations: sectionData.recommendations || '',
-        pipeMaterial: sectionData.pipeMaterial || ''
-      });
-      
-      console.log('Navigating with params:', {
-        pipeSize,
-        pipeDepth: sectionData.pipeDepth,
-        meterage,
-        autoFocus: option.name.toLowerCase(),
-        itemNo: sectionData.itemNo,
-        defects: sectionData.defects,
-        recommendations: sectionData.recommendations,
-        pipeMaterial: sectionData.pipeMaterial,
-        url: `/repair-pricing/${sector}?${params.toString()}`
-      });
-      
-      // Navigate to the sector-specific pricing page using React Router
-      console.log('About to navigate to:', `/repair-pricing/${sector}?${params.toString()}`);
-      setLocation(`/repair-pricing/${sector}?${params.toString()}`);
+    // For both configured and unconfigured options, navigate to the pricing page
+    const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
+    const meterage = extractMeterage(sectionData.defects || '');
+    const sector = sectionData.sector || 'utilities';
+    
+    // Create URL with auto-focus parameters for the specific repair method
+    const params = new URLSearchParams({
+      pipeSize,
+      pipeDepth: sectionData.pipeDepth || '',
+      meterage: meterage.toString(),
+      autoFocus: option.name.toLowerCase(),
+      itemNo: sectionData.itemNo?.toString() || '1',
+      defects: sectionData.defects || '',
+      recommendations: sectionData.recommendations || '',
+      pipeMaterial: sectionData.pipeMaterial || ''
+    });
+    
+    // Add edit mode parameter for configured options
+    if (option.configured) {
+      params.set('edit', 'true');
+      params.set('editId', option.id.toString());
     }
+    
+    console.log('Navigating with params:', {
+      pipeSize,
+      pipeDepth: sectionData.pipeDepth,
+      meterage,
+      autoFocus: option.name.toLowerCase(),
+      itemNo: sectionData.itemNo,
+      defects: sectionData.defects,
+      recommendations: sectionData.recommendations,
+      pipeMaterial: sectionData.pipeMaterial,
+      configured: option.configured,
+      editId: option.configured ? option.id : undefined,
+      url: `/repair-pricing/${sector}?${params.toString()}`
+    });
+    
+    // Navigate to the sector-specific pricing page
+    console.log('About to navigate to:', `/repair-pricing/${sector}?${params.toString()}`);
+    setLocation(`/repair-pricing/${sector}?${params.toString()}`);
     setIsOpen(false);
   };
 

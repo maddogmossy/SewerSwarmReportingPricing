@@ -210,6 +210,8 @@ export default function RepairPricing() {
     const defects = urlParams.get('defects');
     const recommendations = urlParams.get('recommendations');
     const pipeMaterial = urlParams.get('pipeMaterial');
+    const editMode = urlParams.get('edit');
+    const editId = urlParams.get('editId');
     
     console.log('URL Parameters received:', {
       autoFocus,
@@ -219,17 +221,32 @@ export default function RepairPricing() {
       itemNo,
       defects,
       recommendations,
-      pipeMaterial
+      pipeMaterial,
+      editMode,
+      editId
     });
     
-    // Auto-open dialog immediately if autoFocus is present
-    if (autoFocus) {
+    // Handle edit mode for configured pricing
+    if (editMode === 'true' && editId && pricingData) {
+      console.log('Edit mode detected, looking for pricing with ID:', editId);
+      const pricingToEdit = pricingData.find(pricing => pricing.id === parseInt(editId));
+      if (pricingToEdit) {
+        console.log('Found pricing to edit:', pricingToEdit);
+        // Set the editing item and open dialog
+        setEditingItem(pricingToEdit);
+        setTimeout(() => {
+          setIsAddDialogOpen(true);
+        }, 1000);
+      }
+    }
+    // Auto-open dialog immediately if autoFocus is present (for new pricing)
+    else if (autoFocus) {
       console.log('Auto-focus detected, opening dialog in 1 second...');
       setTimeout(() => {
         setIsAddDialogOpen(true);
       }, 1000);
     }
-  }, [location]);
+  }, [location, pricingData]);
 
   // Separate useEffect for auto-selection when data is loaded
   useEffect(() => {
