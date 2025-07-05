@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,7 +22,10 @@ const vehicleTravelRateSchema = z.object({
   fuelConsumptionMpg: z.number().min(0.1, "Fuel consumption must be greater than 0"),
   fuelCostPerLitre: z.number().min(0.01, "Fuel cost must be greater than 0"),
   driverWagePerHour: z.number().min(0.01, "Driver wage must be greater than 0"),
+  assistantWagePerHour: z.number().min(0, "Assistant wage must be 0 or greater"),
+  hasAssistant: z.boolean(),
   vehicleRunningCostPerMile: z.number().min(0.01, "Vehicle running cost must be greater than 0"),
+  autoUpdateFuelPrice: z.boolean(),
 });
 
 type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;

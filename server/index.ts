@@ -39,6 +39,15 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Initialize fuel price monitoring system
+  try {
+    const { setupFuelPriceMonitoring } = await import('./fuel-price-monitor');
+    setupFuelPriceMonitoring();
+    log('Fuel price monitoring system initialized');
+  } catch (error) {
+    console.error('Failed to initialize fuel price monitoring:', error);
+  }
+
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";

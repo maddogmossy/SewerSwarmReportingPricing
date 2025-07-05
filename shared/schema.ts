@@ -353,9 +353,24 @@ export const vehicleTravelRates = pgTable("vehicle_travel_rates", {
   fuelConsumptionMpg: decimal("fuel_consumption_mpg", { precision: 5, scale: 2 }).notNull(), // Miles per gallon
   fuelCostPerLitre: decimal("fuel_cost_per_litre", { precision: 5, scale: 2 }).notNull(), // Cost per litre
   driverWagePerHour: decimal("driver_wage_per_hour", { precision: 8, scale: 2 }).notNull(), // Driver wage per hour
+  assistantWagePerHour: decimal("assistant_wage_per_hour", { precision: 8, scale: 2 }).default("0.00"), // Assistant wage per hour (optional)
+  hasAssistant: boolean("has_assistant").default(false), // Whether this vehicle type typically has an assistant
   vehicleRunningCostPerMile: decimal("vehicle_running_cost_per_mile", { precision: 8, scale: 2 }).notNull(), // Additional running costs
+  autoUpdateFuelPrice: boolean("auto_update_fuel_price").default(true), // Whether to auto-update fuel prices
+  lastFuelPriceUpdate: timestamp("last_fuel_price_update").defaultNow(), // When fuel price was last updated
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Fuel price monitoring table for tracking current UK fuel prices
+export const fuelPrices = pgTable("fuel_prices", {
+  id: serial("id").primaryKey(),
+  fuelType: varchar("fuel_type").notNull(), // "diesel", "petrol"
+  pricePerLitre: decimal("price_per_litre", { precision: 5, scale: 3 }).notNull(), // Current price per litre
+  region: varchar("region").default("UK"), // UK, Scotland, Wales, etc.
+  source: varchar("source").notNull(), // API source or manual entry
+  recordedAt: timestamp("recorded_at").notNull().defaultNow(),
+  isActive: boolean("is_active").default(true),
 });
 
 // Team member invitations
@@ -420,6 +435,8 @@ export type TravelCalculation = typeof travelCalculations.$inferSelect;
 export type InsertTravelCalculation = typeof travelCalculations.$inferInsert;
 export type VehicleTravelRate = typeof vehicleTravelRates.$inferSelect;
 export type InsertVehicleTravelRate = typeof vehicleTravelRates.$inferInsert;
+export type FuelPrice = typeof fuelPrices.$inferSelect;
+export type InsertFuelPrice = typeof fuelPrices.$inferInsert;
 export type TeamInvitation = typeof teamInvitations.$inferSelect;
 export type InsertTeamInvitation = typeof teamInvitations.$inferInsert;
 export type TeamBillingRecord = typeof teamBillingRecords.$inferSelect;

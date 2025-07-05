@@ -2309,6 +2309,118 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Vehicle travel rates with fuel price integration
+  app.get("/api/vehicle-travel-rates", async (req, res) => {
+    try {
+      const rates = await db.select().from(vehicleTravelRates);
+      res.json(rates);
+    } catch (error: any) {
+      console.error('Error fetching vehicle travel rates:', error);
+      res.status(500).json({ error: "Failed to fetch vehicle travel rates" });
+    }
+  });
+
+  app.post("/api/vehicle-travel-rates", async (req, res) => {
+    try {
+      const { FuelPriceMonitor } = await import('./fuel-price-monitor');
+      const defaults = await FuelPriceMonitor.getDefaultVehicleSettings(req.body.vehicleType);
+      
+      const insertData = {
+        vehicleType: req.body.vehicleType,
+        fuelConsumptionMpg: req.body.fuelConsumptionMpg || defaults.fuelConsumptionMpg.toString(),
+        fuelCostPerLitre: req.body.fuelCostPerLitre || defaults.fuelCostPerLitre.toString(),
+        driverWagePerHour: req.body.driverWagePerHour,
+        assistantWagePerHour: req.body.assistantWagePerHour || defaults.assistantWagePerHour.toString(),
+        hasAssistant: req.body.hasAssistant ?? defaults.hasAssistant,
+        vehicleRunningCostPerMile: req.body.vehicleRunningCostPerMile,
+        autoUpdateFuelPrice: req.body.autoUpdateFuelPrice ?? true,
+        lastFuelPriceUpdate: new Date()
+      };
+
+      const [rate] = await db.insert(vehicleTravelRates).values(insertData).returning();
+      res.json(rate);
+    } catch (error: any) {
+      console.error('Error creating vehicle travel rate:', error);
+      res.status(500).json({ error: "Failed to create vehicle travel rate" });
+    }
+  });
+
+  app.put("/api/vehicle-travel-rates/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updateData = {
+        vehicleType: req.body.vehicleType,
+        fuelConsumptionMpg: req.body.fuelConsumptionMpg,
+        fuelCostPerLitre: req.body.fuelCostPerLitre,
+        driverWagePerHour: req.body.driverWagePerHour,
+        assistantWagePerHour: req.body.assistantWagePerHour || "0.00",
+        hasAssistant: req.body.hasAssistant ?? false,
+        vehicleRunningCostPerMile: req.body.vehicleRunningCostPerMile,
+        autoUpdateFuelPrice: req.body.autoUpdateFuelPrice ?? true
+      };
+
+      const [rate] = await db.update(vehicleTravelRates)
+        .set(updateData)
+        .where(eq(vehicleTravelRates.id, id))
+        .returning();
+
+      if (!rate) {
+        return res.status(404).json({ error: "Vehicle travel rate not found" });
+      }
+
+      res.json(rate);
+    } catch (error: any) {
+      console.error('Error updating vehicle travel rate:', error);
+      res.status(500).json({ error: "Failed to update vehicle travel rate" });
+    }
+  });
+
+  app.delete("/api/vehicle-travel-rates/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await db.delete(vehicleTravelRates)
+        .where(eq(vehicleTravelRates.id, id));
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Error deleting vehicle travel rate:', error);
+      res.status(500).json({ error: "Failed to delete vehicle travel rate" });
+    }
+  });
+
+  // Fuel price monitoring endpoints
+  app.get("/api/fuel-prices/current", async (req, res) => {
+    try {
+      const { FuelPriceMonitor } = await import('./fuel-price-monitor');
+      const prices = await FuelPriceMonitor.getCurrentFuelPrices();
+      res.json(prices);
+    } catch (error: any) {
+      console.error('Error fetching current fuel prices:', error);
+      res.status(500).json({ error: "Failed to fetch fuel prices" });
+    }
+  });
+
+  app.post("/api/fuel-prices/update", async (req, res) => {
+    try {
+      const { FuelPriceMonitor } = await import('./fuel-price-monitor');
+      await FuelPriceMonitor.updateFuelPrices();
+      res.json({ success: true, message: "Fuel prices updated successfully" });
+    } catch (error: any) {
+      console.error('Error updating fuel prices:', error);
+      res.status(500).json({ error: "Failed to update fuel prices" });
+    }
+  });
+
+  app.get("/api/vehicle-defaults/:vehicleType", async (req, res) => {
+    try {
+      const { FuelPriceMonitor } = await import('./fuel-price-monitor');
+      const defaults = await FuelPriceMonitor.getDefaultVehicleSettings(req.params.vehicleType);
+      res.json(defaults);
+    } catch (error: any) {
+      console.error('Error fetching vehicle defaults:', error);
+      res.status(500).json({ error: "Failed to fetch vehicle defaults" });
+    }
+  });
+
   // Serve static files for uploaded logos
   app.use('/uploads', express.static('uploads'));
 
