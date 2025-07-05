@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, CreditCard, User, Users, Building, MapPin } from "lucide-react";
+import { Settings, CreditCard, User, Users, Building, MapPin, Calculator, Car, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -54,6 +54,10 @@ interface DepotSettings {
   address?: string;
   postcode: string;
   phoneNumber?: string;
+  travelRatePerMile?: string;
+  standardTravelTime?: string;
+  maxTravelDistance?: string;
+  operatingHours?: string;
 }
 
 interface TeamMember {
@@ -155,6 +159,8 @@ export function CustomerSettings() {
         description: "Your depot settings have been saved successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/depot-settings'] });
+      // Close the dialog after successful save
+      setIsOpen(false);
     },
     onError: () => {
       toast({
@@ -212,6 +218,10 @@ export function CustomerSettings() {
         address: companySettings.address,
         postcode: companySettings.postcode || '',
         phoneNumber: companySettings.phoneNumber,
+        travelRatePerMile: formData.get('travelRatePerMile') as string,
+        standardTravelTime: formData.get('standardTravelTime') as string,
+        maxTravelDistance: formData.get('maxTravelDistance') as string,
+        operatingHours: formData.get('operatingHours') as string,
       };
     } else {
       // Use depot-specific details
@@ -221,6 +231,10 @@ export function CustomerSettings() {
         address: formData.get('address') as string,
         postcode: formData.get('postcode') as string,
         phoneNumber: formData.get('phoneNumber') as string,
+        travelRatePerMile: formData.get('travelRatePerMile') as string,
+        standardTravelTime: formData.get('standardTravelTime') as string,
+        maxTravelDistance: formData.get('maxTravelDistance') as string,
+        operatingHours: formData.get('operatingHours') as string,
       };
     }
     
@@ -547,11 +561,139 @@ export function CustomerSettings() {
                           </div>
                         )}
 
+                        {/* Travel Calculation Settings */}
+                        <div className="space-y-4 border-t pt-4">
+                          <h4 className="font-semibold text-sm">Travel Calculation Settings</h4>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="travelRatePerMile">Travel Rate per Mile (£)</Label>
+                              <Input
+                                id="travelRatePerMile"
+                                name="travelRatePerMile"
+                                type="number"
+                                step="0.01"
+                                defaultValue={depotSettings?.travelRatePerMile || "0.45"}
+                                placeholder="0.45"
+                                required
+                              />
+                              <p className="text-sm text-muted-foreground mt-1">
+                                Cost per mile for travel calculations
+                              </p>
+                            </div>
+                            
+                            <div>
+                              <Label htmlFor="standardTravelTime">Standard Travel Time (minutes)</Label>
+                              <Input
+                                id="standardTravelTime"
+                                name="standardTravelTime"
+                                type="number"
+                                step="0.1"
+                                defaultValue={depotSettings?.standardTravelTime || "30.0"}
+                                placeholder="30.0"
+                                required
+                              />
+                              <p className="text-sm text-muted-foreground mt-1">
+                                Average travel time for typical jobs
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="maxTravelDistance">Max Travel Distance (miles)</Label>
+                              <Input
+                                id="maxTravelDistance"
+                                name="maxTravelDistance"
+                                type="number"
+                                step="0.1"
+                                defaultValue={depotSettings?.maxTravelDistance || "50.0"}
+                                placeholder="50.0"
+                                required
+                              />
+                              <p className="text-sm text-muted-foreground mt-1">
+                                Maximum distance for travel calculations
+                              </p>
+                            </div>
+                            
+                            <div>
+                              <Label htmlFor="operatingHours">Operating Hours</Label>
+                              <Input
+                                id="operatingHours"
+                                name="operatingHours"
+                                defaultValue={depotSettings?.operatingHours || ""}
+                                placeholder="e.g. 8:00 AM - 6:00 PM"
+                              />
+                              <p className="text-sm text-muted-foreground mt-1">
+                                Normal operating hours for scheduling
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Travel Cost Calculator */}
+                        {depotSettings && (
+                          <div className="space-y-4 border-t pt-4">
+                            <h4 className="font-semibold text-sm flex items-center gap-2">
+                              <Calculator className="h-4 w-4" />
+                              Travel Cost Calculator
+                            </h4>
+                            
+                            <div className="grid grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
+                              <div className="text-center">
+                                <Car className="h-6 w-6 mx-auto mb-2 text-blue-600" />
+                                <div className="text-sm font-medium">Rate per Mile</div>
+                                <div className="text-lg font-bold">£{depotSettings.travelRatePerMile || "0.45"}</div>
+                              </div>
+                              
+                              <div className="text-center">
+                                <Clock className="h-6 w-6 mx-auto mb-2 text-green-600" />
+                                <div className="text-sm font-medium">Standard Time</div>
+                                <div className="text-lg font-bold">{depotSettings.standardTravelTime || "30"} min</div>
+                              </div>
+                              
+                              <div className="text-center">
+                                <MapPin className="h-6 w-6 mx-auto mb-2 text-orange-600" />
+                                <div className="text-sm font-medium">Max Distance</div>
+                                <div className="text-lg font-bold">{depotSettings.maxTravelDistance || "50"} miles</div>
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="calc-distance">Distance (miles)</Label>
+                                <Input
+                                  id="calc-distance"
+                                  type="number"
+                                  step="0.1"
+                                  placeholder="Enter distance"
+                                  onChange={(e) => {
+                                    const distance = parseFloat(e.target.value) || 0;
+                                    const rate = parseFloat(depotSettings.travelRatePerMile || "0.45");
+                                    const cost = (distance * rate).toFixed(2);
+                                    const costElement = document.getElementById("calc-cost");
+                                    if (costElement) {
+                                      costElement.textContent = `£${cost}`;
+                                    }
+                                  }}
+                                />
+                              </div>
+                              
+                              <div>
+                                <Label>Estimated Cost</Label>
+                                <div className="h-10 flex items-center px-3 bg-muted rounded-md">
+                                  <span id="calc-cost" className="font-semibold text-lg">£0.00</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                         <Button
                           type="submit"
                           disabled={updateDepotMutation.isPending}
                         >
-                          Save Depot Settings
+                          {updateDepotMutation.isPending ? "Saving..." : "Save Depot Settings"}
                         </Button>
                       </form>
                     )}
