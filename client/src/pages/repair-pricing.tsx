@@ -427,7 +427,11 @@ export default function RepairPricing() {
       toast({ title: "Pricing added successfully" });
       resetForm();
       setIsAddDialogOpen(false);
-      // No automatic navigation - let user stay on pricing page
+      
+      // Clear URL parameters to prevent auto-focus from triggering again
+      const currentUrl = new URL(window.location.href);
+      currentUrl.search = ''; // Clear all search parameters
+      window.history.replaceState({}, '', currentUrl.toString());
     },
     onError: (error: any) => {
       toast({ 
@@ -670,8 +674,8 @@ export default function RepairPricing() {
       minInstallationPerDay: item.minInstallationPerDay?.toString() || "",
       dayRate: item.dayRate?.toString() || "",
       travelTimeAllowance: item.travelTimeAllowance?.toString() || "2.0",
-      option1Cost: item.option1Cost?.toString() || "",
-      option2Cost: item.option2Cost?.toString() || "",
+      option1Cost: item.option1Cost?.toString() || "N/A",
+      option2Cost: item.option2Cost?.toString() || item.cost?.toString() || "",
       option3Cost: item.option3Cost?.toString() || "",
       option4Cost: item.option4Cost?.toString() || "",
       option1PerShift: item.option1PerShift?.toString() || "",
