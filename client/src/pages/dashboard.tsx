@@ -16,6 +16,7 @@ import {
   Download,
   Upload,
   Building,
+  Building2,
   Home as HomeIcon,
   RefreshCw,
   Car,
@@ -1252,6 +1253,12 @@ export default function Dashboard() {
             <Button variant="outline" size="sm">
               <Settings className="h-4 w-4 mr-2 text-orange-600" />
               Pricing
+            </Button>
+          </Link>
+          <Link to="/depot-management">
+            <Button variant="outline" size="sm">
+              <Building2 className="h-4 w-4 mr-2 text-purple-600" />
+              Depots
             </Button>
           </Link>
           <div className="ml-auto flex gap-2">

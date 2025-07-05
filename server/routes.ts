@@ -6,7 +6,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { db } from "./db";
-import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing, workCategories } from "@shared/schema";
+import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing, workCategories, depotSettings, travelCalculations } from "@shared/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
@@ -1811,35 +1811,166 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Depot settings routes (admin only)
-  let depotSettingsData = {
-    id: 1,
-    depotName: "Main Depot",
-    sameAsCompany: false,
-    address: "456 Depot Road, Birmingham, UK",
-    postcode: "B1 1AA",
-    phoneNumber: "+44 121 123 4567"
-  };
-
-  app.get("/api/depot-settings", async (req, res) => {
+  // Depot Management API endpoints
+  app.get("/api/depot-settings", async (req: Request, res: Response) => {
     try {
-      res.json(depotSettingsData);
+      const depots = await db.select().from(depotSettings)
+        .where(eq(depotSettings.adminUserId, "test-user"))
+        .orderBy(desc(depotSettings.createdAt));
+      
+      res.json(depots);
     } catch (error: any) {
       console.error('Error fetching depot settings:', error);
       res.status(500).json({ error: "Failed to fetch depot settings" });
     }
   });
 
-  app.put("/api/depot-settings", async (req, res) => {
+  app.post("/api/depot-settings", async (req: Request, res: Response) => {
     try {
-      const updates = req.body;
-      // Update the stored data
-      depotSettingsData = { ...depotSettingsData, ...updates };
-      console.log('Updated depot settings:', depotSettingsData);
-      res.json(depotSettingsData);
+      const depotData = {
+        adminUserId: "test-user",
+        depotName: req.body.depotName,
+        sameAsCompany: req.body.sameAsCompany || false,
+        address: req.body.address,
+        postcode: req.body.postcode,
+        phoneNumber: req.body.phoneNumber,
+        travelRatePerMile: req.body.travelRatePerMile || "0.45",
+        standardTravelTime: req.body.standardTravelTime || "30.0",
+        maxTravelDistance: req.body.maxTravelDistance || "50.0",
+        operatingHours: req.body.operatingHours,
+        isActive: true
+      };
+
+      const [newDepot] = await db.insert(depotSettings)
+        .values(depotData)
+        .returning();
+
+      res.json(newDepot);
     } catch (error: any) {
-      console.error('Error updating depot settings:', error);
-      res.status(500).json({ error: "Failed to update depot settings" });
+      console.error('Error creating depot:', error);
+      res.status(500).json({ error: "Failed to create depot" });
+    }
+  });
+
+  app.put("/api/depot-settings/:id", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const updates = {
+        depotName: req.body.depotName,
+        sameAsCompany: req.body.sameAsCompany,
+        address: req.body.address,
+        postcode: req.body.postcode,
+        phoneNumber: req.body.phoneNumber,
+        travelRatePerMile: req.body.travelRatePerMile,
+        standardTravelTime: req.body.standardTravelTime,
+        maxTravelDistance: req.body.maxTravelDistance,
+        operatingHours: req.body.operatingHours,
+        isActive: req.body.isActive,
+        updatedAt: new Date()
+      };
+
+      const [updatedDepot] = await db.update(depotSettings)
+        .set(updates)
+        .where(and(
+          eq(depotSettings.id, parseInt(id)),
+          eq(depotSettings.adminUserId, "test-user")
+        ))
+        .returning();
+
+      if (!updatedDepot) {
+        return res.status(404).json({ error: "Depot not found" });
+      }
+
+      res.json(updatedDepot);
+    } catch (error: any) {
+      console.error('Error updating depot:', error);
+      res.status(500).json({ error: "Failed to update depot" });
+    }
+  });
+
+  app.delete("/api/depot-settings/:id", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+
+      const [deletedDepot] = await db.delete(depotSettings)
+        .where(and(
+          eq(depotSettings.id, parseInt(id)),
+          eq(depotSettings.adminUserId, "test-user")
+        ))
+        .returning();
+
+      if (!deletedDepot) {
+        return res.status(404).json({ error: "Depot not found" });
+      }
+
+      res.json({ message: "Depot deleted successfully" });
+    } catch (error: any) {
+      console.error('Error deleting depot:', error);
+      res.status(500).json({ error: "Failed to delete depot" });
+    }
+  });
+
+  // Travel calculation endpoint
+  app.post("/api/calculate-travel", async (req: Request, res: Response) => {
+    try {
+      const { fromPostcode, toPostcode, depotId } = req.body;
+
+      // Check if we have a cached calculation
+      const cachedCalculation = await db.select().from(travelCalculations)
+        .where(and(
+          eq(travelCalculations.fromPostcode, fromPostcode),
+          eq(travelCalculations.toPostcode, toPostcode),
+          eq(travelCalculations.isActive, true)
+        ))
+        .orderBy(desc(travelCalculations.calculatedAt))
+        .limit(1);
+
+      if (cachedCalculation.length > 0) {
+        return res.json(cachedCalculation[0]);
+      }
+
+      // For demo purposes, calculate approximate travel distance and time
+      // In production, this would integrate with Google Maps API or similar
+      const mockDistanceMiles = Math.random() * 30 + 5; // Random distance between 5-35 miles
+      const mockTravelTime = mockDistanceMiles * 2.5 + Math.random() * 20; // Rough estimate
+
+      // Get depot settings for travel rate
+      let travelRate = 0.45; // Default UK mileage rate
+      if (depotId) {
+        const depot = await db.select().from(depotSettings)
+          .where(eq(depotSettings.id, parseInt(depotId)))
+          .limit(1);
+        
+        if (depot.length > 0 && depot[0].travelRatePerMile) {
+          travelRate = parseFloat(depot[0].travelRatePerMile);
+        }
+      }
+
+      const travelCost = mockDistanceMiles * travelRate;
+
+      // Cache the calculation
+      const [newCalculation] = await db.insert(travelCalculations)
+        .values({
+          fromPostcode,
+          toPostcode,
+          distanceMiles: mockDistanceMiles.toFixed(2),
+          travelTimeMinutes: mockTravelTime.toFixed(2),
+          routeType: "driving",
+          isActive: true
+        })
+        .returning();
+
+      // Add travel cost to response
+      const response = {
+        ...newCalculation,
+        travelCost: travelCost.toFixed(2),
+        travelRatePerMile: travelRate.toFixed(2)
+      };
+
+      res.json(response);
+    } catch (error: any) {
+      console.error('Error calculating travel:', error);
+      res.status(500).json({ error: "Failed to calculate travel" });
     }
   });
 

@@ -296,8 +296,26 @@ export const depotSettings = pgTable("depot_settings", {
   address: text("address"),
   postcode: varchar("postcode", { length: 10 }).notNull(), // Depot postcode for travel calculations
   phoneNumber: varchar("phone_number"),
+  // Travel calculation settings
+  travelRatePerMile: decimal("travel_rate_per_mile", { precision: 10, scale: 2 }).default("0.45"),
+  standardTravelTime: decimal("standard_travel_time", { precision: 5, scale: 2 }).default("30.0"),
+  maxTravelDistance: decimal("max_travel_distance", { precision: 8, scale: 2 }).default("50.0"),
+  operatingHours: text("operating_hours"),
+  isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Travel calculations cache for postcode distances
+export const travelCalculations = pgTable("travel_calculations", {
+  id: serial("id").primaryKey(),
+  fromPostcode: varchar("from_postcode", { length: 10 }).notNull(),
+  toPostcode: varchar("to_postcode", { length: 10 }).notNull(),
+  distanceMiles: decimal("distance_miles", { precision: 8, scale: 2 }),
+  travelTimeMinutes: decimal("travel_time_minutes", { precision: 8, scale: 2 }),
+  routeType: varchar("route_type").default("driving"), // driving, walking, cycling
+  calculatedAt: timestamp("calculated_at").notNull().defaultNow(),
+  isActive: boolean("is_active").notNull().default(true),
 });
 
 // Team member invitations
@@ -358,6 +376,8 @@ export type CompanySettings = typeof companySettings.$inferSelect;
 export type InsertCompanySettings = typeof companySettings.$inferInsert;
 export type DepotSettings = typeof depotSettings.$inferSelect;
 export type InsertDepotSettings = typeof depotSettings.$inferInsert;
+export type TravelCalculation = typeof travelCalculations.$inferSelect;
+export type InsertTravelCalculation = typeof travelCalculations.$inferInsert;
 export type TeamInvitation = typeof teamInvitations.$inferSelect;
 export type InsertTeamInvitation = typeof teamInvitations.$inferInsert;
 export type TeamBillingRecord = typeof teamBillingRecords.$inferSelect;
