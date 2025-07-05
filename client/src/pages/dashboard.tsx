@@ -820,7 +820,8 @@ export default function Dashboard() {
           defectsText,
           defectPatterns,
           count,
-          sectionId: section.id
+          sectionId: section.id,
+          rawDefectsText: JSON.stringify(defectsText)
         });
       }
       
@@ -920,6 +921,18 @@ export default function Dashboard() {
     // Total cost = number of defects × cost per repair
     const totalCost = numberOfDefects * unitCost;
     const isUnderMinimum = numberOfDefects < minQuantity;
+
+    // Debug for Section 2 final calculation
+    if (section.itemNo === 2) {
+      console.log(`Section 2 FINAL COST CALCULATION:`, {
+        numberOfDefects,
+        unitCost,
+        totalCost,
+        calculation: `${numberOfDefects} defects × £${unitCost} = £${totalCost}`,
+        isUnderMinimum,
+        minQuantity
+      });
+    }
 
     return {
       cost: totalCost,
