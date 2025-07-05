@@ -52,9 +52,49 @@ export default function VehicleTravelRates() {
       fuelConsumptionMpg: 0,
       fuelCostPerLitre: 0,
       driverWagePerHour: 0,
+      assistantWagePerHour: 0,
+      hasAssistant: false,
       vehicleRunningCostPerMile: 0,
+      autoUpdateFuelPrice: true,
     },
   });
+
+  // Function to auto-populate vehicle defaults
+  const autoPopulateVehicleDefaults = async (vehicleType: string) => {
+    try {
+      const response = await fetch(`/api/vehicle-defaults/${encodeURIComponent(vehicleType)}`);
+      if (response.ok) {
+        const defaults = await response.json();
+        
+        // Only populate if fields are currently empty (not when editing)
+        if (!editingRate) {
+          form.setValue('fuelConsumptionMpg', defaults.fuelConsumptionMpg);
+          form.setValue('fuelCostPerLitre', defaults.fuelCostPerLitre);
+          form.setValue('hasAssistant', defaults.hasAssistant);
+          form.setValue('assistantWagePerHour', defaults.assistantWagePerHour);
+          
+          // Set realistic driver wage (£15/hour for smaller vehicles, £18/hour for larger)
+          const weight = vehicleType.match(/(\d+(?:\.\d+)?)[t]/i);
+          const vehicleWeight = weight ? parseFloat(weight[1]) : 3.5;
+          const driverWage = vehicleWeight <= 7.5 ? 15.00 : 18.00;
+          form.setValue('driverWagePerHour', driverWage);
+          
+          // Set realistic running costs based on vehicle size
+          const runningCost = vehicleWeight <= 3.5 ? 0.15 : 
+                             vehicleWeight <= 7.5 ? 0.25 : 
+                             vehicleWeight <= 18 ? 0.35 : 0.45;
+          form.setValue('vehicleRunningCostPerMile', runningCost);
+          
+          toast({
+            title: "Vehicle defaults loaded",
+            description: `Auto-populated fields for ${vehicleType} with current fuel prices and realistic values.`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching vehicle defaults:', error);
+    }
+  };
 
   const { data: vehicleRates, isLoading } = useQuery<VehicleTravelRate[]>({
     queryKey: ['/api/vehicle-travel-rates'],
@@ -196,7 +236,13 @@ export default function VehicleTravelRates() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Vehicle Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select 
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          autoPopulateVehicleDefaults(value);
+                        }} 
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select vehicle type" />
@@ -277,6 +323,47 @@ export default function VehicleTravelRates() {
 
                 <FormField
                   control={form.control}
+                  name="hasAssistant"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">Has Assistant</FormLabel>
+                        <div className="text-sm text-muted-foreground">
+                          Does this vehicle type require an assistant/mate?
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="assistantWagePerHour"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Assistant Wage per Hour (£)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          step="0.01"
+                          placeholder="e.g., 12.50"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="vehicleRunningCostPerMile"
                   render={({ field }) => (
                     <FormItem>
@@ -291,6 +378,27 @@ export default function VehicleTravelRates() {
                         />
                       </FormControl>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="autoUpdateFuelPrice"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">Auto-Update Fuel Prices</FormLabel>
+                        <div className="text-sm text-muted-foreground">
+                          Automatically update fuel costs with monthly price changes
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
@@ -331,6 +439,7 @@ export default function VehicleTravelRates() {
                   <TableHead>Fuel MPG</TableHead>
                   <TableHead>Fuel Cost/L</TableHead>
                   <TableHead>Driver Wage/Hr</TableHead>
+                  <TableHead>Assistant</TableHead>
                   <TableHead>Vehicle Cost/Mile</TableHead>
                   <TableHead>Total Cost/Mile</TableHead>
                   <TableHead>Actions</TableHead>
@@ -343,6 +452,15 @@ export default function VehicleTravelRates() {
                     <TableCell>{rate.fuelConsumptionMpg} MPG</TableCell>
                     <TableCell>£{rate.fuelCostPerLitre}</TableCell>
                     <TableCell>£{rate.driverWagePerHour}</TableCell>
+                    <TableCell>
+                      {rate.hasAssistant ? (
+                        <span className="text-green-600 font-medium">
+                          Yes (£{rate.assistantWagePerHour}/hr)
+                        </span>
+                      ) : (
+                        <span className="text-gray-500">No</span>
+                      )}
+                    </TableCell>
                     <TableCell>£{rate.vehicleRunningCostPerMile}</TableCell>
                     <TableCell className="font-medium">£{calculateTotalCostPerMile(rate)}</TableCell>
                     <TableCell>
