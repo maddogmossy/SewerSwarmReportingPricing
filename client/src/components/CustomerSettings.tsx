@@ -275,32 +275,46 @@ export function CustomerSettings() {
 
   const handleVehicleTypeChange = async (vehicleType: string) => {
     console.log('Vehicle type selected:', vehicleType);
+    console.log('editingVehicleRate state:', editingVehicleRate);
     vehicleForm.setValue('vehicleType', vehicleType);
     
     // Only auto-populate if we're adding a new vehicle (not editing)
     if (!editingVehicleRate) {
       console.log('Auto-populating defaults for new vehicle type:', vehicleType);
       const defaults = await fetchVehicleDefaults(vehicleType);
+      console.log('Received defaults:', defaults);
       
       if (defaults) {
-        console.log('Setting form values with defaults:', defaults);
-        vehicleForm.setValue('fuelConsumptionMpg', defaults.fuelConsumptionMpg);
-        vehicleForm.setValue('fuelCostPerLitre', defaults.fuelCostPerLitre);
-        vehicleForm.setValue('driverWagePerHour', defaults.driverWagePerHour);
-        vehicleForm.setValue('vehicleRunningCostPerMile', defaults.vehicleRunningCostPerMile);
-        
-        if (defaults.hasAssistant) {
-          vehicleForm.setValue('assistantWagePerHour', defaults.assistantWagePerHour || 0);
-          vehicleForm.setValue('hasAssistant', true);
+        console.log('Setting form values with defaults...');
+        try {
+          vehicleForm.setValue('fuelConsumptionMpg', defaults.fuelConsumptionMpg);
+          vehicleForm.setValue('fuelCostPerLitre', defaults.fuelCostPerLitre);
+          vehicleForm.setValue('driverWagePerHour', defaults.driverWagePerHour);
+          vehicleForm.setValue('vehicleRunningCostPerMile', defaults.vehicleRunningCostPerMile);
+          
+          if (defaults.hasAssistant) {
+            vehicleForm.setValue('assistantWagePerHour', defaults.assistantWagePerHour || 0);
+            vehicleForm.setValue('hasAssistant', true);
+          } else {
+            vehicleForm.setValue('hasAssistant', false);
+            vehicleForm.setValue('assistantWagePerHour', 0);
+          }
+          
+          vehicleForm.setValue('autoUpdateFuelPrice', defaults.autoUpdateFuelPrice || false);
+          
+          console.log('All form values set successfully');
+          toast({
+            title: "Auto-populated",
+            description: `Default values loaded for ${vehicleType}`,
+          });
+        } catch (error) {
+          console.error('Error setting form values:', error);
         }
-        
-        vehicleForm.setValue('autoUpdateFuelPrice', defaults.autoUpdateFuelPrice || false);
-        
-        toast({
-          title: "Auto-populated",
-          description: `Default values loaded for ${vehicleType}`,
-        });
+      } else {
+        console.log('No defaults received from API');
       }
+    } else {
+      console.log('Skipping auto-population because editing existing vehicle');
     }
   };
 
