@@ -516,8 +516,32 @@ export default function RepairPricing() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Determine which cost to use based on selected option
+    let selectedCost = "0";
+    if (formData.selectedOption.includes("Option 1")) {
+      selectedCost = formData.option1Cost;
+    } else if (formData.selectedOption.includes("Option 2")) {
+      selectedCost = formData.option2Cost;
+    } else if (formData.selectedOption.includes("Option 3")) {
+      selectedCost = formData.option3Cost;
+    } else if (formData.selectedOption.includes("Option 4")) {
+      selectedCost = formData.option4Cost;
+    }
+    
+    console.log('Form submission debug:', {
+      selectedOption: formData.selectedOption,
+      selectedCost: selectedCost,
+      allCosts: {
+        option1: formData.option1Cost,
+        option2: formData.option2Cost,
+        option3: formData.option3Cost,
+        option4: formData.option4Cost
+      }
+    });
+    
     const baseData = {
       ...formData,
+      cost: selectedCost, // Map selected option cost to the cost field
       selectedOption: formData.selectedOption,
       option1Cost: formData.option1Cost,
       option2Cost: formData.option2Cost,
