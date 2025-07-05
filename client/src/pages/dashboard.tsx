@@ -572,7 +572,8 @@ export default function Dashboard() {
         // Auto-populate cost for defective sections
         const autoCost = calculateAutoCost(section);
         if (autoCost) {
-          const costColor = autoCost.isUnderMinimum ? 'text-red-600' : 'text-blue-600';
+          // Section 2 should always show red, others follow minimum quantity rule
+          const costColor = (section.itemNo === 2 || autoCost.isUnderMinimum) ? 'text-red-600' : 'text-blue-600';
           return (
             <div className={`text-xs ${costColor} font-medium`} title={
               autoCost.isUnderMinimum 
