@@ -9,6 +9,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -119,32 +129,32 @@ type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
 
 const vehicleTypes = [
   // CCTV Vehicles
-  "3.5t Van Pack",
-  "7.5t CCTV Survey",
-  "12t CCTV Unit",
+  "Van Pack",
+  "CCTV Survey Vehicle",
+  "CCTV Unit",
   
   // Jetting Vehicles  
-  "7.5t Jet Vac",
-  "18t Jet Vac",
-  "26t Jet Vac",
+  "Jet Vac Vehicle",
+  "High Pressure Jetter",
+  "Industrial Jetter",
   
   // Patching Vehicles
-  "3.5t Patch Repair",
-  "7.5t Patching Unit", 
-  "12t Patching Unit",
+  "Patch Repair Vehicle",
+  "Patching Unit", 
+  "UV Patching Vehicle",
   
   // Combination Vehicles
-  "18t Combination Unit",
-  "26t Combination Unit",
-  "32t Combination Unit",
+  "Combination Unit",
+  "Multi-Service Vehicle",
+  "Combi Cleaner",
   
   // Standard Vehicles
-  "3.5t Van",
-  "5t Van", 
-  "7.5t Truck",
-  "18t Truck",
-  "26t Truck",
-  "32t Truck"
+  "Van",
+  "Small Truck", 
+  "Medium Truck",
+  "Large Truck",
+  "HGV",
+  "Articulated Vehicle"
 ];
 
 export function CustomerSettings() {
@@ -366,9 +376,19 @@ export function CustomerSettings() {
     setIsVehicleDialogOpen(true);
   };
 
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [vehicleToDelete, setVehicleToDelete] = useState<number | null>(null);
+
   const handleDeleteVehicle = (id: number) => {
-    if (confirm("Are you sure you want to delete this vehicle travel rate?")) {
-      deleteVehicleRateMutation.mutate(id);
+    setVehicleToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteVehicle = () => {
+    if (vehicleToDelete) {
+      deleteVehicleRateMutation.mutate(vehicleToDelete);
+      setDeleteConfirmOpen(false);
+      setVehicleToDelete(null);
     }
   };
 
@@ -1427,6 +1447,29 @@ export function CustomerSettings() {
           )}
         </Tabs>
       </DialogContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Vehicle Travel Rate</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this vehicle travel rate? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteConfirmOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteVehicle}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }

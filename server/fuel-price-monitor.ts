@@ -128,9 +128,9 @@ export class FuelPriceMonitor {
     
     if (type.includes('van pack') || type.includes('van-pack')) return 'van_pack';
     if (type.includes('cctv') || type.includes('survey')) return 'cctv';
-    if (type.includes('jet vac') || type.includes('jet-vac') || type.includes('jetting')) return 'jet_vac';
-    if (type.includes('patch') || type.includes('repair')) return 'patching';
-    if (type.includes('combination') || type.includes('combi')) return 'combination';
+    if (type.includes('jet vac') || type.includes('jet-vac') || type.includes('jetting') || type.includes('jetter')) return 'jet_vac';
+    if (type.includes('patch') || type.includes('repair') || type.includes('uv')) return 'patching';
+    if (type.includes('combination') || type.includes('combi') || type.includes('multi-service')) return 'combination';
     
     return 'standard';
   }
@@ -165,48 +165,48 @@ export class FuelPriceMonitor {
     let workCategory: string;
     let assistantReason: string;
     
-    // Category-based assistant requirements
+    // Category-based assistant requirements (no longer weight-dependent)
     switch (category) {
       case 'van_pack':
         hasAssistant = false;
         assistantWagePerHour = 0;
         workCategory = 'CCTV Survey';
-        assistantReason = 'Van Pack units are designed for single operator use';
+        assistantReason = 'Van Pack units are designed for single operator use with compact equipment';
         break;
         
       case 'cctv':
-        hasAssistant = weight > 7.5; // Large CCTV units need assistant for equipment handling
-        assistantWagePerHour = hasAssistant ? 12.50 : 0;
+        hasAssistant = false; // Standard CCTV operations typically single operator
+        assistantWagePerHour = 0;
         workCategory = 'CCTV Survey';
-        assistantReason = hasAssistant ? 'Large CCTV equipment requires assistant for cable handling and monitoring' : 'Standard CCTV operation - single operator';
+        assistantReason = 'Standard CCTV Survey operation - single operator for most surveys';
         break;
         
       case 'jet_vac':
         hasAssistant = true; // Jet Vac always needs assistant for safety and efficiency
         assistantWagePerHour = 12.50;
         workCategory = 'Jetting & Cleaning';
-        assistantReason = 'Jet Vac operations require assistant for hose management and safety monitoring';
+        assistantReason = 'Jetting operations require assistant for hose management and safety protocols';
         break;
         
       case 'patching':
-        hasAssistant = weight > 12; // Large patching units need assistant for equipment setup
-        assistantWagePerHour = hasAssistant ? 12.50 : 0;
+        hasAssistant = false; // Standard patching operations typically single operator
+        assistantWagePerHour = 0;
         workCategory = 'Patching & Repair';
-        assistantReason = hasAssistant ? 'Large patching equipment requires assistant for liner installation and curing setup' : 'Standard patching - single operator';
+        assistantReason = 'Standard patching operations - single operator for most repairs';
         break;
         
       case 'combination':
         hasAssistant = true; // Combination units always need assistant due to complexity
         assistantWagePerHour = 12.50;
         workCategory = 'Multi-Service';
-        assistantReason = 'Combination units require assistant for multi-service operations and equipment coordination';
+        assistantReason = 'Multi-service vehicles require assistant for equipment coordination and safety';
         break;
         
       default: // standard
-        hasAssistant = weight > 18; // Only very large standard vehicles need assistant
-        assistantWagePerHour = hasAssistant ? 12.50 : 0;
+        hasAssistant = false; // Standard vehicles default to single operator
+        assistantWagePerHour = 0;
         workCategory = 'General';
-        assistantReason = hasAssistant ? 'Large vehicle operations require assistant for safety and efficiency' : 'Standard single operator vehicle';
+        assistantReason = 'Standard vehicle operation - single operator';
         break;
     }
     
