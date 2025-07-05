@@ -534,7 +534,9 @@ export default function RepairPricing() {
         option2: formData.option2Cost,
         option3: formData.option3Cost,
         option4: formData.option4Cost
-      }
+      },
+      description: formData.description,
+      pipeSize: formData.pipeSize
     });
     
     const baseData = {
@@ -649,18 +651,14 @@ export default function RepairPricing() {
   };
 
   const handleEdit = (item: any) => {
-    // Show compliance warning for existing pricing configurations
-    console.log("handleEdit called, showing compliance warning first");
-    setPendingEditItem(item);
-    setIsComplianceWarningOpen(true);
+    // Go directly to edit mode (bypassing compliance warning as requested)
+    console.log("handleEdit called, going directly to edit mode");
+    proceedWithEditDirectly(item);
   };
 
-  // Proceed with edit after compliance warning
-  const proceedWithEdit = () => {
-    const item = pendingEditItem;
-    if (!item) return;
-
-    console.log("proceedWithEdit called, setting isDescriptionEditable to true");
+  // Direct edit function that bypasses compliance warning
+  const proceedWithEditDirectly = (item: any) => {
+    console.log("proceedWithEditDirectly called, setting up edit mode");
     
     setFormData({
       workCategoryId: item.workCategoryId?.toString() || "",
@@ -682,6 +680,24 @@ export default function RepairPricing() {
       option4PerShift: item.option4PerShift?.toString() || "",
       selectedOption: item.selectedOption || ""
     });
+    
+    // Pre-select sectors that already have this pricing rule
+    const matchingSectors = findMatchingSectors(item);
+    setApplySectors(matchingSectors);
+    setOriginalApplySectors(matchingSectors); // Track original state
+    
+    setIsDescriptionEditable(true); // Allow description editing
+    setEditingItem(item);
+    setIsAddDialogOpen(true);
+  };
+
+  // Proceed with edit after compliance warning (legacy function for dashboard imports)
+  const proceedWithEdit = () => {
+    const item = pendingEditItem;
+    if (!item) return;
+
+    console.log("proceedWithEdit called, setting isDescriptionEditable to true");
+    proceedWithEditDirectly(item);
     
     // Pre-select sectors that already have this pricing rule
     const matchingSectors = findMatchingSectors(item);
