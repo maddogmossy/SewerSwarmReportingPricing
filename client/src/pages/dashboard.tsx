@@ -1693,7 +1693,11 @@ export default function Dashboard() {
                     </thead>
                     <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
                       {sectionData.map((section, index) => (
-                        <tr key={`${section.id}-${section.itemNo}-${index}-${section.defects?.substring(0, 10)}`} className="hover:bg-slate-50">
+                        <tr key={`${section.id}-${section.itemNo}-${index}-${section.defects?.substring(0, 10)}`} className={`hover:bg-slate-50 ${
+                          section.severityGrade === 0 && section.adoptable === 'Yes' 
+                            ? 'bg-green-50 hover:bg-green-100' 
+                            : ''
+                        }`}>
                           {columns.map((column) => {
                             if (hiddenColumns.has(column.key)) return null;
                             return (
