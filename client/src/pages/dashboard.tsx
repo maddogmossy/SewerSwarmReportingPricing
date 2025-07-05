@@ -578,7 +578,8 @@ export default function Dashboard() {
                                    autoCost.numberOfDefects === 1 && 
                                    section.defects && 
                                    !section.defects.toLowerCase().includes('debris') &&
-                                   !section.defects.toLowerCase().includes('der');
+                                   !section.defects.toLowerCase().includes('der') &&
+                                   !section.defects.toLowerCase().includes('deg');
           
           const costColor = (is300mmSinglePatch || autoCost.isUnderMinimum) ? 'text-red-600' : 'text-blue-600';
           return (
@@ -796,6 +797,7 @@ export default function Dashboard() {
     if (section.defects && 
         (section.defects.toLowerCase().includes('debris') || 
          section.defects.toLowerCase().includes('der') ||
+         section.defects.toLowerCase().includes('deg') ||
          section.defects.toLowerCase().includes('cleaning'))) {
       return null;
     }
