@@ -1692,11 +1692,21 @@ export default function Dashboard() {
                       </tr>
                     </thead>
                     <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
-                      {sectionData.map((section, index) => (
-                        <tr key={`${section.id}-${section.itemNo}-${index}-${section.defects?.substring(0, 10)}`} className={`hover:bg-slate-50 ${
-                          section.severityGrade === 0 && section.adoptable === 'Yes' 
-                            ? 'bg-green-50 hover:bg-green-100' 
-                            : ''
+                      {sectionData.map((section, index) => {
+                        // Debug logging for first few sections
+                        if (index < 3) {
+                          console.log(`Section ${section.itemNo}:`, {
+                            severityGrade: section.severityGrade,
+                            severityGradeType: typeof section.severityGrade,
+                            adoptable: section.adoptable,
+                            shouldHighlight: (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes'
+                          });
+                        }
+                        return (
+                        <tr key={`${section.id}-${section.itemNo}-${index}-${section.defects?.substring(0, 10)}`} className={`${
+                          (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
+                            ? 'bg-green-200 hover:bg-green-300' 
+                            : 'hover:bg-slate-50'
                         }`}>
                           {columns.map((column) => {
                             if (hiddenColumns.has(column.key)) return null;
@@ -1706,7 +1716,7 @@ export default function Dashboard() {
                                 className={`
                                   ${column.width} border border-slate-300 text-xs text-center align-middle
                                   ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
-                                  ${section.severityGrade === 0 && section.adoptable === 'Yes' ? 'bg-green-50' : ''}
+                                  ${(section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' ? 'bg-green-200' : ''}
                                 `}
                                 style={{ wordWrap: 'break-word', whiteSpace: 'normal' }}
                               >
@@ -1715,7 +1725,8 @@ export default function Dashboard() {
                             );
                           })}
                         </tr>
-                      ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
