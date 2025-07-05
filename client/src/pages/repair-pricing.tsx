@@ -621,38 +621,10 @@ export default function RepairPricing() {
   };
 
   const handleEdit = (item: any) => {
-    // Go directly to edit mode without compliance warning
-    console.log("handleEdit called, going directly to edit mode");
-    
-    setFormData({
-      workCategoryId: item.workCategoryId?.toString() || "",
-      pipeSize: item.pipeSize,
-      depth: item.depth || "",
-      description: item.description || "",
-      rule: item.rule || "",
-      lengthOfRepair: item.lengthOfRepair || "1000mm",
-      minInstallationPerDay: item.minInstallationPerDay?.toString() || "",
-      dayRate: item.dayRate?.toString() || "",
-      travelTimeAllowance: item.travelTimeAllowance?.toString() || "2.0",
-      option1Cost: item.option1Cost?.toString() || "",
-      option2Cost: item.option2Cost?.toString() || "",
-      option3Cost: item.option3Cost?.toString() || "",
-      option4Cost: item.option4Cost?.toString() || "",
-      option1PerShift: item.option1PerShift?.toString() || "",
-      option2PerShift: item.option2PerShift?.toString() || "",
-      option3PerShift: item.option3PerShift?.toString() || "",
-      option4PerShift: item.option4PerShift?.toString() || "",
-      selectedOption: item.selectedOption || ""
-    });
-    
-    // Pre-select sectors that already have this pricing rule
-    const matchingSectors = findMatchingSectors(item);
-    setApplySectors(matchingSectors);
-    setOriginalApplySectors(matchingSectors);
-    
-    setEditingItem(item);
-    setIsDescriptionEditable(true); // Allow editing of description
-    setIsAddDialogOpen(true);
+    // Show compliance warning for existing pricing configurations
+    console.log("handleEdit called, showing compliance warning first");
+    setPendingEditItem(item);
+    setIsComplianceWarningOpen(true);
   };
 
   // Proceed with edit after compliance warning
@@ -689,8 +661,8 @@ export default function RepairPricing() {
     setOriginalApplySectors(matchingSectors); // Track original state
     
     setEditingItem(item);
-    setIsDescriptionEditable(true); // Enable description editing when proceeding with edit
-    console.log("Set isDescriptionEditable to true");
+    setIsDescriptionEditable(true); // Enable description editing after compliance warning
+    console.log("Set isDescriptionEditable to true after compliance warning");
     setIsAddDialogOpen(true);
     setIsComplianceWarningOpen(false);
     setPendingEditItem(null);
@@ -848,7 +820,12 @@ export default function RepairPricing() {
                             <div className="flex items-start justify-between">
                               <div className="flex-1 mr-3">
                                 <p className="text-sm text-slate-700 leading-relaxed">
-                                  {item.description?.replace(/\s*\(Item No:\s*\d+\)\s*/g, '').trim()}
+                                  {(() => {
+                                    // Extract dimensions for display (e.g., "1000mm x 300mm")
+                                    const description = item.description?.replace(/\s*\(Item No:\s*\d+\)\s*/g, '').trim();
+                                    const dimensionMatch = description?.match(/(\d+mm\s*x\s*\d+mm)/);
+                                    return dimensionMatch ? dimensionMatch[1] : description;
+                                  })()}
                                 </p>
                               </div>
                               <div className="flex gap-1 flex-shrink-0">
