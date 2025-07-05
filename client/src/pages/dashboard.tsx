@@ -812,7 +812,19 @@ export default function Dashboard() {
       
       // Count comma-separated defects or multiple meterage mentions
       const defectPatterns = defectsText.match(/\d+\.?\d*\s*m/g);
-      return defectPatterns ? defectPatterns.length : 1;
+      const count = defectPatterns ? defectPatterns.length : 1;
+      
+      // Debug logging for Section 2
+      if (section.itemNo === 2) {
+        console.log(`Section 2 defect counting debug:`, {
+          defectsText,
+          defectPatterns,
+          count,
+          sectionId: section.id
+        });
+      }
+      
+      return count;
     };
 
     // Extract pipe size (remove "mm" and convert to number)
@@ -828,11 +840,12 @@ export default function Dashboard() {
     // Find matching repair pricing from database
     let matchingPricing = null;
     
-    console.log(`calculateAutoCost debug for section ${section.itemNo}:`, {
+    console.log(`calculateAutoCost debug for section ${section.itemNo} (ID: ${section.id}):`, {
       repairPricingDataLength: Array.isArray(repairPricingData) ? repairPricingData.length : 'not array',
       lookingForPipeSize: `${pipeSize}mm`,
       availablePipeSizes: Array.isArray(repairPricingData) ? repairPricingData.map(p => p.pipeSize) : [],
-      sector: currentSector.id
+      sector: currentSector.id,
+      sectionDefects: section.defects
     });
     
     if (Array.isArray(repairPricingData) && repairPricingData.length > 0) {
