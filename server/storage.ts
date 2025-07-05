@@ -433,11 +433,46 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateCompanySettings(adminUserId: string, updates: Partial<CompanySettings>): Promise<CompanySettings> {
-    const [updated] = await db.update(companySettings)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(companySettings.adminUserId, adminUserId))
-      .returning();
-    return updated;
+    // Check if settings exist
+    const existing = await this.getCompanySettings(adminUserId);
+    
+    if (existing) {
+      // Update existing record
+      const [updated] = await db.update(companySettings)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(companySettings.adminUserId, adminUserId))
+        .returning();
+      return updated;
+    } else {
+      // Create new record
+      const newSettings: InsertCompanySettings = {
+        adminUserId,
+        companyName: "Sewer Inspection Co.",
+        companyLogo: null,
+        buildingName: "",
+        streetName: "",
+        streetName2: "",
+        town: "",
+        city: "",
+        county: "",
+        postcode: "",
+        country: "United Kingdom",
+        phoneNumber: "",
+        email: "",
+        website: "",
+        address: "", // Legacy field
+        streetAddress: "", // Legacy field
+        maxUsers: 1,
+        currentUsers: 1,
+        pricePerUser: "25.00",
+        ...updates
+      };
+      
+      const [created] = await db.insert(companySettings)
+        .values(newSettings)
+        .returning();
+      return created;
+    }
   }
 
   // Team management implementation

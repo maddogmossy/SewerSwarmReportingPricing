@@ -279,7 +279,9 @@ export const companySettings = pgTable("company_settings", {
   companyName: varchar("company_name").notNull(),
   companyLogo: text("company_logo"), // Base64 or URL
   // Detailed address fields
-  streetAddress: text("street_address"),
+  buildingName: text("building_name"),
+  streetName: text("street_name"),
+  streetName2: text("street_name_2"),
   town: varchar("town", { length: 100 }),
   city: varchar("city", { length: 100 }),
   county: varchar("county", { length: 100 }),
@@ -291,6 +293,7 @@ export const companySettings = pgTable("company_settings", {
   website: varchar("website"),
   // Legacy address field for backward compatibility
   address: text("address"),
+  streetAddress: text("street_address"), // Legacy field
   emailDomain: varchar("email_domain"), // For auto-assigning team members
   maxUsers: integer("max_users").default(1), // How many users they've paid for
   currentUsers: integer("current_users").default(1), // How many users they currently have
@@ -306,7 +309,9 @@ export const depotSettings = pgTable("depot_settings", {
   depotName: varchar("depot_name").notNull(),
   sameAsCompany: boolean("same_as_company").default(false), // If true, copies company details
   // Detailed address fields
-  streetAddress: text("street_address"),
+  buildingName: text("building_name"),
+  streetName: text("street_name"),
+  streetName2: text("street_name_2"),
   town: varchar("town", { length: 100 }),
   city: varchar("city", { length: 100 }),
   county: varchar("county", { length: 100 }),
@@ -317,6 +322,7 @@ export const depotSettings = pgTable("depot_settings", {
   email: varchar("email"),
   // Legacy address field for backward compatibility
   address: text("address"),
+  streetAddress: text("street_address"), // Legacy field
   // Travel calculation settings
   travelRatePerMile: decimal("travel_rate_per_mile", { precision: 10, scale: 2 }).default("0.45"),
   standardTravelTime: decimal("standard_travel_time", { precision: 5, scale: 2 }).default("30.0"),

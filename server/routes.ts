@@ -6,6 +6,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { db } from "./db";
+import { storage } from "./storage";
 import { fileUploads, users, sectionInspections, sectionDefects, equipmentTypes, pricingRules, sectorStandards, projectFolders, repairMethods, repairPricing, workCategories, depotSettings, travelCalculations, vehicleTravelRates } from "@shared/schema";
 import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
@@ -37,6 +38,23 @@ const upload = multer({
       cb(null, true);
     } else {
       cb(new Error('Only PDF and .db files are allowed'));
+    }
+  }
+});
+
+// Separate multer configuration for image uploads (logos)
+const logoUpload = multer({
+  dest: "uploads/logos/",
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit for logos
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowedTypes.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files (JPG, PNG, GIF, WebP) are allowed'));
     }
   }
 });
@@ -1781,34 +1799,50 @@ export async function registerRoutes(app: Express) {
   });
 
   // Company settings routes (admin only)
-  let companySettingsData = {
-    id: 1,
-    companyName: "Sewer Inspection Co.",
-    companyLogo: null,
-    address: "123 Infrastructure St, London, UK",
-    postcode: "SW1A 1AA",
-    phoneNumber: "+44 20 1234 5678",
-    maxUsers: 5,
-    currentUsers: 1,
-    pricePerUser: "25.00"
-  };
-
   app.get("/api/company-settings", async (req, res) => {
     try {
-      res.json(companySettingsData);
+      const userId = "test-user"; // Use test user for now
+      let settings = await storage.getCompanySettings(userId);
+      
+      // If no settings exist, create default settings
+      if (!settings) {
+        settings = await storage.updateCompanySettings(userId, {});
+      }
+      
+      res.json(settings);
     } catch (error: any) {
       console.error('Error fetching company settings:', error);
       res.status(500).json({ error: "Failed to fetch company settings" });
     }
   });
 
-  app.put("/api/company-settings", async (req, res) => {
+  // Handle both JSON and FormData for company settings updates
+  app.put("/api/company-settings", logoUpload.single("companyLogo"), async (req, res) => {
     try {
-      const updates = req.body;
-      // Update the stored data
-      companySettingsData = { ...companySettingsData, ...updates };
-      console.log('Updated company settings:', companySettingsData);
-      res.json(companySettingsData);
+      const userId = "test-user"; // Use test user for now
+      let updates: any = {};
+      
+      // Check if this is a FormData request (with file upload)
+      if (req.file) {
+        // Extract form data fields
+        for (const [key, value] of Object.entries(req.body)) {
+          if (typeof value === 'string' && value.trim()) {
+            updates[key] = value;
+          }
+        }
+        
+        // Add logo file path
+        updates.companyLogo = req.file.path;
+      } else {
+        // Regular JSON request
+        updates = req.body;
+      }
+      
+      console.log('Updating company settings with:', updates);
+      
+      // Update company settings in database
+      const updatedSettings = await storage.updateCompanySettings(userId, updates);
+      res.json(updatedSettings);
     } catch (error: any) {
       console.error('Error updating company settings:', error);
       res.status(500).json({ error: "Failed to update company settings" });

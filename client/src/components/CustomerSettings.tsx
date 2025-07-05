@@ -47,7 +47,9 @@ interface CompanySettings {
   companyName: string;
   companyLogo?: string;
   // Detailed address fields
-  streetAddress?: string;
+  buildingName?: string;
+  streetName?: string;
+  streetName2?: string;
   town?: string;
   city?: string;
   county?: string;
@@ -57,8 +59,9 @@ interface CompanySettings {
   phoneNumber?: string;
   email?: string;
   website?: string;
-  // Legacy field for backward compatibility
+  // Legacy fields for backward compatibility
   address?: string;
+  streetAddress?: string;
   maxUsers: number;
   currentUsers: number;
   pricePerUser: string;
@@ -69,7 +72,9 @@ interface DepotSettings {
   depotName: string;
   sameAsCompany: boolean;
   // Detailed address fields
-  streetAddress?: string;
+  buildingName?: string;
+  streetName?: string;
+  streetName2?: string;
   town?: string;
   city?: string;
   county?: string;
@@ -78,8 +83,9 @@ interface DepotSettings {
   // Contact information
   phoneNumber?: string;
   email?: string;
-  // Legacy field for backward compatibility
+  // Legacy fields for backward compatibility
   address?: string;
+  streetAddress?: string;
   travelRatePerMile?: string;
   standardTravelTime?: string;
   maxTravelDistance?: string;
@@ -313,7 +319,7 @@ export function CustomerSettings() {
 
   // Update company settings mutation
   const updateCompanyMutation = useMutation({
-    mutationFn: (data: Partial<CompanySettings>) =>
+    mutationFn: (data: Partial<CompanySettings> | FormData) =>
       apiRequest('PUT', '/api/company-settings', data),
     onSuccess: () => {
       toast({
@@ -376,19 +382,33 @@ export function CustomerSettings() {
   const handleCompanySubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const data = {
-      companyName: formData.get('companyName') as string,
-      streetAddress: formData.get('streetAddress') as string,
-      town: formData.get('town') as string,
-      city: formData.get('city') as string,
-      county: formData.get('county') as string,
-      postcode: formData.get('postcode') as string,
-      country: formData.get('country') as string,
-      phoneNumber: formData.get('phoneNumber') as string,
-      email: formData.get('email') as string,
-      website: formData.get('website') as string,
-    };
-    updateCompanyMutation.mutate(data);
+    
+    // Check if a logo file is uploaded
+    const logoFile = formData.get('companyLogo') as File;
+    
+    if (logoFile && logoFile.size > 0) {
+      // If there's a logo file, send FormData directly
+      updateCompanyMutation.mutate(formData);
+    } else {
+      // If no logo file, send JSON data
+      const data = {
+        companyName: formData.get('companyName') as string,
+        buildingName: formData.get('buildingName') as string,
+        streetName: formData.get('streetName') as string,
+        streetName2: formData.get('streetName2') as string,
+        town: formData.get('town') as string,
+        city: formData.get('city') as string,
+        county: formData.get('county') as string,
+        postcode: formData.get('postcode') as string,
+        country: formData.get('country') as string,
+        phoneNumber: formData.get('phoneNumber') as string,
+        email: formData.get('email') as string,
+        website: formData.get('website') as string,
+        // Legacy fields for backward compatibility
+        streetAddress: formData.get('streetAddress') as string,
+      };
+      updateCompanyMutation.mutate(data);
+    }
   };
 
   const handleDepotSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -403,7 +423,9 @@ export function CustomerSettings() {
       data = {
         depotName: formData.get('depotName') as string,
         sameAsCompany: true,
-        streetAddress: companySettings.streetAddress,
+        buildingName: companySettings.buildingName,
+        streetName: companySettings.streetName,
+        streetName2: companySettings.streetName2,
         town: companySettings.town,
         city: companySettings.city,
         county: companySettings.county,
@@ -411,8 +433,9 @@ export function CustomerSettings() {
         country: companySettings.country,
         phoneNumber: companySettings.phoneNumber,
         email: companySettings.email,
-        // Legacy field for backward compatibility
+        // Legacy fields for backward compatibility
         address: companySettings.address,
+        streetAddress: companySettings.streetAddress,
         travelRatePerMile: formData.get('travelRatePerMile') as string,
         standardTravelTime: formData.get('standardTravelTime') as string,
         maxTravelDistance: formData.get('maxTravelDistance') as string,
@@ -423,7 +446,9 @@ export function CustomerSettings() {
       data = {
         depotName: formData.get('depotName') as string,
         sameAsCompany: false,
-        streetAddress: formData.get('streetAddress') as string,
+        buildingName: formData.get('buildingName') as string,
+        streetName: formData.get('streetName') as string,
+        streetName2: formData.get('streetName2') as string,
         town: formData.get('town') as string,
         city: formData.get('city') as string,
         county: formData.get('county') as string,
@@ -431,8 +456,9 @@ export function CustomerSettings() {
         country: formData.get('country') as string,
         phoneNumber: formData.get('phoneNumber') as string,
         email: formData.get('email') as string,
-        // Legacy field for backward compatibility
+        // Legacy fields for backward compatibility
         address: formData.get('address') as string,
+        streetAddress: formData.get('streetAddress') as string,
         travelRatePerMile: formData.get('travelRatePerMile') as string,
         standardTravelTime: formData.get('standardTravelTime') as string,
         maxTravelDistance: formData.get('maxTravelDistance') as string,
@@ -599,7 +625,7 @@ export function CustomerSettings() {
                     {companyLoading ? (
                       <div className="text-center py-4">Loading company settings...</div>
                     ) : (
-                      <form onSubmit={handleCompanySubmit} className="space-y-4">
+                      <form onSubmit={handleCompanySubmit} className="space-y-4" encType="multipart/form-data">
                         <div>
                           <Label htmlFor="companyName">Company Name</Label>
                           <Input
@@ -609,14 +635,54 @@ export function CustomerSettings() {
                             required
                           />
                         </div>
+                        
                         <div>
-                          <Label htmlFor="streetAddress">Street Address</Label>
+                          <Label htmlFor="companyLogo">Company Logo</Label>
                           <Input
-                            id="streetAddress"
-                            name="streetAddress"
-                            defaultValue={companySettings?.streetAddress || ''}
-                            placeholder="e.g. 123 Business Street"
+                            id="companyLogo"
+                            name="companyLogo"
+                            type="file"
+                            accept="image/*"
+                            className="cursor-pointer"
                           />
+                          {companySettings?.companyLogo && (
+                            <div className="mt-2">
+                              <p className="text-sm text-muted-foreground">
+                                Current logo: {companySettings.companyLogo}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="buildingName">Building Name</Label>
+                          <Input
+                            id="buildingName"
+                            name="buildingName"
+                            defaultValue={companySettings?.buildingName || ''}
+                            placeholder="e.g. Business Centre"
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="streetName">Street Name</Label>
+                            <Input
+                              id="streetName"
+                              name="streetName"
+                              defaultValue={companySettings?.streetName || ''}
+                              placeholder="e.g. High Street"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="streetName2">Street Name (2)</Label>
+                            <Input
+                              id="streetName2"
+                              name="streetName2"
+                              defaultValue={companySettings?.streetName2 || ''}
+                              placeholder="e.g. Industrial Estate"
+                            />
+                          </div>
                         </div>
                         <div className="grid grid-cols-3 gap-4">
                           <div>
@@ -763,13 +829,34 @@ export function CustomerSettings() {
                         {!sameAsCompany && (
                           <div className="space-y-4" id="depot-details">
                             <div>
-                              <Label htmlFor="depot-streetAddress">Street Address</Label>
+                              <Label htmlFor="depot-buildingName">Building Name</Label>
                               <Input
-                                id="depot-streetAddress"
-                                name="streetAddress"
-                                defaultValue={depotSettings?.streetAddress || ''}
-                                placeholder="e.g. 456 Industrial Road"
+                                id="depot-buildingName"
+                                name="buildingName"
+                                defaultValue={depotSettings?.buildingName || ''}
+                                placeholder="e.g. Industrial Complex"
                               />
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="depot-streetName">Street Name</Label>
+                                <Input
+                                  id="depot-streetName"
+                                  name="streetName"
+                                  defaultValue={depotSettings?.streetName || ''}
+                                  placeholder="e.g. Industrial Road"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="depot-streetName2">Street Name (2)</Label>
+                                <Input
+                                  id="depot-streetName2"
+                                  name="streetName2"
+                                  defaultValue={depotSettings?.streetName2 || ''}
+                                  placeholder="e.g. Trading Estate"
+                                />
+                              </div>
                             </div>
                             
                             <div className="grid grid-cols-3 gap-4">
@@ -858,7 +945,9 @@ export function CustomerSettings() {
                             <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
                                 <strong>Address:</strong> {[
-                                  companySettings.streetAddress,
+                                  companySettings.buildingName,
+                                  companySettings.streetName,
+                                  companySettings.streetName2,
                                   companySettings.town,
                                   companySettings.city,
                                   companySettings.county
