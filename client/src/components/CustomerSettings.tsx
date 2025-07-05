@@ -347,8 +347,7 @@ export function CustomerSettings() {
         description: "Your depot settings have been saved successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/depot-settings'] });
-      // Close the dialog after successful save
-      setIsOpen(false);
+      // Don't close the dialog automatically - let user continue editing
     },
     onError: () => {
       toast({
