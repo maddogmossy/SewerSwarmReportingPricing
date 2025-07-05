@@ -427,8 +427,7 @@ export default function RepairPricing() {
       toast({ title: "Pricing added successfully" });
       resetForm();
       setIsAddDialogOpen(false);
-      // Navigate back to dashboard after successful save
-      setTimeout(() => setLocation('/dashboard'), 1000);
+      // No automatic navigation - let user stay on pricing page
     },
     onError: (error: any) => {
       toast({ 
@@ -450,8 +449,7 @@ export default function RepairPricing() {
       toast({ title: "Pricing updated successfully" });
       resetForm();
       setEditingItem(null);
-      // Navigate back to dashboard after successful save
-      setTimeout(() => setLocation('/dashboard'), 1000);
+      // No automatic navigation - let user stay on pricing page
     },
     onError: (error: any) => {
       toast({ 
@@ -516,16 +514,16 @@ export default function RepairPricing() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Determine which cost to use based on selected option
+    // Determine which cost to use - find the first non-empty cost value
     let selectedCost = "0";
-    if (formData.selectedOption.includes("Option 1")) {
-      selectedCost = formData.option1Cost;
-    } else if (formData.selectedOption.includes("Option 2")) {
+    if (formData.option2Cost && formData.option2Cost !== "" && formData.option2Cost !== "N/A") {
       selectedCost = formData.option2Cost;
-    } else if (formData.selectedOption.includes("Option 3")) {
+    } else if (formData.option3Cost && formData.option3Cost !== "" && formData.option3Cost !== "N/A") {
       selectedCost = formData.option3Cost;
-    } else if (formData.selectedOption.includes("Option 4")) {
+    } else if (formData.option4Cost && formData.option4Cost !== "" && formData.option4Cost !== "N/A") {
       selectedCost = formData.option4Cost;
+    } else if (formData.option1Cost && formData.option1Cost !== "" && formData.option1Cost !== "N/A") {
+      selectedCost = formData.option1Cost;
     }
     
     console.log('Form submission debug:', {
