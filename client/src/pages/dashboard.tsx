@@ -558,17 +558,7 @@ export default function Dashboard() {
           </span>
         );
       case 'cost':
-        // Debug specific sections that are showing "Complete" when they shouldn't
-        if (section.itemNo === 2 || section.itemNo === 3) {
-          console.log(`COST DEBUG - Section ${section.itemNo}:`, {
-            severityGrade: section.severityGrade,
-            defects: section.defects,
-            recommendations: section.recommendations,
-            hasNoActionRequired: section.recommendations?.includes('No action required pipe observed in acceptable structural and service condition'),
-            isGradeZero: section.severityGrade === 0,
-            willShowComplete: section.recommendations?.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0
-          });
-        }
+
         
         // Check if section has "No action required" in recommendations (Grade 0 sections only)
         if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
@@ -599,18 +589,7 @@ export default function Dashboard() {
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
           const autoCost = calculateAutoCost(section);
           
-          // Debug logging for ALL defective sections with enhanced data  
-          console.log(`Section ${section.itemNo} cost debug:`, {
-            itemNo: section.itemNo,
-            severityGrade: section.severityGrade,
-            autoCost: autoCost,
-            repairPricingLength: Array.isArray(repairPricingData) ? repairPricingData.length : 'not array',
-            defects: section.defects?.substring(0, 30) + '...',
-            willShowTriangle: !autoCost,
-            hasDefectCode: !!section.defectCode,
-            isMultiDefect: section.isMultiDefect,
-            recommendations: section.recommendations?.substring(0, 30) + '...'
-          });
+
           
           if (!autoCost) {
             return (
@@ -633,7 +612,6 @@ export default function Dashboard() {
                   title="Click to configure pricing for this repair type"
                   onClick={(e) => {
                     e.stopPropagation();
-                    console.log('Warning triangle clicked for section:', section.itemNo);
                   }}
                 >
                   <TriangleAlert className="h-4 w-4 text-orange-500 hover:text-orange-600" />
@@ -814,16 +792,7 @@ export default function Dashboard() {
       const defectPatterns = defectsText.match(/\d+\.?\d*\s*m/g);
       const count = defectPatterns ? defectPatterns.length : 1;
       
-      // Debug logging for Section 2
-      if (section.itemNo === 2) {
-        console.log(`Section 2 defect counting debug:`, {
-          defectsText,
-          defectPatterns,
-          count,
-          sectionId: section.id,
-          rawDefectsText: JSON.stringify(defectsText)
-        });
-      }
+
       
       return count;
     };
@@ -841,25 +810,31 @@ export default function Dashboard() {
     // Find matching repair pricing from database
     let matchingPricing = null;
     
-    console.log(`calculateAutoCost debug for section ${section.itemNo} (ID: ${section.id}):`, {
-      repairPricingDataLength: Array.isArray(repairPricingData) ? repairPricingData.length : 'not array',
-      lookingForPipeSize: `${pipeSize}mm`,
-      availablePipeSizes: Array.isArray(repairPricingData) ? repairPricingData.map(p => p.pipeSize) : [],
-      sector: currentSector.id,
-      sectionDefects: section.defects
-    });
+
     
     if (Array.isArray(repairPricingData) && repairPricingData.length > 0) {
-      // Look for exact pipe size match ONLY - no fallback to closest size
+      // First, try exact pipe size match
       matchingPricing = repairPricingData.find((pricing: any) => 
         pricing.pipeSize === `${pipeSize}mm`
       );
       
-      console.log(`Pricing search result:`, {
-        matchingPricing: matchingPricing ? 'found' : 'not found',
-        exactMatch: matchingPricing,
-        searchedFor: `${pipeSize}mm`
-      });
+      // If no exact match, find the closest pipe size
+      if (!matchingPricing) {
+        const availableSizes = repairPricingData.map((pricing: any) => {
+          const size = parseInt(pricing.pipeSize.replace('mm', ''));
+          return { size, pricing };
+        }).filter(item => !isNaN(item.size));
+        
+        if (availableSizes.length > 0) {
+          // Find the closest pipe size
+          const closest = availableSizes.reduce((prev, curr) => {
+            return Math.abs(curr.size - pipeSize) < Math.abs(prev.size - pipeSize) ? curr : prev;
+          });
+          
+          matchingPricing = closest.pricing;
+
+        }
+      }
     }
 
     // Return null if no pricing data is available - triggers warning triangle display
@@ -873,26 +848,14 @@ export default function Dashboard() {
     // Analyze description first for accurate patch type detection
     const description = (matchingPricing.description || '').toLowerCase();
     
-    console.log(`Cost calculation debug for section ${section.itemNo}:`, {
-      description: matchingPricing.description,
-      selectedOption: matchingPricing.selectedOption,
-      option1Cost: matchingPricing.option1Cost,
-      option2Cost: matchingPricing.option2Cost,
-      option3Cost: matchingPricing.option3Cost,
-      option4Cost: matchingPricing.option4Cost,
-      cost: matchingPricing.cost,
-      descriptionLower: description
-    });
+
     
     if (description.includes('single') && matchingPricing.option1Cost && matchingPricing.option1Cost !== 'N/A') {
       unitCost = parseFloat(matchingPricing.option1Cost);
-      console.log(`Using single layer: ${unitCost}`);
     } else if (description.includes('double') && matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
       unitCost = parseFloat(matchingPricing.option2Cost);
-      console.log(`Using double layer: ${unitCost}`);
     } else if (description.includes('triple') && matchingPricing.option3Cost && matchingPricing.option3Cost !== 'N/A') {
       unitCost = parseFloat(matchingPricing.option3Cost);
-      console.log(`Using triple layer: ${unitCost}`);
     } else if (matchingPricing.selectedOption && matchingPricing.selectedOption.includes('Option')) {
       // Fallback to selected option if description analysis fails
       if (matchingPricing.selectedOption.includes('Option 1') && matchingPricing.option1Cost && matchingPricing.option1Cost !== 'N/A') {
@@ -904,11 +867,9 @@ export default function Dashboard() {
       } else if (matchingPricing.selectedOption.includes('Option 4') && matchingPricing.option4Cost && matchingPricing.option4Cost !== 'N/A') {
         unitCost = parseFloat(matchingPricing.option4Cost);
       }
-      console.log(`Using selected option: ${matchingPricing.selectedOption}, cost: ${unitCost}`);
     } else if (matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
       // Default to double layer (option 2) if available
       unitCost = parseFloat(matchingPricing.option2Cost);
-      console.log(`Using default double layer: ${unitCost}`);
     }
     
     // If parsing failed, use the base cost as fallback
@@ -922,17 +883,7 @@ export default function Dashboard() {
     const totalCost = numberOfDefects * unitCost;
     const isUnderMinimum = numberOfDefects < minQuantity;
 
-    // Debug for Section 2 final calculation
-    if (section.itemNo === 2) {
-      console.log(`Section 2 FINAL COST CALCULATION:`, {
-        numberOfDefects,
-        unitCost,
-        totalCost,
-        calculation: `${numberOfDefects} defects × £${unitCost} = £${totalCost}`,
-        isUnderMinimum,
-        minQuantity
-      });
-    }
+
 
     return {
       cost: totalCost,
@@ -969,22 +920,12 @@ export default function Dashboard() {
   // Debug logging for Section 2 data duplication
   const section2Data = rawSectionData.filter(s => s.itemNo === 2);
   if (section2Data.length > 0) {
-    console.log('Section 2 raw data:', section2Data.map(s => ({ id: s.id, itemNo: s.itemNo, defects: s.defects, defectCode: s.defectCode })));
   }
   
-  // Debug all sections with defects
-  const allDefectiveSections = rawSectionData.filter(s => s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0);
-  console.log('All defective sections:', allDefectiveSections.map(s => ({ 
-    id: s.id, 
-    itemNo: s.itemNo, 
-    severityGrade: s.severityGrade, 
-    defects: s.defects?.substring(0, 50) + '...'
-  })));
+
   
   // Debug individual defects data
-  console.log('Individual defects count:', individualDefects?.length || 0);
   if (individualDefects?.length > 0) {
-    console.log('Sample individual defects:', individualDefects.slice(0, 3));
   }
 
   // Combine sections with individual defects - create multiple rows for sections with multiple defects
