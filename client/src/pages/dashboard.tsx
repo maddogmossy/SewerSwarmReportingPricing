@@ -1706,6 +1706,7 @@ export default function Dashboard() {
                                 className={`
                                   ${column.width} border border-slate-300 text-xs text-center align-middle
                                   ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
+                                  ${section.severityGrade === 0 && section.adoptable === 'Yes' ? 'bg-green-50' : ''}
                                 `}
                                 style={{ wordWrap: 'break-word', whiteSpace: 'normal' }}
                               >
