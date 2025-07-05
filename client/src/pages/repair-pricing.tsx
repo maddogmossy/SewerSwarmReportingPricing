@@ -621,9 +621,38 @@ export default function RepairPricing() {
   };
 
   const handleEdit = (item: any) => {
-    // Show compliance warning first
-    setPendingEditItem(item);
-    setIsComplianceWarningOpen(true);
+    // Go directly to edit mode without compliance warning
+    console.log("handleEdit called, going directly to edit mode");
+    
+    setFormData({
+      workCategoryId: item.workCategoryId?.toString() || "",
+      pipeSize: item.pipeSize,
+      depth: item.depth || "",
+      description: item.description || "",
+      rule: item.rule || "",
+      lengthOfRepair: item.lengthOfRepair || "1000mm",
+      minInstallationPerDay: item.minInstallationPerDay?.toString() || "",
+      dayRate: item.dayRate?.toString() || "",
+      travelTimeAllowance: item.travelTimeAllowance?.toString() || "2.0",
+      option1Cost: item.option1Cost?.toString() || "",
+      option2Cost: item.option2Cost?.toString() || "",
+      option3Cost: item.option3Cost?.toString() || "",
+      option4Cost: item.option4Cost?.toString() || "",
+      option1PerShift: item.option1PerShift?.toString() || "",
+      option2PerShift: item.option2PerShift?.toString() || "",
+      option3PerShift: item.option3PerShift?.toString() || "",
+      option4PerShift: item.option4PerShift?.toString() || "",
+      selectedOption: item.selectedOption || ""
+    });
+    
+    // Pre-select sectors that already have this pricing rule
+    const matchingSectors = findMatchingSectors(item);
+    setApplySectors(matchingSectors);
+    setOriginalApplySectors(matchingSectors);
+    
+    setEditingItem(item);
+    setIsDescriptionEditable(true); // Allow editing of description
+    setIsAddDialogOpen(true);
   };
 
   // Proceed with edit after compliance warning
@@ -841,12 +870,9 @@ export default function RepairPricing() {
                             </div>
                           </div>
                           
-                          {/* Standards compliance warning */}
+                          {/* Standards compliance info - simplified without shield */}
                           <div className="text-xs p-2 bg-blue-50 border border-blue-200 rounded mb-2">
-                            <div className="flex items-center gap-2">
-                              <Shield className="h-3 w-3 text-blue-600" />
-                              <span className="font-medium text-blue-800">Standards Compliant</span>
-                            </div>
+                            <span className="font-medium text-blue-800">Standards Compliant</span>
                             <p className="text-blue-700 mt-1">
                               This pricing follows {sector === 'utilities' ? 'WRc/MSCC5' : 
                                                 sector === 'adoption' ? 'OS20x Adoption' :
@@ -1030,10 +1056,7 @@ export default function RepairPricing() {
                     className={`pr-8 ${!isDescriptionEditable ? 'bg-gray-100 text-gray-500' : ''}`}
                     disabled={!isDescriptionEditable}
                   />
-                  {/* Debug info */}
-                  <div className="text-xs text-red-500 mt-1">
-                    Debug: isDescriptionEditable = {isDescriptionEditable.toString()}
-                  </div>
+
                   {formData.description.includes('patch') && (
                     <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
                   )}
