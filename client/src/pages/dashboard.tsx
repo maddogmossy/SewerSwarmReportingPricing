@@ -788,11 +788,10 @@ export default function Dashboard() {
     const countDefects = (defectsText: string): number => {
       if (!defectsText) return 1;
       
-      // Count comma-separated defects or multiple meterage mentions
-      const defectPatterns = defectsText.match(/\d+\.?\d*\s*m/g);
+      // Count actual meterage references (not measurements in descriptions like "2-5mm")
+      // Look for patterns like "15.2m", "8.4m" but exclude "5mm", "2mm" etc.
+      const defectPatterns = defectsText.match(/\b\d+\.?\d*m\b(?!\s*m)/g);
       const count = defectPatterns ? defectPatterns.length : 1;
-      
-
       
       return count;
     };
