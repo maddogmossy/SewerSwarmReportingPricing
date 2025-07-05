@@ -468,6 +468,21 @@ export default function Dashboard() {
         // Check if section has defects requiring repair (not Grade 0)
         const hasRepairableDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
         
+        // Check if this section has approved repair pricing configuration
+        const approvedRepairStatus = hasApprovedRepairPricing(section);
+        
+        // If section has approved repair pricing, display the actual repair description
+        if (approvedRepairStatus.hasApproved && approvedRepairStatus.pricingConfig) {
+          const pricingConfig = approvedRepairStatus.pricingConfig;
+          const repairDescription = pricingConfig.description || "Approved repair configuration available";
+          
+          return (
+            <div className="text-xs max-w-64 p-1 font-medium text-blue-800">
+              {repairDescription}
+            </div>
+          );
+        }
+        
         if (hasRepairableDefects && section.recommendations && !section.recommendations.includes('No action required')) {
           return (
             <RepairOptionsPopover 
@@ -737,6 +752,48 @@ export default function Dashboard() {
     queryKey: [`/api/repair-pricing/${currentSector.id}`],
     enabled: !!currentSector?.id
   });
+
+  // Check if a section has approved repair pricing configuration 
+  const hasApprovedRepairPricing = (section: any): { hasApproved: boolean, pricingConfig?: any, actualCost?: string } => {
+    // Only check sections with defects requiring repair
+    if (!section.severityGrade || section.severityGrade === "0" || section.severityGrade === 0) {
+      return { hasApproved: false };
+    }
+
+    // Exclude debris/cleaning sections - these need different pricing
+    if (section.defects && 
+        (section.defects.toLowerCase().includes('debris') || 
+         section.defects.toLowerCase().includes('der') ||
+         section.defects.toLowerCase().includes('deg') ||
+         section.defects.toLowerCase().includes('cleaning'))) {
+      return { hasApproved: false };
+    }
+
+    // Extract pipe size and find matching pricing
+    const extractPipeSize = (pipeSizeText: string): number => {
+      if (!pipeSizeText) return 150;
+      const sizeMatch = pipeSizeText.match(/(\d+)/);
+      return sizeMatch ? parseInt(sizeMatch[1]) : 150;
+    };
+
+    const pipeSize = extractPipeSize(section.pipeSize || "");
+    
+    if (Array.isArray(repairPricingData) && repairPricingData.length > 0) {
+      const matchingPricing = repairPricingData.find((pricing: any) => 
+        pricing.pipeSize === `${pipeSize}mm`
+      );
+
+      if (matchingPricing) {
+        return { 
+          hasApproved: true, 
+          pricingConfig: matchingPricing,
+          actualCost: "approved" // Mark as approved, will calculate cost later
+        };
+      }
+    }
+
+    return { hasApproved: false };
+  };
 
   // Function to calculate auto-populated cost for defective sections using actual repair pricing
   const calculateAutoCost = (section: any) => {
@@ -1692,9 +1749,17 @@ export default function Dashboard() {
                       </tr>
                     </thead>
                     <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
-                      {sectionData.map((section, index) => (
+                      {sectionData.map((section, index) => {
+                        // Check for approved repair pricing
+                        const repairStatus = hasApprovedRepairPricing(section);
+                        
+                        return (
                         <tr key={`${section.id}-${section.itemNo}-${index}-${section.defects?.substring(0, 10)}`} className={`${
-                          (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
+                          // Special highlighting for sections with approved repair pricing
+                          repairStatus.hasApproved
+                            ? 'bg-green-200 hover:bg-green-300'
+                            : // Standard Grade 0 adoptable highlighting
+                            (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
                             ? 'bg-green-200 hover:bg-green-300' 
                             : 'hover:bg-slate-50'
                         }`}>
@@ -1706,7 +1771,17 @@ export default function Dashboard() {
                                 className={`
                                   ${column.width} border border-slate-300 text-xs text-center align-middle
                                   ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
-                                  ${(section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' ? 'bg-green-200' : ''}
+                                  ${
+                                    // Special styling for approved repair sections  
+                                    repairStatus.hasApproved
+                                      ? column.key === 'cost' 
+                                        ? 'bg-red-100' // Pastel red for cost cell in approved repairs
+                                        : 'bg-green-200' // Green for other cells in approved repairs
+                                      : // Standard Grade 0 adoptable highlighting
+                                      (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
+                                      ? 'bg-green-200' 
+                                      : ''
+                                  }
                                 `}
                                 style={{ wordWrap: 'break-word', whiteSpace: 'normal' }}
                               >
@@ -1715,7 +1790,8 @@ export default function Dashboard() {
                             );
                           })}
                         </tr>
-                      ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
