@@ -1351,8 +1351,9 @@ export default function RepairPricing() {
                         type="text"
                         value={formData.option1PerShift || ""}
                         onChange={(e) => setFormData({ ...formData, option1PerShift: e.target.value })}
-                        placeholder="5"
-                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                        placeholder="0"
+                        className={`w-full mt-1 p-2 border rounded-md ${formData.option1Cost === "N/A" ? 'bg-gray-100 text-gray-600 border-gray-300' : 'border-blue-300'}`}
+                        readOnly={formData.option1Cost === "N/A"}
                       />
                     </div>
                   </div>
@@ -1397,7 +1398,7 @@ export default function RepairPricing() {
                         type="text"
                         value={formData.option3PerShift || ""}
                         onChange={(e) => setFormData({ ...formData, option3PerShift: e.target.value })}
-                        placeholder="2"
+                        placeholder="3"
                         className="w-full mt-1 p-2 border rounded-md border-blue-300"
                       />
                     </div>
@@ -1420,7 +1421,7 @@ export default function RepairPricing() {
                         type="text"
                         value={formData.option4PerShift || ""}
                         onChange={(e) => setFormData({ ...formData, option4PerShift: e.target.value })}
-                        placeholder="1"
+                        placeholder="2"
                         className="w-full mt-1 p-2 border rounded-md border-blue-300"
                       />
                     </div>
