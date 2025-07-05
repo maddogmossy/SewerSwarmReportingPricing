@@ -870,18 +870,6 @@ export default function RepairPricing() {
                             </div>
                           </div>
                           
-                          {/* Standards compliance info - simplified without shield */}
-                          <div className="text-xs p-2 bg-blue-50 border border-blue-200 rounded mb-2">
-                            <span className="font-medium text-blue-800">Standards Compliant</span>
-                            <p className="text-blue-700 mt-1">
-                              This pricing follows {sector === 'utilities' ? 'WRc/MSCC5' : 
-                                                sector === 'adoption' ? 'OS20x Adoption' :
-                                                sector === 'highways' ? 'HADDMS' :
-                                                sector === 'construction' ? 'BS EN 1610:2015' :
-                                                sector === 'insurance' ? 'ABI Guidelines' : 'Trading Standards'} requirements
-                            </p>
-                          </div>
-                          
                           {item.rule && (
                             <div className="text-xs p-2 bg-yellow-50 border border-yellow-200 rounded">
                               <span className="font-medium">Rule:</span> {item.rule}
