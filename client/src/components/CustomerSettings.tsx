@@ -142,11 +142,13 @@ export function CustomerSettings() {
     enabled: isOpen && !!user && user?.role === 'admin',
   });
 
-  // Fetch depot settings (for admin users)
-  const { data: depotSettings, isLoading: depotLoading } = useQuery<DepotSettings>({
+  // Fetch depot settings (for admin users) - API returns array, use first depot
+  const { data: depotSettingsArray = [], isLoading: depotLoading } = useQuery<DepotSettings[]>({
     queryKey: ['/api/depot-settings'],
     enabled: isOpen && !!user && user?.role === 'admin',
   });
+
+  const depotSettings = depotSettingsArray[0]; // Use first depot
 
   // Initialize sameAsCompany state when depot settings load
   useEffect(() => {
@@ -339,11 +341,18 @@ export function CustomerSettings() {
 
   // Update depot settings mutation
   const updateDepotMutation = useMutation({
-    mutationFn: (data: Partial<DepotSettings>) =>
-      apiRequest('PUT', '/api/depot-settings', data),
+    mutationFn: (data: Partial<DepotSettings>) => {
+      if (depotSettings?.id) {
+        // Update existing depot
+        return apiRequest('PUT', `/api/depot-settings/${depotSettings.id}`, data);
+      } else {
+        // Create new depot
+        return apiRequest('POST', '/api/depot-settings', data);
+      }
+    },
     onSuccess: () => {
       toast({
-        title: "Depot settings updated",
+        title: "Depot settings saved",
         description: "Your depot settings have been saved successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/depot-settings'] });
@@ -352,7 +361,7 @@ export function CustomerSettings() {
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to update depot settings. Please try again.",
+        description: "Failed to save depot settings. Please try again.",
         variant: "destructive",
       });
     },
