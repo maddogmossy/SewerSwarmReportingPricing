@@ -127,8 +127,11 @@ export class FuelPriceMonitor {
     fuelType: 'diesel' | 'petrol';
     fuelCostPerLitre: number;
     fuelConsumptionMpg: number;
+    driverWagePerHour: number;
+    vehicleRunningCostPerMile: number;
     hasAssistant: boolean;
     assistantWagePerHour: number;
+    autoUpdateFuelPrice: boolean;
   }> {
     const currentPrices = await this.getCurrentFuelPrices();
     const fuelType = this.getFuelTypeForVehicle(vehicleType);
@@ -139,24 +142,34 @@ export class FuelPriceMonitor {
     const weight = weightMatch ? parseFloat(weightMatch[1]) : 3.5;
     
     let fuelConsumptionMpg: number;
+    let driverWagePerHour: number;
+    let vehicleRunningCostPerMile: number;
     let hasAssistant: boolean;
     let assistantWagePerHour: number;
     
     // Realistic MPG and assistant requirements based on vehicle size
     if (weight <= 3.5) {
       fuelConsumptionMpg = 30; // Small van
+      driverWagePerHour = 15.50; // Standard van driver wage
+      vehicleRunningCostPerMile = 0.45; // Van running costs
       hasAssistant = false;
       assistantWagePerHour = 0;
     } else if (weight <= 7.5) {
       fuelConsumptionMpg = 25; // Medium truck
+      driverWagePerHour = 16.50; // Medium truck driver wage
+      vehicleRunningCostPerMile = 0.65; // Medium truck running costs
       hasAssistant = false;
       assistantWagePerHour = 0;
     } else if (weight <= 18) {
       fuelConsumptionMpg = 12; // Large truck
+      driverWagePerHour = 18.00; // HGV driver wage
+      vehicleRunningCostPerMile = 1.20; // Large truck running costs
       hasAssistant = true; // Larger vehicles often need assistant
       assistantWagePerHour = 12.50; // UK minimum wage for assistant
     } else {
       fuelConsumptionMpg = 8; // Very large truck
+      driverWagePerHour = 20.00; // Large HGV driver wage
+      vehicleRunningCostPerMile = 1.80; // Very large truck running costs
       hasAssistant = true;
       assistantWagePerHour = 12.50;
     }
@@ -165,8 +178,11 @@ export class FuelPriceMonitor {
       fuelType,
       fuelCostPerLitre,
       fuelConsumptionMpg,
+      driverWagePerHour,
+      vehicleRunningCostPerMile,
       hasAssistant,
-      assistantWagePerHour
+      assistantWagePerHour,
+      autoUpdateFuelPrice: true // Default to enabling automatic fuel price updates
     };
   }
 }

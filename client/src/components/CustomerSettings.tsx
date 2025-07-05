@@ -258,9 +258,15 @@ export function CustomerSettings() {
   const fetchVehicleDefaults = async (vehicleType: string) => {
     console.log('Fetching vehicle defaults for:', vehicleType);
     try {
-      const response = await apiRequest('GET', `/api/vehicle-defaults/${vehicleType}`);
-      console.log('Vehicle defaults response:', response);
-      return response;
+      const response = await fetch(`/api/vehicle-defaults/${encodeURIComponent(vehicleType)}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Vehicle defaults response:', data);
+        return data;
+      } else {
+        console.error('API request failed:', response.status, response.statusText);
+        return null;
+      }
     } catch (error) {
       console.error('Error fetching vehicle defaults:', error);
       return null;
