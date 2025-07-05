@@ -1255,12 +1255,7 @@ export default function Dashboard() {
               Pricing
             </Button>
           </Link>
-          <Link to="/vehicle-travel-rates">
-            <Button variant="outline" size="sm">
-              <Car className="h-4 w-4 mr-2 text-green-600" />
-              Vehicle Rates
-            </Button>
-          </Link>
+
 
           <div className="ml-auto flex gap-2">
 

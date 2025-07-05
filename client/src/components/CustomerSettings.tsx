@@ -874,7 +874,7 @@ export function CustomerSettings() {
                   <CardContent>
                     <div className="flex justify-between items-center mb-4">
                       <div className="text-sm text-muted-foreground">
-                        {vehicleRates.length} vehicle type{vehicleRates.length !== 1 ? 's' : ''} configured
+                        {vehicleRates?.length || 0} vehicle type{(vehicleRates?.length || 0) !== 1 ? 's' : ''} configured
                       </div>
                       <Button onClick={handleAddNewVehicle} size="sm">
                         <Plus className="h-4 w-4 mr-2" />
@@ -884,7 +884,7 @@ export function CustomerSettings() {
 
                     {vehicleRatesLoading ? (
                       <div className="text-center py-4">Loading vehicle rates...</div>
-                    ) : vehicleRates.length === 0 ? (
+                    ) : !vehicleRates || vehicleRates.length === 0 ? (
                       <div className="text-center py-8">
                         <Car className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                         <p className="text-gray-600">No vehicle types configured</p>
