@@ -643,6 +643,16 @@ export default function Dashboard() {
           }
         }
         
+        // CRITICAL FIX: Show configuration message for defective sections with no pricing
+        // This ensures no defective section ever shows as £0.00 or falls through to "Complete"
+        if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
+          return (
+            <div className="text-xs text-orange-600 font-medium">
+              Configure {currentSector.id} sector pricing first
+            </div>
+          );
+        }
+        
         // Fallback for any other sections
         return section.cost || '£0.00';
       default:
