@@ -792,6 +792,14 @@ export default function Dashboard() {
       return null;
     }
 
+    // Exclude debris/cleaning sections from patch repair pricing
+    if (section.defects && 
+        (section.defects.toLowerCase().includes('debris') || 
+         section.defects.toLowerCase().includes('der') ||
+         section.defects.toLowerCase().includes('cleaning'))) {
+      return null;
+    }
+
     // Count number of defects (repair locations) in the section
     const countDefects = (defectsText: string): number => {
       if (!defectsText) return 1;
