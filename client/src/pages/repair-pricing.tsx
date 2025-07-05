@@ -453,6 +453,7 @@ export default function RepairPricing() {
       toast({ title: "Pricing updated successfully" });
       resetForm();
       setEditingItem(null);
+      setIsAddDialogOpen(false);
       // No automatic navigation - let user stay on pricing page
     },
     onError: (error: any) => {
