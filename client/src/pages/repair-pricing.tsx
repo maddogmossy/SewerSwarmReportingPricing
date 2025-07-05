@@ -477,7 +477,15 @@ export default function RepairPricing() {
       resetForm();
       setEditingItem(null);
       setIsAddDialogOpen(false);
-      // No automatic navigation - let user stay on pricing page
+      
+      // Navigate back to dashboard if user came from repair options (has itemNo parameter)
+      const urlParams = new URLSearchParams(location.split('?')[1] || '');
+      const itemNo = urlParams.get('itemNo');
+      if (itemNo) {
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 500);
+      }
     },
     onError: (error: any) => {
       toast({ 
