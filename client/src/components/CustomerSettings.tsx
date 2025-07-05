@@ -18,12 +18,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, CreditCard, User, Users, Building, MapPin, Calculator, Car, Clock } from "lucide-react";
+import { Settings, CreditCard, User, Users, Building, MapPin, Calculator, Car, Clock, Plus, Edit2, Trash2, Truck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { VehicleTravelRate, InsertVehicleTravelRate } from "@shared/schema";
 
 interface PaymentMethod {
   id: string;
@@ -71,6 +78,26 @@ interface TeamMember {
   createdAt: string;
 }
 
+// Vehicle Travel Rate Schema and Types
+const vehicleTravelRateSchema = z.object({
+  vehicleType: z.string().min(1, "Vehicle type is required"),
+  fuelConsumptionMpg: z.number().min(0.1, "Fuel consumption must be greater than 0"),
+  fuelCostPerLitre: z.number().min(0.01, "Fuel cost must be greater than 0"),
+  driverWagePerHour: z.number().min(0.01, "Driver wage must be greater than 0"),
+  vehicleRunningCostPerMile: z.number().min(0.01, "Vehicle running cost must be greater than 0"),
+});
+
+type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
+
+const vehicleTypes = [
+  "3.5t Van",
+  "5t Van", 
+  "7.5t Truck",
+  "18t Truck",
+  "26t Truck",
+  "32t Truck"
+];
+
 export function CustomerSettings() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -108,6 +135,142 @@ export function CustomerSettings() {
     queryKey: ['/api/team-members'],
     enabled: isOpen && !!user && user?.role === 'admin',
   });
+
+  // Vehicle Travel Rate state and functionality
+  const [isVehicleDialogOpen, setIsVehicleDialogOpen] = useState(false);
+  const [editingVehicleRate, setEditingVehicleRate] = useState<VehicleTravelRate | null>(null);
+
+  const vehicleForm = useForm<VehicleTravelRateForm>({
+    resolver: zodResolver(vehicleTravelRateSchema),
+    defaultValues: {
+      vehicleType: "",
+      fuelConsumptionMpg: 0,
+      fuelCostPerLitre: 0,
+      driverWagePerHour: 0,
+      vehicleRunningCostPerMile: 0,
+    },
+  });
+
+  // Fetch vehicle travel rates
+  const { data: vehicleRates = [], isLoading: vehicleRatesLoading } = useQuery<VehicleTravelRate[]>({
+    queryKey: ['/api/vehicle-travel-rates'],
+    enabled: isOpen && !!user,
+  });
+
+  // Vehicle Travel Rate mutations
+  const createVehicleRateMutation = useMutation({
+    mutationFn: (data: InsertVehicleTravelRate) => 
+      apiRequest('POST', '/api/vehicle-travel-rates', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/vehicle-travel-rates'] });
+      setIsVehicleDialogOpen(false);
+      setEditingVehicleRate(null);
+      vehicleForm.reset();
+      toast({
+        title: "Success",
+        description: "Vehicle travel rate created successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create vehicle travel rate",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateVehicleRateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: InsertVehicleTravelRate }) =>
+      apiRequest('PUT', `/api/vehicle-travel-rates/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/vehicle-travel-rates'] });
+      setIsVehicleDialogOpen(false);
+      setEditingVehicleRate(null);
+      vehicleForm.reset();
+      toast({
+        title: "Success",
+        description: "Vehicle travel rate updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update vehicle travel rate",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteVehicleRateMutation = useMutation({
+    mutationFn: (id: number) => 
+      apiRequest('DELETE', `/api/vehicle-travel-rates/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/vehicle-travel-rates'] });
+      toast({
+        title: "Success",
+        description: "Vehicle travel rate deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete vehicle travel rate",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Vehicle Travel Rate helper functions
+  const handleAddNewVehicle = () => {
+    setEditingVehicleRate(null);
+    vehicleForm.reset();
+    setIsVehicleDialogOpen(true);
+  };
+
+  const handleEditVehicle = (rate: VehicleTravelRate) => {
+    setEditingVehicleRate(rate);
+    vehicleForm.reset({
+      vehicleType: rate.vehicleType,
+      fuelConsumptionMpg: parseFloat(rate.fuelConsumptionMpg.toString()),
+      fuelCostPerLitre: parseFloat(rate.fuelCostPerLitre.toString()),
+      driverWagePerHour: parseFloat(rate.driverWagePerHour.toString()),
+      vehicleRunningCostPerMile: parseFloat(rate.vehicleRunningCostPerMile.toString()),
+    });
+    setIsVehicleDialogOpen(true);
+  };
+
+  const handleDeleteVehicle = (id: number) => {
+    if (confirm("Are you sure you want to delete this vehicle travel rate?")) {
+      deleteVehicleRateMutation.mutate(id);
+    }
+  };
+
+  const onVehicleSubmit = (data: VehicleTravelRateForm) => {
+    const vehicleData = {
+      vehicleType: data.vehicleType,
+      fuelConsumptionMpg: data.fuelConsumptionMpg.toString(),
+      fuelCostPerLitre: data.fuelCostPerLitre.toString(),
+      driverWagePerHour: data.driverWagePerHour.toString(),
+      vehicleRunningCostPerMile: data.vehicleRunningCostPerMile.toString(),
+      userId: user?.id || '',
+    };
+
+    if (editingVehicleRate) {
+      updateVehicleRateMutation.mutate({ id: editingVehicleRate.id, data: vehicleData });
+    } else {
+      createVehicleRateMutation.mutate(vehicleData);
+    }
+  };
+
+  const calculateTotalCostPerMile = (rate: VehicleTravelRate) => {
+    const fuelCostPerLitre = parseFloat(rate.fuelCostPerLitre.toString());
+    const fuelConsumptionMpg = parseFloat(rate.fuelConsumptionMpg.toString());
+    const vehicleRunningCost = parseFloat(rate.vehicleRunningCostPerMile.toString());
+    
+    const fuelCostPerMile = (fuelCostPerLitre / 4.546) / fuelConsumptionMpg; // Convert litres to gallons
+    return (fuelCostPerMile + vehicleRunningCost).toFixed(2);
+  };
 
   // Update payment method mutation
   const updatePaymentMethodMutation = useMutation({
@@ -697,6 +860,231 @@ export function CustomerSettings() {
                         </Button>
                       </form>
                     )}
+                  </CardContent>
+                </Card>
+
+                {/* Vehicle Travel Rates Section */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Vehicle Travel Rates</CardTitle>
+                    <CardDescription>
+                      Configure fuel costs, wages, and running costs for different vehicle types to calculate accurate travel expenses.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="text-sm text-muted-foreground">
+                        {vehicleRates.length} vehicle type{vehicleRates.length !== 1 ? 's' : ''} configured
+                      </div>
+                      <Button onClick={handleAddNewVehicle} size="sm">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Vehicle Type
+                      </Button>
+                    </div>
+
+                    {vehicleRatesLoading ? (
+                      <div className="text-center py-4">Loading vehicle rates...</div>
+                    ) : vehicleRates.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Car className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                        <p className="text-gray-600">No vehicle types configured</p>
+                        <p className="text-sm text-gray-500 mt-2">
+                          Add vehicle types to calculate travel costs accurately.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {vehicleRates.map((rate) => (
+                          <div
+                            key={rate.id}
+                            className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Car className="h-4 w-4 text-blue-600" />
+                                <span className="font-medium">{rate.vehicleType}</span>
+                                <span className="text-sm text-muted-foreground">
+                                  (£{calculateTotalCostPerMile(rate)}/mile)
+                                </span>
+                              </div>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
+                                <div>
+                                  <span className="font-medium">Fuel:</span> {rate.fuelConsumptionMpg} MPG @ £{rate.fuelCostPerLitre}/L
+                                </div>
+                                <div>
+                                  <span className="font-medium">Wage:</span> £{rate.driverWagePerHour}/hr
+                                </div>
+                                <div>
+                                  <span className="font-medium">Running:</span> £{rate.vehicleRunningCostPerMile}/mile
+                                </div>
+                                <div>
+                                  <span className="font-medium">Total:</span> £{calculateTotalCostPerMile(rate)}/mile
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEditVehicle(rate)}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteVehicle(rate.id)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Vehicle Travel Rate Dialog */}
+                    <Dialog open={isVehicleDialogOpen} onOpenChange={setIsVehicleDialogOpen}>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>
+                            {editingVehicleRate ? 'Edit Vehicle Travel Rate' : 'Add Vehicle Travel Rate'}
+                          </DialogTitle>
+                          <DialogDescription>
+                            Configure fuel consumption, costs, and wages for this vehicle type.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <Form {...vehicleForm}>
+                          <form onSubmit={vehicleForm.handleSubmit(onVehicleSubmit)} className="space-y-4">
+                            <FormField
+                              control={vehicleForm.control}
+                              name="vehicleType"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Vehicle Type</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select vehicle type" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {vehicleTypes.map((type) => (
+                                        <SelectItem key={type} value={type}>
+                                          {type}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={vehicleForm.control}
+                                name="fuelConsumptionMpg"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Fuel Consumption (MPG)</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        step="0.1"
+                                        {...field}
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={vehicleForm.control}
+                                name="fuelCostPerLitre"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Fuel Cost per Litre (£)</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        step="0.01"
+                                        {...field}
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={vehicleForm.control}
+                                name="driverWagePerHour"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Driver Wage per Hour (£)</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        step="0.01"
+                                        {...field}
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={vehicleForm.control}
+                                name="vehicleRunningCostPerMile"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Running Cost per Mile (£)</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        step="0.01"
+                                        {...field}
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            <div className="flex justify-end space-x-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsVehicleDialogOpen(false)}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                type="submit"
+                                disabled={createVehicleRateMutation.isPending || updateVehicleRateMutation.isPending}
+                              >
+                                {createVehicleRateMutation.isPending || updateVehicleRateMutation.isPending
+                                  ? "Saving..."
+                                  : editingVehicleRate
+                                  ? "Update Rate"
+                                  : "Create Rate"}
+                              </Button>
+                            </div>
+                          </form>
+                        </Form>
+                      </DialogContent>
+                    </Dialog>
                   </CardContent>
                 </Card>
               </TabsContent>
