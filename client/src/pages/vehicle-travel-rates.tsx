@@ -45,6 +45,8 @@ export default function VehicleTravelRates() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRate, setEditingRate] = useState<VehicleTravelRate | null>(null);
 
+  console.log('VehicleTravelRates component mounted');
+
   const form = useForm<VehicleTravelRateForm>({
     resolver: zodResolver(vehicleTravelRateSchema),
     defaultValues: {
@@ -253,6 +255,7 @@ export default function VehicleTravelRates() {
                       <FormLabel>Vehicle Type</FormLabel>
                       <Select 
                         onValueChange={(value) => {
+                          console.log('Vehicle type selected:', value);
                           field.onChange(value);
                           autoPopulateVehicleDefaults(value);
                         }} 
