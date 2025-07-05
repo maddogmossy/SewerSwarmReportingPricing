@@ -61,13 +61,18 @@ export default function VehicleTravelRates() {
 
   // Function to auto-populate vehicle defaults
   const autoPopulateVehicleDefaults = async (vehicleType: string) => {
+    console.log('Auto-populating defaults for vehicle type:', vehicleType);
     try {
       const response = await fetch(`/api/vehicle-defaults/${encodeURIComponent(vehicleType)}`);
+      console.log('API response status:', response.status);
+      
       if (response.ok) {
         const defaults = await response.json();
+        console.log('Received defaults:', defaults);
         
         // Only populate if fields are currently empty (not when editing)
         if (!editingRate) {
+          console.log('Setting form values...');
           form.setValue('fuelConsumptionMpg', defaults.fuelConsumptionMpg);
           form.setValue('fuelCostPerLitre', defaults.fuelCostPerLitre);
           form.setValue('hasAssistant', defaults.hasAssistant);
@@ -85,14 +90,24 @@ export default function VehicleTravelRates() {
                              vehicleWeight <= 18 ? 0.35 : 0.45;
           form.setValue('vehicleRunningCostPerMile', runningCost);
           
+          console.log('Form values set successfully');
           toast({
             title: "Vehicle defaults loaded",
             description: `Auto-populated fields for ${vehicleType} with current fuel prices and realistic values.`,
           });
+        } else {
+          console.log('Skipping auto-population because editing existing rate');
         }
+      } else {
+        console.error('API response not ok:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error fetching vehicle defaults:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load vehicle defaults",
+        variant: "destructive",
+      });
     }
   };
 
