@@ -1089,17 +1089,6 @@ export default function RepairPricing() {
                   Cancel
                 </Button>
                 <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setIsComplianceWarningOpen(true);
-                  }}
-                  className="h-8 px-3 text-xs"
-                >
-                  <Edit className="h-3 w-3 mr-1" />
-                  Edit
-                </Button>
-                <Button
                   type="submit"
                   disabled={createPricing.isPending || updatePricing.isPending}
                 >
@@ -1256,7 +1245,23 @@ export default function RepairPricing() {
                   </select>
                 </div>
 
-
+                <div className="flex flex-col justify-end">
+                  <div className="flex items-center gap-2 mb-2">
+                    <label className="text-sm font-medium text-gray-600">Edit locked cells</label>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setIsDescriptionEditable(true);
+                      setIsComplianceWarningOpen(true);
+                    }}
+                    className="h-10 px-3 text-xs"
+                  >
+                    <Edit className="h-3 w-3 mr-1" />
+                    Edit
+                  </Button>
+                </div>
               </div>
 
               <div>
@@ -1268,8 +1273,11 @@ export default function RepairPricing() {
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="w-full mt-1 p-2 border rounded-md pr-8"
+                    className={`w-full mt-1 p-2 border rounded-md pr-8 ${
+                      !isDescriptionEditable ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     placeholder="e.g., Patch repair for structural defects"
+                    readOnly={!isDescriptionEditable}
                   />
                   {formData.description.includes('patch') && (
                     <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
