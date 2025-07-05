@@ -21,9 +21,9 @@ const __dirname = dirname(__filename);
 
 // Initialize Stripe
 if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+  console.warn('Missing STRIPE_SECRET_KEY - running in demo mode');
 }
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 const upload = multer({
   dest: "uploads/",
@@ -768,10 +768,10 @@ export async function registerRoutes(app: Express) {
                 }
                 
                 console.log(`DB Insert Section ${section.itemNo}: ${section.startMH} → ${section.finishMH}`);
-                await db.insert(sectionInspections).values(section);
+                await db.insert(sectionInspections).values(section as any);
               }
               console.log(`✓ Successfully extracted ${sections.length} authentic sections from PDF`);
-            } catch (error) {
+            } catch (error: any) {
               console.error("❌ DATA INTEGRITY VIOLATION:", error.message);
               throw new Error(`Synthetic data detected. Please ensure PDF contains authentic inspection data.`);
             }

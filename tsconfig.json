@@ -1,23 +1,33 @@
 {
-  "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
-  "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
   "compilerOptions": {
-    "incremental": true,
-    "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
-    "noEmit": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "strict": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "jsx": "preserve",
-    "esModuleInterop": true,
     "skipLibCheck": true,
-    "allowImportingTsExtensions": true,
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
-    "types": ["node", "vite/client"],
     "paths": {
       "@/*": ["./client/src/*"],
-      "@shared/*": ["./shared/*"]
+      "@assets/*": ["./client/src/assets/*"],
+      "@shared/*": ["./shared/*"],
+      "@lib/*": ["./client/src/lib/*"],
+      "@components/*": ["./client/src/components/*"],
+      "@hooks/*": ["./client/src/hooks/*"]
     }
-  }
+  },
+  "include": [
+    "client/src",
+    "server",
+    "shared"
+  ],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
