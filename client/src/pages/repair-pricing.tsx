@@ -981,7 +981,7 @@ export default function RepairPricing() {
                   <SelectContent>
                     {vehicleRates.map((vehicle: any) => (
                       <SelectItem key={vehicle.id} value={vehicle.id.toString()}>
-                        {vehicle.vehicleType} - £{(vehicle.vehicleRunningCostPerMile || 0).toFixed(2)}/mile
+                        {vehicle.vehicleType} - £{parseFloat(vehicle.vehicleRunningCostPerMile || '0').toFixed(2)}/mile
                       </SelectItem>
                     ))}
                   </SelectContent>
