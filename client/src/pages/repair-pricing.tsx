@@ -1381,14 +1381,20 @@ export default function RepairPricing() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-medium">Description</label>
+                  <span className="text-xs text-gray-500">
+                    (Editable: {isDescriptionEditable ? 'Yes' : 'No'})
+                  </span>
                 </div>
                 <div className="relative">
                   <input
                     type="text"
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) => {
+                      console.log("Description onChange triggered, isDescriptionEditable:", isDescriptionEditable);
+                      setFormData({...formData, description: e.target.value});
+                    }}
                     className={`w-full mt-1 p-2 border rounded-md pr-8 ${
-                      !isDescriptionEditable ? 'bg-gray-100 cursor-not-allowed' : ''
+                      !isDescriptionEditable ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'
                     }`}
                     placeholder="e.g., Patch repair for structural defects"
                     readOnly={!isDescriptionEditable}
