@@ -110,6 +110,9 @@ const vehicleTravelRateSchema = z.object({
   fuelCostPerLitre: z.number().min(0.01, "Fuel cost must be greater than 0"),
   driverWagePerHour: z.number().min(0.01, "Driver wage must be greater than 0"),
   vehicleRunningCostPerMile: z.number().min(0.01, "Vehicle running cost must be greater than 0"),
+  hasAssistant: z.boolean().optional(),
+  assistantWagePerHour: z.number().min(0).optional(),
+  autoUpdateFuelPrice: z.boolean().optional(),
 });
 
 type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
@@ -175,6 +178,9 @@ export function CustomerSettings() {
       fuelCostPerLitre: 0,
       driverWagePerHour: 0,
       vehicleRunningCostPerMile: 0,
+      hasAssistant: false,
+      assistantWagePerHour: 0,
+      autoUpdateFuelPrice: false,
     },
   });
 
@@ -249,6 +255,49 @@ export function CustomerSettings() {
   });
 
   // Vehicle Travel Rate helper functions
+  const fetchVehicleDefaults = async (vehicleType: string) => {
+    console.log('Fetching vehicle defaults for:', vehicleType);
+    try {
+      const response = await apiRequest('GET', `/api/vehicle-defaults/${vehicleType}`);
+      console.log('Vehicle defaults response:', response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching vehicle defaults:', error);
+      return null;
+    }
+  };
+
+  const handleVehicleTypeChange = async (vehicleType: string) => {
+    console.log('Vehicle type selected:', vehicleType);
+    vehicleForm.setValue('vehicleType', vehicleType);
+    
+    // Only auto-populate if we're adding a new vehicle (not editing)
+    if (!editingVehicleRate) {
+      console.log('Auto-populating defaults for new vehicle type:', vehicleType);
+      const defaults = await fetchVehicleDefaults(vehicleType);
+      
+      if (defaults) {
+        console.log('Setting form values with defaults:', defaults);
+        vehicleForm.setValue('fuelConsumptionMpg', defaults.fuelConsumptionMpg);
+        vehicleForm.setValue('fuelCostPerLitre', defaults.fuelCostPerLitre);
+        vehicleForm.setValue('driverWagePerHour', defaults.driverWagePerHour);
+        vehicleForm.setValue('vehicleRunningCostPerMile', defaults.vehicleRunningCostPerMile);
+        
+        if (defaults.hasAssistant) {
+          vehicleForm.setValue('assistantWagePerHour', defaults.assistantWagePerHour || 0);
+          vehicleForm.setValue('hasAssistant', true);
+        }
+        
+        vehicleForm.setValue('autoUpdateFuelPrice', defaults.autoUpdateFuelPrice || false);
+        
+        toast({
+          title: "Auto-populated",
+          description: `Default values loaded for ${vehicleType}`,
+        });
+      }
+    }
+  };
+
   const handleAddNewVehicle = () => {
     setEditingVehicleRate(null);
     vehicleForm.reset();
@@ -263,6 +312,9 @@ export function CustomerSettings() {
       fuelCostPerLitre: parseFloat(rate.fuelCostPerLitre.toString()),
       driverWagePerHour: parseFloat(rate.driverWagePerHour.toString()),
       vehicleRunningCostPerMile: parseFloat(rate.vehicleRunningCostPerMile.toString()),
+      hasAssistant: (rate as any).hasAssistant || false,
+      assistantWagePerHour: parseFloat((rate as any).assistantWagePerHour?.toString() || '0'),
+      autoUpdateFuelPrice: (rate as any).autoUpdateFuelPrice || false,
     });
     setIsVehicleDialogOpen(true);
   };
@@ -280,6 +332,9 @@ export function CustomerSettings() {
       fuelCostPerLitre: data.fuelCostPerLitre.toString(),
       driverWagePerHour: data.driverWagePerHour.toString(),
       vehicleRunningCostPerMile: data.vehicleRunningCostPerMile.toString(),
+      hasAssistant: data.hasAssistant || false,
+      assistantWagePerHour: data.assistantWagePerHour?.toString() || '0',
+      autoUpdateFuelPrice: data.autoUpdateFuelPrice || false,
       userId: user?.id || '',
     };
 
@@ -1128,7 +1183,7 @@ export function CustomerSettings() {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Vehicle Type</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value}>
+                                  <Select onValueChange={handleVehicleTypeChange} value={field.value}>
                                     <FormControl>
                                       <SelectTrigger>
                                         <SelectValue placeholder="Select vehicle type" />

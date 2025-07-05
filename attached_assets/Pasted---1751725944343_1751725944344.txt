@@ -1,0 +1,145 @@
+
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+_app-1dfc359d2d776d85.js:38 [LaunchDarkly] LaunchDarkly client initialized
+SewerSwarmSimulator:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+58Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'battery'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+framework-c2be319115910dbc.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-c2be319115910dbc.js:1Understand this warning
+9SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was receivedUnderstand this error
+stallwart.build.js:1 stallwart: failed ping 1
+SewerSwarmSimulator:1 WebGL: CONTEXT_LOST_WEBGL: loseContext: context lostUnderstand this warning
+_app-1dfc359d2d776d85.js:38 webglcontextlost event received
+_app-1dfc359d2d776d85.js:38 webgl context not restored; firing onContextLoss
+(anonymous) @ _app-1dfc359d2d776d85.js:38Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+eruda.js:2 [vite] server connection lost. Polling for restart...
+_app-1dfc359d2d776d85.js:38 task queue exceeded allotted deadline by 70ms
+(anonymous) @ _app-1dfc359d2d776d85.js:38
+_process @ 1836.485d7d7b5b01ef4b.js:15
+(anonymous) @ 1836.485d7d7b5b01ef4b.js:15
+n @ _app-1dfc359d2d776d85.js:38
+setTimeout
+(anonymous) @ _app-1dfc359d2d776d85.js:38
+_requestCallback @ 1836.485d7d7b5b01ef4b.js:15
+_start @ 1836.485d7d7b5b01ef4b.js:15
+enqueue @ 1836.485d7d7b5b01ef4b.js:15
+_doWarmUp @ 1836.485d7d7b5b01ef4b.js:15
+warmUp @ 1836.485d7d7b5b01ef4b.js:15
+_refreshCharAtlas @ 1836.485d7d7b5b01ef4b.js:15
+resize @ 1836.485d7d7b5b01ef4b.js:15
+resize @ 1836.485d7d7b5b01ef4b.js:15
+handleResize @ 1836.485d7d7b5b01ef4b.js:15
+handleCharSizeChanged @ 1836.485d7d7b5b01ef4b.js:15
+_initializeWebGLState @ 1836.485d7d7b5b01ef4b.js:15
+C @ 1836.485d7d7b5b01ef4b.js:15
+activate @ 1836.485d7d7b5b01ef4b.js:15
+loadAddon @ 1c7fb644.6c630f467b6cd232.js:3
+loadAddon @ 1c7fb644.6c630f467b6cd232.js:3
+(anonymous) @ 3837-752156d1da172202.js:1
+(anonymous) @ 3837-752156d1da172202.js:1
+(anonymous) @ main-b1d98e5b70c3078c.js:1
+n @ main-b1d98e5b70c3078c.js:1
+u @ main-b1d98e5b70c3078c.js:1
+Promise.then
+n @ main-b1d98e5b70c3078c.js:1
+u @ main-b1d98e5b70c3078c.js:1
+(anonymous) @ main-b1d98e5b70c3078c.js:1
+(anonymous) @ main-b1d98e5b70c3078c.js:1
+s @ 3837-752156d1da172202.js:1
+(anonymous) @ 3837-752156d1da172202.js:1
+(anonymous) @ 3837-752156d1da172202.js:1
+oO @ framework-c2be319115910dbc.js:1
+oY @ framework-c2be319115910dbc.js:1
+e @ framework-c2be319115910dbc.js:1
+(anonymous) @ framework-c2be319115910dbc.js:1
+uO @ framework-c2be319115910dbc.js:1
+u_ @ framework-c2be319115910dbc.js:1
+r6 @ framework-c2be319115910dbc.js:1
+(anonymous) @ framework-c2be319115910dbc.js:1
+uO @ framework-c2be319115910dbc.js:1
+uS @ framework-c2be319115910dbc.js:1
+C @ framework-c2be319115910dbc.js:1
+z @ framework-c2be319115910dbc.js:1Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3om%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3om%3A:32 Unrecognized feature: 'battery'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3om%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3om%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3om%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3om%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3om%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3om%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3om%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3om%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+eruda.js:2 [vite] server connection lost. Polling for restart...
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'battery'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Unrecognized feature: 'unsized-media'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar3qk%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
