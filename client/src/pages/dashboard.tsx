@@ -419,15 +419,7 @@ export default function Dashboard() {
     const currentItemNo = section.itemNo;
     const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
     
-    // DEBUG: Log all sections with item number 2 to verify data
-    if (currentItemNo === 2) {
-      console.log(`RENDER DEBUG: Processing section ${section.id} with defects: "${section.defects}"`);
-      console.log(`RENDER DEBUG: All Item 2 sections:`, sectionsWithSameItem.map(s => ({
-        id: s.id,
-        defects: s.defects?.substring(0, 20) + '...',
-        itemNo: s.itemNo
-      })));
-    }
+
     
 
     
@@ -450,33 +442,18 @@ export default function Dashboard() {
       const meterageA = getMeterageFromDefects(a.defects || "");
       const meterageB = getMeterageFromDefects(b.defects || "");
 
-      // DEBUG: Log meterage extraction for item 2
-      if (currentItemNo === 2) {
-        console.log(`METERAGE DEBUG: Section ${a.id} (${a.defects?.substring(0, 20)}...) → ${meterageA}`);
-        console.log(`METERAGE DEBUG: Section ${b.id} (${b.defects?.substring(0, 20)}...) → ${meterageB}`);
-        console.log(`METERAGE DEBUG: Sort result: ${meterageA - meterageB}`);
-      }
+
 
       return meterageA - meterageB; // Sort by ascending meterage
     });
     
     const index = sortedSections.findIndex(s => s.id === section.id);
     
-    // DEBUG: Log final suffix assignment for item 2
-    if (currentItemNo === 2) {
-      console.log(`SUFFIX DEBUG: Section ${section.id} (${section.defects?.substring(0, 20)}...) → index ${index}`);
-      console.log(`SUFFIX DEBUG: Sorted sections order:`, sortedSections.map(s => `${s.id}(${s.defects?.substring(0, 20)}...)`));
-    }
-    
     if (index === 0) {
-      const result = currentItemNo.toString();
-      if (currentItemNo === 2) console.log(`SUFFIX DEBUG: Section ${section.id} gets suffix "${result}"`);
-      return result; // First occurrence gets original number
+      return currentItemNo.toString(); // First occurrence gets original number
     } else {
       const letter = String.fromCharCode(97 + index - 1); // a, b, c, etc.
-      const result = `${currentItemNo}${letter}`;
-      if (currentItemNo === 2) console.log(`SUFFIX DEBUG: Section ${section.id} gets suffix "${result}"`);
-      return result;
+      return `${currentItemNo}${letter}`;
     }
   };
 
@@ -1722,9 +1699,9 @@ export default function Dashboard() {
                         })}
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
                       {sectionData.map((section, index) => (
-                        <tr key={`${section.id}-${section.itemNo}-${index}`} className="hover:bg-slate-50">
+                        <tr key={`${section.id}-${section.itemNo}-${index}-${section.defects?.substring(0, 10)}`} className="hover:bg-slate-50">
                           {columns.map((column) => {
                             if (hiddenColumns.has(column.key)) return null;
                             return (
