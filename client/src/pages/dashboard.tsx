@@ -572,8 +572,15 @@ export default function Dashboard() {
         // Auto-populate cost for defective sections
         const autoCost = calculateAutoCost(section);
         if (autoCost) {
-          // Section 2 should always show red, others follow minimum quantity rule
-          const costColor = (section.itemNo === 2 || autoCost.isUnderMinimum) ? 'text-red-600' : 'text-blue-600';
+          // Only show red for single 300mm patch sections or sections under minimum quantity
+          // Check if this is a 300mm pipe with single patch (not debris sections)
+          const is300mmSinglePatch = section.pipeSize === "300mm" && 
+                                   autoCost.numberOfDefects === 1 && 
+                                   section.defects && 
+                                   !section.defects.toLowerCase().includes('debris') &&
+                                   !section.defects.toLowerCase().includes('der');
+          
+          const costColor = (is300mmSinglePatch || autoCost.isUnderMinimum) ? 'text-red-600' : 'text-blue-600';
           return (
             <div className={`text-xs ${costColor} font-medium`} title={
               autoCost.isUnderMinimum 
