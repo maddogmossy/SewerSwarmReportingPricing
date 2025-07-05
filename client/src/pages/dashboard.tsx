@@ -424,8 +424,19 @@ export default function Dashboard() {
       return currentItemNo.toString();
     }
     
-    // Multiple sections with same item number - assign letters based on database ID order
-    sectionsWithSameItem.sort((a, b) => a.id - b.id);
+    // Multiple sections with same item number - assign letters based on meterage order
+    sectionsWithSameItem.sort((a, b) => {
+      // Extract meterage from defects field (e.g., "DEG 7.08m" -> 7.08, "CL 10.78m" -> 10.78)
+      const getMeterageFromDefects = (defects: string): number => {
+        if (!defects) return 0;
+        const meterageMatch = defects.match(/(\d+\.?\d*)\s*m/);
+        return meterageMatch ? parseFloat(meterageMatch[1]) : 0;
+      };
+      
+      const meterageA = getMeterageFromDefects(a.defects || "");
+      const meterageB = getMeterageFromDefects(b.defects || "");
+      return meterageA - meterageB; // Sort by ascending meterage
+    });
     const index = sectionsWithSameItem.findIndex(s => s.id === section.id);
     
     if (index === 0) {
