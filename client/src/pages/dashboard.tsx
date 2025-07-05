@@ -853,9 +853,41 @@ export default function Dashboard() {
       return null;
     }
     
-    // Use actual pricing from database
-    const unitCost = parseFloat(matchingPricing.cost) || 450;
-    const minQuantity = parseInt(matchingPricing.minQuantity) || 2;
+    // Determine which option cost to use based on the selected option or patch type
+    let unitCost = 450; // Default fallback
+    
+    // First try to use the selected option from the pricing configuration
+    if (matchingPricing.selectedOption && matchingPricing.selectedOption.includes('Option')) {
+      if (matchingPricing.selectedOption.includes('Option 1') && matchingPricing.option1Cost && matchingPricing.option1Cost !== 'N/A') {
+        unitCost = parseFloat(matchingPricing.option1Cost);
+      } else if (matchingPricing.selectedOption.includes('Option 2') && matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
+        unitCost = parseFloat(matchingPricing.option2Cost);
+      } else if (matchingPricing.selectedOption.includes('Option 3') && matchingPricing.option3Cost && matchingPricing.option3Cost !== 'N/A') {
+        unitCost = parseFloat(matchingPricing.option3Cost);
+      } else if (matchingPricing.selectedOption.includes('Option 4') && matchingPricing.option4Cost && matchingPricing.option4Cost !== 'N/A') {
+        unitCost = parseFloat(matchingPricing.option4Cost);
+      }
+    } else {
+      // Fallback to analyzing description for patch type
+      const description = (matchingPricing.description || '').toLowerCase();
+      if (description.includes('single') && matchingPricing.option1Cost && matchingPricing.option1Cost !== 'N/A') {
+        unitCost = parseFloat(matchingPricing.option1Cost);
+      } else if (description.includes('double') && matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
+        unitCost = parseFloat(matchingPricing.option2Cost);
+      } else if (description.includes('triple') && matchingPricing.option3Cost && matchingPricing.option3Cost !== 'N/A') {
+        unitCost = parseFloat(matchingPricing.option3Cost);
+      } else if (matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
+        // Default to double layer (option 2) if available
+        unitCost = parseFloat(matchingPricing.option2Cost);
+      }
+    }
+    
+    // If parsing failed, use the base cost as fallback
+    if (isNaN(unitCost)) {
+      unitCost = parseFloat(matchingPricing.cost) || 450;
+    }
+    
+    const minQuantity = parseInt(matchingPricing.minimumQuantity) || 2;
 
     // Total cost = number of defects × cost per repair
     const totalCost = numberOfDefects * unitCost;
