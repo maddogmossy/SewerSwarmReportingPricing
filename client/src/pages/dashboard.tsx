@@ -425,19 +425,21 @@ export default function Dashboard() {
     }
     
     // Multiple sections with same item number - assign letters based on meterage order
-    sectionsWithSameItem.sort((a, b) => {
+    const sortedSections = [...sectionsWithSameItem].sort((a, b) => {
       // Extract meterage from defects field (e.g., "DEG 7.08m" -> 7.08, "CL 10.78m" -> 10.78)
       const getMeterageFromDefects = (defects: string): number => {
         if (!defects) return 0;
+        // Find the first meterage value in the defects text
         const meterageMatch = defects.match(/(\d+\.?\d*)\s*m/);
-        return meterageMatch ? parseFloat(meterageMatch[1]) : 0;
+        const result = meterageMatch ? parseFloat(meterageMatch[1]) : 0;
+        return result;
       };
       
       const meterageA = getMeterageFromDefects(a.defects || "");
       const meterageB = getMeterageFromDefects(b.defects || "");
       return meterageA - meterageB; // Sort by ascending meterage
     });
-    const index = sectionsWithSameItem.findIndex(s => s.id === section.id);
+    const index = sortedSections.findIndex(s => s.id === section.id);
     
     if (index === 0) {
       return currentItemNo.toString(); // First occurrence gets original number
