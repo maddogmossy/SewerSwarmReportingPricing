@@ -925,9 +925,7 @@ export default function RepairPricing() {
                                 </Badge>
                               )}
                             </div>
-                            <span className="font-medium text-lg">
-                              £{parseFloat(item.cost).toFixed(2)}
-                            </span>
+
                           </div>
                           
                           {/* Description - Compact layout */}
