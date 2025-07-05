@@ -646,10 +646,28 @@ export function CustomerSettings() {
                             className="cursor-pointer"
                           />
                           {companySettings?.companyLogo && (
-                            <div className="mt-2">
-                              <p className="text-sm text-muted-foreground">
-                                Current logo: {companySettings.companyLogo}
-                              </p>
+                            <div className="mt-3 p-4 border rounded-lg bg-gray-50">
+                              <div className="flex items-center space-x-4">
+                                <img 
+                                  src={`/${companySettings.companyLogo}`}
+                                  alt="Company Logo"
+                                  className="h-16 w-16 object-contain bg-white border rounded"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.nextElementSibling!.style.display = 'block';
+                                  }}
+                                />
+                                <div style={{ display: 'none' }} className="h-16 w-16 bg-gray-200 border rounded flex items-center justify-center">
+                                  <span className="text-xs text-gray-500">No preview</span>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-gray-900">Current Logo</p>
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    {companySettings.companyLogo.includes('auto-logo') ? 'Auto-fetched from website' : 'Manually uploaded'}
+                                  </p>
+                                  <p className="text-xs text-gray-400 mt-1">{companySettings.companyLogo}</p>
+                                </div>
+                              </div>
                             </div>
                           )}
                         </div>
