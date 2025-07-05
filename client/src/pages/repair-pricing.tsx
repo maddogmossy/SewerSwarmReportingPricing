@@ -165,6 +165,10 @@ export default function RepairPricing() {
     option2Cost: "",
     option3Cost: "",
     option4Cost: "",
+    option1PerShift: "",
+    option2PerShift: "",
+    option3PerShift: "",
+    option4PerShift: "",
     selectedOption: "",
     rule: "",
     lengthOfRepair: "1000mm",
@@ -286,6 +290,10 @@ export default function RepairPricing() {
             minInstallationPerDay: "",
             dayRate: "800.00",
             travelTimeAllowance: "2.0",
+            option1PerShift: "",
+            option2PerShift: "",
+            option3PerShift: "",
+            option4PerShift: "",
             rule: rule
           }));
           setIsDescriptionEditable(false); // Ensure description is locked when auto-populated
@@ -463,6 +471,10 @@ export default function RepairPricing() {
       option2Cost: "",
       option3Cost: "",
       option4Cost: "",
+      option1PerShift: "",
+      option2PerShift: "",
+      option3PerShift: "",
+      option4PerShift: "",
       selectedOption: "",
       rule: "",
       lengthOfRepair: "1000mm",
@@ -613,6 +625,10 @@ export default function RepairPricing() {
       option2Cost: item.option2Cost?.toString() || "",
       option3Cost: item.option3Cost?.toString() || "",
       option4Cost: item.option4Cost?.toString() || "",
+      option1PerShift: item.option1PerShift?.toString() || "",
+      option2PerShift: item.option2PerShift?.toString() || "",
+      option3PerShift: item.option3PerShift?.toString() || "",
+      option4PerShift: item.option4PerShift?.toString() || "",
       selectedOption: item.selectedOption || ""
     });
     
@@ -1291,75 +1307,123 @@ export default function RepairPricing() {
               {/* COSTING OPTIONS - SIMPLE VALUE ENTRY BOXES */}
               <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
                 <label className="text-lg font-bold text-blue-800">🔹 COSTING OPTIONS 🔹</label>
-                <div className="grid grid-cols-2 gap-4 mt-3">
-                  <div>
-                    <label className="text-sm font-medium">1. Single Layer (£)</label>
-                    <div className="flex items-center gap-2 mt-1">
-                      {formData.option1Cost === "N/A" ? (
-                        <>
-                          <div className="bg-gray-100 border rounded-md px-3 py-2 text-gray-600 font-medium flex-1">
-                            N/A
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, option1Cost: "" })}
-                            className="px-3 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                          >
-                            Edit
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <input
-                            type="text"
-                            value={formData.option1Cost}
-                            onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
-                            placeholder="Enter price"
-                            className="flex-1 p-2 border rounded-md border-blue-300"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, option1Cost: "N/A" })}
-                            className="px-3 py-2 text-sm bg-gray-500 text-white rounded-md hover:bg-gray-600"
-                          >
-                            Reset
-                          </button>
-                        </>
-                      )}
+                <div className="space-y-4 mt-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">1. Single Layer (£)</label>
+                      <div className="flex items-center gap-2 mt-1">
+                        {formData.option1Cost === "N/A" ? (
+                          <>
+                            <div className="bg-gray-100 border rounded-md px-3 py-2 text-gray-600 font-medium flex-1">
+                              N/A
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setFormData({ ...formData, option1Cost: "" })}
+                              className="px-3 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            >
+                              Edit
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <input
+                              type="text"
+                              value={formData.option1Cost}
+                              onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                              placeholder="Enter price"
+                              className="flex-1 p-2 border rounded-md border-blue-300"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setFormData({ ...formData, option1Cost: "N/A" })}
+                              className="px-3 py-2 text-sm bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                            >
+                              Reset
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Installed Per shift</label>
+                      <input
+                        type="text"
+                        value={formData.option1PerShift || ""}
+                        onChange={(e) => setFormData({ ...formData, option1PerShift: e.target.value })}
+                        placeholder="5"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
                     </div>
                   </div>
                   
-                  <div>
-                    <label className="text-sm font-medium">2. Double Layer (£)</label>
-                    <input
-                      type="text"
-                      value={formData.option2Cost}
-                      onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
-                      placeholder="0.00"
-                      className="w-full mt-1 p-2 border rounded-md border-blue-300"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">2. Double Layer (£)</label>
+                      <input
+                        type="text"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="0.00"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Installed Per shift</label>
+                      <input
+                        type="text"
+                        value={formData.option2PerShift || ""}
+                        onChange={(e) => setFormData({ ...formData, option2PerShift: e.target.value })}
+                        placeholder="3"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
+                    </div>
                   </div>
                   
-                  <div>
-                    <label className="text-sm font-medium">3. Triple Layer (£)</label>
-                    <input
-                      type="text"
-                      value={formData.option3Cost}
-                      onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
-                      placeholder="0.00"
-                      className="w-full mt-1 p-2 border rounded-md border-blue-300"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">3. Triple Layer (£)</label>
+                      <input
+                        type="text"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="0.00"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Installed Per shift</label>
+                      <input
+                        type="text"
+                        value={formData.option3PerShift || ""}
+                        onChange={(e) => setFormData({ ...formData, option3PerShift: e.target.value })}
+                        placeholder="2"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
+                    </div>
                   </div>
                   
-                  <div>
-                    <label className="text-sm font-medium">4. Triple Layer + Extra Long Cure Time (£)</label>
-                    <input
-                      type="text"
-                      value={formData.option4Cost}
-                      onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
-                      placeholder="0.00"
-                      className="w-full mt-1 p-2 border rounded-md border-blue-300"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">4. Triple Layer + Extra Long Cure Time (£)</label>
+                      <input
+                        type="text"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="0.00"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Installed Per shift</label>
+                      <input
+                        type="text"
+                        value={formData.option4PerShift || ""}
+                        onChange={(e) => setFormData({ ...formData, option4PerShift: e.target.value })}
+                        placeholder="1"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1384,18 +1448,7 @@ export default function RepairPricing() {
 
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium">Min Installation per Day</label>
-                  <input
-                    type="text"
-                    value={formData.minInstallationPerDay}
-                    onChange={(e) => setFormData({...formData, minInstallationPerDay: e.target.value})}
-                    className="w-full mt-1 p-2 border rounded-md"
-                    placeholder="5"
-                  />
-                </div>
-
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <label className="text-sm font-medium">Day Rate (£)</label>
                   <input
