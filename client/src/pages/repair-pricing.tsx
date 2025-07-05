@@ -420,7 +420,10 @@ export default function RepairPricing() {
   const createPricing = useMutation({
     mutationFn: (data: any) => apiRequest('POST', '/api/repair-pricing', data),
     onSuccess: () => {
+      // Invalidate all pricing-related queries to ensure dashboard updates
       queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${sector}`] });
       toast({ title: "Pricing added successfully" });
       resetForm();
       setIsAddDialogOpen(false);
@@ -440,7 +443,10 @@ export default function RepairPricing() {
   const updatePricing = useMutation({
     mutationFn: ({ id, ...data }: any) => apiRequest('PUT', `/api/repair-pricing/${id}`, data),
     onSuccess: () => {
+      // Invalidate all pricing-related queries to ensure dashboard updates
       queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${sector}`] });
       toast({ title: "Pricing updated successfully" });
       resetForm();
       setEditingItem(null);

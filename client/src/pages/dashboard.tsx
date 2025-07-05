@@ -805,11 +805,24 @@ export default function Dashboard() {
     // Find matching repair pricing from database
     let matchingPricing = null;
     
+    console.log(`calculateAutoCost debug for section ${section.itemNo}:`, {
+      repairPricingDataLength: Array.isArray(repairPricingData) ? repairPricingData.length : 'not array',
+      lookingForPipeSize: `${pipeSize}mm`,
+      availablePipeSizes: Array.isArray(repairPricingData) ? repairPricingData.map(p => p.pipeSize) : [],
+      sector: currentSector.id
+    });
+    
     if (Array.isArray(repairPricingData) && repairPricingData.length > 0) {
       // Look for exact pipe size match ONLY - no fallback to closest size
       matchingPricing = repairPricingData.find((pricing: any) => 
         pricing.pipeSize === `${pipeSize}mm`
       );
+      
+      console.log(`Pricing search result:`, {
+        matchingPricing: matchingPricing ? 'found' : 'not found',
+        exactMatch: matchingPricing,
+        searchedFor: `${pipeSize}mm`
+      });
     }
 
     // Return null if no pricing data is available - triggers warning triangle display
