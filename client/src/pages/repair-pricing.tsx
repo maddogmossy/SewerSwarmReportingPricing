@@ -288,6 +288,7 @@ export default function RepairPricing() {
             travelTimeAllowance: "2.0",
             rule: rule
           }));
+          setIsDescriptionEditable(false); // Ensure description is locked when auto-populated
           setIsAddDialogOpen(true);
         }, 500);
       }
@@ -1247,7 +1248,7 @@ export default function RepairPricing() {
 
                 <div className="flex flex-col justify-end">
                   <div className="flex items-center gap-2 mb-2">
-                    <label className="text-sm font-medium text-gray-600">Edit locked cells</label>
+                    <label className="text-sm font-medium text-gray-600">Edit description</label>
                   </div>
                   <Button
                     type="button"
