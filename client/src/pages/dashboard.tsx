@@ -990,7 +990,7 @@ export default function Dashboard() {
   }, []);
 
   // Apply filters to expanded section data
-  const sectionData = expandedSectionData.filter(section => {
+  const filteredData = expandedSectionData.filter(section => {
     if (filters.severityGrade && section.severityGrade !== filters.severityGrade) return false;
     if (filters.adoptable.length > 0 && !filters.adoptable.includes(section.adoptable)) return false;
     if (filters.pipeSize && section.pipeSize !== filters.pipeSize) return false;
@@ -999,17 +999,27 @@ export default function Dashboard() {
     return true;
   });
 
-  // DEBUG: Log the final display order for Item 2 sections
-  React.useEffect(() => {
-    const item2Sections = sectionData.filter(s => s.itemNo === 2);
-    if (item2Sections.length > 0) {
-      console.log("FINAL DISPLAY ORDER for Item 2:");
-      item2Sections.forEach((section, index) => {
-        const suffix = getItemNumberWithSuffix(section, sectionData);
-        console.log(`${index + 1}. Section ID ${section.id} → Display as "${suffix}" → Defects: ${section.defects?.substring(0, 30)}...`);
-      });
+  // Sort the filtered data by item number, then by meterage to ensure correct ordering
+  const sectionData = [...filteredData].sort((a, b) => {
+    // First sort by item number
+    if (a.itemNo !== b.itemNo) {
+      return a.itemNo - b.itemNo;
     }
-  }, [sectionData]);
+    
+    // Then sort by meterage for same item numbers using the same logic as getItemNumberWithSuffix
+    const getMeterageFromDefects = (defects: string): number => {
+      if (!defects) return 0;
+      // Find the first meterage value in the defects text
+      const meterageMatch = defects.match(/(\d+\.?\d*)\s*m/);
+      return meterageMatch ? parseFloat(meterageMatch[1]) : 0;
+    };
+    
+    const meterageA = getMeterageFromDefects(a.defects || "");
+    const meterageB = getMeterageFromDefects(b.defects || "");
+    return meterageA - meterageB;
+  });
+
+
   
 
   
