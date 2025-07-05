@@ -691,7 +691,7 @@ export default function RepairPricing() {
     setApplySectors(matchingSectors);
     setOriginalApplySectors(matchingSectors); // Track original state
     
-    setIsDescriptionEditable(true); // Allow description editing
+    setIsDescriptionEditable(false); // Keep description locked - user must go through compliance warning to edit
     setEditingItem(item);
     setIsAddDialogOpen(true);
   };
