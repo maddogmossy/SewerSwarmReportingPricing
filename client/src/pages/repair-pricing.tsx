@@ -1011,6 +1011,9 @@ export default function RepairPricing() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Label htmlFor="description">Description</Label>
+                  {!isDescriptionEditable && (
+                    <span className="text-xs text-gray-500">(Click shield icon to edit)</span>
+                  )}
                 </div>
                 <div className="relative">
                   <Input
@@ -1018,7 +1021,8 @@ export default function RepairPricing() {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="e.g., Standard structural patch repair"
-                    className="pr-8"
+                    className={`pr-8 ${!isDescriptionEditable ? 'bg-gray-100 text-gray-500' : ''}`}
+                    disabled={!isDescriptionEditable}
                   />
                   {formData.description.includes('patch') && (
                     <Shield className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
