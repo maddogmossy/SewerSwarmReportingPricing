@@ -280,6 +280,7 @@ export default function Dashboard() {
   // Folder selector state
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
   const [selectedFolderForView, setSelectedFolderForView] = useState<number | null>(null);
+  const [selectedReportIds, setSelectedReportIds] = useState<number[]>([]);
 
   // Auto-collapse dropdown when clicking outside
   useEffect(() => {
@@ -789,10 +790,12 @@ export default function Dashboard() {
   // Get completed uploads for analysis
   const completedUploads = uploads.filter(upload => upload.status === 'completed');
   
-  // Filter uploads by selected folder if one is chosen
-  const filteredUploads = selectedFolderForView 
-    ? completedUploads.filter(upload => upload.folderId === selectedFolderForView)
-    : completedUploads;
+  // Filter uploads by selected folder or selected individual reports
+  const filteredUploads = selectedReportIds.length > 0
+    ? completedUploads.filter(upload => selectedReportIds.includes(upload.id))
+    : selectedFolderForView 
+      ? completedUploads.filter(upload => upload.folderId === selectedFolderForView)
+      : completedUploads;
   
   // Get current upload based on reportId parameter or most recent upload from filtered set
   const currentUpload = reportId 
@@ -1472,12 +1475,14 @@ export default function Dashboard() {
                     <div className="flex items-center gap-2">
                       <Folder className="h-4 w-4 text-blue-600" />
                       <span>
-                        {selectedFolderForView ? 
-                          folders.find(f => f.id === selectedFolderForView)?.folderName || 'Unknown Folder' :
-                          (currentUpload?.folderId ? 
-                            folders.find(f => f.id === currentUpload.folderId)?.folderName || 'Current Folder' :
-                            'All Folders'
-                          )
+                        {selectedReportIds.length > 0 ? 
+                          `${selectedReportIds.length} Reports Selected` :
+                          selectedFolderForView ? 
+                            folders.find(f => f.id === selectedFolderForView)?.folderName || 'Unknown Folder' :
+                            (currentUpload?.folderId ? 
+                              folders.find(f => f.id === currentUpload.folderId)?.folderName || 'Current Folder' :
+                              'All Folders'
+                            )
                         }
                       </span>
                     </div>
@@ -1491,6 +1496,7 @@ export default function Dashboard() {
                       <div
                         onClick={() => {
                           setSelectedFolderForView(null);
+                          setSelectedReportIds([]);
                           setShowFolderDropdown(false);
                         }}
                         className="flex items-center justify-between p-3 hover:bg-slate-50 cursor-pointer border-b"
@@ -1501,6 +1507,31 @@ export default function Dashboard() {
                         </div>
                         <span className="text-xs text-slate-500">({completedUploads.length} reports)</span>
                       </div>
+                      
+                      {/* Selection Controls */}
+                      {selectedReportIds.length > 0 && (
+                        <div className="border-b p-3 bg-blue-50">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-blue-700">
+                              {selectedReportIds.length} reports selected
+                            </span>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setSelectedReportIds([])}
+                                className="text-xs px-2 py-1 text-red-600 hover:bg-red-50 rounded"
+                              >
+                                Clear All
+                              </button>
+                              <button
+                                onClick={() => setShowFolderDropdown(false)}
+                                className="text-xs px-3 py-1 bg-blue-600 text-white hover:bg-blue-700 rounded"
+                              >
+                                Apply Selection
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       
                       {/* Individual Folders */}
                       {Object.entries(groupUploadsByFolder()).map(([folderKey, folderUploads]) => {
@@ -1517,6 +1548,7 @@ export default function Dashboard() {
                             <div
                               onClick={() => {
                                 setSelectedFolderForView(parseInt(folderKey));
+                                setSelectedReportIds([]);
                                 setShowFolderDropdown(false);
                               }}
                               className="flex items-center justify-between p-3 hover:bg-blue-50 cursor-pointer border-b bg-slate-50"
@@ -1531,7 +1563,18 @@ export default function Dashboard() {
                             {/* Reports in this folder */}
                             {completedReports.map((upload) => (
                               <div key={upload.id} className="flex items-center justify-between p-3 pl-8 hover:bg-slate-50 border-b last:border-b-0">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-3">
+                                  <Checkbox
+                                    checked={selectedReportIds.includes(upload.id)}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setSelectedReportIds(prev => [...prev, upload.id]);
+                                      } else {
+                                        setSelectedReportIds(prev => prev.filter(id => id !== upload.id));
+                                      }
+                                    }}
+                                    className="w-4 h-4"
+                                  />
                                   {getStatusIcon(upload.status || 'pending')}
                                   <div>
                                     <div className="font-medium text-sm">{upload.fileName}</div>
