@@ -387,9 +387,36 @@ function extractInspectionDirectionFromECL(pdfText: string): { [itemNo: number]:
   return directions;
 }
 
+// Extract inspection number for specific section from ECL PDF
+function extractInspectionNumberForSection(pdfText: string, itemNo: number): string {
+  // Look for inspection number patterns near section data
+  // ECL format may have patterns like "Inspection No: 1" or "Survey No: 1"
+  const inspectionPattern = new RegExp(`Section Item ${itemNo}[\\s\\S]*?(?:Inspection No\\.?:?\\s*(\\d+)|Survey No\\.?:?\\s*(\\d+))`, 'i');
+  const match = pdfText.match(inspectionPattern);
+  
+  if (match) {
+    const inspectionNo = match[1] || match[2];
+    console.log(`✓ Found inspection number ${inspectionNo} for Section ${itemNo}`);
+    return inspectionNo;
+  }
+  
+  // Default to '1' if no specific inspection number found
+  console.log(`✓ Using default inspection number '1' for Section ${itemNo}`);
+  return '1';
+}
+
 // Function to extract ALL sections from PDF text - USING YOUR HIGHLIGHTED STRUCTURE
 async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: number) {
   console.log('Processing adoption sector PDF with authentic data extraction...');
+  
+  // EXTRACT PROJECT NAME FROM PDF HEADERS
+  let projectName = 'Unknown Project';
+  const projectNamePattern = /Project[:\s]+([^,\n]+)/i;
+  const projectMatch = pdfText.match(projectNamePattern);
+  if (projectMatch) {
+    projectName = projectMatch[1].trim();
+    console.log(`✓ Extracted project name: "${projectName}"`);
+  }
   
   // MANDATORY INSPECTION DIRECTION LOGIC - NEVER REMOVE OR MODIFY WITHOUT EXPLICIT USER CONFIRMATION
   // Extract inspection direction for each section from ECL report headers
@@ -460,10 +487,14 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     // Apply adoption sector MSCC5 classification
     const defectData = await classifyAdoptionDefects(itemNo, pipeSize);
     
+    // Extract inspection number from PDF context for this section
+    const inspectionNo = extractInspectionNumberForSection(pdfText, itemNo);
+    
     sections.push({
       fileUploadId,
+      projectNo: projectName,
       itemNo,
-      inspectionNo: '1',
+      inspectionNo,
       date: '10/02/2025',
       time: getAdoptionInspectionTime(itemNo),
       startMH: correction.corrected ? correction.upstream : startMH,
