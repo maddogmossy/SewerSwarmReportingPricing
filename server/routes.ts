@@ -995,21 +995,11 @@ export async function registerRoutes(app: Express) {
     try {
       const uploadId = parseInt(req.params.uploadId);
       
-      // Get all sections, then filter to keep only the most recent for each item_no
-      const allSections = await db.select()
+      // Get all sections - keep multiple records for same item_no (like 2 and 2a)
+      const sections = await db.select()
         .from(sectionInspections)
         .where(eq(sectionInspections.fileUploadId, uploadId))
-        .orderBy(asc(sectionInspections.itemNo), desc(sectionInspections.createdAt));
-
-      // Keep only the most recent record for each item_no
-      const seenItemNos = new Set();
-      const sections = allSections.filter(section => {
-        if (seenItemNos.has(section.itemNo)) {
-          return false; // Skip duplicates, keep only first (most recent due to desc order)
-        }
-        seenItemNos.add(section.itemNo);
-        return true;
-      });
+        .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.createdAt));
 
       res.json(sections);
     } catch (error) {
