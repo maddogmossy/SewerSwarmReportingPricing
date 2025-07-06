@@ -405,10 +405,8 @@ export default function Dashboard() {
   const renderCellContent = (columnKey: string, section: any) => {
     switch (columnKey) {
       case 'projectNo':
-        // Extract project number from filename (e.g., "3588-JRL-NineElmsPark.pdf" -> "3588")
-        const fileName = currentUpload?.fileName || '';
-        const projectMatch = fileName.match(/^(\d+)/);
-        return projectMatch ? projectMatch[1] : 'Unknown';
+        // MULTI-REPORT SUPPORT: Show project number from section's own report
+        return section.projectNumber || 'Unknown';
       case 'itemNo':
         return getItemNumberWithSuffix(section, sectionData);
       case 'inspectionNo':
@@ -1027,10 +1025,54 @@ export default function Dashboard() {
     };
   };
 
-  // ZERO TOLERANCE POLICY: Only authentic data from user-uploaded PDFs
+  // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
-    enabled: !!currentUpload?.id && currentUpload?.status === "completed",
+    queryKey: selectedReportIds.length > 0 
+      ? ['multi-sections', ...selectedReportIds.sort()] 
+      : [`/api/uploads/${currentUpload?.id}/sections`],
+    queryFn: async () => {
+      if (selectedReportIds.length > 0) {
+        // MULTI-REPORT MODE: Fetch sections from multiple reports
+        console.log(`🔄 Fetching sections from ${selectedReportIds.length} selected reports...`);
+        const allSections = [];
+        
+        for (const reportId of selectedReportIds) {
+          try {
+            const sections = await apiRequest('GET', `/api/uploads/${reportId}/sections`);
+            const upload = filteredUploads.find(u => u.id === reportId);
+            
+            // Add reportId and project info to each section for identification
+            const sectionsWithReportInfo = sections.map((section: any) => ({
+              ...section,
+              reportId: reportId,
+              uploadFileName: upload?.fileName || 'Unknown',
+              projectNumber: upload?.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
+              uploadSector: upload?.sector || 'unknown'
+            }));
+            
+            allSections.push(...sectionsWithReportInfo);
+            console.log(`✓ Loaded ${sections.length} sections from ${upload?.fileName}`);
+          } catch (error) {
+            console.warn(`Failed to fetch sections for report ${reportId}:`, error);
+          }
+        }
+        
+        console.log(`✓ Total sections loaded: ${allSections.length} from ${selectedReportIds.length} reports`);
+        return allSections;
+      } else if (currentUpload?.id && currentUpload?.status === "completed") {
+        // SINGLE REPORT MODE: Original functionality
+        const sections = await apiRequest('GET', `/api/uploads/${currentUpload.id}/sections`);
+        return sections.map((section: any) => ({
+          ...section,
+          reportId: currentUpload.id,
+          uploadFileName: currentUpload.fileName,
+          projectNumber: currentUpload.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
+          uploadSector: currentUpload.sector
+        }));
+      }
+      return [];
+    },
+    enabled: !!(selectedReportIds.length > 0 || (currentUpload?.id && currentUpload?.status === "completed")),
     staleTime: 0,
     gcTime: 0, // Prevent caching
     refetchOnMount: true, // Always refetch on mount
@@ -1655,9 +1697,11 @@ export default function Dashboard() {
             )}
           </div>
           <p className="text-slate-600">
-            {currentUpload 
-              ? `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector`
-              : "Comprehensive analysis results across all uploaded reports with sector-specific compliance checking"
+            {selectedReportIds.length > 0 
+              ? `Viewing ${selectedReportIds.length} selected reports with projects: ${[...new Set(rawSectionData.map(s => s.projectNumber))].filter(p => p !== 'Unknown').join(', ')}`
+              : currentUpload 
+                ? `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector`
+                : "Comprehensive analysis results across all uploaded reports with sector-specific compliance checking"
             }
           </p>
         </div>
