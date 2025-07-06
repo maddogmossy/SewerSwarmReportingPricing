@@ -191,11 +191,11 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     const recommendations = sectionData.recommendations.toLowerCase();
     const defects = sectionData.defects?.toLowerCase() || '';
     
-    // Check for cleaning-related defects (DER, debris) - should use Jetting first
+    // Check for cleaning-related defects (DER, debris) - use patch as first option for cleaning
     if (recommendations.includes('cleanse') || recommendations.includes('jetting') || 
         defects.includes('der') || defects.includes('debris') || 
         recommendations.includes('cleaning')) {
-      return ['Jetting', 'Patch', 'Lining', 'Excavation', 'Custom'];
+      return ['Patch', 'Lining', 'Excavation', 'Custom'];
     }
     // Structural defects need patch/lining
     else if (recommendations.includes('patch') || recommendations.includes('structural')) {
