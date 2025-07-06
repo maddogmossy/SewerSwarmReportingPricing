@@ -797,10 +797,10 @@ export default function Dashboard() {
       ? completedUploads.filter(upload => upload.folderId === selectedFolderForView)
       : completedUploads;
   
-  // Get current upload based on reportId parameter or prioritize 218ECL upload (ID 11)
+  // Get current upload based on reportId parameter or most recent upload from filtered set
   const currentUpload = reportId 
     ? filteredUploads.find(upload => upload.id === parseInt(reportId))
-    : filteredUploads.find(upload => upload.id === 11) || filteredUploads.sort((a, b) => b.id - a.id)[0]; // Prioritize 218ECL upload
+    : filteredUploads.sort((a, b) => b.id - a.id)[0]; // Default to most recent if no reportId
   
   // Force clear all cached data for fresh uploads and ensure authentic data
   useEffect(() => {

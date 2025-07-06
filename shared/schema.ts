@@ -85,7 +85,6 @@ export const sectionInspections = pgTable("section_inspections", {
   fileUploadId: integer("file_upload_id").notNull().references(() => fileUploads.id),
   itemNo: integer("item_no").notNull(),
   inspectionNo: integer("inspection_no").default(1),
-  projectNo: varchar("project_no").default("0000"),
   date: varchar("date"),
   time: varchar("time"),
   startMH: varchar("start_mh"),
