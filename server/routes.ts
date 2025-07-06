@@ -2161,6 +2161,60 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Clear dashboard data endpoint
+  app.post("/api/clear-dashboard-data", async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id || "test-user";
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      console.log(`🗑️ Clearing dashboard data for user: ${userId}`);
+      
+      // Get all uploads for this user
+      const userUploads = await db.select().from(fileUploads).where(eq(fileUploads.userId, userId));
+      const uploadIds = userUploads.map(upload => upload.id);
+      
+      let deletedCounts = {
+        sections: 0,
+        defects: 0,
+        uploads: 0,
+        folders: 0
+      };
+      
+      if (uploadIds.length > 0) {
+        // Delete section inspections for each upload
+        for (const uploadId of uploadIds) {
+          await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
+          await db.delete(sectionDefects).where(eq(sectionDefects.fileUploadId, uploadId));
+        }
+        
+        deletedCounts.sections = uploadIds.length;
+        deletedCounts.defects = uploadIds.length;
+        
+        // Delete file uploads
+        const uploadsResult = await db.delete(fileUploads).where(eq(fileUploads.userId, userId));
+        deletedCounts.uploads = uploadsResult.length || userUploads.length;
+      }
+      
+      // Delete project folders
+      const foldersResult = await db.delete(projectFolders).where(eq(projectFolders.userId, userId));
+      deletedCounts.folders = foldersResult.length || 0;
+      
+      console.log(`✅ Dashboard data cleared:`, deletedCounts);
+      
+      res.json({ 
+        success: true, 
+        message: "Dashboard data cleared successfully",
+        deletedCounts 
+      });
+      
+    } catch (error: any) {
+      console.error("Error clearing dashboard data:", error);
+      res.status(500).json({ error: "Failed to clear dashboard data" });
+    }
+  });
+
   // Vehicle Travel Rates API endpoints
   app.get("/api/vehicle-travel-rates", async (req: Request, res: Response) => {
     try {

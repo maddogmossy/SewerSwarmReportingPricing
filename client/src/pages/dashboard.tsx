@@ -281,6 +281,7 @@ export default function Dashboard() {
   const [showFolderDropdown, setShowFolderDropdown] = useState(false);
   const [selectedFolderForView, setSelectedFolderForView] = useState<number | null>(null);
   const [selectedReportIds, setSelectedReportIds] = useState<number[]>([]);
+  const [showClearDataDialog, setShowClearDataDialog] = useState(false);
 
   // Auto-collapse dropdown when clicking outside
   useEffect(() => {
@@ -736,6 +737,29 @@ export default function Dashboard() {
     onError: (error) => {
       toast({
         title: "Delete Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const clearDataMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/clear-dashboard-data");
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Dashboard Data Cleared",
+        description: `Successfully cleared ${data.deletedCounts.uploads} reports and ${data.deletedCounts.folders} folders.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
+      setShowClearDataDialog(false);
+      window.location.reload();
+    },
+    onError: (error) => {
+      toast({
+        title: "Clear Data Failed",
         description: error.message,
         variant: "destructive",
       });
@@ -1455,6 +1479,15 @@ export default function Dashboard() {
               <Download className="h-4 w-4 mr-2" />
               Export to Excel
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowClearDataDialog(true)}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear Dashboard Data
+            </Button>
           </div>
         </div>
       </div>
@@ -2097,6 +2130,46 @@ export default function Dashboard() {
               className="bg-amber-600 hover:bg-amber-700"
             >
               Export Anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Clear Dashboard Data Confirmation Dialog */}
+      <Dialog open={showClearDataDialog} onOpenChange={setShowClearDataDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Clear Dashboard Data</DialogTitle>
+            <DialogDescription>
+              This action will permanently delete all your uploaded reports, section data, and project folders. This cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-sm text-red-800 font-medium">
+                Are you sure you want to clear all dashboard data?
+              </p>
+              <ul className="text-xs text-red-700 mt-2 list-disc list-inside">
+                <li>All uploaded reports will be deleted</li>
+                <li>All section inspection data will be removed</li>
+                <li>All project folders will be deleted</li>
+                <li>All pricing configurations will remain intact</li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowClearDataDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => clearDataMutation.mutate()}
+              disabled={clearDataMutation.isPending}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {clearDataMutation.isPending ? "Clearing..." : "Clear All Data"}
             </Button>
           </DialogFooter>
         </DialogContent>
