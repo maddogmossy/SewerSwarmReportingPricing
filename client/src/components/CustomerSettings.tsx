@@ -30,7 +30,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -1347,6 +1347,53 @@ export function CustomerSettings() {
                                   </FormItem>
                                 )}
                               />
+                            </div>
+
+                            <div className="space-y-4">
+                              <FormField
+                                control={vehicleForm.control}
+                                name="hasAssistant"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                      />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                      <FormLabel>Requires Assistant</FormLabel>
+                                      <FormDescription>
+                                        Check if this vehicle type requires an assistant for operations
+                                      </FormDescription>
+                                    </div>
+                                  </FormItem>
+                                )}
+                              />
+
+                              {vehicleForm.watch('hasAssistant') && (
+                                <FormField
+                                  control={vehicleForm.control}
+                                  name="assistantWagePerHour"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Assistant Wage per Hour (£)</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          type="number"
+                                          step="0.01"
+                                          {...field}
+                                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                        />
+                                      </FormControl>
+                                      <FormDescription>
+                                        Hourly wage for the assistant when required
+                                      </FormDescription>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              )}
                             </div>
 
                             <div className="flex justify-end space-x-2">
