@@ -1280,9 +1280,9 @@ export default function RepairPricing() {
               )}
               
               {(formData.workCategoryId === '1' || formData.workCategoryId === 1) && (
-                <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
+                <div className="border-2 border-sky-200 p-4 rounded-lg bg-sky-50">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-lg font-bold text-blue-800">📹 CCTV Survey Pricing</label>
+                    <label className="text-lg font-bold text-sky-800">📹 CCTV Survey Pricing</label>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1293,7 +1293,7 @@ export default function RepairPricing() {
                         value={formData.option1Cost}
                         onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
                         placeholder="e.g., 1.50"
-                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                        className="w-full mt-1 p-2 border rounded-md border-sky-300"
                       />
                     </div>
                     
@@ -1305,7 +1305,7 @@ export default function RepairPricing() {
                         value={formData.option2Cost}
                         onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
                         placeholder="e.g., 150.00"
-                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                        className="w-full mt-1 p-2 border rounded-md border-sky-300"
                       />
                     </div>
                     
@@ -1317,7 +1317,7 @@ export default function RepairPricing() {
                         value={formData.option3Cost}
                         onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
                         placeholder="e.g., 85.00"
-                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                        className="w-full mt-1 p-2 border rounded-md border-sky-300"
                       />
                     </div>
                     
@@ -1329,17 +1329,17 @@ export default function RepairPricing() {
                         value={formData.option4Cost}
                         onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
                         placeholder="e.g., 45.00"
-                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                        className="w-full mt-1 p-2 border rounded-md border-sky-300"
                       />
                     </div>
                   </div>
                 </div>
               )}
 
-              {(formData.workCategoryId === '2' || formData.workCategoryId === 2 || formData.workCategoryId === '5' || formData.workCategoryId === 5) && (
-                <div className="border-2 border-cyan-200 p-4 rounded-lg bg-cyan-50">
+              {(formData.workCategoryId === '2' || formData.workCategoryId === 2) && (
+                <div className="border-2 border-green-200 p-4 rounded-lg bg-green-50">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-lg font-bold text-cyan-800">🚿 Jetting/Cleansing Pricing</label>
+                    <label className="text-lg font-bold text-green-800">🚿 Cleansing Pricing</label>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1350,7 +1350,7 @@ export default function RepairPricing() {
                         value={formData.option1Cost}
                         onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
                         placeholder="e.g., 95.00"
-                        className="w-full mt-1 p-2 border rounded-md border-cyan-300"
+                        className="w-full mt-1 p-2 border rounded-md border-green-300"
                       />
                     </div>
                     
@@ -1362,7 +1362,7 @@ export default function RepairPricing() {
                         value={formData.option2Cost}
                         onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
                         placeholder="e.g., 650.00"
-                        className="w-full mt-1 p-2 border rounded-md border-cyan-300"
+                        className="w-full mt-1 p-2 border rounded-md border-green-300"
                       />
                     </div>
                     
@@ -1374,7 +1374,7 @@ export default function RepairPricing() {
                         value={formData.option3Cost}
                         onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
                         placeholder="e.g., 120.00"
-                        className="w-full mt-1 p-2 border rounded-md border-cyan-300"
+                        className="w-full mt-1 p-2 border rounded-md border-green-300"
                       />
                     </div>
                     
@@ -1386,7 +1386,64 @@ export default function RepairPricing() {
                         value={formData.option4Cost}
                         onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
                         placeholder="e.g., 140.00"
-                        className="w-full mt-1 p-2 border rounded-md border-cyan-300"
+                        className="w-full mt-1 p-2 border rounded-md border-green-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {(formData.workCategoryId === '5' || formData.workCategoryId === 5) && (
+                <div className="border-2 border-purple-700 p-4 rounded-lg bg-purple-100">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-lg font-bold text-purple-900">🎯 Directional Water Cutting Pricing</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Hourly Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 120.00"
+                        className="w-full mt-1 p-2 border rounded-md border-purple-700"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Daily Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="e.g., 850.00"
+                        className="w-full mt-1 p-2 border rounded-md border-purple-700"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Setup Fee (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 200.00"
+                        className="w-full mt-1 p-2 border rounded-md border-purple-700"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Emergency Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="e.g., 180.00"
+                        className="w-full mt-1 p-2 border rounded-md border-purple-700"
                       />
                     </div>
                   </div>
@@ -1394,9 +1451,9 @@ export default function RepairPricing() {
               )}
 
               {(formData.workCategoryId === '10' || formData.workCategoryId === 10) && (
-                <div className="border-2 border-teal-200 p-4 rounded-lg bg-teal-50">
+                <div className="border-2 border-indigo-200 p-4 rounded-lg bg-indigo-50">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-lg font-bold text-teal-800">📹 CCTV/Cleansing Pricing</label>
+                    <label className="text-lg font-bold text-indigo-800">📹 CCTV/Cleansing Pricing</label>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1407,7 +1464,7 @@ export default function RepairPricing() {
                         value={formData.option1Cost}
                         onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
                         placeholder="e.g., 8.50"
-                        className="w-full mt-1 p-2 border rounded-md border-teal-300"
+                        className="w-full mt-1 p-2 border rounded-md border-indigo-300"
                       />
                     </div>
                     
@@ -1419,7 +1476,7 @@ export default function RepairPricing() {
                         value={formData.option2Cost}
                         onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
                         placeholder="e.g., 95.00"
-                        className="w-full mt-1 p-2 border rounded-md border-teal-300"
+                        className="w-full mt-1 p-2 border rounded-md border-indigo-300"
                       />
                     </div>
                     
@@ -1431,7 +1488,7 @@ export default function RepairPricing() {
                         value={formData.option3Cost}
                         onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
                         placeholder="e.g., 175.00"
-                        className="w-full mt-1 p-2 border rounded-md border-teal-300"
+                        className="w-full mt-1 p-2 border rounded-md border-indigo-300"
                       />
                     </div>
                     
@@ -1443,7 +1500,7 @@ export default function RepairPricing() {
                         value={formData.option4Cost}
                         onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
                         placeholder="e.g., 45.00"
-                        className="w-full mt-1 p-2 border rounded-md border-teal-300"
+                        className="w-full mt-1 p-2 border rounded-md border-indigo-300"
                       />
                     </div>
                   </div>
@@ -1451,9 +1508,9 @@ export default function RepairPricing() {
               )}
 
               {(formData.workCategoryId === '14' || formData.workCategoryId === 14) && (
-                <div className="border-2 border-emerald-200 p-4 rounded-lg bg-emerald-50">
+                <div className="border-2 border-slate-700 p-4 rounded-lg bg-slate-100">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-lg font-bold text-emerald-800">🎯 CCTV/Cleansing/Root Cutting Pricing</label>
+                    <label className="text-lg font-bold text-slate-900">🎯 CCTV/Cleansing/Root Cutting Pricing</label>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1508,9 +1565,9 @@ export default function RepairPricing() {
               )}
 
               {(formData.workCategoryId === '11' || formData.workCategoryId === 11) && (
-                <div className="border-2 border-purple-200 p-4 rounded-lg bg-purple-50">
+                <div className="border-2 border-yellow-200 p-4 rounded-lg bg-yellow-50">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-lg font-bold text-purple-800">🌡️ Ambient Lining Pricing</label>
+                    <label className="text-lg font-bold text-yellow-800">🌡️ Ambient Lining Pricing</label>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1521,7 +1578,7 @@ export default function RepairPricing() {
                         value={formData.option1Cost}
                         onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
                         placeholder="e.g., 65.00"
-                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                        className="w-full mt-1 p-2 border rounded-md border-yellow-300"
                       />
                     </div>
                     
@@ -1533,7 +1590,7 @@ export default function RepairPricing() {
                         value={formData.option2Cost}
                         onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
                         placeholder="e.g., 285.00"
-                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                        className="w-full mt-1 p-2 border rounded-md border-yellow-300"
                       />
                     </div>
                     
@@ -1545,7 +1602,7 @@ export default function RepairPricing() {
                         value={formData.option3Cost}
                         onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
                         placeholder="e.g., 450.00"
-                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                        className="w-full mt-1 p-2 border rounded-md border-yellow-300"
                       />
                     </div>
                     
@@ -1557,7 +1614,7 @@ export default function RepairPricing() {
                         value={formData.option4Cost}
                         onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
                         placeholder="e.g., 25.00"
-                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                        className="w-full mt-1 p-2 border rounded-md border-yellow-300"
                       />
                     </div>
                   </div>
@@ -1565,9 +1622,9 @@ export default function RepairPricing() {
               )}
 
               {(formData.workCategoryId === '12' || formData.workCategoryId === 12) && (
-                <div className="border-2 border-orange-200 p-4 rounded-lg bg-orange-50">
+                <div className="border-2 border-amber-200 p-4 rounded-lg bg-amber-50">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-lg font-bold text-orange-800">🔥 Hot Cure Lining Pricing</label>
+                    <label className="text-lg font-bold text-amber-800">🔥 Hot Cure Lining Pricing</label>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1578,7 +1635,7 @@ export default function RepairPricing() {
                         value={formData.option1Cost}
                         onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
                         placeholder="e.g., 85.00"
-                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
+                        className="w-full mt-1 p-2 border rounded-md border-amber-300"
                       />
                     </div>
                     
@@ -1590,7 +1647,7 @@ export default function RepairPricing() {
                         value={formData.option2Cost}
                         onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
                         placeholder="e.g., 450.00"
-                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
+                        className="w-full mt-1 p-2 border rounded-md border-amber-300"
                       />
                     </div>
                     
@@ -1602,7 +1659,7 @@ export default function RepairPricing() {
                         value={formData.option3Cost}
                         onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
                         placeholder="e.g., 650.00"
-                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
+                        className="w-full mt-1 p-2 border rounded-md border-amber-300"
                       />
                     </div>
                     
@@ -1614,7 +1671,7 @@ export default function RepairPricing() {
                         value={formData.option4Cost}
                         onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
                         placeholder="e.g., 125.00"
-                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
+                        className="w-full mt-1 p-2 border rounded-md border-amber-300"
                       />
                     </div>
                   </div>
@@ -1622,9 +1679,9 @@ export default function RepairPricing() {
               )}
 
               {(formData.workCategoryId === '13' || formData.workCategoryId === 13) && (
-                <div className="border-2 border-indigo-200 p-4 rounded-lg bg-indigo-50">
+                <div className="border-2 border-lime-200 p-4 rounded-lg bg-lime-50">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-lg font-bold text-indigo-800">💜 UV Lining Pricing</label>
+                    <label className="text-lg font-bold text-lime-800">💜 UV Lining Pricing</label>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1679,18 +1736,18 @@ export default function RepairPricing() {
               )}
 
               {(formData.workCategoryId === '6' || formData.workCategoryId === 6) && (
-                <div className="border-2 border-red-200 p-4 rounded-lg bg-red-50">
+                <div className="border-2 border-orange-200 p-4 rounded-lg bg-orange-50">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-lg font-bold text-red-800">🔨 Patching Pricing</label>
+                    <label className="text-lg font-bold text-orange-800">🔨 Patching Pricing</label>
                     <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-red-800">Lock Single Layer:</label>
+                      <label className="text-sm font-medium text-orange-800">Lock Single Layer:</label>
                       <button
                         type="button"
                         onClick={() => setFormData({ ...formData, lockSingleLayer: !formData.lockSingleLayer })}
                         className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
                           formData.lockSingleLayer 
-                            ? 'bg-red-600 text-white hover:bg-red-700' 
-                            : 'bg-red-100 text-red-800 hover:bg-red-200'
+                            ? 'bg-orange-600 text-white hover:bg-orange-700' 
+                            : 'bg-orange-100 text-orange-800 hover:bg-orange-200'
                         }`}
                       >
                         {formData.lockSingleLayer ? 'LOCKED' : 'UNLOCKED'}
