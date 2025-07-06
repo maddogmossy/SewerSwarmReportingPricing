@@ -770,7 +770,8 @@ export default function RepairPricing() {
       option3PerShift: item.option3PerShift?.toString() || "",
       option4PerShift: item.option4PerShift?.toString() || "",
       selectedOption: item.selectedOption || "",
-      vehicleId: item.vehicleId?.toString() || ""
+      vehicleId: item.vehicleId?.toString() || "",
+      lockSingleLayer: true // Lock single layer by default
     });
     
     // Pre-select sectors that already have this pricing rule
@@ -808,7 +809,8 @@ export default function RepairPricing() {
       option3PerShift: item.option3PerShift?.toString() || "",
       option4PerShift: item.option4PerShift?.toString() || "",
       selectedOption: item.selectedOption || "",
-      vehicleId: item.vehicleId?.toString() || ""
+      vehicleId: item.vehicleId?.toString() || "",
+      lockSingleLayer: true // Lock single layer by default
     });
     
     // Pre-select sectors that already have this pricing rule
