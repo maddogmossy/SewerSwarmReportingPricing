@@ -1719,7 +1719,29 @@ export default function RepairPricing() {
                       />
                     </div>
                     
-
+                    <div>
+                      <label className="text-sm font-medium">Triple Layer Cost (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 850.00"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Installs Per Shift (Triple)</label>
+                      <input
+                        type="number"
+                        step="1"
+                        value={formData.installsPerShift3 || ''}
+                        onChange={(e) => setFormData({ ...formData, installsPerShift3: e.target.value })}
+                        placeholder="e.g., 2"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
+                    </div>
                     
                     <div>
                       <label className="text-sm font-medium">Extended Cure Cost (£)</label>
@@ -1787,15 +1809,7 @@ export default function RepairPricing() {
                 </div>
               )}
 
-              <div>
-                <Label htmlFor="selectedOption">Selected Option</Label>
-                <Input
-                  id="selectedOption"
-                  value={formData.selectedOption || "Auto-selected based on description"}
-                  readOnly
-                  className="bg-gray-50"
-                  />
-              </div>
+
 
 
 
