@@ -500,10 +500,8 @@ function getAdoptionPipeMaterial(itemNo: number): string {
 }
 
 function getAdoptionTotalLength(itemNo: number): string {
-  // Realistic adoption sector lengths
-  const baseLengths = [24.5, 31.2, 18.7, 42.1, 29.8, 35.4, 21.3, 38.9];
-  const length = baseLengths[itemNo % baseLengths.length] + (itemNo * 1.2);
-  return `${length.toFixed(2)}m`;
+  // AUTHENTIC DATA ONLY - no synthetic generation
+  return 'no data recorded';
 }
 
 function getAdoptionInspectionTime(itemNo: number): string {
