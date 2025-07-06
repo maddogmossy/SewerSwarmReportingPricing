@@ -1273,22 +1273,39 @@ export async function registerRoutes(app: Express) {
       const sectionData = extractSpecificSectionFromPDF(pdfText.text, uploadId, sectionNumber);
       
       if (sectionData) {
-        await db.insert(sectionInspections).values([sectionData]);
+        // APPLY MULTI-DEFECT SECTION SPLITTING TO SINGLE SECTION REPROCESSING
+        console.log(`🔄 Applying multi-defect section splitting to Section ${sectionNumber}...`);
+        const { default: MSCC5Classifier } = await import('./mscc5-classifier.js');
         
-        // Process any defects for this section
+        const finalSections = [];
         if (sectionData.defects && sectionData.defects !== "No action required pipe observed in acceptable structural and service condition") {
-          const defectResult = await MSCC5Classifier.classifyDefect(sectionData.defects, 'adoption');
+          const subsections = MSCC5Classifier.splitMultiDefectSection(sectionData.defects, sectionData.itemNo, sectionData);
+          finalSections.push(...subsections);
+        } else {
+          finalSections.push(sectionData);
+        }
+        
+        console.log(`✓ Section ${sectionNumber} splitting complete: 1 original → ${finalSections.length} final sections`);
+        
+        // Insert all final sections (could be 1 original or multiple subsections)
+        for (const section of finalSections) {
+          await db.insert(sectionInspections).values([section]);
           
-          await db.insert(sectionDefects).values([{
-            fileUploadId: uploadId,
-            itemNo: sectionNumber,
-            defectCode: defectResult.defectCode,
-            defectDescription: defectResult.defectDescription,
-            severityGrade: defectResult.severityGrade,
-            recommendations: defectResult.recommendations,
-            adoptable: defectResult.adoptable,
-            meterage: sectionData.defects.match(/(\d+\.?\d*m)/)?.[1] || '0.00m'
-          }]);
+          // Process any defects for each subsection
+          if (section.defects && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
+            const defectResult = await MSCC5Classifier.classifyDefect(section.defects, 'adoption');
+            
+            await db.insert(sectionDefects).values([{
+              fileUploadId: uploadId,
+              itemNo: section.itemNo,
+              defectCode: defectResult.defectCode,
+              defectDescription: defectResult.defectDescription,
+              severityGrade: defectResult.severityGrade,
+              recommendations: defectResult.recommendations,
+              adoptable: defectResult.adoptable,
+              meterage: section.defects.match(/(\d+\.?\d*m)/)?.[1] || '0.00m'
+            }]);
+          }
         }
       }
       
@@ -1328,7 +1345,22 @@ export async function registerRoutes(app: Express) {
       const extractedSections = await extractSectionsFromPDF(pdfText.text, uploadId);
       
       if (extractedSections && extractedSections.length > 0) {
-        await db.insert(sectionInspections).values(extractedSections);
+        // APPLY MULTI-DEFECT SECTION SPLITTING TO FLOW REFRESH
+        console.log('🔄 Applying multi-defect section splitting to refreshed sections...');
+        const { default: MSCC5Classifier } = await import('./mscc5-classifier.js');
+        
+        const finalSections = [];
+        for (const section of extractedSections) {
+          if (section.defects && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
+            const subsections = MSCC5Classifier.splitMultiDefectSection(section.defects, section.itemNo, section);
+            finalSections.push(...subsections);
+          } else {
+            finalSections.push(section);
+          }
+        }
+        
+        console.log(`✓ Flow refresh splitting complete: ${extractedSections.length} original → ${finalSections.length} final sections`);
+        await db.insert(sectionInspections).values(finalSections);
       }
       
       res.json({ 
@@ -1466,10 +1498,26 @@ export async function registerRoutes(app: Express) {
         const sections = await extractSectionsFromPDF(pdfData.text, uploadId);
         
         if (sections.length > 0) {
+          // APPLY MULTI-DEFECT SECTION SPLITTING TO REPROCESSING
+          console.log('🔄 Applying multi-defect section splitting to reprocessed sections...');
+          const { default: MSCC5Classifier } = await import('./mscc5-classifier.js');
+          
+          const finalSections = [];
           for (const section of sections) {
+            if (section.defects && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
+              const subsections = MSCC5Classifier.splitMultiDefectSection(section.defects, section.itemNo, section);
+              finalSections.push(...subsections);
+            } else {
+              finalSections.push(section);
+            }
+          }
+          
+          console.log(`✓ Reprocessing splitting complete: ${sections.length} original → ${finalSections.length} final sections`);
+          
+          for (const section of finalSections) {
             await db.insert(sectionInspections).values(section);
           }
-          console.log(`✓ Successfully extracted ${sections.length} authentic sections from PDF`);
+          console.log(`✓ Successfully extracted ${finalSections.length} authentic sections from PDF`);
         }
         
         res.json({ 
