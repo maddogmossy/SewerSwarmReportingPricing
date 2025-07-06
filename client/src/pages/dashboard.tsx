@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { DataIntegrityWarning } from "@/components/data-integrity-warning";
 import { RepairOptionsPopover } from "@/components/repair-options-popover";
+import { CleaningOptionsPopover } from "@/components/cleaning-options-popover";
 import * as XLSX from 'xlsx';
 
 import { 
@@ -39,6 +40,16 @@ import {
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
+
+// Function to detect if defects require cleaning vs structural repair
+const requiresCleaning = (defects: string): boolean => {
+  if (!defects) return false;
+  
+  const cleaningCodes = ['DEG', 'DES', 'DEC', 'DER', 'debris', 'deposits', 'blockage'];
+  const defectsUpper = defects.toUpperCase();
+  
+  return cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
+};
 
 // Calculate depth range from MH depths for pricing calculations
 const calculateDepthRangeFromMHDepths = (startDepth: string, finishDepth: string): string => {
@@ -484,28 +495,56 @@ export default function Dashboard() {
         }
         
         if (hasRepairableDefects && section.recommendations && !section.recommendations.includes('No action required')) {
-          return (
-            <RepairOptionsPopover 
-              sectionData={{
-                pipeSize: section.pipeSize,
-                sector: currentSector.id,
-                recommendations: section.recommendations,
-                defects: section.defects,
-                itemNo: section.itemNo,
-                pipeMaterial: section.pipeMaterial,
-                pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth)
-              }}
-              onPricingNeeded={(method, pipeSize, sector) => {
-                window.location.href = `/repair-pricing/${sector}`;
-              }}
-            >
-              <div className="text-xs max-w-48 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
-                <div className="font-medium text-blue-800 mb-1">🔧 REPAIR OPTIONS</div>
-                <div className="text-blue-700">{section.recommendations || 'No recommendations available'}</div>
-                <div className="text-xs text-blue-600 mt-1 font-medium">→ Click for pricing options</div>
-              </div>
-            </RepairOptionsPopover>
-          );
+          // Check if this section requires cleaning vs structural repair
+          const needsCleaning = requiresCleaning(section.defects || '');
+          
+          if (needsCleaning) {
+            return (
+              <CleaningOptionsPopover 
+                sectionData={{
+                  pipeSize: section.pipeSize,
+                  sector: currentSector.id,
+                  recommendations: section.recommendations,
+                  defects: section.defects,
+                  itemNo: section.itemNo,
+                  pipeMaterial: section.pipeMaterial,
+                  pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth)
+                }}
+                onPricingNeeded={(method, pipeSize, sector) => {
+                  window.location.href = `/repair-pricing/${sector}`;
+                }}
+              >
+                <div className="text-xs max-w-48 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
+                  <div className="font-medium text-blue-800 mb-1">💧 CLEANING OPTIONS</div>
+                  <div className="text-blue-700">{section.recommendations || 'No recommendations available'}</div>
+                  <div className="text-xs text-blue-600 mt-1 font-medium">→ Click for cleaning pricing options</div>
+                </div>
+              </CleaningOptionsPopover>
+            );
+          } else {
+            return (
+              <RepairOptionsPopover 
+                sectionData={{
+                  pipeSize: section.pipeSize,
+                  sector: currentSector.id,
+                  recommendations: section.recommendations,
+                  defects: section.defects,
+                  itemNo: section.itemNo,
+                  pipeMaterial: section.pipeMaterial,
+                  pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth)
+                }}
+                onPricingNeeded={(method, pipeSize, sector) => {
+                  window.location.href = `/repair-pricing/${sector}`;
+                }}
+              >
+                <div className="text-xs max-w-48 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
+                  <div className="font-medium text-blue-800 mb-1">🔧 REPAIR OPTIONS</div>
+                  <div className="text-blue-700">{section.recommendations || 'No recommendations available'}</div>
+                  <div className="text-xs text-blue-600 mt-1 font-medium">→ Click for pricing options</div>
+                </div>
+              </RepairOptionsPopover>
+            );
+          }
         } else {
           // Grade 0 sections or sections without repairable defects - no hover needed
           return (
@@ -568,32 +607,64 @@ export default function Dashboard() {
 
           
           if (!autoCost) {
-            return (
-              <RepairOptionsPopover 
-                sectionData={{
-                  pipeSize: section.pipeSize || '150mm',
-                  sector: currentSector.id,
-                  recommendations: section.recommendations || '',
-                  defects: section.defects || '',
-                  itemNo: section.itemNo,
-                  pipeMaterial: section.pipeMaterial
-                }}
-                onPricingNeeded={(method: string, pipeSize: string, sector: string) => {
-                  // Navigate to pricing configuration
-                  window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
-                }}
-              >
-                <div 
-                  className="flex items-center justify-center cursor-pointer hover:bg-orange-50 p-1 rounded" 
-                  title="Click to configure pricing for this repair type"
-                  onClick={(e) => {
-                    e.stopPropagation();
+            // Check if this section requires cleaning vs structural repair
+            const needsCleaning = requiresCleaning(section.defects || '');
+            
+            if (needsCleaning) {
+              return (
+                <CleaningOptionsPopover 
+                  sectionData={{
+                    pipeSize: section.pipeSize || '150mm',
+                    sector: currentSector.id,
+                    recommendations: section.recommendations || '',
+                    defects: section.defects || '',
+                    itemNo: section.itemNo,
+                    pipeMaterial: section.pipeMaterial
+                  }}
+                  onPricingNeeded={(method: string, pipeSize: string, sector: string) => {
+                    // Navigate to pricing configuration
+                    window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
                   }}
                 >
-                  <TriangleAlert className="h-4 w-4 text-orange-500 hover:text-orange-600" />
-                </div>
-              </RepairOptionsPopover>
-            );
+                  <div 
+                    className="flex items-center justify-center cursor-pointer hover:bg-blue-50 p-1 rounded" 
+                    title="Click to configure pricing for this cleaning type"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <TriangleAlert className="h-4 w-4 text-blue-500 hover:text-blue-600" />
+                  </div>
+                </CleaningOptionsPopover>
+              );
+            } else {
+              return (
+                <RepairOptionsPopover 
+                  sectionData={{
+                    pipeSize: section.pipeSize || '150mm',
+                    sector: currentSector.id,
+                    recommendations: section.recommendations || '',
+                    defects: section.defects || '',
+                    itemNo: section.itemNo,
+                    pipeMaterial: section.pipeMaterial
+                  }}
+                  onPricingNeeded={(method: string, pipeSize: string, sector: string) => {
+                    // Navigate to pricing configuration
+                    window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
+                  }}
+                >
+                  <div 
+                    className="flex items-center justify-center cursor-pointer hover:bg-orange-50 p-1 rounded" 
+                    title="Click to configure pricing for this repair type"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <TriangleAlert className="h-4 w-4 text-orange-500 hover:text-orange-600" />
+                  </div>
+                </RepairOptionsPopover>
+              );
+            }
           }
         }
         
