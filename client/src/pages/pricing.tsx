@@ -172,7 +172,7 @@ export default function Pricing() {
   const [selectedCategory, setSelectedCategory] = useState<number>(1);
   const [showAddRule, setShowAddRule] = useState(false);
   const [showAddEquipment, setShowAddEquipment] = useState(false);
-  const [showAddCategory, setShowAddCategory] = useState(false);
+
   const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
   const [newEquipment, setNewEquipment] = useState({
     name: '',
@@ -199,12 +199,7 @@ export default function Pricing() {
     applicableSectors: [] as string[]
   });
   
-  const [newCategory, setNewCategory] = useState({
-    name: '',
-    description: '',
-    icon: 'Wrench',
-    color: 'text-blue-600'
-  });
+
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -227,34 +222,7 @@ export default function Pricing() {
     enabled: !!selectedCategory
   });
 
-  // Create new category mutation
-  const createCategoryMutation = useMutation({
-    mutationFn: async (categoryData: any) => {
-      return await apiRequest('POST', '/api/work-categories', categoryData);
-    },
-    onSuccess: (newCategory) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
-      setShowAddCategory(false);
-      setSelectedCategory(newCategory.id); // Switch to the new category
-      setNewCategory({
-        name: '',
-        description: '',
-        icon: 'Wrench',
-        color: 'text-blue-600'
-      });
-      toast({
-        title: "Success",
-        description: "New work category created successfully"
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create work category",
-        variant: "destructive",
-      });
-    },
-  });
+
 
   const selectedCategoryData = workCategories.find(cat => cat.id === selectedCategory);
 
@@ -488,14 +456,6 @@ export default function Pricing() {
                 </Button>
               );
             })}
-            <Button
-              variant="outline"
-              onClick={() => setShowAddCategory(true)}
-              className="flex items-center gap-2 border-dashed border-2 hover:border-blue-500"
-            >
-              <Plus className="h-4 w-4 text-blue-600" />
-              New Category
-            </Button>
           </div>
         </div>
 
@@ -1132,101 +1092,7 @@ export default function Pricing() {
         </div>
       )}
 
-      {/* New Category Dialog */}
-      <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create New Work Category</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Category Name</Label>
-              <Input 
-                value={newCategory.name} 
-                onChange={(e) => setNewCategory({...newCategory, name: e.target.value})}
-                placeholder="e.g., Emergency Repairs"
-              />
-            </div>
-            
-            <div>
-              <Label>Description</Label>
-              <Textarea 
-                value={newCategory.description} 
-                onChange={(e) => setNewCategory({...newCategory, description: e.target.value})}
-                placeholder="Brief description of this work category"
-                rows={3}
-              />
-            </div>
-            
-            <div>
-              <Label>Icon</Label>
-              <Select 
-                value={newCategory.icon} 
-                onValueChange={(value) => setNewCategory({...newCategory, icon: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Wrench">🔧 Wrench</SelectItem>
-                  <SelectItem value="Hammer">🔨 Hammer</SelectItem>
-                  <SelectItem value="Scissors">✂️ Scissors</SelectItem>
-                  <SelectItem value="Droplets">💧 Droplets</SelectItem>
-                  <SelectItem value="Building2">🏗️ Building</SelectItem>
-                  <SelectItem value="Truck">🚛 Truck</SelectItem>
-                  <SelectItem value="Layers">📋 Layers</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <Label>Color</Label>
-              <Select 
-                value={newCategory.color} 
-                onValueChange={(value) => setNewCategory({...newCategory, color: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="text-blue-600">🔵 Blue</SelectItem>
-                  <SelectItem value="text-green-600">🟢 Green</SelectItem>
-                  <SelectItem value="text-red-600">🔴 Red</SelectItem>
-                  <SelectItem value="text-orange-600">🟠 Orange</SelectItem>
-                  <SelectItem value="text-purple-600">🟣 Purple</SelectItem>
-                  <SelectItem value="text-teal-600">🟡 Teal</SelectItem>
-                  <SelectItem value="text-amber-600">🟤 Amber</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="flex gap-2 pt-4">
-              <Button 
-                onClick={() => {
-                  if (newCategory.name && newCategory.description) {
-                    createCategoryMutation.mutate({
-                      name: newCategory.name,
-                      description: newCategory.description,
-                      icon: newCategory.icon,
-                      color: newCategory.color,
-                      sortOrder: 99,
-                      implemented: true
-                    });
-                  }
-                }}
-                disabled={!newCategory.name || !newCategory.description || createCategoryMutation.isPending}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                {createCategoryMutation.isPending ? 'Creating...' : 'Create Category'}
-              </Button>
-              <Button variant="outline" onClick={() => setShowAddCategory(false)}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+
     </div>
   );
 }

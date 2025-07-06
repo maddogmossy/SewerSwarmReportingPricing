@@ -153,6 +153,13 @@ export default function RepairPricing() {
   const [pendingSectorChange, setPendingSectorChange] = useState<{sectorId: string, checked: boolean} | null>(null);
   const [isComplianceWarningOpen, setIsComplianceWarningOpen] = useState(false);
   const [pendingEditItem, setPendingEditItem] = useState<any>(null);
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [newCategory, setNewCategory] = useState({
+    name: '',
+    description: '',
+    icon: 'Wrench',
+    color: 'text-blue-600'
+  });
   const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
   const [tempDescription, setTempDescription] = useState("");
   const [isDescriptionEditable, setIsDescriptionEditable] = useState(false);
@@ -522,6 +529,35 @@ export default function RepairPricing() {
         variant: "destructive" 
       });
     }
+  });
+
+  // Create new category mutation
+  const createCategoryMutation = useMutation({
+    mutationFn: async (categoryData: any) => {
+      return await apiRequest('POST', '/api/work-categories', categoryData);
+    },
+    onSuccess: (newCategory) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
+      setShowAddCategory(false);
+      setFormData({...formData, workCategoryId: newCategory.id.toString()});
+      setNewCategory({
+        name: '',
+        description: '',
+        icon: 'Wrench',
+        color: 'text-blue-600'
+      });
+      toast({
+        title: "Success",
+        description: "New work category created successfully"
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create work category",
+        variant: "destructive",
+      });
+    },
   });
 
   const resetForm = () => {
@@ -995,11 +1031,17 @@ export default function RepairPricing() {
                 <Label htmlFor="workCategoryId">Work Category</Label>
                 <Select
                   value={formData.workCategoryId}
-                  onValueChange={(value) => setFormData({ ...formData, workCategoryId: value })}
+                  onValueChange={(value) => {
+                    if (value === "add_new") {
+                      setShowAddCategory(true);
+                    } else {
+                      setFormData({ ...formData, workCategoryId: value });
+                    }
+                  }}
                   required
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select method" />
+                    <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
                     {workCategories.map((category: any) => (
@@ -1007,6 +1049,12 @@ export default function RepairPricing() {
                         {category.name}
                       </SelectItem>
                     ))}
+                    <SelectItem value="add_new" className="border-t border-dashed border-gray-300 text-blue-600 font-medium">
+                      <div className="flex items-center gap-2">
+                        <Plus className="h-4 w-4" />
+                        Add New Category
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1166,12 +1214,35 @@ export default function RepairPricing() {
                 </div>
               </div>
 
-              {/* COSTING OPTIONS - USING CONSISTENT HTML FORM ELEMENTS */}
+              {/* Rule Name Field */}
+              <div>
+                <Label htmlFor="rule">Rule Name</Label>
+                <Input
+                  id="rule"
+                  value={formData.rule}
+                  onChange={(e) => setFormData({ ...formData, rule: e.target.value })}
+                  placeholder="e.g., Standard CCTV Survey - 150mm Pipe"
+                  className="border-blue-300"
+                />
+              </div>
+
+              {/* ADD NEW COST SECTION */}
               <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
-                <label className="text-lg font-bold text-blue-800">🔹 COSTING OPTIONS 🔹</label>
-                <div className="grid grid-cols-2 gap-4 mt-3">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-lg font-bold text-blue-800">💰 Add New Cost</label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Cost Option
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium">1. Single Layer (£)</label>
+                    <label className="text-sm font-medium">Option 1 Cost (£)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -1183,7 +1254,7 @@ export default function RepairPricing() {
                   </div>
                   
                   <div>
-                    <label className="text-sm font-medium">2. Double Layer (£)</label>
+                    <label className="text-sm font-medium">Option 2 Cost (£)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -1195,7 +1266,7 @@ export default function RepairPricing() {
                   </div>
                   
                   <div>
-                    <label className="text-sm font-medium">3. Triple Layer (£)</label>
+                    <label className="text-sm font-medium">Option 3 Cost (£)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -1207,7 +1278,7 @@ export default function RepairPricing() {
                   </div>
                   
                   <div>
-                    <label className="text-sm font-medium">4. Triple Layer + Extra Long Cure Time (£)</label>
+                    <label className="text-sm font-medium">Option 4 Cost (£)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -1819,6 +1890,102 @@ export default function RepairPricing() {
                 Save Changes
               </Button>
             </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* New Category Dialog */}
+        <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Create New Work Category</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Category Name</Label>
+                <Input 
+                  value={newCategory.name} 
+                  onChange={(e) => setNewCategory({...newCategory, name: e.target.value})}
+                  placeholder="e.g., Emergency Repairs"
+                />
+              </div>
+              
+              <div>
+                <Label>Description</Label>
+                <Textarea 
+                  value={newCategory.description} 
+                  onChange={(e) => setNewCategory({...newCategory, description: e.target.value})}
+                  placeholder="Brief description of this work category"
+                  rows={3}
+                />
+              </div>
+              
+              <div>
+                <Label>Icon</Label>
+                <Select 
+                  value={newCategory.icon} 
+                  onValueChange={(value) => setNewCategory({...newCategory, icon: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Wrench">🔧 Wrench</SelectItem>
+                    <SelectItem value="Hammer">🔨 Hammer</SelectItem>
+                    <SelectItem value="Scissors">✂️ Scissors</SelectItem>
+                    <SelectItem value="Droplets">💧 Droplets</SelectItem>
+                    <SelectItem value="Building2">🏗️ Building</SelectItem>
+                    <SelectItem value="Truck">🚛 Truck</SelectItem>
+                    <SelectItem value="Layers">📋 Layers</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label>Color</Label>
+                <Select 
+                  value={newCategory.color} 
+                  onValueChange={(value) => setNewCategory({...newCategory, color: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="text-blue-600">🔵 Blue</SelectItem>
+                    <SelectItem value="text-green-600">🟢 Green</SelectItem>
+                    <SelectItem value="text-red-600">🔴 Red</SelectItem>
+                    <SelectItem value="text-orange-600">🟠 Orange</SelectItem>
+                    <SelectItem value="text-purple-600">🟣 Purple</SelectItem>
+                    <SelectItem value="text-teal-600">🟡 Teal</SelectItem>
+                    <SelectItem value="text-amber-600">🟤 Amber</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  onClick={() => {
+                    if (newCategory.name && newCategory.description) {
+                      createCategoryMutation.mutate({
+                        name: newCategory.name,
+                        description: newCategory.description,
+                        icon: newCategory.icon,
+                        color: newCategory.color,
+                        sortOrder: 99,
+                        implemented: true
+                      });
+                    }
+                  }}
+                  disabled={!newCategory.name || !newCategory.description || createCategoryMutation.isPending}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  {createCategoryMutation.isPending ? 'Creating...' : 'Create Category'}
+                </Button>
+                <Button variant="outline" onClick={() => setShowAddCategory(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
