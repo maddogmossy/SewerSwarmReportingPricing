@@ -1414,124 +1414,53 @@ export default function RepairPricing() {
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-lg font-bold text-red-800">🔨 Patching Pricing</label>
                   </div>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium">1. Single Layer (£)</label>
-                        <div className="flex items-center gap-2 mt-1">
-                          {formData.option1Cost === "N/A" ? (
-                            <>
-                              <div className="bg-gray-100 border rounded-md px-3 py-2 text-gray-600 font-medium flex-1">
-                                N/A
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => setFormData({ ...formData, option1Cost: "" })}
-                                className="px-3 py-2 text-sm bg-red-500 text-white rounded-md hover:bg-red-600"
-                              >
-                                Edit
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <input
-                                type="text"
-                                value={formData.option1Cost}
-                                onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
-                                placeholder="Enter price"
-                                className="flex-1 p-2 border rounded-md border-red-300"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setFormData({ ...formData, option1Cost: "N/A" })}
-                                className="px-3 py-2 text-sm bg-gray-500 text-white rounded-md hover:bg-gray-600"
-                              >
-                                Reset
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium">Installed Per shift</label>
-                        <input
-                          type="text"
-                          value={formData.option1PerShift || ""}
-                          onChange={(e) => setFormData({ ...formData, option1PerShift: e.target.value })}
-                          placeholder="0"
-                          className={`w-full mt-1 p-2 border rounded-md ${formData.option1Cost === "N/A" ? 'bg-gray-100 text-gray-600 border-gray-300' : 'border-red-300'}`}
-                          readOnly={formData.option1Cost === "N/A"}
-                        />
-                      </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Single Layer (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 450.00"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium">2. Double Layer (£)</label>
-                        <input
-                          type="text"
-                          value={formData.option2Cost}
-                          onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
-                          placeholder="0.00"
-                          className="w-full mt-1 p-2 border rounded-md border-red-300"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium">Installed Per shift</label>
-                        <input
-                          type="text"
-                          value={formData.option2PerShift || ""}
-                          onChange={(e) => setFormData({ ...formData, option2PerShift: e.target.value })}
-                          placeholder="3"
-                          className="w-full mt-1 p-2 border rounded-md border-red-300"
-                        />
-                      </div>
+                    <div>
+                      <label className="text-sm font-medium">Double Layer (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="e.g., 650.00"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium">3. Triple Layer (£)</label>
-                        <input
-                          type="text"
-                          value={formData.option3Cost}
-                          onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
-                          placeholder="0.00"
-                          className="w-full mt-1 p-2 border rounded-md border-red-300"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium">Installed Per shift</label>
-                        <input
-                          type="text"
-                          value={formData.option3PerShift || ""}
-                          onChange={(e) => setFormData({ ...formData, option3PerShift: e.target.value })}
-                          placeholder="3"
-                          className="w-full mt-1 p-2 border rounded-md border-red-300"
-                        />
-                      </div>
+                    <div>
+                      <label className="text-sm font-medium">Triple Layer (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 850.00"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium">4. Triple Layer + Extra Long Cure Time (£)</label>
-                        <input
-                          type="text"
-                          value={formData.option4Cost}
-                          onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
-                          placeholder="0.00"
-                          className="w-full mt-1 p-2 border rounded-md border-red-300"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium">Installed Per shift</label>
-                        <input
-                          type="text"
-                          value={formData.option4PerShift || ""}
-                          onChange={(e) => setFormData({ ...formData, option4PerShift: e.target.value })}
-                          placeholder="2"
-                          className="w-full mt-1 p-2 border rounded-md border-red-300"
-                        />
-                      </div>
+                    <div>
+                      <label className="text-sm font-medium">Extended Cure (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="e.g., 950.00"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
                     </div>
                   </div>
                 </div>
