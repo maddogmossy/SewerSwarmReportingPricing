@@ -249,8 +249,16 @@ export function CustomerSettings() {
   const updateVehicleRateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: InsertVehicleTravelRate }) =>
       apiRequest('PUT', `/api/vehicle-travel-rates/${id}`, data),
-    onSuccess: () => {
+    onSuccess: (updatedData) => {
+      // Force an immediate cache update with the new data
+      queryClient.setQueryData(['/api/vehicle-travel-rates'], (oldData: VehicleTravelRate[] | undefined) => {
+        if (!oldData) return [updatedData];
+        return oldData.map(item => item.id === updatedData.id ? updatedData : item);
+      });
+      
+      // Also invalidate to refetch from server
       queryClient.invalidateQueries({ queryKey: ['/api/vehicle-travel-rates'] });
+      
       setIsVehicleDialogOpen(false);
       setEditingVehicleRate(null);
       vehicleForm.reset();
@@ -1220,6 +1228,9 @@ export function CustomerSettings() {
                                 </div>
                                 <div>
                                   <span className="font-medium">Driver:</span> £{rate.driverWagePerHour}/hr
+                                </div>
+                                <div>
+                                  <span className="font-medium">Assistant:</span> {(rate as any).hasAssistant ? `£${(rate as any).assistantWagePerHour || '0'}/hr` : 'No'}
                                 </div>
                                 <div>
                                   <span className="font-medium">Running:</span> £{rate.vehicleRunningCostPerMile}/mile
