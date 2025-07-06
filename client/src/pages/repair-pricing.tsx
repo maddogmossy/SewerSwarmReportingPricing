@@ -1227,6 +1227,10 @@ export default function RepairPricing() {
               </div>
 
               {/* DYNAMIC COST SECTION BASED ON CATEGORY */}
+              <div className="mb-4 p-2 bg-yellow-100 rounded text-sm">
+                Debug: workCategoryId = "{formData.workCategoryId}" | Type: {typeof formData.workCategoryId}
+              </div>
+              
               {formData.workCategoryId === '1' && (
                 <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
                   <div className="flex items-center justify-between mb-3">
