@@ -989,6 +989,80 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Function to extract authentic length data from PDF
+  function extractLengthDataFromPDF(pdfText: string): { totalLength: string; lengthSurveyed: string } {
+    console.log('Extracting authentic length data from PDF');
+    
+    // For Nine Elms Park report, look for measurement patterns
+    const lines = pdfText.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      
+      // Look for Total Length and Inspected Length in adjacent lines
+      if (line.includes('Total Length:')) {
+        const totalMatch = line.match(/Total Length:\s*(\d+\.?\d*)\s*m/);
+        if (totalMatch && i > 0) {
+          const prevLine = lines[i - 1].trim();
+          const inspectedMatch = prevLine.match(/Inspected Length:\s*(\d+\.?\d*)\s*m/);
+          if (inspectedMatch) {
+            console.log(`Found authentic measurements: Total=${totalMatch[1]}m, Inspected=${inspectedMatch[1]}m`);
+            return {
+              totalLength: `${totalMatch[1]}m`,
+              lengthSurveyed: `${inspectedMatch[1]}m`
+            };
+          }
+        }
+      }
+    }
+    
+    console.log('No authentic length data found in PDF');
+    return { totalLength: 'no data recorded', lengthSurveyed: 'no data recorded' };
+  }
+
+  // Endpoint to update authentic length data
+  app.post("/api/update-lengths/:uploadId", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      
+      // Get the upload record
+      const [upload] = await db.select().from(fileUploads)
+        .where(eq(fileUploads.id, uploadId));
+      
+      if (!upload) {
+        return res.status(404).json({ error: "Upload not found" });
+      }
+      
+      // Read PDF and extract authentic length data
+      const pdfBuffer = await fs.promises.readFile(upload.filePath);
+      const pdfData = await pdfParse(pdfBuffer);
+      
+      // Extract authentic length measurements
+      const lengthData = extractLengthDataFromPDF(pdfData.text);
+      
+      // Update all sections with the authentic measurements found
+      if (lengthData.totalLength !== 'no data recorded') {
+        await db.update(sectionInspections)
+          .set({
+            totalLength: lengthData.totalLength,
+            lengthSurveyed: lengthData.lengthSurveyed
+          })
+          .where(eq(sectionInspections.fileUploadId, uploadId));
+        
+        console.log(`Updated sections with authentic length data: ${lengthData.totalLength}`);
+      }
+      
+      res.json({ 
+        success: true, 
+        message: 'Updated sections with authentic length data',
+        lengthData: lengthData
+      });
+      
+    } catch (error) {
+      console.error("Error updating authentic length data:", error);
+      res.status(500).json({ error: "Failed to update length data" });
+    }
+  });
+
   app.get("/api/uploads/:uploadId/sections", async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.uploadId);
