@@ -181,7 +181,8 @@ export default function RepairPricing() {
     lengthOfRepair: "1000mm",
     minInstallationPerDay: "",
     dayRate: "",
-    vehicleId: "" // Add vehicle selection
+    vehicleId: "", // Add vehicle selection
+    lockSingleLayer: true // Lock single layer by default
   });
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
@@ -579,7 +580,8 @@ export default function RepairPricing() {
       lengthOfRepair: "1000mm",
       minInstallationPerDay: "",
       dayRate: "",
-      vehicleId: ""
+      vehicleId: "",
+      lockSingleLayer: true // Lock single layer by default
     });
     setApplySectors([]);
     setOriginalApplySectors([]);
