@@ -1242,11 +1242,11 @@ export default function RepairPricing() {
                 });
 
                 // CCTV Survey Category
-                if (categoryName === 'Surveys') {
+                if (categoryName === 'Surveys' || selectedCategoryId === 1) {
                   return (
                     <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
                       <div className="flex items-center justify-between mb-3">
-                        <label className="text-lg font-bold text-blue-800">📹 CCTV Survey Pricing</label>
+                        <label className="text-lg font-bold text-blue-800">📹 CCTV Survey Pricing (ID: {selectedCategoryId})</label>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -1302,11 +1302,11 @@ export default function RepairPricing() {
                 }
 
                 // Jetting/Cleansing Category
-                if (categoryName === 'Cleansing' || categoryName === 'Directional Water Cutting') {
+                if (categoryName === 'Cleansing' || categoryName === 'Directional Water Cutting' || selectedCategoryId === 2 || selectedCategoryId === 5) {
                   return (
                     <div className="border-2 border-cyan-200 p-4 rounded-lg bg-cyan-50">
                       <div className="flex items-center justify-between mb-3">
-                        <label className="text-lg font-bold text-cyan-800">🚿 Jetting/Cleansing Pricing</label>
+                        <label className="text-lg font-bold text-cyan-800">🚿 Jetting/Cleansing Pricing (ID: {selectedCategoryId})</label>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -1362,11 +1362,11 @@ export default function RepairPricing() {
                 }
 
                 // Lining Category
-                if (categoryName === 'Lining') {
+                if (categoryName === 'Lining' || selectedCategoryId === 7) {
                   return (
                     <div className="border-2 border-purple-200 p-4 rounded-lg bg-purple-50">
                       <div className="flex items-center justify-between mb-3">
-                        <label className="text-lg font-bold text-purple-800">🔧 Lining Pricing</label>
+                        <label className="text-lg font-bold text-purple-800">🔧 Lining Pricing (ID: {selectedCategoryId})</label>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
