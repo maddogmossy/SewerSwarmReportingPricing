@@ -1199,18 +1199,32 @@ export function CustomerSettings() {
                                   (£{calculateTotalCostPerMile(rate)}/mile)
                                 </span>
                               </div>
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-muted-foreground">
                                 <div>
                                   <span className="font-medium">Fuel:</span> {rate.fuelConsumptionMpg} MPG @ £{rate.fuelCostPerLitre}/L
                                 </div>
                                 <div>
-                                  <span className="font-medium">Wage:</span> £{rate.driverWagePerHour}/hr
+                                  <span className="font-medium">Driver:</span> £{rate.driverWagePerHour}/hr
                                 </div>
                                 <div>
                                   <span className="font-medium">Running:</span> £{rate.vehicleRunningCostPerMile}/mile
                                 </div>
                                 <div>
-                                  <span className="font-medium">Total:</span> £{calculateTotalCostPerMile(rate)}/mile
+                                  <span className="font-medium">Travel Hrs:</span> {(rate as any).hoursTraveAllowed || 2}hrs max
+                                </div>
+                                {(rate as any).hasAssistant && (
+                                  <div>
+                                    <span className="font-medium">Assistant:</span> £{(rate as any).assistantWagePerHour || 0}/hr
+                                  </div>
+                                )}
+                                <div>
+                                  <span className="font-medium">Fuel Rate/Hr:</span> £{(parseFloat(rate.fuelCostPerLitre.toString()) * 4.54609 / parseFloat(rate.fuelConsumptionMpg.toString()) * 30).toFixed(2)}/hr
+                                </div>
+                                <div>
+                                  <span className="font-medium">Labor Rate/Hr:</span> £{(parseFloat(rate.driverWagePerHour.toString()) + (((rate as any).hasAssistant ? parseFloat((rate as any).assistantWagePerHour?.toString() || '0') : 0))).toFixed(2)}/hr
+                                </div>
+                                <div>
+                                  <span className="font-medium">Total/Mile:</span> £{calculateTotalCostPerMile(rate)}/mile
                                 </div>
                               </div>
                             </div>
@@ -1421,6 +1435,27 @@ export function CustomerSettings() {
                                   )}
                                 />
                               )}
+
+                              <FormField
+                                control={vehicleForm.control}
+                                name="autoUpdateFuelPrice"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                      />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                      <FormLabel>Auto-Update Fuel Prices</FormLabel>
+                                      <FormDescription>
+                                        Automatically update fuel prices from UK market data
+                                      </FormDescription>
+                                    </div>
+                                  </FormItem>
+                                )}
+                              />
                             </div>
 
                             <div className="flex justify-end space-x-2">
