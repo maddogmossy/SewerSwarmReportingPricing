@@ -1641,29 +1641,53 @@ export default function RepairPricing() {
                 <div className="border-2 border-red-200 p-4 rounded-lg bg-red-50">
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-lg font-bold text-red-800">🔨 Patching Pricing</label>
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-red-800">Lock Single Layer:</label>
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, lockSingleLayer: !formData.lockSingleLayer })}
+                        className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                          formData.lockSingleLayer 
+                            ? 'bg-red-600 text-white hover:bg-red-700' 
+                            : 'bg-red-100 text-red-800 hover:bg-red-200'
+                        }`}
+                      >
+                        {formData.lockSingleLayer ? 'LOCKED' : 'UNLOCKED'}
+                      </button>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium">Single Layer Cost (£)</label>
+                    <div className={`${formData.lockSingleLayer ? 'opacity-50' : ''}`}>
+                      <label className="text-sm font-medium">
+                        Single Layer Cost (£) {formData.lockSingleLayer && '🔒'}
+                      </label>
                       <input
                         type="number"
                         step="0.01"
                         value={formData.option1Cost}
                         onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
                         placeholder="e.g., 450.00"
-                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                        disabled={formData.lockSingleLayer}
+                        className={`w-full mt-1 p-2 border rounded-md border-red-300 ${
+                          formData.lockSingleLayer ? 'bg-gray-100 cursor-not-allowed' : ''
+                        }`}
                       />
                     </div>
                     
-                    <div>
-                      <label className="text-sm font-medium">Installs Per Shift (Single)</label>
+                    <div className={`${formData.lockSingleLayer ? 'opacity-50' : ''}`}>
+                      <label className="text-sm font-medium">
+                        Installs Per Shift (Single) {formData.lockSingleLayer && '🔒'}
+                      </label>
                       <input
                         type="number"
                         step="1"
                         value={formData.installsPerShift1 || ''}
                         onChange={(e) => setFormData({ ...formData, installsPerShift1: e.target.value })}
                         placeholder="e.g., 4"
-                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                        disabled={formData.lockSingleLayer}
+                        className={`w-full mt-1 p-2 border rounded-md border-red-300 ${
+                          formData.lockSingleLayer ? 'bg-gray-100 cursor-not-allowed' : ''
+                        }`}
                       />
                     </div>
                     
