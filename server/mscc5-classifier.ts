@@ -907,6 +907,99 @@ export class MSCC5Classifier {
   }
 
   /**
+   * LOCKED IN: Multi-Defect Section Splitting System
+   * Automatically creates subsections (a, b, c) when both service and structural defects exist
+   * PERMANENT FEATURE - applies to ALL future reports (218 ECL, Nine Elms, etc.)
+   */
+  static splitMultiDefectSection(defectText: string, itemNo: number, sectionData: any): any[] {
+    console.log(`🔍 Analyzing Section ${itemNo} for multi-defect splitting...`);
+    
+    // Parse all defects from the text
+    const allDefects = this.parseAllDefectsFromText(defectText);
+    
+    if (allDefects.length <= 1) {
+      console.log(`✓ Section ${itemNo}: Single defect type - no splitting needed`);
+      return [sectionData]; // Return original section if only one defect type
+    }
+    
+    // Group defects by type (service vs structural)
+    const serviceDefects = allDefects.filter(d => this.getDefectType(d.code) === 'service');
+    const structuralDefects = allDefects.filter(d => this.getDefectType(d.code) === 'structural');
+    
+    const hasMultipleTypes = serviceDefects.length > 0 && structuralDefects.length > 0;
+    
+    if (!hasMultipleTypes) {
+      console.log(`✓ Section ${itemNo}: Same defect type - no splitting needed`);
+      return [sectionData]; // Return original if all same type
+    }
+    
+    console.log(`🚨 Section ${itemNo}: MIXED DEFECTS DETECTED - Creating subsections:`);
+    console.log(`   Service defects: ${serviceDefects.map(d => d.code).join(', ')}`);
+    console.log(`   Structural defects: ${structuralDefects.map(d => d.code).join(', ')}`);
+    
+    const subsections = [];
+    let suffixCounter = 0;
+    
+    // Create subsection for service defects (if any)
+    if (serviceDefects.length > 0) {
+      const serviceSection = { ...sectionData };
+      serviceSection.itemNo = suffixCounter === 0 ? itemNo : `${itemNo}${String.fromCharCode(97 + suffixCounter - 1)}`;
+      serviceSection.defects = serviceDefects.map(d => d.description).join(', ');
+      serviceSection.defectType = 'service';
+      console.log(`   ✓ Created service subsection: ${serviceSection.itemNo}`);
+      subsections.push(serviceSection);
+      suffixCounter++;
+    }
+    
+    // Create subsection for structural defects (if any)
+    if (structuralDefects.length > 0) {
+      const structuralSection = { ...sectionData };
+      structuralSection.itemNo = suffixCounter === 0 ? itemNo : `${itemNo}${String.fromCharCode(97 + suffixCounter - 1)}`;
+      structuralSection.defects = structuralDefects.map(d => d.description).join(', ');
+      structuralSection.defectType = 'structural';
+      console.log(`   ✓ Created structural subsection: ${structuralSection.itemNo}`);
+      subsections.push(structuralSection);
+    }
+    
+    console.log(`✅ Section ${itemNo} split into ${subsections.length} subsections with letter suffixes`);
+    return subsections;
+  }
+
+  /**
+   * Parse all individual defects from defect text
+   */
+  static parseAllDefectsFromText(defectText: string): Array<{code: string, description: string, meterage?: string}> {
+    const defects = [];
+    const upperText = defectText.toUpperCase();
+    
+    // Common defect codes to search for
+    const defectCodes = ['DER', 'FC', 'CR', 'FL', 'RI', 'JDL', 'JDM', 'OJM', 'OJL', 'DEF', 'DES', 'DEC', 'OB', 'OBI', 'WL'];
+    
+    for (const code of defectCodes) {
+      const pattern = new RegExp(`\\b${code}\\b[^,]*?(?:,|$)`, 'g');
+      let match;
+      
+      while ((match = pattern.exec(upperText)) !== null) {
+        const description = match[0].replace(/,$/, '').trim();
+        const meterageMatch = description.match(/(\d+\.?\d*m)/);
+        
+        defects.push({
+          code,
+          description,
+          meterage: meterageMatch ? meterageMatch[1] : undefined
+        });
+      }
+    }
+    
+    // Remove duplicates
+    const uniqueDefects = defects.filter((defect, index, self) => 
+      index === self.findIndex(d => d.code === defect.code && d.meterage === defect.meterage)
+    );
+    
+    return uniqueDefects;
+  }
+
+  /**
    * Classify defects based on MSCC5 standards with detailed parsing
    */
   static async classifyDefect(defectText: string, sector: string = 'utilities'): Promise<DefectClassificationResult> {

@@ -939,11 +939,28 @@ export async function registerRoutes(app: Express) {
           
           // Insert all extracted sections with data integrity validation
           if (sections.length > 0) {
+            // APPLY MULTI-DEFECT SECTION SPLITTING TO ALL REPORTS (218 ECL, Nine Elms, etc.)
+            console.log('🔄 Applying multi-defect section splitting system...');
+            const { default: MSCC5Classifier } = await import('./mscc5-classifier.js');
+            
+            const finalSections = [];
+            for (const section of sections) {
+              // Check if section has mixed defect types and split if necessary
+              if (section.defects && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
+                const subsections = MSCC5Classifier.splitMultiDefectSection(section.defects, section.itemNo, section);
+                finalSections.push(...subsections);
+              } else {
+                finalSections.push(section);
+              }
+            }
+            
+            console.log(`✓ Section splitting complete: ${sections.length} original → ${finalSections.length} final sections`);
+            
             // Validate data integrity before insertion
             try {
-              validateBeforeInsert({ sections }, 'pdf');
+              validateBeforeInsert({ sections: finalSections }, 'pdf');
               
-              for (const section of sections) {
+              for (const section of finalSections) {
                 // Additional validation per section
                 const validation = DataIntegrityValidator.validateSectionData(section);
                 if (!validation.isValid) {
@@ -954,7 +971,7 @@ export async function registerRoutes(app: Express) {
                 console.log(`DB Insert Section ${section.itemNo}: ${section.startMH} → ${section.finishMH}`);
                 await db.insert(sectionInspections).values(section as any);
               }
-              console.log(`✓ Successfully extracted ${sections.length} authentic sections from PDF`);
+              console.log(`✓ Successfully extracted ${finalSections.length} authentic sections from PDF`);
             } catch (error: any) {
               console.error("❌ DATA INTEGRITY VIOLATION:", error.message);
               throw new Error(`Synthetic data detected. Please ensure PDF contains authentic inspection data.`);
