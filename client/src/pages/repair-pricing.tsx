@@ -1409,7 +1409,7 @@ export default function RepairPricing() {
                 </div>
               )}
 
-              {(formData.workCategoryId === '6' || formData.workCategoryId === 6 || (formData.workCategoryId && formData.workCategoryId !== '1' && formData.workCategoryId !== 1 && formData.workCategoryId !== '2' && formData.workCategoryId !== 2 && formData.workCategoryId !== '5' && formData.workCategoryId !== 5 && formData.workCategoryId !== '7' && formData.workCategoryId !== 7)) && (
+              {(formData.workCategoryId === '6' || formData.workCategoryId === 6) && (
                 <div className="border-2 border-red-200 p-4 rounded-lg bg-red-50">
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-lg font-bold text-red-800">🔨 Patching Pricing</label>
@@ -1532,6 +1532,45 @@ export default function RepairPricing() {
                           className="w-full mt-1 p-2 border rounded-md border-red-300"
                         />
                       </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Default form for other categories */}
+              {formData.workCategoryId && 
+               formData.workCategoryId !== '1' && formData.workCategoryId !== 1 &&
+               formData.workCategoryId !== '2' && formData.workCategoryId !== 2 &&
+               formData.workCategoryId !== '5' && formData.workCategoryId !== 5 &&
+               formData.workCategoryId !== '6' && formData.workCategoryId !== 6 &&
+               formData.workCategoryId !== '7' && formData.workCategoryId !== 7 && (
+                <div className="border-2 border-gray-200 p-4 rounded-lg bg-gray-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-lg font-bold text-gray-800">⚙️ General Pricing</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Day Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.dayRate}
+                        onChange={(e) => setFormData({ ...formData, dayRate: e.target.value })}
+                        placeholder="e.g., 800.00"
+                        className="w-full mt-1 p-2 border rounded-md border-gray-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Unit Cost (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 150.00"
+                        className="w-full mt-1 p-2 border rounded-md border-gray-300"
+                      />
                     </div>
                   </div>
                 </div>
