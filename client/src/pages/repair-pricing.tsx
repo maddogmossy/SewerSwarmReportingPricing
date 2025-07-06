@@ -1227,258 +1227,233 @@ export default function RepairPricing() {
               </div>
 
               {/* DYNAMIC COST SECTION BASED ON CATEGORY */}
-              {(() => {
-                const selectedCategoryId = parseInt(formData.workCategoryId);
-                const selectedCategoryData = workCategories.find(cat => cat.id === selectedCategoryId);
-                const categoryName = selectedCategoryData?.name || '';
-                
-                // Debug logging
-                console.log('Dynamic cost section debug:', {
-                  workCategoryId: formData.workCategoryId,
-                  selectedCategoryId,
-                  selectedCategoryData,
-                  categoryName,
-                  workCategories: workCategories.map(cat => ({ id: cat.id, name: cat.name }))
-                });
-
-                // CCTV Survey Category
-                if (categoryName === 'Surveys' || selectedCategoryId === 1) {
-                  return (
-                    <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
-                      <div className="flex items-center justify-between mb-3">
-                        <label className="text-lg font-bold text-blue-800">📹 CCTV Survey Pricing (ID: {selectedCategoryId})</label>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-sm font-medium">Per Metre Rate (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option1Cost}
-                            onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
-                            placeholder="e.g., 1.50"
-                            className="w-full mt-1 p-2 border rounded-md border-blue-300"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium">Minimum Charge (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option2Cost}
-                            onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
-                            placeholder="e.g., 150.00"
-                            className="w-full mt-1 p-2 border rounded-md border-blue-300"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium">Setup Fee (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option3Cost}
-                            onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
-                            placeholder="e.g., 85.00"
-                            className="w-full mt-1 p-2 border rounded-md border-blue-300"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium">Report Fee (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option4Cost}
-                            onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
-                            placeholder="e.g., 45.00"
-                            className="w-full mt-1 p-2 border rounded-md border-blue-300"
-                          />
-                        </div>
-                      </div>
+              {formData.workCategoryId === '1' && (
+                <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-lg font-bold text-blue-800">📹 CCTV Survey Pricing</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Per Metre Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 1.50"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
                     </div>
-                  );
-                }
-
-                // Jetting/Cleansing Category
-                if (categoryName === 'Cleansing' || categoryName === 'Directional Water Cutting' || selectedCategoryId === 2 || selectedCategoryId === 5) {
-                  return (
-                    <div className="border-2 border-cyan-200 p-4 rounded-lg bg-cyan-50">
-                      <div className="flex items-center justify-between mb-3">
-                        <label className="text-lg font-bold text-cyan-800">🚿 Jetting/Cleansing Pricing (ID: {selectedCategoryId})</label>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-sm font-medium">Hourly Rate (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option1Cost}
-                            onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
-                            placeholder="e.g., 95.00"
-                            className="w-full mt-1 p-2 border rounded-md border-cyan-300"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium">Daily Rate (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option2Cost}
-                            onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
-                            placeholder="e.g., 650.00"
-                            className="w-full mt-1 p-2 border rounded-md border-cyan-300"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium">Call Out Fee (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option3Cost}
-                            onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
-                            placeholder="e.g., 120.00"
-                            className="w-full mt-1 p-2 border rounded-md border-cyan-300"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium">Emergency Rate (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option4Cost}
-                            onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
-                            placeholder="e.g., 140.00"
-                            className="w-full mt-1 p-2 border rounded-md border-cyan-300"
-                          />
-                        </div>
-                      </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Minimum Charge (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="e.g., 150.00"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
                     </div>
-                  );
-                }
-
-                // Lining Category
-                if (categoryName === 'Lining' || selectedCategoryId === 7) {
-                  return (
-                    <div className="border-2 border-purple-200 p-4 rounded-lg bg-purple-50">
-                      <div className="flex items-center justify-between mb-3">
-                        <label className="text-lg font-bold text-purple-800">🔧 Lining Pricing (ID: {selectedCategoryId})</label>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-sm font-medium">Per Metre Rate (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option1Cost}
-                            onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
-                            placeholder="e.g., 75.00"
-                            className="w-full mt-1 p-2 border rounded-md border-purple-300"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium">Setup Cost (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option2Cost}
-                            onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
-                            placeholder="e.g., 350.00"
-                            className="w-full mt-1 p-2 border rounded-md border-purple-300"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium">Material Cost (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option3Cost}
-                            onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
-                            placeholder="e.g., 25.00"
-                            className="w-full mt-1 p-2 border rounded-md border-purple-300"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium">Cure Time Rate (£)</label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={formData.option4Cost}
-                            onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
-                            placeholder="e.g., 45.00"
-                            className="w-full mt-1 p-2 border rounded-md border-purple-300"
-                          />
-                        </div>
-                      </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Setup Fee (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 85.00"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
                     </div>
-                  );
-                }
-
-                // Default Patching Category (and others)
-                return (
-                  <div className="border-2 border-red-200 p-4 rounded-lg bg-red-50">
-                    <div className="flex items-center justify-between mb-3">
-                      <label className="text-lg font-bold text-red-800">🔨 {categoryName || 'Patching'} Pricing</label>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium">Single Layer (£)</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={formData.option1Cost}
-                          onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
-                          placeholder="e.g., 285.00"
-                          className="w-full mt-1 p-2 border rounded-md border-red-300"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="text-sm font-medium">Double Layer (£)</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={formData.option2Cost}
-                          onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
-                          placeholder="e.g., 385.00"
-                          className="w-full mt-1 p-2 border rounded-md border-red-300"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="text-sm font-medium">Triple Layer (£)</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={formData.option3Cost}
-                          onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
-                          placeholder="e.g., 485.00"
-                          className="w-full mt-1 p-2 border rounded-md border-red-300"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="text-sm font-medium">Extended Cure (£)</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={formData.option4Cost}
-                          onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
-                          placeholder="e.g., 585.00"
-                          className="w-full mt-1 p-2 border rounded-md border-red-300"
-                        />
-                      </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Report Fee (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="e.g., 45.00"
+                        className="w-full mt-1 p-2 border rounded-md border-blue-300"
+                      />
                     </div>
                   </div>
-                );
-              })()}
+                </div>
+              )}
+
+              {(formData.workCategoryId === '2' || formData.workCategoryId === '5') && (
+                <div className="border-2 border-cyan-200 p-4 rounded-lg bg-cyan-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-lg font-bold text-cyan-800">🚿 Jetting/Cleansing Pricing</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Hourly Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 95.00"
+                        className="w-full mt-1 p-2 border rounded-md border-cyan-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Daily Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="e.g., 650.00"
+                        className="w-full mt-1 p-2 border rounded-md border-cyan-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Call Out Fee (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 120.00"
+                        className="w-full mt-1 p-2 border rounded-md border-cyan-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Emergency Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="e.g., 140.00"
+                        className="w-full mt-1 p-2 border rounded-md border-cyan-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {formData.workCategoryId === '7' && (
+                <div className="border-2 border-purple-200 p-4 rounded-lg bg-purple-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-lg font-bold text-purple-800">🔧 Lining Pricing</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Per Metre Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 75.00"
+                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Setup Cost (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="e.g., 350.00"
+                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Material Cost (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 25.00"
+                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Cure Time Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="e.g., 45.00"
+                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {(formData.workCategoryId === '6' || (!formData.workCategoryId || (formData.workCategoryId !== '1' && formData.workCategoryId !== '2' && formData.workCategoryId !== '5' && formData.workCategoryId !== '7'))) && (
+                <div className="border-2 border-red-200 p-4 rounded-lg bg-red-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-lg font-bold text-red-800">🔨 Patching Pricing</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Single Layer (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 285.00"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Double Layer (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="e.g., 385.00"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Triple Layer (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 485.00"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Extended Cure (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="e.g., 585.00"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <Label htmlFor="selectedOption">Selected Option</Label>
