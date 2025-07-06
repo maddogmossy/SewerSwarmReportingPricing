@@ -1644,7 +1644,7 @@ export default function RepairPricing() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium">Single Layer (£)</label>
+                      <label className="text-sm font-medium">Single Layer Cost (£)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -1656,7 +1656,19 @@ export default function RepairPricing() {
                     </div>
                     
                     <div>
-                      <label className="text-sm font-medium">Double Layer (£)</label>
+                      <label className="text-sm font-medium">Installs Per Shift (Single)</label>
+                      <input
+                        type="number"
+                        step="1"
+                        value={formData.installsPerShift1 || ''}
+                        onChange={(e) => setFormData({ ...formData, installsPerShift1: e.target.value })}
+                        placeholder="e.g., 4"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Double Layer Cost (£)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -1668,7 +1680,19 @@ export default function RepairPricing() {
                     </div>
                     
                     <div>
-                      <label className="text-sm font-medium">Triple Layer (£)</label>
+                      <label className="text-sm font-medium">Installs Per Shift (Double)</label>
+                      <input
+                        type="number"
+                        step="1"
+                        value={formData.installsPerShift2 || ''}
+                        onChange={(e) => setFormData({ ...formData, installsPerShift2: e.target.value })}
+                        placeholder="e.g., 3"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Triple Layer Cost (£)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -1680,13 +1704,37 @@ export default function RepairPricing() {
                     </div>
                     
                     <div>
-                      <label className="text-sm font-medium">Extended Cure (£)</label>
+                      <label className="text-sm font-medium">Installs Per Shift (Triple)</label>
+                      <input
+                        type="number"
+                        step="1"
+                        value={formData.installsPerShift3 || ''}
+                        onChange={(e) => setFormData({ ...formData, installsPerShift3: e.target.value })}
+                        placeholder="e.g., 2"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Extended Cure Cost (£)</label>
                       <input
                         type="number"
                         step="0.01"
                         value={formData.option4Cost}
                         onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
                         placeholder="e.g., 950.00"
+                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Installs Per Shift (Extended)</label>
+                      <input
+                        type="number"
+                        step="1"
+                        value={formData.installsPerShift4 || ''}
+                        onChange={(e) => setFormData({ ...formData, installsPerShift4: e.target.value })}
+                        placeholder="e.g., 1"
                         className="w-full mt-1 p-2 border rounded-md border-red-300"
                       />
                     </div>
