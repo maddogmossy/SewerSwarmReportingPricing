@@ -1231,6 +1231,15 @@ export default function RepairPricing() {
                 const selectedCategoryId = parseInt(formData.workCategoryId);
                 const selectedCategoryData = workCategories.find(cat => cat.id === selectedCategoryId);
                 const categoryName = selectedCategoryData?.name || '';
+                
+                // Debug logging
+                console.log('Dynamic cost section debug:', {
+                  workCategoryId: formData.workCategoryId,
+                  selectedCategoryId,
+                  selectedCategoryData,
+                  categoryName,
+                  workCategories: workCategories.map(cat => ({ id: cat.id, name: cat.name }))
+                });
 
                 // CCTV Survey Category
                 if (categoryName === 'Surveys') {
