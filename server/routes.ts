@@ -1633,6 +1633,30 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  app.post("/api/work-categories", async (req: Request, res: Response) => {
+    try {
+      const { name, description, icon, color, sortOrder, implemented } = req.body;
+      
+      if (!name || !description) {
+        return res.status(400).json({ error: "Name and description are required" });
+      }
+
+      const [newCategory] = await db.insert(workCategories).values({
+        name,
+        description,
+        icon,
+        color,
+        sortOrder: sortOrder || 99,
+        implemented: implemented !== undefined ? implemented : true
+      }).returning();
+
+      res.json(newCategory);
+    } catch (error) {
+      console.error("Error creating work category:", error);
+      res.status(500).json({ error: "Failed to create work category" });
+    }
+  });
+
   // Repair Methods endpoints
   app.get("/api/repair-methods", async (req: Request, res: Response) => {
     try {
