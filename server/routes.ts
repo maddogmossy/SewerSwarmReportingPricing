@@ -994,10 +994,22 @@ export async function registerRoutes(app: Express) {
   app.get("/api/uploads/:uploadId/sections", async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.uploadId);
-      const sections = await db.select()
+      
+      // Get all sections, then filter to keep only the most recent for each item_no
+      const allSections = await db.select()
         .from(sectionInspections)
         .where(eq(sectionInspections.fileUploadId, uploadId))
-        .orderBy(asc(sectionInspections.itemNo));
+        .orderBy(asc(sectionInspections.itemNo), desc(sectionInspections.createdAt));
+
+      // Keep only the most recent record for each item_no
+      const seenItemNos = new Set();
+      const sections = allSections.filter(section => {
+        if (seenItemNos.has(section.itemNo)) {
+          return false; // Skip duplicates, keep only first (most recent due to desc order)
+        }
+        seenItemNos.add(section.itemNo);
+        return true;
+      });
 
       res.json(sections);
     } catch (error) {
