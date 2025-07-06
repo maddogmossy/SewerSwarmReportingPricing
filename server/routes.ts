@@ -264,6 +264,56 @@ async function extractSpecificSectionFromPDF(pdfText: string, fileUploadId: numb
 // 
 // Successfully corrected: Sections 11, 63, 82 in ECL Newark report
 // ═══════════════════════════════════════════════════════════════════════
+// MSCC5 Classification for ECL-NEWARK observations
+function classifyObservations(observations: string) {
+  if (!observations || observations === "No defects observed") {
+    return {
+      grade: "0",
+      recommendations: "No action required pipe observed in acceptable structural and service condition",
+      adoptable: "Yes",
+      cost: "Complete"
+    };
+  }
+
+  const obs = observations.toLowerCase();
+  
+  // Classify based on observation content
+  if (obs.includes("open joint, large") || obs.includes("open joint, medium")) {
+    return {
+      grade: "3",
+      recommendations: "Joint repair required - Excavation and replacement or structural lining recommended",
+      adoptable: "No",
+      cost: "Configure adoption sector pricing first"
+    };
+  }
+  
+  if (obs.includes("water level") && (obs.includes("40%") || obs.includes("30%") || obs.includes("15%"))) {
+    return {
+      grade: "2", 
+      recommendations: "Monitor water level - Check for blockages and assess drainage capacity",
+      adoptable: "Yes",
+      cost: "Configure adoption sector pricing first"
+    };
+  }
+  
+  if (obs.includes("water level") && (obs.includes("10%") || obs.includes("5%") || obs.includes("0%"))) {
+    return {
+      grade: "1",
+      recommendations: "Minor water level observed - Monitor during wet weather conditions",
+      adoptable: "Yes", 
+      cost: "Complete"
+    };
+  }
+  
+  // Default for other observations
+  return {
+    grade: "1",
+    recommendations: "Observation noted - Monitor condition and reassess if required",
+    adoptable: "Yes",
+    cost: "Complete"
+  };
+}
+
 function applyAdoptionFlowDirectionCorrection(upstreamNode: string, downstreamNode: string): { upstream: string, downstream: string, corrected: boolean } {
   // Apply adoption sector flow direction rules
   
@@ -898,28 +948,28 @@ export async function registerRoutes(app: Express) {
             const authentickMeasurements = await extractECLNewarkMeasurements(filePath);
             console.log(`📏 Extracted ${Object.keys(authentickMeasurements).length} authentic measurements`);
             
-            // Convert to section inspection format with real measurements
+            // Convert to section inspection format with real measurements and authentic data
             sections = Object.keys(authentickMeasurements).map(sectionNum => {
               const measurement = authentickMeasurements[parseInt(sectionNum)];
               return {
                 fileUploadId: fileUpload.id,
                 itemNo: parseInt(sectionNum),
                 inspectionNo: 1,
-                date: "20/03/2023",
+                date: "20/03/2023", 
                 time: "09:00",
-                startMH: `F01-${sectionNum}`,
-                finishMH: measurement.downstreamNode || `F02-${sectionNum}`,
+                startMH: measurement.upstreamNode || `F${String(sectionNum).padStart(2, '0')}-01`,
+                finishMH: measurement.downstreamNode || `F${String(sectionNum).padStart(2, '0')}-02`,
                 startMHDepth: 'no data recorded',
                 finishMHDepth: 'no data recorded',
                 pipeSize: '150', // Standard from ECL reports
                 pipeMaterial: 'UPVC',
                 totalLength: `${measurement.totalLength}m`,
                 lengthSurveyed: `${measurement.totalLength}m`,
-                defects: "No action required pipe observed in acceptable structural and service condition",
-                recommendations: "No action required pipe observed in acceptable structural and service condition",
-                severityGrade: "0",
-                adoptable: "Yes",
-                cost: "Complete"
+                defects: measurement.observations || "No defects observed",
+                recommendations: classifyObservations(measurement.observations || "").recommendations,
+                severityGrade: classifyObservations(measurement.observations || "").grade,
+                adoptable: classifyObservations(measurement.observations || "").adoptable,
+                cost: classifyObservations(measurement.observations || "").cost
               };
             });
           } else if (pdfData.text.includes('E.C.L.BOWBRIDGE') || pdfData.text.includes('Section Item') || req.body.sector === 'adoption') {
@@ -1530,7 +1580,7 @@ export async function registerRoutes(app: Express) {
           const authentickMeasurements = await extractECLNewarkMeasurements(filePath);
           console.log(`📏 Extracted ${Object.keys(authentickMeasurements).length} authentic measurements`);
           
-          // Convert to section inspection format with real measurements
+          // Convert to section inspection format with real measurements and authentic data
           sections = Object.keys(authentickMeasurements).map(sectionNum => {
             const measurement = authentickMeasurements[parseInt(sectionNum)];
             return {
@@ -1539,19 +1589,19 @@ export async function registerRoutes(app: Express) {
               inspectionNo: 1,
               date: "20/03/2023",
               time: "09:00",
-              startMH: `F01-${sectionNum}`,
-              finishMH: measurement.downstreamNode || `F02-${sectionNum}`,
+              startMH: measurement.upstreamNode || `F${String(sectionNum).padStart(2, '0')}-01`,
+              finishMH: measurement.downstreamNode || `F${String(sectionNum).padStart(2, '0')}-02`,
               startMHDepth: 'no data recorded',
               finishMHDepth: 'no data recorded',
               pipeSize: '150', // Standard from ECL reports
               pipeMaterial: 'UPVC',
               totalLength: `${measurement.totalLength}m`,
               lengthSurveyed: `${measurement.totalLength}m`,
-              defects: "No action required pipe observed in acceptable structural and service condition",
-              recommendations: "No action required pipe observed in acceptable structural and service condition",
-              severityGrade: "0",
-              adoptable: "Yes",
-              cost: "Complete"
+              defects: measurement.observations || "No defects observed",
+              recommendations: classifyObservations(measurement.observations || "").recommendations,
+              severityGrade: classifyObservations(measurement.observations || "").grade,
+              adoptable: classifyObservations(measurement.observations || "").adoptable,
+              cost: classifyObservations(measurement.observations || "").cost
             };
           });
         } else if (pdfData.text.includes('E.C.L.BOWBRIDGE') || pdfData.text.includes('Section Item')) {
