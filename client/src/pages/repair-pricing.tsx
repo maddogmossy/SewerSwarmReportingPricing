@@ -1402,7 +1402,7 @@ export default function RepairPricing() {
                 </div>
               )}
 
-              {(formData.workCategoryId === '6' || (!formData.workCategoryId || (formData.workCategoryId !== '1' && formData.workCategoryId !== '2' && formData.workCategoryId !== '5' && formData.workCategoryId !== '7'))) && (
+              {(!formData.workCategoryId || (formData.workCategoryId !== '1' && formData.workCategoryId !== '2' && formData.workCategoryId !== '5' && formData.workCategoryId !== '7')) && (
                 <div className="border-2 border-red-200 p-4 rounded-lg bg-red-50">
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-lg font-bold text-red-800">🔨 Patching Pricing</label>
