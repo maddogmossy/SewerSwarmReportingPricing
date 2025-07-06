@@ -1231,7 +1231,7 @@ export default function RepairPricing() {
                 Selected Category: {formData.workCategoryId} | All Categories Available: {workCategories.map(c => c.id + ":" + c.name).join(", ")}
               </div>
               
-              {formData.workCategoryId === '1' && (
+              {(formData.workCategoryId === '1' || formData.workCategoryId === 1) && (
                 <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-lg font-bold text-blue-800">📹 CCTV Survey Pricing</label>
@@ -1288,7 +1288,7 @@ export default function RepairPricing() {
                 </div>
               )}
 
-              {(formData.workCategoryId === '2' || formData.workCategoryId === '5') && (
+              {(formData.workCategoryId === '2' || formData.workCategoryId === 2 || formData.workCategoryId === '5' || formData.workCategoryId === 5) && (
                 <div className="border-2 border-cyan-200 p-4 rounded-lg bg-cyan-50">
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-lg font-bold text-cyan-800">🚿 Jetting/Cleansing Pricing</label>
@@ -1345,7 +1345,7 @@ export default function RepairPricing() {
                 </div>
               )}
 
-              {formData.workCategoryId === '7' && (
+              {(formData.workCategoryId === '7' || formData.workCategoryId === 7) && (
                 <div className="border-2 border-purple-200 p-4 rounded-lg bg-purple-50">
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-lg font-bold text-purple-800">🔧 Lining Pricing</label>
@@ -1402,7 +1402,7 @@ export default function RepairPricing() {
                 </div>
               )}
 
-              {(!formData.workCategoryId || (formData.workCategoryId !== '1' && formData.workCategoryId !== '2' && formData.workCategoryId !== '5' && formData.workCategoryId !== '7')) && (
+              {(!formData.workCategoryId || (formData.workCategoryId !== '1' && formData.workCategoryId !== 1 && formData.workCategoryId !== '2' && formData.workCategoryId !== 2 && formData.workCategoryId !== '5' && formData.workCategoryId !== 5 && formData.workCategoryId !== '7' && formData.workCategoryId !== 7)) && (
                 <div className="border-2 border-red-200 p-4 rounded-lg bg-red-50">
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-lg font-bold text-red-800">🔨 Patching Pricing</label>
