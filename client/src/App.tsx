@@ -66,6 +66,7 @@ function Router() {
           <Route path="/pricing/cleansing" component={CleansingPricing} />
           <Route path="/pricing/jetting" component={JettingPricing} />
           <Route path="/repair-pricing/:sector" component={RepairPricing} />
+          <Route path="/repair-pricing" component={RepairPricing} />
           <Route path="/standards-config" component={StandardsConfig} />
           <Route path="/depot-management" component={DepotManagement} />
           <Route path="/vehicle-travel-rates" component={VehicleTravelRates} />
