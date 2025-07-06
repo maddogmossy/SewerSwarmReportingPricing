@@ -1032,6 +1032,7 @@ export default function RepairPricing() {
                 <Select
                   value={formData.workCategoryId}
                   onValueChange={(value) => {
+                    console.log("Category selected:", value, "Type:", typeof value);
                     if (value === "add_new") {
                       setShowAddCategory(true);
                     } else {
