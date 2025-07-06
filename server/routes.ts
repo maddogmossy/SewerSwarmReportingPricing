@@ -941,7 +941,7 @@ export async function registerRoutes(app: Express) {
           if (sections.length > 0) {
             // APPLY MULTI-DEFECT SECTION SPLITTING TO ALL REPORTS (218 ECL, Nine Elms, etc.)
             console.log('🔄 Applying multi-defect section splitting system...');
-            const { default: MSCC5Classifier } = await import('./mscc5-classifier.js');
+            const { default: MSCC5Classifier } = await import('./mscc5-classifier');
             
             const finalSections = [];
             for (const section of sections) {
@@ -1275,7 +1275,7 @@ export async function registerRoutes(app: Express) {
       if (sectionData) {
         // APPLY MULTI-DEFECT SECTION SPLITTING TO SINGLE SECTION REPROCESSING
         console.log(`🔄 Applying multi-defect section splitting to Section ${sectionNumber}...`);
-        const { default: MSCC5Classifier } = await import('./mscc5-classifier.js');
+        const { default: MSCC5Classifier } = await import('./mscc5-classifier');
         
         const finalSections = [];
         if (sectionData.defects && sectionData.defects !== "No action required pipe observed in acceptable structural and service condition") {
@@ -1347,7 +1347,7 @@ export async function registerRoutes(app: Express) {
       if (extractedSections && extractedSections.length > 0) {
         // APPLY MULTI-DEFECT SECTION SPLITTING TO FLOW REFRESH
         console.log('🔄 Applying multi-defect section splitting to refreshed sections...');
-        const { default: MSCC5Classifier } = await import('./mscc5-classifier.js');
+        const { default: MSCC5Classifier } = await import('./mscc5-classifier');
         
         const finalSections = [];
         for (const section of extractedSections) {
@@ -1500,7 +1500,7 @@ export async function registerRoutes(app: Express) {
         if (sections.length > 0) {
           // APPLY MULTI-DEFECT SECTION SPLITTING TO REPROCESSING
           console.log('🔄 Applying multi-defect section splitting to reprocessed sections...');
-          const { default: MSCC5Classifier } = await import('./mscc5-classifier.js');
+          const { default: MSCC5Classifier } = await import('./mscc5-classifier');
           
           const finalSections = [];
           for (const section of sections) {

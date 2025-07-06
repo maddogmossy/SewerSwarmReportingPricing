@@ -1766,7 +1766,7 @@ export default function RepairPricing() {
                         onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
                         placeholder="e.g., 450.00"
                         disabled={formData.lockSingleLayer}
-                        className={`w-full mt-1 p-2 border rounded-md border-red-300 ${
+                        className={`w-full mt-1 p-2 border rounded-md border-orange-300 ${
                           formData.lockSingleLayer ? 'bg-gray-100 cursor-not-allowed' : ''
                         }`}
                       />
@@ -1783,7 +1783,7 @@ export default function RepairPricing() {
                         onChange={(e) => setFormData({ ...formData, installsPerShift1: e.target.value })}
                         placeholder="e.g., 4"
                         disabled={formData.lockSingleLayer}
-                        className={`w-full mt-1 p-2 border rounded-md border-red-300 ${
+                        className={`w-full mt-1 p-2 border rounded-md border-orange-300 ${
                           formData.lockSingleLayer ? 'bg-gray-100 cursor-not-allowed' : ''
                         }`}
                       />
@@ -1797,7 +1797,7 @@ export default function RepairPricing() {
                         value={formData.option2Cost}
                         onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
                         placeholder="e.g., 650.00"
-                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
                       />
                     </div>
                     
@@ -1809,7 +1809,7 @@ export default function RepairPricing() {
                         value={formData.installsPerShift2 || ''}
                         onChange={(e) => setFormData({ ...formData, installsPerShift2: e.target.value })}
                         placeholder="e.g., 3"
-                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
                       />
                     </div>
                     
@@ -1821,7 +1821,7 @@ export default function RepairPricing() {
                         value={formData.option3Cost}
                         onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
                         placeholder="e.g., 850.00"
-                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
                       />
                     </div>
                     
@@ -1833,7 +1833,7 @@ export default function RepairPricing() {
                         value={formData.installsPerShift3 || ''}
                         onChange={(e) => setFormData({ ...formData, installsPerShift3: e.target.value })}
                         placeholder="e.g., 2"
-                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
                       />
                     </div>
                     
@@ -1845,7 +1845,7 @@ export default function RepairPricing() {
                         value={formData.option4Cost}
                         onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
                         placeholder="e.g., 950.00"
-                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
                       />
                     </div>
                     
@@ -1857,7 +1857,7 @@ export default function RepairPricing() {
                         value={formData.installsPerShift4 || ''}
                         onChange={(e) => setFormData({ ...formData, installsPerShift4: e.target.value })}
                         placeholder="e.g., 1"
-                        className="w-full mt-1 p-2 border rounded-md border-red-300"
+                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
                       />
                     </div>
                   </div>
