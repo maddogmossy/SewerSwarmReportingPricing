@@ -85,6 +85,40 @@ const calculatePatchThickness = (depthRange: string, pipeSize?: string, defects?
   return baseThickness;
 };
 
+// Helper function to generate dynamic MSCC5 description from URL parameters
+const generateDynamicDescription = (params: {
+  pipeSize?: string;
+  meterage?: string;
+  defects?: string;
+  recommendations?: string;
+  depth?: string;
+}) => {
+  const { pipeSize, meterage, defects, recommendations, depth } = params;
+  
+  if (!pipeSize || !meterage || !defects) {
+    return '';
+  }
+  
+  // Extract pipe size number (e.g., "150mm" -> "150")
+  const pipeSizeNumber = pipeSize.replace('mm', '');
+  
+  // Extract meterage point from defects (e.g., "CR 10.78m" -> "10.78m")
+  const meterageMatch = defects.match(/\d+\.?\d*m/);
+  const meteragePoint = meterageMatch ? meterageMatch[0] : meterage;
+  
+  // Determine patch type based on defects and depth
+  const patchType = calculatePatchThickness(depth || '2-3m', pipeSize, defects);
+  
+  // Extract defect code (e.g., "CR 10.78m (Crack)" -> "CR")
+  const defectCodeMatch = defects.match(/([A-Z]+)\s/);
+  const defectCode = defectCodeMatch ? defectCodeMatch[1] : 'defect';
+  
+  // Generate description based on MSCC5 pattern
+  const description = `To install a 1000mm x ${pipeSizeNumber}mm ${patchType} at ${meteragePoint} for ${defectCode}`;
+  
+  return description;
+};
+
 // Auto-select cost based on description content
 const selectCostFromDescription = (description: string, costValues: {
   singleLayerCost: string;
@@ -304,11 +338,14 @@ export default function RepairPricing() {
         const depthRange = pipeDepth || ""; // Use depth from dashboard if available
         const patchThickness = calculatePatchThickness(depthRange, pipeSize, defects);
         
-        // Create description with patch thickness and length based on depth
-        const patchLength = "1000mm"; // Default patch length (will be updated based on Length of Repair field)
-        const description = depthRange 
-          ? `To install a ${patchLength} x ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs (depth: ${depthRange}) for ${defects}`
-          : `To install a ${patchLength} x ${pipeSize}mm ${patchThickness} at ${meterage?.replace('m', '')}mtrs for ${defects}`;
+        // Generate dynamic MSCC5 description using new function
+        const description = generateDynamicDescription({
+          pipeSize: pipeSize ? `${pipeSize}mm` : undefined,
+          meterage: meterage,
+          defects: defects || '',
+          recommendations: recommendations || '',
+          depth: depthRange
+        });
         
         // Set rule - removed depth warning
         const rule = "";
