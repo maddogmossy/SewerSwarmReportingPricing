@@ -2197,9 +2197,9 @@ export async function registerRoutes(app: Express) {
         deletedCounts.uploads = uploadsResult.length || userUploads.length;
       }
       
-      // Delete project folders
-      const foldersResult = await db.delete(projectFolders).where(eq(projectFolders.userId, userId));
-      deletedCounts.folders = foldersResult.length || 0;
+      // PRESERVE project folders - only clear uploads and section data
+      // Project folders are kept so users can easily re-upload to existing folders
+      deletedCounts.folders = 0; // Folders are preserved
       
       console.log(`✅ Dashboard data cleared:`, deletedCounts);
       

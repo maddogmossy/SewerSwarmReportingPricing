@@ -1663,21 +1663,64 @@ export default function Dashboard() {
         </div>
 
         {completedUploads.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <AlertCircle className="h-12 w-12 text-slate-400 mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 mb-2">No Analysis Data Available</h3>
-              <p className="text-slate-500 text-center mb-4">
-                Upload and process your first inspection report to view detailed section analysis
-              </p>
-              <Link to="/upload">
-                <Button>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload First Report
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            {/* Show project folders even when no uploads exist */}
+            {folders.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Project Folders</CardTitle>
+                  <p className="text-sm text-slate-600">
+                    Your project folders are preserved. You can upload reports to these folders.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-3">
+                    {folders.map((folder) => (
+                      <div key={folder.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
+                        <div className="flex items-center gap-3">
+                          <FolderOpen className="h-5 w-5 text-blue-600" />
+                          <div>
+                            <h4 className="font-medium text-slate-900">{folder.folderName}</h4>
+                            <p className="text-sm text-slate-500">
+                              {folder.description || 'No description'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                            0 reports
+                          </span>
+                          <Link to={`/upload?folderId=${folder.id}`}>
+                            <Button variant="outline" size="sm">
+                              <Upload className="h-4 w-4 mr-2" />
+                              Upload to Folder
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* No data available message */}
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <AlertCircle className="h-12 w-12 text-slate-400 mb-4" />
+                <h3 className="text-lg font-medium text-slate-900 mb-2">No Analysis Data Available</h3>
+                <p className="text-slate-500 text-center mb-4">
+                  Upload and process your first inspection report to view detailed section analysis
+                </p>
+                <Link to="/upload">
+                  <Button>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload First Report
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
         ) : sectionData.length === 0 && currentUpload && !sectionsLoading ? (
           // Show data integrity warning when upload exists but no authentic data is available (and not loading)
           <DataIntegrityWarning
@@ -2144,18 +2187,18 @@ export default function Dashboard() {
           <DialogHeader>
             <DialogTitle className="text-red-600">Clear Dashboard Data</DialogTitle>
             <DialogDescription>
-              This action will permanently delete all your uploaded reports, section data, and project folders. This cannot be undone.
+              This action will permanently delete all your uploaded reports and section data. Project folders will be preserved for easy re-upload.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
               <p className="text-sm text-red-800 font-medium">
-                Are you sure you want to clear all dashboard data?
+                Are you sure you want to clear dashboard data?
               </p>
               <ul className="text-xs text-red-700 mt-2 list-disc list-inside">
                 <li>All uploaded reports will be deleted</li>
                 <li>All section inspection data will be removed</li>
-                <li>All project folders will be deleted</li>
+                <li>Project folders will be preserved</li>
                 <li>All pricing configurations will remain intact</li>
               </ul>
             </div>
