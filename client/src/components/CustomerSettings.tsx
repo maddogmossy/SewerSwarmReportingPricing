@@ -1227,11 +1227,6 @@ export function CustomerSettings() {
                                 <div>
                                   <span className="font-medium">Travel Hrs:</span> {(rate as any).hoursTraveAllowed || 2}hrs max
                                 </div>
-                                {(rate as any).hasAssistant && (
-                                  <div>
-                                    <span className="font-medium">Assistant:</span> £{(rate as any).assistantWagePerHour || 0}/hr
-                                  </div>
-                                )}
                                 <div>
                                   <span className="font-medium">Fuel Rate/Hr:</span> £{(parseFloat(rate.fuelCostPerLitre.toString()) * 4.54609 / parseFloat(rate.fuelConsumptionMpg.toString()) * 30).toFixed(2)}/hr
                                 </div>
@@ -1270,7 +1265,7 @@ export function CustomerSettings() {
 
                     {/* Vehicle Travel Rate Dialog */}
                     <Dialog open={isVehicleDialogOpen} onOpenChange={setIsVehicleDialogOpen}>
-                      <DialogContent className="sm:max-w-md">
+                      <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle>
                             {editingVehicleRate ? 'Edit Vehicle Travel Rate' : 'Add Vehicle Travel Rate'}
