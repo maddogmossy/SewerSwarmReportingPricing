@@ -1027,69 +1027,13 @@ export default function Dashboard() {
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: selectedReportIds.length > 0 
-      ? ['multi-sections', ...selectedReportIds.sort(), Date.now()] 
-      : [`/api/uploads/${currentUpload?.id}/sections`, Date.now()],
-    queryFn: async () => {
-      if (selectedReportIds.length > 0) {
-        // MULTI-REPORT MODE: Fetch sections from multiple reports
-        console.log(`🔄 Fetching sections from ${selectedReportIds.length} selected reports...`);
-        const allSections = [];
-        
-        for (const reportId of selectedReportIds) {
-          try {
-            const sections = await apiRequest('GET', `/api/uploads/${reportId}/sections?t=${Date.now()}`);
-            const upload = filteredUploads.find(u => u.id === reportId);
-            
-            // Ensure sections is an array before using map
-            if (Array.isArray(sections)) {
-              // Add reportId and project info to each section for identification
-              const sectionsWithReportInfo = sections.map((section: any) => ({
-                ...section,
-                reportId: reportId,
-                uploadFileName: upload?.fileName || 'Unknown',
-                projectNumber: upload?.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
-                uploadSector: upload?.sector || 'unknown'
-              }));
-              
-              allSections.push(...sectionsWithReportInfo);
-              console.log(`✓ Loaded ${sections.length} sections from ${upload?.fileName}`);
-            } else {
-              console.warn(`Sections data for report ${reportId} is not an array:`, sections);
-            }
-          } catch (error) {
-            console.warn(`Failed to fetch sections for report ${reportId}:`, error);
-          }
-        }
-        
-        console.log(`✓ Total sections loaded: ${allSections.length} from ${selectedReportIds.length} reports`);
-        return allSections;
-      } else if (currentUpload?.id && currentUpload?.status === "completed") {
-        // SINGLE REPORT MODE: Original functionality
-        const sections = await apiRequest('GET', `/api/uploads/${currentUpload.id}/sections?t=${Date.now()}`);
-        
-        // Ensure sections is an array before using map
-        if (Array.isArray(sections)) {
-          return sections.map((section: any) => ({
-            ...section,
-            reportId: currentUpload.id,
-            uploadFileName: currentUpload.fileName,
-            projectNumber: currentUpload.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
-            uploadSector: currentUpload.sector
-          }));
-        } else {
-          console.warn(`Sections data for upload ${currentUpload.id} is not an array:`, sections);
-          return [];
-        }
-      }
-      return [];
-    },
-    enabled: !!(selectedReportIds.length > 0 || (currentUpload?.id && currentUpload?.status === "completed")),
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
+    enabled: !!(currentUpload?.id && currentUpload?.status === "completed"),
     staleTime: 0,
-    gcTime: 0, // Prevent caching
-    refetchOnMount: true, // Always refetch on mount
-    refetchOnWindowFocus: true, // Refetch when window gains focus
-    retry: false, // Don't retry failed requests to avoid cached fake data
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false, // Disable to prevent loops
+    retry: false
   });
 
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
