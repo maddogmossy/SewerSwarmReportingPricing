@@ -166,7 +166,7 @@ export function CustomerSettings() {
   const [sameAsCompany, setSameAsCompany] = useState(false);
 
   // Fetch payment methods
-  const { data: paymentMethods = [], isLoading: paymentMethodsLoading } = useQuery<PaymentMethod[]>({
+  const { data: paymentMethods = [], isLoading: paymentMethodsLoading, error: paymentMethodsError } = useQuery<PaymentMethod[]>({
     queryKey: ['/api/payment-methods'],
     enabled: isOpen && !!user,
   });
@@ -426,18 +426,22 @@ export function CustomerSettings() {
   };
 
   const calculateTotalCostPerMile = (rate: VehicleTravelRate) => {
-    const fuelCostPerLitre = parseFloat(rate.fuelCostPerLitre.toString());
-    const fuelConsumptionMpg = parseFloat(rate.fuelConsumptionMpg.toString());
-    const vehicleRunningCost = parseFloat(rate.vehicleRunningCostPerMile.toString());
+    if (!rate) return '0.00';
+    
+    const fuelCostPerLitre = parseFloat(rate.fuelCostPerLitre?.toString() || '0');
+    const fuelConsumptionMpg = parseFloat(rate.fuelConsumptionMpg?.toString() || '1');
+    const vehicleRunningCost = parseFloat(rate.vehicleRunningCostPerMile?.toString() || '0');
     
     const fuelCostPerMile = (fuelCostPerLitre / 4.546) / fuelConsumptionMpg; // Convert litres to gallons
     return (fuelCostPerMile + vehicleRunningCost).toFixed(2);
   };
 
   const calculateTotalCostPerHour = (rate: VehicleTravelRate) => {
-    const fuelCostPerLitre = parseFloat(rate.fuelCostPerLitre.toString());
-    const fuelConsumptionMpg = parseFloat(rate.fuelConsumptionMpg.toString());
-    const driverWage = parseFloat(rate.driverWagePerHour.toString());
+    if (!rate) return '0.00';
+    
+    const fuelCostPerLitre = parseFloat(rate.fuelCostPerLitre?.toString() || '0');
+    const fuelConsumptionMpg = parseFloat(rate.fuelConsumptionMpg?.toString() || '1');
+    const driverWage = parseFloat(rate.driverWagePerHour?.toString() || '0');
     const assistantWage = ((rate as any).hasAssistant ? parseFloat((rate as any).assistantWagePerHour?.toString() || '0') : 0);
     
     // Calculate fuel cost per hour (assuming 30 mph average speed)
@@ -1239,10 +1243,10 @@ export function CustomerSettings() {
                                   <span className="font-medium">Travel Hrs:</span> {(rate as any).hoursTraveAllowed || 2}hrs max
                                 </div>
                                 <div>
-                                  <span className="font-medium">Fuel Rate/Hr:</span> £{(parseFloat(rate.fuelCostPerLitre.toString()) * 4.54609 / parseFloat(rate.fuelConsumptionMpg.toString()) * 30).toFixed(2)}/hr
+                                  <span className="font-medium">Fuel Rate/Hr:</span> £{(parseFloat(rate.fuelCostPerLitre?.toString() || '0') * 4.54609 / parseFloat(rate.fuelConsumptionMpg?.toString() || '1') * 30).toFixed(2)}/hr
                                 </div>
                                 <div>
-                                  <span className="font-medium">Labor Rate/Hr:</span> £{(parseFloat(rate.driverWagePerHour.toString()) + (((rate as any).hasAssistant ? parseFloat((rate as any).assistantWagePerHour?.toString() || '0') : 0))).toFixed(2)}/hr
+                                  <span className="font-medium">Labor Rate/Hr:</span> £{(parseFloat(rate.driverWagePerHour?.toString() || '0') + (((rate as any).hasAssistant ? parseFloat((rate as any).assistantWagePerHour?.toString() || '0') : 0))).toFixed(2)}/hr
                                 </div>
                                 <div>
                                   <span className="font-medium">Total Cost/Hr:</span> £{calculateTotalCostPerHour(rate)}/hr
