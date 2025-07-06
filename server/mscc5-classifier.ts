@@ -1530,3 +1530,5 @@ export class MSCC5Classifier {
     return analysis;
   }
 }
+
+export default MSCC5Classifier;
