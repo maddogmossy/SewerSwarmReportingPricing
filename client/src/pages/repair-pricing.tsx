@@ -1352,10 +1352,67 @@ export default function RepairPricing() {
                 </div>
               )}
 
-              {(formData.workCategoryId === '7' || formData.workCategoryId === 7) && (
+              {(formData.workCategoryId === '10' || formData.workCategoryId === 10) && (
+                <div className="border-2 border-teal-200 p-4 rounded-lg bg-teal-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-lg font-bold text-teal-800">📹 CCTV/Cleansing Pricing</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">CCTV Per Metre (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 8.50"
+                        className="w-full mt-1 p-2 border rounded-md border-teal-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Cleansing Per Hour (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="e.g., 95.00"
+                        className="w-full mt-1 p-2 border rounded-md border-teal-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Setup Fee (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 175.00"
+                        className="w-full mt-1 p-2 border rounded-md border-teal-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Report Fee (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="e.g., 45.00"
+                        className="w-full mt-1 p-2 border rounded-md border-teal-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {(formData.workCategoryId === '11' || formData.workCategoryId === 11) && (
                 <div className="border-2 border-purple-200 p-4 rounded-lg bg-purple-50">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-lg font-bold text-purple-800">🔧 Lining Pricing</label>
+                    <label className="text-lg font-bold text-purple-800">🌡️ Ambient Lining Pricing</label>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -1365,7 +1422,7 @@ export default function RepairPricing() {
                         step="0.01"
                         value={formData.option1Cost}
                         onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
-                        placeholder="e.g., 75.00"
+                        placeholder="e.g., 65.00"
                         className="w-full mt-1 p-2 border rounded-md border-purple-300"
                       />
                     </div>
@@ -1377,8 +1434,122 @@ export default function RepairPricing() {
                         step="0.01"
                         value={formData.option2Cost}
                         onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
-                        placeholder="e.g., 350.00"
+                        placeholder="e.g., 285.00"
                         className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Minimum Charge (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 450.00"
+                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Material Cost Per m (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="e.g., 25.00"
+                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {(formData.workCategoryId === '12' || formData.workCategoryId === 12) && (
+                <div className="border-2 border-orange-200 p-4 rounded-lg bg-orange-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-lg font-bold text-orange-800">🔥 Hot Cure Lining Pricing</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Per Metre Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 85.00"
+                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Setup Cost (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="e.g., 450.00"
+                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Minimum Charge (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 650.00"
+                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Heating Cost (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="e.g., 125.00"
+                        className="w-full mt-1 p-2 border rounded-md border-orange-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {(formData.workCategoryId === '13' || formData.workCategoryId === 13) && (
+                <div className="border-2 border-indigo-200 p-4 rounded-lg bg-indigo-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-lg font-bold text-indigo-800">💜 UV Lining Pricing</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Per Metre Rate (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 95.00"
+                        className="w-full mt-1 p-2 border rounded-md border-indigo-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Setup Cost (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="e.g., 385.00"
+                        className="w-full mt-1 p-2 border rounded-md border-indigo-300"
                       />
                     </div>
                     
@@ -1389,20 +1560,20 @@ export default function RepairPricing() {
                         step="0.01"
                         value={formData.option3Cost}
                         onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
-                        placeholder="e.g., 25.00"
-                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                        placeholder="e.g., 35.00"
+                        className="w-full mt-1 p-2 border rounded-md border-indigo-300"
                       />
                     </div>
                     
                     <div>
-                      <label className="text-sm font-medium">Cure Time Rate (£)</label>
+                      <label className="text-sm font-medium">UV Equipment Rate (£)</label>
                       <input
                         type="number"
                         step="0.01"
                         value={formData.option4Cost}
                         onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
-                        placeholder="e.g., 45.00"
-                        className="w-full mt-1 p-2 border rounded-md border-purple-300"
+                        placeholder="e.g., 95.00"
+                        className="w-full mt-1 p-2 border rounded-md border-indigo-300"
                       />
                     </div>
                   </div>
