@@ -253,7 +253,7 @@ export default function RepairPricing() {
         setIsAddDialogOpen(true);
       }, 1000);
     }
-  }, [location, pricingData]);
+  }, [location]); // Remove pricingData dependency to prevent infinite loops
 
   // Separate useEffect for auto-selection when data is loaded
   useEffect(() => {
@@ -335,7 +335,7 @@ export default function RepairPricing() {
         }, 500);
       }
     }
-  }, [location, workCategories, pricingData]);
+  }, [location, workCategories]); // Remove pricingData dependency to prevent infinite loops
 
   // Internal automatic cost selection function based on description analysis
   const selectCostFromDescription = (description: string, defectsData: string = "") => {
