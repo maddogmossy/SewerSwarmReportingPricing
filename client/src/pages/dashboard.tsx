@@ -755,7 +755,10 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
       setShowClearDataDialog(false);
-      window.location.reload();
+      // Reset all state instead of reloading the page
+      setSelectedFolderForView(null);
+      setSelectedReportIds([]);
+      setShowFolderDropdown(false);
     },
     onError: (error) => {
       toast({
