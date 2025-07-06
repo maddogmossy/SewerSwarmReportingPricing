@@ -1231,6 +1231,12 @@ export default function RepairPricing() {
                 Selected Category: {formData.workCategoryId} | All Categories Available: {workCategories.map(c => c.id + ":" + c.name).join(", ")}
               </div>
               
+              {!formData.workCategoryId && (
+                <div className="border-2 border-gray-200 p-4 rounded-lg bg-gray-50 text-center">
+                  <p className="text-gray-600">Please select a Work Category above to configure pricing options.</p>
+                </div>
+              )}
+              
               {(formData.workCategoryId === '1' || formData.workCategoryId === 1) && (
                 <div className="border-2 border-blue-200 p-4 rounded-lg bg-blue-50">
                   <div className="flex items-center justify-between mb-3">
@@ -1402,7 +1408,7 @@ export default function RepairPricing() {
                 </div>
               )}
 
-              {(!formData.workCategoryId || (formData.workCategoryId !== '1' && formData.workCategoryId !== 1 && formData.workCategoryId !== '2' && formData.workCategoryId !== 2 && formData.workCategoryId !== '5' && formData.workCategoryId !== 5 && formData.workCategoryId !== '7' && formData.workCategoryId !== 7)) && (
+              {(formData.workCategoryId === '6' || formData.workCategoryId === 6 || (formData.workCategoryId && formData.workCategoryId !== '1' && formData.workCategoryId !== 1 && formData.workCategoryId !== '2' && formData.workCategoryId !== 2 && formData.workCategoryId !== '5' && formData.workCategoryId !== 5 && formData.workCategoryId !== '7' && formData.workCategoryId !== 7)) && (
                 <div className="border-2 border-red-200 p-4 rounded-lg bg-red-50">
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-lg font-bold text-red-800">🔨 Patching Pricing</label>
