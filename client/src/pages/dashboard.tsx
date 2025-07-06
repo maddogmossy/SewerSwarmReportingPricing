@@ -1028,8 +1028,8 @@ export default function Dashboard() {
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
     queryKey: selectedReportIds.length > 0 
-      ? ['multi-sections', ...selectedReportIds.sort()] 
-      : [`/api/uploads/${currentUpload?.id}/sections`],
+      ? ['multi-sections', ...selectedReportIds.sort(), Date.now()] 
+      : [`/api/uploads/${currentUpload?.id}/sections`, Date.now()],
     queryFn: async () => {
       if (selectedReportIds.length > 0) {
         // MULTI-REPORT MODE: Fetch sections from multiple reports
@@ -1038,20 +1038,25 @@ export default function Dashboard() {
         
         for (const reportId of selectedReportIds) {
           try {
-            const sections = await apiRequest('GET', `/api/uploads/${reportId}/sections`);
+            const sections = await apiRequest('GET', `/api/uploads/${reportId}/sections?t=${Date.now()}`);
             const upload = filteredUploads.find(u => u.id === reportId);
             
-            // Add reportId and project info to each section for identification
-            const sectionsWithReportInfo = sections.map((section: any) => ({
-              ...section,
-              reportId: reportId,
-              uploadFileName: upload?.fileName || 'Unknown',
-              projectNumber: upload?.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
-              uploadSector: upload?.sector || 'unknown'
-            }));
-            
-            allSections.push(...sectionsWithReportInfo);
-            console.log(`✓ Loaded ${sections.length} sections from ${upload?.fileName}`);
+            // Ensure sections is an array before using map
+            if (Array.isArray(sections)) {
+              // Add reportId and project info to each section for identification
+              const sectionsWithReportInfo = sections.map((section: any) => ({
+                ...section,
+                reportId: reportId,
+                uploadFileName: upload?.fileName || 'Unknown',
+                projectNumber: upload?.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
+                uploadSector: upload?.sector || 'unknown'
+              }));
+              
+              allSections.push(...sectionsWithReportInfo);
+              console.log(`✓ Loaded ${sections.length} sections from ${upload?.fileName}`);
+            } else {
+              console.warn(`Sections data for report ${reportId} is not an array:`, sections);
+            }
           } catch (error) {
             console.warn(`Failed to fetch sections for report ${reportId}:`, error);
           }
@@ -1061,14 +1066,21 @@ export default function Dashboard() {
         return allSections;
       } else if (currentUpload?.id && currentUpload?.status === "completed") {
         // SINGLE REPORT MODE: Original functionality
-        const sections = await apiRequest('GET', `/api/uploads/${currentUpload.id}/sections`);
-        return sections.map((section: any) => ({
-          ...section,
-          reportId: currentUpload.id,
-          uploadFileName: currentUpload.fileName,
-          projectNumber: currentUpload.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
-          uploadSector: currentUpload.sector
-        }));
+        const sections = await apiRequest('GET', `/api/uploads/${currentUpload.id}/sections?t=${Date.now()}`);
+        
+        // Ensure sections is an array before using map
+        if (Array.isArray(sections)) {
+          return sections.map((section: any) => ({
+            ...section,
+            reportId: currentUpload.id,
+            uploadFileName: currentUpload.fileName,
+            projectNumber: currentUpload.fileName?.match(/^(\d+)/)?.[1] || 'Unknown',
+            uploadSector: currentUpload.sector
+          }));
+        } else {
+          console.warn(`Sections data for upload ${currentUpload.id} is not an array:`, sections);
+          return [];
+        }
       }
       return [];
     },
