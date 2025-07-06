@@ -356,6 +356,7 @@ export const vehicleTravelRates = pgTable("vehicle_travel_rates", {
   assistantWagePerHour: decimal("assistant_wage_per_hour", { precision: 8, scale: 2 }).default("0.00"), // Assistant wage per hour (optional)
   hasAssistant: boolean("has_assistant").default(false), // Whether this vehicle type typically has an assistant
   vehicleRunningCostPerMile: decimal("vehicle_running_cost_per_mile", { precision: 8, scale: 2 }).notNull(), // Additional running costs
+  hoursTraveAllowed: decimal("hours_travel_allowed", { precision: 5, scale: 2 }).default("2.00"), // Maximum hours of travel allowed per day
   autoUpdateFuelPrice: boolean("auto_update_fuel_price").default(true), // Whether to auto-update fuel prices
   lastFuelPriceUpdate: timestamp("last_fuel_price_update").defaultNow(), // When fuel price was last updated
   createdAt: timestamp("created_at").notNull().defaultNow(),

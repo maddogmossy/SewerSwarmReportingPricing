@@ -122,6 +122,7 @@ const vehicleTravelRateSchema = z.object({
   vehicleRunningCostPerMile: z.number().min(0.01, "Vehicle running cost must be greater than 0"),
   hasAssistant: z.boolean().optional(),
   assistantWagePerHour: z.number().min(0).optional(),
+  hoursTraveAllowed: z.number().min(0.1, "Hours travel allowed must be greater than 0").default(2),
   autoUpdateFuelPrice: z.boolean().optional(),
 });
 
@@ -211,6 +212,7 @@ export function CustomerSettings() {
       vehicleRunningCostPerMile: 0,
       hasAssistant: false,
       assistantWagePerHour: 0,
+      hoursTraveAllowed: 2,
       autoUpdateFuelPrice: false,
     },
   });
@@ -331,6 +333,7 @@ export function CustomerSettings() {
             vehicleForm.setValue('assistantWagePerHour', 0);
           }
           
+          vehicleForm.setValue('hoursTraveAllowed', defaults.hoursTraveAllowed || 2);
           vehicleForm.setValue('autoUpdateFuelPrice', defaults.autoUpdateFuelPrice || false);
           
           console.log('All form values set successfully');
@@ -371,6 +374,7 @@ export function CustomerSettings() {
       vehicleRunningCostPerMile: parseFloat(rate.vehicleRunningCostPerMile.toString()),
       hasAssistant: (rate as any).hasAssistant || false,
       assistantWagePerHour: parseFloat((rate as any).assistantWagePerHour?.toString() || '0'),
+      hoursTraveAllowed: parseFloat((rate as any).hoursTraveAllowed?.toString() || '2'),
       autoUpdateFuelPrice: (rate as any).autoUpdateFuelPrice || false,
     });
     setIsVehicleDialogOpen(true);
@@ -401,6 +405,7 @@ export function CustomerSettings() {
       vehicleRunningCostPerMile: data.vehicleRunningCostPerMile.toString(),
       hasAssistant: data.hasAssistant || false,
       assistantWagePerHour: data.assistantWagePerHour?.toString() || '0',
+      hoursTraveAllowed: data.hoursTraveAllowed?.toString() || '2',
       autoUpdateFuelPrice: data.autoUpdateFuelPrice || false,
       userId: user?.id || '',
     };
@@ -1348,6 +1353,28 @@ export function CustomerSettings() {
                                 )}
                               />
                             </div>
+
+                            <FormField
+                              control={vehicleForm.control}
+                              name="hoursTraveAllowed"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Number of Hours Travel Allowed</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      step="0.5"
+                                      {...field}
+                                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 2)}
+                                    />
+                                  </FormControl>
+                                  <FormDescription>
+                                    Maximum hours of travel allowed per day (default: 2 hours)
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
                             <div className="space-y-4">
                               <FormField
