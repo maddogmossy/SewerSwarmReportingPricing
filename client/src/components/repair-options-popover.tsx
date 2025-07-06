@@ -4,8 +4,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Settings, AlertTriangle, CheckCircle, Calculator } from "lucide-react";
+import { Settings, AlertTriangle, CheckCircle, Calculator, Plus, Save, X } from "lucide-react";
 import { useLocation } from "wouter";
 
 
@@ -37,6 +40,9 @@ interface RepairOptionsPopoverProps {
 export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }: RepairOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [customDescription, setCustomDescription] = useState("");
+  const [customPrice, setCustomPrice] = useState("");
   
   // Extract meterage from defects text
   const extractMeterage = (defectsText: string): string => {
@@ -122,7 +128,36 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     }
   });
 
+  // Mutation to save custom pricing
+  const saveCustomPricingMutation = useMutation({
+    mutationFn: async ({ description, cost }: { description: string; cost: string }) => {
+      const pipeSize = sectionData.pipeSize || '150mm';
+      const sector = sectionData.sector || 'utilities';
+      
+      return apiRequest('POST', '/api/repair-pricing', {
+        sector,
+        repairMethodId: repairOptions.find(opt => opt.name === 'Custom')?.id,
+        pipeSize,
+        description,
+        cost,
+        rule: 'Custom user-defined repair method'
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sectionData.sector}`] });
+      setShowCustomForm(false);
+      setCustomDescription("");
+      setCustomPrice("");
+      setIsOpen(false);
+    }
+  });
+
   const handleOptionClick = (option: RepairOption) => {
+    // Handle custom option differently
+    if (option.name === 'Custom' && !option.configured) {
+      setShowCustomForm(true);
+      return;
+    }
     
     // For both configured and unconfigured options, navigate to the pricing page
     const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
@@ -160,18 +195,18 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     if (recommendations.includes('cleanse') || recommendations.includes('jetting') || 
         defects.includes('der') || defects.includes('debris') || 
         recommendations.includes('cleaning')) {
-      return ['Jetting', 'Patch', 'Lining', 'Excavation'];
+      return ['Jetting', 'Patch', 'Lining', 'Excavation', 'Custom'];
     }
     // Structural defects need patch/lining
     else if (recommendations.includes('patch') || recommendations.includes('structural')) {
-      return ['Patch', 'Lining', 'Excavation'];
+      return ['Patch', 'Lining', 'Excavation', 'Custom'];
     } else if (recommendations.includes('lining')) {
-      return ['Lining', 'Patch', 'Excavation'];
+      return ['Lining', 'Patch', 'Excavation', 'Custom'];
     } else if (recommendations.includes('excavation') || recommendations.includes('replacement')) {
-      return ['Excavation', 'Lining', 'Patch'];
+      return ['Excavation', 'Lining', 'Patch', 'Custom'];
     } else {
-      // Default order for unknown recommendations
-      return ['Patch', 'Lining', 'Excavation'];
+      // Default order for unknown recommendations - Custom always appears last
+      return ['Patch', 'Lining', 'Excavation', 'Custom'];
     }
   };
 
@@ -211,77 +246,162 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
         </div>
         
         <div className="p-2 space-y-1">
-          {sortedOptions.map((option, index) => (
-            <div key={option.id}>
-              <button
-                onClick={() => handleOptionClick(option)}
-                className={`w-full p-3 rounded-lg border-2 transition-all duration-200 text-left ${
-                  option.configured
-                    ? 'border-green-200 bg-green-50 hover:bg-green-100'
-                    : 'border-orange-200 bg-orange-50 hover:bg-orange-100'
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-sm">{index + 1}. {option.name}</span>
-                      {option.configured ? (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <AlertTriangle className="h-4 w-4 text-orange-600" />
-                      )}
-                    </div>
-                    
-                    <p className="text-xs text-slate-600 mb-2">
-                      {option.description}
-                    </p>
-                    
-                    {option.configured ? (
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium">Cost:</span>
-                          <Badge 
-                            variant="outline" 
-                            className={`text-xs ${
-                              checkQuantityRule(option) ? 'border-red-500 text-red-700 bg-red-50' : ''
-                            }`}
-                          >
-                            £{parseFloat(option.cost || '0').toFixed(2)}
-                          </Badge>
+          {showCustomForm ? (
+            <div className="p-4 border-2 border-blue-200 bg-blue-50 rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <h5 className="font-medium text-sm flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Custom Repair Method
+                </h5>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowCustomForm(false)}
+                  className="h-6 w-6 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="custom-description" className="text-xs font-medium">
+                    Repair Description
+                  </Label>
+                  <Textarea
+                    id="custom-description"
+                    placeholder="Describe the custom repair method..."
+                    value={customDescription}
+                    onChange={(e) => setCustomDescription(e.target.value)}
+                    className="mt-1 text-xs"
+                    rows={3}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="custom-price" className="text-xs font-medium">
+                    Price (£)
+                  </Label>
+                  <Input
+                    id="custom-price"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={customPrice}
+                    onChange={(e) => setCustomPrice(e.target.value)}
+                    className="mt-1 text-xs"
+                  />
+                </div>
+                
+                <Button
+                  onClick={() => {
+                    if (customDescription.trim() && customPrice.trim()) {
+                      saveCustomPricingMutation.mutate({
+                        description: customDescription.trim(),
+                        cost: customPrice.trim()
+                      });
+                    }
+                  }}
+                  disabled={!customDescription.trim() || !customPrice.trim() || saveCustomPricingMutation.isPending}
+                  className="w-full text-xs h-8"
+                  size="sm"
+                >
+                  {saveCustomPricingMutation.isPending ? (
+                    <>Saving...</>
+                  ) : (
+                    <>
+                      <Save className="h-3 w-3 mr-1" />
+                      Save Custom Repair
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {sortedOptions.map((option, index) => (
+                <div key={option.id}>
+                  <button
+                    onClick={() => handleOptionClick(option)}
+                    className={`w-full p-3 rounded-lg border-2 transition-all duration-200 text-left ${
+                      option.configured
+                        ? 'border-green-200 bg-green-50 hover:bg-green-100'
+                        : option.name === 'Custom'
+                        ? 'border-blue-200 bg-blue-50 hover:bg-blue-100'
+                        : 'border-orange-200 bg-orange-50 hover:bg-orange-100'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-medium text-sm">{index + 1}. {option.name}</span>
+                          {option.configured ? (
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          ) : option.name === 'Custom' ? (
+                            <Plus className="h-4 w-4 text-blue-600" />
+                          ) : (
+                            <AlertTriangle className="h-4 w-4 text-orange-600" />
+                          )}
                         </div>
                         
-                        {option.rule && (
-                          <div className="text-xs text-slate-500">
-                            <span className="font-medium">Rule:</span> {option.rule}
-                          </div>
-                        )}
+                        <p className="text-xs text-slate-600 mb-2">
+                          {option.description}
+                        </p>
                         
-                        {option.minimumQuantity && option.minimumQuantity > 1 && (
-                          <div className="text-xs text-slate-500">
-                            <span className="font-medium">Min Qty:</span> {option.minimumQuantity}
+                        {option.configured ? (
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium">Cost:</span>
+                              <Badge 
+                                variant="outline" 
+                                className={`text-xs ${
+                                  checkQuantityRule(option) ? 'border-red-500 text-red-700 bg-red-50' : ''
+                                }`}
+                              >
+                                £{parseFloat(option.cost || '0').toFixed(2)}
+                              </Badge>
+                            </div>
+                            
+                            {option.rule && (
+                              <div className="text-xs text-slate-500">
+                                <span className="font-medium">Rule:</span> {option.rule}
+                              </div>
+                            )}
+                            
+                            {option.minimumQuantity && option.minimumQuantity > 1 && (
+                              <div className="text-xs text-slate-500">
+                                <span className="font-medium">Min Qty:</span> {option.minimumQuantity}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className={`text-xs font-medium ${
+                            option.name === 'Custom' ? 'text-blue-700' : 'text-orange-700'
+                          }`}>
+                            {option.name === 'Custom' 
+                              ? 'Click to add custom repair method' 
+                              : option.configurationMessage
+                            }
                           </div>
                         )}
                       </div>
-                    ) : (
-                      <div className="text-xs text-orange-700 font-medium">
-                        {option.configurationMessage}
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  </button>
+                  
+                  {index < sortedOptions.length - 1 && (
+                    <Separator className="my-1" />
+                  )}
                 </div>
-              </button>
-              
-              {index < sortedOptions.length - 1 && (
-                <Separator className="my-1" />
-              )}
-            </div>
-          ))}
+              ))}
+            </>
+          )}
         </div>
 
         
         <div className="p-3 border-t bg-slate-50">
           <p className="text-xs text-slate-600">
             Repair options are ordered by suitability for this defect type.
+            Use the Custom option to add your own repair method with custom pricing.
             Red pricing indicates minimum quantity rule threshold reached.
           </p>
         </div>
