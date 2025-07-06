@@ -699,7 +699,7 @@ export function CustomerSettings() {
               <CardContent>
                 {paymentMethodsLoading ? (
                   <div className="text-center py-4">Loading payment methods...</div>
-                ) : paymentMethods.length === 0 ? (
+                ) : !paymentMethods || paymentMethods.length === 0 ? (
                   <div className="text-center py-8">
                     <CreditCard className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                     <p className="text-gray-600">No payment methods on file</p>
