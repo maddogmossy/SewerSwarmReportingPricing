@@ -426,6 +426,21 @@ export function CustomerSettings() {
     return (fuelCostPerMile + vehicleRunningCost).toFixed(2);
   };
 
+  const calculateTotalCostPerHour = (rate: VehicleTravelRate) => {
+    const fuelCostPerLitre = parseFloat(rate.fuelCostPerLitre.toString());
+    const fuelConsumptionMpg = parseFloat(rate.fuelConsumptionMpg.toString());
+    const driverWage = parseFloat(rate.driverWagePerHour.toString());
+    const assistantWage = ((rate as any).hasAssistant ? parseFloat((rate as any).assistantWagePerHour?.toString() || '0') : 0);
+    
+    // Calculate fuel cost per hour (assuming 30 mph average speed)
+    const fuelCostPerHour = (fuelCostPerLitre * 4.54609 / fuelConsumptionMpg) * 30;
+    
+    // Total cost per hour = fuel cost/hour + driver wage + assistant wage
+    const totalCostPerHour = fuelCostPerHour + driverWage + assistantWage;
+    
+    return totalCostPerHour.toFixed(2);
+  };
+
   // Update payment method mutation
   const updatePaymentMethodMutation = useMutation({
     mutationFn: (paymentMethodId: string) =>
@@ -1222,6 +1237,9 @@ export function CustomerSettings() {
                                 </div>
                                 <div>
                                   <span className="font-medium">Labor Rate/Hr:</span> £{(parseFloat(rate.driverWagePerHour.toString()) + (((rate as any).hasAssistant ? parseFloat((rate as any).assistantWagePerHour?.toString() || '0') : 0))).toFixed(2)}/hr
+                                </div>
+                                <div>
+                                  <span className="font-medium">Total Cost/Hr:</span> £{calculateTotalCostPerHour(rate)}/hr
                                 </div>
                                 <div>
                                   <span className="font-medium">Total/Mile:</span> £{calculateTotalCostPerMile(rate)}/mile
