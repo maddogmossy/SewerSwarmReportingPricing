@@ -1409,6 +1409,63 @@ export default function RepairPricing() {
                 </div>
               )}
 
+              {(formData.workCategoryId === '14' || formData.workCategoryId === 14) && (
+                <div className="border-2 border-emerald-200 p-4 rounded-lg bg-emerald-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-lg font-bold text-emerald-800">🎯 CCTV/Cleansing/Root Cutting Pricing</label>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">CCTV Per Metre (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option1Cost}
+                        onChange={(e) => setFormData({ ...formData, option1Cost: e.target.value })}
+                        placeholder="e.g., 8.50"
+                        className="w-full mt-1 p-2 border rounded-md border-emerald-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Cleansing Per Hour (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option2Cost}
+                        onChange={(e) => setFormData({ ...formData, option2Cost: e.target.value })}
+                        placeholder="e.g., 110.00"
+                        className="w-full mt-1 p-2 border rounded-md border-emerald-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Root Cutting Per Hour (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option3Cost}
+                        onChange={(e) => setFormData({ ...formData, option3Cost: e.target.value })}
+                        placeholder="e.g., 125.00"
+                        className="w-full mt-1 p-2 border rounded-md border-emerald-300"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium">Setup Fee (£)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.option4Cost}
+                        onChange={(e) => setFormData({ ...formData, option4Cost: e.target.value })}
+                        placeholder="e.g., 195.00"
+                        className="w-full mt-1 p-2 border rounded-md border-emerald-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {(formData.workCategoryId === '11' || formData.workCategoryId === 11) && (
                 <div className="border-2 border-purple-200 p-4 rounded-lg bg-purple-50">
                   <div className="flex items-center justify-between mb-3">
