@@ -2389,7 +2389,17 @@ export async function registerRoutes(app: Express) {
         return res.status(401).json({ error: "Unauthorized" });
       }
 
-      const { vehicleType, fuelConsumptionMpg, fuelCostPerLitre, driverWagePerHour, vehicleRunningCostPerMile } = req.body;
+      const { 
+        vehicleType, 
+        fuelConsumptionMpg, 
+        fuelCostPerLitre, 
+        driverWagePerHour, 
+        vehicleRunningCostPerMile,
+        hasAssistant,
+        assistantWagePerHour,
+        hoursTraveAllowed,
+        autoUpdateFuelPrice
+      } = req.body;
 
       const [newRate] = await db.insert(vehicleTravelRates).values({
         userId,
@@ -2397,7 +2407,11 @@ export async function registerRoutes(app: Express) {
         fuelConsumptionMpg,
         fuelCostPerLitre,
         driverWagePerHour,
-        vehicleRunningCostPerMile
+        vehicleRunningCostPerMile,
+        hasAssistant,
+        assistantWagePerHour,
+        hoursTraveAllowed,
+        autoUpdateFuelPrice
       }).returning();
 
       res.json(newRate);
@@ -2415,7 +2429,17 @@ export async function registerRoutes(app: Express) {
       }
 
       const { id } = req.params;
-      const { vehicleType, fuelConsumptionMpg, fuelCostPerLitre, driverWagePerHour, vehicleRunningCostPerMile } = req.body;
+      const { 
+        vehicleType, 
+        fuelConsumptionMpg, 
+        fuelCostPerLitre, 
+        driverWagePerHour, 
+        vehicleRunningCostPerMile,
+        hasAssistant,
+        assistantWagePerHour,
+        hoursTraveAllowed,
+        autoUpdateFuelPrice
+      } = req.body;
 
       const [updatedRate] = await db.update(vehicleTravelRates)
         .set({
@@ -2424,6 +2448,10 @@ export async function registerRoutes(app: Express) {
           fuelCostPerLitre,
           driverWagePerHour,
           vehicleRunningCostPerMile,
+          hasAssistant,
+          assistantWagePerHour,
+          hoursTraveAllowed,
+          autoUpdateFuelPrice,
           updatedAt: new Date()
         })
         .where(and(
