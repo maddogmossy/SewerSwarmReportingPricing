@@ -185,7 +185,8 @@ export default function Upload() {
         formData.append('folderId', folderId.toString());
       }
       
-      return apiRequest("POST", "/api/upload", formData);
+      const response = await apiRequest("POST", "/api/upload", formData);
+      return response.json();
     },
     onSuccess: (data: any) => {
       toast({
