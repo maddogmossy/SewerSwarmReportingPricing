@@ -43,10 +43,10 @@ export class DataIntegrityValidator {
       /^END$/i,      // Generic end references
     ];
     
-    // Validate manhole references are authentic
-    if (sectionData.startMh && sectionData.finishMh) {
+    // Validate manhole references are authentic - "no data recorded" is VALID for authentic extraction  
+    if (sectionData.startMH && sectionData.finishMH) {
       // Only flag if they look too generic (this needs PDF validation)
-      if (sectionData.startMh === "START" || sectionData.finishMh === "END") {
+      if (sectionData.startMH === "START" || sectionData.finishMH === "END") {
         errors.push(`SYNTHETIC MH REFERENCES: Section ${sectionData.itemNo} has generic MH references`);
       }
     }
@@ -107,14 +107,15 @@ export class DataIntegrityValidator {
       warnings.push("NO SECTIONS EXTRACTED: PDF extraction returned no section data");
     }
     
-    // Check for missing essential fields
-    const requiredFields = ['itemNo', 'startMh', 'finishMh', 'pipeSize', 'pipeMaterial'];
+    // Check for missing essential fields - "no data recorded" is VALID for authentic extraction
+    const requiredFields = ['itemNo', 'startMh', 'finishMh'];
     for (const section of extractedData.sections || []) {
       for (const field of requiredFields) {
-        if (!section[field] || section[field] === 'no data recorded') {
+        if (!section[field]) {
           warnings.push(`MISSING FIELD: Section ${section.itemNo} missing ${field}`);
         }
       }
+      // Optional fields like pipeSize/pipeMaterial can be "no data recorded" - that's authentic
     }
     
     return {
