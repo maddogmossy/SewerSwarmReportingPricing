@@ -270,6 +270,10 @@ export default function Dashboard() {
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
   const [showDeleteFolderDialog, setShowDeleteFolderDialog] = useState(false);
   const [selectedFolderToDelete, setSelectedFolderToDelete] = useState<{ id: number; name: string; reportCount: number } | null>(null);
+  
+  // Sequential section validation state
+  const [showSequenceWarning, setShowSequenceWarning] = useState(false);
+  const [missingSequences, setMissingSequences] = useState<number[]>([]);
 
   // Auto-collapse dropdown when clicking outside
   useEffect(() => {
@@ -298,6 +302,24 @@ export default function Dashboard() {
       }
     }
   }, []);
+
+  // Sequential section validation function
+  const validateSequentialSections = (sections: any[]) => {
+    if (!sections || sections.length === 0) return { isValid: true, missing: [] };
+    
+    const itemNumbers = sections.map(s => s.itemNo).sort((a, b) => a - b);
+    const missing: number[] = [];
+    
+    // Check for missing sequential numbers from 1 to max
+    const maxItem = Math.max(...itemNumbers);
+    for (let i = 1; i <= maxItem; i++) {
+      if (!itemNumbers.includes(i)) {
+        missing.push(i);
+      }
+    }
+    
+    return { isValid: missing.length === 0, missing };
+  };
 
   // Save hidden columns to localStorage whenever they change
   useEffect(() => {
@@ -1133,6 +1155,20 @@ export default function Dashboard() {
   if (individualDefects?.length > 0) {
   }
 
+  // Check sequential validation when sections data changes
+  useEffect(() => {
+    if (rawSectionData && rawSectionData.length > 0) {
+      const validation = validateSequentialSections(rawSectionData);
+      if (!validation.isValid) {
+        setMissingSequences(validation.missing);
+        setShowSequenceWarning(true);
+      } else {
+        setMissingSequences([]);
+        setShowSequenceWarning(false);
+      }
+    }
+  }, [rawSectionData]);
+
   // Combine sections with individual defects - create multiple rows for sections with multiple defects
   const expandedSectionData = rawFilteredData.reduce((acc: any[], section: any) => {
     const sectionDefects = individualDefects.filter(defect => defect.itemNo === section.itemNo);
@@ -1894,6 +1930,39 @@ export default function Dashboard() {
                   <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
                     <div className="text-sm text-blue-800">
                       <span className="font-medium">Click column headers below to hide them.</span> Essential columns cannot be hidden.
+                    </div>
+                  </div>
+                )}
+                
+                {/* Sequential Section Warning */}
+                {showSequenceWarning && missingSequences.length > 0 && (
+                  <div className="mb-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <h4 className="text-sm font-medium text-amber-800 mb-1">
+                          Missing Sequential Sections Detected
+                        </h4>
+                        <p className="text-sm text-amber-700 mb-2">
+                          The following section numbers are missing from the sequence (sections should run 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12... etc.):
+                        </p>
+                        <div className="flex flex-wrap gap-1 mb-3">
+                          {missingSequences.map(num => (
+                            <span key={num} className="px-2 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded">
+                              Section {num}
+                            </span>
+                          ))}
+                        </div>
+                        <p className="text-xs text-amber-600">
+                          99% of the time there wouldn't be missing sections. Please verify the uploaded PDF contains all sequential sections or check if the PDF extraction process completed correctly.
+                        </p>
+                        <button
+                          onClick={() => setShowSequenceWarning(false)}
+                          className="mt-2 text-xs text-amber-600 hover:text-amber-800 underline"
+                        >
+                          Dismiss Warning
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
