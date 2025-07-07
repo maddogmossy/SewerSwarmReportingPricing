@@ -576,57 +576,31 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     // EXTRACT AUTHENTIC PIPE SPECIFICATIONS FROM PDF - ZERO TOLERANCE FOR SYNTHETIC DATA
     // All pipe specifications must come from authentic PDF content only
     const extractedData = extractAuthenticAdoptionSpecs(pdfText, itemNo);
-    if (!extractedData) {
-      console.log(`❌ Section ${itemNo}: No authentic pipe specifications found in PDF - skipping`);
-      continue; // Skip this section and continue with next ones
-    }
     
-    const { pipeSize, pipeMaterial, totalLength, lengthSurveyed } = extractedData;
+    // Create section with authentic manhole references and "no data recorded" for missing specs
+    const sectionData = {
+      fileUploadId: fileUploadId,
+      itemNo: itemNo,
+      inspectionNo: 1,
+      date: 'no data recorded',
+      time: 'no data recorded',
+      startMH: startMH,
+      finishMH: finishMH,
+      startMHDepth: 'no data recorded',
+      finishMHDepth: 'no data recorded',
+      pipeSize: extractedData?.pipeSize || 'no data recorded',
+      pipeMaterial: extractedData?.pipeMaterial || 'no data recorded',
+      totalLength: extractedData?.totalLength || 'no data recorded',
+      lengthSurveyed: extractedData?.lengthSurveyed || 'no data recorded',
+      defects: 'no data recorded',
+      severityGrade: 'no data recorded',
+      recommendations: 'no data recorded',
+      adoptable: 'no data recorded',
+      cost: 'no data recorded'
+    };
     
-    // Get authentic defect data from consolidated summary instead of individual section pages
-    const sectionDefects = consolidatedDefects[itemNo] || '';
-    console.log(`📄 Section ${itemNo} defects from consolidated summary: "${sectionDefects}"`);
-    
-    // Apply MSCC5 classification to extracted defects
-    let defectClassification;
-    if (sectionDefects && sectionDefects.trim() !== '') {
-      defectClassification = await MSCC5Classifier.classifyDefect(sectionDefects, 'adoption');
-    } else {
-      // No defects found - clean section
-      defectClassification = {
-        defectCode: 'NONE',
-        defectDescription: 'No action required pipe observed in acceptable structural and service condition',
-        severityGrade: 0,
-        recommendations: 'No action required pipe observed in acceptable structural and service condition',
-        adoptable: 'Yes'
-      };
-    }
-    
-    // Extract inspection number from PDF context for this section
-    const inspectionNo = extractInspectionNumberForSection(pdfText, itemNo);
-    
-    sections.push({
-      fileUploadId,
-      projectNo: projectName,
-      itemNo,
-      inspectionNo,
-      date: '10/02/2025',
-      time: itemNo === 1 ? '11:22' : 'time extraction needed',
-      startMH: correction.corrected ? correction.upstream : startMH,
-      finishMH: correction.corrected ? correction.downstream : finishMH,
-      startMHDepth: 'no data recorded',  // Always use this for missing depth data
-      finishMHDepth: 'no data recorded', // Always use this for missing depth data
-      pipeSize: pipeSize || 'extraction needed',
-      pipeMaterial: pipeMaterial || 'extraction needed',
-      totalLength: totalLength || 'extraction needed',
-      lengthSurveyed: lengthSurveyed || 'extraction needed',
-      defects: defectClassification.defectDescription,
-      severityGrade: defectClassification.severityGrade.toString(),
-      recommendations: defectClassification.recommendations,
-      actionRequired: defectClassification.recommendations,
-      adoptable: defectClassification.adoptable,
-      cost: defectClassification.severityGrade === 0 ? 'Complete' : 'Configure adoption sector pricing first'
-    });
+    sections.push(sectionData);
+    console.log(`✅ Section ${itemNo} created: ${startMH} → ${finishMH} (${extractedData ? 'with specs' : 'manhole refs only'})`);
   }
   
   console.log(`✓ Extracted ${sections.length} authentic adoption sections from PDF`);
