@@ -2313,7 +2313,7 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Clear dashboard data endpoint
+  // Clear dashboard analysis data only (preserve uploaded files)
   app.post("/api/clear-dashboard-data", async (req: Request, res: Response) => {
     try {
       const userId = req.user?.id || "test-user";
@@ -2321,7 +2321,7 @@ export async function registerRoutes(app: Express) {
         return res.status(401).json({ error: "Unauthorized" });
       }
 
-      console.log(`🗑️ Clearing dashboard data for user: ${userId}`);
+      console.log(`🗑️ Clearing dashboard analysis data for user: ${userId}`);
       
       // Get all uploads for this user
       const userUploads = await db.select().from(fileUploads).where(eq(fileUploads.userId, userId));
@@ -2330,12 +2330,12 @@ export async function registerRoutes(app: Express) {
       let deletedCounts = {
         sections: 0,
         defects: 0,
-        uploads: 0,
+        uploads: 0,  // Will remain 0 since we preserve upload records
         folders: 0
       };
       
       if (uploadIds.length > 0) {
-        // Delete section inspections for each upload
+        // Only delete the analysis data - preserve the original upload records
         for (const uploadId of uploadIds) {
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
           await db.delete(sectionDefects).where(eq(sectionDefects.fileUploadId, uploadId));
@@ -2344,26 +2344,26 @@ export async function registerRoutes(app: Express) {
         deletedCounts.sections = uploadIds.length;
         deletedCounts.defects = uploadIds.length;
         
-        // Delete file uploads
-        const uploadsResult = await db.delete(fileUploads).where(eq(fileUploads.userId, userId));
-        deletedCounts.uploads = uploadsResult.length || userUploads.length;
+        // DO NOT DELETE file uploads - preserve them for re-processing
+        // The uploaded PDF files remain in the uploads/ directory and database records are kept
+        deletedCounts.uploads = 0; // Upload records preserved
       }
       
-      // PRESERVE project folders - only clear uploads and section data
-      // Project folders are kept so users can easily re-upload to existing folders
+      // PRESERVE project folders - only clear analysis data
+      // Project folders and upload records are kept for easy re-processing
       deletedCounts.folders = 0; // Folders are preserved
       
-      console.log(`✅ Dashboard data cleared:`, deletedCounts);
+      console.log(`✅ Dashboard analysis data cleared:`, deletedCounts);
       
       res.json({ 
         success: true, 
-        message: "Dashboard data cleared successfully",
+        message: "Dashboard analysis data cleared successfully (uploaded files preserved)",
         deletedCounts 
       });
       
     } catch (error: any) {
-      console.error("Error clearing dashboard data:", error);
-      res.status(500).json({ error: "Failed to clear dashboard data" });
+      console.error("Error clearing dashboard analysis data:", error);
+      res.status(500).json({ error: "Failed to clear dashboard analysis data" });
     }
   });
 

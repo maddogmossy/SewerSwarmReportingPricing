@@ -748,8 +748,8 @@ export default function Dashboard() {
     },
     onSuccess: (data) => {
       toast({
-        title: "Dashboard Data Cleared",
-        description: `Successfully cleared ${data.deletedCounts.uploads} reports and ${data.deletedCounts.sections} sections.`,
+        title: "Dashboard Analysis Data Cleared",
+        description: `Successfully cleared analysis data from ${data.deletedCounts.sections} sections. Uploaded files preserved for re-processing.`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
@@ -1485,10 +1485,10 @@ export default function Dashboard() {
               variant="outline"
               size="sm"
               onClick={() => setShowClearDataDialog(true)}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Clear Dashboard Data
+              Clear Analysis Data
             </Button>
           </div>
         </div>
@@ -2186,19 +2186,20 @@ export default function Dashboard() {
       <Dialog open={showClearDataDialog} onOpenChange={setShowClearDataDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-red-600">Clear Dashboard Data</DialogTitle>
+            <DialogTitle className="text-amber-600">Clear Dashboard Analysis Data</DialogTitle>
             <DialogDescription>
-              This action will permanently delete all your uploaded reports and section data. Project folders will be preserved for easy re-upload.
+              This action will clear the dashboard analysis data while preserving your uploaded files for re-processing.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-sm text-red-800 font-medium">
-                Are you sure you want to clear dashboard data?
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <p className="text-sm text-amber-800 font-medium">
+                Are you sure you want to clear dashboard analysis data?
               </p>
-              <ul className="text-xs text-red-700 mt-2 list-disc list-inside">
-                <li>All uploaded reports will be deleted</li>
-                <li>All section inspection data will be removed</li>
+              <ul className="text-xs text-amber-700 mt-2 list-disc list-inside">
+                <li>Section inspection analysis data will be removed</li>
+                <li>Defect classifications will be cleared</li>
+                <li>Uploaded PDF files will be preserved</li>
                 <li>Project folders will be preserved</li>
                 <li>All pricing configurations will remain intact</li>
               </ul>
@@ -2214,9 +2215,9 @@ export default function Dashboard() {
             <Button
               onClick={() => clearDataMutation.mutate()}
               disabled={clearDataMutation.isPending}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-amber-600 hover:bg-amber-700 text-white"
             >
-              {clearDataMutation.isPending ? "Clearing..." : "Clear All Data"}
+              {clearDataMutation.isPending ? "Clearing..." : "Clear Analysis Data"}
             </Button>
           </DialogFooter>
         </DialogContent>
