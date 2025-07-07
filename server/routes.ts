@@ -410,6 +410,12 @@ function extractInspectionNumberForSection(pdfText: string, itemNo: number): str
 async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: number) {
   console.log('Processing adoption sector PDF with authentic data extraction...');
   
+  // DEBUG: Show first 1000 characters of PDF text to understand format
+  console.log('PDF text preview (first 1000 chars):');
+  console.log(pdfText.substring(0, 1000));
+  console.log('---');
+  console.log('PDF text length:', pdfText.length);
+  
   // EXTRACT PROJECT NAME FROM PDF HEADERS
   let projectName = 'Unknown Project';
   const projectNamePattern = /Project[:\s]+([^,\n]+)/i;
