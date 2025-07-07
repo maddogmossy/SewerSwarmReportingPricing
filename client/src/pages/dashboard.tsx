@@ -868,10 +868,10 @@ export default function Dashboard() {
       ? completedUploads.filter(upload => upload.folderId === selectedFolderForView)
       : completedUploads;
   
-  // Get current upload based on reportId parameter or most recent upload from filtered set
+  // Get current upload based on reportId parameter only - don't auto-select if no reportId
   const currentUpload = reportId 
     ? filteredUploads.find(upload => upload.id === parseInt(reportId))
-    : filteredUploads.sort((a, b) => b.id - a.id)[0]; // Default to most recent if no reportId
+    : null; // Only show specific report if explicitly requested
   
   // Force clear all cached data for fresh uploads and ensure authentic data
   useEffect(() => {
@@ -1901,7 +1901,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        {completedUploads.length === 0 ? (
+        {completedUploads.length === 0 || !currentUpload ? (
           <div className="space-y-6">
             {/* Show project folders even when no uploads exist */}
             {folders.length > 0 && (
