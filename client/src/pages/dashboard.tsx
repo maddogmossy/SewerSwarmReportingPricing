@@ -880,7 +880,8 @@ export default function Dashboard() {
     completedUploadsCount: completedUploads.length,
     condition1: completedUploads.length === 0,
     condition2: !currentUpload,
-    shouldShowFolders: completedUploads.length === 0 || !currentUpload
+    shouldShowFolders: completedUploads.length === 0 || !currentUpload,
+    foldersCount: folders.length
   });
   
   // Force clear all cached data for fresh uploads and ensure authentic data

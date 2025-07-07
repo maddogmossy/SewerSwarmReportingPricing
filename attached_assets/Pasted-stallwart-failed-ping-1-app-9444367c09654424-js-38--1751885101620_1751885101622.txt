@@ -1,0 +1,103 @@
+stallwart: failed ping 1
+_app-9444367c09654424.js:38 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+_app-9444367c09654424.js:38 [LaunchDarkly] LaunchDarkly client initialized
+2stallwart.build.js:1 stallwart: failed ping 1
+SewerSwarmSimulator:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+stallwart.build.js:1 stallwart: failed ping 1
+5SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was receivedUnderstand this error
+24Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'battery'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+framework-dfe5d8a22d938f45.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-dfe5d8a22d938f45.js:1Understand this warning
+stallwart.build.js:1 stallwart: failed ping 1
+_app-9444367c09654424.js:38 task queue exceeded allotted deadline by 54ms
+(anonymous) @ _app-9444367c09654424.js:38Understand this warning
+_app-9444367c09654424.js:38 task queue exceeded allotted deadline by 87ms
+(anonymous) @ _app-9444367c09654424.js:38Understand this warning
+_app-9444367c09654424.js:38 task queue exceeded allotted deadline by 86ms
+(anonymous) @ _app-9444367c09654424.js:38Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 AUDIT TRAIL: Object
