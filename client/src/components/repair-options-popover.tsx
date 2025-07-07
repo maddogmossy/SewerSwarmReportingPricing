@@ -70,10 +70,16 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     return result;
   };
   
-  // Fetch available repair methods
+  // Fetch available repair methods - only the 4 structural repair methods
   const { data: repairMethods = [] } = useQuery({
     queryKey: ['/api/repair-methods'],
     enabled: isOpen,
+    select: (methods) => {
+      // Filter to only show the 4 structural repair methods
+      return methods.filter((method: any) => 
+        ['Patch', 'Lining', 'Excavation', 'Custom'].includes(method.name)
+      );
+    }
   });
 
   // Check pricing for each method
