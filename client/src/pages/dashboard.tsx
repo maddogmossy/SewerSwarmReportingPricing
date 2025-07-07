@@ -873,6 +873,16 @@ export default function Dashboard() {
     ? filteredUploads.find(upload => upload.id === parseInt(reportId))
     : null; // Only show specific report if explicitly requested
   
+  // Debug logging
+  console.log("Dashboard Debug:", {
+    reportId,
+    hasCurrentUpload: !!currentUpload,
+    completedUploadsCount: completedUploads.length,
+    condition1: completedUploads.length === 0,
+    condition2: !currentUpload,
+    shouldShowFolders: completedUploads.length === 0 || !currentUpload
+  });
+  
   // Force clear all cached data for fresh uploads and ensure authentic data
   useEffect(() => {
     queryClient.removeQueries({ queryKey: ["/api/uploads"] });
