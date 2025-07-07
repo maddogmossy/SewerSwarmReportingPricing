@@ -743,12 +743,13 @@ export default function Dashboard() {
 
   const clearDataMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest("POST", "/api/clear-dashboard-data");
+      const response = await apiRequest("POST", "/api/clear-dashboard-data");
+      return await response.json();
     },
     onSuccess: (data) => {
       toast({
         title: "Dashboard Data Cleared",
-        description: `Successfully cleared ${data.deletedCounts.uploads} reports and ${data.deletedCounts.folders} folders.`,
+        description: `Successfully cleared ${data.deletedCounts.uploads} reports and ${data.deletedCounts.sections} sections.`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
