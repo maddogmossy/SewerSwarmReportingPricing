@@ -124,6 +124,19 @@ From attached inspection report image (image_1751896855881.png):
 - Inspection Direction: Downstream
 - Upstream Node: F01-10A, Downstream Node: F01-10
 
+**CRITICAL: Section 2 Authentic Data (User-Verified)**
+From PDF extraction (July 7, 2025):
+- **Pipe Size: 300mm** (NOT 150mm - critical data integrity violation identified and FIXED)
+- **Material: Vitrified clay**
+- Manholes: F02-ST3 → F02-03
+- Defects: CLJ crack at 10.78m (longitudinal crack)
+- **WORKFLOW FIXED**: Updated extraction logic to properly capture 300mm from PDF line 2942
+- **ZERO TOLERANCE POLICY**: Now extracts only authentic PDF data, synthetic data generation eliminated
+
+**Multi-Defect Section Pattern:**
+- Section 2: DEG grease deposits (service defect) → blue cleaning icon
+- Section 2a: CR longitudinal crack (structural defect) → orange repair icon, 300mm Patch pricing configured
+
 **PDF Extraction Rules:**
 1. NEVER use synthetic data - only extract authentic content from PDF
 2. Table of Contents shows correct MH flow: "F01-10A > F01-10" 
