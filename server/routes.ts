@@ -520,24 +520,35 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     testPattern.lastIndex = 0; // Reset for next test
   });
   const sections = [];
-  let match;
   
-  console.log(`📋 Starting while loop with sectionPattern against full PDF text...`);
+  console.log(`📋 Starting pattern matching against full PDF text...`);
   let matchCount = 0;
+  // FIXED: Use global flag properly and collect all matches first
+  const allMatches = [];
+  let match;
   while ((match = sectionPattern.exec(pdfText)) !== null) {
+    allMatches.push({
+      itemNo: parseInt(match[1]),
+      startMH: match[2],
+      finishMH: match[3],
+      sectionId: match[4],
+      fullMatch: match[0]
+    });
+  }
+  
+  console.log(`✓ Found ${allMatches.length} total pattern matches`);
+  tracker.addStep('PATTERN_MATCHES_FOUND', { totalMatches: allMatches.length });
+  
+  // Process each match individually
+  for (const matchData of allMatches) {
     matchCount++;
-    const itemNo = parseInt(match[1]);
-    tracker.addPatternMatch(matchCount, match[0], itemNo);
-    console.log(`✓ Found section pattern match ${matchCount}: ${match[0]}`);
-    const originalStartMH = match[2];
-    const originalFinishMH = match[3];
-    const sectionId = match[4];
-    
-    console.log(`✓ Found Section ${itemNo}: ${originalStartMH} → ${originalFinishMH} (${sectionId})`);
+    const { itemNo, startMH: originalStartMH, finishMH: originalFinishMH, sectionId } = matchData;
+    tracker.addPatternMatch(matchCount, matchData.fullMatch, itemNo);
+    console.log(`✓ Processing section ${matchCount}/${allMatches.length}: Section ${itemNo} - ${originalStartMH} → ${originalFinishMH}`);
     
     // DEBUG: Track specific missing sections
     if ([55, 62, 63, 64, 65, 66, 75, 82, 83, 84, 89, 90].includes(itemNo)) {
-      console.log(`🔍 CRITICAL: Processing missing section ${itemNo} - ${originalStartMH} → ${originalFinishMH}`);
+      console.log(`🔍 CRITICAL: Processing previously missing section ${itemNo} - ${originalStartMH} → ${originalFinishMH}`);
     }
     
     // CRITICAL: Apply inspection direction logic for adoption reports
@@ -614,6 +625,8 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     tracker.addSectionCreated(itemNo, startMH, finishMH);
     console.log(`✅ Section ${itemNo} created: ${startMH} → ${finishMH} (${extractedData ? 'with specs' : 'manhole refs only'})`);
   }
+  
+  console.log(`📊 EXTRACTION COMPLETE: Processed ${allMatches.length} matches, created ${sections.length} sections`);
   
   console.log(`✓ Extracted ${sections.length} authentic adoption sections from PDF`);
   console.log(`📊 Debug: sections array contains:`, sections.map(s => `${s.itemNo}: ${s.startMH}→${s.finishMH}`));
