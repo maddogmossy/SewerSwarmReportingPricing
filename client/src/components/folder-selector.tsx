@@ -265,7 +265,6 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
               <div className="flex-1">
                 <div className="text-sm font-medium">
                   {folder.projectAddress}
-                  {folder.projectPostcode && `, ${folder.projectPostcode}`}
                 </div>
                 {folder.projectNumber && (
                   <div className="text-xs text-slate-600">Project: {folder.projectNumber}</div>

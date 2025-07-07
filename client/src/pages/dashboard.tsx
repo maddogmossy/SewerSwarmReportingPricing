@@ -1578,12 +1578,12 @@ export default function Dashboard() {
                           selectedFolderForView ? 
                             (() => {
                               const folder = folders.find(f => f.id === selectedFolderForView);
-                              return folder ? `${folder.projectAddress}${folder.projectPostcode ? `, ${folder.projectPostcode}` : ''}` : 'Unknown Folder';
+                              return folder ? folder.projectAddress : 'Unknown Folder';
                             })() :
                             (currentUpload?.folderId ? 
                               (() => {
                                 const folder = folders.find(f => f.id === currentUpload.folderId);
-                                return folder ? `${folder.projectAddress}${folder.projectPostcode ? `, ${folder.projectPostcode}` : ''}` : 'Current Folder';
+                                return folder ? folder.projectAddress : 'Current Folder';
                               })() :
                               'All Folders'
                             )
@@ -1662,7 +1662,6 @@ export default function Dashboard() {
                                 <div className="flex flex-col">
                                   <span className="font-medium text-sm">
                                     {folder?.projectAddress || `Folder ${folderKey}`}
-                                    {folder?.projectPostcode && `, ${folder.projectPostcode}`}
                                   </span>
                                   {folder?.projectNumber && (
                                     <span className="text-xs text-slate-600">Project: {folder.projectNumber}</span>
@@ -1676,7 +1675,7 @@ export default function Dashboard() {
                                     e.stopPropagation();
                                     setSelectedFolderToDelete({
                                       id: parseInt(folderKey),
-                                      name: folder?.projectAddress ? `${folder.projectAddress}${folder.projectPostcode ? `, ${folder.projectPostcode}` : ''}` : `Folder ${folderKey}`,
+                                      name: folder?.projectAddress || `Folder ${folderKey}`,
                                       reportCount: completedReports.length
                                     });
                                     setShowDeleteFolderDialog(true);

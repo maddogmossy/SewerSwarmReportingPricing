@@ -35,19 +35,31 @@ const DEPOT_POSTCODE = "B1 1AA"; // Birmingham city center as example depot
 export function validateAddress(address: string): AddressValidationResult {
   const errors: string[] = [];
   
-  if (!address || address.trim().length < 10) {
-    errors.push("Address must be at least 10 characters long");
+  if (!address || address.trim().length < 5) {
+    errors.push("Address must be at least 5 characters long");
   }
 
-  // Extract postcode from address
+  // Extract postcode from address - more flexible matching
   const postcodeMatch = address.match(UK_POSTCODE_REGEX);
-  if (!postcodeMatch) {
-    errors.push("Valid UK postcode required (e.g., SW1A 1AA, M1 1AA, B33 8TH)");
+  let extractedPostcode = '';
+  
+  if (postcodeMatch) {
+    extractedPostcode = postcodeMatch[0].toUpperCase().trim();
+  } else {
+    // Try to find postcode-like patterns at the end of the address
+    const addressParts = address.split(/[,\s]+/);
+    const lastParts = addressParts.slice(-2).join(' ');
+    const flexibleMatch = lastParts.match(/[A-Z]{1,2}[0-9]{1,2}\s?[0-9][A-Z]{2}/i);
+    if (flexibleMatch) {
+      extractedPostcode = flexibleMatch[0].toUpperCase().trim();
+    } else {
+      errors.push("Valid UK postcode required (e.g., SW1A 1AA, M1 1AA, B33 8TH)");
+    }
   }
 
   // Check for minimum address components
   const addressParts = address.split(',').map(part => part.trim()).filter(part => part.length > 0);
-  if (addressParts.length < 2) {
+  if (addressParts.length < 1) {
     errors.push("Address must include at least street and city/town");
   }
 
@@ -64,15 +76,16 @@ export function validateAddress(address: string): AddressValidationResult {
                        address.toLowerCase().includes('place') ||
                        address.toLowerCase().includes('gardens');
 
-  if (!hasStreetNumber && !hasStreetName) {
-    errors.push("Address should include street number or street type (Road, Street, Avenue, etc.)");
+  // More flexible validation - don't require specific street types
+  if (!hasStreetNumber && !hasStreetName && address.trim().length < 15) {
+    errors.push("Address should include more details (street number or street type)");
   }
 
   return {
     isValid: errors.length === 0,
     errors,
-    extractedPostcode: postcodeMatch ? postcodeMatch[0].toUpperCase().replace(/\s+/g, ' ').trim() : undefined,
-    formattedAddress: errors.length === 0 ? address.trim() : undefined
+    extractedPostcode: extractedPostcode || undefined,
+    formattedAddress: address.trim()
   };
 }
 

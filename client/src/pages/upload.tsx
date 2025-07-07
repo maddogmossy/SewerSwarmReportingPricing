@@ -617,7 +617,6 @@ export default function Upload() {
                           <div>
                             <div className="font-medium">
                               {folder?.projectAddress || `Folder ${folderKey}`}
-                              {folder?.projectPostcode && `, ${folder.projectPostcode}`}
                             </div>
                             <div className="text-sm text-muted-foreground">
                               {folder?.projectNumber && `Project: ${folder.projectNumber} • `}
@@ -635,7 +634,7 @@ export default function Upload() {
                               if (folder) {
                                 setSelectedFolderToDelete({
                                   id: folder.id,
-                                  name: folder.projectAddress ? `${folder.projectAddress}${folder.projectPostcode ? `, ${folder.projectPostcode}` : ''}` : folder.folderName,
+                                  name: folder.projectAddress || folder.folderName,
                                   reportCount: folderUploads.length
                                 });
                                 setShowDeleteFolderDialog(true);
