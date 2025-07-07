@@ -960,123 +960,83 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       // 4. Verify no regression in existing direction compliance
       // =====================================================================
       if (headerInfo && headerInfo.inspectionDirection) {
-        // PROTECTION CHECK: User confirmed - fixing upstream/downstream flow direction
-        // User reported flow direction is backwards (longer reference → shorter reference should be shorter → longer)
-        console.log('INFO: Inspection direction logic enabled per user confirmation');
+        // GENERIC INSPECTION DIRECTION LOGIC - WORKS WITH ANY REPORT
+        console.log(`INFO: Applying inspection direction logic for Section ${sectionNum}: "${headerInfo.inspectionDirection}"`);
         
-        if (sectionNum <= 22) {
-          // SECTIONS 1-22: PROTECTED - Use fallback correction only
-          if (upstreamNode === 'Main Run' && downstreamNode.startsWith('RE')) {
-            console.log(`DEBUG Section ${sectionNum}: PROTECTED - Correcting Main Run→RE to RE→Main Run`);
-            const temp = upstreamNode;
-            upstreamNode = downstreamNode;
-            downstreamNode = temp;
-            flowDirectionNote = ' (protected 1-22: RE→Main Run correction)';
-          } else {
-            flowDirectionNote = ' (protected section 1-22)';
-          }
-          
-        } else if (sectionNum === 23) {
-          // SECTION 23: LOCKED TO INSPECTION DIRECTION RULE
-          // Inspection Direction: Upstream → use downstream node (SW09) as start MH
-          if (headerInfo.inspectionDirection.toLowerCase().includes('upstream')) {
-            upstreamNode = headerInfo.downstream; // SW09
-            downstreamNode = headerInfo.upstream;  // POP UP 1
-            flowDirectionNote = ' (locked: upstream inspection rule SW09→POP UP 1)';
-            console.log(`DEBUG Section 23: LOCKED upstream inspection rule ${upstreamNode}→${downstreamNode}`);
-          }
-          
-        } else if (sectionNum === 24) {
-          // SECTION 24: LOCKED TO SW10→SW01
-          upstreamNode = 'SW10';
-          downstreamNode = 'SW01';
-          flowDirectionNote = ' (locked: SW10→SW01)';
-          console.log(`DEBUG Section 24: LOCKED to SW10→SW01`);
-          
-        } else {
-          // SECTIONS 25+: APPLY INSPECTION DIRECTION LOGIC
-          console.log(`DEBUG Section ${sectionNum}: Applying inspection direction logic for "${headerInfo.inspectionDirection}"`);
-          
-          // PERMANENT INSPECTION DIRECTION RULES:
-          // When "downstream" inspection → use "upstream node" as start MH  
-          // When "upstream" inspection → use "downstream node" as start MH
-          if (headerInfo.inspectionDirection.toLowerCase().includes('downstream')) {
-            upstreamNode = headerInfo.upstream;
-            downstreamNode = headerInfo.downstream;
-            flowDirectionNote = ' (downstream inspection: upstream→downstream)';
-            console.log(`DEBUG Section ${sectionNum}: DOWNSTREAM flow ${upstreamNode}→${downstreamNode}`);
-          } else if (headerInfo.inspectionDirection.toLowerCase().includes('upstream')) {
-            upstreamNode = headerInfo.downstream;
-            downstreamNode = headerInfo.upstream;
-            flowDirectionNote = ' (upstream inspection: downstream→upstream)';
-            console.log(`DEBUG Section ${sectionNum}: UPSTREAM flow ${upstreamNode}→${downstreamNode}`);
-          }
+        // UNIVERSAL INSPECTION DIRECTION RULES:
+        // - Downstream inspection → use extracted upstream→downstream flow  
+        // - Upstream inspection → use extracted downstream→upstream flow
+        if (headerInfo.inspectionDirection.toLowerCase().includes('downstream')) {
+          // Downstream inspection: keep extracted flow direction as-is
+          flowDirectionNote = ' (downstream inspection: normal flow)';
+          console.log(`DEBUG Section ${sectionNum}: Downstream inspection - keeping ${upstreamNode}→${downstreamNode}`);
+        } else if (headerInfo.inspectionDirection.toLowerCase().includes('upstream')) {
+          // Upstream inspection: reverse the extracted flow direction
+          const temp = upstreamNode;
+          upstreamNode = downstreamNode;
+          downstreamNode = temp;
+          flowDirectionNote = ' (upstream inspection: reversed flow)';
+          console.log(`DEBUG Section ${sectionNum}: Upstream inspection - reversed to ${upstreamNode}→${downstreamNode}`);
+        
+        // ADDITIONAL GENERIC CORRECTIONS (apply to all sections):
+        
+        // 1. Longer reference containing shorter reference = backwards flow
+        if (upstreamNode.length > downstreamNode.length && 
+            upstreamNode.includes(downstreamNode)) {
+          const temp = upstreamNode;
+          upstreamNode = downstreamNode;
+          downstreamNode = temp;
+          flowDirectionNote += ' + corrected longer→shorter';
+          console.log(`DEBUG Section ${sectionNum}: Corrected longer→shorter reference ${upstreamNode}→${downstreamNode}`);
+        }
+        
+        // 2. Apply generic adoption sector flow direction correction
+        const correction = applyAdoptionFlowDirectionCorrection(upstreamNode, downstreamNode);
+        if (correction.corrected) {
+          upstreamNode = correction.upstream;
+          downstreamNode = correction.downstream;
+          flowDirectionNote += ' + flow direction corrected';
+          console.log(`DEBUG Section ${sectionNum}: Flow direction corrected ${upstreamNode}→${downstreamNode}`);
         }
         
       } else {
-        // NO HEADER INFO: Apply section-specific rules
-        if (sectionNum <= 22) {
-          // Sections 1-22: Apply Main Run correction if needed
-          if (upstreamNode === 'Main Run' && downstreamNode.startsWith('RE')) {
-            const temp = upstreamNode;
-            upstreamNode = downstreamNode;
-            downstreamNode = temp;
-            flowDirectionNote = ' (fallback: RE→Main Run correction)';
-          }
-          
-          // ADOPTION SECTOR FIX: Correct backwards flow direction
-          // Example: longer reference → shorter reference should be shorter → longer
-          // Pattern: longer reference → shorter reference should be shorter → longer
-          if (upstreamNode.length > downstreamNode.length && 
-              upstreamNode.includes(downstreamNode)) {
-            const temp = upstreamNode;
-            upstreamNode = downstreamNode;
-            downstreamNode = temp;
-            flowDirectionNote = ' (adoption sector: corrected flow direction)';
-            console.log(`DEBUG Section ${sectionNum}: ADOPTION SECTOR correction ${upstreamNode}→${downstreamNode}`);
-          }
-        } else if (sectionNum === 23) {
-          // Section 23: Force correct direction even without header
-          if ((upstreamNode === 'POP UP 1' && downstreamNode === 'SW09')) {
-            upstreamNode = 'SW09';
-            downstreamNode = 'POP UP 1';
-            flowDirectionNote = ' (forced: SW09→POP UP 1)';
-          }
-        } else if (sectionNum === 24) {
-          // Section 24: Force SW10→SW01
-          upstreamNode = 'SW10';
-          downstreamNode = 'SW01';
-          flowDirectionNote = ' (forced: SW10→SW01)';
-        } else {
-          // ALL OTHER SECTIONS: Apply comprehensive adoption sector flow direction correction
-          const correction = applyAdoptionFlowDirectionCorrection(upstreamNode, downstreamNode);
-          if (correction.corrected) {
-            upstreamNode = correction.upstream;
-            downstreamNode = correction.downstream;
-            flowDirectionNote = ' (adoption sector: flow direction auto-corrected)';
-            console.log(`DEBUG Section ${sectionNum}: ADOPTION FLOW CORRECTED ${upstreamNode}→${downstreamNode}`);
-          }
+        // NO HEADER INFO: Apply generic corrections only
+        console.log(`INFO: No inspection direction header for Section ${sectionNum} - applying generic corrections`);
+        
+        // 1. Longer reference containing shorter reference = backwards flow
+        if (upstreamNode.length > downstreamNode.length && 
+            upstreamNode.includes(downstreamNode)) {
+          const temp = upstreamNode;
+          upstreamNode = downstreamNode;
+          downstreamNode = temp;
+          flowDirectionNote = ' (corrected longer→shorter reference)';
+          console.log(`DEBUG Section ${sectionNum}: Corrected longer→shorter reference ${upstreamNode}→${downstreamNode}`);
+        }
+        
+        // 2. Apply generic flow direction correction
+        const correction = applyAdoptionFlowDirectionCorrection(upstreamNode, downstreamNode);
+        if (correction.corrected) {
+          upstreamNode = correction.upstream;
+          downstreamNode = correction.downstream;
+          flowDirectionNote = ' (flow direction auto-corrected)';
+          console.log(`DEBUG Section ${sectionNum}: Flow direction corrected ${upstreamNode}→${downstreamNode}`);
         }
       }
       
       console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${flowDirectionNote}`);
       console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
 
-      // Skip updating sections 1-24 if they already exist (protect from reprocessing changes)
-      if (sectionNum <= 24) {
-        console.log(`DEBUG: Checking if section ${sectionNum} already exists in database...`);
-        // For sections 1-24, only add if not already in database
-        const existingSection = await db.query.sectionInspections.findFirst({
-          where: and(
-            eq(sectionInspections.fileUploadId, fileUploadId),
-            eq(sectionInspections.itemNo, sectionNum)
-          )
-        });
-        
-        if (existingSection) {
-          console.log(`DEBUG: Section ${sectionNum} already exists - SKIPPING to protect sections 1-24`);
-          continue;
-        }
+      // Check if section already exists (prevent duplicates on reprocessing)
+      const existingSection = await db.query.sectionInspections.findFirst({
+        where: and(
+          eq(sectionInspections.fileUploadId, fileUploadId),
+          eq(sectionInspections.itemNo, sectionNum)
+        )
+      });
+      
+      if (existingSection) {
+        console.log(`DEBUG: Section ${sectionNum} already exists - SKIPPING to prevent duplicates`);
+        continue;
       }
 
       sections.push({
@@ -1104,6 +1064,7 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
   
   console.log(`✓ Extracted ${sections.length} authentic sections from PDF`);
   return sections;
+}
 }
 
 export async function registerRoutes(app: Express) {
