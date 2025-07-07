@@ -438,7 +438,7 @@ export type InsertCompanySettings = typeof companySettings.$inferInsert;
 export type DepotSettings = typeof depotSettings.$inferSelect;
 export type InsertDepotSettings = typeof depotSettings.$inferInsert;
 export type ProjectFolder = typeof projectFolders.$inferSelect;
-export type InsertProjectFolder = typeof projectFolders.$inferInsert;
+export type InsertProjectFolderType = typeof projectFolders.$inferInsert;
 export type TravelCalculation = typeof travelCalculations.$inferSelect;
 export type InsertTravelCalculation = typeof travelCalculations.$inferInsert;
 export type VehicleTravelRate = typeof vehicleTravelRates.$inferSelect;
@@ -450,28 +450,24 @@ export type InsertTeamInvitation = typeof teamInvitations.$inferInsert;
 export type TeamBillingRecord = typeof teamBillingRecords.$inferSelect;
 export type InsertTeamBillingRecord = typeof teamBillingRecords.$inferInsert;
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  email: true,
-  firstName: true,
-  lastName: true,
-  company: true,
-  companyAddress: true,
-  phoneNumber: true,
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
 });
 
-export const insertProjectFolderSchema = createInsertSchema(projectFolders).pick({
-  folderName: true,
-  projectAddress: true,
+export const insertProjectFolderSchema = createInsertSchema(projectFolders).omit({
+  id: true,
+  createdAt: true,
+  userId: true,
+});
+
+export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({
+  id: true,
+  createdAt: true,
+  userId: true,
+  filePath: true,
+  status: true,
   projectNumber: true,
-});
-
-export const insertFileUploadSchema = createInsertSchema(fileUploads).pick({
-  fileName: true,
-  fileSize: true,
-  fileType: true,
-  sector: true,
-  folderId: true,
-  visitNumber: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
