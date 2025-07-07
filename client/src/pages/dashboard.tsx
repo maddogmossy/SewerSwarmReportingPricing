@@ -1677,9 +1677,13 @@ export default function Dashboard() {
                                     checked={selectedReportIds.includes(upload.id)}
                                     onCheckedChange={(checked) => {
                                       if (checked) {
-                                        setSelectedReportIds(prev => [...prev, upload.id]);
+                                        setSelectedReportIds([upload.id]); // Only allow single selection
+                                        handleViewReport(upload.id); // Automatically view the report
+                                        setShowFolderDropdown(false);
                                       } else {
-                                        setSelectedReportIds(prev => prev.filter(id => id !== upload.id));
+                                        setSelectedReportIds([]);
+                                        // Navigate back to folder view
+                                        window.location.href = '/dashboard';
                                       }
                                     }}
                                     className="w-4 h-4"
@@ -1914,62 +1918,22 @@ export default function Dashboard() {
 
         {completedUploads.length === 0 || !currentUpload ? (
           <div className="space-y-6">
-            {/* Show project folders even when no uploads exist */}
-            {folders.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Project Folders</CardTitle>
-                  <p className="text-sm text-slate-600">
-                    Your project folders are preserved. You can upload reports to these folders.
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-3">
-                    {folders.map((folder) => (
-                      <div key={folder.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
-                        <div className="flex items-center gap-3">
-                          <FolderOpen className="h-5 w-5 text-blue-600" />
-                          <div>
-                            <h4 className="font-medium text-slate-900">{folder.folderName}</h4>
-                            <p className="text-sm text-slate-500">
-                              {folder.description || 'No description'}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
-                            0 reports
-                          </span>
-                          <Link to={`/upload?folderId=${folder.id}`}>
-                            <Button variant="outline" size="sm">
-                              <Upload className="h-4 w-4 mr-2" />
-                              Upload to Folder
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-            
             {/* No data available message */}
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <AlertCircle className="h-12 w-12 text-slate-400 mb-4" />
-                <h3 className="text-lg font-medium text-slate-900 mb-2">No Analysis Data Available</h3>
-                <p className="text-slate-500 text-center mb-4">
-                  Upload and process your first inspection report to view detailed section analysis
-                </p>
-                <Link to="/upload">
-                  <Button>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload First Report
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                <AlertCircle className="h-8 w-8 text-slate-400" />
+              </div>
+              <h3 className="text-lg font-medium text-slate-900 mb-2">No Analysis Data Available</h3>
+              <p className="text-slate-600 mb-6 max-w-md">
+                Upload and process your first inspection report to view detailed section analysis
+              </p>
+              <Link to="/upload">
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload First Report
+                </Button>
+              </Link>
+            </div>
           </div>
         ) : sectionData.length === 0 && currentUpload && !sectionsLoading && !sectionsError ? (
           // Show data integrity warning when upload exists but no authentic data is available (and not loading, and no error)
