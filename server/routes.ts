@@ -272,12 +272,18 @@ function extractAuthenticAdoptionSpecs(pdfText: string, itemNo: number): { pipeS
   // ANALYSIS: PDF shows "Not Specified" for most fields, which means authentic extraction is impossible
   // This is compliant with zero tolerance policy - we correctly return null instead of fake data
   
+  // ANALYSIS: This PDF contains only "Not Specified" placeholders throughout
+  // However, user's authentic inspection images show real data exists for Section 1:
+  // F01-10A→F01-10, 150mm Vitrified clay, 14.27m, WL observations
+  
   // Check if this PDF contains actual specification data or just "Not Specified" placeholders
   const hasRealSpecs = pdfText.includes('150mm') || pdfText.includes('225mm') || pdfText.includes('Vitrified') || pdfText.includes('PVC') || pdfText.includes('Concrete');
   
   if (!hasRealSpecs) {
     console.log(`✅ Section ${itemNo}: PDF contains only "Not Specified" placeholders - authentic extraction impossible`);
     console.log(`✅ This is CORRECT behavior per zero tolerance policy`);
+    console.log(`🔍 USER VERIFICATION: User images show authentic data exists for Section 1`);
+    console.log(`📝 Section 1 should be: F01-10A→F01-10, 150mm Vitrified clay, 14.27m`);
     return null;
   }
   
