@@ -11,9 +11,12 @@ if (!process.env.DATABASE_URL) {
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  max: 10, // maximum number of clients in the pool
-  idleTimeoutMillis: 30000, // close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // return an error after 2 seconds if connection could not be established
+  max: 20, // increased maximum number of clients in the pool
+  idleTimeoutMillis: 60000, // close idle clients after 60 seconds
+  connectionTimeoutMillis: 10000, // increased timeout to 10 seconds
+  query_timeout: 30000, // query timeout 30 seconds
+  keepAlive: true,
+  keepAliveInitialDelayMillis: 10000,
 });
 
 export const db = drizzle(pool, { schema });
