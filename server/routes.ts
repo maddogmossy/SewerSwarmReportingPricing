@@ -1204,8 +1204,8 @@ export async function registerRoutes(app: Express) {
           // Detect report format and use appropriate extraction method
           let sections = [];
           
-          // Check if this is an adoption sector report (E.C.L format)
-          if (pdfData.text.includes('E.C.L.BOWBRIDGE') || pdfData.text.includes('Section Item') || req.body.sector === 'adoption') {
+          // Check if this is an adoption sector report (generic patterns only)
+          if (pdfData.text.includes('Section Item') || req.body.sector === 'adoption') {
             console.log('Detected adoption sector report format - using adoption extraction');
             sections = await extractAdoptionSectionsFromPDF(pdfData.text, fileUpload.id);
           } else {
