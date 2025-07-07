@@ -197,27 +197,10 @@ const getStatusColor = (status: string) => {
 };
 
 // Helper functions to get actual data from section inspection
-function getStartMH(itemNumber: number): string {
-  const startMHData: { [key: number]: string } = {
-    1: "SW02", 2: "SW03", 3: "SW04", 4: "SW05", 5: "SW06",
-    6: "SW07", 7: "SW08", 8: "SW09", 9: "SW10", 10: "SW11",
-    11: "SW12", 12: "SW13", 13: "SW14", 14: "SW15", 15: "SW16",
-    16: "SW17", 17: "SW18", 18: "SW19", 19: "SW20", 20: "SW21",
-    21: "SW22", 22: "SW23", 23: "SW24", 24: "SW25"
-  };
-  return startMHData[itemNumber] || `SW${String(itemNumber + 1).padStart(2, '0')}`;
-}
-
-function getFinishMH(itemNumber: number): string {
-  const finishMHData: { [key: number]: string } = {
-    1: "SW03", 2: "SW04", 3: "SW05", 4: "SW06", 5: "SW07",
-    6: "SW08", 7: "SW09", 8: "SW10", 9: "SW11", 10: "SW12",
-    11: "SW13", 12: "SW14", 13: "SW15", 14: "SW16", 15: "SW17",
-    16: "SW18", 17: "SW19", 18: "SW20", 19: "SW21", 20: "SW22",
-    21: "SW23", 22: "SW24", 23: "SW25", 24: "SW26"
-  };
-  return finishMHData[itemNumber] || `SW${String(itemNumber + 2).padStart(2, '0')}`;
-}
+// ELIMINATED: FAKE MANHOLE REFERENCE FUNCTIONS
+// These functions were generating completely fake SW02→SW03 data that violated zero tolerance policy
+// AUTHENTIC DATA ONLY - All manhole references must come directly from uploaded PDF content
+// Database contains authentic references like F01-10→F01-10A from user's inspection report
 
 // REMOVED: getPipeSize function contained false hardcoded data
 // All pipe size data now comes directly from authentic database records
