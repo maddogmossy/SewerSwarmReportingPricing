@@ -34,20 +34,33 @@ export function AddressAutocomplete({
   }, [value]);
 
   // Fetch address suggestions
-  const { data: suggestions = [], isLoading } = useQuery({
+  const { data: rawSuggestions, isLoading } = useQuery({
     queryKey: ["/api/search-addresses", searchQuery],
-    queryFn: () => apiRequest("GET", `/api/search-addresses?q=${encodeURIComponent(searchQuery)}&limit=8`),
+    queryFn: async () => {
+      const result = await apiRequest("GET", `/api/search-addresses?q=${encodeURIComponent(searchQuery)}&limit=8`);
+      console.log("API returned suggestions:", result);
+      return result;
+    },
     enabled: searchQuery.length >= 1,
   });
 
+  const suggestions = Array.isArray(rawSuggestions) ? rawSuggestions : [];
+  console.log("Final suggestions array:", suggestions);
+
   // Show suggestions when data is available
   useEffect(() => {
+    console.log("Address autocomplete state:", { 
+      suggestions: suggestions.length, 
+      value: value.length, 
+      showSuggestions,
+      searchQuery 
+    });
     if (suggestions.length > 0 && value.length >= 1) {
       setShowSuggestions(true);
     } else {
       setShowSuggestions(false);
     }
-  }, [suggestions, value]);
+  }, [suggestions, value, showSuggestions, searchQuery]);
 
   const handleSelect = (selectedAddress: string) => {
     onChange(selectedAddress);
@@ -85,20 +98,37 @@ export function AddressAutocomplete({
         />
         <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
         
-        {/* Suggestions dropdown */}
-        {showSuggestions && (suggestions.length > 0 || isLoading) && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-[200px] overflow-y-auto">
+        {/* Suggestions dropdown - always visible for debugging */}
+        {(showSuggestions || value.length >= 1) && (suggestions.length > 0 || isLoading) && (
+          <div 
+            className="absolute z-[9999] w-full mt-1 bg-white border-2 border-blue-300 rounded-md shadow-2xl max-h-[200px] overflow-y-auto"
+            style={{ 
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              zIndex: 9999,
+              backgroundColor: 'white',
+              border: '2px solid #3b82f6'
+            }}
+          >
             {isLoading ? (
-              <div className="p-3 text-sm text-gray-500">Loading suggestions...</div>
+              <div className="p-3 text-sm text-gray-500 bg-yellow-100">Loading suggestions...</div>
+            ) : suggestions.length === 0 ? (
+              <div className="p-3 text-sm text-gray-500 bg-red-100">No suggestions found</div>
             ) : (
               suggestions.map((address: string, index: number) => (
                 <div
                   key={index}
-                  onMouseDown={() => handleSelect(address)} // Use onMouseDown to prevent blur
-                  className="flex items-start gap-2 p-3 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-b-0"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    console.log("Clicking suggestion:", address);
+                    handleSelect(address);
+                  }}
+                  className="flex items-start gap-2 p-3 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-b-0 bg-green-50"
                 >
                   <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm text-gray-700 font-medium">{address}</div>
+                  <div className="text-sm text-gray-700 font-bold">{address}</div>
                 </div>
               ))
             )}
