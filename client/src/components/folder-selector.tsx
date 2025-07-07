@@ -44,7 +44,7 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
   const [showWorkTypeWarnings, setShowWorkTypeWarnings] = useState(false);
   const { toast } = useToast();
 
-  // Extract address from filename if available (e.g., "3588 - JRL - Nine Elms Park" -> "Nine Elms Park")
+  // Extract address from filename if available (e.g., "1234 - ABC - Project Name" -> "Project Name")
   const extractedAddress = fileName ? fileName.replace(/^\d+\s*-\s*[^-]*-\s*/, '').replace(/\.pdf$/i, '') : "";
 
   useEffect(() => {

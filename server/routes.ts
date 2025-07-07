@@ -197,7 +197,7 @@ async function fetchLogoFromWebsite(websiteUrl: string): Promise<string | null> 
 
 // Extract specific section data from PDF
 async function extractSpecificSectionFromPDF(pdfText: string, fileUploadId: number, sectionNumber: number) {
-  console.log(`Extracting authentic Section ${sectionNumber} data from Newark PDF`);
+  console.log(`Extracting authentic Section ${sectionNumber} data from PDF`);
   
   const lines = pdfText.split('\n').map(line => line.trim()).filter(line => line);
   
@@ -207,7 +207,7 @@ async function extractSpecificSectionFromPDF(pdfText: string, fileUploadId: numb
     
     // Look for line starting with section number followed by pattern
     if (new RegExp(`^0?${sectionNumber}[A-Z]`).test(line)) {
-      // Parse the compact format: "02F02-03F02-ST320/03/2023Newark300mm Clay15.0m15.0m"
+      // Parse the compact format: "02F02-03F02-ST320/03/2023Project300mm Clay15.0m15.0m"
       const match = line.match(/^0?(\d+)([A-Z0-9\-]+)([A-Z0-9\-]+)(\d{2}\/\d{2}\/\d{4})(.+?)(\d+mm)\s*(.+?)\s*(\d+\.?\d*m)\s*(\d+\.?\d*m)$/);
       
       if (match) {
@@ -218,7 +218,7 @@ async function extractSpecificSectionFromPDF(pdfText: string, fileUploadId: numb
         
         const sectionData = {
           fileUploadId,
-          projectNo: 'ECL-NEWARK',
+          projectNo: 'EXTRACTED',
           itemNo: parseInt(itemNo),
           inspectionNo: 1,
           date,
@@ -248,21 +248,21 @@ async function extractSpecificSectionFromPDF(pdfText: string, fileUploadId: numb
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// PERMANENTLY LOCKED FUNCTION: ECL Flow Direction Correction Logic
+// FLOW DIRECTION CORRECTION LOGIC
 // Date Locked: January 3, 2025
 // 
 // CRITICAL: This function implements authenticated inspection direction compliance
-// for ECL adoption reports with comprehensive S-pattern detection.
+// for adoption reports with comprehensive pattern detection.
 //
 // ⚠️  WARNING: DO NOT MODIFY WITHOUT EXPLICIT USER CONFIRMATION ⚠️
-// This logic has been tested and verified against authentic ECL inspection data
+// This logic has been tested and verified against authentic inspection data
 // 
 // Protected Rules:
-// 1. Longer reference containing shorter (F01-10A → F01-10)
+// 1. Longer reference containing shorter reference patterns
 // 2. F-pattern upstream inspection corrections
 // 3. S-pattern sequence detection (dash S02-04 and slash S03/05 formats)
 // 
-// Successfully corrected: Sections 11, 63, 82 in ECL Newark report
+// Successfully corrects backwards flow direction patterns in adoption reports
 // ═══════════════════════════════════════════════════════════════════════
 // Extract authentic pipe specifications from PDF content - ZERO TOLERANCE FOR SYNTHETIC DATA
 function extractAuthenticAdoptionSpecs(pdfText: string, itemNo: number): { pipeSize: string, pipeMaterial: string, totalLength: string, lengthSurveyed: string } | null {
@@ -303,19 +303,19 @@ function extractAuthenticAdoptionSpecs(pdfText: string, itemNo: number): { pipeS
     }
   }
   
-  // Pattern 3: Look for Section 1 authentic data from user's inspection report
-  if (itemNo === 1) {
-    // Extract from user's verified inspection data (image_1751896855881.png)
-    const section1Pattern = /F01-10A.*?F01-10.*?(150mm|Vitrified clay|14\.27m)/i;
-    if (pdfText.match(section1Pattern)) {
-      console.log(`✅ Section 1: Using user-verified authentic data from inspection report`);
-      return {
-        pipeSize: '150',
-        pipeMaterial: 'Vitrified clay',
-        totalLength: '14.27m',
-        lengthSurveyed: '14.27m'
-      };
-    }
+  // Pattern 3: Extract from PDF headers or specification tables
+  // Look for any section-specific specification data in PDF headers
+  const headerPattern = new RegExp(`Item\\s+${itemNo}.*?(\\d+mm)\\s+([A-Za-z\\s]+)\\s+(\\d+\\.?\\d*m)`, 'i');
+  const headerMatch = pdfText.match(headerPattern);
+  if (headerMatch) {
+    const [, pipeSize, pipeMaterial, totalLength] = headerMatch;
+    console.log(`✅ Section ${itemNo}: Found header specs - ${pipeSize} ${pipeMaterial.trim()}, ${totalLength}`);
+    return {
+      pipeSize: pipeSize.replace('mm', ''),
+      pipeMaterial: pipeMaterial.trim(),
+      totalLength,
+      lengthSurveyed: totalLength
+    };
   }
   
   console.log(`❌ Section ${itemNo}: No authentic pipe specifications found in PDF`);
@@ -325,7 +325,7 @@ function extractAuthenticAdoptionSpecs(pdfText: string, itemNo: number): { pipeS
 function applyAdoptionFlowDirectionCorrection(upstreamNode: string, downstreamNode: string): { upstream: string, downstream: string, corrected: boolean } {
   // Apply adoption sector flow direction rules
   
-  // Rule 1: Longer reference containing shorter reference should be corrected (F01-10A → F01-10 becomes F01-10 → F01-10A)
+  // Rule 1: Longer reference containing shorter reference should be corrected
   if (upstreamNode.length > downstreamNode.length && upstreamNode.includes(downstreamNode)) {
     return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
   }
@@ -389,7 +389,7 @@ function validateInspectionDirectionModification(userConfirmation: boolean = fal
       PROTECTED CODE: Inspection Direction Logic Modification Blocked
       
       This code section controls upstream/downstream flow direction for all 79 sections
-      of Nine Elms Park inspection data. Modifications require explicit user confirmation.
+      of inspection data. Modifications require explicit user confirmation.
       
       To modify this logic:
       1. User must explicitly confirm changes are needed
@@ -408,12 +408,12 @@ function validateInspectionDirectionModification(userConfirmation: boolean = fal
   return true;
 }
 
-// MANDATORY INSPECTION DIRECTION EXTRACTION FOR ECL ADOPTION REPORTS
+// MANDATORY INSPECTION DIRECTION EXTRACTION FOR ADOPTION REPORTS
 // This function extracts inspection direction for each section to ensure proper upstream/downstream flow
-function extractInspectionDirectionFromECL(pdfText: string): { [itemNo: number]: string } {
+function extractInspectionDirection(pdfText: string): { [itemNo: number]: string } {
   const directions: { [itemNo: number]: string } = {};
   
-  // ECL reports show patterns like "67DownstreamG76X" where 67 is section number
+  // Reports show patterns like "67DownstreamG76X" where 67 is section number
   // Extract these patterns to determine inspection direction per section
   const sectionDirectionPattern = /(\d+)(Upstream|Downstream)([A-Z0-9\-\/]+)X?/g;
   let match;
@@ -424,7 +424,7 @@ function extractInspectionDirectionFromECL(pdfText: string): { [itemNo: number]:
     const node = match[3];
     
     directions[itemNo] = direction;
-    console.log(`✓ ECL Section ${itemNo}: ${direction} inspection (node: ${node})`);
+    console.log(`✓ Section ${itemNo}: ${direction} inspection (node: ${node})`);
   }
   
   // If no specific section directions found, check for general inspection direction
@@ -435,7 +435,7 @@ function extractInspectionDirectionFromECL(pdfText: string): { [itemNo: number]:
     
     if (generalMatch) {
       const generalDirection = generalMatch[1];
-      console.log(`✓ ECL General inspection direction: ${generalDirection} - applying to all sections`);
+      console.log(`✓ General inspection direction: ${generalDirection} - applying to all sections`);
       
       // Apply general direction to all sections (we'll determine section count later)
       // Return empty object here and apply general direction in main extraction function
@@ -446,10 +446,10 @@ function extractInspectionDirectionFromECL(pdfText: string): { [itemNo: number]:
   return directions;
 }
 
-// Extract inspection number for specific section from ECL PDF
+// Extract inspection number for specific section from PDF
 function extractInspectionNumberForSection(pdfText: string, itemNo: number): string {
   // Look for inspection number patterns near section data
-  // ECL format may have patterns like "Inspection No: 1" or "Survey No: 1"
+  // Format may have patterns like "Inspection No: 1" or "Survey No: 1"
   const inspectionPattern = new RegExp(`Section Item ${itemNo}[\\s\\S]*?(?:Inspection No\\.?:?\\s*(\\d+)|Survey No\\.?:?\\s*(\\d+))`, 'i');
   const match = pdfText.match(inspectionPattern);
   
@@ -488,18 +488,18 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   }
   
   // MANDATORY INSPECTION DIRECTION LOGIC - NEVER REMOVE OR MODIFY WITHOUT EXPLICIT USER CONFIRMATION
-  // Extract inspection direction for each section from ECL report headers
-  const inspectionDirections = extractInspectionDirectionFromECL(pdfText);
+  // Extract inspection direction for each section from report headers
+  const inspectionDirections = extractInspectionDirection(pdfText);
   console.log(`✓ Extracted inspection directions for ${Object.keys(inspectionDirections).length} sections`);
   console.log(`🧪 CHECKPOINT: Reached section pattern matching logic`);
   
-  // Updated pattern to match the actual ECL format: "Section Item 1:  F01-10A  >  F01-10  (F01-10AX)"
+  // Updated pattern to match the section format: "Section Item 1:  MH1  >  MH2  (MH1X)"
   // Add debug logging to see what the pattern is trying to match
   console.log('🔍 Looking for sections with pattern in PDF text...');
   const sectionPattern = /Section Item (\d+):\s+([A-Z0-9\-]+)\s+>\s+([A-Z0-9\-]+)\s+\(([A-Z0-9\-X]+)\)/g;
   
   // Debug: Test regex on specific known text from the PDF
-  const testText = "Section Item 1:  F01-10A  >  F01-10  (F01-10AX)";
+  const testText = "Section Item 1:  MH1  >  MH2  (MH1X)";
   const testPattern = /Section Item (\d+):\s+([A-Z0-9\-]+)\s+>\s+([A-Z0-9\-]+)\s+\(([A-Z0-9\-X]+)\)/g;
   const testMatch = testPattern.exec(testText);
   console.log(`🧪 Test regex on: "${testText}"`);
@@ -529,7 +529,7 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     
     console.log(`✓ Found Section ${itemNo}: ${originalStartMH} → ${originalFinishMH} (${sectionId})`);
     
-    // CRITICAL: Apply inspection direction logic for ECL adoption reports
+    // CRITICAL: Apply inspection direction logic for adoption reports
     let inspectionDirection = inspectionDirections[itemNo];
     
     // Check if general direction applies to all (flag value 0)
@@ -556,8 +556,8 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
       console.log(`✓ Section ${itemNo} DOWNSTREAM inspection: maintaining ${startMH} → ${finishMH}`);
     }
     
-    // CRITICAL: Apply proven adoption flow direction correction for ECL reports
-    // This is the same logic that fixed the Newark report backwards flow directions
+    // CRITICAL: Apply proven adoption flow direction correction for reports
+    // This logic fixes backwards flow direction patterns
     console.log(`🔍 Section ${itemNo} BEFORE correction: ${startMH} → ${finishMH}`);
     const correction = applyAdoptionFlowDirectionCorrection(startMH, finishMH);
     console.log(`🔍 Section ${itemNo} correction result:`, correction);
@@ -669,9 +669,9 @@ function getAdoptionInspectionTime(itemNo: number): string {
   throw new Error("SYNTHETIC DATA BLOCKED: Only authentic PDF extraction permitted");
 }
 
-// Parse consolidated defect summary from ECL PDF structure
+// Parse consolidated defect summary from PDF structure
 function parseConsolidatedDefectSummary(pdfText: string): { [sectionNumber: number]: string } {
-  console.log("🔍 Parsing consolidated defect summary from ECL PDF...");
+  console.log("🔍 Parsing consolidated defect summary from PDF...");
   
   const defectMap: { [sectionNumber: number]: string } = {};
   
@@ -731,9 +731,9 @@ function parseConsolidatedDefectSummary(pdfText: string): { [sectionNumber: numb
 }
 
 function extractDefectsFromAdoptionSection(pdfText: string, itemNo: number): string {
-  console.log(`🔍 Extracting authentic defects for Section ${itemNo} from ECL PDF`);
+  console.log(`🔍 Extracting authentic defects for Section ${itemNo} from PDF`);
   
-  // Look for the actual section content in the PDF - ECL format has detailed section pages
+  // Look for the actual section content in the PDF - format has detailed section pages
   const lines = pdfText.split('\n').map(line => line.trim()).filter(line => line);
   
   // Find the section header pattern: "Section Item X:"
@@ -777,10 +777,10 @@ function extractDefectsFromAdoptionSection(pdfText: string, itemNo: number): str
   console.log(`📄 Section ${itemNo} content length: ${fullSectionText.length} characters`);
   console.log(`📄 Section ${itemNo} first 200 chars: "${fullSectionText.substring(0, 200)}"`);
   
-  // Look for authentic defect descriptions in plain English format (ECL style)
+  // Look for authentic defect descriptions in plain English format
   const defectMatches = [];
   
-  // ECL reports use plain English descriptions - look for these patterns
+  // Reports use plain English descriptions - look for these patterns
   const defectPatterns = [
     /broken pipe/gi,
     /deformed sewer/gi,
@@ -833,7 +833,7 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
 }
 
 async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
-  console.log("Extracting authentic sections from Nine Elms Park PDF format");
+  console.log("Extracting authentic sections from PDF format");
   
   const lines = pdfText.split('\n').map(line => line.trim()).filter(line => line);
   let sections = [];
@@ -880,13 +880,13 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
     }
   }
   
-  // Look for authentic PDF format: "26RE24FW0220/03/2023Nine Elms ParkPolyvinyl chloride6.75 m6.75 m"
+  // Look for authentic PDF format: "26RE24FW0220/03/2023ProjectPolyvinyl chloride6.75 m6.75 m"
   // Pattern: SectionNumber + UpstreamNode + DownstreamNode + Date + Location + Material + Lengths
   
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     
-    // Match authentic Nine Elms Park section format with various node types
+    // Match authentic section format with various node types
     // Examples: "1RE2Main Run...", "23POP UP 1SW09...", "24SW10SW01...", "28FW02FW03..."
     const sectionMatch = line.match(/^(\d+)(RE\w*|POP UP \d+|SW\w*|FW\w*|CP\w*|P\w*|S\w*)(Main Run|FW\w*|SW\w*|CP\w*|P\w*|S\w*|EXMH\w*)(\d{2}\/\d{2}\/\d{4}).*?(Polyvinyl chloride|Polyethylene|Concrete|Polypropylene)([\d.]+)\s*m([\d.]+)\s*m/);
     
@@ -936,7 +936,7 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       // =====================================================================
       // 
       // CRITICAL: This logic ensures consistent manhole flow direction across
-      // all 79 sections of Nine Elms Park inspection data. DO NOT MODIFY.
+      // all sections of inspection data. DO NOT MODIFY.
       //
       // WARNING: PROTECTED INSPECTION DIRECTION LOGIC
       // This code block is protected against modifications. Any changes to the 
@@ -956,12 +956,12 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
       // MODIFICATION PROTOCOL:
       // 1. User must explicitly confirm changes are needed
       // 2. Document reason for changes in replit.md
-      // 3. Test against all 79 sections of Nine Elms Park data
+      // 3. Test against all sections of inspection data
       // 4. Verify no regression in existing direction compliance
       // =====================================================================
       if (headerInfo && headerInfo.inspectionDirection) {
         // PROTECTION CHECK: User confirmed - fixing upstream/downstream flow direction
-        // User reported flow direction is backwards (F01-10A → F01-10 should be F01-10 → F01-10A)
+        // User reported flow direction is backwards (longer reference → shorter reference should be shorter → longer)
         console.log('INFO: Inspection direction logic enabled per user confirmation');
         
         if (sectionNum <= 22) {
@@ -1025,7 +1025,7 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
           }
           
           // ADOPTION SECTOR FIX: Correct backwards flow direction
-          // Example: F01-10A → F01-10 should be F01-10 → F01-10A
+          // Example: longer reference → shorter reference should be shorter → longer
           // Pattern: longer reference → shorter reference should be shorter → longer
           if (upstreamNode.length > downstreamNode.length && 
               upstreamNode.includes(downstreamNode)) {
@@ -1102,7 +1102,7 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
     }
   }
   
-  console.log(`✓ Extracted ${sections.length} authentic sections from Nine Elms Park PDF`);
+  console.log(`✓ Extracted ${sections.length} authentic sections from PDF`);
   return sections;
 }
 
@@ -1209,7 +1209,7 @@ export async function registerRoutes(app: Express) {
             console.log('Detected adoption sector report format - using adoption extraction');
             sections = await extractAdoptionSectionsFromPDF(pdfData.text, fileUpload.id);
           } else {
-            console.log('Using Nine Elms Park extraction format');
+            console.log('Using standard extraction format');
             sections = await extractAdoptionSectionsFromPDF(pdfData.text, fileUpload.id);
           }
           
@@ -1221,7 +1221,7 @@ export async function registerRoutes(app: Express) {
           
           // Insert all extracted sections with data integrity validation
           if (sections.length > 0) {
-            // APPLY MULTI-DEFECT SECTION SPLITTING TO ALL REPORTS (218 ECL, Nine Elms, etc.)
+            // APPLY MULTI-DEFECT SECTION SPLITTING TO ALL REPORTS
             console.log('🔄 Applying multi-defect section splitting system...');
             
             const finalSections = [];
@@ -1879,7 +1879,7 @@ export async function registerRoutes(app: Express) {
         
         console.log(`📄 Reprocessing PDF: ${pdfData.numpages} pages, ${pdfData.text.length} characters`);
         
-        // Extract sections using corrected format for adoption sector ECL reports
+        // Extract sections using corrected format for adoption sector reports
         const sections = await extractAdoptionSectionsFromPDF(pdfData.text, uploadId);
         
         if (sections.length > 0) {
@@ -2782,7 +2782,7 @@ export async function registerRoutes(app: Express) {
   });
 
   // Clear dashboard analysis data only (preserve uploaded files)
-  // Fix authentic defect data for ECL Newark report
+  // Fix authentic defect data for adoption report
   app.post("/api/fix-authentic-defects/:uploadId", async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.uploadId);

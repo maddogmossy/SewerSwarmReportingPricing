@@ -200,7 +200,7 @@ const getStatusColor = (status: string) => {
 // ELIMINATED: FAKE MANHOLE REFERENCE FUNCTIONS
 // These functions were generating completely fake SW02→SW03 data that violated zero tolerance policy
 // AUTHENTIC DATA ONLY - All manhole references must come directly from uploaded PDF content
-// Database contains authentic references like F01-10→F01-10A from user's inspection report
+// Database contains authentic references from user's inspection reports
 
 // REMOVED: getPipeSize function contained false hardcoded data
 // All pipe size data now comes directly from authentic database records
@@ -1907,7 +1907,7 @@ export default function Dashboard() {
                           type="text"
                           value={filters.projectNumber}
                           onChange={(e) => setFilters({...filters, projectNumber: e.target.value})}
-                          placeholder="e.g. 3588"
+                          placeholder="e.g. 1234"
                           className="w-full px-3 py-1 text-sm border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>

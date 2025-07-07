@@ -909,7 +909,7 @@ export class MSCC5Classifier {
   /**
    * LOCKED IN: Multi-Defect Section Splitting System
    * Automatically creates subsections (a, b, c) when both service and structural defects exist
-   * PERMANENT FEATURE - applies to ALL future reports (218 ECL, Nine Elms, etc.)
+   * PERMANENT FEATURE - applies to ALL future inspection reports
    */
   static splitMultiDefectSection(defectText: string, itemNo: number, sectionData: any): any[] {
     console.log(`🔍 Analyzing Section ${itemNo} for multi-defect splitting...`);

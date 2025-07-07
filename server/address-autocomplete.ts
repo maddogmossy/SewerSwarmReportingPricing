@@ -29,8 +29,8 @@ const UK_ADDRESSES = [
   "Warwick Castle, Warwick, CV34 4QU",
   
   // Project specific addresses
-  "Bowbridge Lane, Newark, NG24 3BY",
-  "Nine Elms Park, Vauxhall, London, SW8 5BX",
+  "Industrial Estate, Location TBD",
+  "Infrastructure Site, Location TBD",
   
   // Common street names
   "High Street, Birmingham, B4 7SL",
