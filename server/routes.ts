@@ -12,6 +12,7 @@ import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
 import { DataIntegrityValidator, validateBeforeInsert } from "./data-integrity";
+import { WorkflowTracker } from "./workflow-tracker";
 import { searchUKAddresses } from "./address-autocomplete.js";
 
 import pdfParse from "pdf-parse";
@@ -468,6 +469,10 @@ function extractInspectionNumberForSection(pdfText: string, itemNo: number): str
 async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: number) {
   console.log('Processing adoption sector PDF with authentic data extraction...');
   
+  // Initialize workflow tracker for comprehensive analysis
+  const tracker = new WorkflowTracker(fileUploadId);
+  tracker.addStep('EXTRACTION_START', { pdfTextLength: pdfText.length });
+  
   // FIRST: Parse the consolidated defect summary to get authentic defect data
   const consolidatedDefects = parseConsolidatedDefectSummary(pdfText);
   console.log(`📋 Found defect data for ${Object.keys(consolidatedDefects).length} sections in consolidated summary`);
@@ -521,6 +526,7 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   let matchCount = 0;
   while ((match = sectionPattern.exec(pdfText)) !== null) {
     matchCount++;
+    tracker.addPatternMatch(matchCount, match[0]);
     console.log(`✓ Found section pattern match ${matchCount}: ${match[0]}`);
     const itemNo = parseInt(match[1]);
     const originalStartMH = match[2];
@@ -600,16 +606,52 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     };
     
     sections.push(sectionData);
+    tracker.addSectionCreated(itemNo, startMH, finishMH);
     console.log(`✅ Section ${itemNo} created: ${startMH} → ${finishMH} (${extractedData ? 'with specs' : 'manhole refs only'})`);
   }
   
   console.log(`✓ Extracted ${sections.length} authentic adoption sections from PDF`);
   console.log(`📊 Debug: sections array contains:`, sections.map(s => `${s.itemNo}: ${s.startMH}→${s.finishMH}`));
   
+  // WORKFLOW ANALYSIS: Check for missing/duplicate sections
+  const extractedItemNumbers = sections.map(s => s.itemNo).sort((a, b) => a - b);
+  const missingItems = [];
+  const duplicateItems = [];
+  
+  // Check for missing sequential numbers
+  for (let i = 1; i <= Math.max(...extractedItemNumbers); i++) {
+    if (!extractedItemNumbers.includes(i)) {
+      missingItems.push(i);
+    }
+  }
+  
+  // Check for duplicates
+  const itemCounts = {};
+  extractedItemNumbers.forEach(item => {
+    itemCounts[item] = (itemCounts[item] || 0) + 1;
+  });
+  Object.keys(itemCounts).forEach(item => {
+    if (itemCounts[item] > 1) {
+      duplicateItems.push(`Item ${item} (${itemCounts[item]} times)`);
+    }
+  });
+  
+  console.log(`📋 WORKFLOW ANALYSIS:`);
+  console.log(`   📊 Total sections extracted: ${sections.length}`);
+  console.log(`   📊 Item number range: ${Math.min(...extractedItemNumbers)} to ${Math.max(...extractedItemNumbers)}`);
+  console.log(`   ❌ Missing items: ${missingItems.length > 0 ? missingItems.join(', ') : 'None'}`);
+  console.log(`   🔄 Duplicate items: ${duplicateItems.length > 0 ? duplicateItems.join(', ') : 'None'}`);
+  console.log(`   📝 Expected count: ${Math.max(...extractedItemNumbers) - missingItems.length}`);
+  console.log(`   ✅ Actual count: ${sections.length}`);
+  
   // Store sections in database with proper sector and file ID
   for (const section of sections) {
     await db.insert(sectionInspections).values(section);
+    tracker.addSectionStored(section.itemNo);
   }
+  
+  // Generate comprehensive workflow analysis
+  tracker.printDetailedReport();
   
   console.log(`💾 Stored ${sections.length} sections in database for upload ${fileUploadId}`);
   return sections;
