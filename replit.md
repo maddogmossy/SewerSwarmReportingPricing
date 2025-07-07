@@ -139,6 +139,17 @@ From attached inspection report image (image_1751896855881.png):
 - Different pricing workflows: cleaning vs structural repair pricing
 - Visual indicators in dashboard Item No column show defect type icons
 
+## Key Process Lessons Learned
+
+**NEVER create manual random data then patch with more data.**
+**ALWAYS:**
+1. Check existing report state first
+2. Clear any incomplete/test data completely  
+3. Re-run full extraction process for complete authentic dataset
+4. Verify final count matches expected total (94 sections)
+
+This prevents data contamination and ensures authentic extraction integrity.
+
 ## Changelog
 
 ```
