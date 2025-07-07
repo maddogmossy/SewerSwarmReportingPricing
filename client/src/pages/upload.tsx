@@ -615,9 +615,12 @@ export default function Upload() {
                         <div className="flex items-center gap-3">
                           {isExpanded ? <FolderOpen className="h-5 w-5 text-blue-600" /> : <Folder className="h-5 w-5 text-blue-600" />}
                           <div>
-                            <div className="font-medium">{folder?.folderName || `Folder ${folderKey}`}</div>
+                            <div className="font-medium">
+                              {folder?.projectAddress || `Folder ${folderKey}`}
+                              {folder?.projectPostcode && `, ${folder.projectPostcode}`}
+                            </div>
                             <div className="text-sm text-muted-foreground">
-                              {folder?.projectAddress && `${folder.projectAddress} • `}
+                              {folder?.projectNumber && `Project: ${folder.projectNumber} • `}
                               {folderUploads.length} report{folderUploads.length !== 1 ? 's' : ''}
                             </div>
                           </div>
@@ -632,7 +635,7 @@ export default function Upload() {
                               if (folder) {
                                 setSelectedFolderToDelete({
                                   id: folder.id,
-                                  name: folder.folderName,
+                                  name: folder.projectAddress ? `${folder.projectAddress}${folder.projectPostcode ? `, ${folder.projectPostcode}` : ''}` : folder.folderName,
                                   reportCount: folderUploads.length
                                 });
                                 setShowDeleteFolderDialog(true);

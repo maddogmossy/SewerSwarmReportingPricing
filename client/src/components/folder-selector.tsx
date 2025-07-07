@@ -204,7 +204,7 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
 
   const handleEditFolder = (folder: ProjectFolder) => {
     setEditingFolder(folder);
-    setNewFolderName(folder.folderName);
+    setNewFolderName(folder.projectAddress || folder.folderName); // Use address as name
     setNewFolderAddress(folder.projectAddress || "");
     setShowEditDialog(true);
   };
@@ -214,8 +214,8 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
     
     updateFolderMutation.mutate({
       id: editingFolder.id,
-      folderName: newFolderName.trim(),
-      projectAddress: "", // No separate address field
+      folderName: newFolderName.trim(), // Keep using the name field for updates
+      projectAddress: newFolderName.trim(), // But also update the address
     });
   };
 
@@ -263,9 +263,12 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <div className="text-sm font-medium">{folder.folderName}</div>
-                {folder.projectAddress && (
-                  <div className="text-xs text-slate-600">{folder.projectAddress}</div>
+                <div className="text-sm font-medium">
+                  {folder.projectAddress}
+                  {folder.projectPostcode && `, ${folder.projectPostcode}`}
+                </div>
+                {folder.projectNumber && (
+                  <div className="text-xs text-slate-600">Project: {folder.projectNumber}</div>
                 )}
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

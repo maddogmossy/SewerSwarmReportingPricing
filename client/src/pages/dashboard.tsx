@@ -1576,9 +1576,15 @@ export default function Dashboard() {
                         {selectedReportIds.length > 0 ? 
                           `${selectedReportIds.length} Reports Selected` :
                           selectedFolderForView ? 
-                            folders.find(f => f.id === selectedFolderForView)?.folderName || 'Unknown Folder' :
+                            (() => {
+                              const folder = folders.find(f => f.id === selectedFolderForView);
+                              return folder ? `${folder.projectAddress}${folder.projectPostcode ? `, ${folder.projectPostcode}` : ''}` : 'Unknown Folder';
+                            })() :
                             (currentUpload?.folderId ? 
-                              folders.find(f => f.id === currentUpload.folderId)?.folderName || 'Current Folder' :
+                              (() => {
+                                const folder = folders.find(f => f.id === currentUpload.folderId);
+                                return folder ? `${folder.projectAddress}${folder.projectPostcode ? `, ${folder.projectPostcode}` : ''}` : 'Current Folder';
+                              })() :
                               'All Folders'
                             )
                         }
@@ -1653,7 +1659,15 @@ export default function Dashboard() {
                                 className="flex items-center gap-2 cursor-pointer flex-1"
                               >
                                 <FolderOpen className="h-4 w-4 text-blue-600" />
-                                <span className="font-medium text-sm">{folder?.folderName || `Folder ${folderKey}`}</span>
+                                <div className="flex flex-col">
+                                  <span className="font-medium text-sm">
+                                    {folder?.projectAddress || `Folder ${folderKey}`}
+                                    {folder?.projectPostcode && `, ${folder.projectPostcode}`}
+                                  </span>
+                                  {folder?.projectNumber && (
+                                    <span className="text-xs text-slate-600">Project: {folder.projectNumber}</span>
+                                  )}
+                                </div>
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="text-xs text-slate-500">({completedReports.length} reports)</span>
@@ -1662,7 +1676,7 @@ export default function Dashboard() {
                                     e.stopPropagation();
                                     setSelectedFolderToDelete({
                                       id: parseInt(folderKey),
-                                      name: folder?.folderName || `Folder ${folderKey}`,
+                                      name: folder?.projectAddress ? `${folder.projectAddress}${folder.projectPostcode ? `, ${folder.projectPostcode}` : ''}` : `Folder ${folderKey}`,
                                       reportCount: completedReports.length
                                     });
                                     setShowDeleteFolderDialog(true);
