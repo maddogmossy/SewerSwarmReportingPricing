@@ -498,16 +498,16 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   console.log(`✓ Extracted inspection directions for ${Object.keys(inspectionDirections).length} sections`);
   console.log(`🧪 CHECKPOINT: Reached section pattern matching logic`);
   
-  // Updated pattern to match the section format: "Section Item 1:  MH1  >  MH2  (MH1X)"
-  // Add debug logging to see what the pattern is trying to match
-  console.log('🔍 Looking for sections with pattern in PDF text...');
+  // Updated pattern to match authentic section format from PDF: "Section Item 13: F02-05A > F02-05 (F02-05AX)"
+  // IMPORTANT: Never use placeholder references like MH1/MH2 - only authentic manholes (F01-10A, GY54, BK1, etc.)
+  console.log('🔍 Looking for authentic manhole references in PDF text...');
   const sectionPattern = /Section Item (\d+):\s+([A-Z0-9\-]+)\s+>\s+([A-Z0-9\-]+)\s+\(([A-Z0-9\-X]+)\)/g;
   
-  // Debug: Test regex on specific known text from the PDF
-  const testText = "Section Item 1:  MH1  >  MH2  (MH1X)";
+  // Debug: Test regex on actual authentic text from the PDF
+  const testText = "Section Item 13:  F02-05A  >  F02-05  (F02-05AX)";
   const testPattern = /Section Item (\d+):\s+([A-Z0-9\-]+)\s+>\s+([A-Z0-9\-]+)\s+\(([A-Z0-9\-X]+)\)/g;
   const testMatch = testPattern.exec(testText);
-  console.log(`🧪 Test regex on: "${testText}"`);
+  console.log(`🧪 Test regex on authentic data: "${testText}"`);
   console.log(`🧪 Test result:`, testMatch);
   
   // Find actual Section Item lines in PDF
@@ -539,19 +539,21 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
       const itemNo = parseInt(itemNoMatch[1]);
       console.log(`✓ Processing Section Item ${itemNo} (${allMatches.length + 1}/${allSectionMatches.length})`);
       
-      // Try to extract manhole references for this specific section
+      // Try to extract authentic manhole references for this specific section  
+      // Pattern allows for variable spacing to match actual PDF format
       const sectionLinePattern = new RegExp(`Section Item ${itemNo}:\\s+([A-Z0-9\\-]+)\\s+>\\s+([A-Z0-9\\-]+)\\s+\\(([A-Z0-9\\-X]+)\\)`, 'g');
       const lineMatch = sectionLinePattern.exec(pdfText);
       
       if (lineMatch) {
+        // Only store authentic manhole references (F01-10A, GY54, BK1, etc.) - never placeholders
         allMatches.push({
           itemNo: itemNo,
-          startMH: lineMatch[1],
-          finishMH: lineMatch[2],
-          sectionId: lineMatch[3],
+          startMH: lineMatch[1].trim(),
+          finishMH: lineMatch[2].trim(), 
+          sectionId: lineMatch[3].trim(),
           fullMatch: lineMatch[0]
         });
-        console.log(`✓ Extracted MH refs for Section ${itemNo}: ${lineMatch[1]} → ${lineMatch[2]}`);
+        console.log(`✓ Extracted authentic MH refs for Section ${itemNo}: ${lineMatch[1].trim()} → ${lineMatch[2].trim()}`);
       } else {
         // Create with authentic "no data recorded" when MH refs not found
         allMatches.push({
