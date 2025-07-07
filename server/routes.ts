@@ -1387,15 +1387,37 @@ export async function registerRoutes(app: Express) {
 
   app.post("/api/folders", async (req: Request, res: Response) => {
     try {
-      const { folderName, projectAddress, projectNumber } = req.body;
+      const { 
+        folderName, 
+        projectAddress, 
+        projectPostcode,
+        projectNumber,
+        travelDistance,
+        travelTime,
+        addressValidated
+      } = req.body;
+      
+      console.log("📁 Creating folder with enhanced validation:", {
+        folderName,
+        projectAddress,
+        projectPostcode,
+        travelDistance,
+        travelTime,
+        addressValidated
+      });
       
       const [newFolder] = await db.insert(projectFolders).values({
         userId: "test-user",
         folderName,
         projectAddress,
+        projectPostcode,
         projectNumber,
+        travelDistance: travelDistance ? travelDistance.toString() : null,
+        travelTime,
+        addressValidated: addressValidated || false,
       }).returning();
       
+      console.log("✅ Folder created with travel distance:", newFolder);
       res.json(newFolder);
     } catch (error) {
       console.error("Error creating folder:", error);

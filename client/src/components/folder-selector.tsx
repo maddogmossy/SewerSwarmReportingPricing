@@ -5,16 +5,22 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Folder, Plus, Edit, Trash2 } from "lucide-react";
+import { Folder, Plus, Edit, Trash2, AlertTriangle, MapPin, Clock, Calculator } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { validateAddress, calculateTravelDistance, getWorkTypeRequirements, checkTravelAllowance } from "@shared/address-validation";
 
 interface ProjectFolder {
   id: number;
   folderName: string;
   projectAddress: string;
+  projectPostcode?: string;
   projectNumber: string;
+  travelDistance?: number;
+  travelTime?: number;
+  addressValidated?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,6 +38,9 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
   const [editingFolder, setEditingFolder] = useState<ProjectFolder | null>(null);
   const [newFolderName, setNewFolderName] = useState("");
   const [newFolderAddress, setNewFolderAddress] = useState("");
+  const [addressValidation, setAddressValidation] = useState<{ isValid: boolean; errors: string[]; extractedPostcode?: string } | null>(null);
+  const [travelInfo, setTravelInfo] = useState<{ distance: number; travelTime: number; isValidating: boolean } | null>(null);
+  const [showWorkTypeWarnings, setShowWorkTypeWarnings] = useState(false);
   const { toast } = useToast();
 
   // Extract address from filename if available (e.g., "3588 - JRL - Nine Elms Park" -> "Nine Elms Park")
@@ -46,22 +55,64 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
     }
   }, [extractedAddress, projectNumber, newFolderName, newFolderAddress]);
 
+  // Validate address in real-time
+  useEffect(() => {
+    if (newFolderAddress.trim().length > 0) {
+      const validation = validateAddress(newFolderAddress);
+      setAddressValidation(validation);
+      
+      if (validation.isValid && validation.extractedPostcode) {
+        // Calculate travel distance when address is valid
+        setTravelInfo(prev => ({ ...prev, isValidating: true }));
+        calculateTravelDistance(validation.extractedPostcode)
+          .then(result => {
+            setTravelInfo({
+              distance: result.distance,
+              travelTime: result.travelTime,
+              isValidating: false
+            });
+            setShowWorkTypeWarnings(true);
+          })
+          .catch(() => {
+            setTravelInfo(null);
+          });
+      } else {
+        setTravelInfo(null);
+        setShowWorkTypeWarnings(false);
+      }
+    } else {
+      setAddressValidation(null);
+      setTravelInfo(null);
+      setShowWorkTypeWarnings(false);
+    }
+  }, [newFolderAddress]);
+
   const { data: folders = [], isLoading } = useQuery<ProjectFolder[]>({
     queryKey: ["/api/folders"],
   });
 
   const createFolderMutation = useMutation({
-    mutationFn: (folderData: { folderName: string; projectAddress: string; projectNumber: string }) =>
-      apiRequest("POST", "/api/folders", folderData),
+    mutationFn: (folderData: { 
+      folderName: string; 
+      projectAddress: string; 
+      projectPostcode?: string;
+      projectNumber: string;
+      travelDistance?: number;
+      travelTime?: number;
+      addressValidated?: boolean;
+    }) => apiRequest("POST", "/api/folders", folderData),
     onSuccess: (newFolder: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
       onFolderSelect(newFolder.id);
       setShowCreateDialog(false);
       setNewFolderName("");
       setNewFolderAddress("");
+      setAddressValidation(null);
+      setTravelInfo(null);
+      setShowWorkTypeWarnings(false);
       toast({
-        title: "Folder created",
-        description: `Created folder "${newFolder.folderName}"`,
+        title: "Folder created successfully",
+        description: `Created "${newFolder.folderName}" with ${newFolder.travelDistance ? `${parseFloat(newFolder.travelDistance).toFixed(1)} mile travel distance` : 'travel distance calculated'}`,
       });
     },
     onError: () => {
@@ -117,12 +168,32 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
   });
 
   const handleCreateFolder = () => {
-    if (!newFolderName.trim()) return;
+    if (!newFolderName.trim() || !newFolderAddress.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Both folder name and full address are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!addressValidation?.isValid) {
+      toast({
+        title: "Address Validation Failed",
+        description: addressValidation?.errors.join('. ') || "Please provide a valid UK address with postcode",
+        variant: "destructive",
+      });
+      return;
+    }
     
     createFolderMutation.mutate({
       folderName: newFolderName.trim(),
-      projectAddress: "", // No separate address field
+      projectAddress: newFolderAddress.trim(),
+      projectPostcode: addressValidation.extractedPostcode,
       projectNumber: projectNumber || "",
+      travelDistance: travelInfo?.distance,
+      travelTime: travelInfo?.travelTime,
+      addressValidated: true,
     });
   };
 
@@ -217,16 +288,17 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
               Create New Folder
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create Project Folder</DialogTitle>
               <DialogDescription>
-                Create a new folder to organize your inspection reports.
+                Create a new folder with complete address validation and travel distance calculation.
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {/* Folder Name Field */}
               <div>
-                <Label htmlFor="folderName">Folder Name (Address)</Label>
+                <Label htmlFor="folderName">Folder Name</Label>
                 <Input
                   id="folderName"
                   value={newFolderName}
@@ -234,16 +306,131 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
                   placeholder="e.g., 3588 - Nine Elms Park"
                 />
               </div>
+
+              {/* Full Address Field */}
+              <div>
+                <Label htmlFor="folderAddress">Full Address & Postcode *</Label>
+                <Textarea
+                  id="folderAddress"
+                  value={newFolderAddress}
+                  onChange={(e) => setNewFolderAddress(e.target.value)}
+                  placeholder="e.g., Nine Elms Park, Vauxhall, London, SW8 5BX"
+                  className="min-h-[100px]"
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Include street, city/town, and UK postcode for travel calculations
+                </p>
+              </div>
+
+              {/* Address Validation Results */}
+              {addressValidation && (
+                <div className="space-y-2">
+                  {addressValidation.isValid ? (
+                    <Alert className="border-green-200 bg-green-50">
+                      <MapPin className="h-4 w-4 text-green-600" />
+                      <AlertDescription className="text-green-800">
+                        Valid UK address detected. Postcode: <strong>{addressValidation.extractedPostcode}</strong>
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <Alert variant="destructive">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        <div className="space-y-1">
+                          <p className="font-semibold">Address validation errors:</p>
+                          {addressValidation.errors.map((error, index) => (
+                            <p key={index} className="text-sm">• {error}</p>
+                          ))}
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              )}
+
+              {/* Travel Distance Information */}
+              {travelInfo && (
+                <Alert className="border-blue-200 bg-blue-50">
+                  <Calculator className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-800">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="font-semibold">Travel Distance</p>
+                        <p>{travelInfo.distance.toFixed(1)} miles from depot</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold">Travel Time</p>
+                        <p>{travelInfo.travelTime} minutes estimated</p>
+                      </div>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Work Type Travel Warnings */}
+              {showWorkTypeWarnings && travelInfo && (
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-sm">Work Type Travel Allowances</h4>
+                  {Object.entries(getWorkTypeRequirements()).map(([workType, requirements]) => {
+                    const allowanceCheck = checkTravelAllowance(travelInfo.distance, workType);
+                    const isPatching = workType === 'patching';
+                    
+                    return (
+                      <Alert 
+                        key={workType}
+                        className={allowanceCheck.isWithinAllowance ? "border-green-200 bg-green-50" : "border-orange-200 bg-orange-50"}
+                      >
+                        <Clock className={`h-4 w-4 ${allowanceCheck.isWithinAllowance ? "text-green-600" : "text-orange-600"}`} />
+                        <AlertDescription className={allowanceCheck.isWithinAllowance ? "text-green-800" : "text-orange-800"}>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold capitalize">{workType.replace(/([A-Z])/g, ' $1')}</p>
+                              <p className="text-sm">
+                                Max: {requirements.maxTravelDistance} miles
+                                {allowanceCheck.isWithinAllowance ? 
+                                  " ✓ Within allowance" : 
+                                  ` ⚠️ Exceeds by ${allowanceCheck.exceedsBy.toFixed(1)} miles`
+                                }
+                              </p>
+                              {!allowanceCheck.isWithinAllowance && (
+                                <p className="text-sm font-medium">
+                                  Additional cost: £{allowanceCheck.additionalCost.toFixed(2)}
+                                </p>
+                              )}
+                              {isPatching && requirements.requiresNIN && (
+                                <p className="text-sm font-medium text-red-700 mt-1">
+                                  🔢 Requires NIN number (+£{requirements.additionalCosts.ninSurcharge.toFixed(2)})
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowCreateDialog(false);
+                  setNewFolderName("");
+                  setNewFolderAddress("");
+                  setAddressValidation(null);
+                  setTravelInfo(null);
+                  setShowWorkTypeWarnings(false);
+                }}
+              >
                 Cancel
               </Button>
               <Button 
                 onClick={handleCreateFolder}
-                disabled={!newFolderName.trim() || createFolderMutation.isPending}
+                disabled={!newFolderName.trim() || !addressValidation?.isValid || createFolderMutation.isPending}
+                className="min-w-[120px]"
               >
-                Create Folder
+                {createFolderMutation.isPending ? "Creating..." : "Create Folder"}
               </Button>
             </DialogFooter>
           </DialogContent>

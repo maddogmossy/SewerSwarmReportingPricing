@@ -54,8 +54,12 @@ export const projectFolders = pgTable("project_folders", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id),
   folderName: varchar("folder_name").notNull(),
-  projectAddress: text("project_address"),
+  projectAddress: text("project_address").notNull(),
+  projectPostcode: varchar("project_postcode", { length: 10 }),
   projectNumber: varchar("project_number"),
+  travelDistance: decimal("travel_distance", { precision: 5, scale: 2 }), // miles to 2 decimal places
+  travelTime: integer("travel_time"), // minutes
+  addressValidated: boolean("address_validated").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -432,6 +436,8 @@ export type CompanySettings = typeof companySettings.$inferSelect;
 export type InsertCompanySettings = typeof companySettings.$inferInsert;
 export type DepotSettings = typeof depotSettings.$inferSelect;
 export type InsertDepotSettings = typeof depotSettings.$inferInsert;
+export type ProjectFolder = typeof projectFolders.$inferSelect;
+export type InsertProjectFolder = typeof projectFolders.$inferInsert;
 export type TravelCalculation = typeof travelCalculations.$inferSelect;
 export type InsertTravelCalculation = typeof travelCalculations.$inferInsert;
 export type VehicleTravelRate = typeof vehicleTravelRates.$inferSelect;
