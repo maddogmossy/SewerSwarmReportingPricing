@@ -35,21 +35,21 @@ export function AddressAutocomplete({
     return () => clearTimeout(timer);
   }, [value]);
 
+  // Fetch address suggestions
+  const { data: rawSuggestions } = useQuery({
+    queryKey: ["/api/search-addresses", searchQuery],
+    queryFn: () => apiRequest("GET", `/api/search-addresses?q=${encodeURIComponent(searchQuery)}&limit=8`),
+    enabled: searchQuery.length >= 2,
+  });
+
+  const suggestions = Array.isArray(rawSuggestions) ? rawSuggestions : [];
+
   // Auto-open popover when suggestions are available
   useEffect(() => {
     if (suggestions.length > 0 && value.length >= 2) {
       setOpen(true);
     }
   }, [suggestions, value]);
-
-  // Fetch address suggestions
-  const { data: rawSuggestions } = useQuery({
-    queryKey: ["/api/search-addresses", searchQuery],
-    queryFn: () => apiRequest("GET", `/api/search-addresses?q=${encodeURIComponent(searchQuery)}&limit=8`),
-    enabled: searchQuery.length >= 2 && open,
-  });
-
-  const suggestions = Array.isArray(rawSuggestions) ? rawSuggestions : [];
 
   const handleSelect = (selectedAddress: string) => {
     onChange(selectedAddress);
