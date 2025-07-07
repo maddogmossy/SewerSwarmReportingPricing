@@ -721,6 +721,8 @@ export default function Dashboard() {
   };
 
   const handleViewReport = (uploadId: number) => {
+    console.log(`handleViewReport called with uploadId: ${uploadId}`);
+    console.log(`Navigating to: /dashboard?reportId=${uploadId}`);
     window.location.href = `/dashboard?reportId=${uploadId}`;
   };
 
@@ -1558,6 +1560,17 @@ export default function Dashboard() {
               <div className="flex items-center gap-4">
                 <label className="text-sm font-medium text-slate-700">Project Folders:</label>
                 <div className="relative" id="folder-dropdown">
+                  {/* TEST: Direct link to ECL Report */}
+                  <button
+                    onClick={() => {
+                      console.log("Direct navigation to ECL report");
+                      window.location.href = '/dashboard?reportId=25';
+                    }}
+                    className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                  >
+                    🔗 TEST: View ECL Report (ID: 25)
+                  </button>
+
                   {/* Compact Folder Selector */}
                   <button
                     onClick={() => setShowFolderDropdown(!showFolderDropdown)}
