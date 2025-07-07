@@ -2,7 +2,7 @@ import express, { type Express, type Request, type Response } from "express";
 import { createServer } from "http";
 import multer from "multer";
 import path from "path";
-import fs from "fs";
+import fs, { existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { db } from "./db";
@@ -2402,6 +2402,73 @@ export async function registerRoutes(app: Express) {
     } catch (error: any) {
       console.error('Error calculating travel:', error);
       res.status(500).json({ error: "Failed to calculate travel" });
+    }
+  });
+
+  // Reprocess existing upload by extracting data from stored PDF
+  app.post("/api/reprocess-upload/:uploadId", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      const userId = req.user?.id || "test-user";
+      
+      // Get the upload record
+      const upload = await db.select().from(fileUploads).where(
+        and(eq(fileUploads.id, uploadId), eq(fileUploads.userId, userId))
+      ).limit(1);
+      
+      if (upload.length === 0) {
+        return res.status(404).json({ error: "Upload not found" });
+      }
+      
+      const filePath = upload[0].filePath;
+      
+      if (!existsSync(filePath)) {
+        return res.status(404).json({ error: "PDF file not found" });
+      }
+      
+      console.log(`🔄 Reprocessing upload ${uploadId} from ${filePath}`);
+      
+      // Clear existing sections for this upload
+      await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
+      await db.delete(sectionDefects).where(eq(sectionDefects.fileUploadId, uploadId));
+      
+      // Extract sections from PDF
+      const sectionsData = await extractAdoptionSectionsFromPDF(filePath);
+      
+      if (sectionsData && sectionsData.length > 0) {
+        // Insert sections into database
+        for (const section of sectionsData) {
+          await db.insert(sectionInspections).values({
+            fileUploadId: uploadId,
+            itemNumber: section.itemNumber,
+            startMh: section.startMh,
+            finishMh: section.finishMh,
+            pipeSize: section.pipeSize,
+            pipeMaterial: section.pipeMaterial,
+            totalLength: section.totalLength,
+            lengthSurveyed: section.lengthSurveyed,
+            defects: section.defects,
+            recommendations: section.recommendations,
+            adoptable: section.adoptable,
+            severityGrade: section.severityGrade,
+            startMhDepth: section.startMhDepth || "no data recorded",
+            finishMhDepth: section.finishMhDepth || "no data recorded"
+          });
+        }
+        
+        console.log(`✅ Reprocessed ${sectionsData.length} sections for upload ${uploadId}`);
+        
+        res.json({
+          message: "Upload reprocessed successfully",
+          sectionsExtracted: sectionsData.length
+        });
+      } else {
+        res.status(400).json({ error: "No sections could be extracted from PDF" });
+      }
+      
+    } catch (error: any) {
+      console.error('Reprocess error:', error);
+      res.status(500).json({ error: "Failed to reprocess upload" });
     }
   });
 
