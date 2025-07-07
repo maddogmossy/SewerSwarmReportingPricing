@@ -754,13 +754,24 @@ export default function Dashboard() {
         title: "Dashboard Analysis Data Cleared",
         description: `Successfully cleared analysis data from ${data.deletedCounts.sections} sections. Uploaded files preserved for re-processing.`,
       });
+      // Invalidate all relevant queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/uploads", currentUpload?.id, "sections"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/uploads", currentUpload?.id, "defects"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/repair-pricing"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/pricing/check"] });
+      
       setShowClearDataDialog(false);
-      // Reset all state instead of reloading the page
+      // Reset all state to force UI refresh
       setSelectedFolderForView(null);
       setSelectedReportIds([]);
       setShowFolderDropdown(false);
+      
+      // Force refetch of sections data to show cleared state immediately
+      if (currentUpload?.id) {
+        queryClient.refetchQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+      }
     },
     onError: (error) => {
       toast({
@@ -1774,19 +1785,48 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
-        ) : sectionData.length === 0 && currentUpload && !sectionsLoading ? (
-          // Show data integrity warning when upload exists but no authentic data is available (and not loading)
-          <DataIntegrityWarning
-            type="warning"
-            message="No authentic inspection data available for this report."
-            details={[
-              `Report: ${currentUpload.fileName}`,
-              "PDF extraction did not find valid section inspection data",
-              "Synthetic or placeholder data has been blocked for data integrity"
-            ]}
-            showUploadButton={true}
-            onUploadClick={() => window.location.href = '/upload'}
-          />
+        ) : sectionData.length === 0 && currentUpload && !sectionsLoading && !sectionsError ? (
+          // Show data integrity warning when upload exists but no authentic data is available (and not loading, and no error)
+          // Check if this might be a cleared dataset first
+          rawSectionData?.length === 0 ? (
+            // Data has been cleared - show normal upload interface
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <RefreshCw className="h-12 w-12 text-slate-400 mb-4" />
+                <h3 className="text-lg font-medium text-slate-900 mb-2">Analysis Data Cleared</h3>
+                <p className="text-slate-500 text-center mb-4">
+                  Upload file has been preserved. Re-upload or process the file to restore analysis data.
+                </p>
+                <div className="flex gap-3">
+                  <Link to="/upload">
+                    <Button>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload New Report
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="outline"
+                    onClick={() => window.location.reload()}
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh Page
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <DataIntegrityWarning
+              type="warning"
+              message="No authentic inspection data available for this report."
+              details={[
+                `Report: ${currentUpload.fileName}`,
+                "PDF extraction did not find valid section inspection data",
+                "Synthetic or placeholder data has been blocked for data integrity"
+              ]}
+              showUploadButton={true}
+              onUploadClick={() => window.location.href = '/upload'}
+            />
+          )
         ) : (
           <div className="space-y-8">
             {/* Section Inspection Data Table */}
