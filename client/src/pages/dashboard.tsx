@@ -870,10 +870,12 @@ export default function Dashboard() {
       ? completedUploads.filter(upload => upload.folderId === selectedFolderForView)
       : completedUploads;
   
-  // Get current upload based on reportId parameter only - don't auto-select if no reportId
+  // Get current upload based on reportId parameter OR selectedReportIds
   const currentUpload = reportId 
     ? filteredUploads.find(upload => upload.id === parseInt(reportId))
-    : null; // Only show specific report if explicitly requested
+    : selectedReportIds.length === 1 
+      ? filteredUploads.find(upload => upload.id === selectedReportIds[0])
+      : null;
   
   // Debug logging
   console.log("Dashboard Debug:", {
@@ -1554,6 +1556,19 @@ export default function Dashboard() {
 
       <div className="container mx-auto p-6 max-w-none">
         <div className="mb-6">
+          {/* Quick Access Test Button for ECL Report */}
+          <div className="mb-4">
+            <button
+              onClick={() => {
+                setSelectedReportIds([25]);
+                console.log("Direct ECL report access - setting selectedReportIds to [25]");
+              }}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
+            >
+              📋 Quick Access: View ECL Newark Report (38 sections)
+            </button>
+          </div>
+          
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold text-slate-900">Section Inspection Data & Analysis</h1>
             {completedUploads.length > 0 && (
