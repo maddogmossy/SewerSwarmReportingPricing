@@ -36,11 +36,13 @@ export function AddressAutocomplete({
   }, [value]);
 
   // Fetch address suggestions
-  const { data: suggestions = [] } = useQuery({
+  const { data: rawSuggestions } = useQuery({
     queryKey: ["/api/search-addresses", searchQuery],
     queryFn: () => apiRequest("GET", `/api/search-addresses?q=${encodeURIComponent(searchQuery)}&limit=8`),
     enabled: searchQuery.length >= 2 && open,
   });
+
+  const suggestions = Array.isArray(rawSuggestions) ? rawSuggestions : [];
 
   const handleSelect = (selectedAddress: string) => {
     onChange(selectedAddress);
@@ -79,7 +81,7 @@ export function AddressAutocomplete({
             <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0" side="bottom" align="start">
+        <PopoverContent className="w-[--radix-popover-trigger-width] p-0" side="bottom" align="start">
           <Command>
             <CommandInput 
               placeholder="Search UK addresses..." 
