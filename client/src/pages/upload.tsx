@@ -256,20 +256,20 @@ export default function Upload() {
   // Delete folder mutation
   const deleteFolderMutation = useMutation({
     mutationFn: async (folderId: number) => {
-      const response = await apiRequest("DELETE", `/api/folders/${folderId}`);
-      return await response.json();
+      return apiRequest("DELETE", `/api/folders/${folderId}`);
     },
     onSuccess: (data) => {
+      console.log("Delete folder success:", data);
       toast({
         title: "Project Folder Deleted",
-        description: `Successfully deleted "${data.folderName}" folder and ${data.deletedCounts.uploads} reports.`,
+        description: `Successfully deleted "${data.folderName}" and ${data.deletedCounts.uploads} reports.`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
       setShowDeleteFolderDialog(false);
       setSelectedFolderToDelete(null);
       // Reset state if deleted folder was currently selected
-      if (selectedFolderId === data.deletedCounts.folders) {
+      if (selectedFolderId && selectedFolderToDelete && selectedFolderId === selectedFolderToDelete.id) {
         setSelectedFolderId(null);
       }
     },
