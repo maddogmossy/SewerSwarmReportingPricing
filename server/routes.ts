@@ -491,9 +491,23 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     const totalLength = getAdoptionTotalLength(itemNo);
     const lengthSurveyed = totalLength; // Adoption standard: full length surveyed
     
-    // Apply adoption sector MSCC5 classification
-    // REMOVED: classifyAdoptionDefects call - synthetic data blocked
-    // Only authentic PDF extraction permitted
+    // Extract authentic defect data from PDF for this specific section
+    const sectionDefects = extractDefectsFromAdoptionSection(pdfText, itemNo);
+    
+    // Apply MSCC5 classification to extracted defects
+    let defectClassification;
+    if (sectionDefects && sectionDefects.trim() !== '') {
+      defectClassification = await MSCC5Classifier.classifyDefect(sectionDefects, 'adoption');
+    } else {
+      // No defects found - clean section
+      defectClassification = {
+        defectCode: 'NONE',
+        defectDescription: 'No action required pipe observed in acceptable structural and service condition',
+        severityGrade: 0,
+        recommendations: 'No action required pipe observed in acceptable structural and service condition',
+        adoptable: 'Yes'
+      };
+    }
     
     // Extract inspection number from PDF context for this section
     const inspectionNo = extractInspectionNumberForSection(pdfText, itemNo);
@@ -513,12 +527,12 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
       pipeMaterial,
       totalLength,
       lengthSurveyed,
-      defects: 'AUTHENTIC PDF EXTRACTION REQUIRED',
-      severityGrade: 'PDF_REQUIRED',
-      recommendations: 'AUTHENTIC PDF EXTRACTION REQUIRED',
-      actionRequired: 'AUTHENTIC PDF EXTRACTION REQUIRED',
-      adoptable: 'PDF_REQUIRED',
-      cost: 'PDF_EXTRACTION_REQUIRED'
+      defects: defectClassification.defectDescription,
+      severityGrade: defectClassification.severityGrade.toString(),
+      recommendations: defectClassification.recommendations,
+      actionRequired: defectClassification.recommendations,
+      adoptable: defectClassification.adoptable,
+      cost: defectClassification.severityGrade === 0 ? 'Complete' : 'Configure adoption sector pricing first'
     });
   }
   
@@ -554,6 +568,64 @@ function getAdoptionInspectionTime(itemNo: number): string {
   const minute = totalMinutes % 60;
   return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 }
+
+function extractDefectsFromAdoptionSection(pdfText: string, itemNo: number): string {
+  console.log(`Extracting defects for Section ${itemNo} from PDF`);
+  
+  // Look for defect patterns around this section number in the PDF
+  const lines = pdfText.split('\n');
+  
+  // Find the section header line
+  const sectionHeaderPattern = new RegExp(`Section Item ${itemNo}[:\\s]`, 'i');
+  let sectionStartIndex = -1;
+  
+  for (let i = 0; i < lines.length; i++) {
+    if (sectionHeaderPattern.test(lines[i])) {
+      sectionStartIndex = i;
+      break;
+    }
+  }
+  
+  if (sectionStartIndex === -1) {
+    console.log(`No section header found for Section ${itemNo}`);
+    return '';
+  }
+  
+  // Look for defect codes and observations in the next 20 lines after the section header
+  const searchRange = Math.min(sectionStartIndex + 20, lines.length);
+  const defects = [];
+  
+  for (let i = sectionStartIndex; i < searchRange; i++) {
+    const line = lines[i].trim();
+    
+    // Common MSCC5 defect patterns
+    const defectPatterns = [
+      /\b(CR|FC|FL|JDL|JDS|DER|DES|RI|WL|OB|DEF|S\/A|OJM|OJL|DEC|JDM)\s+[\d\.]+m?\b/gi,
+      /\b(debris|crack|fracture|displacement|deformation|root|water|obstruction|deposits)\b/gi,
+      /\b\d+%\s*(cross[- ]sectional|blockage|diameter|circumferential)/gi,
+      /\b(Grade|Severity)\s*[0-5]\b/gi
+    ];
+    
+    for (const pattern of defectPatterns) {
+      const matches = line.match(pattern);
+      if (matches) {
+        defects.push(...matches);
+      }
+    }
+    
+    // Look for specific observation codes
+    if (/\b(Construction Features|Miscellaneous Features|No coding present|Service connection)\b/i.test(line)) {
+      defects.push(line.trim());
+    }
+  }
+  
+  const extractedDefects = defects.join(', ').substring(0, 500); // Limit length
+  console.log(`Section ${itemNo} defects extracted: "${extractedDefects}"`);
+  
+  return extractedDefects;
+}
+
+
 
 function getAdoptionMHDepth(itemNo: number, position: 'start' | 'finish'): string {
   // AUTHENTIC DATA ONLY - no synthetic generation
@@ -2417,27 +2489,40 @@ export async function registerRoutes(app: Express) {
       await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
       await db.delete(sectionDefects).where(eq(sectionDefects.fileUploadId, uploadId));
       
-      // Extract sections from PDF
-      const sectionsData = await extractAdoptionSectionsFromPDF(filePath);
+      // Read and parse the PDF file first
+      console.log(`Reading PDF file from: ${filePath}`);
+      const fileBuffer = fs.readFileSync(filePath);
+      console.log(`File buffer size: ${fileBuffer.length} bytes`);
+      
+      const pdfData = await pdfParse(fileBuffer);
+      console.log(`PDF parsed: ${pdfData.numpages} pages, ${pdfData.text.length} characters`);
+      console.log(`PDF text preview: ${pdfData.text.substring(0, 200)}...`);
+      
+      // Extract sections from PDF content
+      const sectionsData = await extractAdoptionSectionsFromPDF(pdfData.text, uploadId);
       
       if (sectionsData && sectionsData.length > 0) {
         // Insert sections into database
         for (const section of sectionsData) {
           await db.insert(sectionInspections).values({
             fileUploadId: uploadId,
-            itemNumber: section.itemNumber,
-            startMh: section.startMh,
-            finishMh: section.finishMh,
+            itemNo: section.itemNo,
+            inspectionNo: section.inspectionNo,
+            date: section.date,
+            time: section.time,
+            startMH: section.startMH,
+            finishMH: section.finishMH,
+            startMHDepth: section.startMHDepth || "no data recorded",
+            finishMHDepth: section.finishMHDepth || "no data recorded",
             pipeSize: section.pipeSize,
             pipeMaterial: section.pipeMaterial,
             totalLength: section.totalLength,
             lengthSurveyed: section.lengthSurveyed,
             defects: section.defects,
+            severityGrade: section.severityGrade,
             recommendations: section.recommendations,
             adoptable: section.adoptable,
-            severityGrade: section.severityGrade,
-            startMhDepth: section.startMhDepth || "no data recorded",
-            finishMhDepth: section.finishMhDepth || "no data recorded"
+            cost: section.cost
           });
         }
         
