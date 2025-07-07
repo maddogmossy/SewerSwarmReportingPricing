@@ -35,6 +35,13 @@ export function AddressAutocomplete({
     return () => clearTimeout(timer);
   }, [value]);
 
+  // Auto-open popover when suggestions are available
+  useEffect(() => {
+    if (suggestions.length > 0 && value.length >= 2) {
+      setOpen(true);
+    }
+  }, [suggestions, value]);
+
   // Fetch address suggestions
   const { data: rawSuggestions } = useQuery({
     queryKey: ["/api/search-addresses", searchQuery],
@@ -52,11 +59,7 @@ export function AddressAutocomplete({
 
   const handleInputChange = (newValue: string) => {
     onChange(newValue);
-    if (newValue.length >= 2) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
+    // Don't automatically close/open popover - let the effect handle it based on suggestions
   };
 
   return (
@@ -73,7 +76,7 @@ export function AddressAutocomplete({
               placeholder={placeholder}
               className="min-h-[100px] pr-10"
               onFocus={() => {
-                if (value.length >= 2) {
+                if (value.length >= 2 && suggestions.length > 0) {
                   setOpen(true);
                 }
               }}
@@ -90,20 +93,25 @@ export function AddressAutocomplete({
               className="hidden"
             />
             <CommandList>
-              <CommandEmpty>No addresses found.</CommandEmpty>
-              <CommandGroup>
-                {suggestions.map((address: string, index: number) => (
-                  <CommandItem
-                    key={index}
-                    value={address}
-                    onSelect={() => handleSelect(address)}
-                    className="flex items-start gap-2 p-3 cursor-pointer"
-                  >
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                    <div className="text-sm">{address}</div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
+              {suggestions.length === 0 ? (
+                <div className="p-3 text-sm text-muted-foreground">
+                  Continue typing to see address suggestions...
+                </div>
+              ) : (
+                <CommandGroup>
+                  {suggestions.map((address: string, index: number) => (
+                    <CommandItem
+                      key={index}
+                      value={address}
+                      onSelect={() => handleSelect(address)}
+                      className="flex items-start gap-2 p-3 cursor-pointer"
+                    >
+                      <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                      <div className="text-sm">{address}</div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
             </CommandList>
           </Command>
         </PopoverContent>
