@@ -26,8 +26,8 @@ export interface WorkTypeRequirement {
 // UK Postcode regex pattern
 const UK_POSTCODE_REGEX = /([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]))))\s?[0-9][A-Za-z]{2})/;
 
-// Depot location (configurable - for now using example location)
-const DEPOT_POSTCODE = "B1 1AA"; // Birmingham city center as example depot
+// Depot location (configurable from company settings)
+const DEFAULT_DEPOT_POSTCODE = "DEPOT_NOT_SET"; // Must be configured in company settings
 
 /**
  * Validates UK address format and extracts postcode
@@ -93,11 +93,16 @@ export function validateAddress(address: string): AddressValidationResult {
  * Calculates travel distance between depot and work location
  * Note: This uses a simplified calculation. In production, you'd use Google Maps API or similar
  */
-export async function calculateTravelDistance(destinationPostcode: string): Promise<TravelDistanceResult> {
-  // For now, using a mock calculation based on postcode area
-  // In production, this would call Google Maps Distance Matrix API
+export async function calculateTravelDistance(destinationPostcode: string, depotPostcode?: string): Promise<TravelDistanceResult> {
+  // Use provided depot postcode or require configuration
+  const fromPostcode = depotPostcode || DEFAULT_DEPOT_POSTCODE;
   
-  const mockDistance = calculateMockDistance(DEPOT_POSTCODE, destinationPostcode);
+  if (fromPostcode === "DEPOT_NOT_SET") {
+    throw new Error("Depot postcode must be configured in company settings before calculating travel distance");
+  }
+  
+  // In production, this would call Google Maps Distance Matrix API
+  const mockDistance = calculateMockDistance(fromPostcode, destinationPostcode);
   const travelTime = Math.round(mockDistance * 2.5); // Assume 2.5 minutes per mile average
   
   return {
@@ -122,21 +127,12 @@ function calculateMockDistance(depotPostcode: string, destinationPostcode: strin
     return Math.random() * 10 + 5; // 5-15 miles within same area
   }
   
-  // Different areas - calculate based on area codes
-  const areaDistances: Record<string, number> = {
-    'B1': 0,   // Birmingham center (depot)
-    'B2': 8,   'B3': 12,  'B4': 15,  'B5': 18,
-    'M1': 85,  'M2': 88,  'M3': 92,  // Manchester
-    'SW1': 120, 'SW2': 125, 'SW3': 130, // London Southwest
-    'NW1': 115, 'NW2': 118, 'NW3': 122, // London Northwest
-    'SE1': 125, 'SE2': 128, 'SE3': 132, // London Southeast
-    'LE1': 35,  'LE2': 38,  'LE3': 42,  // Leicester
-    'CV1': 25,  'CV2': 28,  'CV3': 32,  // Coventry
-    'WS1': 15,  'WS2': 18,  'WS3': 22,  // Walsall
-    'DY1': 20,  'DY2': 23,  'DY3': 27,  // Dudley
-  };
+  // Calculate relative distance between postcode areas
+  // This uses a simplified distance matrix - in production would use real API
+  const baseDistance = Math.abs(depotArea.charCodeAt(0) - destArea.charCodeAt(0)) * 10;
+  const numberVariation = Math.random() * 20 + 10; // 10-30 mile variation
   
-  return areaDistances[destArea] || (Math.random() * 50 + 50); // Default 50-100 miles
+  return Math.min(baseDistance + numberVariation, 200); // Cap at 200 miles
 }
 
 /**
