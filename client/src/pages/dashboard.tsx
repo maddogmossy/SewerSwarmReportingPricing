@@ -1727,11 +1727,13 @@ export default function Dashboard() {
             )}
           </div>
           <p className="text-slate-600">
-            {selectedReportIds.length > 0 
-              ? `Viewing ${selectedReportIds.length} selected reports with projects: ${[...new Set(rawSectionData.map(s => s.projectNumber))].filter(p => p !== 'Unknown').join(', ')}`
-              : currentUpload 
-                ? `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector`
-                : "Comprehensive analysis results across all uploaded reports with sector-specific compliance checking"
+            {completedUploads.length === 0 
+              ? "No analysis data available. Upload a report to begin inspection analysis."
+              : selectedReportIds.length > 0 && rawSectionData.length > 0
+                ? `Viewing ${selectedReportIds.length} selected reports with projects: ${[...new Set(rawSectionData.map(s => s.projectNumber))].filter(p => p !== 'Unknown').join(', ')}`
+                : currentUpload 
+                  ? `Viewing report: ${currentUpload.fileName} • ${currentSector.name} Sector`
+                  : "Comprehensive analysis results across all uploaded reports with sector-specific compliance checking"
             }
           </p>
 
