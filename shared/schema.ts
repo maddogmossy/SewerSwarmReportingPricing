@@ -457,17 +457,21 @@ export const insertUserSchema = createInsertSchema(users).omit({
 
 export const insertProjectFolderSchema = createInsertSchema(projectFolders).omit({
   id: true,
-  createdAt: true,
   userId: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({
   id: true,
-  createdAt: true,
   userId: true,
   filePath: true,
   status: true,
   projectNumber: true,
+  reportUrl: true,
+  siteAddress: true,
+  sitePostcode: true,
+  createdAt: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

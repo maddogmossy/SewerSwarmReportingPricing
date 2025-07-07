@@ -119,7 +119,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
+    const result = await db
       .insert(users)
       .values(userData)
       .onConflictDoUpdate({
@@ -130,7 +130,7 @@ export class DatabaseStorage implements IStorage {
         },
       })
       .returning();
-    return user;
+    return result[0];
   }
 
   async updateUserProfile(id: string, data: Partial<User>): Promise<User> {
@@ -289,8 +289,7 @@ export class DatabaseStorage implements IStorage {
   async updateUserCostBand(id: number, costBandValue: string): Promise<UserCostBand> {
     const [result] = await db.update(userCostBands)
       .set({ 
-        costBand: costBandValue,
-        updatedAt: new Date()
+        costBand: costBandValue
       })
       .where(eq(userCostBands.id, id))
       .returning();
@@ -356,7 +355,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateUserPricing(id: number, pricingUpdate: Partial<InsertUserPricing>): Promise<UserPricing> {
     const [updated] = await db.update(userPricing)
-      .set({ ...pricingUpdate, updatedAt: new Date() })
+      .set(pricingUpdate)
       .where(eq(userPricing.id, id))
       .returning();
     return updated;
@@ -439,7 +438,7 @@ export class DatabaseStorage implements IStorage {
     if (existing) {
       // Update existing record
       const [updated] = await db.update(companySettings)
-        .set({ ...updates, updatedAt: new Date() })
+        .set(updates)
         .where(eq(companySettings.adminUserId, adminUserId))
         .returning();
       return updated;
@@ -499,7 +498,7 @@ export class DatabaseStorage implements IStorage {
   async acceptTeamInvitation(token: string, userId: string): Promise<void> {
     await db.update(teamInvitations)
       .set({ 
-        isAccepted: true, 
+        isAccepted: true,
         acceptedAt: new Date() 
       })
       .where(eq(teamInvitations.token, token));
