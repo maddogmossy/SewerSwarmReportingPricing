@@ -38,7 +38,8 @@ import {
   Trash2,
   TriangleAlert,
   AlertTriangle,
-  BarChart3
+  BarChart3,
+  FileX
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
