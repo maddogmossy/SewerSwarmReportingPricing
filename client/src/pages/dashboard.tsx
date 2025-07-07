@@ -594,8 +594,8 @@ export default function Dashboard() {
       case 'cost':
 
         
-        // Check if section has "No action required" in recommendations (Grade 0 sections only)
-        if (section.recommendations && section.recommendations.includes('No action required pipe observed in acceptable structural and service condition') && section.severityGrade === 0) {
+        // Display "Complete" for all Grade 0 sections with "Complete" in cost field
+        if (section.cost === 'Complete' || (section.severityGrade === '0' && section.adoptable === 'Yes')) {
           return (
             <div className="text-xs text-green-600 font-medium">
               Complete
