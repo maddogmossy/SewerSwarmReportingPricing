@@ -36,8 +36,8 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingFolder, setEditingFolder] = useState<ProjectFolder | null>(null);
-  const [newFolderName, setNewFolderName] = useState("");
   const [newFolderAddress, setNewFolderAddress] = useState("");
+  const [newFolderName, setNewFolderName] = useState(""); // Keep for edit functionality
   const [addressValidation, setAddressValidation] = useState<{ isValid: boolean; errors: string[]; extractedPostcode?: string } | null>(null);
   const [travelInfo, setTravelInfo] = useState<{ distance: number; travelTime: number; isValidating: boolean } | null>(null);
   const [showWorkTypeWarnings, setShowWorkTypeWarnings] = useState(false);
@@ -50,10 +50,7 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
     if (extractedAddress && !newFolderAddress) {
       setNewFolderAddress(extractedAddress);
     }
-    if (projectNumber && !newFolderName) {
-      setNewFolderName(`${projectNumber} - ${extractedAddress}`);
-    }
-  }, [extractedAddress, projectNumber, newFolderName, newFolderAddress]);
+  }, [extractedAddress, newFolderAddress]);
 
   // Validate address in real-time
   useEffect(() => {
@@ -105,7 +102,6 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
       onFolderSelect(newFolder.id);
       setShowCreateDialog(false);
-      setNewFolderName("");
       setNewFolderAddress("");
       setAddressValidation(null);
       setTravelInfo(null);
@@ -168,10 +164,10 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
   });
 
   const handleCreateFolder = () => {
-    if (!newFolderName.trim() || !newFolderAddress.trim()) {
+    if (!newFolderAddress.trim()) {
       toast({
         title: "Validation Error",
-        description: "Both folder name and full address are required",
+        description: "Folder address is required",
         variant: "destructive",
       });
       return;
@@ -186,8 +182,13 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
       return;
     }
     
+    // Auto-generate folder name from project number and address
+    const autoFolderName = projectNumber ? 
+      `${projectNumber} - ${newFolderAddress.split(',')[0]?.trim() || newFolderAddress.trim()}` :
+      newFolderAddress.split(',')[0]?.trim() || newFolderAddress.trim();
+    
     createFolderMutation.mutate({
-      folderName: newFolderName.trim(),
+      folderName: autoFolderName,
       projectAddress: newFolderAddress.trim(),
       projectPostcode: addressValidation.extractedPostcode,
       projectNumber: projectNumber || "",
@@ -296,25 +297,14 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-6">
-              {/* Folder Name Field */}
+              {/* Single Folder Address Field */}
               <div>
-                <Label htmlFor="folderName">Folder Name</Label>
-                <Input
-                  id="folderName"
-                  value={newFolderName}
-                  onChange={(e) => setNewFolderName(e.target.value)}
-                  placeholder="e.g., 3588 - Nine Elms Park"
-                />
-              </div>
-
-              {/* Full Address Field */}
-              <div>
-                <Label htmlFor="folderAddress">Full Address & Postcode *</Label>
+                <Label htmlFor="folderAddress">Folder Address</Label>
                 <Textarea
                   id="folderAddress"
                   value={newFolderAddress}
                   onChange={(e) => setNewFolderAddress(e.target.value)}
-                  placeholder="e.g., Nine Elms Park, Vauxhall, London, SW8 5BX"
+                  placeholder="Full Address and Post code"
                   className="min-h-[100px]"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
@@ -416,7 +406,6 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
                 variant="outline" 
                 onClick={() => {
                   setShowCreateDialog(false);
-                  setNewFolderName("");
                   setNewFolderAddress("");
                   setAddressValidation(null);
                   setTravelInfo(null);
@@ -427,7 +416,7 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
               </Button>
               <Button 
                 onClick={handleCreateFolder}
-                disabled={!newFolderName.trim() || !addressValidation?.isValid || createFolderMutation.isPending}
+                disabled={!newFolderAddress.trim() || !addressValidation?.isValid || createFolderMutation.isPending}
                 className="min-w-[120px]"
               >
                 {createFolderMutation.isPending ? "Creating..." : "Create Folder"}
