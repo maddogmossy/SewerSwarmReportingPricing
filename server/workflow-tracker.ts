@@ -39,8 +39,12 @@ export class WorkflowTracker {
     console.log(`📊 WORKFLOW STEP: ${step} ${count ? `(${count})` : ''} ${details || ''}`);
   }
   
-  addPatternMatch(matchCount: number, pattern: string) {
-    this.addStep('PATTERN_MATCH', pattern, matchCount);
+  addPatternMatch(matchCount: number, pattern: string, itemNo?: number) {
+    this.addStep('PATTERN_MATCH', { pattern, itemNo }, matchCount);
+  }
+  
+  addPatternFailure(itemNo: number, reason: string) {
+    this.addStep('PATTERN_FAILURE', { itemNo, reason });
   }
   
   addSectionCreated(itemNo: number, startMH: string, finishMH: string) {

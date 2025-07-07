@@ -526,14 +526,19 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   let matchCount = 0;
   while ((match = sectionPattern.exec(pdfText)) !== null) {
     matchCount++;
-    tracker.addPatternMatch(matchCount, match[0]);
-    console.log(`✓ Found section pattern match ${matchCount}: ${match[0]}`);
     const itemNo = parseInt(match[1]);
+    tracker.addPatternMatch(matchCount, match[0], itemNo);
+    console.log(`✓ Found section pattern match ${matchCount}: ${match[0]}`);
     const originalStartMH = match[2];
     const originalFinishMH = match[3];
     const sectionId = match[4];
     
     console.log(`✓ Found Section ${itemNo}: ${originalStartMH} → ${originalFinishMH} (${sectionId})`);
+    
+    // DEBUG: Track specific missing sections
+    if ([55, 62, 63, 64, 65, 66, 75, 82, 83, 84, 89, 90].includes(itemNo)) {
+      console.log(`🔍 CRITICAL: Processing missing section ${itemNo} - ${originalStartMH} → ${originalFinishMH}`);
+    }
     
     // CRITICAL: Apply inspection direction logic for adoption reports
     let inspectionDirection = inspectionDirections[itemNo];
