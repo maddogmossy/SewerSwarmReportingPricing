@@ -2367,6 +2367,73 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Delete project folder endpoint
+  app.delete("/api/folders/:folderId", async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id || "test-user";
+      const folderId = parseInt(req.params.folderId);
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      console.log(`🗑️ Deleting project folder ${folderId} for user: ${userId}`);
+      
+      // Get the folder to verify ownership and get folder name
+      const folder = await db.select().from(projectFolders)
+        .where(and(eq(projectFolders.id, folderId), eq(projectFolders.userId, userId)))
+        .limit(1);
+      
+      if (folder.length === 0) {
+        return res.status(404).json({ error: "Folder not found or not authorized" });
+      }
+      
+      // Get all uploads in this folder
+      const folderUploads = await db.select().from(fileUploads)
+        .where(and(eq(fileUploads.folderId, folderId), eq(fileUploads.userId, userId)));
+      
+      const uploadIds = folderUploads.map(upload => upload.id);
+      
+      let deletedCounts = {
+        sections: 0,
+        defects: 0,
+        uploads: 0,
+        folders: 1
+      };
+      
+      // Delete all section data for uploads in this folder
+      if (uploadIds.length > 0) {
+        for (const uploadId of uploadIds) {
+          await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
+          await db.delete(sectionDefects).where(eq(sectionDefects.fileUploadId, uploadId));
+        }
+        
+        deletedCounts.sections = uploadIds.length;
+        deletedCounts.defects = uploadIds.length;
+        
+        // Delete all file uploads in this folder
+        await db.delete(fileUploads).where(and(eq(fileUploads.folderId, folderId), eq(fileUploads.userId, userId)));
+        deletedCounts.uploads = folderUploads.length;
+      }
+      
+      // Finally delete the folder itself
+      await db.delete(projectFolders).where(and(eq(projectFolders.id, folderId), eq(projectFolders.userId, userId)));
+      
+      console.log(`✅ Project folder "${folder[0].folderName}" deleted:`, deletedCounts);
+      
+      res.json({ 
+        success: true, 
+        message: `Project folder "${folder[0].folderName}" and all reports deleted successfully`,
+        deletedCounts,
+        folderName: folder[0].folderName
+      });
+      
+    } catch (error: any) {
+      console.error("Error deleting project folder:", error);
+      res.status(500).json({ error: "Failed to delete project folder" });
+    }
+  });
+
   // Vehicle Travel Rates API endpoints
   app.get("/api/vehicle-travel-rates", async (req: Request, res: Response) => {
     try {

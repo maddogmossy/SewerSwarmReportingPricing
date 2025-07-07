@@ -36,7 +36,8 @@ import {
   ChevronDown,
   Eye,
   Trash2,
-  TriangleAlert
+  TriangleAlert,
+  AlertTriangle
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
@@ -282,6 +283,8 @@ export default function Dashboard() {
   const [selectedFolderForView, setSelectedFolderForView] = useState<number | null>(null);
   const [selectedReportIds, setSelectedReportIds] = useState<number[]>([]);
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
+  const [showDeleteFolderDialog, setShowDeleteFolderDialog] = useState(false);
+  const [selectedFolderToDelete, setSelectedFolderToDelete] = useState<{ id: number; name: string; reportCount: number } | null>(null);
 
   // Auto-collapse dropdown when clicking outside
   useEffect(() => {
@@ -762,6 +765,37 @@ export default function Dashboard() {
     onError: (error) => {
       toast({
         title: "Clear Data Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete folder mutation
+  const deleteFolderMutation = useMutation({
+    mutationFn: async (folderId: number) => {
+      const response = await apiRequest("DELETE", `/api/folders/${folderId}`);
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Project Folder Deleted",
+        description: `Successfully deleted "${data.folderName}" folder and ${data.deletedCounts.uploads} reports.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
+      setShowDeleteFolderDialog(false);
+      setSelectedFolderToDelete(null);
+      // Reset state if deleted folder was currently selected
+      if (selectedFolderForView === selectedFolderToDelete?.id) {
+        setSelectedFolderForView(null);
+        setSelectedReportIds([]);
+      }
+      setShowFolderDropdown(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Delete Folder Failed",
         description: error.message,
         variant: "destructive",
       });
@@ -1580,19 +1614,37 @@ export default function Dashboard() {
                         return (
                           <div key={folderKey}>
                             {/* Folder Header */}
-                            <div
-                              onClick={() => {
-                                setSelectedFolderForView(parseInt(folderKey));
-                                setSelectedReportIds([]);
-                                setShowFolderDropdown(false);
-                              }}
-                              className="flex items-center justify-between p-3 hover:bg-blue-50 cursor-pointer border-b bg-slate-50"
-                            >
-                              <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between p-3 hover:bg-blue-50 border-b bg-slate-50">
+                              <div 
+                                onClick={() => {
+                                  setSelectedFolderForView(parseInt(folderKey));
+                                  setSelectedReportIds([]);
+                                  setShowFolderDropdown(false);
+                                }}
+                                className="flex items-center gap-2 cursor-pointer flex-1"
+                              >
                                 <FolderOpen className="h-4 w-4 text-blue-600" />
                                 <span className="font-medium text-sm">{folder?.folderName || `Folder ${folderKey}`}</span>
                               </div>
-                              <span className="text-xs text-slate-500">({completedReports.length} reports)</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-slate-500">({completedReports.length} reports)</span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedFolderToDelete({
+                                      id: parseInt(folderKey),
+                                      name: folder?.folderName || `Folder ${folderKey}`,
+                                      reportCount: completedReports.length
+                                    });
+                                    setShowDeleteFolderDialog(true);
+                                    setShowFolderDropdown(false);
+                                  }}
+                                  className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                  title="Delete Folder"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
+                              </div>
                             </div>
                             
                             {/* Reports in this folder */}
@@ -2177,6 +2229,53 @@ export default function Dashboard() {
               className="bg-amber-600 hover:bg-amber-700"
             >
               Export Anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Project Folder Confirmation Dialog */}
+      <Dialog open={showDeleteFolderDialog} onOpenChange={setShowDeleteFolderDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-600 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              Delete Project Folder
+            </DialogTitle>
+            <DialogDescription>
+              This action will permanently delete the entire project folder and all reports within it.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-sm text-red-800 font-medium mb-2">
+                Are you sure you want to delete this project folder?
+              </p>
+              <div className="text-sm text-red-700 space-y-1">
+                <div><strong>Folder:</strong> {selectedFolderToDelete?.name}</div>
+                <div><strong>Reports to delete:</strong> {selectedFolderToDelete?.reportCount}</div>
+              </div>
+              <ul className="text-xs text-red-700 mt-3 list-disc list-inside">
+                <li>The project folder will be permanently removed</li>
+                <li>All {selectedFolderToDelete?.reportCount} reports in this folder will be deleted</li>
+                <li>All section inspection data will be removed</li>
+                <li>This action cannot be undone</li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteFolderDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => selectedFolderToDelete && deleteFolderMutation.mutate(selectedFolderToDelete.id)}
+              disabled={deleteFolderMutation.isPending}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {deleteFolderMutation.isPending ? "Deleting..." : "Delete Folder"}
             </Button>
           </DialogFooter>
         </DialogContent>
