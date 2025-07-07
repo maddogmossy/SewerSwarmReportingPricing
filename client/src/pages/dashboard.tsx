@@ -784,8 +784,8 @@ export default function Dashboard() {
       // Invalidate all relevant queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/uploads", currentUpload?.id, "sections"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/uploads", currentUpload?.id, "defects"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/defects`] });
       queryClient.invalidateQueries({ queryKey: ["/api/repair-pricing"] });
       queryClient.invalidateQueries({ queryKey: ["/api/pricing/check"] });
       
@@ -876,6 +876,10 @@ export default function Dashboard() {
       // Force refresh all section data
       queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
       queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
+      // Force immediate refetch of section data
+      if (currentUpload?.id) {
+        queryClient.refetchQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+      }
       toast({
         title: "Reports Refreshed",
         description: "Dashboard data and pricing updated.",
