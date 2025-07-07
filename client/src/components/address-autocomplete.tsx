@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MapPin } from "lucide-react";
@@ -22,8 +20,8 @@ export function AddressAutocomplete({
   placeholder = "Full Address and Post code",
   className = ""
 }: AddressAutocompleteProps) {
-  const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Debounce search query
@@ -36,99 +34,77 @@ export function AddressAutocomplete({
   }, [value]);
 
   // Fetch address suggestions
-  const { data: rawSuggestions } = useQuery({
+  const { data: suggestions = [], isLoading } = useQuery({
     queryKey: ["/api/search-addresses", searchQuery],
     queryFn: () => apiRequest("GET", `/api/search-addresses?q=${encodeURIComponent(searchQuery)}&limit=8`),
     enabled: searchQuery.length >= 1,
   });
 
-  const suggestions = Array.isArray(rawSuggestions) ? rawSuggestions : [];
-
-  // Auto-open popover when suggestions are available
+  // Show suggestions when data is available
   useEffect(() => {
     if (suggestions.length > 0 && value.length >= 1) {
-      setOpen(true);
-    } else if (suggestions.length === 0 && value.length < 1) {
-      setOpen(false);
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
     }
   }, [suggestions, value]);
 
   const handleSelect = (selectedAddress: string) => {
     onChange(selectedAddress);
-    setOpen(false);
+    setShowSuggestions(false);
     textareaRef.current?.focus();
   };
 
   const handleInputChange = (newValue: string) => {
     onChange(newValue);
-    // Don't automatically close/open popover - let the effect handle it based on suggestions
+    if (newValue.length >= 1) {
+      setShowSuggestions(true);
+    }
   };
 
   return (
     <div className={className}>
       <Label htmlFor="address-input">{label}</Label>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <div className="relative">
-            <Textarea
-              ref={textareaRef}
-              id="address-input"
-              value={value}
-              onChange={(e) => handleInputChange(e.target.value)}
-              placeholder={placeholder}
-              className="min-h-[100px] pr-10"
-              onFocus={() => {
-                if (value.length >= 1) {
-                  setOpen(true);
-                }
-              }}
-              onBlur={(e) => {
-                // Only close if not clicking on the popover
-                const relatedTarget = e.relatedTarget as HTMLElement;
-                if (!relatedTarget || !relatedTarget.closest('[data-radix-popper-content-wrapper]')) {
-                  setTimeout(() => setOpen(false), 150);
-                }
-              }}
-            />
-            <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+      <div className="relative">
+        <Textarea
+          ref={textareaRef}
+          id="address-input"
+          value={value}
+          onChange={(e) => handleInputChange(e.target.value)}
+          placeholder={placeholder}
+          className="min-h-[100px] pr-10"
+          onFocus={() => {
+            if (value.length >= 1 && suggestions.length > 0) {
+              setShowSuggestions(true);
+            }
+          }}
+          onBlur={() => {
+            // Delay hiding to allow click on suggestions
+            setTimeout(() => setShowSuggestions(false), 200);
+          }}
+        />
+        <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+        
+        {/* Suggestions dropdown */}
+        {showSuggestions && (suggestions.length > 0 || isLoading) && (
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-[200px] overflow-y-auto">
+            {isLoading ? (
+              <div className="p-3 text-sm text-gray-500">Loading suggestions...</div>
+            ) : (
+              suggestions.map((address: string, index: number) => (
+                <div
+                  key={index}
+                  onMouseDown={() => handleSelect(address)} // Use onMouseDown to prevent blur
+                  className="flex items-start gap-2 p-3 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-b-0"
+                >
+                  <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-gray-700 font-medium">{address}</div>
+                </div>
+              ))
+            )}
           </div>
-        </PopoverTrigger>
-        <PopoverContent className="w-[--radix-popover-trigger-width] p-0 z-50" side="bottom" align="start">
-          <Command>
-            <CommandInput 
-              placeholder="Search UK addresses..." 
-              value={searchQuery}
-              onValueChange={setSearchQuery}
-              className="hidden"
-            />
-            <CommandList className="max-h-[200px] overflow-y-auto">
-              {value.length < 1 ? (
-                <div className="p-3 text-sm text-muted-foreground">
-                  Start typing an address to see suggestions...
-                </div>
-              ) : suggestions.length === 0 ? (
-                <div className="p-3 text-sm text-muted-foreground">
-                  Continue typing to see address suggestions...
-                </div>
-              ) : (
-                <CommandGroup>
-                  {suggestions.map((address: string, index: number) => (
-                    <CommandItem
-                      key={index}
-                      value={address}
-                      onSelect={() => handleSelect(address)}
-                      className="flex items-start gap-2 p-3 cursor-pointer hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
-                    >
-                      <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                      <div className="text-sm text-gray-700 font-medium">{address}</div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+        )}
+      </div>
       <p className="text-sm text-muted-foreground mt-1">
         <span className="inline-flex items-center gap-1">
           <MapPin className="h-3 w-3" />
