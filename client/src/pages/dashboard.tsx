@@ -37,7 +37,8 @@ import {
   Eye,
   Trash2,
   TriangleAlert,
-  AlertTriangle
+  AlertTriangle,
+  BarChart3
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
@@ -1547,8 +1548,18 @@ export default function Dashboard() {
 
       <div className="container mx-auto p-6 max-w-none">
         <div className="mb-6">
+          {/* Dashboard Header */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-3 bg-green-100 rounded-lg">
+              <BarChart3 className="h-8 w-8 text-green-600" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
+              <p className="text-slate-600">View section inspection data and analysis results across all reports</p>
+            </div>
+          </div>
+          
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-slate-900">Section Inspection Data & Analysis</h1>
             {completedUploads.length > 0 && (
               <div className="flex items-center gap-4">
                 <label className="text-sm font-medium text-slate-700">Project Folders:</label>
