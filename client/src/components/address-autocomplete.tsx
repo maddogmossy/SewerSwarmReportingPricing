@@ -33,13 +33,36 @@ export function AddressAutocomplete({
     return () => clearTimeout(timer);
   }, [value]);
 
-  // Fetch address suggestions
+  // Fetch address suggestions - using direct fetch with proper error handling
   const { data: rawSuggestions, isLoading } = useQuery({
     queryKey: ["/api/search-addresses", searchQuery],
     queryFn: async () => {
-      const result = await apiRequest("GET", `/api/search-addresses?q=${encodeURIComponent(searchQuery)}&limit=8`);
-      console.log("API returned suggestions:", result);
-      return result;
+      if (!searchQuery || searchQuery.length < 1) return [];
+      
+      try {
+        console.log("Fetching suggestions for:", searchQuery);
+        const response = await fetch(`/api/search-addresses?q=${encodeURIComponent(searchQuery)}&limit=8`, {
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        console.log("Raw API response:", response);
+        console.log("Parsed suggestions:", result);
+        console.log("Is array?", Array.isArray(result));
+        
+        return Array.isArray(result) ? result : [];
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+        return [];
+      }
     },
     enabled: searchQuery.length >= 1,
   });
