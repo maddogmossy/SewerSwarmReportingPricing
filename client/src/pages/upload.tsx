@@ -268,10 +268,13 @@ export default function Upload() {
       queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
       setShowDeleteFolderDialog(false);
       setSelectedFolderToDelete(null);
-      // Reset state if deleted folder was currently selected
-      if (selectedFolderId && selectedFolderToDelete && selectedFolderId === selectedFolderToDelete.id) {
-        setSelectedFolderId(null);
-      }
+      
+      // Reset all upload state to return to sector selection
+      setSelectedFolderId(null);
+      setSelectedSector("");
+      setSelectedFile(null);
+      
+      console.log("✅ Returned to main upload page after folder deletion");
     },
     onError: (error) => {
       toast({
