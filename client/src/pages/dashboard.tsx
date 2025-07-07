@@ -873,8 +873,9 @@ export default function Dashboard() {
       : completedUploads;
   
   // Get current upload based on reportId parameter OR selectedReportIds
+  // For URL parameter navigation (auto-navigation), search in ALL completed uploads, not just filtered
   const currentUpload = reportId 
-    ? filteredUploads.find(upload => upload.id === parseInt(reportId))
+    ? completedUploads.find(upload => upload.id === parseInt(reportId))
     : selectedReportIds.length === 1 
       ? filteredUploads.find(upload => upload.id === selectedReportIds[0])
       : null;

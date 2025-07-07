@@ -200,14 +200,17 @@ export default function Upload() {
       
       // Redirect to dashboard with specific report ID for auto-loading
       setTimeout(() => {
+        console.log("Upload response data:", data);
         if (data.uploadId) {
           console.log(`Redirecting to dashboard with reportId: ${data.uploadId}`);
           window.location.href = `/dashboard?reportId=${data.uploadId}`;
         } else {
-          console.log("Redirecting to dashboard without specific report");
+          console.log("Redirecting to dashboard without specific report - uploadId not found in response");
+          // Check if data is an object with different structure
+          console.log("Available keys in response:", Object.keys(data || {}));
           window.location.href = "/dashboard";
         }
-      }, 2000); // Give more time for processing to complete
+      }, 3000); // Give more time for processing to complete
     },
     onError: (error) => {
       toast({
