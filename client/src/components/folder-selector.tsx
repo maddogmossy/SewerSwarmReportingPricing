@@ -11,6 +11,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Folder, Plus, Edit, Trash2, AlertTriangle, MapPin, Clock, Calculator } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { validateAddress, calculateTravelDistance, getWorkTypeRequirements, checkTravelAllowance } from "@shared/address-validation";
+import { AddressAutocomplete } from "./address-autocomplete";
 
 interface ProjectFolder {
   id: number;
@@ -148,7 +149,10 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
       if (selectedFolderId === editingFolder?.id) {
         onFolderSelect(null);
       }
+      setShowEditDialog(false);
       setEditingFolder(null);
+      setNewFolderName("");
+      setNewFolderAddress("");
       toast({
         title: "Folder deleted",
         description: "Folder deleted successfully",
@@ -297,20 +301,13 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-6">
-              {/* Single Folder Address Field */}
-              <div>
-                <Label htmlFor="folderAddress">Folder Address</Label>
-                <Textarea
-                  id="folderAddress"
-                  value={newFolderAddress}
-                  onChange={(e) => setNewFolderAddress(e.target.value)}
-                  placeholder="Full Address and Post code"
-                  className="min-h-[100px]"
-                />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Include street, city/town, and UK postcode for travel calculations
-                </p>
-              </div>
+              {/* Address Autocomplete Field */}
+              <AddressAutocomplete
+                value={newFolderAddress}
+                onChange={setNewFolderAddress}
+                label="Folder Address"
+                placeholder="Full Address and Post code"
+              />
 
               {/* Address Validation Results */}
               {addressValidation && (

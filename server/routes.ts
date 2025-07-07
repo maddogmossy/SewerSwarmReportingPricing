@@ -12,6 +12,7 @@ import { eq, desc, asc, and } from "drizzle-orm";
 import { MSCC5Classifier } from "./mscc5-classifier";
 import { SEWER_CLEANING_MANUAL } from "./sewer-cleaning";
 import { DataIntegrityValidator, validateBeforeInsert } from "./data-integrity";
+import { searchUKAddresses } from "./address-autocomplete.js";
 
 import pdfParse from "pdf-parse";
 import Stripe from "stripe";
@@ -1369,6 +1370,23 @@ export async function registerRoutes(app: Express) {
     } catch (error: any) {
       console.error("Error refreshing report flow direction:", error);
       res.status(500).json({ error: error.message || "Failed to refresh report" });
+    }
+  });
+
+  // Address search endpoint
+  app.get("/api/search-addresses", async (req: Request, res: Response) => {
+    try {
+      const { q: query, limit = 10 } = req.query;
+      
+      if (!query || typeof query !== 'string') {
+        return res.json([]);
+      }
+
+      const suggestions = searchUKAddresses(query, parseInt(limit as string));
+      res.json(suggestions);
+    } catch (error) {
+      console.error("Address search error:", error);
+      res.status(500).json({ error: "Address search failed" });
     }
   });
 
