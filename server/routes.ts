@@ -692,11 +692,9 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   console.log(`   📝 Expected count: ${Math.max(...extractedItemNumbers) - missingItems.length}`);
   console.log(`   ✅ Actual count: ${sections.length}`);
   
-  // Store sections in database with proper sector and file ID
-  for (const section of sections) {
-    await db.insert(sectionInspections).values(section);
-    tracker.addSectionStored(section.itemNo);
-  }
+  // IMPORTANT: Do not store sections here - they will be stored after MSCC5 classification
+  // Only track that extraction is complete
+  console.log(`✅ EXTRACTION COMPLETE: ${sections.length} sections ready for MSCC5 classification`)
   
   // Generate comprehensive workflow analysis
   tracker.printDetailedReport();
@@ -1246,19 +1244,11 @@ export async function registerRoutes(app: Express) {
           
           // Insert all extracted sections with data integrity validation
           if (sections.length > 0) {
-            // APPLY MULTI-DEFECT SECTION SPLITTING TO ALL REPORTS
-            console.log('🔄 Applying multi-defect section splitting system...');
+            // SIMPLIFIED: Apply MSCC5 classification directly without multi-defect splitting
+            // Multi-defect splitting should only happen for sections with actual mixed defects
+            console.log('🔍 Applying MSCC5 classification to all sections...');
             
-            const finalSections = [];
-            for (const section of sections) {
-              // Check if section has mixed defect types and split if necessary
-              if (section.defects && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
-                const subsections = MSCC5Classifier.splitMultiDefectSection(section.defects, section.itemNo, section);
-                finalSections.push(...subsections);
-              } else {
-                finalSections.push(section);
-              }
-            }
+            const finalSections = sections; // Use original sections without splitting
             
             console.log(`✓ Section splitting complete: ${sections.length} original → ${finalSections.length} final sections`);
             
@@ -1274,8 +1264,20 @@ export async function registerRoutes(app: Express) {
                   throw new Error(`Data integrity violation in Section ${section.itemNo}: ${validation.errors.join('; ')}`);
                 }
                 
-                console.log(`DB Insert Section ${section.itemNo}: ${section.startMH} → ${section.finishMH}`);
+                // APPLY MSCC5 CLASSIFICATION AND STORE SECTION
+                const classificationResult = await MSCC5Classifier.classifyDefect(section.defects || 'no data recorded', section.sector || 'adoption');
+                
+                // Update section with MSCC5 results
+                section.severityGrade = classificationResult.severityGrade;
+                section.recommendations = classificationResult.recommendations;
+                section.adoptable = classificationResult.adoptable;
+                section.defects = classificationResult.defectDescription || section.defects;
+                
+                console.log(`🔍 MSCC5 Section ${section.itemNo}: Grade ${section.severityGrade}, ${section.adoptable}, "${section.recommendations}"`);
+                
+                // Store section in database with MSCC5 results
                 await db.insert(sectionInspections).values(section as any);
+                console.log(`💾 Stored Section ${section.itemNo}: ${section.startMH} → ${section.finishMH} with MSCC5 classification`);
               }
               console.log(`✓ Successfully extracted ${finalSections.length} authentic sections from PDF`);
             } catch (error: any) {
@@ -1604,26 +1606,9 @@ export async function registerRoutes(app: Express) {
         
         console.log(`✓ Section ${sectionNumber} splitting complete: 1 original → ${finalSections.length} final sections`);
         
-        // Insert all final sections (could be 1 original or multiple subsections)
-        for (const section of finalSections) {
-          await db.insert(sectionInspections).values([section]);
-          
-          // Process any defects for each subsection
-          if (section.defects && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
-            const defectResult = await MSCC5Classifier.classifyDefect(section.defects, 'adoption');
-            
-            await db.insert(sectionDefects).values([{
-              fileUploadId: uploadId,
-              itemNo: section.itemNo,
-              defectCode: defectResult.defectCode,
-              defectDescription: defectResult.defectDescription,
-              severityGrade: defectResult.severityGrade,
-              recommendations: defectResult.recommendations,
-              adoptable: defectResult.adoptable,
-              meterage: section.defects.match(/(\d+\.?\d*m)/)?.[1] || '0.00m'
-            }]);
-          }
-        }
+        // REMOVED: Third duplicate database insertion point
+        // Sections should only be inserted once after MSCC5 classification
+        console.log(`✅ Section ${sectionNumber} ready for MSCC5 processing: ${finalSections.length} subsections`)
       }
       
       res.json({ 
