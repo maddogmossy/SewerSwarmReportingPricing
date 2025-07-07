@@ -492,7 +492,8 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     const lengthSurveyed = totalLength; // Adoption standard: full length surveyed
     
     // Apply adoption sector MSCC5 classification
-    const defectData = await classifyAdoptionDefects(itemNo, pipeSize);
+    // REMOVED: classifyAdoptionDefects call - synthetic data blocked
+    // Only authentic PDF extraction permitted
     
     // Extract inspection number from PDF context for this section
     const inspectionNo = extractInspectionNumberForSection(pdfText, itemNo);
@@ -512,12 +513,12 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
       pipeMaterial,
       totalLength,
       lengthSurveyed,
-      defects: defectData.defects,
-      severityGrade: defectData.grade,
-      recommendations: defectData.recommendations,
-      actionRequired: defectData.actionRequired,
-      adoptable: defectData.adoptable,
-      cost: defectData.cost
+      defects: 'AUTHENTIC PDF EXTRACTION REQUIRED',
+      severityGrade: 'PDF_REQUIRED',
+      recommendations: 'AUTHENTIC PDF EXTRACTION REQUIRED',
+      actionRequired: 'AUTHENTIC PDF EXTRACTION REQUIRED',
+      adoptable: 'PDF_REQUIRED',
+      cost: 'PDF_EXTRACTION_REQUIRED'
     });
   }
   
@@ -559,37 +560,11 @@ function getAdoptionMHDepth(itemNo: number, position: 'start' | 'finish'): strin
   return 'no data recorded';
 }
 
+// ELIMINATED: SYNTHETIC DATA GENERATION FUNCTION
+// This function was generating fake defect classifications that violated zero tolerance policy
 async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promise<any> {
-  // Apply OS20x adoption standards with MSCC5 classification
-  const adoptionDefects = [
-    { items: [1,4,7,12,16,20], grade: 0, defects: 'No action required pipe observed in acceptable structural and service condition', recommendations: 'No action required pipe observed in acceptable structural and service condition', adoptable: 'Yes', cost: 'Complete' },
-    { items: [2,5,8,13,17], grade: 2, defects: 'CR 15.2m (Crack, 2-5mm opening)', recommendations: 'Monitor crack development, consider patch repair if progresses', adoptable: 'Conditional', cost: 'Configure adoption sector pricing first' },
-    { items: [3,6,9,14,18], grade: 3, defects: 'DER 8.4m (Debris, 10-15% cross-sectional area loss)', recommendations: 'Cleanse with medium-pressure jetting and resurvey', adoptable: 'No', cost: 'Configure adoption sector pricing first' },
-    { items: [10,11,15,19], grade: 4, defects: 'DEF 12.7m (Deformation, 20% cross-sectional area loss)', recommendations: 'CIPP lining or excavation and replacement required', adoptable: 'No', cost: 'Configure adoption sector pricing first' }
-  ];
-  
-  for (const pattern of adoptionDefects) {
-    if (pattern.items.includes(itemNo)) {
-      return {
-        defects: pattern.defects,
-        grade: pattern.grade,
-        recommendations: pattern.recommendations,
-        actionRequired: pattern.recommendations,
-        adoptable: pattern.adoptable,
-        cost: pattern.cost
-      };
-    }
-  }
-  
-  // Default for sections beyond pattern
-  return {
-    defects: 'No action required pipe observed in acceptable structural and service condition',
-    grade: 0,
-    recommendations: 'No action required pipe observed in acceptable structural and service condition',
-    actionRequired: 'No action required',
-    adoptable: 'Yes',
-    cost: 'Complete'
-  };
+  // AUTHENTIC DATA ONLY - No synthetic defect generation allowed
+  throw new Error("SYNTHETIC DATA BLOCKED: Only authentic PDF extraction permitted. Use extractAdoptionSectionsFromPDF instead.");
 }
 
 async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
