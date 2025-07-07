@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/ui/file-upload";
 import { FolderSelector } from "@/components/folder-selector";
 import { FileUpload as FileUploadType } from "@shared/schema";
-import { Download, FileText, Clock, CheckCircle, AlertCircle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House, Settings, Folder, FolderOpen, ChevronRight, ChevronDown } from "lucide-react";
+import { Download, FileText, Clock, CheckCircle, AlertCircle, AlertTriangle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House, Settings, Folder, FolderOpen, ChevronRight, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 const sectors = [
@@ -111,6 +112,8 @@ export default function Upload() {
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
+  const [showDeleteFolderDialog, setShowDeleteFolderDialog] = useState(false);
+  const [selectedFolderToDelete, setSelectedFolderToDelete] = useState<{ id: number; name: string; reportCount: number } | null>(null);
 
 
   const [, setLocation] = useLocation();
@@ -244,6 +247,35 @@ export default function Upload() {
     onError: (error) => {
       toast({
         title: "Delete Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete folder mutation
+  const deleteFolderMutation = useMutation({
+    mutationFn: async (folderId: number) => {
+      const response = await apiRequest("DELETE", `/api/folders/${folderId}`);
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Project Folder Deleted",
+        description: `Successfully deleted "${data.folderName}" folder and ${data.deletedCounts.uploads} reports.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
+      setShowDeleteFolderDialog(false);
+      setSelectedFolderToDelete(null);
+      // Reset state if deleted folder was currently selected
+      if (selectedFolderId === data.deletedCounts.folders) {
+        setSelectedFolderId(null);
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: "Delete Folder Failed",
         description: error.message,
         variant: "destructive",
       });
@@ -582,6 +614,25 @@ export default function Upload() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge variant="outline">{folderUploads.length}</Badge>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (folder) {
+                                setSelectedFolderToDelete({
+                                  id: folder.id,
+                                  name: folder.folderName,
+                                  reportCount: folderUploads.length
+                                });
+                                setShowDeleteFolderDialog(true);
+                              }
+                            }}
+                            className="text-red-600 hover:text-red-800 hover:bg-red-50 p-1"
+                            title="Delete Project Folder"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                           {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                         </div>
                       </div>
@@ -648,6 +699,66 @@ export default function Upload() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Delete Folder Dialog */}
+      <Dialog open={showDeleteFolderDialog} onOpenChange={setShowDeleteFolderDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
+              Delete Project Folder
+            </DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete the project folder and all associated reports.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedFolderToDelete && (
+            <div className="space-y-4">
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <div className="font-medium text-slate-900">{selectedFolderToDelete.name}</div>
+                <div className="text-sm text-slate-600 mt-1">
+                  Contains {selectedFolderToDelete.reportCount} report{selectedFolderToDelete.reportCount !== 1 ? 's' : ''}
+                </div>
+              </div>
+              
+              <div className="text-sm text-slate-600 space-y-2">
+                <p>Deleting this folder will permanently remove:</p>
+                <ul className="list-disc list-inside ml-2 space-y-1">
+                  <li>The project folder: "{selectedFolderToDelete.name}"</li>
+                  <li>All {selectedFolderToDelete.reportCount} inspection report{selectedFolderToDelete.reportCount !== 1 ? 's' : ''}</li>
+                  <li>All associated analysis data, defect classifications, and section inspections</li>
+                  <li>All uploaded PDF files and processed content</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowDeleteFolderDialog(false);
+                setSelectedFolderToDelete(null);
+              }}
+              disabled={deleteFolderMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={() => {
+                if (selectedFolderToDelete) {
+                  deleteFolderMutation.mutate(selectedFolderToDelete.id);
+                }
+              }}
+              disabled={deleteFolderMutation.isPending}
+            >
+              {deleteFolderMutation.isPending ? "Deleting..." : "Delete Project Folder"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
