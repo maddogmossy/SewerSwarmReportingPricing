@@ -199,14 +199,15 @@ export default function Upload() {
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       
       // Redirect to dashboard with specific report ID for auto-loading
-      const redirectDelay = data.reprocessedExisting ? 500 : 1500;
       setTimeout(() => {
         if (data.uploadId) {
-          setLocation(`/dashboard?reportId=${data.uploadId}`);
+          console.log(`Redirecting to dashboard with reportId: ${data.uploadId}`);
+          window.location.href = `/dashboard?reportId=${data.uploadId}`;
         } else {
-          setLocation("/dashboard");
+          console.log("Redirecting to dashboard without specific report");
+          window.location.href = "/dashboard";
         }
-      }, redirectDelay);
+      }, 2000); // Give more time for processing to complete
     },
     onError: (error) => {
       toast({

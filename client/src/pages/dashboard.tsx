@@ -879,7 +879,7 @@ export default function Dashboard() {
       ? filteredUploads.find(upload => upload.id === selectedReportIds[0])
       : null;
   
-  // Debug logging
+  // Debug logging - enhanced for auto-navigation debugging
   console.log("Dashboard Debug:", {
     reportId,
     hasCurrentUpload: !!currentUpload,
@@ -887,7 +887,9 @@ export default function Dashboard() {
     condition1: completedUploads.length === 0,
     condition2: !currentUpload,
     shouldShowFolders: completedUploads.length === 0 || !currentUpload,
-    foldersCount: folders.length
+    foldersCount: folders.length,
+    currentUploadId: currentUpload?.id,
+    filteredUploadsCount: filteredUploads.length
   });
   
   // REMOVED: Aggressive cache clearing that was interfering with data display
