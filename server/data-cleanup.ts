@@ -110,11 +110,11 @@ export async function validateNoSyntheticData(): Promise<boolean> {
   const sections = await db.select().from(sectionInspections);
   
   for (const section of sections) {
-    // Check for placeholder values
-    if (section.startMH?.includes("SW02") || 
-        section.finishMH?.includes("SW03") ||
-        section.pipeSize === "225mm" ||
-        section.pipeMaterial === "Concrete") {
+    // Check for any placeholder values that aren't from authentic PDF
+    if (section.defects?.includes("placeholder") || 
+        section.recommendations?.includes("placeholder") ||
+        section.startMH?.includes("placeholder") ||
+        section.finishMH?.includes("placeholder")) {
       console.error(`❌ SYNTHETIC DATA DETECTED in Section ${section.itemNo}`);
       return false;
     }

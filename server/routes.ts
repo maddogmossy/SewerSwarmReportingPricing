@@ -208,7 +208,7 @@ async function extractSpecificSectionFromPDF(pdfText: string, fileUploadId: numb
     
     // Look for line starting with section number followed by pattern
     if (new RegExp(`^0?${sectionNumber}[A-Z]`).test(line)) {
-      // Parse the compact format: "02F02-03F02-ST320/03/2023Project300mm Clay15.0m15.0m"
+      // Parse the compact format from authentic PDF content
       const match = line.match(/^0?(\d+)([A-Z0-9\-]+)([A-Z0-9\-]+)(\d{2}\/\d{2}\/\d{4})(.+?)(\d+mm)\s*(.+?)\s*(\d+\.?\d*m)\s*(\d+\.?\d*m)$/);
       
       if (match) {
@@ -269,8 +269,7 @@ async function extractSpecificSectionFromPDF(pdfText: string, fileUploadId: numb
 function extractAuthenticAdoptionSpecs(pdfText: string, itemNo: number): { pipeSize: string, pipeMaterial: string, totalLength: string, lengthSurveyed: string } | null {
   console.log(`🔍 Extracting authentic specs for Section ${itemNo} from PDF content`);
   
-  // CRITICAL: Section 2 is 300mm Vitrified clay per user verification
-  // Look for authentic 300mm specifications in the PDF
+  // Extract authentic pipe specifications from PDF content
   
   const lines = pdfText.split('\n');
   
@@ -333,17 +332,7 @@ function extractAuthenticAdoptionSpecs(pdfText: string, itemNo: number): { pipeS
     }
   }
   
-  // Fallback: If we can't find section-specific data but know this is Section 2
-  if (itemNo === 2) {
-    console.log(`✅ Section 2: Using authentic user-verified specifications with defect meterage`);
-    return {
-      pipeSize: '300',
-      pipeMaterial: 'Vitrified clay',
-      totalLength: '18.50m',
-      lengthSurveyed: '18.50m',
-      defectMeterage: '10.78m'  // Extract authentic meterage for description
-    };
-  }
+  // No fallback - only authentic PDF extraction allowed
   
   console.log(`❌ Could not extract authentic specs for Section ${itemNo}`);
   return null;
