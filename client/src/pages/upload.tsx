@@ -187,19 +187,22 @@ export default function Upload() {
       
       return apiRequest("POST", "/api/upload", formData);
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
       toast({
-        title: "Upload Successful",
-        description: "Your file has been uploaded and is being processed.",
+        title: "Upload Successful", 
+        description: data.reprocessedExisting ? 
+          "Existing report has been reprocessed with updated data." :
+          "Your file has been uploaded and is being processed.",
       });
       setSelectedFile(null);
       setSelectedSector("");
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       
-      // Redirect to dashboard after successful upload
+      // Redirect to dashboard immediately for reprocessed files, or after delay for new uploads
+      const redirectDelay = data.reprocessedExisting ? 500 : 1500;
       setTimeout(() => {
         setLocation("/dashboard");
-      }, 1500);
+      }, redirectDelay);
     },
     onError: (error) => {
       toast({

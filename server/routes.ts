@@ -877,6 +877,20 @@ export async function registerRoutes(app: Express) {
       const projectMatch = req.file.originalname.match(/(\d{4})/);
       const projectNo = projectMatch ? projectMatch[1] : "0000";
       
+      // Check if this file already exists and has a sector assigned
+      const existingUpload = await db.select().from(fileUploads)
+        .where(and(
+          eq(fileUploads.userId, userId),
+          eq(fileUploads.fileName, req.file.originalname)
+        ))
+        .limit(1);
+      
+      // If file exists with sector, reprocess it with existing sector instead of requiring selection
+      if (existingUpload.length > 0 && existingUpload[0].sector && !req.body.sector) {
+        req.body.sector = existingUpload[0].sector;
+        console.log(`Using existing sector "${existingUpload[0].sector}" for re-uploaded file: ${req.file.originalname}`);
+      }
+      
       // Handle folder assignment and visit number
       let folderId = null;
       let visitNumber = 1;
@@ -888,21 +902,42 @@ export async function registerRoutes(app: Express) {
         const existingFiles = await db.select().from(fileUploads)
           .where(eq(fileUploads.folderId, folderId));
         visitNumber = existingFiles.length + 1;
+      } else if (existingUpload.length > 0 && existingUpload[0].folderId) {
+        // Use existing folder if no new folder specified
+        folderId = existingUpload[0].folderId;
       }
 
-      // Create file upload record
-      const [fileUpload] = await db.insert(fileUploads).values({
-        userId: userId,
-        folderId: folderId,
-        fileName: req.file.originalname,
-        fileSize: req.file.size,
-        fileType: req.file.mimetype,
-        filePath: req.file.path,
-        status: "processing",
-        projectNumber: projectNo,
-        visitNumber: visitNumber,
-        sector: req.body.sector || "utilities"
-      }).returning();
+      // Create or update file upload record
+      let fileUpload;
+      if (existingUpload.length > 0) {
+        // Update existing upload record
+        [fileUpload] = await db.update(fileUploads)
+          .set({
+            fileSize: req.file.size,
+            fileType: req.file.mimetype,
+            filePath: req.file.path,
+            status: "processing",
+            sector: req.body.sector || existingUpload[0].sector,
+            folderId: folderId !== null ? folderId : existingUpload[0].folderId,
+            updatedAt: new Date()
+          })
+          .where(eq(fileUploads.id, existingUpload[0].id))
+          .returning();
+      } else {
+        // Create new upload record
+        [fileUpload] = await db.insert(fileUploads).values({
+          userId: userId,
+          folderId: folderId,
+          fileName: req.file.originalname,
+          fileSize: req.file.size,
+          fileType: req.file.mimetype,
+          filePath: req.file.path,
+          status: "processing",
+          projectNumber: projectNo,
+          visitNumber: visitNumber,
+          sector: req.body.sector || "utilities"
+        }).returning();
+      }
 
       console.log("Processing PDF:", req.file.originalname);
 
@@ -997,7 +1032,9 @@ export async function registerRoutes(app: Express) {
 
       res.json({ 
         message: "File uploaded and processed successfully", 
-        fileId: fileUpload.id
+        fileId: fileUpload.id,
+        reprocessedExisting: existingUpload.length > 0,
+        sectionsExtracted: sections?.length || 0
       });
     } catch (error) {
       console.error("Error uploading file:", error);
