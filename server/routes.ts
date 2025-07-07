@@ -3016,6 +3016,7 @@ export async function registerRoutes(app: Express) {
       // Now extract detailed information for each section
       for (const tocEntry of tocSections) {
         console.log(`🔍 Processing Section ${tocEntry.itemNo}`);
+        console.log(`    Looking for: "Section Inspection" + "${tocEntry.startMH}X"`);
         
         // Look for actual section content page
         let sectionContent = null;
@@ -3024,8 +3025,9 @@ export async function registerRoutes(app: Express) {
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i].trim();
           
-          // Look for section header page (not TOC): "Section Item 1"
-          if (line.includes(`Section Item ${tocEntry.itemNo}`) && !line.includes('...')) {
+          // Look for actual section content page: "Section Inspection - 14/02/2025 - F01-10AX"
+          // Note: Content pages have "X" suffix on MH references
+          if (line.includes('Section Inspection') && line.includes(tocEntry.startMH + 'X')) {
             foundSectionStart = true;
             console.log(`  📖 Found content page for Section ${tocEntry.itemNo}`);
             
@@ -3062,9 +3064,9 @@ export async function registerRoutes(app: Express) {
                 }
               }
               
-              // Extract material
-              if (dataLine.includes('Material:')) {
-                const materialMatch = dataLine.match(/Material:\s*([^\t\n]+?)(?:\s{2,}|\t|$)/);
+              // Extract material - look for "Material:Vitrified clay" pattern  
+              if (dataLine.includes('Material:') && !dataLine.includes('Lining Material:')) {
+                const materialMatch = dataLine.match(/Material:\s*([^L]+?)(?:Lining Material|$)/);
                 if (materialMatch) {
                   sectionContent.pipeMaterial = materialMatch[1].trim();
                   console.log(`    🧱 Material: ${sectionContent.pipeMaterial}`);
