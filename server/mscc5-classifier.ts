@@ -124,11 +124,11 @@ export const MSCC5_DEFECTS: Record<string, MSCC5Defect> = {
   DEF: {
     code: 'DEF',
     description: 'Deformity',
-    type: 'structural',
+    type: 'service',
     default_grade: 3,
-    risk: 'Progressive structural deterioration',
-    recommended_action: 'Structural assessment and repair',
-    action_type: 1
+    risk: 'Progressive service deterioration affecting flow',
+    recommended_action: 'Service assessment and repair',
+    action_type: 2
   },
   OJL: {
     code: 'OJL',

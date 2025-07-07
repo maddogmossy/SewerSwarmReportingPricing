@@ -131,6 +131,14 @@ From attached inspection report image (image_1751896855881.png):
 4. When section content is empty, extract from table of contents pattern
 5. Apply inspection direction logic after extracting authentic MH references
 
+**Multi-Defect Section Splitting System:**
+- Automatically detects mixed service and structural defects in single sections
+- Creates separate database records (2, 2a, 2b) with proper letter suffixes
+- Service defects (DEF, DER, DES, DEC, RI, WL, OB, S/A) get blue cleaning icons (💧)
+- Structural defects (FC, FL, CR, JDL, JDM, OJM, OJL) get orange repair icons (🔧)
+- Different pricing workflows: cleaning vs structural repair pricing
+- Visual indicators in dashboard Item No column show defect type icons
+
 ## Changelog
 
 ```
@@ -338,4 +346,4 @@ Changelog:
 
 ```
 Preferred communication style: Simple, everyday language.
-```
+```295 - July 7, 2025. ENHANCED MULTI-DEFECT SECTION SPLITTING FOR SERVICE VS STRUCTURAL PRICING: Fixed DEF defect classification from structural to service type for proper MSCC5 compliance. Enhanced multi-defect splitting system to properly differentiate service defects (DEF, DER, DES, DEC, RI, WL, OB, S/A) from structural defects (FC, FL, CR, JDL, JDM, OJM, OJL) with separate pricing workflows. Added defectType database field to sectionInspections table. Dashboard now displays service defects with blue cleaning icons (💧) and structural defects with orange repair icons (🔧) in Item No column. Service defects route to cleaning pricing options while structural defects route to repair pricing configuration. System maintains authentic inspection data while enabling proper pricing differentiation for mixed defect sections (2, 2a, 2b letter suffixes).
