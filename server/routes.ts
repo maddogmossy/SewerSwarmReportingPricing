@@ -1416,6 +1416,40 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Debug PDF content
+  app.get("/api/uploads/:uploadId/debug-pdf", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      const upload = await db.select()
+        .from(fileUploads)
+        .where(eq(fileUploads.id, uploadId))
+        .limit(1);
+
+      if (upload.length === 0) {
+        return res.status(404).json({ error: "Upload not found" });
+      }
+
+      // Read and parse PDF to see content
+      const fileBuffer = fs.readFileSync(upload[0].filePath);
+      const pdf = await pdfParse(fileBuffer);
+      const pdfText = pdf.text;
+
+      res.json({ 
+        filename: upload[0].fileName,
+        sector: upload[0].sector,
+        textLength: pdfText.length,
+        preview: pdfText.substring(0, 2000),
+        sectionMatches: {
+          eclPattern: (pdfText.match(/Section Item (\d+):\s+([A-Z0-9\-\/]+)\s+>\s+([A-Z0-9\-\/]+)\s+\(([A-Z0-9\-\/]+)\)/g) || []).length,
+          simplePattern: (pdfText.match(/\d+[A-Z]/g) || []).slice(0, 10)
+        }
+      });
+    } catch (error) {
+      console.error("Error debugging PDF:", error);
+      res.status(500).json({ error: "Failed to debug PDF" });
+    }
+  });
+
   // Address search endpoint
   app.get("/api/search-addresses", async (req: Request, res: Response) => {
     try {
