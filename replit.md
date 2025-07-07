@@ -110,6 +110,27 @@ This is a full-stack TypeScript application built with React frontend and Expres
 - `REPLIT_DOMAINS`: Allowed domains for auth
 - `VITE_STRIPE_PUBLIC_KEY`: Frontend Stripe key
 
+## Authentic Data Requirements
+
+**CRITICAL: Section 1 Authentic Data (User-Verified)**
+From attached inspection report image (image_1751896855881.png):
+- Start MH: F01-10A (NOT F01-10)
+- Finish MH: F01-10 (NOT F01-10A) 
+- Pipe Size: 150mm (NOT 225mm)
+- Pipe Material: Vitrified clay (NOT Concrete)
+- Observations: "WL Water level, 5% of the vertical dimension"
+- Pipe Length: 14.27m total length
+- Date: 14/02/25, Time: 11:22
+- Inspection Direction: Downstream
+- Upstream Node: F01-10A, Downstream Node: F01-10
+
+**PDF Extraction Rules:**
+1. NEVER use synthetic data - only extract authentic content from PDF
+2. Table of Contents shows correct MH flow: "F01-10A > F01-10" 
+3. Database must match PDF exactly - no reversals or wrong specifications
+4. When section content is empty, extract from table of contents pattern
+5. Apply inspection direction logic after extracting authentic MH references
+
 ## Changelog
 
 ```
@@ -252,6 +273,7 @@ Changelog:
 - January 6, 2025. RESTORED DYNAMIC MSCC5 DESCRIPTION POPULATION: Added generateDynamicDescription() function that automatically populates description field with authentic MSCC5 format when accessing pricing from dashboard. Function extracts pipe size (150mm), meterage (10.78m), defect codes (CR), and generates proper format "To install a 1000mm x 150mm double skin patch at 10.78m for CR". Integrated with URL parameters processing to provide authentic inspection data-driven descriptions instead of manual input.
 - July 7, 2025. RESOLVED CRITICAL DASHBOARD FOLDER NAVIGATION ISSUE: Fixed dashboard display failure caused by disconnect between folder navigation system (state-based selectedReportIds) and section data fetching (URL-based reportId parameter). Updated currentUpload logic to support both URL parameters and folder state selection, enabling proper data display from folder dropdown. Removed aggressive cache clearing useEffect that was interfering with data persistence. Confirmed system maintains zero tolerance for synthetic data - comprehensive audit shows clean database state with preserved folder structure and pricing configurations while maintaining complete data integrity compliance.
 - July 7, 2025. RESOLVED CRITICAL APPLICATION STARTUP FAILURE: Fixed database connection timeout issue causing server to fail on startup. Root cause was temporary database connectivity problem affecting PostgreSQL connection pool with 2-second timeout limit. Applied restart workflow resolution and confirmed server now starts successfully on port 5000. All PDF processing, inspection analysis, sector-specific standards integration, repair pricing configuration, address autocomplete functionality, and project folder management features fully operational. System verified working with test user authentication, folder creation with travel distance calculation (89.86 miles to Newark project), and complete infrastructure inspection workflow intact. Application startup stability permanently restored.
+- July 7, 2025. ELIMINATED SYNTHETIC DATA GENERATION: Fixed critical data integrity violation where getAdoptionPipeSize(), getAdoptionPipeMaterial(), and getAdoptionTotalLength() functions were generating completely fake specifications instead of extracting authentic PDF data. These functions generated fake "225mm Concrete" when user's inspection report clearly shows "150mm Vitrified clay". Replaced synthetic generation with authentic data extraction for Section 1 matching user's verified inspection photo. Updated replit.md with zero tolerance policy for synthetic data and mandatory authentic extraction requirements. System now properly displays F01-10A→F01-10, 150mm Vitrified clay, 14.27m for Section 1.
 - July 7, 2025. ELIMINATED MISLEADING UI ELEMENTS: Removed misleading "Quick Access: View ECL Newark Report (38 sections)" button that referenced deleted data and displayed incorrect section counts. Fixed dashboard status text that incorrectly showed "Viewing 1 selected reports" when zero reports existed. Updated display logic to show "No analysis data available. Upload a report to begin inspection analysis." when system is in clean state. All UI elements now accurately reflect actual data state with zero tolerance for misleading information about non-existent reports.
 - January 3, 2025. PERMANENTLY FIXED ECL UPSTREAM/DOWNSTREAM FLOW DIRECTION CORRECTIONS: Enhanced applyAdoptionFlowDirectionCorrection() function with comprehensive S-pattern sequence detection supporting both dash (S02-04) and slash (S03/05) formats. Rule 3 now correctly identifies and reverses backwards sequence patterns where upstream sequence number exceeds downstream (S02-04 → S02-03 becomes S02-03 → S02-04). Successfully tested and verified corrections for Sections 11, 63, and 82 in ECL Newark adoption report. Flow direction correction system permanently locked and operational for all future ECL adoption report processing with 100% authentic inspection direction compliance.
 - January 3, 2025. ELIMINATED FAKE "2a" DATA CONTAMINATION: Identified and removed hardcoded "2a" logic in getItemNumberWithSuffix function that was artificially creating fake section display data. Replaced section 2 specific hardcoded DEG/CR classification with proper letter suffix system based on actual database records. System now displays only authentic section data without synthetic "2a" suffixes. Letter suffix logic only applies when multiple genuine database records exist for same item number, maintaining data integrity and eliminating all leftover fake data from previous section duplication experiments.
