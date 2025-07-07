@@ -1428,32 +1428,7 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  app.delete("/api/folders/:id", async (req: Request, res: Response) => {
-    try {
-      const folderId = parseInt(req.params.id);
-      
-      // Check if folder has any files
-      const filesInFolder = await db.select().from(fileUploads)
-        .where(eq(fileUploads.folderId, folderId));
-        
-      if (filesInFolder.length > 0) {
-        return res.status(400).json({ error: "Cannot delete folder containing files" });
-      }
-      
-      const [deletedFolder] = await db.delete(projectFolders)
-        .where(and(eq(projectFolders.id, folderId), eq(projectFolders.userId, "test-user")))
-        .returning();
-        
-      if (!deletedFolder) {
-        return res.status(404).json({ error: "Folder not found" });
-      }
-      
-      res.json({ message: "Folder deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting folder:", error);
-      res.status(500).json({ error: "Failed to delete folder" });
-    }
-  });
+  // Note: Folder deletion endpoint moved to comprehensive version at line 2371
 
   // Equipment management endpoints
   app.get("/api/equipment-types/:categoryId", async (req: Request, res: Response) => {
@@ -2368,10 +2343,10 @@ export async function registerRoutes(app: Express) {
   });
 
   // Delete project folder endpoint
-  app.delete("/api/folders/:folderId", async (req: Request, res: Response) => {
+  app.delete("/api/folders/:id", async (req: Request, res: Response) => {
     try {
       const userId = req.user?.id || "test-user";
-      const folderId = parseInt(req.params.folderId);
+      const folderId = parseInt(req.params.id);
       
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
