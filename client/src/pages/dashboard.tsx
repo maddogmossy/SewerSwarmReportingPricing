@@ -1543,7 +1543,7 @@ export default function Dashboard() {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold text-slate-900">Section Inspection Data & Analysis</h1>
-            {completedUploads.length > 1 && (
+            {completedUploads.length > 0 && (
               <div className="flex items-center gap-4">
                 <label className="text-sm font-medium text-slate-700">Project Folders:</label>
                 <div className="relative" id="folder-dropdown">
@@ -1724,6 +1724,118 @@ export default function Dashboard() {
                 : "Comprehensive analysis results across all uploaded reports with sector-specific compliance checking"
             }
           </p>
+
+          {/* Report Selection Interface */}
+          {completedUploads.length > 0 && (
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  {completedUploads.length === 1 ? 'Available Report' : 'Select Reports to Analyze'}
+                </CardTitle>
+                <p className="text-sm text-slate-600">
+                  {completedUploads.length === 1 
+                    ? 'Your uploaded report is ready for analysis. You can view detailed inspection data below.'
+                    : 'Choose which reports to include in your analysis. You can select multiple reports from different folders.'
+                  }
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Report Selection Controls */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedReportIds(completedUploads.map(u => u.id))}
+                      >
+                        Select All ({completedUploads.length})
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedReportIds([])}
+                        disabled={selectedReportIds.length === 0}
+                      >
+                        Clear Selection
+                      </Button>
+                    </div>
+                    {selectedReportIds.length > 0 && (
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                        {selectedReportIds.length} reports selected
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Reports Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {completedUploads.map((upload) => {
+                      const folder = folders.find(f => f.id === upload.folderId);
+                      const isSelected = selectedReportIds.includes(upload.id);
+                      
+                      return (
+                        <div
+                          key={upload.id}
+                          className={`border rounded-lg p-3 cursor-pointer transition-all hover:shadow-md ${
+                            isSelected 
+                              ? 'border-blue-500 bg-blue-50 shadow-sm' 
+                              : 'border-slate-200 hover:border-slate-300'
+                          }`}
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedReportIds(prev => prev.filter(id => id !== upload.id));
+                            } else {
+                              setSelectedReportIds(prev => [...prev, upload.id]);
+                            }
+                          }}
+                        >
+                          <div className="flex items-start gap-3">
+                            <Checkbox
+                              checked={isSelected}
+                              onChange={() => {}} // Handled by parent div click
+                              className="mt-1"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 className="font-medium text-sm text-slate-900 truncate">
+                                  {upload.fileName}
+                                </h4>
+                                {upload.sector && (
+                                  <Badge 
+                                    variant="outline" 
+                                    className={`text-xs ${
+                                      upload.sector === 'utilities' ? 'border-blue-500 text-blue-700' :
+                                      upload.sector === 'adoption' ? 'border-green-500 text-green-700' :
+                                      upload.sector === 'highways' ? 'border-orange-500 text-orange-700' :
+                                      upload.sector === 'insurance' ? 'border-red-500 text-red-700' :
+                                      upload.sector === 'construction' ? 'border-purple-500 text-purple-700' :
+                                      'border-yellow-500 text-yellow-700'
+                                    }`}
+                                  >
+                                    {upload.sector}
+                                  </Badge>
+                                )}
+                              </div>
+                              {folder && (
+                                <p className="text-xs text-slate-500 flex items-center gap-1">
+                                  <Folder className="h-3 w-3" />
+                                  {folder.folderName}
+                                </p>
+                              )}
+                              <p className="text-xs text-slate-400 mt-1">
+                                Project: {upload.projectNumber || 'Unknown'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {completedUploads.length === 0 ? (
