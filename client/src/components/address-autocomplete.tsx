@@ -39,14 +39,14 @@ export function AddressAutocomplete({
   const { data: rawSuggestions } = useQuery({
     queryKey: ["/api/search-addresses", searchQuery],
     queryFn: () => apiRequest("GET", `/api/search-addresses?q=${encodeURIComponent(searchQuery)}&limit=8`),
-    enabled: searchQuery.length >= 2,
+    enabled: searchQuery.length >= 1,
   });
 
   const suggestions = Array.isArray(rawSuggestions) ? rawSuggestions : [];
 
   // Auto-open popover when suggestions are available
   useEffect(() => {
-    if (suggestions.length > 0 && value.length >= 2) {
+    if (suggestions.length > 0 && value.length >= 1) {
       setOpen(true);
     }
   }, [suggestions, value]);
@@ -76,7 +76,7 @@ export function AddressAutocomplete({
               placeholder={placeholder}
               className="min-h-[100px] pr-10"
               onFocus={() => {
-                if (value.length >= 2 && suggestions.length > 0) {
+                if (value.length >= 1 && suggestions.length > 0) {
                   setOpen(true);
                 }
               }}
