@@ -1000,7 +1000,12 @@ export async function registerRoutes(app: Express) {
           
         } catch (pdfError) {
           console.error("PDF parsing error:", pdfError);
-          // Continue with basic processing
+          // Update status to failed since we couldn't extract sections
+          await db.update(fileUploads)
+            .set({ status: "failed" })
+            .where(eq(fileUploads.id, fileUpload.id));
+          
+          throw new Error(`PDF processing failed: ${pdfError.message}`);
         }
       }
 
@@ -1009,11 +1014,18 @@ export async function registerRoutes(app: Express) {
         .set({ status: "completed" })
         .where(eq(fileUploads.id, fileUpload.id));
 
+      // Verify sections were actually inserted before claiming success
+      const insertedSections = await db.select()
+        .from(sectionInspections)
+        .where(eq(sectionInspections.fileUploadId, fileUpload.id));
+      
+      console.log(`✓ Verified ${insertedSections.length} sections in database for upload ${fileUpload.id}`);
+      
       res.json({ 
         message: "File uploaded and processed successfully", 
         uploadId: fileUpload.id,
         reprocessedExisting: existingUpload.length > 0,
-        sectionsExtracted: 94 // Based on successful extraction logged above
+        sectionsExtracted: insertedSections.length
       });
     } catch (error) {
       console.error("Error uploading file:", error);
