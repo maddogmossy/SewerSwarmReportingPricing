@@ -433,13 +433,37 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   // Extract inspection direction for each section from ECL report headers
   const inspectionDirections = extractInspectionDirectionFromECL(pdfText);
   console.log(`✓ Extracted inspection directions for ${Object.keys(inspectionDirections).length} sections`);
+  console.log(`🧪 CHECKPOINT: Reached section pattern matching logic`);
   
   // Updated pattern to match the actual ECL format: "Section Item 1:  F01-10A  >  F01-10  (F01-10AX)"
-  const sectionPattern = /Section Item (\d+):\s+([A-Z0-9\-\/]+)\s+>\s+([A-Z0-9\-\/]+)\s+\(([A-Z0-9\-\/]+)\)/g;
+  // Add debug logging to see what the pattern is trying to match
+  console.log('🔍 Looking for sections with pattern in PDF text...');
+  const sectionPattern = /Section Item (\d+):\s+([A-Z0-9\-]+)\s+>\s+([A-Z0-9\-]+)\s+\(([A-Z0-9\-X]+)\)/g;
+  
+  // Debug: Test regex on specific known text from the PDF
+  const testText = "Section Item 1:  F01-10A  >  F01-10  (F01-10AX)";
+  const testPattern = /Section Item (\d+):\s+([A-Z0-9\-]+)\s+>\s+([A-Z0-9\-]+)\s+\(([A-Z0-9\-X]+)\)/g;
+  const testMatch = testPattern.exec(testText);
+  console.log(`🧪 Test regex on: "${testText}"`);
+  console.log(`🧪 Test result:`, testMatch);
+  
+  // Find actual Section Item lines in PDF
+  const sectionLines = pdfText.split('\n').filter(line => line.includes('Section Item'));
+  console.log(`📄 Found ${sectionLines.length} Section Item lines:`);
+  sectionLines.slice(0, 5).forEach((line, i) => {
+    console.log(`  - Line ${i+1}: "${line}"`);
+    const lineMatch = testPattern.exec(line);
+    console.log(`  - Match result:`, lineMatch ? 'SUCCESS' : 'FAILED');
+    testPattern.lastIndex = 0; // Reset for next test
+  });
   const sections = [];
   let match;
   
+  console.log(`📋 Starting while loop with sectionPattern against full PDF text...`);
+  let matchCount = 0;
   while ((match = sectionPattern.exec(pdfText)) !== null) {
+    matchCount++;
+    console.log(`✓ Found section pattern match ${matchCount}: ${match[0]}`);
     const itemNo = parseInt(match[1]);
     const originalStartMH = match[2];
     const originalFinishMH = match[3];
@@ -558,6 +582,14 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   }
   
   console.log(`✓ Extracted ${sections.length} authentic adoption sections from PDF`);
+  console.log(`📊 Debug: sections array contains:`, sections.map(s => `${s.itemNo}: ${s.startMH}→${s.finishMH}`));
+  
+  // Store sections in database with proper sector and file ID
+  for (const section of sections) {
+    await db.insert(sectionInspections).values(section);
+  }
+  
+  console.log(`💾 Stored ${sections.length} sections in database for upload ${fileUploadId}`);
   return sections;
 }
 
@@ -1130,7 +1162,7 @@ export async function registerRoutes(app: Express) {
             sections = await extractAdoptionSectionsFromPDF(pdfData.text, fileUpload.id);
           } else {
             console.log('Using Nine Elms Park extraction format');
-            sections = await extractSectionsFromPDF(pdfData.text, fileUpload.id);
+            sections = await extractAdoptionSectionsFromPDF(pdfData.text, fileUpload.id);
           }
           
           console.log(`Extracted ${sections.length} authentic sections from PDF`);
@@ -1554,7 +1586,7 @@ export async function registerRoutes(app: Express) {
       const pdfBuffer = await fs.promises.readFile(upload.filePath);
       const pdfText = await pdfParse(pdfBuffer);
       
-      const extractedSections = await extractSectionsFromPDF(pdfText.text, uploadId);
+      const extractedSections = await extractAdoptionSectionsFromPDF(pdfText.text, uploadId);
       
       if (extractedSections && extractedSections.length > 0) {
         // APPLY MULTI-DEFECT SECTION SPLITTING TO FLOW REFRESH
@@ -1799,8 +1831,8 @@ export async function registerRoutes(app: Express) {
         
         console.log(`📄 Reprocessing PDF: ${pdfData.numpages} pages, ${pdfData.text.length} characters`);
         
-        // Extract sections using corrected format
-        const sections = await extractSectionsFromPDF(pdfData.text, uploadId);
+        // Extract sections using corrected format for adoption sector ECL reports
+        const sections = await extractAdoptionSectionsFromPDF(pdfData.text, uploadId);
         
         if (sections.length > 0) {
           // APPLY MULTI-DEFECT SECTION SPLITTING TO REPROCESSING
