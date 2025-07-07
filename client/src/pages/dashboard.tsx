@@ -888,20 +888,11 @@ export default function Dashboard() {
     foldersCount: folders.length
   });
   
-  // Force clear all cached data for fresh uploads and ensure authentic data
-  useEffect(() => {
-    queryClient.removeQueries({ queryKey: ["/api/uploads"] });
-    queryClient.removeQueries({ queryKey: ["/api/uploads/*/sections"] });
-    queryClient.clear(); // Clear all cache
-  }, []);
+  // REMOVED: Aggressive cache clearing that was interfering with data display
+  // The automatic cache clearing was preventing section data from being displayed
 
-  // Additional cache clearing when upload changes
-  useEffect(() => {
-    if (currentUpload?.id) {
-      queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-    }
-  }, [currentUpload?.id]);
+  // REMOVED: Additional cache clearing that was interfering with data display
+  // Let React Query handle cache invalidation naturally
     
   const currentSector = currentUpload 
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
