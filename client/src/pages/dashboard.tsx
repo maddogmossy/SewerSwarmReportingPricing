@@ -901,13 +901,15 @@ export default function Dashboard() {
     ? completedUploads.find(upload => upload.id === parseInt(reportId))
     : selectedReportIds.length === 1 
       ? filteredUploads.find(upload => upload.id === selectedReportIds[0])
-      : null;
+      : completedUploads.length === 1 ? completedUploads[0] : null; // Auto-select if only one upload
   
   // Debug logging - enhanced for auto-navigation debugging
   console.log("Dashboard Debug:", {
     reportId,
+    reportIdParsed: reportId ? parseInt(reportId) : null,
     hasCurrentUpload: !!currentUpload,
     completedUploadsCount: completedUploads.length,
+    uploadsIds: completedUploads.map(u => u.id),
     condition1: completedUploads.length === 0,
     condition2: !currentUpload,
     shouldShowFolders: completedUploads.length === 0 || !currentUpload,
