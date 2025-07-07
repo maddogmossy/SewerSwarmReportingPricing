@@ -523,17 +523,47 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   
   console.log(`📋 Starting pattern matching against full PDF text...`);
   let matchCount = 0;
-  // FIXED: Use global flag properly and collect all matches first
+  // FIXED: Use the exact same approach as debug endpoint
+  console.log('🔍 Using robust pattern matching to find ALL 94 sections...');
+  
+  // Use match() to get all matches at once (same as debug endpoint)
+  const allSectionMatches = pdfText.match(/Section Item (\d+):/g) || [];
+  console.log(`✓ Found ${allSectionMatches.length} total Section Items using match()`);
+  
   const allMatches = [];
-  let match;
-  while ((match = sectionPattern.exec(pdfText)) !== null) {
-    allMatches.push({
-      itemNo: parseInt(match[1]),
-      startMH: match[2],
-      finishMH: match[3],
-      sectionId: match[4],
-      fullMatch: match[0]
-    });
+  
+  // Process each match to extract section number and try to get manhole references
+  for (const sectionMatch of allSectionMatches) {
+    const itemNoMatch = sectionMatch.match(/Section Item (\d+):/);
+    if (itemNoMatch) {
+      const itemNo = parseInt(itemNoMatch[1]);
+      console.log(`✓ Processing Section Item ${itemNo} (${allMatches.length + 1}/${allSectionMatches.length})`);
+      
+      // Try to extract manhole references for this specific section
+      const sectionLinePattern = new RegExp(`Section Item ${itemNo}:\\s+([A-Z0-9\\-]+)\\s+>\\s+([A-Z0-9\\-]+)\\s+\\(([A-Z0-9\\-X]+)\\)`, 'g');
+      const lineMatch = sectionLinePattern.exec(pdfText);
+      
+      if (lineMatch) {
+        allMatches.push({
+          itemNo: itemNo,
+          startMH: lineMatch[1],
+          finishMH: lineMatch[2],
+          sectionId: lineMatch[3],
+          fullMatch: lineMatch[0]
+        });
+        console.log(`✓ Extracted MH refs for Section ${itemNo}: ${lineMatch[1]} → ${lineMatch[2]}`);
+      } else {
+        // Create with authentic "no data recorded" when MH refs not found
+        allMatches.push({
+          itemNo: itemNo,
+          startMH: 'no data recorded',
+          finishMH: 'no data recorded',
+          sectionId: 'no data recorded',
+          fullMatch: sectionMatch
+        });
+        console.log(`⚠️ No MH refs found for Section ${itemNo}, using authentic placeholders`);
+      }
+    }
   }
   
   console.log(`✓ Found ${allMatches.length} total pattern matches`);
@@ -1732,7 +1762,8 @@ export async function registerRoutes(app: Express) {
         },
         sectionMatches: {
           eclPattern: (pdfText.match(/Section Item (\d+):\s+([A-Z0-9\-\/]+)\s+>\s+([A-Z0-9\-\/]+)\s+\(([A-Z0-9\-\/]+)\)/g) || []).length,
-          simplePattern: (pdfText.match(/\d+[A-Z]/g) || []).slice(0, 10)
+          simplePattern: (pdfText.match(/Section Item (\d+):/g) || []).length,
+          actualSectionNumbers: (pdfText.match(/Section Item (\d+):/g) || []).map(m => m.match(/\d+/)[0]).slice(0, 20)
         }
       });
     } catch (error) {
