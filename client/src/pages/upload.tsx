@@ -198,10 +198,14 @@ export default function Upload() {
       setSelectedSector("");
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       
-      // Redirect to dashboard immediately for reprocessed files, or after delay for new uploads
+      // Redirect to dashboard with specific report ID for auto-loading
       const redirectDelay = data.reprocessedExisting ? 500 : 1500;
       setTimeout(() => {
-        setLocation("/dashboard");
+        if (data.uploadId) {
+          setLocation(`/dashboard?reportId=${data.uploadId}`);
+        } else {
+          setLocation("/dashboard");
+        }
       }, redirectDelay);
     },
     onError: (error) => {

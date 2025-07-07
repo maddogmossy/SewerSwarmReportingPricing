@@ -1023,8 +1023,6 @@ export async function registerRoutes(app: Express) {
             throw new Error("No authentic data could be extracted from PDF. Please verify the PDF contains valid inspection data or contact support.");
           }
           
-          console.log(`Extracted ${finalSections.length} sections from PDF`);
-          
         } catch (pdfError) {
           console.error("PDF parsing error:", pdfError);
           // Continue with basic processing
@@ -1038,7 +1036,7 @@ export async function registerRoutes(app: Express) {
 
       res.json({ 
         message: "File uploaded and processed successfully", 
-        fileId: fileUpload.id,
+        uploadId: fileUpload.id,
         reprocessedExisting: existingUpload.length > 0,
         sectionsExtracted: 94 // Based on successful extraction logged above
       });
