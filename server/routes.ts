@@ -3318,12 +3318,12 @@ export async function registerRoutes(app: Express) {
       };
       
       if (userUploads.length > 0) {
-        // SAFE APPROACH: Set upload status to 'processing' to hide from dashboard
-        // All sections, defects, folders, and PDF files remain in database
+        // TRULY NON-DESTRUCTIVE: Just clear section data display, keep upload status as 'completed'
+        // This preserves folders and upload records while clearing analysis results
         for (const upload of userUploads) {
-          await db.update(fileUploads)
-            .set({ status: 'processing' })
-            .where(eq(fileUploads.id, upload.id));
+          // Delete only the section analysis data, not the upload record
+          await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, upload.id));
+          await db.delete(sectionDefects).where(eq(sectionDefects.fileUploadId, upload.id));
           clearCounts.uploads++;
         }
         
