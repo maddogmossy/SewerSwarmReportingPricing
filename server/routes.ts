@@ -2835,32 +2835,42 @@ export async function registerRoutes(app: Express) {
             const sectionText = sectionInspectionText.substring(match.index, match.index + 2000);
             const sectionHeaderData = extractSectionHeaderFromInspectionData(sectionText, itemNo);
             
-            // Extract observations/defects specifically for this section
+            // Extract observations/defects specifically for this section using broader patterns
             const sectionObservations = [];
-            const sectionObservationPatterns = [
-              /WL\s+[0-9.]+m?\s*\([^)]*\)/gi,
-              /LL\s+[0-9.]+m?\s*\([^)]*\)/gi,
-              /REM\s+[0-9.]+m?\s*\([^)]*\)/gi,
-              /MCPP\s+[0-9.]+m?\s*\([^)]*\)/gi,
-              /REST\s+BEND\s+[0-9.]+m?\s*\([^)]*\)/gi,
-              /JN\s+[0-9.]+m?\s*\([^)]*\)/gi,
-              /BRF\s+[0-9.]+m?\s*\([^)]*\)/gi,
-              /DER\s+[0-9.]+m?\s*\([^)]*\)/gi,
-              /FC\s+[0-9.]+m?\s*\([^)]*\)/gi,
-              /CR\s+[0-9.]+m?\s*\([^)]*\)/gi,
-              /DEG\s+[0-9.]+m?\s*\([^)]*\)/gi
-            ];
+            console.log(`🔍 Analyzing section ${itemNo} text for observations...`);
+            console.log(`Section text preview: ${sectionText.substring(0, 500)}...`);
             
-            sectionObservationPatterns.forEach(pattern => {
-              let observationMatch;
-              while ((observationMatch = pattern.exec(sectionText)) !== null) {
-                sectionObservations.push(observationMatch[0].trim());
-              }
+            // Look for any observation codes in the section text
+            const observationCodes = ['WL', 'LL', 'REM', 'MCPP', 'REST BEND', 'JN', 'BRF', 'DER', 'FC', 'CR', 'DEG', 'DEF', 'S/A', 'OJM', 'JDL'];
+            
+            observationCodes.forEach(code => {
+              // Look for patterns like "WL 0.00m" or "LL 0.75m" or "REM Something" 
+              const patterns = [
+                new RegExp(`${code}\\s+[0-9.]+m?\\s*\\([^)]*\\)`, 'gi'),
+                new RegExp(`${code}\\s+[0-9.]+m?`, 'gi'),
+                new RegExp(`${code}\\s+[^\\n\\r]{1,50}`, 'gi')
+              ];
+              
+              patterns.forEach(pattern => {
+                let observationMatch;
+                while ((observationMatch = pattern.exec(sectionText)) !== null) {
+                  const observation = observationMatch[0].trim();
+                  if (observation.length > code.length + 1) { // Must have content beyond just the code
+                    sectionObservations.push(observation);
+                    console.log(`✅ Found observation: ${observation}`);
+                  }
+                }
+              });
             });
             
-            const defectsText = sectionObservations.length > 0 
-              ? sectionObservations.join(', ') 
+            // Remove duplicates
+            const uniqueObservations = [...new Set(sectionObservations)];
+            
+            const defectsText = uniqueObservations.length > 0 
+              ? uniqueObservations.join(', ') 
               : 'No action required pipe observed in acceptable structural and service condition';
+              
+            console.log(`📋 Section ${itemNo} final defects: ${defectsText}`);
             
             const section = {
               itemNo,
