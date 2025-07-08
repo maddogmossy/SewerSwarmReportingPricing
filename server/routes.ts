@@ -2895,6 +2895,19 @@ export async function registerRoutes(app: Express) {
               cost: 'Complete'
             };
             
+            // CRITICAL: Apply data integrity validation
+            const validation = DataIntegrityValidator.validateSectionData(section);
+            if (!validation.isValid) {
+              console.error('🚨 DATA INTEGRITY VIOLATION:', validation.errors);
+              throw new Error(`Data integrity violation: ${validation.errors.join(', ')}`);
+            }
+            
+            // Additional validation for PDF extraction
+            const pdfValidation = DataIntegrityValidator.validatePDFExtraction(section);
+            if (pdfValidation.warnings.length > 0) {
+              console.warn('⚠️ PDF EXTRACTION WARNINGS:', pdfValidation.warnings);
+            }
+            
             sections.push(section);
             console.log(`✅ Found Section ${itemNo}: ${startMH} → ${finishMH}`);
           }
