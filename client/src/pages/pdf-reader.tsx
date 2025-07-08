@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FileText, Eye, Database, AlertTriangle, CheckCircle, Play, ArrowLeft, Home } from 'lucide-react';
+import { FileText, Eye, Database, AlertTriangle, CheckCircle, Play, ArrowLeft, Home, RefreshCw } from 'lucide-react';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
@@ -223,15 +223,37 @@ export default function PDFReaderPage() {
       {/* Analysis Results */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Eye className="h-5 w-5" />
-            Section Inspection Data
-            {expandedSectionData && (
-              <Badge variant="outline" className="ml-2">
-                {expandedSectionData.length} Sections
-              </Badge>
-            )}
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Section Inspection Data
+              {expandedSectionData && (
+                <Badge variant="outline" className="ml-2">
+                  {expandedSectionData.length} Sections
+                </Badge>
+              )}
+            </CardTitle>
+            
+            {/* Refresh Button */}
+            <Button
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ['/api/uploads'] });
+                if (selectedUploadId) {
+                  queryClient.invalidateQueries({ queryKey: [`/api/uploads/${selectedUploadId}/sections`] });
+                }
+                toast({
+                  title: "Data Refreshed",
+                  description: "PDF Reader data has been refreshed"
+                });
+              }}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Refresh Data
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {isLoading && (
