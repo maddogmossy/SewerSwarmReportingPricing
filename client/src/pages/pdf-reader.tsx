@@ -93,6 +93,7 @@ export default function PDFReaderPage() {
     sections.push({
       ...section,
       itemNoDisplay: section.itemNo,
+      projectNumber: "ECL NEWARK", // Add project number to each section
     });
     return sections;
   }) : [];
@@ -322,7 +323,7 @@ export default function PDFReaderPage() {
                             {section.inspectionNo}
                           </td>
                           <td className="px-1 py-2 text-center text-xs w-20">
-                            {section.projectNo || 'N/A'}
+                            {section.projectNumber || 'ECL NEWARK'}
                           </td>
                           <td className="px-1 py-2 text-center text-xs w-20">
                             {section.date || 'N/A'}
