@@ -726,8 +726,9 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     const extractedData = extractAuthenticAdoptionSpecs(pdfText, itemNo);
     console.log(`📊 Section ${itemNo} extraction result:`, extractedData);
     
-    // Extract authentic project information from PDF
-    const projectInfo = extractProjectInformation(pdfText);
+    // Extract authentic project information from PDF (with filename fallback)
+    const fileUpload = await storage.getFileUpload(fileUploadId);
+    const projectInfo = extractProjectInformation(pdfText, fileUpload?.fileName);
     console.log(`📋 Project Info for Section ${itemNo}:`, projectInfo);
     
     // Extract authentic inspection data for this section
@@ -831,8 +832,8 @@ function getAdoptionTotalLength(itemNo: number): string {
 }
 
 // AUTHENTIC DATA EXTRACTION FUNCTIONS
-// Extract project information from PDF header
-function extractProjectInformation(pdfText: string): { projectNumber: string | null } {
+// Extract project information from PDF header or filename as fallback
+function extractProjectInformation(pdfText: string, filename?: string): { projectNumber: string | null } {
   console.log("🔍 Extracting project information from PDF...");
   
   // Extract project number from various PDF patterns
@@ -848,12 +849,47 @@ function extractProjectInformation(pdfText: string): { projectNumber: string | n
     if (match) {
       // Clean up project number by removing line breaks and extra whitespace
       const projectNumber = match[1].replace(/[\r\n]+/g, ' ').trim();
-      console.log(`✅ Found project number: "${projectNumber}"`);
+      console.log(`✅ Found project number in PDF: "${projectNumber}"`);
       return { projectNumber };
     }
   }
   
-  console.log("⚠️ No project number found in PDF");
+  console.log("⚠️ No project number found in PDF content");
+  
+  // FALLBACK: Extract project number from filename when PDF field is empty
+  if (filename) {
+    console.log(`🔍 Attempting fallback extraction from filename: "${filename}"`);
+    
+    // Remove file extensions and clean filename
+    const cleanFilename = filename.replace(/\.pdf$/gi, '').trim();
+    
+    // Extract meaningful project identifiers from filename
+    const filenamePatterns = [
+      // Pattern: "218ECL-NEWARK" or "3588-JRL-NineElmsPark"
+      /^(\d+[-]?[A-Z]+[-]?[A-Za-z\s]*)/i,
+      // Pattern: "ECL NEWARK" or similar
+      /([A-Z]{2,}\s+[A-Z\s]+)/i,
+      // Pattern: Any meaningful project code
+      /([A-Z0-9\-\.]{3,})/i
+    ];
+    
+    for (const pattern of filenamePatterns) {
+      const match = cleanFilename.match(pattern);
+      if (match) {
+        const projectNumber = match[1].trim();
+        console.log(`✅ Extracted project number from filename: "${projectNumber}"`);
+        return { projectNumber };
+      }
+    }
+    
+    // Last resort: use cleaned filename if it looks like a project identifier
+    if (cleanFilename.length >= 3 && cleanFilename.length <= 50) {
+      console.log(`✅ Using cleaned filename as project number: "${cleanFilename}"`);
+      return { projectNumber: cleanFilename };
+    }
+  }
+  
+  console.log("❌ No project number found in PDF or filename");
   return { projectNumber: null };
 }
 
