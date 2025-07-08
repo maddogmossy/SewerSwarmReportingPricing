@@ -93,7 +93,7 @@ export default function PDFReaderPage() {
     sections.push({
       ...section,
       itemNoDisplay: section.itemNo,
-      projectNumber: "ECL NEWARK", // Add project number to each section
+      projectNumber: section.projectNumber || "ECL NEWARK", // Use authentic project number from extraction
     });
     return sections;
   }) : [];
