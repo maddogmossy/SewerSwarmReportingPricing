@@ -279,106 +279,111 @@ export default function PDFReaderPage() {
                 </h3>
               </div>
               
-              {/* Dashboard Table Template */}
+              {/* Dashboard Table Template - EXACT MATCH */}
               <div className="border rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-green-50">
                       <tr>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16" style={{ whiteSpace: 'nowrap' }}>
                           Item No
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16" style={{ whiteSpace: 'nowrap' }}>
                           Inspec. No
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Project No
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Date
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Time
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Start MH
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Start MH Depth
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Finish MH
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Finish MH Depth
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Pipe Size
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
-                          Material
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-32" style={{ whiteSpace: 'nowrap' }}>
+                          Pipe Material
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
-                          Total Length
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                          Total Length (m)
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
-                          Length Surveyed
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                          Length Surveyed (m)
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-96" style={{ whiteSpace: 'nowrap' }}>
+                          Observations
+                        </th>
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Severity Grade
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider w-20" style={{ whiteSpace: 'nowrap' }}>
                           SRM Grading
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-96">
-                          Observations
                         </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {expandedSectionData && expandedSectionData.length > 0 ? expandedSectionData.map((section: any, index: number) => (
-                        <tr key={index} className="hover:bg-gray-50">
-                          <td className="px-1 py-2 text-center text-xs w-16">
-                            <div className="font-medium">{section.itemNo}</div>
+                        <tr key={index} className="hover:bg-gray-50 text-center">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 font-medium w-16">
+                            {section.itemNo}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-16">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-16">
                             {section.inspectionNo}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20 font-medium">
                             {section.projectNo || section.projectNumber || 'ECL NEWARK'}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
-                            {section.date || 'N/A'}
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
+                            {section.date || 'no data recorded'}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
-                            {section.time || 'N/A'}
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
+                            {section.time || 'no data recorded'}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20 font-medium">
                             {section.startMH}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
                             {section.startMHDepth}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20 font-medium">
                             {section.finishMH}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
                             {section.finishMHDepth}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
-                            {section.pipeSize}mm
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20 font-medium">
+                            {section.pipeSize}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-32">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-32">
                             {section.pipeMaterial}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
                             {section.totalLength}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
                             {section.lengthSurveyed}
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
-                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-96">
+                            <div className="text-xs text-left leading-relaxed">
+                              {section.defects || 'no data recorded'}
+                            </div>
+                          </td>
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
+                            <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${
                               section.severityGrade === '0' ? 'bg-green-100 text-green-800' :
                               section.severityGrade === '1' ? 'bg-red-100 text-red-800' :
                               section.severityGrade === '2' ? 'bg-amber-100 text-amber-800' :
@@ -386,27 +391,23 @@ export default function PDFReaderPage() {
                               section.severityGrade === '4' ? 'bg-red-100 text-red-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
-                              Grade {section.severityGrade}
+                              {section.severityGrade || '0'}
                             </span>
                           </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
+                          <td className="px-2 py-2 text-xs w-20">
                             <div className="text-xs">
                               {section.severityGrade === "0" ? "No service issues" :
                                section.severityGrade === "1" ? "Minor service impacts" :
                                section.severityGrade === "2" ? "Moderate service defects" :
                                section.severityGrade === "3" ? "Major service defects" :
-                               "Blocked or non-functional"}
-                            </div>
-                          </td>
-                          <td className="px-1 py-2 text-xs w-96">
-                            <div className="text-sm leading-relaxed">
-                              {section.defects}
+                               section.severityGrade === "4" ? "Critical defects" :
+                               "No service issues"}
                             </div>
                           </td>
                         </tr>
                       )) : (
                         <tr>
-                          <td colSpan={15} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={16} className="px-4 py-8 text-center text-gray-500">
                             {selectedUploadId ? 'Loading sections data...' : 'Select a PDF file to view sections'}
                           </td>
                         </tr>
