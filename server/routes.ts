@@ -2835,36 +2835,58 @@ export async function registerRoutes(app: Express) {
             const sectionText = sectionInspectionText.substring(match.index, match.index + 2000);
             const sectionHeaderData = extractSectionHeaderFromInspectionData(sectionText, itemNo);
             
-            // Extract observations/defects specifically for this section using broader patterns
-            const sectionObservations = [];
-            console.log(`🔍 Analyzing section ${itemNo} text for observations...`);
-            console.log(`Section text preview: ${sectionText.substring(0, 500)}...`);
+            // Look for observation data in the main PDF text for this specific item number
+            console.log(`🔍 Looking for observation data for Item ${itemNo} in main PDF...`);
             
-            // Look for any observation codes in the section text
-            const observationCodes = ['WL', 'LL', 'REM', 'MCPP', 'REST BEND', 'JN', 'BRF', 'DER', 'FC', 'CR', 'DEG', 'DEF', 'S/A', 'OJM', 'JDL'];
+            // Search for observation patterns in the entire PDF text that reference this item number
+            const observationPatterns = [
+              new RegExp(`${itemNo}\\s+[^\\n]*?(WL\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
+              new RegExp(`${itemNo}\\s+[^\\n]*?(LL\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
+              new RegExp(`${itemNo}\\s+[^\\n]*?(REM\\s+[^\\n]*)`, 'gi'),
+              new RegExp(`${itemNo}\\s+[^\\n]*?(MCPP\\s+[^\\n]*)`, 'gi'),
+              new RegExp(`${itemNo}\\s+[^\\n]*?(REST\\s+BEND[^\\n]*)`, 'gi'),
+              new RegExp(`${itemNo}\\s+[^\\n]*?(JN\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
+              new RegExp(`${itemNo}\\s+[^\\n]*?(BRF\\s+[^\\n]*)`, 'gi'),
+              new RegExp(`${itemNo}\\s+[^\\n]*?(DER\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
+              new RegExp(`${itemNo}\\s+[^\\n]*?(FC\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
+              new RegExp(`${itemNo}\\s+[^\\n]*?(CR\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
+              new RegExp(`${itemNo}\\s+[^\\n]*?(DEG\\s+[0-9.]+m?[^\\n]*)`, 'gi')
+            ];
             
-            observationCodes.forEach(code => {
-              // Look for patterns like "WL 0.00m" or "LL 0.75m" or "REM Something" 
-              const patterns = [
-                new RegExp(`${code}\\s+[0-9.]+m?\\s*\\([^)]*\\)`, 'gi'),
-                new RegExp(`${code}\\s+[0-9.]+m?`, 'gi'),
-                new RegExp(`${code}\\s+[^\\n\\r]{1,50}`, 'gi')
-              ];
-              
-              patterns.forEach(pattern => {
-                let observationMatch;
-                while ((observationMatch = pattern.exec(sectionText)) !== null) {
-                  const observation = observationMatch[0].trim();
-                  if (observation.length > code.length + 1) { // Must have content beyond just the code
-                    sectionObservations.push(observation);
-                    console.log(`✅ Found observation: ${observation}`);
-                  }
+            const foundObservations = [];
+            observationPatterns.forEach(pattern => {
+              let match;
+              while ((match = pattern.exec(pdfText)) !== null) {
+                if (match[1]) {
+                  foundObservations.push(match[1].trim());
+                  console.log(`✅ Found observation for Item ${itemNo}: ${match[1].trim()}`);
                 }
-              });
+              }
             });
             
-            // Remove duplicates
-            const uniqueObservations = [...new Set(sectionObservations)];
+            // Also look for lines that start with the item number and contain observation codes
+            const lines = pdfText.split('\n');
+            lines.forEach(line => {
+              if (line.trim().startsWith(`${itemNo}\t`) || line.trim().startsWith(`${itemNo} `)) {
+                const observationCodes = ['WL', 'LL', 'REM', 'MCPP', 'REST BEND', 'JN', 'BRF', 'DER', 'FC', 'CR', 'DEG'];
+                observationCodes.forEach(code => {
+                  if (line.includes(code)) {
+                    // Extract the part after the item number that contains observations
+                    const parts = line.split(/\t/);
+                    if (parts.length > 10) { // Assuming observations are in later columns
+                      const observationColumn = parts.find(part => part.includes(code));
+                      if (observationColumn && observationColumn.trim() !== code) {
+                        foundObservations.push(observationColumn.trim());
+                        console.log(`✅ Found table observation for Item ${itemNo}: ${observationColumn.trim()}`);
+                      }
+                    }
+                  }
+                });
+              }
+            });
+            
+            // Remove duplicates and filter out empty observations
+            const uniqueObservations = [...new Set(foundObservations)].filter(obs => obs && obs.length > 2);
             
             const defectsText = uniqueObservations.length > 0 
               ? uniqueObservations.join(', ') 
