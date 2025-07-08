@@ -1665,8 +1665,7 @@ export async function registerRoutes(app: Express) {
         return res.status(404).json({ error: "File upload not found or access denied" });
       }
       
-      // 5. Delete physical file if it exists
-      const fs = require('fs');
+      // 5. Delete physical file if it exists (import already exists at top)
       if (uploadRecord.filePath && fs.existsSync(uploadRecord.filePath)) {
         try {
           fs.unlinkSync(uploadRecord.filePath);
