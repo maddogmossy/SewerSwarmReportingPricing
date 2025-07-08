@@ -41,11 +41,21 @@ export default function PDFReaderPage() {
     enabled: !!selectedUploadId
   });
 
-  // Get actual database sections to display dashboard format
-  const { data: databaseSections } = useQuery({
+  // Get actual database sections to display dashboard format (same as dashboard)
+  const { data: sectionData } = useQuery({
     queryKey: ['/api/uploads', selectedUploadId, 'sections'],
     enabled: !!selectedUploadId,
   });
+
+  // Process the data the same way dashboard does
+  const expandedSectionData = sectionData ? sectionData.flatMap((section: any) => {
+    const sections = [];
+    sections.push({
+      ...section,
+      itemNoDisplay: section.itemNo,
+    });
+    return sections;
+  }) : [];
 
   return (
     <div className="container mx-auto p-6 max-w-7xl">
@@ -198,13 +208,13 @@ export default function PDFReaderPage() {
                     <div className="flex items-center gap-2 mb-4">
                       <Database className="h-5 w-5" />
                       <h3 className="text-lg font-semibold">
-                        Database Sections - Exact Dashboard Format ({databaseSections?.length || 0})
+                        Database Sections - Exact Dashboard Format ({expandedSectionData?.length || 0})
                       </h3>
                     </div>
                     
                     <ScrollArea className="h-96 border rounded-lg p-4">
                       <div className="space-y-2">
-                        {databaseSections?.map((section: any, index: number) => (
+                        {expandedSectionData?.map((section: any, index: number) => (
                           <div key={index} className="border border-gray-200 rounded p-3 bg-white">
                             <div className="flex items-center justify-between mb-2">
                               <div className="font-semibold text-sm">
