@@ -108,13 +108,38 @@ export default function PDFReaderPage() {
   return (
     <div className="container mx-auto p-6 max-w-7xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-          <FileText className="h-8 w-8 text-blue-600" />
-          PDF Reader & Analysis
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Analyze PDF content before database insertion to identify extraction errors
-        </p>
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+              <FileText className="h-8 w-8 text-blue-600" />
+              PDF Reader & Analysis
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Analyze PDF content before database insertion to identify extraction errors
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              asChild
+              variant="outline"
+            >
+              <Link href="/upload">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Upload
+              </Link>
+            </Button>
+            
+            <Button
+              asChild
+              variant="outline"
+            >
+              <Link href="/">
+                <Home className="h-4 w-4 mr-2" />
+                Home
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* File Selection */}
