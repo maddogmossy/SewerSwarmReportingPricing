@@ -1225,6 +1225,20 @@ export default function Dashboard() {
     return true;
   });
 
+  // DEBUG: Log data processing steps
+  console.log("DEBUG - Data Processing:", {
+    rawSectionDataLength: rawSectionData?.length || 0,
+    individualDefectsLength: individualDefects?.length || 0,
+    expandedSectionDataLength: expandedSectionData?.length || 0,
+    filteredDataLength: filteredData?.length || 0,
+    firstRawSection: rawSectionData?.[0] ? {
+      itemNo: rawSectionData[0].itemNo,
+      startMH: rawSectionData[0].startMH,
+      finishMH: rawSectionData[0].finishMH,
+      defects: rawSectionData[0].defects?.substring(0, 50)
+    } : null
+  });
+
   // Sort the filtered data by item number, then by meterage to ensure correct ordering
   const sectionData = [...filteredData].sort((a, b) => {
     // First sort by item number
