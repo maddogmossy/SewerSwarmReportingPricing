@@ -151,6 +151,15 @@ export default function PDFReaderPage() {
                           Inspec. No
                         </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                          Project No
+                        </th>
+                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                          Date
+                        </th>
+                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                          Time
+                        </th>
+                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                           Start MH
                         </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
@@ -175,10 +184,10 @@ export default function PDFReaderPage() {
                           Length Surveyed
                         </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
-                          Structural Grade
+                          Severity Grade
                         </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
-                          Service Grade
+                          SRM Grading
                         </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-96">
                           Observations
@@ -193,6 +202,15 @@ export default function PDFReaderPage() {
                           </td>
                           <td className="px-1 py-2 text-center text-xs w-16">
                             {section.inspectionNo}
+                          </td>
+                          <td className="px-1 py-2 text-center text-xs w-20">
+                            {section.projectNumber || 'N/A'}
+                          </td>
+                          <td className="px-1 py-2 text-center text-xs w-20">
+                            {section.date || 'N/A'}
+                          </td>
+                          <td className="px-1 py-2 text-center text-xs w-20">
+                            {section.time || 'N/A'}
                           </td>
                           <td className="px-1 py-2 text-center text-xs w-20">
                             {section.startMH}
@@ -227,20 +245,17 @@ export default function PDFReaderPage() {
                               section.severityGrade === '4' ? 'bg-red-100 text-red-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
-                              {section.severityGrade}
+                              Grade {section.severityGrade}
                             </span>
                           </td>
                           <td className="px-1 py-2 text-center text-xs w-20">
-                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                              section.severityGrade === '0' ? 'bg-green-100 text-green-800' :
-                              section.severityGrade === '1' ? 'bg-emerald-100 text-emerald-800' :
-                              section.severityGrade === '2' ? 'bg-amber-100 text-amber-800' :
-                              section.severityGrade === '3' ? 'bg-red-100 text-red-800' :
-                              section.severityGrade === '4' ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {section.severityGrade}
-                            </span>
+                            <div className="text-xs">
+                              {section.severityGrade === "0" ? "No service issues" :
+                               section.severityGrade === "1" ? "Minor service impacts" :
+                               section.severityGrade === "2" ? "Moderate service defects" :
+                               section.severityGrade === "3" ? "Major service defects" :
+                               "Blocked or non-functional"}
+                            </div>
                           </td>
                           <td className="px-1 py-2 text-xs w-96">
                             <div className="text-sm leading-relaxed">
@@ -250,7 +265,7 @@ export default function PDFReaderPage() {
                         </tr>
                       )) : (
                         <tr>
-                          <td colSpan={13} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={15} className="px-4 py-8 text-center text-gray-500">
                             {selectedUploadId ? 'Loading sections data...' : 'Select a PDF file to view sections'}
                           </td>
                         </tr>
