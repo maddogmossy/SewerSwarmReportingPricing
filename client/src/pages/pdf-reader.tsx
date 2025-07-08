@@ -147,11 +147,20 @@ export default function PDFReaderPage() {
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
                           Item No
                         </th>
+                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                          Inspec. No
+                        </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                           Start MH
                         </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                          Start MH Depth
+                        </th>
+                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                           Finish MH
+                        </th>
+                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                          Finish MH Depth
                         </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                           Pipe Size
@@ -166,7 +175,7 @@ export default function PDFReaderPage() {
                           Grade
                         </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-96">
-                          Defects
+                          Observations
                         </th>
                       </tr>
                     </thead>
@@ -176,11 +185,20 @@ export default function PDFReaderPage() {
                           <td className="px-1 py-2 text-center text-xs w-16">
                             <div className="font-medium">{section.itemNo}</div>
                           </td>
+                          <td className="px-1 py-2 text-center text-xs w-16">
+                            {section.inspectionNo}
+                          </td>
                           <td className="px-1 py-2 text-center text-xs w-20">
                             {section.startMH}
                           </td>
                           <td className="px-1 py-2 text-center text-xs w-20">
+                            {section.startMHDepth}
+                          </td>
+                          <td className="px-1 py-2 text-center text-xs w-20">
                             {section.finishMH}
+                          </td>
+                          <td className="px-1 py-2 text-center text-xs w-20">
+                            {section.finishMHDepth}
                           </td>
                           <td className="px-1 py-2 text-center text-xs w-20">
                             {section.pipeSize}mm
@@ -211,7 +229,7 @@ export default function PDFReaderPage() {
                         </tr>
                       )) : (
                         <tr>
-                          <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={11} className="px-4 py-8 text-center text-gray-500">
                             {selectedUploadId ? 'Loading sections data...' : 'Select a PDF file to view sections'}
                           </td>
                         </tr>
