@@ -221,7 +221,7 @@ const getStatusColor = (status: string) => {
 const tableColumns = [
   { key: 'itemNo', label: 'Item No', hideable: false },
   { key: 'inspectionNo', label: 'Inspec. No', hideable: true },
-  { key: 'projectNumber', label: 'Project No', hideable: true },
+  { key: 'projectNo', label: 'Project No', hideable: true },
   { key: 'date', label: 'Date', hideable: true },
   { key: 'time', label: 'Time', hideable: true },
   { key: 'startMH', label: 'Start MH', hideable: false },
@@ -881,7 +881,7 @@ export default function Dashboard() {
   });
 
   // Get completed uploads for analysis
-  const completedUploads = uploads.filter(upload => upload.status === 'completed');
+  const completedUploads = uploads.filter(upload => upload.status === 'completed' || upload.status === 'extracted_pending_review');
   
   // Filter uploads by selected folder or selected individual reports
   const filteredUploads = selectedReportIds.length > 0
@@ -1105,7 +1105,7 @@ export default function Dashboard() {
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
-    enabled: !!(currentUpload?.id && currentUpload?.status === "completed"),
+    enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
@@ -1115,7 +1115,7 @@ export default function Dashboard() {
 
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
-  const apiFailure = sectionsError || (!sectionsLoading && !hasAuthenticData && currentUpload?.status === "completed");
+  const apiFailure = sectionsError || (!sectionsLoading && !hasAuthenticData && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"));
 
   // AUDIT TRAIL: Log data source for verification
   console.log("AUDIT TRAIL:", {
@@ -1131,7 +1131,7 @@ export default function Dashboard() {
   // Fetch individual defects for multiple defects per section
   const { data: individualDefects = [], isLoading: defectsLoading } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/defects`],
-    enabled: !!currentUpload?.id && currentUpload?.status === "completed",
+    enabled: !!currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"),
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
@@ -1698,7 +1698,7 @@ export default function Dashboard() {
                       {/* Individual Folders */}
                       {Object.entries(groupUploadsByFolder()).map(([folderKey, folderUploads]) => {
                         const folder = folders.find(f => f.id === parseInt(folderKey));
-                        const completedReports = folderUploads.filter(u => u.status === 'completed');
+                        const completedReports = folderUploads.filter(u => u.status === 'completed' || u.status === 'extracted_pending_review');
                         
                         if (folderKey === 'no-folder' || completedReports.length === 0) {
                           return null;
