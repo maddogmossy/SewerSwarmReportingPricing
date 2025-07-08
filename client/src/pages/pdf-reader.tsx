@@ -120,7 +120,7 @@ export default function PDFReaderPage() {
       pipeMaterial: expandedSectionData[0].pipeMaterial,
       totalLength: expandedSectionData[0].totalLength,
       lengthSurveyed: expandedSectionData[0].lengthSurveyed,
-      defects: expandedSectionData[0].defects,
+      observations: expandedSectionData[0].defects || expandedSectionData[0].observations,
       severityGrade: expandedSectionData[0].severityGrade
     });
   }
@@ -401,7 +401,7 @@ export default function PDFReaderPage() {
                           </td>
                           <td className="px-2 py-2 text-xs border-r border-gray-200 w-96">
                             <div className="text-xs text-left leading-relaxed">
-                              {section.defects || 'no data recorded'}
+                              {section.defects || section.observations || 'no data recorded'}
                             </div>
                           </td>
                           <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">

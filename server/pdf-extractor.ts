@@ -49,6 +49,14 @@ export async function extractAuthenticDataFromPDF(filePath: string): Promise<Ext
       
       console.log(`\n🔍 Processing Section ${itemNo}: ${startMH} → ${finishMH}`);
       
+      // Debug: Show the raw lines we're processing for this section (first section only)
+      if (itemNo === 1) {
+        console.log(`📝 Raw lines for Section ${itemNo}:`);
+        for (let debug = i; debug < Math.min(i + 15, lines.length); debug++) {
+          console.log(`  ${debug}: "${lines[debug]}"`);
+        }
+      }
+      
       // Extract header information from the following lines
       const sectionData = extractSectionHeaderData(lines, i, itemNo, projectName, startMH, finishMH);
       if (sectionData) {
@@ -136,9 +144,10 @@ function extractSectionHeaderData(
       }
     }
     
-    // Extract date/time (next fields right)
+    // Extract date/time (next fields right) - Enhanced pattern matching
     if (line.includes('Date:') && line.includes('Time:')) {
-      const dateTimeMatch = line.match(/Date:\s*(\d{2}\/\d{2}\/\d{4})\s*Time:\s*(\d{2}:\d{2})/);
+      // Try multiple date/time patterns
+      const dateTimeMatch = line.match(/Date:\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\s*Time:\s*(\d{1,2}:\d{2})/);
       if (dateTimeMatch) {
         sectionData.inspectionDate = dateTimeMatch[1];
         sectionData.inspectionTime = dateTimeMatch[2];
@@ -146,17 +155,44 @@ function extractSectionHeaderData(
       }
     }
     
-    // Look for defect information in observations
-    if (line.includes('Observations:') || line.includes('Defects:')) {
-      const defectMatch = line.match(/(?:Observations|Defects):\s*(.+)/);
+    // Try separate date extraction if combined pattern fails
+    if (line.includes('Date:') && sectionData.inspectionDate === "no data recorded") {
+      const dateMatch = line.match(/Date:\s*(\d{1,2}\/\d{1,2}\/\d{2,4})/);
+      if (dateMatch) {
+        sectionData.inspectionDate = dateMatch[1];
+        console.log(`  📅 Found Date: ${sectionData.inspectionDate}`);
+      }
+    }
+    
+    // Try separate time extraction
+    if (line.includes('Time:') && sectionData.inspectionTime === "no data recorded") {
+      const timeMatch = line.match(/Time:\s*(\d{1,2}:\d{2})/);
+      if (timeMatch) {
+        sectionData.inspectionTime = timeMatch[1];
+        console.log(`  ⏰ Found Time: ${sectionData.inspectionTime}`);
+      }
+    }
+    
+    // Look for observations/defects information - Enhanced pattern matching
+    if (line.includes('Observations:') || line.includes('Defects:') || line.includes('Comments:')) {
+      const defectMatch = line.match(/(?:Observations|Defects|Comments):\s*(.+)/i);
       if (defectMatch) {
         const defectText = defectMatch[1].trim();
-        if (defectText && defectText !== '' && !defectText.toLowerCase().includes('none')) {
+        if (defectText && defectText !== '' && !defectText.toLowerCase().includes('none') && !defectText.toLowerCase().includes('nil')) {
           sectionData.defects = defectText;
           sectionData.severityGrade = classifyDefectSeverity(defectText);
           sectionData.adoptable = sectionData.severityGrade > 0 ? "Conditional" : "Yes";
-          console.log(`  ⚠️  Defects: ${sectionData.defects} (Grade ${sectionData.severityGrade})`);
+          console.log(`  👁️ Observations: ${sectionData.defects} (Grade ${sectionData.severityGrade})`);
         }
+      }
+    }
+    
+    // Also look for observation codes like WL, LL, REM, etc.
+    if (sectionData.defects === "no data recorded") {
+      const codeMatch = line.match(/\b(WL|LL|REM|MCPP|REST|BRF|JN|CN)\b.*?(?:\d+\.?\d*m|\d+%)/g);
+      if (codeMatch && codeMatch.length > 0) {
+        sectionData.defects = codeMatch.join(', ');
+        console.log(`  🔍 Found observation codes: ${sectionData.defects}`);
       }
     }
     
