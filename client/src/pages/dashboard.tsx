@@ -779,27 +779,16 @@ export default function Dashboard() {
     },
     onSuccess: (data) => {
       toast({
-        title: "Dashboard Analysis Data Cleared",
-        description: `Successfully cleared analysis data from ${data.deletedCounts.sections} sections. Uploaded files preserved for re-processing.`,
+        title: "Dashboard Data Hidden",
+        description: `${data.clearCounts?.preserved || 0} authentic sections preserved. Click folder to restore display.`,
       });
-      // Invalidate all relevant queries to refresh the UI
-      queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/folders"] });
-      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/defects`] });
-      queryClient.invalidateQueries({ queryKey: ["/api/repair-pricing"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/pricing/check"] });
       
       setShowClearDataDialog(false);
-      // Reset all state to force UI refresh
-      setSelectedFolderForView(null);
-      setSelectedReportIds([]);
-      setShowFolderDropdown(false);
       
-      // Force refetch of sections data to show cleared state immediately
-      if (currentUpload?.id) {
-        queryClient.refetchQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-      }
+      // Force complete page refresh to show hidden state
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     },
     onError: (error) => {
       toast({

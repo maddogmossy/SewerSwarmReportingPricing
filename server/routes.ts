@@ -3340,7 +3340,8 @@ export async function registerRoutes(app: Express) {
       res.json({ 
         success: true, 
         message: `Dashboard cleared - ${clearCounts.preserved} authentic sections preserved. Click folder to restore display.`,
-        clearCounts 
+        clearCounts,
+        deletedCounts: clearCounts  // Add for frontend compatibility
       });
       
     } catch (error: any) {
