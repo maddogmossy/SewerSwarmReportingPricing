@@ -34,31 +34,46 @@ export async function extractAuthenticDataFromPDF(filePath: string): Promise<Ext
   const projectName = extractProjectName(data.text);
   console.log("📋 Project Name:", projectName);
   
-  // Extract all sections
+  // Extract all sections using the ACTUAL inspection pages, not table of contents
   const sections: ExtractedSectionData[] = [];
   
+  // First, collect manhole references from table of contents for validation
+  const tocSections: { [key: number]: { startMH: string, finishMH: string } } = {};
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    
-    // Look for "Section Item X:" pattern
     const sectionMatch = line.match(/Section Item (\d+):\s*([^>]+)\s*>\s*([^(]+)/);
     if (sectionMatch) {
       const itemNo = parseInt(sectionMatch[1]);
       const startMH = sectionMatch[2].trim();
       const finishMH = sectionMatch[3].trim();
+      tocSections[itemNo] = { startMH, finishMH };
+    }
+  }
+  
+  // Now look for actual inspection pages with pattern like "1114/02/25 11:22"
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    // Look for inspection data pattern: "1114/02/25 11:22373/60RainYesF01-10AX"
+    // The pattern breaks down as: "11" + "14/02/25" + " " + "11:22" + "373/60RainYesF01-10AX"
+    const inspectionMatch = line.match(/^(\d{1,2})(\d{1,2}\/\d{1,2}\/\d{2,4})\s+(\d{1,2}:\d{2})/);
+    if (inspectionMatch) {
+      const itemNo = parseInt(inspectionMatch[1]);
+      const date = inspectionMatch[2];
+      const time = inspectionMatch[3];
       
-      console.log(`\n🔍 Processing Section ${itemNo}: ${startMH} → ${finishMH}`);
+      console.log(`\n🎯 FOUND ACTUAL INSPECTION DATA for Section ${itemNo}`);
+      console.log(`📅 Date: ${date}, ⏰ Time: ${time}`);
       
-      // Debug: Show the raw lines we're processing for this section (first section only)
       if (itemNo === 1) {
-        console.log(`📝 Raw lines for Section ${itemNo}:`);
-        for (let debug = i; debug < Math.min(i + 15, lines.length); debug++) {
+        console.log(`📝 Raw inspection lines for Section ${itemNo}:`);
+        for (let debug = i; debug < Math.min(i + 25, lines.length); debug++) {
           console.log(`  ${debug}: "${lines[debug]}"`);
         }
       }
       
-      // Extract header information from the following lines
-      const sectionData = extractSectionHeaderData(lines, i, itemNo, projectName, startMH, finishMH);
+      // Extract authentic section data from the inspection page
+      const sectionData = extractAuthenticSectionData(lines, i, itemNo, projectName, date, time, tocSections[itemNo]);
       if (sectionData) {
         sections.push(sectionData);
       }
@@ -85,21 +100,22 @@ function extractProjectName(pdfText: string): string {
   return "PROJECT_NOT_FOUND";
 }
 
-function extractSectionHeaderData(
+function extractAuthenticSectionData(
   lines: string[], 
   startIndex: number, 
   itemNo: number, 
   projectNo: string,
-  startMH: string, 
-  finishMH: string
+  date: string,
+  time: string,
+  tocData?: { startMH: string, finishMH: string }
 ): ExtractedSectionData | null {
   
-  // Initialize with authentic data we have
+  // Initialize with authentic data we have from the inspection page
   const sectionData: ExtractedSectionData = {
     itemNo,
     projectNo,
-    startMH,
-    finishMH,
+    startMH: tocData?.startMH || "no data recorded",
+    finishMH: tocData?.finishMH || "no data recorded", 
     pipeSize: "no data recorded",
     pipeMaterial: "no data recorded", 
     totalLength: "no data recorded",
@@ -108,11 +124,13 @@ function extractSectionHeaderData(
     recommendations: "No action required pipe observed in acceptable structural and service condition",
     severityGrade: 0,
     adoptable: "Yes",
-    inspectionDate: "10/02/2025", // From project header
-    inspectionTime: "no data recorded"
+    inspectionDate: date, // Authentic date from inspection page
+    inspectionTime: time  // Authentic time from inspection page
   };
   
-  // Look ahead in the next 50 lines for header information
+  console.log(`📋 Initialized Section ${itemNo} with authentic date/time: ${date} ${time}`);
+  
+  // Look ahead in the next 50 lines for authentic inspection data
   for (let i = startIndex + 1; i < Math.min(lines.length, startIndex + 50); i++) {
     const line = lines[i].trim();
     
@@ -187,12 +205,20 @@ function extractSectionHeaderData(
       }
     }
     
-    // Also look for observation codes like WL, LL, REM, etc.
+    // Look for authentic observation codes with descriptions like "0.00 WLWater level, 5% of the vertical dimension"
     if (sectionData.defects === "no data recorded") {
-      const codeMatch = line.match(/\b(WL|LL|REM|MCPP|REST|BRF|JN|CN)\b.*?(?:\d+\.?\d*m|\d+%)/g);
-      if (codeMatch && codeMatch.length > 0) {
-        sectionData.defects = codeMatch.join(', ');
-        console.log(`  🔍 Found observation codes: ${sectionData.defects}`);
+      const wlMatch = line.match(/(\d+\.?\d*)\s+(WL.*?(?:water level|Water level).*?)(?:F01|$)/i);
+      if (wlMatch) {
+        sectionData.defects = `WL ${wlMatch[1]}m (${wlMatch[2].trim()})`;
+        console.log(`  👁️ Found authentic WL observation: ${sectionData.defects}`);
+      }
+      
+      // Other observation codes
+      const otherObsMatch = line.match(/(\d+\.?\d*)\s+((?:LL|REM|MCPP|REST|BRF|JN|CN)[^F]*?)(?:F01|$)/);
+      if (otherObsMatch) {
+        const existingDefects = sectionData.defects === "no data recorded" ? "" : sectionData.defects + ", ";
+        sectionData.defects = existingDefects + `${otherObsMatch[2].trim()} at ${otherObsMatch[1]}m`;
+        console.log(`  👁️ Found observation: ${otherObsMatch[2].trim()}`);
       }
     }
     
