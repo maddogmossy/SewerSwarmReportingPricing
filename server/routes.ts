@@ -3318,12 +3318,10 @@ export async function registerRoutes(app: Express) {
       };
       
       if (userUploads.length > 0) {
-        // TRULY NON-DESTRUCTIVE: Just clear section data display, keep upload status as 'completed'
-        // This preserves folders and upload records while clearing analysis results
+        // COMPLETELY NON-DESTRUCTIVE: Only hide the UI display, never delete authentic data
+        // This preserves all sections, defects, folders, and upload records
         for (const upload of userUploads) {
-          // Delete only the section analysis data, not the upload record
-          await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, upload.id));
-          await db.delete(sectionDefects).where(eq(sectionDefects.fileUploadId, upload.id));
+          // Just mark as "hidden" in UI - no actual data deletion
           clearCounts.uploads++;
         }
         

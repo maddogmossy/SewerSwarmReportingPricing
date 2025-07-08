@@ -1589,15 +1589,7 @@ export default function Dashboard() {
               <Download className="h-4 w-4 mr-2" />
               Export to Excel
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowClearDataDialog(true)}
-              className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-            >
-              <EyeOff className="h-4 w-4 mr-2" />
-              Hide Dashboard Data
-            </Button>
+            {/* Clear button removed to prevent accidental data loss */}
           </div>
         </div>
       </div>
