@@ -897,8 +897,8 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   tracker.addStep('EXTRACTION_START', { pdfTextLength: pdfText.length });
   
   // FIND THE SECTION INSPECTION DATA START POINT
-  console.log('🔍 Looking for "Defect Grade Description (Section)" marker...');
-  const sectionStartMarker = "Defect Grade Description (Section)";
+  console.log('🔍 Looking for first "Section Inspection" header...');
+  const sectionStartMarker = "Section Inspection";
   const sectionStartIndex = pdfText.indexOf(sectionStartMarker);
   
   if (sectionStartIndex === -1) {
@@ -908,7 +908,7 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   
   console.log(`✅ Found section inspection data at position ${sectionStartIndex}`);
   
-  // Extract only the section inspection portion of the PDF
+  // Extract only the section inspection portion of the PDF starting from first section
   const sectionInspectionText = pdfText.substring(sectionStartIndex);
   console.log(`📄 Section inspection data length: ${sectionInspectionText.length} characters`);
   console.log(`📄 First 500 chars of section data:`, sectionInspectionText.substring(0, 500));
@@ -929,13 +929,14 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
   // NOW WORK ONLY WITH SECTION INSPECTION DATA (after the marker)
   console.log('🔍 Extracting sections from inspection data portion only...');
   
-  // Look for Section Item patterns in the section inspection data
-  const sectionItemPattern = /Section Item (\d+):\s*([A-Z0-9\-\/]+)\s*>\s*([A-Z0-9\-\/]+)/g;
+  // Look for Section Inspection patterns in the section inspection data
+  // Pattern: "Section Inspection - 14/02/2025 - F01-10AX" followed by Item No table
+  const sectionInspectionPattern = /Section Inspection[^]*?Item No[^]*?(\d+)[^]*?Upstream Node:\s*([A-Z0-9\-\/]+)[^]*?Downstream Node:\s*([A-Z0-9\-\/]+)/g;
   
-  // Find all Section Item matches in the section inspection data
+  // Find all Section Inspection matches in the section inspection data
   const sectionMatches = [];
   let match;
-  while ((match = sectionItemPattern.exec(sectionInspectionText)) !== null) {
+  while ((match = sectionInspectionPattern.exec(sectionInspectionText)) !== null) {
     const itemNo = parseInt(match[1]);
     const startMH = match[2].trim();
     const finishMH = match[3].trim();
