@@ -1,562 +1,261 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FileText, Eye, Database, AlertTriangle, CheckCircle, Play, ArrowLeft, Home, RefreshCw } from 'lucide-react';
-import { apiRequest, queryClient } from '@/lib/queryClient';
+import { FileText, Search, AlertCircle, CheckCircle, ArrowLeft, Upload, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
 
-interface PDFAnalysis {
+interface PDFExtractionResult {
   fileName: string;
   fileSize: number;
   totalPages: number;
   totalCharacters: number;
-  extractedSections: any[];
-  rawPDFText: string;
-  sectionPatterns: string[];
-  manholeReferences: string[];
-  pipeSpecifications: string[];
-  defectCodes: string[];
-  inspectionDates: string[];
+  headerData: {
+    date?: string;
+    time?: string;
+    upstreamNode?: string;
+    downstreamNode?: string;
+    pipeSize?: string;
+    pipeMaterial?: string;
+    totalLength?: string;
+    inspectedLength?: string;
+    projectNumber?: string;
+  };
+  observations: string[];
+  extractedText: string;
   errors: string[];
-  warnings: string[];
 }
 
 export default function PDFReaderPage() {
   const { toast } = useToast();
-  const [selectedUploadId, setSelectedUploadId] = useState<number | null>(null);
-  
-  // Get uploadId from URL params if available (for paused uploads)
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const uploadId = urlParams.get('uploadId');
-    if (uploadId) {
-      setSelectedUploadId(parseInt(uploadId));
-    }
-  }, []);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [extractionResult, setExtractionResult] = useState<PDFExtractionResult | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // Get list of uploaded files (including paused ones)
-  const { data: uploads } = useQuery({
-    queryKey: ['/api/uploads'],
-    select: (data) => data.filter((upload: any) => 
-      upload.status === 'completed' || upload.status === 'extracted_pending_review' || upload.status === 'processed'
-    )
-  });
-  
-  // Get specific upload details
-  const { data: currentUpload } = useQuery({
-    queryKey: [`/api/uploads/${selectedUploadId}`],
-    enabled: !!selectedUploadId,
-  });
-
-  // Get PDF analysis for selected file
-  const { data: pdfAnalysis, isLoading, error } = useQuery({
-    queryKey: ['/api/pdf-analysis', selectedUploadId],
-    queryFn: () => selectedUploadId ? apiRequest('POST', '/api/analyze-pdf', { uploadId: selectedUploadId }) : null,
-    enabled: !!selectedUploadId
-  });
-
-  // Get actual database sections to display dashboard format (same as dashboard)
-  const { data: sectionData } = useQuery({
-    queryKey: [`/api/uploads/${selectedUploadId}/sections`],
-    enabled: !!selectedUploadId,
-  });
-
-  // Continue processing mutation for paused uploads
-  const continueProcessingMutation = useMutation({
-    mutationFn: (uploadId: number) => apiRequest('POST', `/api/continue-processing/${uploadId}`, {}),
-    onSuccess: (data) => {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      setSelectedFile(file);
+      setExtractionResult(null);
+    } else {
       toast({
-        title: "Processing Continued",
-        description: `Successfully processed ${data.sectionsProcessed} sections. Redirecting to dashboard...`,
+        title: "Invalid File",
+        description: "Please select a PDF file",
+        variant: "destructive"
       });
-      // Redirect to dashboard after successful processing
-      setTimeout(() => {
-        window.location.href = `/dashboard?reportId=${selectedUploadId}`;
-      }, 2000);
-    },
-    onError: (error) => {
-      toast({
-        title: "Continue Processing Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  // =====================================================================
-  // LOCKED: PDF READER FLOW DIRECTION CORRECTION LOGIC
-  // Date Locked: July 8, 2025
-  // 
-  // CRITICAL: This function ensures PDF reader displays identical corrected
-  // flow direction as main dashboard for upstream/downstream inspection compliance
-  //
-  // ⚠️  WARNING: DO NOT MODIFY WITHOUT EXPLICIT USER CONFIRMATION ⚠️
-  // This logic matches server-side applyAdoptionFlowDirectionCorrection
-  // =====================================================================
-  
-  // Apply flow direction correction function (same as backend logic)
-  const applyFlowDirectionCorrection = (upstreamNode: string, downstreamNode: string): { upstream: string, downstream: string, corrected: boolean } => {
-    // Rule 1: Longer reference containing shorter reference should be corrected
-    if (upstreamNode.length > downstreamNode.length && upstreamNode.includes(downstreamNode)) {
-      return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
     }
-    
-    // Rule 2: F-pattern nodes with upstream inspection (shorter → longer becomes longer → shorter)
-    if ((upstreamNode.startsWith('F') || downstreamNode.startsWith('F')) && 
-        upstreamNode.length < downstreamNode.length && 
-        downstreamNode.includes(upstreamNode)) {
-      return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
-    }
-    
-    // Rule 3: S-pattern sequence corrections (S02-04 → S02-03 becomes S02-03 → S02-04)
-    const sSequencePattern = /S(\d+)[-\/](\d+)/;
-    const upstreamMatch = upstreamNode.match(sSequencePattern);
-    const downstreamMatch = downstreamNode.match(sSequencePattern);
-    
-    if (upstreamMatch && downstreamMatch) {
-      const upstreamGroup = upstreamMatch[1];
-      const upstreamSequence = parseInt(upstreamMatch[2]);
-      const downstreamGroup = downstreamMatch[1];
-      const downstreamSequence = parseInt(downstreamMatch[2]);
-      
-      // Only correct if same group but backwards sequence
-      if (upstreamGroup === downstreamGroup && upstreamSequence > downstreamSequence) {
-        return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
-      }
-    }
-    
-    // Rule 4: Generic number sequence corrections
-    const extractNumbers = (nodeName: string): number[] => {
-      const matches = nodeName.match(/(\d+)/g);
-      return matches ? matches.map(num => parseInt(num)) : [];
-    };
-    
-    const upstreamNumbers = extractNumbers(upstreamNode);
-    const downstreamNumbers = extractNumbers(downstreamNode);
-    
-    if (upstreamNumbers.length > 0 && downstreamNumbers.length > 0) {
-      const upstreamLast = upstreamNumbers[upstreamNumbers.length - 1];
-      const downstreamLast = downstreamNumbers[downstreamNumbers.length - 1];
-      
-      const upstreamBase = upstreamNode.replace(/\d+/g, '');
-      const downstreamBase = downstreamNode.replace(/\d+/g, '');
-      
-      if (upstreamBase === downstreamBase && upstreamLast > downstreamLast) {
-        return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
-      }
-    }
-    
-    return { upstream: upstreamNode, downstream: downstreamNode, corrected: false };
   };
 
-  // Process the data with flow direction correction applied
-  const expandedSectionData = sectionData ? sectionData.flatMap((section: any) => {
-    const sections = [];
-    
-    // Apply flow direction correction to manhole references
-    const originalStartMH = section.startMH || '';
-    const originalFinishMH = section.finishMH || '';
-    
-    // Apply inspection direction logic (default to downstream for ECL reports)
-    let startMH = originalStartMH;
-    let finishMH = originalFinishMH;
-    
-    // For upstream inspections, reverse the flow
-    // For ECL reports, we assume downstream inspection unless specified
-    const inspectionDirection = 'Downstream'; // Default for ECL
-    
-    if (inspectionDirection === 'Upstream') {
-      startMH = originalFinishMH;
-      finishMH = originalStartMH;
+  const analyzePDF = async () => {
+    if (!selectedFile) return;
+
+    setIsAnalyzing(true);
+    try {
+      const formData = new FormData();
+      formData.append('pdf', selectedFile);
+
+      const response = await fetch('/api/analyze-pdf-standalone', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze PDF');
+      }
+
+      const result = await response.json();
+      setExtractionResult(result);
+      
+      toast({
+        title: "PDF Analysis Complete",
+        description: `Extracted header data from ${selectedFile.name}`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Analysis Failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsAnalyzing(false);
     }
-    
-    // Apply flow direction correction
-    const correction = applyFlowDirectionCorrection(startMH, finishMH);
-    if (correction.corrected) {
-      console.log(`🔧 PDF Reader: Section ${section.itemNo} flow corrected: ${originalStartMH}→${originalFinishMH} became ${correction.upstream}→${correction.downstream}`);
-      startMH = correction.upstream;
-      finishMH = correction.downstream;
-    }
-    
-    sections.push({
-      ...section,
-      startMH: startMH,
-      finishMH: finishMH,
-      itemNoDisplay: section.itemNo,
-      projectNumber: section.projectNo || section.projectNumber || "no data recorded",
-    });
-    return sections;
-  }) : [];
-
-  // Debug logging
-  console.log('PDF Reader Debug:', {
-    selectedUploadId,
-    sectionDataLength: sectionData?.length,
-    expandedDataLength: expandedSectionData?.length,
-    firstSection: expandedSectionData?.[0],
-    secondSection: expandedSectionData?.[1],
-    allSections: expandedSectionData?.map(s => ({ itemNo: s.itemNo, startMH: s.startMH, finishMH: s.finishMH }))
-  });
-
-  // Display Section 1 and Section 2 data in console for user verification (with flow direction applied)
-  if (expandedSectionData?.[0] && sectionData?.[0]) {
-    console.log('SECTION 1 DATA FOR USER VERIFICATION (PDF READER WITH FLOW CORRECTION):', {
-      projectNumber: expandedSectionData[0].projectNo || expandedSectionData[0].projectNumber,
-      itemNo: expandedSectionData[0].itemNo,
-      inspectionNo: expandedSectionData[0].inspectionNo,
-      date: expandedSectionData[0].date,
-      time: expandedSectionData[0].time,
-      originalMH: `${sectionData[0].startMH}→${sectionData[0].finishMH}`,
-      correctedMH: `${expandedSectionData[0].startMH}→${expandedSectionData[0].finishMH}`,
-      pipeSize: expandedSectionData[0].pipeSize,
-      pipeMaterial: expandedSectionData[0].pipeMaterial,
-      totalLength: expandedSectionData[0].totalLength,
-      lengthSurveyed: expandedSectionData[0].lengthSurveyed,
-      observations: expandedSectionData[0].defects || expandedSectionData[0].observations,
-      severityGrade: expandedSectionData[0].severityGrade
-    });
-  }
-
-  // Display Section 2 data for user verification
-  if (expandedSectionData?.[1] && sectionData?.[1]) {
-    console.log('SECTION 2 DATA FOR USER VERIFICATION (PDF READER WITH FLOW CORRECTION):', {
-      projectNumber: expandedSectionData[1].projectNo || expandedSectionData[1].projectNumber,
-      itemNo: expandedSectionData[1].itemNo,
-      inspectionNo: expandedSectionData[1].inspectionNo,
-      date: expandedSectionData[1].date,
-      time: expandedSectionData[1].time,
-      originalMH: `${sectionData[1].startMH}→${sectionData[1].finishMH}`,
-      correctedMH: `${expandedSectionData[1].startMH}→${expandedSectionData[1].finishMH}`,
-      pipeSize: expandedSectionData[1].pipeSize,
-      pipeMaterial: expandedSectionData[1].pipeMaterial,
-      totalLength: expandedSectionData[1].totalLength,
-      lengthSurveyed: expandedSectionData[1].lengthSurveyed,
-      observations: expandedSectionData[1].defects || expandedSectionData[1].observations,
-      severityGrade: expandedSectionData[1].severityGrade
-    });
-  }
+  };
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
-      <div className="mb-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-              <FileText className="h-8 w-8 text-blue-600" />
-              PDF Reader & Analysis
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Analyze PDF content before database insertion to identify extraction errors
-            </p>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <FileText className="h-8 w-8 text-purple-600" />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">PDF Reader & Analysis Tool</h1>
+              <p className="text-gray-600">Analyze PDF inspection reports and extract header information</p>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              asChild
-              variant="outline"
-            >
-              <Link href="/upload">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Upload
-              </Link>
+          <Link to="/dashboard">
+            <Button variant="outline">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
             </Button>
-            
-            <Button
-              asChild
-              variant="outline"
-            >
-              <Link href="/">
-                <Home className="h-4 w-4 mr-2" />
-                Home
-              </Link>
-            </Button>
-          </div>
+          </Link>
         </div>
-      </div>
 
-      {/* File Selection - DEBUG INFO */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Select PDF File to Analyze (Upload ID: {selectedUploadId || 'None'})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3">
-            {uploads?.map((upload: any) => (
-              <Button
-                key={upload.id}
-                variant={selectedUploadId === upload.id ? "default" : "outline"}
-                className="w-full text-left p-4 h-auto"
-                onClick={() => setSelectedUploadId(upload.id)}
-              >
-                <div className="flex flex-col items-start w-full">
-                  <div className="font-medium">{upload.fileName}</div>
-                  <div className="text-sm text-gray-500">
-                    Upload ID: {upload.id} | Status: {upload.status}
-                  </div>
-                </div>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Paused Upload Actions */}
-      {selectedUploadId && currentUpload?.status === 'extracted_pending_review' && (
-        <Card className="mb-6 border-orange-200 bg-orange-50">
+        {/* File Upload Section */}
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-800">
-              <AlertTriangle className="h-5 w-5" />
-              Workflow Paused - Review Required
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5" />
+              Select PDF File for Analysis
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-orange-700">
-                PDF extraction completed for {currentUpload.fileName}. 
-                Review the extracted data below, then continue processing to apply MSCC5 classification and store in database.
-              </p>
-              
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => continueProcessingMutation.mutate(selectedUploadId)}
-                  disabled={continueProcessingMutation.isPending}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <Play className="h-4 w-4 mr-2" />
-                  {continueProcessingMutation.isPending ? "Processing..." : "Continue Processing"}
-                </Button>
-                
-                <Button
-                  asChild
-                  variant="outline"
-                >
-                  <Link href="/upload">
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Upload
-                  </Link>
-                </Button>
-                
-                <Button
-                  asChild
-                  variant="outline"
-                >
-                  <Link href="/">
-                    <Home className="h-4 w-4 mr-2" />
-                    Home
-                  </Link>
-                </Button>
-              </div>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Input
+                type="file"
+                accept=".pdf"
+                onChange={handleFileSelect}
+                className="flex-1"
+              />
+              <Button 
+                onClick={analyzePDF} 
+                disabled={!selectedFile || isAnalyzing}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                <Search className="h-4 w-4 mr-2" />
+                {isAnalyzing ? 'Analyzing...' : 'Analyze PDF'}
+              </Button>
             </div>
+            {selectedFile && (
+              <div className="text-sm text-gray-600">
+                Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+              </div>
+            )}
           </CardContent>
         </Card>
-      )}
 
-      {/* Analysis Results */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Eye className="h-5 w-5" />
-              Section Inspection Data
-              {expandedSectionData && (
-                <Badge variant="outline" className="ml-2">
-                  {expandedSectionData.length} Sections
-                </Badge>
-              )}
-            </CardTitle>
-            
-            {/* Refresh Button */}
-            <Button
-              onClick={() => {
-                queryClient.invalidateQueries({ queryKey: ['/api/uploads'] });
-                if (selectedUploadId) {
-                  queryClient.invalidateQueries({ queryKey: [`/api/uploads/${selectedUploadId}/sections`] });
-                }
-                toast({
-                  title: "Data Refreshed",
-                  description: "PDF Reader data has been refreshed"
-                });
-              }}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Refresh Data
-            </Button>
+        {/* Analysis Results */}
+        {extractionResult && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* File Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  File Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>File Name:</div>
+                  <div className="font-mono">{extractionResult.fileName}</div>
+                  <div>File Size:</div>
+                  <div className="font-mono">{(extractionResult.fileSize / 1024 / 1024).toFixed(2)} MB</div>
+                  <div>Total Pages:</div>
+                  <div className="font-mono">{extractionResult.totalPages}</div>
+                  <div>Characters:</div>
+                  <div className="font-mono">{extractionResult.totalCharacters.toLocaleString()}</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Extracted Header Data */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  Extracted Header Data
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {Object.entries(extractionResult.headerData).map(([key, value]) => (
+                    <div key={key} className="contents">
+                      <div className="capitalize">{key.replace(/([A-Z])/g, ' $1')}:</div>
+                      <div className="font-mono">{value || 'Not found'}</div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Observations */}
+            {extractionResult.observations.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Search className="h-5 w-5" />
+                    Extracted Observations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {extractionResult.observations.map((obs, index) => (
+                      <div key={index} className="bg-blue-50 p-2 rounded text-sm font-mono">
+                        {obs}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Errors */}
+            {extractionResult.errors.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5 text-red-600" />
+                    Extraction Issues
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {extractionResult.errors.map((error, index) => (
+                      <div key={index} className="bg-red-50 p-2 rounded text-sm text-red-700">
+                        {error}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Raw PDF Text (First 2000 chars) */}
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  PDF Text Content (Preview)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-64">
+                  <pre className="text-xs bg-gray-100 p-4 rounded whitespace-pre-wrap">
+                    {extractionResult.extractedText.substring(0, 2000)}
+                    {extractionResult.extractedText.length > 2000 && '\n... (truncated)'}
+                  </pre>
+                </ScrollArea>
+              </CardContent>
+            </Card>
           </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading && (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-2">Analyzing PDF...</span>
-            </div>
-          )}
+        )}
 
-          {error && (
-            <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
-              <span className="text-red-800">Error analyzing PDF: {error.message}</span>
-            </div>
-          )}
-
-          {selectedUploadId && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Database className="h-5 w-5" />
-                <h3 className="text-lg font-semibold">
-                  Section Inspection Data ({expandedSectionData?.length || 0} Sections) - PDF Reader Display
-                </h3>
-                <div className="text-sm text-gray-500 ml-4">
-                  Upload: {selectedUploadId} | Raw Data: {sectionData?.length || 0} | Expanded: {expandedSectionData?.length || 0}
-                </div>
-              </div>
-              
-              {/* Dashboard Table Template - EXACT MATCH */}
-              <div className="border rounded-lg overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-purple-50">
-                      <tr>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
-                          Project No
-                        </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16" style={{ whiteSpace: 'nowrap' }}>
-                          Item No
-                        </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16" style={{ whiteSpace: 'nowrap' }}>
-                          Inspec. No
-                        </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
-                          Date
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-12 break-words">
-                          Time
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16 break-words">
-                          Start MH
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-12 break-words">
-                          Start MH Depth
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16 break-words">
-                          Finish MH
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-12 break-words">
-                          Finish MH Depth
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16 break-words">
-                          Pipe Size
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-24 break-words">
-                          Pipe Material
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16 break-words">
-                          Total Length (m)
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16 break-words">
-                          Length Surveyed (m)
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-64 break-words">
-                          Observations
-                        </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
-                          Severity Grade
-                        </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider w-20" style={{ whiteSpace: 'nowrap' }}>
-                          SRM Grading
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {expandedSectionData && expandedSectionData.length > 0 ? expandedSectionData.map((section: any, index: number) => (
-                        <tr key={index} className="hover:bg-gray-50 text-center">
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20 font-medium">
-                            {section.projectNo || section.projectNumber || 'ECL NEWARK'}
-                          </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 font-medium w-16">
-                            {section.itemNo}
-                          </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-16">
-                            {section.inspectionNo}
-                          </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
-                            {section.date || 'no data recorded'}
-                          </td>
-                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-12 break-words text-center">
-                            {section.time || 'no data recorded'}
-                          </td>
-                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-16 font-medium break-words text-center">
-                            {section.startMH}
-                          </td>
-                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-12 break-words text-center">
-                            {section.startMHDepth}
-                          </td>
-                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-16 font-medium break-words text-center">
-                            {section.finishMH}
-                          </td>
-                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-12 break-words text-center">
-                            {section.finishMHDepth}
-                          </td>
-                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-16 font-medium break-words text-center">
-                            {section.pipeSize}
-                          </td>
-                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-24 break-words text-center">
-                            {section.pipeMaterial}
-                          </td>
-                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-16 break-words text-center">
-                            {section.totalLength}
-                          </td>
-                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-16 break-words text-center">
-                            {section.lengthSurveyed}
-                          </td>
-                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-64 break-words text-left">
-                            <div className="text-xs text-left leading-relaxed">
-                              {section.defects || section.observations || 'no data recorded'}
-                            </div>
-                          </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
-                            <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${
-                              section.severityGrade === '0' ? 'bg-green-100 text-green-800' :
-                              section.severityGrade === '1' ? 'bg-red-100 text-red-800' :
-                              section.severityGrade === '2' ? 'bg-amber-100 text-amber-800' :
-                              section.severityGrade === '3' ? 'bg-red-100 text-red-800' :
-                              section.severityGrade === '4' ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {section.severityGrade || '0'}
-                            </span>
-                          </td>
-                          <td className="px-2 py-2 text-xs w-20">
-                            <div className="text-xs">
-                              {section.severityGrade === "0" ? "No service issues" :
-                               section.severityGrade === "1" ? "Minor service impacts" :
-                               section.severityGrade === "2" ? "Moderate service defects" :
-                               section.severityGrade === "3" ? "Major service defects" :
-                               section.severityGrade === "4" ? "Critical defects" :
-                               "No service issues"}
-                            </div>
-                          </td>
-                        </tr>
-                      )) : (
-                        <tr>
-                          <td colSpan={16} className="px-4 py-8 text-center text-gray-500">
-                            {selectedUploadId ? 'Loading sections data...' : 'Select a PDF file to view sections'}
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        {/* No Results Message */}
+        {!extractionResult && !isAnalyzing && (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <FileText className="h-16 w-16 text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No PDF Selected</h3>
+              <p className="text-gray-500 text-center">
+                Upload a PDF inspection report to analyze its contents and extract header information.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

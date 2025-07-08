@@ -2599,6 +2599,168 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Standalone PDF analysis endpoint - NO DATABASE STORAGE
+  app.post("/api/analyze-pdf-standalone", upload.single('pdf'), async (req: Request, res: Response) => {
+    try {
+      console.log('🔍 === STANDALONE PDF ANALYSIS (NO DATABASE) ===\n');
+      
+      if (!req.file) {
+        return res.status(400).json({ error: "No PDF file uploaded" });
+      }
+
+      const pdfBuffer = req.file.buffer;
+      const fileName = req.file.originalname;
+      
+      console.log(`📄 Analyzing: ${fileName} (${pdfBuffer.length} bytes)`);
+      
+      // Parse PDF content
+      const pdfData = await pdfParse(pdfBuffer);
+      const pdfText = pdfData.text;
+      
+      console.log(`📊 PDF Stats: ${pdfData.numpages} pages, ${pdfText.length} characters\n`);
+      
+      // Extract header information using regex patterns
+      const headerData: any = {};
+      const observations: string[] = [];
+      const errors: string[] = [];
+      
+      try {
+        // Date extraction - multiple patterns
+        const datePatterns = [
+          /(\d{2}\/\d{2}\/\d{2})/,
+          /(\d{2}\/\d{2}\/\d{4})/,
+          /Date:\s*(\d{2}\/\d{2}\/\d{2,4})/i
+        ];
+        
+        for (const pattern of datePatterns) {
+          const match = pdfText.match(pattern);
+          if (match) {
+            headerData.date = match[1];
+            break;
+          }
+        }
+        
+        // Time extraction
+        const timeMatch = pdfText.match(/(\d{1,2}:\d{2})/);
+        headerData.time = timeMatch ? timeMatch[1] : null;
+        
+        // Upstream/Downstream nodes
+        const upstreamMatch = pdfText.match(/Upstream\s*Node:\s*([^\n\r,]+)/i);
+        headerData.upstreamNode = upstreamMatch ? upstreamMatch[1].trim() : null;
+        
+        const downstreamMatch = pdfText.match(/Downstream\s*Node:\s*([^\n\r,]+)/i);
+        headerData.downstreamNode = downstreamMatch ? downstreamMatch[1].trim() : null;
+        
+        // Pipe specifications
+        const pipeSizePatterns = [
+          /Dia\/Height:\s*(\d+)\s*mm/i,
+          /Pipe\s*Size:\s*(\d+)\s*mm/i,
+          /Diameter:\s*(\d+)\s*mm/i
+        ];
+        
+        for (const pattern of pipeSizePatterns) {
+          const match = pdfText.match(pattern);
+          if (match) {
+            headerData.pipeSize = `${match[1]}mm`;
+            break;
+          }
+        }
+        
+        const materialPatterns = [
+          /Material:\s*([^\n\r,]+)/i,
+          /Pipe\s*Material:\s*([^\n\r,]+)/i
+        ];
+        
+        for (const pattern of materialPatterns) {
+          const match = pdfText.match(pattern);
+          if (match) {
+            headerData.pipeMaterial = match[1].trim();
+            break;
+          }
+        }
+        
+        // Length measurements
+        const totalLengthPatterns = [
+          /Total\s*Length:\s*(\d+\.?\d*)\s*m/i,
+          /Length:\s*(\d+\.?\d*)\s*m/i
+        ];
+        
+        for (const pattern of totalLengthPatterns) {
+          const match = pdfText.match(pattern);
+          if (match) {
+            headerData.totalLength = `${match[1]}m`;
+            break;
+          }
+        }
+        
+        const inspectedLengthMatch = pdfText.match(/Inspected\s*Length:\s*(\d+\.?\d*)\s*m/i);
+        headerData.inspectedLength = inspectedLengthMatch ? `${inspectedLengthMatch[1]}m` : null;
+        
+        // Project number extraction
+        const projectPatterns = [
+          /(\d{4})\s*-\s*[A-Z]+/,
+          /Project\s*No[.:]\s*(\d+)/i,
+          /(\d{4})\s*Nine\s*Elms/i
+        ];
+        
+        for (const pattern of projectPatterns) {
+          const match = pdfText.match(pattern);
+          if (match) {
+            headerData.projectNumber = match[1];
+            break;
+          }
+        }
+        
+        // Extract observations/defects
+        const observationPatterns = [
+          /WL\s+([^,\n\r]+)/g,
+          /LL\s+([^,\n\r]+)/g,
+          /DER\s+([^,\n\r]+)/g,
+          /FC\s+([^,\n\r]+)/g,
+          /CR\s+([^,\n\r]+)/g,
+          /DEG\s+([^,\n\r]+)/g
+        ];
+        
+        observationPatterns.forEach(pattern => {
+          let match;
+          while ((match = pattern.exec(pdfText)) !== null) {
+            observations.push(`${match[0]} (${match[1].trim()})`);
+          }
+        });
+        
+        console.log('📊 EXTRACTED HEADER DATA:');
+        console.log(JSON.stringify(headerData, null, 2));
+        console.log(`📋 Observations found: ${observations.length}`);
+        
+      } catch (extractionError: any) {
+        console.error('❌ Extraction error:', extractionError.message);
+        errors.push(`Extraction error: ${extractionError.message}`);
+      }
+      
+      const result = {
+        fileName,
+        fileSize: pdfBuffer.length,
+        totalPages: pdfData.numpages,
+        totalCharacters: pdfText.length,
+        headerData,
+        observations,
+        extractedText: pdfText,
+        errors
+      };
+      
+      console.log('✅ STANDALONE PDF ANALYSIS COMPLETE - NO DATABASE STORAGE');
+      
+      res.json(result);
+      
+    } catch (error: any) {
+      console.error('❌ Standalone PDF analysis error:', error);
+      res.status(500).json({ 
+        error: error.message || "Failed to analyze PDF",
+        errors: [error.message]
+      });
+    }
+  });
+
   // Extract authentic data from single-section inspection PDF
   app.post("/api/extract-single-section", async (req: Request, res: Response) => {
     try {
