@@ -87,13 +87,96 @@ export default function PDFReaderPage() {
     },
   });
 
-  // Process the data the same way dashboard does
+  // Apply flow direction correction function (same as backend logic)
+  const applyFlowDirectionCorrection = (upstreamNode: string, downstreamNode: string): { upstream: string, downstream: string, corrected: boolean } => {
+    // Rule 1: Longer reference containing shorter reference should be corrected
+    if (upstreamNode.length > downstreamNode.length && upstreamNode.includes(downstreamNode)) {
+      return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
+    }
+    
+    // Rule 2: F-pattern nodes with upstream inspection (shorter → longer becomes longer → shorter)
+    if ((upstreamNode.startsWith('F') || downstreamNode.startsWith('F')) && 
+        upstreamNode.length < downstreamNode.length && 
+        downstreamNode.includes(upstreamNode)) {
+      return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
+    }
+    
+    // Rule 3: S-pattern sequence corrections (S02-04 → S02-03 becomes S02-03 → S02-04)
+    const sSequencePattern = /S(\d+)[-\/](\d+)/;
+    const upstreamMatch = upstreamNode.match(sSequencePattern);
+    const downstreamMatch = downstreamNode.match(sSequencePattern);
+    
+    if (upstreamMatch && downstreamMatch) {
+      const upstreamGroup = upstreamMatch[1];
+      const upstreamSequence = parseInt(upstreamMatch[2]);
+      const downstreamGroup = downstreamMatch[1];
+      const downstreamSequence = parseInt(downstreamMatch[2]);
+      
+      // Only correct if same group but backwards sequence
+      if (upstreamGroup === downstreamGroup && upstreamSequence > downstreamSequence) {
+        return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
+      }
+    }
+    
+    // Rule 4: Generic number sequence corrections
+    const extractNumbers = (nodeName: string): number[] => {
+      const matches = nodeName.match(/(\d+)/g);
+      return matches ? matches.map(num => parseInt(num)) : [];
+    };
+    
+    const upstreamNumbers = extractNumbers(upstreamNode);
+    const downstreamNumbers = extractNumbers(downstreamNode);
+    
+    if (upstreamNumbers.length > 0 && downstreamNumbers.length > 0) {
+      const upstreamLast = upstreamNumbers[upstreamNumbers.length - 1];
+      const downstreamLast = downstreamNumbers[downstreamNumbers.length - 1];
+      
+      const upstreamBase = upstreamNode.replace(/\d+/g, '');
+      const downstreamBase = downstreamNode.replace(/\d+/g, '');
+      
+      if (upstreamBase === downstreamBase && upstreamLast > downstreamLast) {
+        return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
+      }
+    }
+    
+    return { upstream: upstreamNode, downstream: downstreamNode, corrected: false };
+  };
+
+  // Process the data with flow direction correction applied
   const expandedSectionData = sectionData ? sectionData.flatMap((section: any) => {
     const sections = [];
+    
+    // Apply flow direction correction to manhole references
+    const originalStartMH = section.startMH || '';
+    const originalFinishMH = section.finishMH || '';
+    
+    // Apply inspection direction logic (default to downstream for ECL reports)
+    let startMH = originalStartMH;
+    let finishMH = originalFinishMH;
+    
+    // For upstream inspections, reverse the flow
+    // For ECL reports, we assume downstream inspection unless specified
+    const inspectionDirection = 'Downstream'; // Default for ECL
+    
+    if (inspectionDirection === 'Upstream') {
+      startMH = originalFinishMH;
+      finishMH = originalStartMH;
+    }
+    
+    // Apply flow direction correction
+    const correction = applyFlowDirectionCorrection(startMH, finishMH);
+    if (correction.corrected) {
+      console.log(`🔧 PDF Reader: Section ${section.itemNo} flow corrected: ${originalStartMH}→${originalFinishMH} became ${correction.upstream}→${correction.downstream}`);
+      startMH = correction.upstream;
+      finishMH = correction.downstream;
+    }
+    
     sections.push({
       ...section,
+      startMH: startMH,
+      finishMH: finishMH,
       itemNoDisplay: section.itemNo,
-      projectNumber: section.projectNo || section.projectNumber || "no data recorded", // Use authentic project number from database
+      projectNumber: section.projectNo || section.projectNumber || "no data recorded",
     });
     return sections;
   }) : [];
@@ -106,16 +189,16 @@ export default function PDFReaderPage() {
     firstSection: expandedSectionData?.[0]
   });
 
-  // Display Section 1 data in console for user verification
-  if (expandedSectionData?.[0]) {
-    console.log('SECTION 1 DATA FOR USER VERIFICATION:', {
+  // Display Section 1 data in console for user verification (with flow direction applied)
+  if (expandedSectionData?.[0] && sectionData?.[0]) {
+    console.log('SECTION 1 DATA FOR USER VERIFICATION (PDF READER WITH FLOW CORRECTION):', {
       projectNumber: expandedSectionData[0].projectNo || expandedSectionData[0].projectNumber,
       itemNo: expandedSectionData[0].itemNo,
       inspectionNo: expandedSectionData[0].inspectionNo,
       date: expandedSectionData[0].date,
       time: expandedSectionData[0].time,
-      startMH: expandedSectionData[0].startMH,
-      finishMH: expandedSectionData[0].finishMH,
+      originalMH: `${sectionData[0].startMH}→${sectionData[0].finishMH}`,
+      correctedMH: `${expandedSectionData[0].startMH}→${expandedSectionData[0].finishMH}`,
       pipeSize: expandedSectionData[0].pipeSize,
       pipeMaterial: expandedSectionData[0].pipeMaterial,
       totalLength: expandedSectionData[0].totalLength,
