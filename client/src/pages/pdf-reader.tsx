@@ -23,9 +23,31 @@ interface PDFExtractionResult {
     inspectedLength?: string;
     projectNumber?: string;
   };
-  observations: string[];
+  sections: PDFSection[];
+  missingSequences: number[];
   extractedText: string;
   errors: string[];
+}
+
+interface PDFSection {
+  itemNo: number;
+  inspectionNo: string;
+  projectNo: string;
+  date: string;
+  time: string;
+  startMH: string;
+  startMHDepth: string;
+  finishMH: string;
+  finishMHDepth: string;
+  pipeSize: string;
+  pipeMaterial: string;
+  totalLength: string;
+  lengthSurveyed: string;
+  defects: string;
+  severityGrade: number;
+  recommendations: string;
+  adoptable: string;
+  cost: string;
 }
 
 export default function PDFReaderPage() {
@@ -70,7 +92,7 @@ export default function PDFReaderPage() {
       
       toast({
         title: "PDF Analysis Complete",
-        description: `Extracted header data from ${selectedFile.name}`,
+        description: `Extracted ${result.sections?.length || 0} sections from ${selectedFile.name}`,
       });
     } catch (error: any) {
       toast({
@@ -136,115 +158,160 @@ export default function PDFReaderPage() {
           </CardContent>
         </Card>
 
-        {/* Analysis Results */}
+        {/* File Statistics Cards */}
         {extractionResult && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* File Information */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  File Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>File Name:</div>
-                  <div className="font-mono">{extractionResult.fileName}</div>
-                  <div>File Size:</div>
-                  <div className="font-mono">{(extractionResult.fileSize / 1024 / 1024).toFixed(2)} MB</div>
-                  <div>Total Pages:</div>
-                  <div className="font-mono">{extractionResult.totalPages}</div>
-                  <div>Characters:</div>
-                  <div className="font-mono">{extractionResult.totalCharacters.toLocaleString()}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Extracted Header Data */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  Extracted Header Data
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  {Object.entries(extractionResult.headerData).map(([key, value]) => (
-                    <div key={key} className="contents">
-                      <div className="capitalize">{key.replace(/([A-Z])/g, ' $1')}:</div>
-                      <div className="font-mono">{value || 'Not found'}</div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Observations */}
-            {extractionResult.observations.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Search className="h-5 w-5" />
-                    Extracted Observations
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {extractionResult.observations.map((obs, index) => (
-                      <div key={index} className="bg-blue-50 p-2 rounded text-sm font-mono">
-                        {obs}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Errors */}
-            {extractionResult.errors.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <AlertCircle className="h-5 w-5 text-red-600" />
-                    Extraction Issues
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {extractionResult.errors.map((error, index) => (
-                      <div key={index} className="bg-red-50 p-2 rounded text-sm text-red-700">
-                        {error}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Raw PDF Text (First 2000 chars) */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  PDF Text Content (Preview)
-                </CardTitle>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">File Size</CardTitle>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-64">
-                  <pre className="text-xs bg-gray-100 p-4 rounded whitespace-pre-wrap">
-                    {extractionResult.extractedText.substring(0, 2000)}
-                    {extractionResult.extractedText.length > 2000 && '\n... (truncated)'}
-                  </pre>
-                </ScrollArea>
+                <p className="text-lg font-semibold">{(extractionResult.fileSize / (1024 * 1024)).toFixed(1)} MB</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Total Pages</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg font-semibold">{extractionResult.totalPages}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Characters</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg font-semibold">{extractionResult.totalCharacters.toLocaleString()}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Sections Found</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg font-semibold">{extractionResult.sections?.length || 0}</p>
               </CardContent>
             </Card>
           </div>
         )}
 
+        {/* Missing Sequences Warning */}
+        {extractionResult && extractionResult.missingSequences?.length > 0 && (
+          <Card className="border-orange-200 bg-orange-50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-orange-800">
+                <AlertCircle className="h-5 w-5" />
+                Missing Sections Detected
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-orange-700">
+                The following section numbers are missing from the sequence: {extractionResult.missingSequences.join(', ')}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Section Inspection Data Table - Matching Dashboard Format */}
+        {extractionResult && extractionResult.sections && extractionResult.sections.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                Section Inspection Data
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300">
+                  <thead>
+                    <tr className="bg-purple-50">
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-12">Item No</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-16">Inspec. No</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-20">Project No</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-16">Date</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-16">Time</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-20">Start MH</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-20">Start MH Depth</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-20">Finish MH</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-20">Finish MH Depth</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-20">Pipe Size</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-24">Pipe Material</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-20">Total Length</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-20">Length Surveyed</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-24">Observations</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-16">Grade</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-24">Recommendations</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-20">Adoptable</th>
+                      <th className="border border-gray-300 px-1 py-2 text-center text-xs font-medium text-gray-700 uppercase w-16">Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {extractionResult.sections.map((section) => (
+                      <tr key={section.itemNo} className="hover:bg-gray-50">
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.itemNo}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.inspectionNo}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.projectNo}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.date}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.time}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.startMH}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.startMHDepth}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.finishMH}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.finishMHDepth}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.pipeSize}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.pipeMaterial}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.totalLength}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.lengthSurveyed}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.defects}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.severityGrade}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.recommendations}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.adoptable}</td>
+                        <td className="border border-gray-300 px-1 py-2 text-center text-xs break-words">{section.cost}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Raw PDF Text (First 2000 chars) */}
+        {extractionResult && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Raw PDF Text (First 2000 chars)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-96">
+                <div className="font-mono text-xs whitespace-pre-wrap bg-gray-50 p-4 rounded">
+                  {extractionResult.extractedText}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        )}
+
         {/* No Results Message */}
         {!extractionResult && !isAnalyzing && (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <FileText className="h-16 w-16 text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No PDF Selected</h3>
+              <p className="text-gray-500 text-center">
+                Upload a PDF inspection report to analyze its contents and extract section data.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <FileText className="h-16 w-16 text-gray-400 mb-4" />
