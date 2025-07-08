@@ -1367,7 +1367,19 @@ export async function registerRoutes(app: Express) {
     try {
       const uploadId = parseInt(req.params.uploadId);
       
-      // Get all sections - keep multiple records for same item_no (like 2 and 2a)
+      // First check if this upload is in pause mode with extracted data
+      const [upload] = await db.select()
+        .from(fileUploads)
+        .where(eq(fileUploads.id, uploadId))
+        .limit(1);
+      
+      if (upload && upload.status === "extracted_pending_review" && upload.extractedData) {
+        // Return the extracted data for pause mode review
+        const extractedSections = JSON.parse(upload.extractedData);
+        return res.json(extractedSections);
+      }
+      
+      // Otherwise get all sections from the sections table - keep multiple records for same item_no (like 2 and 2a)
       const sections = await db.select()
         .from(sectionInspections)
         .where(eq(sectionInspections.fileUploadId, uploadId))
