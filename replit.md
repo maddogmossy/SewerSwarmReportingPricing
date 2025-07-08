@@ -166,6 +166,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 ## Changelog
 
 ```
+- January 8, 2025. SUCCESSFUL REV_V1 ROLLBACK: User expressed frustration with complex development going "round in circles" and requested return to REV_V1 baseline. Successfully restored clean routes-rev-v1.ts with minimal PDF extraction functionality extracting only 14 sections from OBSERVATIONS column data (WL, DEG, DER, FC codes). Eliminated all complex processing, preserved missing Section 8 pattern, confirmed authentic manhole references (F01-10A → F01-10, etc.). System now provides simple, working baseline without synthetic data generation.
 Changelog:
 - June 27, 2025. Initial setup
 - June 27, 2025. Added test user access system for unlimited testing without payment
