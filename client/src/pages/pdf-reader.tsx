@@ -286,16 +286,16 @@ export default function PDFReaderPage() {
               <div className="border rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-green-50">
+                    <thead className="bg-purple-50">
                       <tr>
+                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                          Project No
+                        </th>
                         <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16" style={{ whiteSpace: 'nowrap' }}>
                           Item No
                         </th>
                         <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16" style={{ whiteSpace: 'nowrap' }}>
                           Inspec. No
-                        </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
-                          Project No
                         </th>
                         <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Date
@@ -341,14 +341,14 @@ export default function PDFReaderPage() {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {expandedSectionData && expandedSectionData.length > 0 ? expandedSectionData.map((section: any, index: number) => (
                         <tr key={index} className="hover:bg-gray-50 text-center">
+                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20 font-medium">
+                            {section.projectNo || section.projectNumber || 'ECL NEWARK'}
+                          </td>
                           <td className="px-2 py-2 text-xs border-r border-gray-200 font-medium w-16">
                             {section.itemNo}
                           </td>
                           <td className="px-2 py-2 text-xs border-r border-gray-200 w-16">
                             {section.inspectionNo}
-                          </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20 font-medium">
-                            {section.projectNo || section.projectNumber || 'ECL NEWARK'}
                           </td>
                           <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
                             {section.date || 'no data recorded'}
