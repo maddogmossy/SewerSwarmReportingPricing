@@ -2608,8 +2608,21 @@ export async function registerRoutes(app: Express) {
         return res.status(400).json({ error: "No PDF file uploaded" });
       }
 
-      const pdfBuffer = req.file.buffer;
+      // Check if file has buffer or path
+      let pdfBuffer: Buffer;
       const fileName = req.file.originalname;
+      
+      if (req.file.buffer) {
+        pdfBuffer = req.file.buffer;
+      } else if (req.file.path) {
+        // Read from disk if buffer not available
+        const fs = require('fs');
+        pdfBuffer = fs.readFileSync(req.file.path);
+        // Clean up temp file
+        fs.unlinkSync(req.file.path);
+      } else {
+        return res.status(400).json({ error: "PDF file data not accessible" });
+      }
       
       console.log(`📄 Analyzing: ${fileName} (${pdfBuffer.length} bytes)`);
       
