@@ -43,7 +43,7 @@ export default function PDFReaderPage() {
 
   // Get actual database sections to display dashboard format (same as dashboard)
   const { data: sectionData } = useQuery({
-    queryKey: ['/api/uploads', selectedUploadId, 'sections'],
+    queryKey: [`/api/uploads/${selectedUploadId}/sections`],
     enabled: !!selectedUploadId,
   });
 
@@ -56,6 +56,14 @@ export default function PDFReaderPage() {
     });
     return sections;
   }) : [];
+
+  // Debug logging
+  console.log('PDF Reader Debug:', {
+    selectedUploadId,
+    sectionDataLength: sectionData?.length,
+    expandedDataLength: expandedSectionData?.length,
+    firstSection: expandedSectionData?.[0]
+  });
 
   return (
     <div className="container mx-auto p-6 max-w-7xl">
@@ -251,7 +259,7 @@ export default function PDFReaderPage() {
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
-                            {expandedSectionData?.map((section: any, index: number) => (
+                            {expandedSectionData && expandedSectionData.length > 0 ? expandedSectionData.map((section: any, index: number) => (
                               <tr key={index} className="hover:bg-gray-50">
                                 <td className="px-1 py-2 text-center text-xs w-16">
                                   <div className="font-medium">{section.itemNo}</div>
@@ -303,7 +311,13 @@ export default function PDFReaderPage() {
                                   </span>
                                 </td>
                               </tr>
-                            ))}
+                            )) : (
+                              <tr>
+                                <td colSpan={10} className="px-4 py-8 text-center text-gray-500">
+                                  {selectedUploadId ? 'Loading sections data...' : 'Select a PDF file to view sections'}
+                                </td>
+                              </tr>
+                            )}
                           </tbody>
                         </table>
                       </div>
