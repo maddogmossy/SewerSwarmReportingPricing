@@ -881,7 +881,7 @@ export default function Dashboard() {
   });
 
   // Get completed uploads for analysis
-  const completedUploads = uploads.filter(upload => upload.status === 'completed' || upload.status === 'extracted_pending_review');
+  const completedUploads = uploads.filter(upload => upload.status === 'completed' || upload.status === 'extracted_pending_review' || upload.status === 'processed');
   
   // Filter uploads by selected folder or selected individual reports
   const filteredUploads = selectedReportIds.length > 0

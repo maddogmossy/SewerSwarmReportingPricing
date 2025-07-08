@@ -42,7 +42,7 @@ export default function PDFReaderPage() {
   const { data: uploads } = useQuery({
     queryKey: ['/api/uploads'],
     select: (data) => data.filter((upload: any) => 
-      upload.status === 'completed' || upload.status === 'extracted_pending_review'
+      upload.status === 'completed' || upload.status === 'extracted_pending_review' || upload.status === 'processed'
     )
   });
   
