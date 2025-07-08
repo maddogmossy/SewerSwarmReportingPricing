@@ -340,27 +340,27 @@ export default function Dashboard() {
     });
   };
 
-  // Define columns with their properties and widths
+  // Define columns with their properties and widths (tightened with text wrapping)
   const columns = [
-    { key: 'projectNo', label: 'Project No', hideable: true, width: 'w-16', priority: 'tight' },
-    { key: 'itemNo', label: 'Item No', hideable: false, width: 'w-12', priority: 'tight' },
-    { key: 'inspectionNo', label: 'Inspec. No', hideable: true, width: 'w-16', priority: 'tight' },
-    { key: 'date', label: 'Date', hideable: true, width: 'w-20', priority: 'tight' },
-    { key: 'time', label: 'Time', hideable: true, width: 'w-16', priority: 'tight' },
-    { key: 'startMH', label: 'Start MH', hideable: false, width: 'w-16', priority: 'tight' },
-    { key: 'startMHDepth', label: 'Start MH Depth', hideable: true, width: 'w-16', priority: 'tight' },
-    { key: 'finishMH', label: 'Finish MH', hideable: false, width: 'w-16', priority: 'tight' },
-    { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true, width: 'w-16', priority: 'tight' },
-    { key: 'pipeSize', label: 'Pipe Size', hideable: false, width: 'w-16', priority: 'tight' },
-    { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: 'w-20', priority: 'tight' },
-    { key: 'totalLength', label: 'Total Length (m)', hideable: false, width: 'w-16', priority: 'tight' },
-    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: false, width: 'w-16', priority: 'tight' },
-    { key: 'defects', label: 'Observations', hideable: false, width: 'w-96', priority: 'pretty' },
-    { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: 'w-16', priority: 'tight' },
-    { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: 'w-20', priority: 'tight' },
-    { key: 'recommendations', label: 'Recommendations', hideable: false, width: 'w-96', priority: 'pretty' },
-    { key: 'adoptable', label: 'Adoptable', hideable: false, width: 'w-16', priority: 'tight' },
-    { key: 'cost', label: 'Cost (£)', hideable: false, width: 'w-20', priority: 'tight' }
+    { key: 'projectNo', label: 'Project No', hideable: true, width: 'w-12 break-words', priority: 'tight' },
+    { key: 'itemNo', label: 'Item No', hideable: false, width: 'w-12 break-words', priority: 'tight' },
+    { key: 'inspectionNo', label: 'Inspec. No', hideable: true, width: 'w-12 break-words', priority: 'tight' },
+    { key: 'date', label: 'Date', hideable: true, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'time', label: 'Time', hideable: true, width: 'w-12 break-words', priority: 'tight' },
+    { key: 'startMH', label: 'Start MH', hideable: false, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'startMHDepth', label: 'Start MH Depth', hideable: true, width: 'w-12 break-words', priority: 'tight' },
+    { key: 'finishMH', label: 'Finish MH', hideable: false, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true, width: 'w-12 break-words', priority: 'tight' },
+    { key: 'pipeSize', label: 'Pipe Size', hideable: false, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: 'w-24 break-words', priority: 'tight' },
+    { key: 'totalLength', label: 'Total Length (m)', hideable: false, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: false, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'defects', label: 'Observations', hideable: false, width: 'w-64 break-words', priority: 'pretty' },
+    { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'recommendations', label: 'Recommendations', hideable: false, width: 'w-64 break-words', priority: 'pretty' },
+    { key: 'adoptable', label: 'Adoptable', hideable: false, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'cost', label: 'Cost (£)', hideable: false, width: 'w-20 break-words', priority: 'tight' }
   ];
 
 

@@ -319,34 +319,34 @@ export default function PDFReaderPage() {
                         <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
                           Date
                         </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-12 break-words">
                           Time
                         </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16 break-words">
                           Start MH
                         </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-12 break-words">
                           Start MH Depth
                         </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16 break-words">
                           Finish MH
                         </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-12 break-words">
                           Finish MH Depth
                         </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16 break-words">
                           Pipe Size
                         </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-32" style={{ whiteSpace: 'nowrap' }}>
+                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-24 break-words">
                           Pipe Material
                         </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16 break-words">
                           Total Length (m)
                         </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
+                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-16 break-words">
                           Length Surveyed (m)
                         </th>
-                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-96" style={{ whiteSpace: 'nowrap' }}>
+                        <th className="px-1 py-2 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-64 break-words">
                           Observations
                         </th>
                         <th className="px-2 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-300 w-20" style={{ whiteSpace: 'nowrap' }}>
@@ -372,34 +372,34 @@ export default function PDFReaderPage() {
                           <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
                             {section.date || 'no data recorded'}
                           </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
+                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-12 break-words text-center">
                             {section.time || 'no data recorded'}
                           </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20 font-medium">
+                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-16 font-medium break-words text-center">
                             {section.startMH}
                           </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
+                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-12 break-words text-center">
                             {section.startMHDepth}
                           </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20 font-medium">
+                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-16 font-medium break-words text-center">
                             {section.finishMH}
                           </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
+                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-12 break-words text-center">
                             {section.finishMHDepth}
                           </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20 font-medium">
+                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-16 font-medium break-words text-center">
                             {section.pipeSize}
                           </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-32">
+                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-24 break-words text-center">
                             {section.pipeMaterial}
                           </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
+                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-16 break-words text-center">
                             {section.totalLength}
                           </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-20">
+                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-16 break-words text-center">
                             {section.lengthSurveyed}
                           </td>
-                          <td className="px-2 py-2 text-xs border-r border-gray-200 w-96">
+                          <td className="px-1 py-2 text-xs border-r border-gray-200 w-64 break-words text-left">
                             <div className="text-xs text-left leading-relaxed">
                               {section.defects || section.observations || 'no data recorded'}
                             </div>
