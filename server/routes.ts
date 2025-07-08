@@ -2806,12 +2806,75 @@ export async function registerRoutes(app: Express) {
         errors.push(`Extraction error: ${extractionError.message}`);
       }
       
+      // Extract sections using the new focused extraction logic
+      const sections: any[] = [];
+      try {
+        console.log('\n🔍 EXTRACTING SECTIONS FROM INSPECTION DATA...');
+        
+        // Find the section inspection data starting from the first "Section Inspection" header
+        const sectionStartMarker = "Section Inspection";
+        const sectionStartIndex = pdfText.indexOf(sectionStartMarker);
+        
+        if (sectionStartIndex !== -1) {
+          console.log(`✅ Found section inspection data at position ${sectionStartIndex}`);
+          
+          // Extract only the section inspection portion of the PDF starting from first section
+          const sectionInspectionText = pdfText.substring(sectionStartIndex);
+          console.log(`📄 Section inspection data length: ${sectionInspectionText.length} characters`);
+          
+          // Look for Section Inspection patterns in the section inspection data
+          const sectionInspectionPattern = /Section Inspection[^]*?Item No[^]*?(\d+)[^]*?Upstream Node:\s*([A-Z0-9\-\/]+)[^]*?Downstream Node:\s*([A-Z0-9\-\/]+)/g;
+          
+          let match;
+          while ((match = sectionInspectionPattern.exec(sectionInspectionText)) !== null) {
+            const itemNo = parseInt(match[1]);
+            const startMH = match[2].trim();
+            const finishMH = match[3].trim();
+            
+            // Extract header data from this section's content
+            const sectionText = sectionInspectionText.substring(match.index, match.index + 2000);
+            const sectionHeaderData = extractSectionHeaderFromInspectionData(sectionText, itemNo);
+            
+            const section = {
+              itemNo,
+              startMH,
+              finishMH,
+              pipeSize: sectionHeaderData?.pipeSize || 'no data recorded',
+              pipeMaterial: sectionHeaderData?.pipeMaterial || 'no data recorded',
+              totalLength: sectionHeaderData?.totalLength || 'no data recorded',
+              lengthSurveyed: sectionHeaderData?.lengthSurveyed || 'no data recorded',
+              defects: sectionHeaderData?.defects || 'no data recorded',
+              date: sectionHeaderData?.inspectionDate || 'no data recorded',
+              time: sectionHeaderData?.inspectionTime || 'no data recorded',
+              severityGrade: 0,
+              recommendations: 'No action required pipe observed in acceptable structural and service condition',
+              adoptable: 'Yes',
+              cost: 'Complete'
+            };
+            
+            sections.push(section);
+            console.log(`✅ Found Section ${itemNo}: ${startMH} → ${finishMH}`);
+          }
+          
+          console.log(`📋 Total sections extracted: ${sections.length}`);
+        } else {
+          console.log('❌ Section inspection marker not found');
+          errors.push('Section inspection data not found in PDF');
+        }
+        
+      } catch (sectionError: any) {
+        console.error('❌ Section extraction error:', sectionError.message);
+        errors.push(`Section extraction error: ${sectionError.message}`);
+      }
+      
       const result = {
         fileName,
         fileSize: pdfBuffer.length,
         totalPages: pdfData.numpages,
         totalCharacters: pdfText.length,
         headerData,
+        sections,
+        missingSequences: [],
         observations,
         extractedText: pdfText,
         errors
