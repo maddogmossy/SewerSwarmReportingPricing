@@ -3306,44 +3306,41 @@ export async function registerRoutes(app: Express) {
         return res.status(401).json({ error: "Unauthorized" });
       }
 
-      console.log(`🗑️ Clearing dashboard analysis data for user: ${userId}`);
+      console.log(`📊 Clearing dashboard display data for user: ${userId} (data preserved in database)`);
       
-      // Get all uploads for this user
+      // NON-DESTRUCTIVE CLEAR: Hide data from dashboard without deleting authentic content
+      // This preserves all authentic PDF data while clearing the dashboard display
       const userUploads = await db.select().from(fileUploads).where(eq(fileUploads.userId, userId));
-      const uploadIds = userUploads.map(upload => upload.id);
       
-      let deletedCounts = {
-        sections: 0,
-        defects: 0,
-        uploads: 0,  // Will remain 0 since we preserve upload records
-        folders: 0
+      let clearCounts = {
+        uploads: 0,
+        preserved: 0
       };
       
-      if (uploadIds.length > 0) {
-        // Only delete the analysis data - preserve the original upload records
-        for (const uploadId of uploadIds) {
-          await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
-          await db.delete(sectionDefects).where(eq(sectionDefects.fileUploadId, uploadId));
+      if (userUploads.length > 0) {
+        // SAFE APPROACH: Set upload status to 'processing' to hide from dashboard
+        // All sections, defects, folders, and PDF files remain in database
+        for (const upload of userUploads) {
+          await db.update(fileUploads)
+            .set({ status: 'processing' })
+            .where(eq(fileUploads.id, upload.id));
+          clearCounts.uploads++;
         }
         
-        deletedCounts.sections = uploadIds.length;
-        deletedCounts.defects = uploadIds.length;
-        
-        // DO NOT DELETE file uploads - preserve them for re-processing
-        // The uploaded PDF files remain in the uploads/ directory and database records are kept
-        deletedCounts.uploads = 0; // Upload records preserved
+        // Count preserved authentic data
+        for (const upload of userUploads) {
+          const sections = await db.select().from(sectionInspections)
+            .where(eq(sectionInspections.fileUploadId, upload.id));
+          clearCounts.preserved += sections.length;
+        }
       }
       
-      // PRESERVE project folders - only clear analysis data
-      // Project folders and upload records are kept for easy re-processing
-      deletedCounts.folders = 0; // Folders are preserved
-      
-      console.log(`✅ Dashboard analysis data cleared:`, deletedCounts);
+      console.log(`✅ Dashboard display cleared (${clearCounts.preserved} sections preserved):`, clearCounts);
       
       res.json({ 
         success: true, 
-        message: "Dashboard analysis data cleared successfully (uploaded files preserved)",
-        deletedCounts 
+        message: `Dashboard cleared - ${clearCounts.preserved} authentic sections preserved. Click folder to restore display.`,
+        clearCounts 
       });
       
     } catch (error: any) {

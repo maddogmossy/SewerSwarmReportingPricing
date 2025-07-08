@@ -18,6 +18,7 @@ import {
   Upload,
   Building,
   Building2,
+  EyeOff,
   Home as HomeIcon,
   RefreshCw,
   Car,
@@ -1605,8 +1606,8 @@ export default function Dashboard() {
               onClick={() => setShowClearDataDialog(true)}
               className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Clear Analysis Data
+              <EyeOff className="h-4 w-4 mr-2" />
+              Hide Dashboard Data
             </Button>
           </div>
         </div>
@@ -2420,24 +2421,24 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Clear Dashboard Data Confirmation Dialog */}
+      {/* Hide Dashboard Data Confirmation Dialog */}
       <Dialog open={showClearDataDialog} onOpenChange={setShowClearDataDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-amber-600">Clear Dashboard Analysis Data</DialogTitle>
+            <DialogTitle className="text-amber-600">Hide Dashboard Data</DialogTitle>
             <DialogDescription>
-              This action will clear the dashboard analysis data while preserving your uploaded files for re-processing.
+              This action will hide data from dashboard display while preserving all authentic content in the database.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
               <p className="text-sm text-amber-800 font-medium">
-                Are you sure you want to clear dashboard analysis data?
+                Hide dashboard display data?
               </p>
               <ul className="text-xs text-amber-700 mt-2 list-disc list-inside">
-                <li>Section inspection analysis data will be removed</li>
-                <li>Defect classifications will be cleared</li>
-                <li>Uploaded PDF files will be preserved</li>
+                <li>Dashboard will show empty state temporarily</li>
+                <li>All authentic data preserved in database</li>
+                <li>Click any folder to restore display instantly</li>
                 <li>Project folders will be preserved</li>
                 <li>All pricing configurations will remain intact</li>
               </ul>
@@ -2455,7 +2456,7 @@ export default function Dashboard() {
               disabled={clearDataMutation.isPending}
               className="bg-amber-600 hover:bg-amber-700 text-white"
             >
-              {clearDataMutation.isPending ? "Clearing..." : "Clear Analysis Data"}
+              {clearDataMutation.isPending ? "Hiding..." : "Hide Dashboard Data"}
             </Button>
           </DialogFooter>
         </DialogContent>
