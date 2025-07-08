@@ -418,7 +418,7 @@ export default function Dashboard() {
     switch (columnKey) {
       case 'projectNo':
         // MULTI-REPORT SUPPORT: Show project number from section's own report
-        return section.projectNumber || 'Unknown';
+        return section.projectNo || section.projectNumber || 'no data recorded';
       case 'itemNo':
         const itemSuffix = getItemNumberWithSuffix(section, sectionData);
         const defectTypeIcon = section.defectType === 'service' ? '💧' : 

@@ -726,22 +726,31 @@ async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: num
     const extractedData = extractAuthenticAdoptionSpecs(pdfText, itemNo);
     console.log(`📊 Section ${itemNo} extraction result:`, extractedData);
     
-    // Create section with authentic manhole references and user-verified specs
+    // Extract authentic project information from PDF
+    const projectInfo = extractProjectInformation(pdfText);
+    console.log(`📋 Project Info for Section ${itemNo}:`, projectInfo);
+    
+    // Extract authentic inspection data for this section
+    const inspectionData = extractSectionInspectionData(pdfText, itemNo);
+    console.log(`📊 Inspection Data for Section ${itemNo}:`, inspectionData);
+    
+    // Create section with authentic data from PDF extraction
     const sectionData = {
       fileUploadId: fileUploadId,
       itemNo: itemNo,
       inspectionNo: 1,
-      date: 'no data recorded',
-      time: 'no data recorded',
+      projectNo: projectInfo.projectNumber || 'no data recorded',
+      date: inspectionData.date || 'no data recorded',
+      time: inspectionData.time || 'no data recorded',
       startMH: startMH,
       finishMH: finishMH,
-      startMHDepth: 'no data recorded',
-      finishMHDepth: 'no data recorded',
-      pipeSize: extractedData?.pipeSize || 'no data recorded',
-      pipeMaterial: extractedData?.pipeMaterial || 'no data recorded',
-      totalLength: extractedData?.totalLength || 'no data recorded',
-      lengthSurveyed: extractedData?.lengthSurveyed || 'no data recorded',
-      defects: 'no data recorded',
+      startMHDepth: inspectionData.startMHDepth || 'no data recorded',
+      finishMHDepth: inspectionData.finishMHDepth || 'no data recorded',
+      pipeSize: inspectionData.pipeSize || extractedData?.pipeSize || 'no data recorded',
+      pipeMaterial: inspectionData.pipeMaterial || extractedData?.pipeMaterial || 'no data recorded',
+      totalLength: inspectionData.totalLength || extractedData?.totalLength || 'no data recorded',
+      lengthSurveyed: inspectionData.lengthSurveyed || extractedData?.lengthSurveyed || 'no data recorded',
+      defects: inspectionData.defects || 'no data recorded',
       severityGrade: 0, // Initialize to Grade 0 - will be updated by MSCC5 classification
       recommendations: "No action required pipe observed in acceptable structural and service condition",
       adoptable: "Yes",
@@ -821,12 +830,34 @@ function getAdoptionTotalLength(itemNo: number): string {
   throw new Error("SYNTHETIC DATA BLOCKED: Only authentic PDF extraction permitted");
 }
 
-// ELIMINATED: SYNTHETIC DATA GENERATION FUNCTION
-// This function was generating fake inspection times that violated zero tolerance policy
-function getAdoptionInspectionTime(itemNo: number): string {
-  // AUTHENTIC DATA ONLY - No synthetic time generation allowed  
-  throw new Error("SYNTHETIC DATA BLOCKED: Only authentic PDF extraction permitted");
+// AUTHENTIC DATA EXTRACTION FUNCTIONS
+// Extract project information from PDF header
+function extractProjectInformation(pdfText: string): { projectNumber: string | null } {
+  console.log("🔍 Extracting project information from PDF...");
+  
+  // Extract project number from various PDF patterns
+  const patterns = [
+    /Project\s*(?:Number|No\.?):\s*([^\n\r]+)/i,
+    /Project:\s*([^\n\r]+)/i,
+    /([A-Z0-9\-\.]+\s*(?:ECL|NEWARK)[^\n\r]*)/i,
+    /(\d+\s*[-]?\s*[A-Z]+\s*[-]?\s*[A-Z\s]+)/i
+  ];
+  
+  for (const pattern of patterns) {
+    const match = pdfText.match(pattern);
+    if (match) {
+      // Clean up project number by removing line breaks and extra whitespace
+      const projectNumber = match[1].replace(/[\r\n]+/g, ' ').trim();
+      console.log(`✅ Found project number: "${projectNumber}"`);
+      return { projectNumber };
+    }
+  }
+  
+  console.log("⚠️ No project number found in PDF");
+  return { projectNumber: null };
 }
+
+// Use existing extractSectionInspectionData function (avoid duplicate)
 
 // Parse consolidated defect summary from PDF structure
 function parseConsolidatedDefectSummary(pdfText: string): { [sectionNumber: number]: string } {
