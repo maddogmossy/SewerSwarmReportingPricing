@@ -143,10 +143,10 @@ export default function PDFReaderPage() {
         </div>
       </div>
 
-      {/* File Selection */}
+      {/* File Selection - DEBUG INFO */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Select PDF File to Analyze</CardTitle>
+          <CardTitle>Select PDF File to Analyze (Upload ID: {selectedUploadId || 'None'})</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-3">
@@ -275,8 +275,11 @@ export default function PDFReaderPage() {
               <div className="flex items-center gap-2 mb-4">
                 <Database className="h-5 w-5" />
                 <h3 className="text-lg font-semibold">
-                  Section Inspection Data ({expandedSectionData?.length || 0} Sections)
+                  Section Inspection Data ({expandedSectionData?.length || 0} Sections) - PDF Reader Display
                 </h3>
+                <div className="text-sm text-gray-500 ml-4">
+                  Upload: {selectedUploadId} | Raw Data: {sectionData?.length || 0} | Expanded: {expandedSectionData?.length || 0}
+                </div>
               </div>
               
               {/* Dashboard Table Template - EXACT MATCH */}
