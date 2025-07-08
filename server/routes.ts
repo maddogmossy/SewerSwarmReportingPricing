@@ -1319,9 +1319,13 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
         )
       });
       
-      if (existingSection) {
+      if (existingSection && sectionNum !== 1) {
         console.log(`DEBUG: Section ${sectionNum} already exists - SKIPPING to prevent duplicates`);
         continue;
+      }
+      
+      if (existingSection && sectionNum === 1) {
+        console.log(`🔄 SECTION 1 RE-EXTRACTION: Allowing re-extraction for testing authentic data`);
       }
 
       // Extract authentic data from PDF section content
