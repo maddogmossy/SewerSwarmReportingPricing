@@ -2835,80 +2835,60 @@ export async function registerRoutes(app: Express) {
             const sectionText = sectionInspectionText.substring(match.index, match.index + 2000);
             const sectionHeaderData = extractSectionHeaderFromInspectionData(sectionText, itemNo);
             
-            // Look for observation data in the main PDF text for this specific item number
-            console.log(`🔍 Looking for observation data for Item ${itemNo} in main PDF...`);
+            // Extract observations from the OBSERVATIONS column in the summary table
+            console.log(`🔍 Looking for Item ${sections.length + 1} in OBSERVATIONS table...`);
             
-            // Search for observation patterns in the entire PDF text that reference this item number
-            const observationPatterns = [
-              new RegExp(`${itemNo}\\s+[^\\n]*?(WL\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
-              new RegExp(`${itemNo}\\s+[^\\n]*?(LL\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
-              new RegExp(`${itemNo}\\s+[^\\n]*?(REM\\s+[^\\n]*)`, 'gi'),
-              new RegExp(`${itemNo}\\s+[^\\n]*?(MCPP\\s+[^\\n]*)`, 'gi'),
-              new RegExp(`${itemNo}\\s+[^\\n]*?(REST\\s+BEND[^\\n]*)`, 'gi'),
-              new RegExp(`${itemNo}\\s+[^\\n]*?(JN\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
-              new RegExp(`${itemNo}\\s+[^\\n]*?(BRF\\s+[^\\n]*)`, 'gi'),
-              new RegExp(`${itemNo}\\s+[^\\n]*?(DER\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
-              new RegExp(`${itemNo}\\s+[^\\n]*?(FC\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
-              new RegExp(`${itemNo}\\s+[^\\n]*?(CR\\s+[0-9.]+m?[^\\n]*)`, 'gi'),
-              new RegExp(`${itemNo}\\s+[^\\n]*?(DEG\\s+[0-9.]+m?[^\\n]*)`, 'gi')
-            ];
+            // Look for table rows that match this item's sequential number (1, 2, 3, etc.)
+            const sequentialItemNo = sections.length + 1;
+            let observationText = '';
             
-            const foundObservations = [];
-            observationPatterns.forEach(pattern => {
-              let match;
-              while ((match = pattern.exec(pdfText)) !== null) {
-                if (match[1]) {
-                  foundObservations.push(match[1].trim());
-                  console.log(`✅ Found observation for Item ${itemNo}: ${match[1].trim()}`);
-                }
-              }
-            });
-            
-            // Also look for lines that start with the item number and contain observation codes
+            // Search for lines in the PDF that contain tabular data with our item number
             const lines = pdfText.split('\n');
-            lines.forEach(line => {
-              if (line.trim().startsWith(`${itemNo}\t`) || line.trim().startsWith(`${itemNo} `)) {
-                const observationCodes = ['WL', 'LL', 'REM', 'MCPP', 'REST BEND', 'JN', 'BRF', 'DER', 'FC', 'CR', 'DEG'];
-                observationCodes.forEach(code => {
-                  if (line.includes(code)) {
-                    // Extract the part after the item number that contains observations
-                    const parts = line.split(/\t/);
-                    if (parts.length > 10) { // Assuming observations are in later columns
-                      const observationColumn = parts.find(part => part.includes(code));
-                      if (observationColumn && observationColumn.trim() !== code) {
-                        foundObservations.push(observationColumn.trim());
-                        console.log(`✅ Found table observation for Item ${itemNo}: ${observationColumn.trim()}`);
-                      }
+            for (const line of lines) {
+              // Look for table rows that start with our sequential item number
+              if (line.trim().startsWith(`${sequentialItemNo}\t`) || 
+                  line.trim().startsWith(`${sequentialItemNo} `) ||
+                  line.includes(`\t${sequentialItemNo}\t`)) {
+                console.log(`📋 Found potential table row: ${line.substring(0, 200)}...`);
+                
+                // Split by tabs to get table columns
+                const columns = line.split(/\t/);
+                if (columns.length > 10) { // Table should have many columns
+                  // Look for the OBSERVATIONS column (usually towards the end)
+                  for (let i = 10; i < columns.length; i++) {
+                    const column = columns[i].trim();
+                    if (column && column.length > 10 && 
+                        (column.includes('WL') || column.includes('LL') || column.includes('REM') || 
+                         column.includes('MCPP') || column.includes('No action required'))) {
+                      observationText = column;
+                      console.log(`✅ Found observations for Item ${sequentialItemNo}: ${observationText}`);
+                      break;
                     }
                   }
-                });
+                }
+                break;
               }
-            });
+            }
             
-            // Remove duplicates and filter out empty observations
-            const uniqueObservations = [...new Set(foundObservations)].filter(obs => obs && obs.length > 2);
-            
-            const defectsText = uniqueObservations.length > 0 
-              ? uniqueObservations.join(', ') 
-              : 'No action required pipe observed in acceptable structural and service condition';
+            const defectsText = observationText || 'No action required pipe observed in acceptable structural and service condition';
               
             console.log(`📋 Section ${itemNo} final defects: ${defectsText}`);
             
             const section = {
-              itemNo,
+              itemNo: sections.length + 1, // Sequential numbering: 1, 2, 3, etc.
               inspectionNo: '1',
               projectNo: headerData.projectNumber || 'ECL NEWARK',
               startMH,
               finishMH,
-              startMHDepth: '1.5m',
-              finishMHDepth: '1.8m',
-              pipeSize: sectionHeaderData?.pipeSize || '150mm',
-              pipeMaterial: sectionHeaderData?.pipeMaterial || 'Polyvinyl chloride',
+              startMHDepth: 'no data recorded', // No fake data
+              finishMHDepth: 'no data recorded', // No fake data
+              pipeSize: sectionHeaderData?.pipeSize || 'no data recorded',
+              pipeMaterial: sectionHeaderData?.pipeMaterial || 'no data recorded',
               totalLength: sectionHeaderData?.totalLength || 'no data recorded',
               lengthSurveyed: sectionHeaderData?.lengthSurveyed || 'no data recorded',
               defects: defectsText,
-              date: sectionHeaderData?.inspectionDate || headerData.date || '14/02/25',
-              time: sectionHeaderData?.inspectionTime || headerData.time || '11:22',
+              date: sectionHeaderData?.inspectionDate || 'no data recorded',
+              time: sectionHeaderData?.inspectionTime || 'no data recorded',
               severityGrade: 0,
               recommendations: 'No action required pipe observed in acceptable structural and service condition',
               adoptable: 'Yes',
