@@ -1581,7 +1581,12 @@ export default function Dashboard() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                // Force cache invalidation and refresh to show authentic data
+                queryClient.invalidateQueries();
+                queryClient.clear();
+                setTimeout(() => window.location.reload(), 100);
+              }}
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh Dashboard
@@ -1863,10 +1868,14 @@ export default function Dashboard() {
                   </Link>
                   <Button 
                     variant="outline"
-                    onClick={() => window.location.reload()}
+                    onClick={() => {
+                      // Force cache invalidation and refresh
+                      queryClient.invalidateQueries();
+                      window.location.reload();
+                    }}
                   >
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh Page
+                    Force Refresh Data
                   </Button>
                 </div>
               </CardContent>
