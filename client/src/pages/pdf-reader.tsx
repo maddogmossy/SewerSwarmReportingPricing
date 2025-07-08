@@ -208,82 +208,106 @@ export default function PDFReaderPage() {
                     <div className="flex items-center gap-2 mb-4">
                       <Database className="h-5 w-5" />
                       <h3 className="text-lg font-semibold">
-                        Database Sections - Exact Dashboard Format ({expandedSectionData?.length || 0})
+                        Database Sections - Dashboard Table Format ({expandedSectionData?.length || 0})
                       </h3>
                     </div>
                     
-                    <ScrollArea className="h-96 border rounded-lg p-4">
-                      <div className="space-y-2">
-                        {expandedSectionData?.map((section: any, index: number) => (
-                          <div key={index} className="border border-gray-200 rounded p-3 bg-white">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="font-semibold text-sm">
-                                Section {section.itemNo}
-                              </div>
-                              {section.errors?.length > 0 ? (
-                                <Badge variant="destructive" className="text-xs">
-                                  {section.errors.length} Error(s)
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="text-xs">
-                                  Valid
-                                </Badge>
-                              )}
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                              <div>
-                                <span className="font-medium">Start MH:</span> {section.startMH || 'no data recorded'}
-                              </div>
-                              <div>
-                                <span className="font-medium">Finish MH:</span> {section.finishMH || 'no data recorded'}
-                              </div>
-                              <div>
-                                <span className="font-medium">Pipe Size:</span> {section.pipeSize || 'no data recorded'}
-                              </div>
-                              <div>
-                                <span className="font-medium">Material:</span> {section.pipeMaterial || 'no data recorded'}
-                              </div>
-                              <div>
-                                <span className="font-medium">Total Length:</span> {section.totalLength || 'no data recorded'}
-                              </div>
-                              <div>
-                                <span className="font-medium">Length Surveyed:</span> {section.lengthSurveyed || 'no data recorded'}
-                              </div>
-                              <div>
-                                <span className="font-medium">Date:</span> {section.inspectionDate || 'no data recorded'}
-                              </div>
-                              <div>
-                                <span className="font-medium">Time:</span> {section.inspectionTime || 'no data recorded'}
-                              </div>
-                              <div>
-                                <span className="font-medium">Grade:</span> {section.severityGrade || 'no data recorded'}
-                              </div>
-                              <div>
-                                <span className="font-medium">Adoptable:</span> {section.adoptable || 'no data recorded'}
-                              </div>
-                              <div className="col-span-2">
-                                <span className="font-medium">Defects:</span> {section.defects || 'no data recorded'}
-                              </div>
-                              <div className="col-span-2">
-                                <span className="font-medium">Recommendations:</span> {section.recommendations || 'no data recorded'}
-                              </div>
-                            </div>
-                            
-                            {section.errors && section.errors.length > 0 && (
-                              <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded">
-                                <strong className="text-red-700 text-xs">Errors:</strong>
-                                <ul className="text-red-600 text-xs mt-1">
-                                  {section.errors.map((error: string, i: number) => (
-                                    <li key={i}>• {error}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                    {/* Dashboard Table Template */}
+                    <div className="border rounded-lg overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
+                                Item No
+                              </th>
+                              <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                                Start MH
+                              </th>
+                              <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                                Finish MH
+                              </th>
+                              <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                                Pipe Size
+                              </th>
+                              <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                                Material
+                              </th>
+                              <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                                Total Length
+                              </th>
+                              <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                                Grade
+                              </th>
+                              <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-96">
+                                Defects
+                              </th>
+                              <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-96">
+                                Recommendations
+                              </th>
+                              <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                                Adoptable
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {expandedSectionData?.map((section: any, index: number) => (
+                              <tr key={index} className="hover:bg-gray-50">
+                                <td className="px-1 py-2 text-center text-xs w-16">
+                                  <div className="font-medium">{section.itemNo}</div>
+                                </td>
+                                <td className="px-1 py-2 text-center text-xs w-20">
+                                  {section.startMH}
+                                </td>
+                                <td className="px-1 py-2 text-center text-xs w-20">
+                                  {section.finishMH}
+                                </td>
+                                <td className="px-1 py-2 text-center text-xs w-20">
+                                  {section.pipeSize}mm
+                                </td>
+                                <td className="px-1 py-2 text-center text-xs w-32">
+                                  {section.pipeMaterial}
+                                </td>
+                                <td className="px-1 py-2 text-center text-xs w-20">
+                                  {section.totalLength}
+                                </td>
+                                <td className="px-1 py-2 text-center text-xs w-20">
+                                  <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                                    section.severityGrade === '0' ? 'bg-green-100 text-green-800' :
+                                    section.severityGrade === '1' ? 'bg-red-100 text-red-800' :
+                                    section.severityGrade === '2' ? 'bg-amber-100 text-amber-800' :
+                                    section.severityGrade === '3' ? 'bg-red-100 text-red-800' :
+                                    section.severityGrade === '4' ? 'bg-red-100 text-red-800' :
+                                    'bg-gray-100 text-gray-800'
+                                  }`}>
+                                    Grade {section.severityGrade}
+                                  </span>
+                                </td>
+                                <td className="px-1 py-2 text-xs w-96">
+                                  <div className="text-sm leading-relaxed">
+                                    {section.defects}
+                                  </div>
+                                </td>
+                                <td className="px-1 py-2 text-xs w-96">
+                                  <div className="text-sm leading-relaxed">
+                                    {section.recommendations}
+                                  </div>
+                                </td>
+                                <td className="px-1 py-2 text-center text-xs w-20">
+                                  <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                                    section.adoptable === 'Yes' ? 'bg-green-100 text-green-800' :
+                                    section.adoptable === 'No' ? 'bg-red-100 text-red-800' :
+                                    'bg-amber-100 text-amber-800'
+                                  }`}>
+                                    {section.adoptable}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
-                    </ScrollArea>
+                    </div>
                   </div>
                 </TabsContent>
 
