@@ -896,7 +896,8 @@ export default function Dashboard() {
     ? completedUploads.find(upload => upload.id === parseInt(reportId))
     : selectedReportIds.length === 1 
       ? filteredUploads.find(upload => upload.id === selectedReportIds[0])
-      : completedUploads.length === 1 ? completedUploads[0] : null; // Auto-select if only one upload
+      : completedUploads.length === 1 ? completedUploads[0] 
+      : completedUploads.length > 0 ? completedUploads[completedUploads.length - 1] : null; // Auto-select most recent upload
   
   // Debug logging - enhanced for auto-navigation debugging
   console.log("Dashboard Debug:", {
@@ -905,6 +906,8 @@ export default function Dashboard() {
     hasCurrentUpload: !!currentUpload,
     completedUploadsCount: completedUploads.length,
     uploadsIds: completedUploads.map(u => u.id),
+    uploadsStatuses: uploads.map(u => ({ id: u.id, status: u.status })),
+    allUploadsLength: uploads.length,
     condition1: completedUploads.length === 0,
     condition2: !currentUpload,
     shouldShowFolders: completedUploads.length === 0 || !currentUpload,
