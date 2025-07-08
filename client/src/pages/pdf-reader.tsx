@@ -306,9 +306,28 @@ export default function PDFReaderPage() {
                       <CardContent>
                         <ScrollArea className="h-48">
                           <div className="space-y-1 text-sm font-mono">
-                            {pdfAnalysis.sectionPatterns?.map((pattern: string, index: number) => (
-                              <div key={index} className="p-1 bg-gray-50 rounded">{pattern}</div>
-                            ))}
+                            {pdfAnalysis.sectionPatterns?.map((pattern: string, index: number) => {
+                              // Extract item number from pattern
+                              const itemMatch = pattern.match(/Section Item (\d+):/);
+                              const itemNumber = itemMatch ? parseInt(itemMatch[1]) : index + 1;
+                              
+                              // Clean up pattern to match dashboard format
+                              const cleanPattern = pattern
+                                .replace(/Section Item \d+:\s*/, '')
+                                .replace(/\s*\(.*?\)\s*\.+.*$/, '')
+                                .trim();
+                              
+                              return (
+                                <div key={index} className="p-2 bg-gray-50 rounded border">
+                                  <div className="font-medium text-sm mb-1">
+                                    Section {itemNumber}
+                                  </div>
+                                  <div className="text-xs text-gray-600">
+                                    {cleanPattern}
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </ScrollArea>
                       </CardContent>
