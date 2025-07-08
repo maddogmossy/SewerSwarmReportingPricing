@@ -2619,20 +2619,22 @@ export async function registerRoutes(app: Express) {
         hasPath: !!req.file.path
       });
 
-      // Get file data
-      let pdfBuffer: Buffer;
+      // Get file data from disk (multer saves to uploads/ directory)
       const fileName = req.file.originalname;
+      const filePath = req.file.path;
       
-      if (req.file.buffer) {
-        pdfBuffer = req.file.buffer;
-      } else if (req.file.path) {
-        const fs = require('fs');
-        pdfBuffer = fs.readFileSync(req.file.path);
-        fs.unlinkSync(req.file.path);
-      } else {
-        console.log('❌ No buffer or path available');
-        return res.status(400).json({ error: "PDF file data not accessible" });
+      if (!filePath || !fs.existsSync(filePath)) {
+        console.log('❌ File path not found:', filePath);
+        return res.status(400).json({ error: "Uploaded file not accessible" });
       }
+      
+      // Read PDF file from disk
+      const pdfBuffer = fs.readFileSync(filePath);
+      
+      // Clean up temp file after reading
+      fs.unlinkSync(filePath);
+      
+      console.log(`✅ File loaded: ${fileName} (${pdfBuffer.length} bytes)`);
       
       console.log(`📄 Analyzing: ${fileName} (${pdfBuffer.length} bytes)`);
       
