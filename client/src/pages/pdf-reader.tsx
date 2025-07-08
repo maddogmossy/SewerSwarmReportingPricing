@@ -192,52 +192,71 @@ export default function PDFReaderPage() {
                     <div className="flex items-center gap-2 mb-4">
                       <Database className="h-5 w-5" />
                       <h3 className="text-lg font-semibold">
-                        Extracted Sections ({pdfAnalysis.extractedSections?.length || 0})
+                        Database Sections - Exact Dashboard Format ({pdfAnalysis.extractedSections?.length || 0})
                       </h3>
                     </div>
                     
                     <ScrollArea className="h-96 border rounded-lg p-4">
-                      {pdfAnalysis.extractedSections?.map((section: any, index: number) => (
-                        <Card key={index} className="mb-4">
-                          <CardHeader className="pb-2">
-                            <CardTitle className="text-base flex items-center gap-2">
-                              Section {section.itemNo}
+                      <div className="space-y-2">
+                        {pdfAnalysis.extractedSections?.map((section: any, index: number) => (
+                          <div key={index} className="border border-gray-200 rounded p-3 bg-white">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="font-semibold text-sm">
+                                Section {section.itemNo}
+                              </div>
                               {section.errors?.length > 0 ? (
-                                <Badge variant="destructive">
+                                <Badge variant="destructive" className="text-xs">
                                   {section.errors.length} Error(s)
                                 </Badge>
                               ) : (
-                                <Badge variant="default">
-                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                <Badge variant="outline" className="text-xs">
                                   Valid
                                 </Badge>
                               )}
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent className="pt-0">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                               <div>
-                                <strong>Manholes:</strong> {section.startMH} → {section.finishMH}
+                                <span className="font-medium">Start MH:</span> {section.startMH || 'no data recorded'}
                               </div>
                               <div>
-                                <strong>Pipe:</strong> {section.pipeSize} {section.pipeMaterial}
+                                <span className="font-medium">Finish MH:</span> {section.finishMH || 'no data recorded'}
                               </div>
                               <div>
-                                <strong>Length:</strong> {section.totalLength}
+                                <span className="font-medium">Pipe Size:</span> {section.pipeSize || 'no data recorded'}
                               </div>
                               <div>
-                                <strong>Grade:</strong> {section.severityGrade}
+                                <span className="font-medium">Material:</span> {section.pipeMaterial || 'no data recorded'}
+                              </div>
+                              <div>
+                                <span className="font-medium">Total Length:</span> {section.totalLength || 'no data recorded'}
+                              </div>
+                              <div>
+                                <span className="font-medium">Length Surveyed:</span> {section.lengthSurveyed || 'no data recorded'}
+                              </div>
+                              <div>
+                                <span className="font-medium">Date:</span> {section.inspectionDate || 'no data recorded'}
+                              </div>
+                              <div>
+                                <span className="font-medium">Time:</span> {section.inspectionTime || 'no data recorded'}
+                              </div>
+                              <div>
+                                <span className="font-medium">Grade:</span> {section.severityGrade || 'no data recorded'}
+                              </div>
+                              <div>
+                                <span className="font-medium">Adoptable:</span> {section.adoptable || 'no data recorded'}
                               </div>
                               <div className="col-span-2">
-                                <strong>Defects:</strong> {section.defects || 'None'}
+                                <span className="font-medium">Defects:</span> {section.defects || 'no data recorded'}
                               </div>
                               <div className="col-span-2">
-                                <strong>Recommendations:</strong> {section.recommendations || 'None'}
+                                <span className="font-medium">Recommendations:</span> {section.recommendations || 'no data recorded'}
                               </div>
                             </div>
-                            {section.errors && (
+                            
+                            {section.errors && section.errors.length > 0 && (
                               <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded">
-                                <strong className="text-red-700">Errors:</strong>
+                                <strong className="text-red-700 text-xs">Errors:</strong>
                                 <ul className="text-red-600 text-xs mt-1">
                                   {section.errors.map((error: string, i: number) => (
                                     <li key={i}>• {error}</li>
@@ -245,9 +264,9 @@ export default function PDFReaderPage() {
                                 </ul>
                               </div>
                             )}
-                          </CardContent>
-                        </Card>
-                      ))}
+                          </div>
+                        ))}
+                      </div>
                     </ScrollArea>
                   </div>
                 </TabsContent>
