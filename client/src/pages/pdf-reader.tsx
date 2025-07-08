@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FileText, Eye, Database, AlertTriangle, CheckCircle } from 'lucide-react';
-import { apiRequest } from '@/lib/queryClient';
+import { FileText, Eye, Database, AlertTriangle, CheckCircle, Play, ArrowLeft } from 'lucide-react';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { Link } from 'wouter';
 
 interface PDFAnalysis {
   fileName: string;
@@ -24,12 +26,30 @@ interface PDFAnalysis {
 }
 
 export default function PDFReaderPage() {
+  const { toast } = useToast();
   const [selectedUploadId, setSelectedUploadId] = useState<number | null>(null);
+  
+  // Get uploadId from URL params if available (for paused uploads)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const uploadId = urlParams.get('uploadId');
+    if (uploadId) {
+      setSelectedUploadId(parseInt(uploadId));
+    }
+  }, []);
 
-  // Get list of uploaded files
+  // Get list of uploaded files (including paused ones)
   const { data: uploads } = useQuery({
     queryKey: ['/api/uploads'],
-    select: (data) => data.filter((upload: any) => upload.status === 'completed')
+    select: (data) => data.filter((upload: any) => 
+      upload.status === 'completed' || upload.status === 'extracted_pending_review'
+    )
+  });
+  
+  // Get specific upload details
+  const { data: currentUpload } = useQuery({
+    queryKey: [`/api/uploads/${selectedUploadId}`],
+    enabled: !!selectedUploadId,
   });
 
   // Get PDF analysis for selected file
@@ -43,6 +63,28 @@ export default function PDFReaderPage() {
   const { data: sectionData } = useQuery({
     queryKey: [`/api/uploads/${selectedUploadId}/sections`],
     enabled: !!selectedUploadId,
+  });
+
+  // Continue processing mutation for paused uploads
+  const continueProcessingMutation = useMutation({
+    mutationFn: (uploadId: number) => apiRequest('POST', `/api/continue-processing/${uploadId}`, {}),
+    onSuccess: (data) => {
+      toast({
+        title: "Processing Continued",
+        description: `Successfully processed ${data.sectionsProcessed} sections. Redirecting to dashboard...`,
+      });
+      // Redirect to dashboard after successful processing
+      setTimeout(() => {
+        window.location.href = `/dashboard?reportId=${selectedUploadId}`;
+      }, 2000);
+    },
+    onError: (error) => {
+      toast({
+        title: "Continue Processing Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   // Process the data the same way dashboard does
@@ -100,6 +142,47 @@ export default function PDFReaderPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Paused Upload Actions */}
+      {selectedUploadId && currentUpload?.status === 'extracted_pending_review' && (
+        <Card className="mb-6 border-orange-200 bg-orange-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-800">
+              <AlertTriangle className="h-5 w-5" />
+              Workflow Paused - Review Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-orange-700">
+                PDF extraction completed for {currentUpload.fileName}. 
+                Review the extracted data below, then continue processing to apply MSCC5 classification and store in database.
+              </p>
+              
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => continueProcessingMutation.mutate(selectedUploadId)}
+                  disabled={continueProcessingMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  {continueProcessingMutation.isPending ? "Processing..." : "Continue Processing"}
+                </Button>
+                
+                <Button
+                  asChild
+                  variant="outline"
+                >
+                  <Link href="/upload">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Upload
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Analysis Results */}
       <Card>

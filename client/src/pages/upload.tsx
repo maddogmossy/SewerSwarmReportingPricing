@@ -111,6 +111,7 @@ export default function Upload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
+  const [pauseForReview, setPauseForReview] = useState<boolean>(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
   const [showDeleteFolderDialog, setShowDeleteFolderDialog] = useState(false);
   const [selectedFolderToDelete, setSelectedFolderToDelete] = useState<{ id: number; name: string; reportCount: number } | null>(null);
@@ -177,10 +178,11 @@ export default function Upload() {
   }, [folders]);
 
   const uploadMutation = useMutation({
-    mutationFn: async ({ file, sector, folderId }: { file: File; sector: string; folderId: number | null }) => {
+    mutationFn: async ({ file, sector, folderId, pauseForReview }: { file: File; sector: string; folderId: number | null; pauseForReview: boolean }) => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('sector', sector);
+      formData.append('pauseForReview', pauseForReview.toString());
       if (folderId !== null) {
         formData.append('folderId', folderId.toString());
       }
@@ -199,15 +201,18 @@ export default function Upload() {
       setSelectedSector("");
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       
-      // Redirect to dashboard with specific report ID for auto-loading
+      // Handle different redirect logic based on workflow status
       setTimeout(() => {
         console.log("Upload response data:", data);
-        if (data.uploadId) {
+        
+        if (data.status === "extracted_pending_review") {
+          console.log(`Redirecting to PDF Reader for review: Upload ${data.uploadId}`);
+          window.location.href = `/pdf-reader?uploadId=${data.uploadId}`;
+        } else if (data.uploadId) {
           console.log(`Redirecting to dashboard with reportId: ${data.uploadId}`);
           window.location.href = `/dashboard?reportId=${data.uploadId}`;
         } else {
           console.log("Redirecting to dashboard without specific report - uploadId not found in response");
-          // Check if data is an object with different structure
           console.log("Available keys in response:", Object.keys(data || {}));
           window.location.href = "/dashboard";
         }
@@ -231,7 +236,7 @@ export default function Upload() {
       });
       return;
     }
-    uploadMutation.mutate({ file: selectedFile, sector: selectedSector, folderId: selectedFolderId });
+    uploadMutation.mutate({ file: selectedFile, sector: selectedSector, folderId: selectedFolderId, pauseForReview });
   };
 
   const refreshMutation = useMutation({
@@ -512,13 +517,26 @@ export default function Upload() {
                   />
 
                   {selectedFile && (
-                    <Button 
-                      onClick={handleUpload}
-                      disabled={uploadMutation.isPending}
-                      className="w-full"
-                    >
-                      {uploadMutation.isPending ? "Uploading..." : "Upload Report"}
-                    </Button>
+                    <div className="space-y-3">
+                      {/* Pause for Review Checkbox */}
+                      <label className="flex items-center space-x-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={pauseForReview}
+                          onChange={(e) => setPauseForReview(e.target.checked)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span>Pause workflow after PDF extraction for review</span>
+                      </label>
+
+                      <Button 
+                        onClick={handleUpload}
+                        disabled={uploadMutation.isPending}
+                        className="w-full"
+                      >
+                        {uploadMutation.isPending ? "Uploading..." : "Upload Report"}
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>

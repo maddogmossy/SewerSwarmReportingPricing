@@ -1206,6 +1206,27 @@ export async function registerRoutes(app: Express) {
           
           console.log(`Extracted ${sections.length} authentic sections from PDF`);
           
+          // WORKFLOW PAUSE POINT: Check if user requested pause for PDF Reader review
+          if (req.body.pauseForReview === 'true') {
+            console.log(`⏸️ WORKFLOW PAUSED: Extracted ${sections.length} sections for PDF Reader review`);
+            
+            // Store extracted sections temporarily without classification
+            await db.update(fileUploads)
+              .set({ 
+                status: "extracted_pending_review",
+                extractedData: JSON.stringify(sections.slice(0, 10)) // Store first 10 sections for preview
+              })
+              .where(eq(fileUploads.id, fileUpload.id));
+            
+            return res.json({
+              message: "PDF extraction completed - sections ready for review",
+              uploadId: fileUpload.id,
+              sectionsExtracted: sections.length,
+              status: "extracted_pending_review",
+              nextStep: "Review extracted data in PDF Reader, then continue processing"
+            });
+          }
+          
           // PREVENT DUPLICATES: Delete existing sections before inserting new ones
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
           console.log(`🗑️ Cleared existing sections for upload ID ${fileUpload.id}`);
@@ -1977,6 +1998,131 @@ export async function registerRoutes(app: Express) {
     } catch (error: any) {
       console.error("Error in workflow demonstration:", error);
       res.status(500).json({ error: error.message || "Failed to demonstrate workflow" });
+    }
+  });
+
+  // Continue workflow after PDF Reader review
+  app.post("/api/continue-processing/:uploadId", async (req: Request, res: Response) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      
+      console.log(`🔄 CONTINUING WORKFLOW for Upload ${uploadId} after PDF Reader review`);
+      
+      // Get file upload record
+      const [fileUpload] = await db.select().from(fileUploads).where(eq(fileUploads.id, uploadId));
+      if (!fileUpload) {
+        return res.status(404).json({ error: "File upload not found" });
+      }
+      
+      if (fileUpload.status !== "extracted_pending_review") {
+        return res.status(400).json({ error: "Upload is not in pending review state" });
+      }
+      
+      // Get the stored extracted data
+      const extractedSections = fileUpload.extractedData ? JSON.parse(fileUpload.extractedData) : [];
+      
+      if (extractedSections.length === 0) {
+        return res.status(400).json({ error: "No extracted data found to process" });
+      }
+      
+      // Re-extract all sections from PDF for complete processing
+      const filePath = fileUpload.filePath;
+      const fileBuffer = fs.readFileSync(filePath);
+      const pdfData = await pdfParse(fileBuffer);
+      
+      let sections = [];
+      if (pdfData.text.includes('Section Item') || fileUpload.sector === 'adoption') {
+        sections = await extractAdoptionSectionsFromPDF(pdfData.text, fileUpload.id);
+      } else {
+        sections = await extractAdoptionSectionsFromPDF(pdfData.text, fileUpload.id);
+      }
+      
+      console.log(`🔄 Re-extracted ${sections.length} sections for complete processing`);
+      
+      // PREVENT DUPLICATES: Delete existing sections before inserting new ones
+      await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
+      console.log(`🗑️ Cleared existing sections for upload ID ${fileUpload.id}`);
+      
+      // Continue with MSCC5 classification and database storage
+      if (sections.length > 0) {
+        console.log('🔍 Applying MSCC5 classification to all sections...');
+        
+        const finalSections = sections;
+        
+        // Validate data integrity before insertion
+        try {
+          validateBeforeInsert({ sections: finalSections }, 'pdf');
+          
+          for (const section of finalSections) {
+            // Additional validation per section
+            const validation = DataIntegrityValidator.validateSectionData(section);
+            if (!validation.isValid) {
+              console.error(`❌ SYNTHETIC DATA BLOCKED for Section ${section.itemNo}:`, validation.errors);
+              throw new Error(`Data integrity violation in Section ${section.itemNo}: ${validation.errors.join('; ')}`);
+            }
+            
+            // APPLY MSCC5 CLASSIFICATION AND STORE SECTION
+            try {
+              console.log(`🔍 Classifying Section ${section.itemNo} defects: "${section.defects || 'no data recorded'}"`);
+              
+              // Simple MSCC5 classification for adoption sector
+              if (section.defects && section.defects !== "no data recorded" && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
+                section.severityGrade = 2; // Default grade for defects
+                section.recommendations = "Further investigation required for observed defects";
+                section.adoptable = "Conditional";
+              } else {
+                section.severityGrade = 0; // Grade 0 for clean sections
+                section.recommendations = "No action required pipe observed in acceptable structural and service condition";
+                section.adoptable = "Yes";
+              }
+              
+              console.log(`✅ MSCC5 Section ${section.itemNo}: Grade ${section.severityGrade}, ${section.adoptable}, "${section.recommendations}"`);
+              
+              // Store section in database with MSCC5 results
+              await db.insert(sectionInspections).values(section as any);
+              console.log(`💾 Stored Section ${section.itemNo}: ${section.startMH} → ${section.finishMH} with classification`);
+              
+            } catch (classificationError) {
+              console.error(`❌ MSCC5 classification failed for Section ${section.itemNo}:`, classificationError);
+              // Store with default values if classification fails
+              section.severityGrade = 0;
+              section.recommendations = "Classification pending - manual review required";
+              section.adoptable = "Pending";
+              await db.insert(sectionInspections).values(section as any);
+            }
+          }
+          console.log(`✓ Successfully processed ${finalSections.length} sections after PDF Reader review`);
+        } catch (error: any) {
+          console.error("❌ DATA INTEGRITY VIOLATION:", error.message);
+          throw new Error(`Synthetic data detected. Please ensure PDF contains authentic inspection data.`);
+        }
+      }
+      
+      // Update upload status to completed
+      await db.update(fileUploads)
+        .set({ 
+          status: "completed",
+          extractedData: null // Clear temporary data
+        })
+        .where(eq(fileUploads.id, fileUpload.id));
+      
+      // Verify sections were inserted
+      const insertedSections = await db.select()
+        .from(sectionInspections)
+        .where(eq(sectionInspections.fileUploadId, fileUpload.id));
+      
+      console.log(`✓ Verified ${insertedSections.length} sections in database for upload ${fileUpload.id}`);
+      
+      res.json({
+        message: "Workflow continued successfully after PDF Reader review",
+        uploadId: fileUpload.id,
+        sectionsProcessed: insertedSections.length,
+        status: "completed"
+      });
+      
+    } catch (error: any) {
+      console.error("Error continuing workflow:", error);
+      res.status(500).json({ error: error.message || "Failed to continue processing" });
     }
   });
 

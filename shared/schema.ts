@@ -74,12 +74,13 @@ export const fileUploads = pgTable("file_uploads", {
   fileType: varchar("file_type").notNull(),
   filePath: varchar("file_path").notNull(),
   sector: varchar("sector").notNull(), // utilities, adoption, highways, domestic, insurance, construction
-  status: varchar("status").default("pending"), // pending, processing, completed, failed
+  status: varchar("status").default("pending"), // pending, processing, completed, failed, extracted_pending_review
   reportUrl: varchar("report_url"),
   projectNumber: varchar("project_number"),
   visitNumber: integer("visit_number").default(1), // Track multiple visits to same project
   siteAddress: text("site_address"), // Site address for travel calculations
   sitePostcode: varchar("site_postcode", { length: 10 }), // Site postcode for travel calculations
+  extractedData: text("extracted_data"), // Temporary storage for extracted sections during pause workflow
   createdAt: timestamp("created_at").defaultNow(),
 });
 
