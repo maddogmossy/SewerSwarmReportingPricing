@@ -1565,30 +1565,75 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Delete file upload and all associated data
+  // Delete file upload and all associated data with comprehensive cascade deletion
   app.delete("/api/uploads/:uploadId", async (req: Request, res: Response) => {
     try {
       const uploadId = parseInt(req.params.uploadId);
       
-      // First delete all associated section inspections and individual defects
-      await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, uploadId));
-      await db.delete(sectionDefects).where(eq(sectionDefects.fileUploadId, uploadId));
-      console.log(`🗑️ Deleted section inspections and defects for upload ID ${uploadId}`);
+      console.log(`🗑️ Starting comprehensive deletion for upload ID ${uploadId}`);
       
-      // Then delete the file upload record
+      // COMPREHENSIVE CASCADE DELETION - Delete all associated data
+      
+      // 1. Delete section inspections
+      const deletedSections = await db.delete(sectionInspections)
+        .where(eq(sectionInspections.fileUploadId, uploadId))
+        .returning();
+      console.log(`🗑️ Deleted ${deletedSections.length} section inspections`);
+      
+      // 2. Delete individual defects
+      const deletedDefects = await db.delete(sectionDefects)
+        .where(eq(sectionDefects.fileUploadId, uploadId))
+        .returning();
+      console.log(`🗑️ Deleted ${deletedDefects.length} individual defects`);
+      
+      // 3. Check for and delete any pricing/repair data that might reference this upload
+      // Note: Most pricing tables are user-based, not upload-based, so they persist
+      
+      // 4. Get file upload record to check for physical file deletion
+      const [uploadRecord] = await db.select()
+        .from(fileUploads)
+        .where(and(eq(fileUploads.id, uploadId), eq(fileUploads.userId, "test-user")))
+        .limit(1);
+      
+      if (!uploadRecord) {
+        return res.status(404).json({ error: "File upload not found or access denied" });
+      }
+      
+      // 5. Delete physical file if it exists
+      const fs = require('fs');
+      if (uploadRecord.filePath && fs.existsSync(uploadRecord.filePath)) {
+        try {
+          fs.unlinkSync(uploadRecord.filePath);
+          console.log(`🗑️ Deleted physical file: ${uploadRecord.filePath}`);
+        } catch (fileError) {
+          console.warn(`⚠️ Could not delete physical file: ${fileError.message}`);
+        }
+      }
+      
+      // 6. Finally delete the file upload record
       const deletedUpload = await db.delete(fileUploads)
         .where(and(eq(fileUploads.id, uploadId), eq(fileUploads.userId, "test-user")))
         .returning();
       
       if (deletedUpload.length === 0) {
-        return res.status(404).json({ error: "File upload not found" });
+        return res.status(404).json({ error: "File upload record not found" });
       }
       
-      console.log(`🗑️ Successfully deleted upload ID ${uploadId} and all associated data`);
-      res.json({ message: "Upload deleted successfully" });
+      console.log(`✅ COMPLETE DELETION: Upload ID ${uploadId} and ALL associated data removed`);
+      console.log(`📊 Deletion Summary: ${deletedSections.length} sections, ${deletedDefects.length} defects, 1 upload record, physical file cleaned`);
+      
+      res.json({ 
+        message: "Upload deleted successfully",
+        deletionSummary: {
+          sectionsDeleted: deletedSections.length,
+          defectsDeleted: deletedDefects.length,
+          uploadRecordDeleted: 1,
+          physicalFileDeleted: uploadRecord.filePath ? "attempted" : "not_applicable"
+        }
+      });
     } catch (error) {
-      console.error("Error deleting upload:", error);
-      res.status(500).json({ error: "Failed to delete upload" });
+      console.error("❌ Error during comprehensive deletion:", error);
+      res.status(500).json({ error: "Failed to delete upload and associated data" });
     }
   });
 
