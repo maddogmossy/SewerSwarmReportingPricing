@@ -172,7 +172,13 @@ export default function PDFReaderPage() {
                           Total Length
                         </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
-                          Grade
+                          Length Surveyed
+                        </th>
+                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                          Structural Grade
+                        </th>
+                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                          Service Grade
                         </th>
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-96">
                           Observations
@@ -210,6 +216,9 @@ export default function PDFReaderPage() {
                             {section.totalLength}
                           </td>
                           <td className="px-1 py-2 text-center text-xs w-20">
+                            {section.lengthSurveyed}
+                          </td>
+                          <td className="px-1 py-2 text-center text-xs w-20">
                             <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
                               section.severityGrade === '0' ? 'bg-green-100 text-green-800' :
                               section.severityGrade === '1' ? 'bg-red-100 text-red-800' :
@@ -218,7 +227,19 @@ export default function PDFReaderPage() {
                               section.severityGrade === '4' ? 'bg-red-100 text-red-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
-                              Grade {section.severityGrade}
+                              {section.severityGrade}
+                            </span>
+                          </td>
+                          <td className="px-1 py-2 text-center text-xs w-20">
+                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                              section.severityGrade === '0' ? 'bg-green-100 text-green-800' :
+                              section.severityGrade === '1' ? 'bg-emerald-100 text-emerald-800' :
+                              section.severityGrade === '2' ? 'bg-amber-100 text-amber-800' :
+                              section.severityGrade === '3' ? 'bg-red-100 text-red-800' :
+                              section.severityGrade === '4' ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {section.severityGrade}
                             </span>
                           </td>
                           <td className="px-1 py-2 text-xs w-96">
@@ -229,7 +250,7 @@ export default function PDFReaderPage() {
                         </tr>
                       )) : (
                         <tr>
-                          <td colSpan={11} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={13} className="px-4 py-8 text-center text-gray-500">
                             {selectedUploadId ? 'Loading sections data...' : 'Select a PDF file to view sections'}
                           </td>
                         </tr>
