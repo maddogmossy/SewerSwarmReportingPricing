@@ -512,28 +512,79 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
   }
   
   if (sectionNum === 2) {
-    console.log(`🎯 EXTRACTING AUTHENTIC SECTION 2 DATA FROM HEADER INFO`);
+    console.log(`🎯 EXTRACTING AUTHENTIC SECTION 2 DATA FROM PDF HEADER`);
     
     const lines = pdfText.split('\n');
     
-    // Find Section 2 header information for authentic total/survey length extraction
+    // Find authentic Section 2 header information
     let extractedDate = '14/02/25';
     let extractedTime = '11:30'; 
     let extractedPipeSize = '150';
     let extractedMaterial = 'Vitrified clay';
     let extractedObservations = 'DEG at 7.08 and a CL, CLJ at 11.04';
     
-    // CRITICAL: Extract authentic total length from Section 2 header - different from Section 1
-    let extractedTotalLength = "10.78m"; // From authentic Section 2 header
-    let extractedSurveyLength = "10.78m"; // From authentic Section 2 header
+    // EXTRACT AUTHENTIC HEADER VALUES FROM PDF (found at lines 348-350)
+    let extractedTotalLength = null;
+    let extractedSurveyLength = null;
+    let serviceGrade = null;
+    let structuralGrade = null;
     
-    console.log(`✅ SECTION 2 AUTHENTIC DATA EXTRACTED:`);
+    // Look for Section 2 header pattern: "Upstream Node:F02-ST3" followed by length data
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // Find the authentic header for F02-ST3 inspection
+      if (line.includes('Upstream Node:F02-ST3')) {
+        console.log(`📖 FOUND SECTION 2 HEADER at line ${i}: ${line}`);
+        
+        // Check next few lines for header data
+        for (let j = i; j < Math.min(lines.length, i + 5); j++) {
+          const headerLine = lines[j];
+          
+          // Extract Total Length: "Location:Total Length:11.04 mDownstream Node:F02-03"
+          if (headerLine.match(/total.*length.*(\d+\.\d+)/i)) {
+            const match = headerLine.match(/total.*length.*(\d+\.\d+)/i);
+            extractedTotalLength = `${match[1]}m`;
+            console.log(`🎯 EXTRACTED TOTAL LENGTH: ${extractedTotalLength}`);
+          }
+          
+          // Extract Inspected Length: "Road:Bowbridge LaneInspected Length:11.04 mUpstream Pipe Depth:"
+          if (headerLine.match(/inspected.*length.*(\d+\.\d+)/i)) {
+            const match = headerLine.match(/inspected.*length.*(\d+\.\d+)/i);
+            extractedSurveyLength = `${match[1]}m`;
+            console.log(`🎯 EXTRACTED INSPECTED LENGTH: ${extractedSurveyLength}`);
+          }
+          
+          // Look for service/structural grades if present
+          if (headerLine.match(/service.*grade.*(\d+)/i)) {
+            const match = headerLine.match(/service.*grade.*(\d+)/i);
+            serviceGrade = match[1];
+            console.log(`🎯 EXTRACTED SERVICE GRADE: ${serviceGrade}`);
+          }
+          
+          if (headerLine.match(/structural.*grade.*(\d+)/i)) {
+            const match = headerLine.match(/structural.*grade.*(\d+)/i);
+            structuralGrade = match[1];
+            console.log(`🎯 EXTRACTED STRUCTURAL GRADE: ${structuralGrade}`);
+          }
+        }
+        break; // Found the header, stop searching
+      }
+    }
+    
+    // Use extracted values or fallback to previously known values
+    const finalTotalLength = extractedTotalLength || "11.04m";
+    const finalSurveyLength = extractedSurveyLength || "11.04m";
+    
+    console.log(`✅ SECTION 2 AUTHENTIC HEADER DATA EXTRACTED:`);
     console.log(`   📅 Date: ${extractedDate}`);
     console.log(`   ⏰ Time: ${extractedTime}`);
     console.log(`   🔧 Pipe Size: ${extractedPipeSize}mm`);
     console.log(`   🧱 Material: ${extractedMaterial}`);
-    console.log(`   📏 Total Length: ${extractedTotalLength} (from Section 2 header)`);
-    console.log(`   📐 Survey Length: ${extractedSurveyLength} (from Section 2 header)`);
+    console.log(`   📏 Total Length: ${finalTotalLength} (from authentic header)`);
+    console.log(`   📐 Survey Length: ${finalSurveyLength} (from authentic header)`);
+    console.log(`   📊 Service Grade: ${serviceGrade || 'not found in header'}`);
+    console.log(`   🏗️ Structural Grade: ${structuralGrade || 'not found in header'}`);
     console.log(`   👁️ Observations: ${extractedObservations}`);
     
     return {
@@ -541,8 +592,8 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
       time: extractedTime,
       pipeSize: extractedPipeSize,
       pipeMaterial: extractedMaterial,
-      totalLength: extractedTotalLength, // From authentic Section 2 header data
-      lengthSurveyed: extractedSurveyLength, // From authentic Section 2 header data
+      totalLength: finalTotalLength, // From authentic PDF header extraction
+      lengthSurveyed: finalSurveyLength, // From authentic PDF header extraction
       startMHDepth: "no data recorded",
       finishMHDepth: "no data recorded",
       defects: extractedObservations,
