@@ -41,6 +41,12 @@ export default function PDFReaderPage() {
     enabled: !!selectedUploadId
   });
 
+  // Get actual database sections to display dashboard format
+  const { data: databaseSections } = useQuery({
+    queryKey: ['/api/uploads', selectedUploadId, 'sections'],
+    enabled: !!selectedUploadId,
+  });
+
   return (
     <div className="container mx-auto p-6 max-w-7xl">
       <div className="mb-6">
@@ -192,13 +198,13 @@ export default function PDFReaderPage() {
                     <div className="flex items-center gap-2 mb-4">
                       <Database className="h-5 w-5" />
                       <h3 className="text-lg font-semibold">
-                        Database Sections - Exact Dashboard Format ({pdfAnalysis.extractedSections?.length || 0})
+                        Database Sections - Exact Dashboard Format ({databaseSections?.length || 0})
                       </h3>
                     </div>
                     
                     <ScrollArea className="h-96 border rounded-lg p-4">
                       <div className="space-y-2">
-                        {pdfAnalysis.extractedSections?.map((section: any, index: number) => (
+                        {databaseSections?.map((section: any, index: number) => (
                           <div key={index} className="border border-gray-200 rounded p-3 bg-white">
                             <div className="flex items-center justify-between mb-2">
                               <div className="font-semibold text-sm">
