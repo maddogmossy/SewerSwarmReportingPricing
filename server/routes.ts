@@ -2599,28 +2599,38 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Standalone PDF analysis endpoint - NO DATABASE STORAGE
+  // Standalone PDF analysis endpoint - NO DATABASE STORAGE  
   app.post("/api/analyze-pdf-standalone", upload.single('pdf'), async (req: Request, res: Response) => {
     try {
-      console.log('🔍 === STANDALONE PDF ANALYSIS (NO DATABASE) ===\n');
+      console.log('🔍 === STANDALONE PDF ANALYSIS (NO DATABASE) ===');
+      console.log('Request file object:', req.file ? 'EXISTS' : 'MISSING');
+      console.log('Multer fieldname expected: pdf');
       
       if (!req.file) {
-        return res.status(400).json({ error: "No PDF file uploaded" });
+        console.log('❌ No file received by multer');
+        return res.status(400).json({ error: "No PDF file uploaded - check field name is 'pdf'" });
       }
 
-      // Check if file has buffer or path
+      console.log('📄 File details:', {
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        hasBuffer: !!req.file.buffer,
+        hasPath: !!req.file.path
+      });
+
+      // Get file data
       let pdfBuffer: Buffer;
       const fileName = req.file.originalname;
       
       if (req.file.buffer) {
         pdfBuffer = req.file.buffer;
       } else if (req.file.path) {
-        // Read from disk if buffer not available
         const fs = require('fs');
         pdfBuffer = fs.readFileSync(req.file.path);
-        // Clean up temp file
         fs.unlinkSync(req.file.path);
       } else {
+        console.log('❌ No buffer or path available');
         return res.status(400).json({ error: "PDF file data not accessible" });
       }
       
