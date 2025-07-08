@@ -87,6 +87,17 @@ export default function PDFReaderPage() {
     },
   });
 
+  // =====================================================================
+  // LOCKED: PDF READER FLOW DIRECTION CORRECTION LOGIC
+  // Date Locked: July 8, 2025
+  // 
+  // CRITICAL: This function ensures PDF reader displays identical corrected
+  // flow direction as main dashboard for upstream/downstream inspection compliance
+  //
+  // ⚠️  WARNING: DO NOT MODIFY WITHOUT EXPLICIT USER CONFIRMATION ⚠️
+  // This logic matches server-side applyAdoptionFlowDirectionCorrection
+  // =====================================================================
+  
   // Apply flow direction correction function (same as backend logic)
   const applyFlowDirectionCorrection = (upstreamNode: string, downstreamNode: string): { upstream: string, downstream: string, corrected: boolean } => {
     // Rule 1: Longer reference containing shorter reference should be corrected
@@ -186,10 +197,12 @@ export default function PDFReaderPage() {
     selectedUploadId,
     sectionDataLength: sectionData?.length,
     expandedDataLength: expandedSectionData?.length,
-    firstSection: expandedSectionData?.[0]
+    firstSection: expandedSectionData?.[0],
+    secondSection: expandedSectionData?.[1],
+    allSections: expandedSectionData?.map(s => ({ itemNo: s.itemNo, startMH: s.startMH, finishMH: s.finishMH }))
   });
 
-  // Display Section 1 data in console for user verification (with flow direction applied)
+  // Display Section 1 and Section 2 data in console for user verification (with flow direction applied)
   if (expandedSectionData?.[0] && sectionData?.[0]) {
     console.log('SECTION 1 DATA FOR USER VERIFICATION (PDF READER WITH FLOW CORRECTION):', {
       projectNumber: expandedSectionData[0].projectNo || expandedSectionData[0].projectNumber,
@@ -205,6 +218,25 @@ export default function PDFReaderPage() {
       lengthSurveyed: expandedSectionData[0].lengthSurveyed,
       observations: expandedSectionData[0].defects || expandedSectionData[0].observations,
       severityGrade: expandedSectionData[0].severityGrade
+    });
+  }
+
+  // Display Section 2 data for user verification
+  if (expandedSectionData?.[1] && sectionData?.[1]) {
+    console.log('SECTION 2 DATA FOR USER VERIFICATION (PDF READER WITH FLOW CORRECTION):', {
+      projectNumber: expandedSectionData[1].projectNo || expandedSectionData[1].projectNumber,
+      itemNo: expandedSectionData[1].itemNo,
+      inspectionNo: expandedSectionData[1].inspectionNo,
+      date: expandedSectionData[1].date,
+      time: expandedSectionData[1].time,
+      originalMH: `${sectionData[1].startMH}→${sectionData[1].finishMH}`,
+      correctedMH: `${expandedSectionData[1].startMH}→${expandedSectionData[1].finishMH}`,
+      pipeSize: expandedSectionData[1].pipeSize,
+      pipeMaterial: expandedSectionData[1].pipeMaterial,
+      totalLength: expandedSectionData[1].totalLength,
+      lengthSurveyed: expandedSectionData[1].lengthSurveyed,
+      observations: expandedSectionData[1].defects || expandedSectionData[1].observations,
+      severityGrade: expandedSectionData[1].severityGrade
     });
   }
 
