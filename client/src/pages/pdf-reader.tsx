@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FileText, Eye, Database, AlertTriangle, CheckCircle, Play, ArrowLeft } from 'lucide-react';
+import { FileText, Eye, Database, AlertTriangle, CheckCircle, Play, ArrowLeft, Home } from 'lucide-react';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
@@ -176,6 +176,16 @@ export default function PDFReaderPage() {
                   <Link href="/upload">
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Back to Upload
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  variant="outline"
+                >
+                  <Link href="/">
+                    <Home className="h-4 w-4 mr-2" />
+                    Home
                   </Link>
                 </Button>
               </div>
