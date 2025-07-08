@@ -168,12 +168,6 @@ export default function PDFReaderPage() {
                         <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-96">
                           Defects
                         </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-96">
-                          Recommendations
-                        </th>
-                        <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
-                          Adoptable
-                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -214,24 +208,10 @@ export default function PDFReaderPage() {
                               {section.defects}
                             </div>
                           </td>
-                          <td className="px-1 py-2 text-xs w-96">
-                            <div className="text-sm leading-relaxed">
-                              {section.recommendations}
-                            </div>
-                          </td>
-                          <td className="px-1 py-2 text-center text-xs w-20">
-                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                              section.adoptable === 'Yes' ? 'bg-green-100 text-green-800' :
-                              section.adoptable === 'No' ? 'bg-red-100 text-red-800' :
-                              'bg-amber-100 text-amber-800'
-                            }`}>
-                              {section.adoptable}
-                            </span>
-                          </td>
                         </tr>
                       )) : (
                         <tr>
-                          <td colSpan={10} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
                             {selectedUploadId ? 'Loading sections data...' : 'Select a PDF file to view sections'}
                           </td>
                         </tr>
