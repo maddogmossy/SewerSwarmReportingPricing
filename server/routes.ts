@@ -1285,13 +1285,37 @@ export async function registerRoutes(app: Express) {
           
           // WORKFLOW PAUSE POINT: Check if user requested pause for PDF Reader review
           if (req.body.pauseForReview === 'true') {
-            console.log(`⏸️ WORKFLOW PAUSED: Extracted ${sections.length} sections for PDF Reader review`);
+            console.log(`⏸️ WORKFLOW PAUSED: Extracting detailed section data for PDF Reader review`);
             
-            // Store extracted sections temporarily without classification
+            // Enhance sections with detailed inspection data for review
+            const enhancedSections = sections.map(section => {
+              const extractedData = extractSectionInspectionData(pdfData.text, section.itemNo);
+              return {
+                ...section,
+                date: extractedData.date || section.date || "no data recorded",
+                time: extractedData.time || section.time || "no data recorded",
+                pipeSize: extractedData.pipeSize || section.pipeSize || "no data recorded",
+                pipeMaterial: extractedData.pipeMaterial || section.pipeMaterial || "no data recorded",
+                totalLength: extractedData.totalLength || section.totalLength || "no data recorded",
+                lengthSurveyed: extractedData.lengthSurveyed || section.lengthSurveyed || "no data recorded",
+                startMHDepth: extractedData.startMHDepth || section.startMHDepth || "no data recorded",
+                finishMHDepth: extractedData.finishMHDepth || section.finishMHDepth || "no data recorded",
+                defects: extractedData.defects || section.defects || "no data recorded",
+                recommendations: extractedData.recommendations || section.recommendations || "no data recorded",
+                severityGrade: extractedData.severityGrade || section.severityGrade || "0",
+                adoptable: extractedData.adoptable || section.adoptable || "Yes",
+                cost: extractedData.cost || section.cost || "no data recorded",
+                projectNumber: "ECL NEWARK" // Add project number for display
+              };
+            });
+            
+            console.log(`✓ Enhanced ${enhancedSections.length} sections with detailed inspection data`);
+            
+            // Store enhanced sections temporarily for review
             await db.update(fileUploads)
               .set({ 
                 status: "extracted_pending_review",
-                extractedData: JSON.stringify(sections) // Store ALL extracted sections for review
+                extractedData: JSON.stringify(enhancedSections) // Store enhanced sections for review
               })
               .where(eq(fileUploads.id, fileUpload.id));
             
