@@ -431,6 +431,79 @@ function extractInspectionNumberForSection(pdfText: string, itemNo: number): str
 }
 
 // Function to extract ALL sections from PDF text - USING YOUR HIGHLIGHTED STRUCTURE
+// Function to extract authentic inspection data for each section
+function extractSectionInspectionData(pdfText: string, sectionNum: number) {
+  console.log(`🔍 Extracting inspection data for Section ${sectionNum}`);
+  
+  // Look for section header with inspection details
+  const sectionPattern = new RegExp(`Section Item ${sectionNum}:[\\s\\S]*?(?=Section Item ${sectionNum + 1}:|$)`, 'i');
+  const sectionMatch = pdfText.match(sectionPattern);
+  
+  if (!sectionMatch) {
+    console.log(`❌ No section content found for Section ${sectionNum}`);
+    return {};
+  }
+  
+  const sectionContent = sectionMatch[0];
+  console.log(`📄 Found section content (${sectionContent.length} chars) for Section ${sectionNum}`);
+  
+  // Extract date - look for patterns like "14/02/25" or "Date: 14/02/25"
+  const datePattern = /(?:Date[:\s]*)?(\d{2}\/\d{2}\/\d{2,4})/i;
+  const dateMatch = sectionContent.match(datePattern);
+  const date = dateMatch ? dateMatch[1] : null;
+  
+  // Extract time - look for patterns like "11:22" or "Time: 11:22"
+  const timePattern = /(?:Time[:\s]*)?(\d{1,2}:\d{2})/i;
+  const timeMatch = sectionContent.match(timePattern);
+  const time = timeMatch ? timeMatch[1] : null;
+  
+  // Extract pipe size - look for patterns like "150mm" or "Pipe Size: 150mm"
+  const pipeSizePattern = /(?:Pipe\s+Size[:\s]*)?(\d+)mm?/i;
+  const pipeSizeMatch = sectionContent.match(pipeSizePattern);
+  const pipeSize = pipeSizeMatch ? pipeSizeMatch[1] : null;
+  
+  // Extract pipe material - look for materials like "Vitrified clay", "Concrete", "PVC"
+  const materialPattern = /(?:Material[:\s]*)?(?:Pipe\s+Material[:\s]*)?(Vitrified\s+clay|Concrete|PVC|Polyvinyl\s+chloride|Clay|Steel|Cast\s+iron)/i;
+  const materialMatch = sectionContent.match(materialPattern);
+  const pipeMaterial = materialMatch ? materialMatch[1] : null;
+  
+  // Extract total length - look for patterns like "14.27m"
+  const lengthPattern = /(?:Total\s+Length[:\s]*)?(\d+\.?\d*m)/i;
+  const lengthMatch = sectionContent.match(lengthPattern);
+  const totalLength = lengthMatch ? lengthMatch[1] : null;
+  
+  // Extract MH depths - look for patterns like "1.2m", "2.3m"
+  const depthPattern = /(?:Depth[:\s]*)?(\d+\.?\d*m)/gi;
+  const depthMatches = sectionContent.match(depthPattern) || [];
+  const startMHDepth = depthMatches[0] || null;
+  const finishMHDepth = depthMatches[1] || null;
+  
+  // Extract defects/observations - look for observation codes like "WL", "LL", "REM"
+  const observationPattern = /(?:WL|LL|REM|MCPP|REST|BRF|JN|CN)\s+[^,\n]*/gi;
+  const observations = sectionContent.match(observationPattern) || [];
+  const defects = observations.length > 0 ? observations.join(', ') : null;
+  
+  console.log(`✓ Extracted data for Section ${sectionNum}:`, {
+    date, time, pipeSize, pipeMaterial, totalLength, startMHDepth, finishMHDepth, defects
+  });
+  
+  return {
+    date,
+    time,
+    pipeSize,
+    pipeMaterial,
+    totalLength,
+    lengthSurveyed: totalLength, // Usually same as total length
+    startMHDepth,
+    finishMHDepth,
+    defects,
+    recommendations: defects ? "We recommend detailed inspection and appropriate remedial action" : "No action required pipe observed in acceptable structural and service condition",
+    severityGrade: defects ? "1" : "0",
+    adoptable: defects ? "Conditional" : "Yes",
+    cost: defects ? "Configure sector pricing" : "Complete"
+  };
+}
+
 async function extractAdoptionSectionsFromPDF(pdfText: string, fileUploadId: number) {
   console.log('Processing adoption sector PDF with authentic data extraction...');
   
@@ -1069,26 +1142,29 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
         continue;
       }
 
+      // Extract authentic data from PDF section content
+      const extractedData = extractSectionInspectionData(pdfText, sectionNum);
+      
       sections.push({
         fileUploadId: fileUploadId,
         itemNo: sectionNum,
         inspectionNo: 1,
-        projectNo: "ECL NEWARK", // Add project number as requested
-        date: "08/03/2023",
-        time: "12:17",
+        projectNo: "ECL NEWARK", 
+        date: extractedData.date || "no data recorded",
+        time: extractedData.time || "no data recorded", 
         startMH: upstreamNode,
         finishMH: downstreamNode,
-        startMHDepth: 'depth not recorded',
-        finishMHDepth: 'depth not recorded',
-        pipeSize: '150', // Standard from inspection data
-        pipeMaterial: material,
-        totalLength: totalLength,
-        lengthSurveyed: inspectedLength,
-        defects: "No action required pipe observed in acceptable structural and service condition",
-        recommendations: "No action required pipe observed in acceptable structural and service condition",
-        severityGrade: "0",
-        adoptable: "Yes",
-        cost: "Complete"
+        startMHDepth: extractedData.startMHDepth || "no data recorded",
+        finishMHDepth: extractedData.finishMHDepth || "no data recorded",
+        pipeSize: extractedData.pipeSize || "no data recorded",
+        pipeMaterial: extractedData.pipeMaterial || material,
+        totalLength: extractedData.totalLength || totalLength,
+        lengthSurveyed: extractedData.lengthSurveyed || inspectedLength,
+        defects: extractedData.defects || "no data recorded",
+        recommendations: extractedData.recommendations || "no data recorded",
+        severityGrade: extractedData.severityGrade || "0",
+        adoptable: extractedData.adoptable || "Yes",
+        cost: extractedData.cost || "no data recorded"
       });
     }
   }
