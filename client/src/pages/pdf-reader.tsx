@@ -106,6 +106,25 @@ export default function PDFReaderPage() {
     firstSection: expandedSectionData?.[0]
   });
 
+  // Display Section 1 data in console for user verification
+  if (expandedSectionData?.[0]) {
+    console.log('SECTION 1 DATA FOR USER VERIFICATION:', {
+      projectNumber: expandedSectionData[0].projectNo || expandedSectionData[0].projectNumber,
+      itemNo: expandedSectionData[0].itemNo,
+      inspectionNo: expandedSectionData[0].inspectionNo,
+      date: expandedSectionData[0].date,
+      time: expandedSectionData[0].time,
+      startMH: expandedSectionData[0].startMH,
+      finishMH: expandedSectionData[0].finishMH,
+      pipeSize: expandedSectionData[0].pipeSize,
+      pipeMaterial: expandedSectionData[0].pipeMaterial,
+      totalLength: expandedSectionData[0].totalLength,
+      lengthSurveyed: expandedSectionData[0].lengthSurveyed,
+      defects: expandedSectionData[0].defects,
+      severityGrade: expandedSectionData[0].severityGrade
+    });
+  }
+
   return (
     <div className="container mx-auto p-6 max-w-7xl">
       <div className="mb-6">
