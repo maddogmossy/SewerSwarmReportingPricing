@@ -3350,6 +3350,24 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Fix upload status endpoint
+  app.patch("/api/uploads/:id", async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id || "test-user";
+      const uploadId = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      await db.update(fileUploads)
+        .set({ status })
+        .where(and(eq(fileUploads.id, uploadId), eq(fileUploads.userId, userId)));
+      
+      res.json({ success: true, message: `Upload status updated to ${status}` });
+    } catch (error: any) {
+      console.error("Error updating upload status:", error);
+      res.status(500).json({ error: "Failed to update upload status" });
+    }
+  });
+
   // Delete project folder endpoint
   app.delete("/api/folders/:id", async (req: Request, res: Response) => {
     try {
