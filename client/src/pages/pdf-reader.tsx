@@ -287,7 +287,7 @@ export default function PDFReaderPage() {
                             {section.inspectionNo}
                           </td>
                           <td className="px-1 py-2 text-center text-xs w-20">
-                            {section.projectNumber || 'N/A'}
+                            {section.projectNo || 'N/A'}
                           </td>
                           <td className="px-1 py-2 text-center text-xs w-20">
                             {section.date || 'N/A'}

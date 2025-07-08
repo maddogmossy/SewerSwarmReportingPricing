@@ -1073,6 +1073,7 @@ async function extractSectionsFromPDF(pdfText: string, fileUploadId: number) {
         fileUploadId: fileUploadId,
         itemNo: sectionNum,
         inspectionNo: 1,
+        projectNo: "ECL NEWARK", // Add project number as requested
         date: "08/03/2023",
         time: "12:17",
         startMH: upstreamNode,
@@ -1214,7 +1215,7 @@ export async function registerRoutes(app: Express) {
             await db.update(fileUploads)
               .set({ 
                 status: "extracted_pending_review",
-                extractedData: JSON.stringify(sections.slice(0, 10)) // Store first 10 sections for preview
+                extractedData: JSON.stringify(sections) // Store ALL extracted sections for review
               })
               .where(eq(fileUploads.id, fileUpload.id));
             
