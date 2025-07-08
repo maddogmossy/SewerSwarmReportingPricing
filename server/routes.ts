@@ -1997,11 +1997,16 @@ export async function registerRoutes(app: Express) {
         return res.status(404).json({ error: "File upload not found" });
       }
       
-      const filePath = `uploads/${fileUpload.fileName}`;
+      // Use the stored file path from database
+      const filePath = fileUpload.filePath || `uploads/${fileUpload.fileName}`;
       
       // Check if file exists
       if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ error: "PDF file not found on disk" });
+        return res.status(404).json({ 
+          error: "PDF file not found on disk", 
+          expectedPath: filePath,
+          fileName: fileUpload.fileName 
+        });
       }
       
       // Read and parse PDF
