@@ -1980,6 +1980,129 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // PDF Analysis endpoint for PDF Reader page
+  app.post("/api/analyze-pdf", async (req: Request, res: Response) => {
+    try {
+      const { uploadId } = req.body;
+      
+      if (!uploadId) {
+        return res.status(400).json({ error: "Upload ID is required" });
+      }
+      
+      console.log(`\n🔍 === PDF ANALYSIS FOR UPLOAD ${uploadId} ===`);
+      
+      // Get file upload record
+      const [fileUpload] = await db.select().from(fileUploads).where(eq(fileUploads.id, uploadId));
+      if (!fileUpload) {
+        return res.status(404).json({ error: "File upload not found" });
+      }
+      
+      const filePath = `uploads/${fileUpload.fileName}`;
+      
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "PDF file not found on disk" });
+      }
+      
+      // Read and parse PDF
+      const pdfBuffer = fs.readFileSync(filePath);
+      const pdfData = await pdfParse(pdfBuffer);
+      const pdfText = pdfData.text;
+      
+      console.log(`📄 File: ${fileUpload.fileName}`);
+      console.log(`📊 Pages: ${pdfData.numpages}, Characters: ${pdfText.length}`);
+      
+      // Initialize analysis results
+      const analysis = {
+        fileName: fileUpload.fileName,
+        fileSize: pdfBuffer.length,
+        totalPages: pdfData.numpages,
+        totalCharacters: pdfText.length,
+        extractedSections: [] as any[],
+        rawPDFText: pdfText,
+        sectionPatterns: [] as string[],
+        manholeReferences: [] as string[],
+        pipeSpecifications: [] as string[],
+        defectCodes: [] as string[],
+        inspectionDates: [] as string[],
+        errors: [] as string[],
+        warnings: [] as string[]
+      };
+      
+      // Extract section patterns
+      const sectionPatterns = pdfText.match(/Section Item \d+:[^\n]*/g) || [];
+      analysis.sectionPatterns = sectionPatterns.slice(0, 50); // Limit to first 50
+      
+      // Extract manhole references
+      const manholeMatches = pdfText.match(/[A-Z0-9]+[-\/][A-Z0-9]+/g) || [];
+      analysis.manholeReferences = [...new Set(manholeMatches)].slice(0, 100);
+      
+      // Extract pipe specifications
+      const pipeSizeMatches = pdfText.match(/\b\d{2,4}mm\b/g) || [];
+      const materialMatches = pdfText.match(/\b(Vitrified clay|Concrete|PVC|Polyvinyl chloride|Clay|Cast iron)\b/g) || [];
+      analysis.pipeSpecifications = [
+        ...new Set([...pipeSizeMatches, ...materialMatches])
+      ].slice(0, 50);
+      
+      // Extract defect codes
+      const defectMatches = pdfText.match(/\b(DER|FC|CR|JDL|JDM|OJM|OJL|DEF|DES|DEC|RI|WL|OB|S\/A)\b/g) || [];
+      analysis.defectCodes = [...new Set(defectMatches)];
+      
+      // Extract inspection dates
+      const dateMatches = pdfText.match(/\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/g) || [];
+      analysis.inspectionDates = [...new Set(dateMatches)];
+      
+      // Try to extract sections using existing logic
+      console.log(`🔍 Attempting section extraction...`);
+      
+      try {
+        // Use the existing adoption extraction function
+        const sections = await extractAdoptionSectionsFromPDF(pdfText, uploadId);
+        
+        if (sections && sections.length > 0) {
+          analysis.extractedSections = sections.slice(0, 20); // Limit to first 20 for display
+          console.log(`✅ Successfully extracted ${sections.length} sections`);
+        } else {
+          analysis.warnings.push("No sections could be extracted using current extraction logic");
+          console.log(`⚠️ No sections extracted`);
+        }
+      } catch (extractionError: any) {
+        analysis.errors.push(`Section extraction failed: ${extractionError.message}`);
+        console.error(`❌ Extraction error:`, extractionError);
+      }
+      
+      // Validate extraction results
+      if (analysis.sectionPatterns.length === 0) {
+        analysis.errors.push("No section patterns found in PDF text");
+      }
+      
+      if (analysis.manholeReferences.length === 0) {
+        analysis.errors.push("No manhole references found in PDF text");
+      }
+      
+      if (analysis.pipeSpecifications.length === 0) {
+        analysis.warnings.push("No pipe specifications found in PDF text");
+      }
+      
+      // Check for missing Section 8 (known issue)
+      const hasSection8 = analysis.sectionPatterns.some(p => p.includes('Section Item 8:'));
+      if (!hasSection8 && analysis.sectionPatterns.length > 7) {
+        analysis.warnings.push("Section 8 appears to be missing from PDF structure (known issue)");
+      }
+      
+      console.log(`📋 Analysis complete: ${analysis.errors.length} errors, ${analysis.warnings.length} warnings`);
+      
+      res.json(analysis);
+      
+    } catch (error: any) {
+      console.error("Error analyzing PDF:", error);
+      res.status(500).json({ 
+        error: "Failed to analyze PDF",
+        details: error.message 
+      });
+    }
+  });
+
   app.post("/api/debug-pdf-extraction", async (req: Request, res: Response) => {
     try {
       const { uploadId } = req.body;
