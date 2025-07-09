@@ -594,16 +594,39 @@ export default function RepairPricing() {
     mutationFn: ({ id, scope }: { id: number; scope: 'current' | 'all' }) => 
       apiRequest('DELETE', `/api/repair-pricing/${id}?scope=${scope}&currentSector=${sector}`),
     onSuccess: (_, variables) => {
+      // Close dialog first
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
+      setDeleteScope('current');
+      
+      // Comprehensive cache invalidation to ensure complete removal
+      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${sector}`] });
+      
       if (variables.scope === 'all') {
         // Invalidate all sector queries when deleting from all sectors
         SECTORS.forEach(s => {
           queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${s.id}`] });
+          queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${s.id}`] });
         });
-        toast({ title: "Pricing deleted from all sectors successfully" });
+        queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
+        toast({ 
+          title: "✅ Complete removal successful", 
+          description: "Pricing deleted from all sectors and all traces cleared"
+        });
       } else {
-        queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
-        toast({ title: "Pricing deleted from current sector successfully" });
+        toast({ 
+          title: "✅ Complete removal successful", 
+          description: "Pricing deleted from current sector and all traces cleared"
+        });
       }
+      
+      // Force complete cache clearing and page refresh
+      queryClient.clear();
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     },
     onError: (error: any) => {
       toast({ 
@@ -916,10 +939,9 @@ export default function RepairPricing() {
 
   const confirmDelete = () => {
     if (itemToDelete) {
+      console.log('Confirming delete for item:', itemToDelete.id, 'scope:', deleteScope);
       deletePricing.mutate({ id: itemToDelete.id, scope: deleteScope });
-      setDeleteDialogOpen(false);
-      setItemToDelete(null);
-      setDeleteScope('current'); // Reset to default
+      // Dialog state will be handled in the mutation's onSuccess callback
     }
   };
 
