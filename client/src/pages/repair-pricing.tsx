@@ -637,6 +637,35 @@ export default function RepairPricing() {
     }
   });
 
+  // Clear all pricing configurations mutation
+  const clearAllPricing = useMutation({
+    mutationFn: () => apiRequest('DELETE', `/api/repair-pricing-clear/${sector}`),
+    onSuccess: (data: any) => {
+      toast({ 
+        title: "✅ All configurations cleared", 
+        description: `Removed ${data.deletedCount} old pricing configurations. Ready to add new comprehensive pricing structure.`
+      });
+      
+      // Comprehensive cache invalidation
+      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${sector}`] });
+      
+      // Force refresh
+      queryClient.clear();
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Error clearing configurations", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    }
+  });
+
 
 
   const resetForm = () => {
@@ -974,18 +1003,36 @@ export default function RepairPricing() {
 
           </div>
           
-          <Button 
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => { 
-              console.log('Add Pricing button clicked');
-              resetForm(); 
-              setEditingItem(null); 
-              setIsAddDialogOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Pricing
-          </Button>
+          <div className="flex gap-2">
+            {pricingData && pricingData.length > 0 && (
+              <Button 
+                variant="outline"
+                className="text-red-600 border-red-600 hover:bg-red-50"
+                onClick={() => {
+                  if (confirm(`Clear all ${pricingData.length} old pricing configurations for ${currentSector.name} sector? This will allow you to add new configurations using the comprehensive 9-option pricing structure.`)) {
+                    clearAllPricing.mutate();
+                  }
+                }}
+                disabled={clearAllPricing.isPending}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {clearAllPricing.isPending ? 'Clearing...' : 'Clear All Old Configs'}
+              </Button>
+            )}
+            
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => { 
+                console.log('Add Pricing button clicked');
+                resetForm(); 
+                setEditingItem(null); 
+                setIsAddDialogOpen(true);
+              }}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Pricing
+            </Button>
+          </div>
         </div>
 
         {/* Sector Header */}

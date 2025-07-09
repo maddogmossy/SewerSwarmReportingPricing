@@ -199,6 +199,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Add endpoint to clear ALL old pricing configurations
+  app.delete('/api/repair-pricing-clear/:sector', (req, res) => {
+    const { sector } = req.params;
+    
+    console.log(`Clearing all pricing configurations for sector: ${sector}`);
+    
+    const initialLength = pricingStorage.length;
+    pricingStorage = pricingStorage.filter(item => item.sector !== sector);
+    const deletedCount = initialLength - pricingStorage.length;
+    
+    res.json({ 
+      success: true, 
+      message: `Cleared ${deletedCount} old pricing configurations for ${sector} sector`,
+      sector: sector,
+      deletedCount: deletedCount
+    });
+  });
+
   // REV_V1: Critical endpoints for dashboard data display
   app.get('/api/uploads/:id/sections', (req, res) => {
     // Return REV_V1 authentic OBSERVATIONS data from E.C.L BOWBRIDGE LANE NEWARK
