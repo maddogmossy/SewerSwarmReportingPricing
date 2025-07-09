@@ -103,23 +103,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get('/api/repair-pricing/:sector', (req, res) => {
-    // REV_V1: Return sample pricing data
+    // REV_V1: Return sample pricing data including 300mm patch repair
     res.json([
       {
         id: 1,
         sector: req.params.sector,
+        workCategoryId: 1,
         workCategory: "CCTV Survey",
         pipeSize: "150mm",
         costPerMetre: 15.50,
+        cost: 15.50,
         description: "Standard CCTV inspection"
       },
       {
         id: 2,
         sector: req.params.sector,
+        workCategoryId: 2,
         workCategory: "High Pressure Jetting",
         pipeSize: "150mm", 
         costPerMetre: 25.00,
+        cost: 25.00,
         description: "Water jetting cleaning"
+      },
+      {
+        id: 3,
+        sector: req.params.sector,
+        workCategoryId: 3,
+        workCategory: "Patch Repair",
+        pipeSize: "300mm",
+        costPerMetre: 85.00,
+        cost: 85.00,
+        description: "300mm patch repair excavation and reinstatement"
       }
     ]);
   });
