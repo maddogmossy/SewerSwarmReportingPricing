@@ -235,7 +235,7 @@ export default function RepairPricing() {
   });
 
   // Fetch existing pricing for this sector
-  const { data: pricingData = [], refetch } = useQuery({
+  const { data: pricingData = [], refetch, isLoading: pricingLoading } = useQuery({
     queryKey: [`/api/repair-pricing/${sector}`],
     enabled: !!sector,
   });
@@ -967,7 +967,6 @@ export default function RepairPricing() {
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           {workCategories.map((category: any) => {
             const categoryPricing = groupedData[category.name] || [];
-            console.log(`Badge render for ${category.name}: length=${categoryPricing.length}, hasItems=${categoryPricing.length > 0}`);
             
             return (
               <Card key={category.id} data-category={category.name.toLowerCase()}>
@@ -977,8 +976,8 @@ export default function RepairPricing() {
                       <Wrench className="h-5 w-5" />
                       {category.name}
                     </CardTitle>
-                    <Badge variant={categoryPricing.length > 0 ? "default" : "secondary"}>
-                      {categoryPricing.length} config{categoryPricing.length !== 1 ? 's' : ''}
+                    <Badge variant={pricingLoading ? "secondary" : (categoryPricing.length > 0 ? "default" : "secondary")}>
+                      {pricingLoading ? "Loading..." : `${categoryPricing.length} config${categoryPricing.length !== 1 ? 's' : ''}`}
                     </Badge>
                   </div>
                   <p className="text-sm text-slate-600">{category.description}</p>
