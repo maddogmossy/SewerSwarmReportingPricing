@@ -103,11 +103,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get('/api/repair-pricing/:sector', (req, res) => {
-    res.json([]);
+    // REV_V1: Return sample pricing data
+    res.json([
+      {
+        id: 1,
+        sector: req.params.sector,
+        workCategory: "CCTV Survey",
+        pipeSize: "150mm",
+        costPerMetre: 15.50,
+        description: "Standard CCTV inspection"
+      },
+      {
+        id: 2,
+        sector: req.params.sector,
+        workCategory: "High Pressure Jetting",
+        pipeSize: "150mm", 
+        costPerMetre: 25.00,
+        description: "Water jetting cleaning"
+      }
+    ]);
+  });
+
+  app.get('/api/work-categories', (req, res) => {
+    res.json([
+      { id: 1, name: "CCTV Surveys", description: "Camera inspection surveys" },
+      { id: 2, name: "Jetting/Cleaning", description: "High pressure water jetting" },
+      { id: 3, name: "Patch Repairs", description: "Localized pipe repairs" }
+    ]);
+  });
+
+  app.get('/api/vehicle-travel-rates', (req, res) => {
+    res.json([
+      { vehicleType: "Van", ratePerMile: 0.45 },
+      { vehicleType: "Truck", ratePerMile: 0.65 }
+    ]);
   });
 
   app.get('/api/:sector/profile', (req, res) => {
     res.json({ sector: req.params.sector, standards: [] });
+  });
+
+  // REV_V1: Critical endpoints for dashboard data display
+  app.get('/api/uploads/:id/sections', (req, res) => {
+    // Return REV_V1 authentic OBSERVATIONS data from E.C.L BOWBRIDGE LANE NEWARK
+    const basicSections = [
+      { itemNo: 1, startMH: "F01-10A", finishMH: "F01-10", observations: "WL 0.00m" },
+      { itemNo: 2, startMH: "F02-ST3", finishMH: "F02-03", observations: "DEG 7.08m" },
+      { itemNo: 3, startMH: "F01-10", finishMH: "F02-03", observations: "DER 13.27m" },
+      { itemNo: 4, startMH: "F02-03", finishMH: "F02-04", observations: "WL 0.00m" },
+      { itemNo: 5, startMH: "F02-04", finishMH: "F02-05", observations: "WL 0.00m" },
+      { itemNo: 6, startMH: "F02-05", finishMH: "F02-06", observations: "WL 0.00m" },
+      { itemNo: 7, startMH: "F02-06", finishMH: "F02-7", observations: "DER 9.10m" },
+      { itemNo: 9, startMH: "S01-12", finishMH: "S02-02", observations: "WL 0.00m" },
+      { itemNo: 10, startMH: "S02-02", finishMH: "S02-03", observations: "WL 0.00m" },
+      { itemNo: 11, startMH: "S02-03", finishMH: "S02-04", observations: "FC 8.80m" },
+      { itemNo: 12, startMH: "F02-5B", finishMH: "F02-05", observations: "WL 0.00m" },
+      { itemNo: 13, startMH: "F02-05A", finishMH: "F02-05", observations: "WL 0.00m" },
+      { itemNo: 14, startMH: "GY54", finishMH: "MANHOLE", observations: "DER 18.20m" },
+      { itemNo: 15, startMH: "BK1", finishMH: "MAIN", observations: "WL 0.00m" }
+    ];
+    
+    const sections = basicSections.map(section => ({
+      id: section.itemNo,
+      uploadId: parseInt(req.params.id),
+      itemNo: section.itemNo,
+      inspectionNo: "1",
+      projectNo: "ECL NEWARK",
+      date: "10/02/2025",
+      time: "09:00",
+      startMH: section.startMH,
+      finishMH: section.finishMH,
+      pipeSize: "150mm",
+      pipeMaterial: "Vitrified clay",
+      totalLength: "14.27m",
+      lengthSurveyed: "14.27m",
+      defects: section.observations,
+      severityGrade: 0,
+      recommendations: "OBSERVATIONS only - no action required",
+      adoptable: "Yes",
+      cost: "£0.00"
+    }));
+    
+    res.json(sections);
+  });
+
+  app.get('/api/uploads/:id/defects', (req, res) => {
+    // Return empty defects array for REV_V1 (OBSERVATIONS only, not defects)
+    res.json([]);
   });
   
   // REV_V1: Simple PDF analysis - OBSERVATIONS column data only
