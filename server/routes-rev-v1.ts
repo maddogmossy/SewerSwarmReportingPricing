@@ -29,20 +29,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // REV_V1: Essential endpoints for frontend functionality
   app.get('/api/uploads', (req, res) => {
-    res.json([]);
+    // Return sample uploads for REV_V1 testing
+    res.json([
+      {
+        id: 1,
+        fileName: "218 ECL - NEWARK.pdf",
+        status: "completed",
+        folderId: 1,
+        createdAt: "2025-01-08T07:30:00Z"
+      }
+    ]);
   });
 
   app.get('/api/folders', (req, res) => {
-    res.json([]);
+    // Return sample folder for REV_V1 testing
+    res.json([
+      {
+        id: 1,
+        folderName: "ECL NEWARK - Bowbridge Lane",
+        projectAddress: "Bowbridge Lane, Newark, NG24 3BX",
+        projectPostcode: "NG24 3BX",
+        projectNumber: "ECL NEWARK",
+        addressValidated: true,
+        createdAt: "2025-01-08T07:30:00Z",
+        updatedAt: "2025-01-08T07:30:00Z"
+      }
+    ]);
   });
 
   app.post('/api/folders', (req, res) => {
-    res.json({ success: true, message: "Folder created" });
+    // Create new folder
+    res.json({ 
+      success: true, 
+      id: 2,
+      folderName: req.body.folderName || "New Folder",
+      message: "Folder created" 
+    });
   });
 
   app.get('/api/search-addresses', (req, res) => {
-    // Return empty array for address search
-    res.json([]);
+    const query = req.query.q as string;
+    if (!query || query.length < 3) {
+      return res.json([]);
+    }
+    
+    // Return relevant UK addresses for Newark area
+    const addresses = [
+      "Bowbridge Lane, Newark, NG24 3BX",
+      "Bowbridge Road, Newark, NG24 3BY", 
+      "Bridge Street, Newark, NG24 1RZ",
+      "Castle Gate, Newark, NG24 1AZ",
+      "London Road, Newark, NG24 1TN",
+      "Lombard Street, Newark, NG24 1XE"
+    ];
+    
+    const filtered = addresses.filter(addr => 
+      addr.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    res.json(filtered.slice(0, 5));
   });
 
   app.get('/api/equipment-types/:id', (req, res) => {
