@@ -192,7 +192,14 @@ export default function RepairPricing() {
     name: '',
     description: '',
     icon: 'Wrench',
-    color: 'text-blue-600'
+    color: 'text-blue-600',
+    pricingStructure: {
+      meterage: false,
+      numberPerShift: false,
+      metersPerShift: false,
+      dayRate: false,
+      hourlyRate: false
+    }
   });
   const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
   const [tempDescription, setTempDescription] = useState("");
@@ -513,6 +520,36 @@ export default function RepairPricing() {
     }
   });
 
+  // Create category mutation
+  const createCategoryMutation = useMutation({
+    mutationFn: (data: any) => apiRequest('POST', '/api/work-categories', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
+      toast({ title: "Category created successfully" });
+      setShowAddCategory(false);
+      setNewCategory({
+        name: '',
+        description: '',
+        icon: 'Wrench',
+        color: 'text-blue-600',
+        pricingStructure: {
+          meterage: false,
+          numberPerShift: false,
+          metersPerShift: false,
+          dayRate: false,
+          hourlyRate: false
+        }
+      });
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Error creating category", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    }
+  });
+
   // Update pricing mutation
   const updatePricing = useMutation({
     mutationFn: ({ id, ...data }: any) => apiRequest('PUT', `/api/repair-pricing/${id}`, data),
@@ -569,34 +606,7 @@ export default function RepairPricing() {
     }
   });
 
-  // Create new category mutation
-  const createCategoryMutation = useMutation({
-    mutationFn: async (categoryData: any) => {
-      return await apiRequest('POST', '/api/work-categories', categoryData);
-    },
-    onSuccess: (newCategory) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
-      setShowAddCategory(false);
-      setFormData({...formData, workCategoryId: newCategory.id.toString()});
-      setNewCategory({
-        name: '',
-        description: '',
-        icon: 'Wrench',
-        color: 'text-blue-600'
-      });
-      toast({
-        title: "Success",
-        description: "New work category created successfully"
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create work category",
-        variant: "destructive",
-      });
-    },
-  });
+
 
   const resetForm = () => {
     setFormData({
@@ -2207,7 +2217,7 @@ export default function RepairPricing() {
 
         {/* New Category Dialog */}
         <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>Create New Work Category</DialogTitle>
             </DialogHeader>
@@ -2273,6 +2283,100 @@ export default function RepairPricing() {
                 </Select>
               </div>
               
+              <div>
+                <Label className="text-sm font-medium text-slate-700">Pricing Structure Options</Label>
+                <p className="text-xs text-slate-500 mb-3">Select the pricing options you need for this category:</p>
+                <div className="space-y-2 p-3 border border-slate-200 rounded-lg bg-slate-50">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="meterage"
+                      checked={newCategory.pricingStructure.meterage}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          meterage: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="meterage" className="text-sm">Meterage (£ per meter)</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="numberPerShift"
+                      checked={newCategory.pricingStructure.numberPerShift}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          numberPerShift: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="numberPerShift" className="text-sm">Number per shift</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="metersPerShift"
+                      checked={newCategory.pricingStructure.metersPerShift}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          metersPerShift: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="metersPerShift" className="text-sm">Meters per shift</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="dayRate"
+                      checked={newCategory.pricingStructure.dayRate}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          dayRate: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="hourlyRate"
+                      checked={newCategory.pricingStructure.hourlyRate}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          hourlyRate: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500 mt-2">
+                  You can select multiple options to create flexible pricing configurations.
+                </p>
+              </div>
+              
               <div className="flex gap-2 pt-4">
                 <Button 
                   onClick={() => {
@@ -2283,7 +2387,8 @@ export default function RepairPricing() {
                         icon: newCategory.icon,
                         color: newCategory.color,
                         sortOrder: 99,
-                        implemented: true
+                        implemented: true,
+                        pricingStructure: newCategory.pricingStructure
                       });
                     }
                   }}
@@ -2293,7 +2398,22 @@ export default function RepairPricing() {
                   <Plus className="h-4 w-4" />
                   {createCategoryMutation.isPending ? 'Creating...' : 'Create Category'}
                 </Button>
-                <Button variant="outline" onClick={() => setShowAddCategory(false)}>
+                <Button variant="outline" onClick={() => {
+                  setShowAddCategory(false);
+                  setNewCategory({
+                    name: '',
+                    description: '',
+                    icon: 'Wrench',
+                    color: 'text-blue-600',
+                    pricingStructure: {
+                      meterage: false,
+                      numberPerShift: false,
+                      metersPerShift: false,
+                      dayRate: false,
+                      hourlyRate: false
+                    }
+                  });
+                }}>
                   Cancel
                 </Button>
               </div>
