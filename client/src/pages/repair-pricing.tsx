@@ -198,7 +198,9 @@ export default function RepairPricing() {
       numberPerShift: false,
       metersPerShift: false,
       dayRate: false,
-      hourlyRate: false
+      hourlyRate: false,
+      runsPerShift: false,
+      setupRate: false
     }
   });
   const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
@@ -537,7 +539,9 @@ export default function RepairPricing() {
           numberPerShift: false,
           metersPerShift: false,
           dayRate: false,
-          hourlyRate: false
+          hourlyRate: false,
+          runsPerShift: false,
+          setupRate: false
         }
       });
     },
@@ -2279,6 +2283,17 @@ export default function RepairPricing() {
                     <SelectItem value="text-purple-600">🟣 Purple</SelectItem>
                     <SelectItem value="text-teal-600">🟡 Teal</SelectItem>
                     <SelectItem value="text-amber-600">🟤 Amber</SelectItem>
+                    <SelectItem value="text-pink-600">🩷 Pink</SelectItem>
+                    <SelectItem value="text-cyan-600">🔷 Cyan</SelectItem>
+                    <SelectItem value="text-indigo-600">🟦 Indigo</SelectItem>
+                    <SelectItem value="text-lime-600">🟢 Lime</SelectItem>
+                    <SelectItem value="text-emerald-600">💚 Emerald</SelectItem>
+                    <SelectItem value="text-rose-600">🌹 Rose</SelectItem>
+                    <SelectItem value="text-violet-600">🟣 Violet</SelectItem>
+                    <SelectItem value="text-fuchsia-600">💜 Fuchsia</SelectItem>
+                    <SelectItem value="text-sky-600">🔷 Sky</SelectItem>
+                    <SelectItem value="text-slate-600">⚫ Slate</SelectItem>
+                    <SelectItem value="text-gray-600">⚪ Gray</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -2371,6 +2386,40 @@ export default function RepairPricing() {
                     />
                     <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
                   </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="runsPerShift"
+                      checked={newCategory.pricingStructure.runsPerShift}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          runsPerShift: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="runsPerShift" className="text-sm">Number of runs per shift</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="setupRate"
+                      checked={newCategory.pricingStructure.setupRate}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          setupRate: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="setupRate" className="text-sm">Set up rate (£ per setup)</Label>
+                  </div>
                 </div>
                 <p className="text-xs text-slate-500 mt-2">
                   You can select multiple options to create flexible pricing configurations.
@@ -2410,7 +2459,9 @@ export default function RepairPricing() {
                       numberPerShift: false,
                       metersPerShift: false,
                       dayRate: false,
-                      hourlyRate: false
+                      hourlyRate: false,
+                      runsPerShift: false,
+                      setupRate: false
                     }
                   });
                 }}>
