@@ -907,10 +907,6 @@ export default function RepairPricing() {
 
   const groupedData = workCategories.reduce((acc: any, category: any) => {
     acc[category.name] = pricingData.filter((item: any) => item.workCategoryId === category.id);
-    console.log(`Grouping ${category.name} (ID: ${category.id}):`, 
-      `Found ${acc[category.name].length} items`,
-      `Pricing data:`, pricingData.map(p => `ID:${p.workCategoryId}`).join(',')
-    );
     return acc;
   }, {});
 
