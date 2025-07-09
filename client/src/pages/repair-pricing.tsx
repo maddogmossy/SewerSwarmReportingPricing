@@ -967,6 +967,7 @@ export default function RepairPricing() {
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           {workCategories.map((category: any) => {
             const categoryPricing = groupedData[category.name] || [];
+            console.log(`Badge render for ${category.name}: length=${categoryPricing.length}, hasItems=${categoryPricing.length > 0}`);
             
             return (
               <Card key={category.id} data-category={category.name.toLowerCase()}>
@@ -977,7 +978,7 @@ export default function RepairPricing() {
                       {category.name}
                     </CardTitle>
                     <Badge variant={categoryPricing.length > 0 ? "default" : "secondary"}>
-                      {categoryPricing.length} configs
+                      {categoryPricing.length} config{categoryPricing.length !== 1 ? 's' : ''}
                     </Badge>
                   </div>
                   <p className="text-sm text-slate-600">{category.description}</p>
