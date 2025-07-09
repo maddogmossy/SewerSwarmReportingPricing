@@ -200,7 +200,9 @@ export default function RepairPricing() {
       dayRate: false,
       hourlyRate: false,
       runsPerShift: false,
-      setupRate: false
+      setupRate: false,
+      minCharge: false,
+      repeatFree: false
     }
   });
   const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
@@ -541,7 +543,9 @@ export default function RepairPricing() {
           dayRate: false,
           hourlyRate: false,
           runsPerShift: false,
-          setupRate: false
+          setupRate: false,
+          minCharge: false,
+          repeatFree: false
         }
       });
     },
@@ -2420,6 +2424,40 @@ export default function RepairPricing() {
                     />
                     <Label htmlFor="setupRate" className="text-sm">Set up rate (£ per setup)</Label>
                   </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="minCharge"
+                      checked={newCategory.pricingStructure.minCharge}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          minCharge: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="minCharge" className="text-sm">Min charge (£ minimum)</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="repeatFree"
+                      checked={newCategory.pricingStructure.repeatFree}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          repeatFree: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="repeatFree" className="text-sm">Repeat Free (no charge for repeat visits)</Label>
+                  </div>
                 </div>
                 <p className="text-xs text-slate-500 mt-2">
                   You can select multiple options to create flexible pricing configurations.
@@ -2461,7 +2499,9 @@ export default function RepairPricing() {
                       dayRate: false,
                       hourlyRate: false,
                       runsPerShift: false,
-                      setupRate: false
+                      setupRate: false,
+                      minCharge: false,
+                      repeatFree: false
                     }
                   });
                 }}>
