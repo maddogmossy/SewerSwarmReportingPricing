@@ -102,47 +102,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ configured: false });
   });
 
+  // In-memory storage for pricing data (REV_V1 simulation)
+  let pricingStorage = [
+    {
+      id: 1,
+      sector: "utilities",
+      workCategoryId: 1,
+      workCategory: "CCTV Survey",
+      pipeSize: "150mm",
+      costPerMetre: 15.50,
+      cost: 15.50,
+      description: "Standard CCTV inspection"
+    },
+    {
+      id: 2,
+      sector: "utilities",
+      workCategoryId: 2,
+      workCategory: "High Pressure Jetting",
+      pipeSize: "150mm", 
+      costPerMetre: 25.00,
+      cost: 25.00,
+      description: "Water jetting cleaning"
+    },
+    {
+      id: 3,
+      sector: "utilities",
+      workCategoryId: 3,
+      workCategory: "Patch Repair",
+      pipeSize: "300mm",
+      depth: "2-3m",
+      description: "300mm patch repair excavation and reinstatement",
+      option1Cost: "450.00",
+      option2Cost: "680.00", 
+      option3Cost: "850.00",
+      option4Cost: "950.00",
+      cost: 680.00,
+      rule: "Standard double layer patch for 300mm pipe",
+      lengthOfRepair: "1000mm",
+      selectedOption: "Option 2: Double Layer"
+    }
+  ];
+
   app.get('/api/repair-pricing/:sector', (req, res) => {
-    // REV_V1: Return sample pricing data including 300mm patch repair
-    res.json([
-      {
-        id: 1,
-        sector: req.params.sector,
-        workCategoryId: 1,
-        workCategory: "CCTV Survey",
-        pipeSize: "150mm",
-        costPerMetre: 15.50,
-        cost: 15.50,
-        description: "Standard CCTV inspection"
-      },
-      {
-        id: 2,
-        sector: req.params.sector,
-        workCategoryId: 2,
-        workCategory: "High Pressure Jetting",
-        pipeSize: "150mm", 
-        costPerMetre: 25.00,
-        cost: 25.00,
-        description: "Water jetting cleaning"
-      },
-      {
-        id: 3,
-        sector: req.params.sector,
-        workCategoryId: 3,
-        workCategory: "Patch Repair",
-        pipeSize: "300mm",
-        depth: "2-3m",
-        description: "300mm patch repair excavation and reinstatement",
-        option1Cost: "450.00",
-        option2Cost: "680.00", 
-        option3Cost: "850.00",
-        option4Cost: "950.00",
-        cost: 680.00,
-        rule: "Standard double layer patch for 300mm pipe",
-        lengthOfRepair: "1000mm",
-        selectedOption: "Option 2: Double Layer"
-      }
-    ]);
+    // Return pricing data for the requested sector
+    const sectorPricing = pricingStorage.filter(item => item.sector === req.params.sector);
+    res.json(sectorPricing);
   });
 
   app.get('/api/work-categories', (req, res) => {
@@ -162,6 +166,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/:sector/profile', (req, res) => {
     res.json({ sector: req.params.sector, standards: [] });
+  });
+
+  // Add DELETE endpoint for repair pricing
+  app.delete('/api/repair-pricing/:id', (req, res) => {
+    const { id } = req.params;
+    const { scope, currentSector } = req.query;
+    
+    console.log(`Deleting repair pricing item ${id} with scope ${scope} for sector ${currentSector}`);
+    
+    const itemId = parseInt(id);
+    const initialLength = pricingStorage.length;
+    
+    if (scope === 'all') {
+      // Remove item from all sectors
+      pricingStorage = pricingStorage.filter(item => item.id !== itemId);
+    } else {
+      // Remove item from current sector only
+      pricingStorage = pricingStorage.filter(item => 
+        !(item.id === itemId && item.sector === currentSector)
+      );
+    }
+    
+    const deletedCount = initialLength - pricingStorage.length;
+    
+    res.json({ 
+      success: true, 
+      message: `Successfully deleted ${deletedCount} pricing item(s)`,
+      scope: scope,
+      sector: currentSector,
+      deletedCount: deletedCount
+    });
   });
 
   // REV_V1: Critical endpoints for dashboard data display
