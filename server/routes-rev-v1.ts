@@ -131,9 +131,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         workCategoryId: 3,
         workCategory: "Patch Repair",
         pipeSize: "300mm",
-        costPerMetre: 85.00,
-        cost: 85.00,
-        description: "300mm patch repair excavation and reinstatement"
+        depth: "2-3m",
+        description: "300mm patch repair excavation and reinstatement",
+        option1Cost: "450.00",
+        option2Cost: "680.00", 
+        option3Cost: "850.00",
+        option4Cost: "950.00",
+        cost: 680.00,
+        rule: "Standard double layer patch for 300mm pipe",
+        lengthOfRepair: "1000mm",
+        selectedOption: "Option 2: Double Layer"
       }
     ]);
   });
