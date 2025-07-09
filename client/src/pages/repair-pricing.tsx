@@ -976,9 +976,14 @@ export default function RepairPricing() {
                       <Wrench className="h-5 w-5" />
                       {category.name}
                     </CardTitle>
-                    <Badge variant={pricingLoading ? "secondary" : (categoryPricing.length > 0 ? "default" : "secondary")}>
-                      {pricingLoading ? "Loading..." : `${categoryPricing.length} config${categoryPricing.length !== 1 ? 's' : ''}`}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-slate-600">
+                        {categoryPricing.length} item{categoryPricing.length !== 1 ? 's' : ''}
+                      </span>
+                      <Badge variant={categoryPricing.length > 0 ? "default" : "secondary"}>
+                        Ready
+                      </Badge>
+                    </div>
                   </div>
                   <p className="text-sm text-slate-600">{category.description}</p>
                 </CardHeader>
