@@ -1086,8 +1086,8 @@ export default function RepairPricing() {
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {workCategories.map((category: any) => (
-                      <SelectItem key={category.id} value={category.id.toString()}>
+                    {workCategories.map((category: any, index: number) => (
+                      <SelectItem key={category.id || index} value={(category.id || index).toString()}>
                         {category.name}
                       </SelectItem>
                     ))}
@@ -1111,9 +1111,9 @@ export default function RepairPricing() {
                     <SelectValue placeholder="Select vehicle (optional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    {vehicleRates.map((vehicle: any) => (
-                      <SelectItem key={vehicle.id} value={vehicle.id.toString()}>
-                        {vehicle.vehicleType} - £{parseFloat(vehicle.vehicleRunningCostPerMile || '0').toFixed(2)}/mile
+                    {vehicleRates.map((vehicle: any, index: number) => (
+                      <SelectItem key={vehicle.id || index} value={(vehicle.id || index).toString()}>
+                        {vehicle.vehicleType} - £{parseFloat(vehicle.ratePerMile || '0').toFixed(2)}/mile
                       </SelectItem>
                     ))}
                   </SelectContent>

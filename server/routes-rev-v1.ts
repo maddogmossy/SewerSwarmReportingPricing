@@ -134,8 +134,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/vehicle-travel-rates', (req, res) => {
     res.json([
-      { vehicleType: "Van", ratePerMile: 0.45 },
-      { vehicleType: "Truck", ratePerMile: 0.65 }
+      { id: 1, vehicleType: "Van", ratePerMile: 0.45 },
+      { id: 2, vehicleType: "Truck", ratePerMile: 0.65 }
     ]);
   });
 
