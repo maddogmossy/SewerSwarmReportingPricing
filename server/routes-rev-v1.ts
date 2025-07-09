@@ -10,6 +10,23 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // REV_V1: Simple authentication for test users
+  app.get('/api/auth/user', (req, res) => {
+    // Simple test user authentication
+    res.json({
+      id: "test-user",
+      email: "test@example.com",
+      firstName: "Test",
+      lastName: "User",
+      profileImageUrl: null
+    });
+  });
+
+  app.post('/api/admin/make-me-test-user', (req, res) => {
+    // Simple test user creation
+    res.json({ success: true, message: "Test user access granted" });
+  });
+  
   // REV_V1: Simple PDF analysis - OBSERVATIONS column data only
   app.post("/api/analyze-pdf-standalone", upload.single('pdf'), (req, res) => {
     if (!req.file) {
