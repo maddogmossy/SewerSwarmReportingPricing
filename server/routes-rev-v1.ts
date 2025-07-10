@@ -19,8 +19,21 @@ let folderStorage = [
     addressValidated: true,
     createdAt: "2025-01-08T07:30:00Z",
     updatedAt: "2025-01-08T07:30:00Z"
+  },
+  {
+    id: 2,
+    folderName: "Cromwell Road, CB1 3EG",
+    projectAddress: "Cromwell Road, CB1 3EG",
+    projectPostcode: "CB1 3EG",
+    projectNumber: "CROMWELL_TEST",
+    addressValidated: true,
+    createdAt: "2025-07-10T18:17:24.288Z",
+    updatedAt: "2025-07-10T18:17:24.288Z"
   }
 ];
+
+// In-memory storage for uploads (REV_V1 simulation) - empty since 218 ECL was deleted
+let uploadsStorage = [];
 
 // In-memory storage for pricing data (REV_V1 simulation)
 let pricingStorage = [
@@ -84,16 +97,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // REV_V1: Essential endpoints for frontend functionality
   app.get('/api/uploads', (req, res) => {
-    // Return sample uploads for REV_V1 testing
-    res.json([
-      {
-        id: 1,
-        fileName: "218 ECL - NEWARK.pdf",
-        status: "completed",
-        folderId: 1,
-        createdAt: "2025-01-08T07:30:00Z"
-      }
-    ]);
+    res.json(uploadsStorage);
+  });
+
+  app.delete('/api/uploads/:id', (req, res) => {
+    const uploadId = parseInt(req.params.id);
+    const initialLength = uploadsStorage.length;
+    uploadsStorage = uploadsStorage.filter(upload => upload.id !== uploadId);
+    
+    console.log(`Deleted upload ${uploadId}, removed ${initialLength - uploadsStorage.length} items`);
+    res.json({ success: true, deleted: initialLength - uploadsStorage.length });
   });
 
   app.get('/api/folders', (req, res) => {
