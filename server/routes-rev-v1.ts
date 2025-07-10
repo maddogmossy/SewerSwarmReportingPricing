@@ -42,29 +42,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get('/api/folders', (req, res) => {
-    // Return sample folder for REV_V1 testing
-    res.json([
-      {
-        id: 1,
-        folderName: "ECL NEWARK - Bowbridge Lane",
-        projectAddress: "Bowbridge Lane, Newark, NG24 3BX",
-        projectPostcode: "NG24 3BX",
-        projectNumber: "ECL NEWARK",
-        addressValidated: true,
-        createdAt: "2025-01-08T07:30:00Z",
-        updatedAt: "2025-01-08T07:30:00Z"
-      }
-    ]);
+    // Return current folder storage
+    res.json(folderStorage);
   });
 
   app.post('/api/folders', (req, res) => {
-    // Create new folder
-    res.json({ 
-      success: true, 
-      id: 2,
-      folderName: req.body.folderName || "New Folder",
-      message: "Folder created" 
-    });
+    // Create new folder with proper data structure
+    const newFolder = {
+      id: Math.max(...folderStorage.map(f => f.id), 0) + 1,
+      folderName: req.body.projectAddress || req.body.folderName || "New Folder",
+      projectAddress: req.body.projectAddress || req.body.folderName || "New Folder",
+      projectPostcode: req.body.projectPostcode || "",
+      projectNumber: req.body.projectNumber || "",
+      travelDistance: req.body.travelDistance || null,
+      travelTime: req.body.travelTime || null,
+      addressValidated: req.body.addressValidated || false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    folderStorage.push(newFolder);
+    
+    console.log('Created new folder:', newFolder);
+    console.log('Updated folder storage:', folderStorage);
+    
+    res.json(newFolder);
   });
 
   app.get('/api/search-addresses', (req, res) => {
@@ -101,6 +103,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/pricing/check/:sector', (req, res) => {
     res.json({ configured: false });
   });
+
+  // In-memory storage for folders (REV_V1 simulation)
+  let folderStorage = [
+    {
+      id: 1,
+      folderName: "ECL NEWARK - Bowbridge Lane",
+      projectAddress: "Bowbridge Lane, Newark, NG24 3BX",
+      projectPostcode: "NG24 3BX",
+      projectNumber: "ECL NEWARK",
+      addressValidated: true,
+      createdAt: "2025-01-08T07:30:00Z",
+      updatedAt: "2025-01-08T07:30:00Z"
+    }
+  ];
 
   // In-memory storage for pricing data (REV_V1 simulation)
   let pricingStorage = [
