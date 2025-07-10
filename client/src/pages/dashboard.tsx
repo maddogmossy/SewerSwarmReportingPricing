@@ -1738,8 +1738,77 @@ export default function Dashboard() {
                         const folder = folders.find(f => f.id === parseInt(folderKey));
                         const completedReports = folderUploads.filter(u => u.status === 'completed' || u.status === 'extracted_pending_review');
                         
-                        if (folderKey === 'no-folder' || completedReports.length === 0) {
+                        if (completedReports.length === 0) {
                           return null;
+                        }
+                        
+                        // Handle unfoldered reports
+                        if (folderKey === 'no-folder') {
+                          return (
+                            <div key={folderKey}>
+                              {/* Unfoldered Reports Header */}
+                              <div className="flex items-center justify-between p-3 hover:bg-blue-50 border-b bg-slate-50">
+                                <div className="flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-slate-600" />
+                                  <span className="font-medium text-sm">Unorganized Reports</span>
+                                </div>
+                                <span className="text-xs text-slate-500">({completedReports.length} reports)</span>
+                              </div>
+                              
+                              {/* Reports without folder */}
+                              {completedReports.map((upload) => (
+                                <div key={upload.id} className="flex items-center justify-between p-3 pl-8 hover:bg-slate-50 border-b last:border-b-0">
+                                  <div className="flex items-center gap-3">
+                                    <Checkbox
+                                      checked={selectedReportIds.includes(upload.id)}
+                                      onCheckedChange={(checked) => {
+                                        if (checked) {
+                                          setSelectedReportIds([upload.id]);
+                                          handleViewReport(upload.id);
+                                          setShowFolderDropdown(false);
+                                        } else {
+                                          setSelectedReportIds([]);
+                                          window.location.href = '/dashboard';
+                                        }
+                                      }}
+                                      className="w-4 h-4"
+                                    />
+                                    {getStatusIcon(upload.status || 'pending')}
+                                    <div>
+                                      <div className="font-medium text-sm">{upload.fileName}</div>
+                                      <div className="text-xs text-slate-500">
+                                        {sectors.find(s => s.id === upload.sector)?.name || 'Unknown'} Sector
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleViewReport(upload.id);
+                                        setShowFolderDropdown(false);
+                                      }}
+                                      className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                                      title="View Report"
+                                    >
+                                      <Eye className="h-3 w-3" />
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteMutation.mutate(upload.id);
+                                        setShowFolderDropdown(false);
+                                      }}
+                                      className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                      title="Delete Report"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          );
                         }
 
                         return (
