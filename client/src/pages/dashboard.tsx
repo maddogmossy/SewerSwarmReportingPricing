@@ -923,14 +923,15 @@ export default function Dashboard() {
   const [renderingState, setRenderingState] = useState<'loading' | 'empty' | 'data'>('loading');
   
   useEffect(() => {
-    if (completedUploads.length === 0 || !currentUpload) {
+    if (completedUploads.length === 0) {
       setRenderingState('empty');
     } else if (currentUpload && !sectionsLoading) {
       if (hasAuthenticData) {
         setRenderingState('data');
       } else {
-        // Upload exists but no data - show empty state
-        setRenderingState('empty');
+        // Upload exists but no sections data - still show the dashboard interface
+        // This allows users to select reports and see appropriate "no data" messages
+        setRenderingState('data');
       }
     }
   }, [completedUploads.length, currentUpload, sectionsLoading, hasAuthenticData]);
@@ -951,6 +952,7 @@ export default function Dashboard() {
     condition2: !currentUpload,
     shouldShowFolders: completedUploads.length === 0 || !currentUpload || (!sectionsLoading && !hasAuthenticData && !!currentUpload),
     shouldShowEmptyState: shouldShowEmptyState,
+    renderingState: renderingState,
     sectionsLoading: sectionsLoading,
     hasAuthenticData: hasAuthenticData,
     foldersCount: folders.length,
