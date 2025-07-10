@@ -1973,8 +1973,41 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="flex gap-3">
+                  <Button
+                    onClick={async () => {
+                      try {
+                        const res = await apiRequest('POST', `/api/uploads/${currentUpload.id}/process-wincan`);
+                        const response = await res.json();
+                        if (response.success) {
+                          toast({
+                            title: "Success!",
+                            description: `Extracted ${response.sectionsCount} sections from Wincan database`,
+                          });
+                          // Refresh the page to show extracted data
+                          window.location.reload();
+                        } else {
+                          toast({
+                            title: "Processing Failed",
+                            description: response.message || "Could not extract data from database file",
+                            variant: "destructive",
+                          });
+                        }
+                      } catch (error) {
+                        console.error('Processing error:', error);
+                        toast({
+                          title: "Error",
+                          description: "Failed to process Wincan database: " + error.message,
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Database className="h-4 w-4 mr-2" />
+                    Process Database
+                  </Button>
                   <Link to="/upload">
-                    <Button>
+                    <Button variant="outline">
                       <Upload className="h-4 w-4 mr-2" />
                       Upload PDF Report
                     </Button>

@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import { storage } from "./storage";
+import { readWincanDatabase, storeWincanSections } from "./wincan-db-reader";
 
 // REV_V1: Simple file upload configuration
 const upload = multer({ 
@@ -303,6 +304,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/uploads/:id/defects', (req, res) => {
     // Return empty defects array for REV_V1 (OBSERVATIONS only, not defects)
     res.json([]);
+  });
+
+  // Process Wincan database file endpoint
+  app.post('/api/uploads/:id/process-wincan', async (req, res) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      
+      // Get upload details
+      const upload = await storage.getFileUploadById(uploadId);
+      if (!upload) {
+        return res.status(404).json({ error: 'Upload not found' });
+      }
+
+      // Check if it's a database file
+      if (!upload.fileName.endsWith('.db3') && !upload.fileName.endsWith('.db')) {
+        return res.status(400).json({ error: 'Not a database file' });
+      }
+
+      console.log(`🔄 Processing Wincan database: ${upload.fileName}`);
+      
+      // Read and extract data from Wincan database
+      const sections = await readWincanDatabase(upload.filePath);
+      
+      if (sections.length > 0) {
+        // Store extracted sections in database
+        await storeWincanSections(sections, uploadId);
+        
+        // Update upload status
+        await storage.updateFileUploadStatus(uploadId, 'completed', '');
+        
+        res.json({
+          success: true,
+          message: `Successfully extracted ${sections.length} sections from Wincan database`,
+          sectionsCount: sections.length,
+          sections: sections
+        });
+      } else {
+        res.json({
+          success: false,
+          message: 'No inspection data found in Wincan database',
+          sectionsCount: 0
+        });
+      }
+      
+    } catch (error) {
+      console.error('Error processing Wincan database:', error);
+      res.status(500).json({ error: 'Failed to process Wincan database: ' + error.message });
+    }
   });
 
   // REV_V1: Main upload endpoint for both PDFs and database files
