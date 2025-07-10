@@ -243,6 +243,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteFileUpload(id: number): Promise<void> {
+    // First delete associated section inspections
+    const deletedSections = await db
+      .delete(sectionInspections)
+      .where(eq(sectionInspections.fileUploadId, id))
+      .returning();
+    
+    console.log(`Deleted upload ${id}, removed ${deletedSections.length} items`);
+    
+    // Then delete the file upload record
     await db.delete(fileUploads).where(eq(fileUploads.id, id));
   }
 

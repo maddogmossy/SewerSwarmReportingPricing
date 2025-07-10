@@ -107,13 +107,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/uploads/:id', (req, res) => {
-    const uploadId = parseInt(req.params.id);
-    const initialLength = uploadsStorage.length;
-    uploadsStorage = uploadsStorage.filter(upload => upload.id !== uploadId);
-    
-    console.log(`Deleted upload ${uploadId}, removed ${initialLength - uploadsStorage.length} items`);
-    res.json({ success: true, deleted: initialLength - uploadsStorage.length });
+  app.delete('/api/uploads/:id', async (req, res) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      
+      // Use database storage to delete the upload (this also deletes associated sections)
+      await storage.deleteFileUpload(uploadId);
+      
+      res.json({ success: true, message: 'Upload deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting upload:', error);
+      res.status(500).json({ error: 'Failed to delete upload' });
+    }
   });
 
   app.get('/api/folders', async (req, res) => {
