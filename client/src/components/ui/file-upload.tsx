@@ -18,7 +18,7 @@ interface FileUploadProps {
 export default function FileUpload({ 
   onFileSelect, 
   selectedFile, 
-  accept = ".pdf,.db",
+  accept = ".pdf,.db,.db3",
   maxSize = 50 * 1024 * 1024, // 50MB default
   className = "",
   requiresSector = false,
@@ -87,11 +87,12 @@ export default function FileUpload({
     const isValidType = allowedExtensions.some(ext => 
       ext === fileExtension || 
       (ext === '.pdf' && file.type === 'application/pdf') ||
-      (ext === '.db' && (file.type === 'application/octet-stream' || file.name.endsWith('.db')))
+      (ext === '.db' && (file.type === 'application/octet-stream' || file.name.endsWith('.db'))) ||
+      (ext === '.db3' && (file.type === 'application/octet-stream' || file.name.endsWith('.db3') || file.name.endsWith('meta.db3')))
     );
 
     if (!isValidType) {
-      alert('Please select a valid PDF or database (.db) file');
+      alert('Please select a valid PDF or database file (.db, .db3, meta.db3)');
       return false;
     }
 
@@ -143,7 +144,7 @@ export default function FileUpload({
               Drag and drop your file here, or click to browse
             </p>
             <p className="text-sm text-slate-500 mb-4">
-              Supports: PDF, .db files (Max {Math.round(maxSize / (1024 * 1024))}MB)
+              Supports: PDF, .db, .db3, meta.db3 files (Max {Math.round(maxSize / (1024 * 1024))}MB)
             </p>
             <Button type="button" className="bg-primary hover:bg-primary/90">
               Choose File

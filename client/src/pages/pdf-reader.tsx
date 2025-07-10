@@ -52,13 +52,18 @@ export default function PDFReaderPage() {
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && file.type === 'application/pdf') {
+    if (file && (
+      file.type === 'application/pdf' || 
+      file.name.endsWith('.db') || 
+      file.name.endsWith('.db3') || 
+      file.name.endsWith('meta.db3')
+    )) {
       setSelectedFile(file);
       setExtractionResult(null);
     } else {
       toast({
         title: "Invalid File",
-        description: "Please select a PDF file",
+        description: "Please select a PDF or database file (.db, .db3, meta.db3)",
         variant: "destructive"
       });
     }
@@ -108,7 +113,7 @@ export default function PDFReaderPage() {
             <FileText className="h-8 w-8 text-purple-600" />
             <div>
               <h1 className="text-2xl font-bold text-gray-900">PDF Reader & Analysis Tool</h1>
-              <p className="text-gray-600">Analyze PDF inspection reports and extract header information</p>
+              <p className="text-gray-600">Analyze PDF inspection reports and Wincan database files (.db3, meta.db3)</p>
             </div>
           </div>
           <Link to="/dashboard">
@@ -124,14 +129,14 @@ export default function PDFReaderPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5" />
-              Select PDF File for Analysis
+              Select PDF or Database File for Analysis
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
               <Input
                 type="file"
-                accept=".pdf"
+                accept=".pdf,.db,.db3"
                 onChange={handleFileSelect}
                 className="flex-1"
               />
