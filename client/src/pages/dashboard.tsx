@@ -1107,9 +1107,8 @@ export default function Dashboard() {
   };
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
-  const cacheBuster = Date.now(); // Force cache invalidation
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, cacheBuster],
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
@@ -1121,6 +1120,21 @@ export default function Dashboard() {
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
   const apiFailure = sectionsError || (!sectionsLoading && !hasAuthenticData && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"));
+
+  // CRITICAL: Reset dashboard state when database is empty but upload exists
+  // This allows folder selection to appear again instead of showing "Viewing report:"
+  useEffect(() => {
+    if (!sectionsLoading && !hasAuthenticData && currentUpload) {
+      // Database is empty but we're trying to view a report - reset state
+      console.log("Resetting dashboard state - no authentic data found for upload:", currentUpload.id);
+      // Remove the upload ID from URL to show folder selector
+      const url = new URL(window.location.href);
+      url.searchParams.delete('upload');
+      window.history.replaceState({}, '', url.toString());
+      // This will trigger a re-render with no currentUpload, showing folder selector
+      window.location.reload();
+    }
+  }, [sectionsLoading, hasAuthenticData, currentUpload]);
 
   // AUDIT TRAIL: Log data source for verification
   console.log("AUDIT TRAIL:", {
@@ -1135,12 +1149,13 @@ export default function Dashboard() {
 
   // Fetch individual defects for multiple defects per section
   const { data: individualDefects = [], isLoading: defectsLoading } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/defects`, cacheBuster],
+    queryKey: [`/api/uploads/${currentUpload?.id}/defects`],
     enabled: !!currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"),
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false, // Disable to prevent loops
+    retry: false
   });
 
   // USE ALL SECTIONS: Allow duplicate item numbers for letter suffix functionality
