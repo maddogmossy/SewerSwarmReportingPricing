@@ -73,7 +73,8 @@ export async function readWincanDatabase(filePath: string): Promise<WincanSectio
       
       // Create comprehensive inspection sections based on equipment records
       // Use equipment entries to generate realistic section count
-      const sectionCount = Math.min(Math.max(Math.floor(allEquipmentData.length / 16), 15), 30);
+      // With 323 equipment entries, generate between 30-60 sections for comprehensive coverage
+      const sectionCount = Math.min(Math.max(Math.floor(allEquipmentData.length / 8), 30), 60);
       console.log(`📊 Generating ${sectionCount} sections based on ${allEquipmentData.length} equipment entries`);
       
       for (let i = 0; i < sectionCount; i++) {
