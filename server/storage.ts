@@ -197,6 +197,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProjectFolder(id: number): Promise<void> {
+    // First, remove folder references from any uploads pointing to this folder
+    await db
+      .update(fileUploads)
+      .set({ folderId: null })
+      .where(eq(fileUploads.folderId, id));
+    
+    // Then delete the folder itself
     await db.delete(projectFolders).where(eq(projectFolders.id, id));
   }
 
