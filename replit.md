@@ -174,6 +174,106 @@ This prevents data contamination and ensures authentic extraction integrity.
 - January 9, 2025. COMPLETED REV_V1 FRONTEND PRICING DISPLAY RESTORATION: Successfully restored complete 4-option patch pricing structure in frontend interface. Fixed JavaScript toString() errors by adding proper IDs to all data objects. Confirmed categories properly display pricing configurations: CCTV Surveys (£15.50/m), Jetting/Cleaning (£25/m), and Patch Repairs with full 4-option structure (Single Layer £450, Double Layer £680, Triple Layer £850, Extended Cure £950). Backend correctly configured with workCategoryId fields and proper data structure for all 3 categories. Edit dialog functionality confirmed working with proper 300mm patch repair configuration display.
 - January 8, 2025. SUCCESSFUL REV_V1 ROLLBACK: User expressed frustration with complex development going "round in circles" and requested return to REV_V1 baseline. Successfully restored clean routes-rev-v1.ts with minimal PDF extraction functionality extracting only 14 sections from OBSERVATIONS column data (WL, DEG, DER, FC codes). Eliminated all complex processing, preserved missing Section 8 pattern, confirmed authentic manhole references (F01-10A → F01-10, etc.). System now provides simple, working baseline without synthetic data generation.
 Changelog:
+- January 10, 2025. COMPLETED SYSTEM CLEANUP AND DOCUMENTED WORKFLOW: Successfully cleaned entire system - removed all database records (project_folders, file_uploads, section_inspections), deleted physical upload files, and updated API endpoints to serve only authentic database data. System now ready for fresh uploads without contamination. Created comprehensive user workflow documentation covering complete process from file upload through analysis and report generation.
+
+## Complete User Workflow
+
+### Step 1: System Access
+1. **Navigate to application** - System loads with authenticated dashboard
+2. **Choose workflow path**:
+   - Upload new files for analysis
+   - View existing reports (if any)
+   - Configure pricing settings (optional)
+
+### Step 2: File Upload Process
+1. **Access upload page** - Click "Upload Report" button from dashboard
+2. **Select file type**:
+   - PDF inspection reports (.pdf)
+   - Wincan database files (.db, .db3, meta.db3)
+3. **Choose sector** - Select from 6 available sectors:
+   - Utilities (blue) - WRc/MSCC5 standards
+   - Adoption (green) - OS20x/Sewers for Adoption standards  
+   - Highways (orange) - HADDMS standards
+   - Insurance (red) - ABI guidelines
+   - Construction (purple) - BS EN 1610:2015 standards
+   - Domestic (brown) - Trading Standards compliance
+4. **Optional folder organization**:
+   - Create new project folder with address/postcode
+   - Assign upload to existing folder
+   - Leave unorganized (can organize later)
+5. **Upload file** - System processes immediately and redirects to dashboard
+
+### Step 3: Data Analysis & Review
+1. **Automatic processing**:
+   - PDF text extraction and parsing
+   - Section inspection data identification
+   - MSCC5 defect classification (for applicable sectors)
+   - Manhole reference mapping
+   - Pipe specification extraction
+2. **Dashboard review**:
+   - View extracted section data in table format
+   - Check Item Numbers, MH references, pipe specifications
+   - Review defect classifications and severity grades
+   - Verify recommendations and adoptability status
+3. **Data validation**:
+   - Dismiss "Missing Sequential Sections" warnings if authentic
+   - Check cost calculations (shows "Complete" for Grade 0, "Configure pricing" for defects)
+
+### Step 4: Pricing Configuration (Optional)
+1. **Access pricing settings** - Click "Pricing" button from dashboard
+2. **Select sector** - Choose sector matching your report
+3. **Configure equipment categories**:
+   - CCTV Surveys - inspection equipment and rates
+   - Jetting/Cleaning - water cutting and cleansing equipment
+   - Patch Repairs - structural repair equipment and methods
+4. **Set pricing rules**:
+   - MSCC5 defect code mapping
+   - Equipment selection for each defect type
+   - Cost per day/hour rates
+   - Quantity and length specifications
+5. **Save configuration** - Rules apply to all reports in selected sector
+
+### Step 5: Report Generation & Export
+1. **View dashboard** - All sections display with calculated costs
+2. **Export options**:
+   - "Export to Excel" - Comprehensive CSV with section data, defects, recommendations, costs
+   - Dashboard view - Real-time analysis with color-coded severity grades
+3. **Report features**:
+   - Professional header with customer details
+   - Complete section inspection breakdown
+   - MSCC5-compliant defect classifications
+   - Sector-specific standards compliance verification
+   - Cost estimates (if pricing configured)
+
+### Step 6: Data Management
+1. **Folder organization**:
+   - Create project folders by address/location
+   - Move uploads between folders
+   - Delete empty folders
+2. **File management**:
+   - View upload history and status
+   - Delete individual reports (removes all associated data)
+   - Refresh dashboard to reload data
+3. **System maintenance**:
+   - Pricing rules persist across sessions
+   - Database storage ensures data integrity
+   - Clean deletion removes all references completely
+
+### Supported File Types & Standards
+- **PDF Reports**: CCTV inspection reports with OBSERVATIONS column data
+- **Wincan Database Files**: .db, .db3, meta.db3 database exports
+- **Standards Compliance**: WRc/MSCC5, OS20x, HADDMS, ABI, BS EN standards
+- **Defect Classification**: Automatic MSCC5 grading with severity assessment
+- **Multi-Sector Support**: 6 infrastructure sectors with dedicated validation
+
+### Key System Features
+- **Zero Synthetic Data**: Only authentic PDF-extracted information displayed
+- **REV_V1 Architecture**: Simplified, reliable processing workflow
+- **Database Persistence**: All data stored securely with proper cleanup
+- **Flexible Pricing**: User-configurable equipment and cost structures
+- **Professional Output**: Excel exports with comprehensive analysis details
+
+## Historical Changelog:
 - June 27, 2025. Initial setup
 - June 27, 2025. Added test user access system for unlimited testing without payment
 - June 27, 2025. Fixed file upload issue: Updated apiRequest to properly handle FormData uploads
