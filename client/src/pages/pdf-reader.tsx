@@ -8,24 +8,18 @@ import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
 
 interface PDFExtractionResult {
+  success: boolean;
   fileName: string;
-  fileSize: number;
+  projectName?: string;
+  date?: string;
+  inspectionStandard?: string;
   totalPages: number;
-  totalCharacters: number;
-  headerData: {
-    date?: string;
-    time?: string;
-    upstreamNode?: string;
-    downstreamNode?: string;
-    pipeSize?: string;
-    pipeMaterial?: string;
-    totalLength?: string;
-    inspectedLength?: string;
-    projectNumber?: string;
-  };
+  textLength?: number;
+  sectionsExtracted?: number;
   sections: PDFSection[];
   missingSequences: number[];
-  extractedText: string;
+  extractedText?: string;
+  observations?: any[];
   errors: string[];
 }
 
@@ -166,7 +160,7 @@ export default function PDFReaderPage() {
                 <CardTitle className="text-sm">File Size</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-lg font-semibold">{(extractionResult.fileSize / (1024 * 1024)).toFixed(1)} MB</p>
+                <p className="text-lg font-semibold">{selectedFile ? (selectedFile.size / (1024 * 1024)).toFixed(1) + ' MB' : 'N/A'}</p>
               </CardContent>
             </Card>
             <Card>
@@ -182,7 +176,7 @@ export default function PDFReaderPage() {
                 <CardTitle className="text-sm">Characters</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-lg font-semibold">{extractionResult.totalCharacters.toLocaleString()}</p>
+                <p className="text-lg font-semibold">{extractionResult.textLength?.toLocaleString() || 'N/A'}</p>
               </CardContent>
             </Card>
             <Card>
