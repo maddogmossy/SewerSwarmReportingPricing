@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
+import { storage } from "./storage";
 
 // REV_V1: Simple file upload configuration
 const upload = multer({ 
@@ -109,32 +110,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ success: true, deleted: initialLength - uploadsStorage.length });
   });
 
-  app.get('/api/folders', (req, res) => {
-    // Return current folder storage
-    res.json(folderStorage);
+  app.get('/api/folders', async (req, res) => {
+    try {
+      // Use database storage instead of in-memory storage
+      const folders = await storage.getProjectFolders("test-user");
+      res.json(folders);
+    } catch (error) {
+      console.error('Error fetching folders:', error);
+      res.status(500).json({ error: 'Failed to fetch folders' });
+    }
   });
 
-  app.post('/api/folders', (req, res) => {
-    // Create new folder with proper data structure
-    const newFolder = {
-      id: Math.max(...folderStorage.map(f => f.id), 0) + 1,
-      folderName: req.body.projectAddress || req.body.folderName || "New Folder",
-      projectAddress: req.body.projectAddress || req.body.folderName || "New Folder",
-      projectPostcode: req.body.projectPostcode || "",
-      projectNumber: req.body.projectNumber || "",
-      travelDistance: req.body.travelDistance || null,
-      travelTime: req.body.travelTime || null,
-      addressValidated: req.body.addressValidated || false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    folderStorage.push(newFolder);
-    
-    console.log('Created new folder:', newFolder);
-    console.log('Updated folder storage:', folderStorage);
-    
-    res.json(newFolder);
+  app.post('/api/folders', async (req, res) => {
+    try {
+      // Create new folder with proper data structure
+      const newFolder = {
+        userId: "test-user",
+        folderName: req.body.projectAddress || req.body.folderName || "New Folder",
+        projectAddress: req.body.projectAddress || req.body.folderName || "New Folder",
+        projectPostcode: req.body.projectPostcode || "",
+        projectNumber: req.body.projectNumber || "",
+        travelDistance: req.body.travelDistance || null,
+        travelTime: req.body.travelTime || null,
+        addressValidated: req.body.addressValidated || false
+      };
+      
+      const created = await storage.createProjectFolder(newFolder);
+      
+      console.log('Created new folder:', created);
+      
+      res.json(created);
+    } catch (error) {
+      console.error('Error creating folder:', error);
+      res.status(500).json({ error: 'Failed to create folder' });
+    }
+  });
+
+  app.delete('/api/folders/:id', async (req, res) => {
+    try {
+      const folderId = parseInt(req.params.id);
+      await storage.deleteProjectFolder(folderId);
+      
+      console.log(`Deleted folder with ID: ${folderId}`);
+      
+      res.json({ success: true, message: 'Folder deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting folder:', error);
+      res.status(500).json({ error: 'Failed to delete folder' });
+    }
   });
 
   app.get('/api/search-addresses', (req, res) => {

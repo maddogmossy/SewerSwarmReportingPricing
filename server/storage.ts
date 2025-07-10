@@ -12,6 +12,7 @@ import {
   companySettings,
   teamInvitations,
   teamBillingRecords,
+  projectFolders,
   type User,
   type UpsertUser,
   type FileUpload,
@@ -36,6 +37,8 @@ import {
   type InsertTeamInvitation,
   type TeamBillingRecord,
   type InsertTeamBillingRecord,
+  type ProjectFolder,
+  type InsertProjectFolderType,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, isNull } from "drizzle-orm";
@@ -48,6 +51,12 @@ export interface IStorage {
   // User profile operations
   updateUserProfile(id: string, data: Partial<User>): Promise<User>;
   updateUserStripeInfo(id: string, customerId: string, subscriptionId?: string): Promise<User>;
+  
+  // Project folder operations
+  getProjectFolders(userId: string): Promise<ProjectFolder[]>;
+  createProjectFolder(folder: InsertProjectFolderType): Promise<ProjectFolder>;
+  updateProjectFolder(id: number, folder: Partial<ProjectFolder>): Promise<ProjectFolder>;
+  deleteProjectFolder(id: number): Promise<void>;
   
   // File upload operations
   createFileUpload(upload: InsertFileUpload): Promise<FileUpload>;
@@ -159,6 +168,36 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     return user;
+  }
+
+  // Project folder operations
+  async getProjectFolders(userId: string): Promise<ProjectFolder[]> {
+    return await db
+      .select()
+      .from(projectFolders)
+      .where(eq(projectFolders.userId, userId))
+      .orderBy(desc(projectFolders.createdAt));
+  }
+
+  async createProjectFolder(folder: InsertProjectFolderType): Promise<ProjectFolder> {
+    const [created] = await db
+      .insert(projectFolders)
+      .values(folder)
+      .returning();
+    return created;
+  }
+
+  async updateProjectFolder(id: number, folderUpdate: Partial<ProjectFolder>): Promise<ProjectFolder> {
+    const [updated] = await db
+      .update(projectFolders)
+      .set({ ...folderUpdate, updatedAt: new Date() })
+      .where(eq(projectFolders.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteProjectFolder(id: number): Promise<void> {
+    await db.delete(projectFolders).where(eq(projectFolders.id, id));
   }
 
   async createFileUpload(upload: InsertFileUpload): Promise<FileUpload> {
