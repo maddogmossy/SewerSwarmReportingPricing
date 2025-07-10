@@ -918,6 +918,25 @@ export default function Dashboard() {
 
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
+  
+  // Use a stable state for rendering decision to prevent flashing
+  const [renderingState, setRenderingState] = useState<'loading' | 'empty' | 'data'>('loading');
+  
+  useEffect(() => {
+    if (completedUploads.length === 0 || !currentUpload) {
+      setRenderingState('empty');
+    } else if (currentUpload && !sectionsLoading) {
+      if (hasAuthenticData) {
+        setRenderingState('data');
+      } else {
+        // Upload exists but no data - show empty state
+        setRenderingState('empty');
+      }
+    }
+  }, [completedUploads.length, currentUpload, sectionsLoading, hasAuthenticData]);
+  
+  // Stable condition for showing folder selector - don't depend on loading states that fluctuate
+  const shouldShowEmptyState = renderingState === 'empty';
 
   // Debug logging - enhanced for auto-navigation debugging
   console.log("Dashboard Debug:", {
@@ -931,6 +950,9 @@ export default function Dashboard() {
     condition1: completedUploads.length === 0,
     condition2: !currentUpload,
     shouldShowFolders: completedUploads.length === 0 || !currentUpload || (!sectionsLoading && !hasAuthenticData && !!currentUpload),
+    shouldShowEmptyState: shouldShowEmptyState,
+    sectionsLoading: sectionsLoading,
+    hasAuthenticData: hasAuthenticData,
     foldersCount: folders.length,
     currentUploadId: currentUpload?.id,
     filteredUploadsCount: filteredUploads.length
@@ -1835,7 +1857,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {completedUploads.length === 0 || !currentUpload || (!sectionsLoading && !hasAuthenticData && !!currentUpload) ? (
+        {shouldShowEmptyState ? (
           <div className="space-y-6">
             {/* No data available message */}
             <div className="flex flex-col items-center justify-center py-16 text-center">
