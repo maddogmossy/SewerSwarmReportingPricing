@@ -892,14 +892,33 @@ export default function Dashboard() {
       : completedUploads;
   
   // Get current upload based on reportId parameter OR selectedReportIds
+  // CRITICAL: Only consider uploads that have authentic section data to prevent loops
   // For URL parameter navigation (auto-navigation), search in ALL completed uploads, not just filtered
-  const currentUpload = reportId 
+  let potentialCurrentUpload = reportId 
     ? completedUploads.find(upload => upload.id === parseInt(reportId))
     : selectedReportIds.length === 1 
       ? filteredUploads.find(upload => upload.id === selectedReportIds[0])
       : completedUploads.length === 1 ? completedUploads[0] 
       : completedUploads.length > 0 ? completedUploads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0] : null; // Auto-select most recent upload by creation date
   
+  // CRITICAL FIX: If the potential upload exists but has no sections data, ignore it to prevent loops
+  // We'll check this after we fetch the section data below
+  const currentUpload = potentialCurrentUpload;
+  
+  // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
+  const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
+    enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false, // Disable to prevent loops
+    retry: false
+  });
+
+  // CRITICAL: If API fails or returns empty data, NEVER show fake data
+  const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
+
   // Debug logging - enhanced for auto-navigation debugging
   console.log("Dashboard Debug:", {
     reportId,
@@ -911,7 +930,7 @@ export default function Dashboard() {
     allUploadsLength: uploads.length,
     condition1: completedUploads.length === 0,
     condition2: !currentUpload,
-    shouldShowFolders: completedUploads.length === 0 || !currentUpload,
+    shouldShowFolders: completedUploads.length === 0 || !currentUpload || (!sectionsLoading && !hasAuthenticData && currentUpload),
     foldersCount: folders.length,
     currentUploadId: currentUpload?.id,
     filteredUploadsCount: filteredUploads.length
@@ -1106,35 +1125,10 @@ export default function Dashboard() {
     };
   };
 
-  // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
-  const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
-    enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false, // Disable to prevent loops
-    retry: false
-  });
 
-  // CRITICAL: If API fails or returns empty data, NEVER show fake data
-  const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
-  const apiFailure = sectionsError || (!sectionsLoading && !hasAuthenticData && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"));
 
-  // CRITICAL: Reset dashboard state when database is empty but upload exists
+  // CRITICAL: If database is empty, ignore upload parameter to prevent stuck state
   // This allows folder selection to appear again instead of showing "Viewing report:"
-  useEffect(() => {
-    if (!sectionsLoading && !hasAuthenticData && currentUpload) {
-      // Database is empty but we're trying to view a report - reset state
-      console.log("Resetting dashboard state - no authentic data found for upload:", currentUpload.id);
-      // Remove the upload ID from URL to show folder selector
-      const url = new URL(window.location.href);
-      url.searchParams.delete('upload');
-      window.history.replaceState({}, '', url.toString());
-      // This will trigger a re-render with no currentUpload, showing folder selector
-      window.location.reload();
-    }
-  }, [sectionsLoading, hasAuthenticData, currentUpload]);
 
   // AUDIT TRAIL: Log data source for verification
   console.log("AUDIT TRAIL:", {
