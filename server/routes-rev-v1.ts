@@ -338,12 +338,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         path: req.file.path
       });
 
+      // Determine file type based on extension
+      const fileExtension = req.file.originalname.toLowerCase();
+      let fileType = 'pdf';
+      if (fileExtension.endsWith('.db3') || fileExtension.endsWith('.db')) {
+        fileType = 'database';
+      }
+
       // Create upload record in database
       const uploadData = {
         userId: "test-user",
         fileName: req.file.originalname,
         filePath: req.file.path,
         fileSize: req.file.size,
+        fileType: fileType,
         sector: req.body.sector || 'utilities',
         projectFolderId: req.body.projectFolderId ? parseInt(req.body.projectFolderId) : null,
         status: 'processing'
