@@ -345,11 +345,11 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="font-semibold">Travel Distance</p>
-                        <p>{travelInfo.distance.toFixed(1)} miles from depot</p>
+                        <p>{travelInfo?.distance?.toFixed(1) || '0.0'} miles from depot</p>
                       </div>
                       <div>
                         <p className="font-semibold">Travel Time</p>
-                        <p>{travelInfo.travelTime} minutes estimated</p>
+                        <p>{travelInfo?.travelTime || 0} minutes estimated</p>
                       </div>
                     </div>
                   </AlertDescription>
@@ -361,7 +361,7 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
                 <div className="space-y-3">
                   <h4 className="font-semibold text-sm">Work Type Travel Allowances</h4>
                   {Object.entries(getWorkTypeRequirements()).map(([workType, requirements]) => {
-                    const allowanceCheck = checkTravelAllowance(travelInfo.distance, workType);
+                    const allowanceCheck = checkTravelAllowance(travelInfo?.distance || 0, workType);
                     const isPatching = workType === 'patching';
                     
                     return (
@@ -375,20 +375,20 @@ export function FolderSelector({ selectedFolderId, onFolderSelect, projectNumber
                             <div>
                               <p className="font-semibold capitalize">{workType.replace(/([A-Z])/g, ' $1')}</p>
                               <p className="text-sm">
-                                Max: {requirements.maxTravelDistance} miles
-                                {allowanceCheck.isWithinAllowance ? 
+                                Max: {requirements?.maxTravelDistance || 0} miles
+                                {allowanceCheck?.isWithinAllowance ? 
                                   " ✓ Within allowance" : 
-                                  ` ⚠️ Exceeds by ${allowanceCheck.exceedsBy.toFixed(1)} miles`
+                                  ` ⚠️ Exceeds by ${allowanceCheck?.exceedsBy?.toFixed(1) || '0.0'} miles`
                                 }
                               </p>
-                              {!allowanceCheck.isWithinAllowance && (
+                              {!allowanceCheck?.isWithinAllowance && (
                                 <p className="text-sm font-medium">
-                                  Additional cost: £{allowanceCheck.additionalCost.toFixed(2)}
+                                  Additional cost: £{allowanceCheck.additionalCost?.toFixed(2) || '0.00'}
                                 </p>
                               )}
-                              {isPatching && requirements.requiresNIN && (
+                              {isPatching && requirements?.requiresNIN && (
                                 <p className="text-sm font-medium text-red-700 mt-1">
-                                  🔢 Requires NIN number (+£{requirements.additionalCosts.ninSurcharge.toFixed(2)})
+                                  🔢 Requires NIN number (+£{requirements.additionalCosts?.ninSurcharge?.toFixed(2) || '0.00'})
                                 </p>
                               )}
                             </div>
