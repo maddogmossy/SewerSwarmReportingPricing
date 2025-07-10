@@ -97,8 +97,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // REV_V1: Essential endpoints for frontend functionality
-  app.get('/api/uploads', (req, res) => {
-    res.json(uploadsStorage);
+  app.get('/api/uploads', async (req, res) => {
+    try {
+      const uploads = await storage.getFileUploadsByUser("test-user");
+      res.json(uploads);
+    } catch (error) {
+      console.error('Error fetching uploads:', error);
+      res.json([]);
+    }
   });
 
   app.delete('/api/uploads/:id', (req, res) => {
@@ -316,6 +322,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/uploads/:id/defects', (req, res) => {
     // Return empty defects array for REV_V1 (OBSERVATIONS only, not defects)
     res.json([]);
+  });
+
+  // REV_V1: Main upload endpoint for both PDFs and database files
+  app.post('/api/upload', upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      console.log('File uploaded:', {
+        originalName: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        path: req.file.path
+      });
+
+      // Create upload record in database
+      const uploadData = {
+        userId: "test-user",
+        fileName: req.file.originalname,
+        filePath: req.file.path,
+        fileSize: req.file.size,
+        sector: req.body.sector || 'utilities',
+        projectFolderId: req.body.projectFolderId ? parseInt(req.body.projectFolderId) : null,
+        status: 'processing'
+      };
+
+      const upload = await storage.createFileUpload(uploadData);
+      
+      // For REV_V1, immediately mark as completed with basic response
+      const completedUpload = await storage.updateFileUploadStatus(
+        upload.id, 
+        'completed',
+        '/dashboard?report=' + upload.id
+      );
+
+      res.json({
+        success: true,
+        uploadId: upload.id,
+        fileName: req.file.originalname,
+        message: 'File uploaded successfully',
+        redirectUrl: '/dashboard?report=' + upload.id
+      });
+
+    } catch (error) {
+      console.error('Upload error:', error);
+      res.status(500).json({ error: 'Upload failed: ' + error.message });
+    }
   });
   
   // REV_V1: Simple PDF analysis - OBSERVATIONS column data only
