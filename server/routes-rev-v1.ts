@@ -8,6 +8,61 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
 });
 
+// In-memory storage for folders (REV_V1 simulation)
+let folderStorage = [
+  {
+    id: 1,
+    folderName: "ECL NEWARK - Bowbridge Lane",
+    projectAddress: "Bowbridge Lane, Newark, NG24 3BX",
+    projectPostcode: "NG24 3BX",
+    projectNumber: "ECL NEWARK",
+    addressValidated: true,
+    createdAt: "2025-01-08T07:30:00Z",
+    updatedAt: "2025-01-08T07:30:00Z"
+  }
+];
+
+// In-memory storage for pricing data (REV_V1 simulation)
+let pricingStorage = [
+  {
+    id: 1,
+    sector: "utilities",
+    workCategoryId: 1,
+    workCategory: "CCTV Survey",
+    pipeSize: "150mm",
+    costPerMetre: 15.50,
+    cost: 15.50,
+    description: "Standard CCTV inspection"
+  },
+  {
+    id: 2,
+    sector: "utilities",
+    workCategoryId: 2,
+    workCategory: "High Pressure Jetting",
+    pipeSize: "150mm", 
+    costPerMetre: 25.00,
+    cost: 25.00,
+    description: "Water jetting cleaning"
+  },
+  {
+    id: 3,
+    sector: "utilities",
+    workCategoryId: 3,
+    workCategory: "Patch Repair",
+    pipeSize: "300mm",
+    depth: "2-3m",
+    description: "300mm patch repair excavation and reinstatement",
+    option1Cost: "450.00",
+    option2Cost: "680.00", 
+    option3Cost: "850.00",
+    option4Cost: "950.00",
+    cost: 680.00,
+    rule: "Standard double layer patch for 300mm pipe",
+    lengthOfRepair: "1000mm",
+    selectedOption: "Option 2: Double Layer"
+  }
+];
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // REV_V1: Simple authentication for test users
@@ -103,61 +158,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/pricing/check/:sector', (req, res) => {
     res.json({ configured: false });
   });
-
-  // In-memory storage for folders (REV_V1 simulation)
-  let folderStorage = [
-    {
-      id: 1,
-      folderName: "ECL NEWARK - Bowbridge Lane",
-      projectAddress: "Bowbridge Lane, Newark, NG24 3BX",
-      projectPostcode: "NG24 3BX",
-      projectNumber: "ECL NEWARK",
-      addressValidated: true,
-      createdAt: "2025-01-08T07:30:00Z",
-      updatedAt: "2025-01-08T07:30:00Z"
-    }
-  ];
-
-  // In-memory storage for pricing data (REV_V1 simulation)
-  let pricingStorage = [
-    {
-      id: 1,
-      sector: "utilities",
-      workCategoryId: 1,
-      workCategory: "CCTV Survey",
-      pipeSize: "150mm",
-      costPerMetre: 15.50,
-      cost: 15.50,
-      description: "Standard CCTV inspection"
-    },
-    {
-      id: 2,
-      sector: "utilities",
-      workCategoryId: 2,
-      workCategory: "High Pressure Jetting",
-      pipeSize: "150mm", 
-      costPerMetre: 25.00,
-      cost: 25.00,
-      description: "Water jetting cleaning"
-    },
-    {
-      id: 3,
-      sector: "utilities",
-      workCategoryId: 3,
-      workCategory: "Patch Repair",
-      pipeSize: "300mm",
-      depth: "2-3m",
-      description: "300mm patch repair excavation and reinstatement",
-      option1Cost: "450.00",
-      option2Cost: "680.00", 
-      option3Cost: "850.00",
-      option4Cost: "950.00",
-      cost: 680.00,
-      rule: "Standard double layer patch for 300mm pipe",
-      lengthOfRepair: "1000mm",
-      selectedOption: "Option 2: Double Layer"
-    }
-  ];
 
   app.get('/api/repair-pricing/:sector', (req, res) => {
     // Return pricing data for the requested sector
