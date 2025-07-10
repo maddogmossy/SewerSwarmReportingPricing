@@ -930,7 +930,7 @@ export default function Dashboard() {
     allUploadsLength: uploads.length,
     condition1: completedUploads.length === 0,
     condition2: !currentUpload,
-    shouldShowFolders: completedUploads.length === 0 || !currentUpload || (!sectionsLoading && !hasAuthenticData && currentUpload),
+    shouldShowFolders: completedUploads.length === 0 || !currentUpload || (!sectionsLoading && !hasAuthenticData && !!currentUpload),
     foldersCount: folders.length,
     currentUploadId: currentUpload?.id,
     filteredUploadsCount: filteredUploads.length
@@ -1835,7 +1835,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {completedUploads.length === 0 || !currentUpload ? (
+        {completedUploads.length === 0 || !currentUpload || (!sectionsLoading && !hasAuthenticData && !!currentUpload) ? (
           <div className="space-y-6">
             {/* No data available message */}
             <div className="flex flex-col items-center justify-center py-16 text-center">
