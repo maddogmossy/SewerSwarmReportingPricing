@@ -276,6 +276,7 @@ export default function Dashboard() {
   // Sequential section validation state
   const [showSequenceWarning, setShowSequenceWarning] = useState(false);
   const [missingSequences, setMissingSequences] = useState<number[]>([]);
+  const [warningDismissed, setWarningDismissed] = useState(false);
 
   // Auto-collapse dropdown when clicking outside
   useEffect(() => {
