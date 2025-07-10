@@ -41,7 +41,9 @@ import {
   AlertTriangle,
   BarChart3,
   FileX,
-  FileText
+  FileText,
+  Database,
+  ArrowLeft
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
@@ -1948,10 +1950,47 @@ export default function Dashboard() {
             </div>
           </div>
         ) : sectionData.length === 0 && currentUpload && !sectionsLoading && !sectionsError ? (
-          // Show data integrity warning when upload exists but no authentic data is available (and not loading, and no error)
-          // Check if this might be a cleared dataset first
-          rawSectionData?.length === 0 ? (
-            // Data has been cleared - show normal upload interface
+          // Show appropriate message based on file type when upload exists but no sections data
+          currentUpload.fileName?.endsWith('.db3') || currentUpload.fileName?.endsWith('.db') ? (
+            // Database file - show processing status
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <Database className="h-12 w-12 text-blue-600 mb-4" />
+                <h3 className="text-lg font-medium text-slate-900 mb-2">Wincan Database File Uploaded</h3>
+                <p className="text-slate-500 text-center mb-4">
+                  {currentUpload.fileName} has been successfully uploaded but requires processing to extract inspection data.
+                </p>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4 max-w-md">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-yellow-800">Processing Required</p>
+                      <p className="text-sm text-yellow-700">
+                        Wincan database files need specialized processing to extract section inspection data. 
+                        This feature is in development.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Link to="/upload">
+                    <Button>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload PDF Report
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="outline"
+                    onClick={() => window.location.href = '/dashboard'}
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Dashboard
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : rawSectionData?.length === 0 ? (
+            // PDF data has been cleared - show normal upload interface
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <RefreshCw className="h-12 w-12 text-slate-400 mb-4" />
