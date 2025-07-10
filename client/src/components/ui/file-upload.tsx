@@ -81,17 +81,21 @@ export default function FileUpload({
       return false;
     }
 
-    // Check file type
-    const allowedExtensions = accept.split(',').map(ext => ext.trim());
-    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-    const isValidType = allowedExtensions.some(ext => 
-      ext === fileExtension || 
-      (ext === '.pdf' && file.type === 'application/pdf') ||
-      (ext === '.db' && (file.type === 'application/octet-stream' || file.name.endsWith('.db'))) ||
-      (ext === '.db3' && (file.type === 'application/octet-stream' || file.name.endsWith('.db3') || file.name.endsWith('meta.db3')))
-    );
+    // Check file type - improved validation for Wincan database files
+    const fileName = file.name.toLowerCase();
+    const allowedExtensions = ['.pdf', '.db', '.db3'];
+    
+    // Check if file has valid extension
+    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext)) || 
+                              fileName.endsWith('meta.db3');
+    
+    // Additional check for common database MIME types
+    const hasValidMimeType = file.type === 'application/pdf' || 
+                            file.type === 'application/octet-stream' || 
+                            file.type === 'application/x-sqlite3' ||
+                            file.type === '';
 
-    if (!isValidType) {
+    if (!hasValidExtension) {
       alert('Please select a valid PDF or database file (.db, .db3, meta.db3)');
       return false;
     }
