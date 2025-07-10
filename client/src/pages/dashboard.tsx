@@ -897,7 +897,7 @@ export default function Dashboard() {
     : selectedReportIds.length === 1 
       ? filteredUploads.find(upload => upload.id === selectedReportIds[0])
       : completedUploads.length === 1 ? completedUploads[0] 
-      : completedUploads.length > 0 ? completedUploads[completedUploads.length - 1] : null; // Auto-select most recent upload
+      : completedUploads.length > 0 ? completedUploads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0] : null; // Auto-select most recent upload by creation date
   
   // Debug logging - enhanced for auto-navigation debugging
   console.log("Dashboard Debug:", {
