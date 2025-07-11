@@ -43,7 +43,8 @@ import {
   FileX,
   FileText,
   Database,
-  ArrowLeft
+  ArrowLeft,
+  Info
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
@@ -279,6 +280,7 @@ export default function Dashboard() {
   const [showSequenceWarning, setShowSequenceWarning] = useState(false);
   const [missingSequences, setMissingSequences] = useState<number[]>([]);
   const [warningDismissed, setWarningDismissed] = useState(false);
+  const [isDatabaseFile, setIsDatabaseFile] = useState(false);
 
   // Auto-collapse dropdown when clicking outside
   useEffect(() => {
@@ -310,19 +312,27 @@ export default function Dashboard() {
 
   // Sequential section validation function - Updated for authentic Wincan data
   const validateSequentialSections = (sections: any[], uploadData: any) => {
-    if (!sections || sections.length === 0) return { isValid: true, missing: [] };
+    if (!sections || sections.length === 0) return { isValid: true, missing: [], isDatabase: false };
     
     const itemNumbers = sections.map(s => s.itemNo).sort((a, b) => a - b);
     const missing: number[] = [];
     
-    // For Wincan database files, gaps in sequence are authentic (deleted sections)
-    // Only flag as missing if it's clearly a PDF extraction issue
+    // Detect if this is a Wincan database file
     const isWincanDatabase = uploadData?.fileType === 'database' || 
                              uploadData?.fileName?.toLowerCase().includes('.db');
     
     if (isWincanDatabase) {
-      // For Wincan databases, gaps are normal - don't show warnings
-      return { isValid: true, missing: [] };
+      // For Wincan databases, detect gaps but label them as authentic deletions
+      const minItem = Math.min(...itemNumbers);
+      const maxItem = Math.max(...itemNumbers);
+      
+      for (let i = minItem; i <= maxItem; i++) {
+        if (!itemNumbers.includes(i)) {
+          missing.push(i);
+        }
+      }
+      
+      return { isValid: true, missing, isDatabase: true };
     } else {
       // For PDF files, check for missing sequential numbers from 1 to max
       const maxItem = Math.max(...itemNumbers);
@@ -331,7 +341,7 @@ export default function Dashboard() {
           missing.push(i);
         }
       }
-      return { isValid: missing.length === 0, missing };
+      return { isValid: missing.length === 0, missing, isDatabase: false };
     }
   };
 
@@ -1220,7 +1230,9 @@ export default function Dashboard() {
   useEffect(() => {
     if (rawSectionData && rawSectionData.length > 0) {
       const validation = validateSequentialSections(rawSectionData, currentUpload);
-      if (!validation.isValid) {
+      setIsDatabaseFile(validation.isDatabase);
+      
+      if (!validation.isValid || (validation.missing && validation.missing.length > 0)) {
         setMissingSequences(validation.missing);
         setShowSequenceWarning(true);
       } else {
@@ -2165,31 +2177,41 @@ export default function Dashboard() {
                 
                 {/* Sequential Section Warning */}
                 {showSequenceWarning && missingSequences.length > 0 && (
-                  <div className="mb-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className={`mb-4 p-4 rounded-lg border ${isDatabaseFile ? 'bg-blue-50 border-blue-200' : 'bg-amber-50 border-amber-200'}`}>
                     <div className="flex items-start gap-3">
-                      <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                      {isDatabaseFile ? (
+                        <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      ) : (
+                        <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                      )}
                       <div>
-                        <h4 className="text-sm font-medium text-amber-800 mb-1">
-                          Missing Sequential Sections Detected
+                        <h4 className={`text-sm font-medium mb-1 ${isDatabaseFile ? 'text-blue-800' : 'text-amber-800'}`}>
+                          {isDatabaseFile ? 'Wincan Database Non-Consecutive Numbering' : 'Missing Sequential Sections Detected'}
                         </h4>
-                        <p className="text-sm text-amber-700 mb-2">
-                          The following section numbers are missing from the sequence (sections should run 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12... etc.):
+                        <p className={`text-sm mb-2 ${isDatabaseFile ? 'text-blue-700' : 'text-amber-700'}`}>
+                          {isDatabaseFile 
+                            ? 'The following section numbers are missing because they were deleted in Wincan and the database wasn\'t refreshed:'
+                            : 'The following section numbers are missing from the sequence (sections should run 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12... etc.):'
+                          }
                         </p>
                         <div className="flex flex-wrap gap-1 mb-3">
                           {missingSequences.map(num => (
-                            <span key={num} className="px-2 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded">
+                            <span key={num} className={`px-2 py-1 text-xs font-medium rounded ${isDatabaseFile ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'}`}>
                               Section {num}
                             </span>
                           ))}
                         </div>
-                        <p className="text-xs text-amber-600">
-                          99% of the time there wouldn't be missing sections. Please verify the uploaded PDF contains all sequential sections or check if the PDF extraction process completed correctly.
+                        <p className={`text-xs ${isDatabaseFile ? 'text-blue-600' : 'text-amber-600'}`}>
+                          {isDatabaseFile 
+                            ? 'This is normal - sections were deleted in Wincan software but not renumbered. The gaps are authentic and match the original database structure.'
+                            : '99% of the time there wouldn\'t be missing sections. Please verify the uploaded PDF contains all sequential sections or check if the PDF extraction process completed correctly.'
+                          }
                         </p>
                         <button
                           onClick={() => setShowSequenceWarning(false)}
-                          className="mt-2 text-xs text-amber-600 hover:text-amber-800 underline"
+                          className={`mt-2 text-xs underline ${isDatabaseFile ? 'text-blue-600 hover:text-blue-800' : 'text-amber-600 hover:text-amber-800'}`}
                         >
-                          Dismiss Warning
+                          Dismiss
                         </button>
                       </div>
                     </div>
