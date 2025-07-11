@@ -621,9 +621,9 @@ export default function Dashboard() {
         // Display "Complete" for all Grade 0 sections with "Complete" in cost field
         if (section.cost === 'Complete' || (section.severityGrade === '0' && section.adoptable === 'Yes')) {
           return (
-            <div className="text-xs text-green-600 font-medium">
+            <span className="px-1 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">
               Complete
-            </div>
+            </span>
           );
         }
         
