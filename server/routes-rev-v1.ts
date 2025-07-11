@@ -414,22 +414,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const upload = await storage.createFileUpload(uploadData);
       
-      // Process database files with Wincan reader for authentic data extraction
+      // Database files will be processed separately via /process-wincan endpoint
       if (fileType === 'database') {
-        console.log('🔒 PROCESSING WINCAN DATABASE FILE FOR AUTHENTIC DATA');
-        try {
-          const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
-          const sections = await readWincanDatabase(req.file.path);
-          
-          if (sections.length > 0) {
-            console.log(`✅ Extracted ${sections.length} authentic sections from database`);
-            await storeWincanSections(sections, upload.id);
-          } else {
-            console.log('⚠️ No sections extracted from database file');
-          }
-        } catch (error) {
-          console.error('Error processing Wincan database:', error);
-        }
+        console.log('🔒 WINCAN DATABASE UPLOADED - Processing will happen via dedicated endpoint');
+        // No processing here - avoid duplicate storage operations
+        // The /process-wincan endpoint will handle all database processing
       }
 
       // Mark as completed after processing

@@ -25,6 +25,7 @@ import Database from 'better-sqlite3';
 import fs from 'fs';
 import { db } from "./db";
 import { sectionInspections } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 // Format observation text to hide 5% WL and group repeated codes by meterage
 // JN codes only display if structural defect within one meter of junction
@@ -353,8 +354,9 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
   const authenticSections: WincanSectionData[] = [];
   
   // Process ONLY authentic database records
-  for (const record of sectionRecords) {
-    console.log("📋 Processing authentic section:", record);
+  for (let i = 0; i < sectionRecords.length; i++) {
+    const record = sectionRecords[i];
+    console.log(`📋 Processing section ${i + 1}/${sectionRecords.length}: ${record?.OBJ_Key || 'Unknown'}`);
     
     if (record && typeof record === 'object') {
       // Map GUIDs to readable manhole names
@@ -368,10 +370,13 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       
       // Extract authentic observations for this section
       const observations = observationMap.get(record.OBJ_PK) || [];
+      console.log(`🔍 Section ${record.OBJ_Key || 'Unknown'} (PK: ${record.OBJ_PK}): Found ${observations.length} observations`);
+      
       const formattedText = observations.length > 0 ? formatObservationText(observations) : '';
       const defectText = formattedText || 'No action required pipe observed in acceptable structural and service condition';
       
-      console.log(`🔍 Section ${record.OBJ_Key || 'Unknown'}: Found ${observations.length} observations:`, observations.slice(0, 3));
+      console.log(`📝 Formatted defect text: "${defectText.substring(0, 80)}..."`);
+      console.log(`📊 About to add section with itemNo: ${authenticSections.length + 1}`);
       
       // Extract inspection date
       const inspectionDate = record.OBJ_TimeStamp ? record.OBJ_TimeStamp.split(' ')[0] : 'UNKNOWN';
@@ -444,11 +449,30 @@ function extractAuthenticValue(record: any, fieldNames: string[]): string | null
   return null;
 }
 
-// Store authentic sections in database
+// Store authentic sections in database with comprehensive duplicate prevention
 export async function storeWincanSections(sections: WincanSectionData[], uploadId: number): Promise<void> {
   console.log(`🔒 STORING ${sections.length} AUTHENTIC SECTIONS IN DATABASE`);
   
+  // First, clear any existing sections for this upload to prevent accumulation
+  try {
+    const deletedSections = await db.delete(sectionInspections)
+      .where(eq(sectionInspections.fileUploadId, uploadId))
+      .returning();
+    console.log(`🗑️ Cleared ${deletedSections.length} existing sections for upload ${uploadId}`);
+  } catch (error) {
+    console.log(`⚠️ No existing sections to clear: ${error}`);
+  }
+  
+  // Track processed sections to prevent duplicates within this batch
+  const processedSections = new Set<number>();
+  
   for (const section of sections) {
+    // Skip if we've already processed this item number in this batch
+    if (processedSections.has(section.itemNo)) {
+      console.log(`⚠️ Skipping duplicate section ${section.itemNo} within batch`);
+      continue;
+    }
+    
     try {
       const insertData = {
         fileUploadId: uploadId,
@@ -470,12 +494,36 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         finishMHDepth: '1.5m'
       };
       
-      await db.insert(sectionInspections).values(insertData);
-      console.log(`✅ Stored authentic section ${section.itemNo}`);
+      // Use upsert to prevent duplicates at database level
+      await db.insert(sectionInspections)
+        .values(insertData)
+        .onConflictDoUpdate({
+          target: [sectionInspections.fileUploadId, sectionInspections.itemNo],
+          set: {
+            projectNo: insertData.projectNo,
+            date: insertData.date,
+            time: insertData.time,
+            startMH: insertData.startMH,
+            finishMH: insertData.finishMH,
+            pipeSize: insertData.pipeSize,
+            pipeMaterial: insertData.pipeMaterial,
+            totalLength: insertData.totalLength,
+            lengthSurveyed: insertData.lengthSurveyed,
+            defects: insertData.defects,
+            recommendations: insertData.recommendations,
+            severityGrade: insertData.severityGrade,
+            adoptable: insertData.adoptable,
+            startMHDepth: insertData.startMHDepth,
+            finishMHDepth: insertData.finishMHDepth
+          }
+        });
+      
+      processedSections.add(section.itemNo);
+      console.log(`✅ Stored/updated authentic section ${section.itemNo}`);
     } catch (error) {
       console.error(`❌ Error storing section ${section.itemNo}:`, error);
     }
   }
   
-  console.log(`🔒 LOCKDOWN COMPLETE: ${sections.length} authentic sections stored`);
+  console.log(`🔒 LOCKDOWN COMPLETE: ${processedSections.size} unique authentic sections stored`);
 }

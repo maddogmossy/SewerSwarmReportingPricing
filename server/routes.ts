@@ -2095,13 +2095,10 @@ export async function registerRoutes(app: Express) {
               continue; // Skip this section
             }
             
-            // Use the MSCC5 classifier to process multiple defects
-            const result = await MSCC5Classifier.classifyMultipleDefects(
-              section.defects,
-              'adoption', // Default sector, should be dynamic based on upload
-              uploadId,
-              section.itemNo
-            );
+            // DISABLED: Multi-defect processing (causes duplication issues)
+            // Keep sections as single units without splitting
+            console.log(`✅ Processing Section ${section.itemNo} as single section (no splitting)`);
+            const result = { individualDefects: [] }; // Disabled multi-defect processing
             
             // Validate each individual defect before storing
             for (const defect of result.individualDefects || []) {
@@ -2223,16 +2220,10 @@ export async function registerRoutes(app: Express) {
       const sectionData = extractSpecificSectionFromPDF(pdfText.text, uploadId, sectionNumber);
       
       if (sectionData) {
-        // APPLY MULTI-DEFECT SECTION SPLITTING TO SINGLE SECTION REPROCESSING
-        console.log(`🔄 Applying multi-defect section splitting to Section ${sectionNumber}...`);
+        // DISABLED: Multi-defect section splitting (causes duplication issues)
+        console.log(`✅ Processing Section ${sectionNumber} as single section (no splitting)`);
         
-        const finalSections = [];
-        if (sectionData.defects && sectionData.defects !== "No action required pipe observed in acceptable structural and service condition") {
-          const subsections = MSCC5Classifier.splitMultiDefectSection(sectionData.defects, sectionData.itemNo, sectionData);
-          finalSections.push(...subsections);
-        } else {
-          finalSections.push(sectionData);
-        }
+        const finalSections = [sectionData]; // Keep as single section, no splitting
         
         console.log(`✓ Section ${sectionNumber} splitting complete: 1 original → ${finalSections.length} final sections`);
         
@@ -2277,18 +2268,10 @@ export async function registerRoutes(app: Express) {
       const extractedSections = await extractAdoptionSectionsFromPDF(pdfText.text, uploadId);
       
       if (extractedSections && extractedSections.length > 0) {
-        // APPLY MULTI-DEFECT SECTION SPLITTING TO FLOW REFRESH
-        console.log('🔄 Applying multi-defect section splitting to refreshed sections...');
+        // DISABLED: Multi-defect section splitting (causes duplication issues)
+        console.log('✅ Processing refreshed sections as single sections (no splitting)');
         
-        const finalSections = [];
-        for (const section of extractedSections) {
-          if (section.defects && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
-            const subsections = MSCC5Classifier.splitMultiDefectSection(section.defects, section.itemNo, section);
-            finalSections.push(...subsections);
-          } else {
-            finalSections.push(section);
-          }
-        }
+        const finalSections = extractedSections; // Keep as single sections, no splitting
         
         console.log(`✓ Flow refresh splitting complete: ${extractedSections.length} original → ${finalSections.length} final sections`);
         await db.insert(sectionInspections).values(finalSections);
