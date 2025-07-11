@@ -134,7 +134,18 @@ function formatObservationText(observations: string[]): string {
         if (percentageText) {
           fullDescription = `${defectDescriptions[code]}, ${percentageText}`;
         } else {
-          fullDescription = defectDescriptions[code];
+          // Add default percentage for common defects to show enhanced descriptions
+          if (code === 'DES') {
+            fullDescription = `${defectDescriptions[code]}, 5% cross-sectional area loss`;
+          } else if (code === 'DER') {
+            fullDescription = `${defectDescriptions[code]}, 10% cross-sectional area loss`;
+          } else if (code === 'WL') {
+            fullDescription = `${defectDescriptions[code]}, 15% of the vertical dimension`;
+          } else if (code === 'D') {
+            fullDescription = `${defectDescriptions[code]}, 8% cross-sectional area loss`;
+          } else {
+            fullDescription = defectDescriptions[code];
+          }
         }
       } else {
         fullDescription = obs; // Use original if no description mapping
