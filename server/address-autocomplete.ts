@@ -338,6 +338,29 @@ export function searchUKAddresses(query: string, limit: number = 10): string[] {
     return a.localeCompare(b);
   });
 
+  // ENHANCED: For city/area names, suggest street types and area options first
+  if (matches.length > 0) {
+    const cityAreaMatches = ['london', 'manchester', 'birmingham', 'liverpool', 'leeds', 'glasgow', 'edinburgh', 'bristol', 'cardiff', 'belfast'];
+    const isLikeCityQuery = cityAreaMatches.some(city => searchTerm.toLowerCase().includes(city.toLowerCase()));
+    
+    if (isLikeCityQuery && queryWords.length === 1) {
+      // For single city names, prioritize street type suggestions
+      const cityName = searchTerm.charAt(0).toUpperCase() + searchTerm.slice(1);
+      const streetTypeSuggestions = [
+        `${cityName} Road - Enter Full Address`,
+        `${cityName} Street - Enter Full Address`, 
+        `${cityName} Lane - Enter Full Address`,
+        `${cityName} Avenue - Enter Full Address`,
+        `${cityName} Close - Enter Full Address`,
+        `${cityName} Business Park - Enter Full Address`,
+        `${cityName} Industrial Estate - Enter Full Address`
+      ];
+      
+      // Combine street type suggestions with a few best existing matches
+      return [...streetTypeSuggestions.slice(0, 5), ...matches.slice(0, 3)].slice(0, limit);
+    }
+  }
+
   // If no matches found, provide intelligent fallback suggestions
   if (matches.length === 0) {
     // Check if query contains business/unit patterns
