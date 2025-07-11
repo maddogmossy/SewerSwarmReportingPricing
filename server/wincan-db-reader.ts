@@ -119,6 +119,13 @@ function classifyWincanObservations(observationText: string, sector: string) {
   let recommendations = 'No action required pipe observed in acceptable structural and service condition';
   let adoptable = 'Yes';
   
+  // If no defects text or observation-only text, return Grade 0
+  if (!observationText || 
+      observationText === 'No action required pipe observed in acceptable structural and service condition' ||
+      observationText.trim() === '') {
+    return { severityGrade: 0, recommendations, adoptable: 'Yes' };
+  }
+  
   // Extract defect patterns from Wincan observation format
   const upperText = observationText.toUpperCase();
   
@@ -182,15 +189,22 @@ function classifyWincanObservations(observationText: string, sector: string) {
     }
   }
   
-  // Check for line deviations
+  // Check for line deviations (minor observation)
   else if (upperText.includes('LINE DEVIATES') || upperText.includes('LL ') || upperText.includes('LR ')) {
-    severityGrade = 1;
-    recommendations = 'We recommend monitoring line deviation and consideration of realignment if flow is affected';
+    severityGrade = 0; // Line deviations are observations, not defects
+    recommendations = 'No action required pipe observed in acceptable structural and service condition';
     adoptable = 'Yes';
   }
   
   // Junctions and connections are typically observations only
   else if (upperText.includes('JUNCTION') || upperText.includes('JN ')) {
+    severityGrade = 0;
+    recommendations = 'No action required pipe observed in acceptable structural and service condition';
+    adoptable = 'Yes';
+  }
+  
+  // For any other observation codes that don't match defect patterns, treat as Grade 0
+  else {
     severityGrade = 0;
     recommendations = 'No action required pipe observed in acceptable structural and service condition';
     adoptable = 'Yes';
@@ -494,29 +508,9 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         finishMHDepth: '1.5m'
       };
       
-      // Use upsert to prevent duplicates at database level
+      // Insert directly without upsert to avoid constraint issues
       await db.insert(sectionInspections)
-        .values(insertData)
-        .onConflictDoUpdate({
-          target: [sectionInspections.fileUploadId, sectionInspections.itemNo],
-          set: {
-            projectNo: insertData.projectNo,
-            date: insertData.date,
-            time: insertData.time,
-            startMH: insertData.startMH,
-            finishMH: insertData.finishMH,
-            pipeSize: insertData.pipeSize,
-            pipeMaterial: insertData.pipeMaterial,
-            totalLength: insertData.totalLength,
-            lengthSurveyed: insertData.lengthSurveyed,
-            defects: insertData.defects,
-            recommendations: insertData.recommendations,
-            severityGrade: insertData.severityGrade,
-            adoptable: insertData.adoptable,
-            startMHDepth: insertData.startMHDepth,
-            finishMHDepth: insertData.finishMHDepth
-          }
-        });
+        .values(insertData);
       
       processedSections.add(section.itemNo);
       console.log(`✅ Stored/updated authentic section ${section.itemNo}`);
