@@ -740,7 +740,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Sector Standards API endpoints
   app.get('/api/sector-standards', async (req, res) => {
     try {
-      const sectorStandardsModule = await import('./sector-standards.js');
+      const sectorStandardsModule = await import('./sector-standards');
       const allStandards = sectorStandardsModule.getAllSectorStandards();
       res.json(allStandards);
     } catch (error) {
@@ -751,7 +751,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/sector-standards/:sector', async (req, res) => {
     try {
-      const sectorStandardsModule = await import('./sector-standards.js');
+      const sectorStandardsModule = await import('./sector-standards');
       const sectorStandards = sectorStandardsModule.getSectorStandards(req.params.sector);
       if (!sectorStandards) {
         return res.status(404).json({ error: 'Sector not found' });
@@ -760,6 +760,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching sector standards:', error);
       res.status(500).json({ error: 'Failed to fetch sector standards' });
+    }
+  });
+
+  // Individual sector profile endpoints (frontend compatibility)
+  app.get('/api/utilities/profile', async (req, res) => {
+    try {
+      const sectorStandardsModule = await import('./sector-standards');
+      const sectorStandards = sectorStandardsModule.getSectorStandards('utilities');
+      res.json(sectorStandards || { sector: 'utilities', standards: [] });
+    } catch (error) {
+      console.error('Error fetching utilities standards:', error);
+      res.json({ sector: 'utilities', standards: [] });
+    }
+  });
+
+  app.get('/api/adoption/profile', async (req, res) => {
+    try {
+      const sectorStandardsModule = await import('./sector-standards');
+      const sectorStandards = sectorStandardsModule.getSectorStandards('adoption');
+      res.json(sectorStandards || { sector: 'adoption', standards: [] });
+    } catch (error) {
+      console.error('Error fetching adoption standards:', error);
+      res.json({ sector: 'adoption', standards: [] });
+    }
+  });
+
+  app.get('/api/highways/profile', async (req, res) => {
+    try {
+      const sectorStandardsModule = await import('./sector-standards');
+      const sectorStandards = sectorStandardsModule.getSectorStandards('highways');
+      res.json(sectorStandards || { sector: 'highways', standards: [] });
+    } catch (error) {
+      console.error('Error fetching highways standards:', error);
+      res.json({ sector: 'highways', standards: [] });
+    }
+  });
+
+  app.get('/api/insurance/profile', async (req, res) => {
+    try {
+      const sectorStandardsModule = await import('./sector-standards');
+      const sectorStandards = sectorStandardsModule.getSectorStandards('insurance');
+      res.json(sectorStandards || { sector: 'insurance', standards: [] });
+    } catch (error) {
+      console.error('Error fetching insurance standards:', error);
+      res.json({ sector: 'insurance', standards: [] });
+    }
+  });
+
+  app.get('/api/construction/profile', async (req, res) => {
+    try {
+      const sectorStandardsModule = await import('./sector-standards');
+      const sectorStandards = sectorStandardsModule.getSectorStandards('construction');
+      res.json(sectorStandards || { sector: 'construction', standards: [] });
+    } catch (error) {
+      console.error('Error fetching construction standards:', error);
+      res.json({ sector: 'construction', standards: [] });
+    }
+  });
+
+  app.get('/api/domestic/profile', async (req, res) => {
+    try {
+      const sectorStandardsModule = await import('./sector-standards');
+      const sectorStandards = sectorStandardsModule.getSectorStandards('domestic');
+      res.json(sectorStandards || { sector: 'domestic', standards: [] });
+    } catch (error) {
+      console.error('Error fetching domestic standards:', error);
+      res.json({ sector: 'domestic', standards: [] });
     }
   });
 
