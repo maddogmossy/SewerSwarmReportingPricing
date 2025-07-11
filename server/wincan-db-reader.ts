@@ -397,35 +397,21 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       const fromMH = manholeMap.get(record.OBJ_FromNode_REF) || record.OBJ_FromNode_REF || 'UNKNOWN';
       const toMH = manholeMap.get(record.OBJ_ToNode_REF) || record.OBJ_ToNode_REF || 'UNKNOWN';
       
-      // Apply inspection direction logic with upstream/downstream rule
-      // UPSTREAM/DOWNSTREAM RULE: Force alternating inspection directions for proper display
+      // Apply authentic inspection direction logic from database
       let startMH: string;
       let finishMH: string;
-      let inspectionDirection = 'downstream'; // Default assumption
       
-      // Detect inspection direction based on manhole patterns and section number
-      if (fromMH && toMH) {
-        const fromHasNumber = /\d+/.test(fromMH);
-        const toHasNumber = /\d+/.test(toMH);
-        
-        if (fromHasNumber && toHasNumber) {
-          const fromNum = parseInt(fromMH.match(/\d+/)?.[0] || '0');
-          const toNum = parseInt(toMH.match(/\d+/)?.[0] || '0');
-          
-          // UPSTREAM/DOWNSTREAM RULE: Apply smart direction detection
-          // Check if this should be treated as upstream inspection
-          // Even-numbered sections or specific patterns should show reversed flow
-          const sectionIndex = authenticSections.length + 1;
-          
-          // Apply upstream rule for certain sections to create proper flow representation
-          if (sectionIndex === 1 ||     // Force Item 1 to show upstream (SW02 → SW01)
-              sectionIndex % 3 === 0 || // Every 3rd section shows upstream
-              fromNum > toNum ||         // Natural upstream (high to low numbers)
-              (fromMH.includes('SW') && sectionIndex > 10) || // Later SW sections
-              (fromMH.includes('FW') && sectionIndex > 5)) {  // Later FW sections
-            inspectionDirection = 'upstream';
-          }
-        }
+      // Read authentic inspection direction from OBJ_FlowDir field
+      // OBJ_FlowDir: 1 = downstream, 0 = upstream (or other values based on Wincan standards)
+      const flowDirection = record.OBJ_FlowDir;
+      let inspectionDirection = 'downstream'; // Default
+      
+      if (flowDirection !== null && flowDirection !== undefined) {
+        // Wincan standard: 1 = downstream, 0 = upstream
+        inspectionDirection = flowDirection === 1 ? 'downstream' : 'upstream';
+        console.log(`🔍 Authentic Flow Direction from DB: OBJ_FlowDir=${flowDirection} → ${inspectionDirection}`);
+      } else {
+        console.log(`⚠️ No flow direction in database for section ${record.OBJ_Key}, using default downstream`);
       }
       
       // UPSTREAM/DOWNSTREAM RULE APPLICATION:

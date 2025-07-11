@@ -208,15 +208,17 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v1' to return to this stable checkpoint
 
-✅ **INSPECTION DIRECTION SYSTEM VERIFIED (July 11, 2025):**
-- **Upload 79 (GR7188):** 24 consecutive sections with smart upstream/downstream detection
-- **Item 1 Upstream Fix:** Item 1 correctly shows SW02→SW01 (upstream inspection with reversed manholes)
-- **Upstream Rule Applied:** Sections 1,3,18,21,22,23 show reversed manholes (SW02→SW01, SW04→SW03, SPUR 1→SW12)
-- **Downstream Rule Applied:** Most sections show normal flow (SW01→SW02, SW02→SW03, FW01→FW02)
-- **Upload 78 (GR7188a):** 15 non-consecutive sections with different manhole patterns (NOD_01, FW04, etc.)
-- **Automatic Processing:** Direction logic applied during upload processing and reprocessing
-- **Dashboard Refresh:** Built-in "Refresh Dashboard" button clears cache and reloads data
-- **Real-time Validation:** Process-wincan endpoint shows direction logic examples in logs
+✅ **AUTHENTIC INSPECTION DIRECTION DISCOVERED (July 11, 2025):**
+- **CRITICAL DISCOVERY:** Database contains OBJ_FlowDir field (column 46) with authentic inspection direction values
+- **DATABASE FACT:** All sections have OBJ_FlowDir = 1 (downstream flow) - no artificial patterns needed
+- **AUTHENTIC DIRECTION:** All inspections were performed downstream according to database
+- **CORRECTED LOGIC:** Now reads authentic OBJ_FlowDir field instead of applying synthetic upstream/downstream rules
+- **Item 1 Should Be:** SW01→SW02 (downstream, not reversed) based on authentic database
+- **Item 2 Correct:** SW02→SW03 (downstream) ✅ 
+- **Item 3 Should Be:** SW03→SW04 (downstream, not reversed) based on authentic database
+- **Zero Synthetic Data:** System now uses only authentic flow direction from Wincan database OBJ_FlowDir field
+- **Upload 78 (GR7188a):** 15 non-consecutive sections with authentic flow patterns from database
+- **Real-time Processing:** OBJ_FlowDir field read during upload processing for authentic direction
 
 ## Changelog
 
