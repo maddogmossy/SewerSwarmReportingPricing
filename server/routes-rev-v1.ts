@@ -853,6 +853,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Repair Methods API endpoint for cleaning and repair options
+  app.get('/api/repair-methods', (req, res) => {
+    console.log('=== REPAIR METHODS ROUTE CALLED ===');
+    try {
+      // Return predefined repair methods with categories for filtering
+      const repairMethods = [
+        // Cleaning methods (for service defects)
+        {
+          id: 1,
+          name: 'Van Pack',
+          description: 'Small mobile CCTV and cleaning unit suitable for restricted access areas',
+          category: 'cleaning'
+        },
+        {
+          id: 2, 
+          name: 'Jet Vac',
+          description: 'High-pressure water jetting with vacuum recovery for debris removal',
+          category: 'cleaning'
+        },
+        {
+          id: 3,
+          name: 'Custom Cleaning',
+          description: 'User-defined cleaning method with custom specifications',
+          category: 'cleaning'
+        },
+        // Structural repair methods (for structural defects)
+        {
+          id: 4,
+          name: 'Patch',
+          description: 'Localized structural repair using resin-based patching materials',
+          category: 'structural'
+        },
+        {
+          id: 5,
+          name: 'Lining',
+          description: 'Full pipe rehabilitation using CIPP or other lining technologies',
+          category: 'structural'
+        },
+        {
+          id: 6,
+          name: 'Excavation',
+          description: 'Complete pipe replacement through open excavation',
+          category: 'structural'
+        },
+        {
+          id: 7,
+          name: 'Custom',
+          description: 'User-defined repair method with custom specifications',
+          category: 'structural'
+        }
+      ];
+      
+      res.json(repairMethods);
+    } catch (error) {
+      console.error('Error fetching repair methods:', error);
+      res.status(500).json({ error: 'Failed to fetch repair methods' });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }
