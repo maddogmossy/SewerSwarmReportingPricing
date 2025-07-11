@@ -54,16 +54,35 @@ export async function readWincanDatabase(filePath: string): Promise<WincanSectio
     // Build manhole name mapping from NODE table
     const manholeMap = new Map<string, string>();
     try {
-      const nodeData = database.prepare("SELECT OBJ_Key, OBJ_Name FROM NODE WHERE OBJ_Name IS NOT NULL").all();
+      const nodeData = database.prepare("SELECT OBJ_PK, OBJ_Key FROM NODE WHERE OBJ_Key IS NOT NULL").all();
       console.log(`📍 Found ${nodeData.length} manhole records`);
       for (const node of nodeData) {
-        if (node.OBJ_Key && node.OBJ_Name) {
-          manholeMap.set(node.OBJ_Key, node.OBJ_Name);
+        if (node.OBJ_PK && node.OBJ_Key) {
+          manholeMap.set(node.OBJ_PK, node.OBJ_Key);
         }
       }
-      console.log(`📍 Mapped ${manholeMap.size} manholes: ${Array.from(manholeMap.values()).slice(0, 5).join(', ')}...`);
+      console.log(`📍 Mapped ${manholeMap.size} manholes: ${Array.from(manholeMap.values()).slice(0, 10).join(', ')}...`);
     } catch (error) {
       console.log("⚠️ Could not load manhole names, using GUIDs");
+    }
+
+    // Build observation data mapping from SECOBS table
+    const observationMap = new Map<string, string[]>();
+    try {
+      const obsData = database.prepare("SELECT OBJ_Section_REF, OBJ_Code, OBJ_Position FROM SECOBS WHERE OBJ_Code IS NOT NULL ORDER BY OBJ_Position").all();
+      console.log(`🔍 Found ${obsData.length} observation records`);
+      for (const obs of obsData) {
+        if (obs.OBJ_Section_REF && obs.OBJ_Code) {
+          if (!observationMap.has(obs.OBJ_Section_REF)) {
+            observationMap.set(obs.OBJ_Section_REF, []);
+          }
+          const position = obs.OBJ_Position ? ` at ${obs.OBJ_Position}m` : '';
+          observationMap.get(obs.OBJ_Section_REF)!.push(`${obs.OBJ_Code}${position}`);
+        }
+      }
+      console.log(`🔍 Mapped observations for ${observationMap.size} sections`);
+    } catch (error) {
+      console.log("⚠️ Could not load observation data");
     }
 
     // Look for SECTION table (main inspection data)
@@ -77,7 +96,7 @@ export async function readWincanDatabase(filePath: string): Promise<WincanSectio
       
       if (sectionRecords.length > 0) {
         console.log(`📄 Sample SECTION data:`, sectionRecords[0]);
-        sectionData = await processSectionTable(sectionRecords, manholeMap);
+        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap);
       }
     }
     
@@ -121,7 +140,7 @@ export async function readWincanDatabase(filePath: string): Promise<WincanSectio
 }
 
 // Process authentic SECTION data with manhole name mapping - ZERO SYNTHETIC DATA
-async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>): Promise<WincanSectionData[]> {
+async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>, observationMap: Map<string, string[]>): Promise<WincanSectionData[]> {
   console.log(`🔒 LOCKDOWN: Processing authentic SECTION data only`);
   
   if (!sectionRecords || sectionRecords.length === 0) {
@@ -137,13 +156,17 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
     
     if (record && typeof record === 'object') {
       // Map GUIDs to readable manhole names
-      const startMH = manholeMap.get(record.OBJ_FromNodeID) || record.OBJ_FromNodeID || 'UNKNOWN';
-      const finishMH = manholeMap.get(record.OBJ_ToNodeID) || record.OBJ_ToNodeID || 'UNKNOWN';
+      const startMH = manholeMap.get(record.OBJ_FromNode_REF) || record.OBJ_FromNode_REF || 'UNKNOWN';
+      const finishMH = manholeMap.get(record.OBJ_ToNode_REF) || record.OBJ_ToNode_REF || 'UNKNOWN';
       
       // Extract authentic pipe specifications
-      const pipeSize = record.OBJ_Diameter || record.OBJ_Width || 'UNKNOWN';
+      const pipeSize = record.OBJ_Size1 || 'UNKNOWN';
       const pipeMaterial = record.OBJ_Material || 'UNKNOWN';
       const totalLength = record.OBJ_Length || 'UNKNOWN';
+      
+      // Extract authentic observations for this section
+      const observations = observationMap.get(record.OBJ_PK) || [];
+      const defectText = observations.length > 0 ? observations.join(', ') : 'No action required pipe observed in acceptable structural and service condition';
       
       // Extract inspection date
       const inspectionDate = record.OBJ_TimeStamp ? record.OBJ_TimeStamp.split(' ')[0] : 'UNKNOWN';
@@ -158,7 +181,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         pipeMaterial: pipeMaterial,
         totalLength: totalLength.toString(),
         lengthSurveyed: totalLength.toString(), // Assume fully surveyed unless specified
-        defects: 'No action required pipe observed in acceptable structural and service condition',
+        defects: defectText,
         recommendations: 'No action required pipe observed in acceptable structural and service condition',
         severityGrade: 0,
         adoptable: 'Yes',
