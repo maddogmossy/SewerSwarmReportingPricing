@@ -369,55 +369,43 @@ export default function Dashboard() {
     if (key === 'defects' || key === 'recommendations') {
       if (hiddenCount >= 8) {
         return { 
-          width: '400px !important', 
+          width: '400px', 
           minWidth: '400px',
-          maxWidth: '400px',
-          whiteSpace: 'normal',
-          wordWrap: 'break-word',
-          wordBreak: 'break-word',
-          overflowWrap: 'break-word',
-          textAlign: 'left',
-          verticalAlign: 'top'
+          maxWidth: '400px'
         };
       } else if (hiddenCount >= 6) {
         return { 
-          width: '350px !important', 
+          width: '350px', 
           minWidth: '350px',
-          maxWidth: '350px',
-          whiteSpace: 'normal',
-          wordWrap: 'break-word',
-          wordBreak: 'break-word',
-          overflowWrap: 'break-word',
-          textAlign: 'left',
-          verticalAlign: 'top'
+          maxWidth: '350px'
         };
       } else if (hiddenCount >= 4) {
         return { 
-          width: '300px !important', 
+          width: '300px', 
           minWidth: '300px',
-          maxWidth: '300px',
-          whiteSpace: 'normal',
-          wordWrap: 'break-word',
-          wordBreak: 'break-word',
-          overflowWrap: 'break-word',
-          textAlign: 'left',
-          verticalAlign: 'top'
+          maxWidth: '300px'
         };
       } else if (hiddenCount >= 2) {
         return { 
-          width: '250px !important', 
+          width: '250px', 
           minWidth: '250px',
-          maxWidth: '250px',
-          whiteSpace: 'normal',
-          wordWrap: 'break-word',
-          wordBreak: 'break-word',
-          overflowWrap: 'break-word',
-          textAlign: 'left',
-          verticalAlign: 'top'
+          maxWidth: '250px'
         };
       }
     }
     return {};
+  };
+
+  // Get CSS classes for dynamic content columns
+  const getColumnClasses = (key: string) => {
+    const hiddenCount = hiddenColumns.size;
+    if (key === 'defects' || key === 'recommendations') {
+      if (hiddenCount >= 2) {
+        return 'expanded-column-text';
+      }
+      return 'text-left align-top whitespace-normal break-words';
+    }
+    return '';
   };
 
   // Calculate dynamic columns with reactive widths based on hidden columns
@@ -2450,8 +2438,9 @@ export default function Dashboard() {
                                 }
                               }}
                               className={`
-                                ${column.width} border border-slate-300 font-semibold text-xs align-middle break-words
+                                border border-slate-300 font-semibold text-xs align-middle
                                 ${column.priority === 'pretty' ? 'px-2 py-2 text-left' : 'px-1 py-1 text-center'}
+                                ${getColumnClasses(column.key) || ''}
                                 ${showColumnSelector && !canBeHidden 
                                   ? 'bg-slate-200 cursor-not-allowed opacity-60'
                                   : showColumnSelector && canBeHidden
@@ -2459,7 +2448,7 @@ export default function Dashboard() {
                                   : ''
                                 }
                               `}
-                              style={{ wordWrap: 'break-word', whiteSpace: 'normal', ...getColumnStyle(column.key) }}
+                              style={getColumnStyle(column.key)}
                               title={showColumnSelector ? (canBeHidden ? 'Click to hide this column' : 'Essential column - cannot be hidden') : ''}
                             >
                               {column.label}
@@ -2486,8 +2475,9 @@ export default function Dashboard() {
                               <td 
                                 key={column.key} 
                                 className={`
-                                  ${column.width} border border-slate-300 text-xs align-top break-words
-                                  ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed text-left' : 'px-1 py-1 text-center'}
+                                  border border-slate-300 text-xs align-top
+                                  ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
+                                  ${getColumnClasses(column.key) || 'text-center'}
                                   ${
                                     // Standard Grade 0 adoptable highlighting only
                                     (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
@@ -2495,13 +2485,7 @@ export default function Dashboard() {
                                     : ''
                                   }
                                 `}
-                                style={{ 
-                                  wordWrap: 'break-word', 
-                                  whiteSpace: 'normal', 
-                                  wordBreak: 'break-word',
-                                  hyphens: 'auto',
-                                  ...getColumnStyle(column.key) 
-                                }}
+                                style={getColumnStyle(column.key)}
                               >
                                 {renderCellContent(column.key, section)}
                               </td>
