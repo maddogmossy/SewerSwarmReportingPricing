@@ -27,10 +27,34 @@ import { db } from "./db";
 import { sectionInspections } from "@shared/schema";
 
 // Format observation text to hide 5% WL and group repeated codes by meterage
+// JN codes only display if structural defect within one meter of junction
 function formatObservationText(observations: string[]): string {
   const codeGroups: { [key: string]: string[] } = {};
   const filteredObservations: string[] = [];
+  const junctionPositions: number[] = [];
+  const structuralDefectPositions: number[] = [];
   
+  // First pass: identify junction positions and structural defects
+  for (const obs of observations) {
+    // Extract code and meterage
+    const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)/);
+    if (codeMatch) {
+      const code = codeMatch[1];
+      const meterage = parseFloat(codeMatch[2]);
+      
+      if (code === 'JN') {
+        junctionPositions.push(meterage);
+      }
+      
+      // Structural defect codes: D (deformation), FC/FL (fractures), CR (cracks), 
+      // JDL/JDS (joint displacement), DEF (deformed), OJM/OJL (open joints)
+      if (['D', 'FC', 'FL', 'CR', 'JDL', 'JDS', 'DEF', 'OJM', 'OJL'].includes(code)) {
+        structuralDefectPositions.push(meterage);
+      }
+    }
+  }
+  
+  // Second pass: process observations with conditional JN filtering
   for (const obs of observations) {
     // Skip WL observations that are exactly 5%
     if (obs.includes('Water level,  5% of the vertical dimension')) {
@@ -41,12 +65,23 @@ function formatObservationText(observations: string[]): string {
     const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*m?)\s*\(/);
     if (codeMatch) {
       const code = codeMatch[1];
-      const meterage = codeMatch[2];
+      const meterage = parseFloat(codeMatch[2]);
+      
+      // Special handling for JN codes - only include if structural defect within 1m
+      if (code === 'JN') {
+        const hasNearbyStructuralDefect = structuralDefectPositions.some(
+          structPos => Math.abs(structPos - meterage) <= 1.0
+        );
+        
+        if (!hasNearbyStructuralDefect) {
+          continue; // Skip this JN observation
+        }
+      }
       
       if (!codeGroups[code]) {
         codeGroups[code] = [];
       }
-      codeGroups[code].push(meterage);
+      codeGroups[code].push(codeMatch[2]); // Keep original meterage format
     } else {
       // Keep observations that don't match the pattern (like WL with higher percentages)
       filteredObservations.push(obs);
