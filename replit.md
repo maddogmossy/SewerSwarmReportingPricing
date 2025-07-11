@@ -206,6 +206,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Comprehensive Deletion System:** Complete cleanup of database records + physical files + cache
 - **Zero Synthetic Data Policy:** Absolute lockdown on placeholder/fallback data generation
 - **Professional Dashboard:** Multi-defect handling, pricing integration, sector-specific standards
+- **WRc Recommendations Display:** Authentic WRc recommendations take priority over generic approved repair descriptions, proper blue cleaning popovers for service defects
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v1' to return to this stable checkpoint
 
