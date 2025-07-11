@@ -907,33 +907,29 @@ export default function Dashboard() {
   // We'll check this after we fetch the section data below
   const currentUpload = potentialCurrentUpload;
   
-  // Invalidate cache when switching between reports
+  // Cache invalidation when switching between reports - simplified approach
+  const [lastReportId, setLastReportId] = useState<number | null>(null);
+  
   useEffect(() => {
-    if (currentUpload?.id) {
-      console.log(`🔄 AGGRESSIVE CACHE INVALIDATION for report ${currentUpload.id}`);
-      // Clear ALL cache entries
-      queryClient.clear();
-      // Force fresh data when switching reports
-      queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-      queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload.id}/defects`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/defects`] });
-      // Force immediate refetch
-      setTimeout(() => {
-        queryClient.refetchQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-        queryClient.refetchQueries({ queryKey: [`/api/uploads/${currentUpload.id}/defects`] });
-      }, 100);
+    if (currentUpload?.id && currentUpload.id !== lastReportId) {
+      console.log(`🔄 Switching from report ${lastReportId} to ${currentUpload.id}`);
+      // Only invalidate when actually switching reports
+      if (lastReportId !== null) {
+        queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/defects`] });
+      }
+      setLastReportId(currentUpload.id);
     }
-  }, [currentUpload?.id, queryClient]);
+  }, [currentUpload?.id, lastReportId, queryClient]);
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, currentUpload?.id, Date.now()], // Add timestamp to force fresh queries
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
     enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
-    refetchOnWindowFocus: false, // Disable to prevent loops
+    refetchOnWindowFocus: false,
     retry: false
   });
 
@@ -1188,12 +1184,12 @@ export default function Dashboard() {
 
   // Fetch individual defects for multiple defects per section
   const { data: individualDefects = [], isLoading: defectsLoading } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/defects`, currentUpload?.id, Date.now()], // Add timestamp to force fresh queries
+    queryKey: [`/api/uploads/${currentUpload?.id}/defects`],
     enabled: !!currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"),
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
-    refetchOnWindowFocus: false, // Disable to prevent loops
+    refetchOnWindowFocus: false,
     retry: false
   });
 
