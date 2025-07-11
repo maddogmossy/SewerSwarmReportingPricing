@@ -58,12 +58,17 @@ function formatObservationText(observations: string[]): string {
   // Second pass: process observations with conditional JN filtering
   for (const obs of observations) {
     // Skip WL observations that are exactly 5%
-    if (obs.includes('Water level,  5% of the vertical dimension')) {
+    if (obs.includes('Water level, 5% of the vertical dimension')) {
       continue;
     }
     
-    // Extract code and meterage from observations like "JN 0.96m (Junction...)" 
-    const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*m?)\s*\(/);
+    // Extract code and meterage - handle different formats
+    let codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*m?)\s*\(/);
+    if (!codeMatch) {
+      // Try alternative format: "WL 1.9m, 6.88m" (simple meterage list)
+      codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*m?)/);
+    }
+    
     if (codeMatch) {
       const code = codeMatch[1];
       const meterage = parseFloat(codeMatch[2]);
@@ -83,8 +88,8 @@ function formatObservationText(observations: string[]): string {
         codeGroups[code] = [];
       }
       codeGroups[code].push(codeMatch[2]); // Keep original meterage format
-    } else {
-      // Keep observations that don't match the pattern (like WL with higher percentages)
+    } else if (!obs.includes('Water level, 5% of the vertical dimension')) {
+      // Keep observations that don't match the pattern (like higher % WL or IC/ICF nodes)
       filteredObservations.push(obs);
     }
   }
@@ -107,10 +112,17 @@ function formatObservationText(observations: string[]): string {
     }
   }
   
-  // Add any remaining non-grouped observations
-  groupedObservations.push(...filteredObservations);
+  // Add any remaining non-grouped observations (excluding 5% WL)
+  const finalFilteredObservations = filteredObservations.filter(obs => 
+    !obs.includes('Water level, 5% of the vertical dimension')
+  );
+  groupedObservations.push(...finalFilteredObservations);
   
-  return groupedObservations.join(', ');
+  // Final cleanup: remove any remaining 5% WL references from the entire result
+  const result = groupedObservations.join(', ');
+  return result.replace(/,?\s*WL \(Water level, 5% of the vertical dimension\)/g, '')
+              .replace(/,\s*$/, '') // Remove trailing comma
+              .trim();
 }
 
 // Classify Wincan observations using MSCC5 standards
@@ -387,7 +399,12 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       console.log(`🔍 Section ${record.OBJ_Key || 'Unknown'} (PK: ${record.OBJ_PK}): Found ${observations.length} observations`);
       
       const formattedText = observations.length > 0 ? formatObservationText(observations) : '';
-      const defectText = formattedText || 'No action required pipe observed in acceptable structural and service condition';
+      let defectText = formattedText || 'No action required pipe observed in acceptable structural and service condition';
+      
+      // If after formatting we only have 5% WL observations, treat as no defects
+      if (defectText.trim() === '' || defectText.match(/^WL \(Water level, 5% of the vertical dimension\),?\s*$/)) {
+        defectText = 'No action required pipe observed in acceptable structural and service condition';
+      }
       
       console.log(`📝 Formatted defect text: "${defectText.substring(0, 80)}..."`);
       console.log(`📊 About to add section with itemNo: ${authenticSections.length + 1}`);
