@@ -26,6 +26,92 @@ import fs from 'fs';
 import { db } from "./db";
 import { sectionInspections } from "@shared/schema";
 
+// Classify Wincan observations using MSCC5 standards
+function classifyWincanObservations(observationText: string, sector: string) {
+  let severityGrade = 0;
+  let recommendations = 'No action required pipe observed in acceptable structural and service condition';
+  let adoptable = 'Yes';
+  
+  // Extract defect patterns from Wincan observation format
+  const upperText = observationText.toUpperCase();
+  
+  // Check for structural defects
+  if (upperText.includes('DEFORMED') || upperText.includes('D ')) {
+    const percentageMatch = observationText.match(/(\d+)%/);
+    const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
+    
+    if (percentage >= 20) {
+      severityGrade = 4;
+      recommendations = 'We recommend excavation and replacement due to severe deformation affecting structural integrity';
+      adoptable = 'No';
+    } else if (percentage >= 10) {
+      severityGrade = 3;
+      recommendations = 'We recommend structural repair or relining to address deformation';
+      adoptable = 'Conditional';
+    } else {
+      severityGrade = 2;
+      recommendations = 'We recommend monitoring and consideration of relining';
+      adoptable = 'Yes';
+    }
+  }
+  
+  // Check for deposits (DES/DER equivalent)
+  else if (upperText.includes('SETTLED DEPOSITS') || upperText.includes('DES ') || upperText.includes('DER ')) {
+    const percentageMatch = observationText.match(/(\d+)%/);
+    const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
+    
+    if (percentage >= 25) {
+      severityGrade = 4;
+      recommendations = 'We recommend immediate high-pressure jetting and root cutting to remove severe blockage deposits';
+      adoptable = 'Conditional';
+    } else if (percentage >= 10) {
+      severityGrade = 3;
+      recommendations = 'We recommend high-pressure jetting to remove accumulated deposits and improve flow capacity';
+      adoptable = 'Yes';
+    } else {
+      severityGrade = 2;
+      recommendations = 'We recommend routine jetting and cleaning to prevent deposit accumulation';
+      adoptable = 'Yes';
+    }
+  }
+  
+  // Check for high water levels indicating downstream blockage
+  else if (upperText.includes('WATER LEVEL')) {
+    const percentageMatch = observationText.match(/(\d+)%/);
+    const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
+    
+    if (percentage >= 50) {
+      severityGrade = 3;
+      recommendations = 'We recommend cleanse and survey to investigate the high water levels, consideration should be given to downstream access';
+      adoptable = 'Conditional';
+    } else if (percentage >= 25) {
+      severityGrade = 2;
+      recommendations = 'We recommend investigation of downstream conditions and potential cleansing';
+      adoptable = 'Yes';
+    } else {
+      severityGrade = 0; // Low water levels are observations only
+      recommendations = 'No action required pipe observed in acceptable structural and service condition';
+      adoptable = 'Yes';
+    }
+  }
+  
+  // Check for line deviations
+  else if (upperText.includes('LINE DEVIATES') || upperText.includes('LL ') || upperText.includes('LR ')) {
+    severityGrade = 1;
+    recommendations = 'We recommend monitoring line deviation and consideration of realignment if flow is affected';
+    adoptable = 'Yes';
+  }
+  
+  // Junctions and connections are typically observations only
+  else if (upperText.includes('JUNCTION') || upperText.includes('JN ')) {
+    severityGrade = 0;
+    recommendations = 'No action required pipe observed in acceptable structural and service condition';
+    adoptable = 'Yes';
+  }
+  
+  return { severityGrade, recommendations, adoptable };
+}
+
 export interface WincanSectionData {
   itemNo: number;
   projectNo: string;
@@ -204,6 +290,20 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       const inspectionDate = record.OBJ_TimeStamp ? record.OBJ_TimeStamp.split(' ')[0] : 'UNKNOWN';
       const inspectionTime = record.OBJ_TimeStamp ? record.OBJ_TimeStamp.split(' ')[1] : 'UNKNOWN';
       
+      // Apply MSCC5 classification for defect analysis
+      let severityGrade = 0;
+      let recommendations = 'No action required pipe observed in acceptable structural and service condition';
+      let adoptable = 'Yes';
+      
+      if (observations.length > 0) {
+        const classification = classifyWincanObservations(defectText, 'utilities');
+        severityGrade = classification.severityGrade;
+        recommendations = classification.recommendations;
+        adoptable = classification.adoptable;
+        
+        console.log(`📊 MSCC5 Classification: Grade ${severityGrade}, ${adoptable}, ${recommendations.substring(0, 50)}...`);
+      }
+      
       const sectionData: WincanSectionData = {
         itemNo: authenticSections.length + 1,
         projectNo: record.OBJ_Name || 'GR7188',
@@ -214,9 +314,9 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         totalLength: totalLength.toString(),
         lengthSurveyed: totalLength.toString(), // Assume fully surveyed unless specified
         defects: defectText,
-        recommendations: 'No action required pipe observed in acceptable structural and service condition',
-        severityGrade: 0,
-        adoptable: 'Yes',
+        recommendations: recommendations,
+        severityGrade: severityGrade,
+        adoptable: adoptable,
         inspectionDate: inspectionDate,
         inspectionTime: inspectionTime
       };
