@@ -1,3 +1,25 @@
+/**
+ * WINCAN DATABASE READER - AUTHENTIC DATA EXTRACTION ONLY
+ * 
+ * LOCKED: July 11, 2025 - Complete authentic extraction system implemented
+ * 
+ * LOCKDOWN RULES:
+ * 1. Only extract data that exists in the database
+ * 2. Never generate synthetic/mock/placeholder data  
+ * 3. Use proper database relationships and column mapping
+ * 4. Maintain data integrity through authentic extraction only
+ * 
+ * LOCKED IMPLEMENTATION DETAILS:
+ * - NODE table: OBJ_PK (GUID) → OBJ_Key (SW01, SW02, FW01...)
+ * - SECTION table: OBJ_FromNode_REF/OBJ_ToNode_REF links to NODE OBJ_PK
+ * - SECOBS table: OBJ_Section_REF links to SECTION OBJ_PK for observation data
+ * - Proper filtering: Active sections only (24) vs total database records (39)
+ * - Manhole mapping: manholeMap for GUID→readable name conversion
+ * - Observation mapping: observationMap for authentic observation codes
+ * 
+ * ⚠️ DO NOT MODIFY - This working implementation is locked in
+ */
+
 // Wincan Database Reader - Extract inspection data from .db3 files
 import Database from 'better-sqlite3';
 import fs from 'fs';
