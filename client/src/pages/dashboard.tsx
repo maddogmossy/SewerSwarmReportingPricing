@@ -910,18 +910,25 @@ export default function Dashboard() {
   // Invalidate cache when switching between reports
   useEffect(() => {
     if (currentUpload?.id) {
-      console.log(`🔄 Cache invalidation for report ${currentUpload.id}`);
+      console.log(`🔄 AGGRESSIVE CACHE INVALIDATION for report ${currentUpload.id}`);
+      // Clear ALL cache entries
+      queryClient.clear();
       // Force fresh data when switching reports
       queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
       queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload.id}/defects`] });
       queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
       queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/defects`] });
+      // Force immediate refetch
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+        queryClient.refetchQueries({ queryKey: [`/api/uploads/${currentUpload.id}/defects`] });
+      }, 100);
     }
   }, [currentUpload?.id, queryClient]);
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, currentUpload?.id, Date.now()], // Add timestamp to force fresh queries
     enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
@@ -1181,7 +1188,7 @@ export default function Dashboard() {
 
   // Fetch individual defects for multiple defects per section
   const { data: individualDefects = [], isLoading: defectsLoading } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/defects`],
+    queryKey: [`/api/uploads/${currentUpload?.id}/defects`, currentUpload?.id, Date.now()], // Add timestamp to force fresh queries
     enabled: !!currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review"),
     staleTime: 0,
     gcTime: 0,
