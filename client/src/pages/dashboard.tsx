@@ -363,27 +363,43 @@ export default function Dashboard() {
     });
   };
 
-  // Define columns with their properties and widths (tightened with text wrapping)
+  // Calculate dynamic widths based on hidden columns to give more space to content
+  const getColumnWidth = (key: string, baseWidth: string) => {
+    const hiddenCount = hiddenColumns.size;
+    
+    // Expand Observations and Recommendations columns when others are hidden
+    if (key === 'defects' || key === 'recommendations') {
+      if (hiddenCount >= 8) return 'w-[400px] break-words'; // Extra wide when many columns hidden
+      if (hiddenCount >= 6) return 'w-96 break-words';      // Very wide when several columns hidden
+      if (hiddenCount >= 4) return 'w-80 break-words';      // Wide when some columns hidden
+      if (hiddenCount >= 2) return 'w-72 break-words';      // Medium when few columns hidden
+      return baseWidth; // Default width
+    }
+    
+    return baseWidth;
+  };
+
+  // Define columns with their properties and dynamic widths
   const columns = [
-    { key: 'projectNo', label: 'Project No', hideable: true, width: 'w-12 break-words', priority: 'tight' },
-    { key: 'itemNo', label: 'Item No', hideable: false, width: 'w-12 break-words', priority: 'tight' },
-    { key: 'inspectionNo', label: 'Inspec. No', hideable: true, width: 'w-12 break-words', priority: 'tight' },
-    { key: 'date', label: 'Date', hideable: true, width: 'w-16 break-words', priority: 'tight' },
-    { key: 'time', label: 'Time', hideable: true, width: 'w-12 break-words', priority: 'tight' },
-    { key: 'startMH', label: 'Start MH', hideable: false, width: 'w-16 break-words', priority: 'tight' },
-    { key: 'startMHDepth', label: 'Start MH Depth', hideable: true, width: 'w-12 break-words', priority: 'tight' },
-    { key: 'finishMH', label: 'Finish MH', hideable: false, width: 'w-16 break-words', priority: 'tight' },
-    { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true, width: 'w-12 break-words', priority: 'tight' },
-    { key: 'pipeSize', label: 'Pipe Size', hideable: true, width: 'w-16 break-words', priority: 'tight' },
-    { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: 'w-24 break-words', priority: 'tight' },
-    { key: 'totalLength', label: 'Total Length (m)', hideable: true, width: 'w-16 break-words', priority: 'tight' },
-    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: true, width: 'w-16 break-words', priority: 'tight' },
-    { key: 'defects', label: 'Observations', hideable: false, width: 'w-64 break-words', priority: 'pretty' },
-    { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: 'w-16 break-words', priority: 'tight' },
-    { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: 'w-16 break-words', priority: 'tight' },
-    { key: 'recommendations', label: 'Recommendations', hideable: false, width: 'w-64 break-words', priority: 'pretty' },
-    { key: 'adoptable', label: 'Adoptable', hideable: false, width: 'w-16 break-words', priority: 'tight' },
-    { key: 'cost', label: 'Cost (£)', hideable: false, width: 'w-20 break-words', priority: 'tight' }
+    { key: 'projectNo', label: 'Project No', hideable: true, width: getColumnWidth('projectNo', 'w-12 break-words'), priority: 'tight' },
+    { key: 'itemNo', label: 'Item No', hideable: false, width: getColumnWidth('itemNo', 'w-12 break-words'), priority: 'tight' },
+    { key: 'inspectionNo', label: 'Inspec. No', hideable: true, width: getColumnWidth('inspectionNo', 'w-12 break-words'), priority: 'tight' },
+    { key: 'date', label: 'Date', hideable: true, width: getColumnWidth('date', 'w-16 break-words'), priority: 'tight' },
+    { key: 'time', label: 'Time', hideable: true, width: getColumnWidth('time', 'w-12 break-words'), priority: 'tight' },
+    { key: 'startMH', label: 'Start MH', hideable: false, width: getColumnWidth('startMH', 'w-16 break-words'), priority: 'tight' },
+    { key: 'startMHDepth', label: 'Start MH Depth', hideable: true, width: getColumnWidth('startMHDepth', 'w-12 break-words'), priority: 'tight' },
+    { key: 'finishMH', label: 'Finish MH', hideable: false, width: getColumnWidth('finishMH', 'w-16 break-words'), priority: 'tight' },
+    { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true, width: getColumnWidth('finishMHDepth', 'w-12 break-words'), priority: 'tight' },
+    { key: 'pipeSize', label: 'Pipe Size', hideable: true, width: getColumnWidth('pipeSize', 'w-16 break-words'), priority: 'tight' },
+    { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: getColumnWidth('pipeMaterial', 'w-24 break-words'), priority: 'tight' },
+    { key: 'totalLength', label: 'Total Length (m)', hideable: true, width: getColumnWidth('totalLength', 'w-16 break-words'), priority: 'tight' },
+    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: true, width: getColumnWidth('lengthSurveyed', 'w-16 break-words'), priority: 'tight' },
+    { key: 'defects', label: 'Observations', hideable: false, width: getColumnWidth('defects', 'w-64 break-words'), priority: 'pretty' },
+    { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: getColumnWidth('severityGrade', 'w-16 break-words'), priority: 'tight' },
+    { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: getColumnWidth('srmGrading', 'w-16 break-words'), priority: 'tight' },
+    { key: 'recommendations', label: 'Recommendations', hideable: false, width: getColumnWidth('recommendations', 'w-64 break-words'), priority: 'pretty' },
+    { key: 'adoptable', label: 'Adoptable', hideable: false, width: getColumnWidth('adoptable', 'w-16 break-words'), priority: 'tight' },
+    { key: 'cost', label: 'Cost (£)', hideable: false, width: getColumnWidth('cost', 'w-20 break-words'), priority: 'tight' }
   ];
 
 
