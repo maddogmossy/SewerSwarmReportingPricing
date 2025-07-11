@@ -147,6 +147,25 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       return;
     }
     
+    // Handle Cleanse and Survey option - prompt to set up work category
+    if (option.name === 'Cleanse and Survey' && !option.configured) {
+      alert('This requires setting up a "Cleanse and Survey" work category. You will now be redirected to create this category and select the fields you want to include.');
+      
+      // Navigate to work category creation with pre-filled data for Cleanse and Survey
+      const sector = sectionData.sector || 'utilities';
+      const params = new URLSearchParams({
+        categoryName: 'Cleanse and Survey',
+        categoryDescription: 'Complete cleaning followed by verification survey to confirm completion',
+        suggestedColor: 'Blue',
+        pipeSize: sectionData.pipeSize || '150mm',
+        autoSetup: 'true'
+      });
+      
+      setLocation(`/pricing?category=new&${params.toString()}`);
+      setIsOpen(false);
+      return;
+    }
+    
     // For both configured and unconfigured options, navigate to the pricing page
     const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
     const meterage = extractMeterage(sectionData.defects || '');
@@ -176,9 +195,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     setIsOpen(false);
   };
 
-  // Fixed order for cleaning options: Van Pack, Jet Vac, Custom Cleaning
+  // Fixed order for cleaning options: Van Pack, Jet Vac, Cleanse and Survey, Custom Cleaning
   const orderedCleaningOptions = cleaningOptions.sort((a, b) => {
-    const order = ['Van Pack', 'Jet Vac', 'Custom Cleaning'];
+    const order = ['Van Pack', 'Jet Vac', 'Cleanse and Survey', 'Custom Cleaning'];
     const aIndex = order.indexOf(a.name);
     const bIndex = order.indexOf(b.name);
     return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
@@ -295,6 +314,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
                         ? 'border-green-200 bg-green-50 hover:bg-green-100'
                         : option.name === 'Custom Cleaning'
                         ? 'border-blue-200 bg-blue-50 hover:bg-blue-100'
+                        : option.name === 'Cleanse and Survey'
+                        ? 'border-purple-200 bg-purple-50 hover:bg-purple-100'
                         : 'border-orange-200 bg-orange-50 hover:bg-orange-100'
                     }`}
                   >
@@ -306,6 +327,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
                             <CheckCircle className="h-4 w-4 text-green-600" />
                           ) : option.name === 'Custom Cleaning' ? (
                             <Plus className="h-4 w-4 text-blue-600" />
+                          ) : option.name === 'Cleanse and Survey' ? (
+                            <Settings className="h-4 w-4 text-purple-600" />
                           ) : (
                             <AlertTriangle className="h-4 w-4 text-orange-600" />
                           )}
@@ -343,10 +366,13 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
                           </div>
                         ) : (
                           <div className={`text-xs font-medium ${
-                            option.name === 'Custom Cleaning' ? 'text-blue-700' : 'text-orange-700'
+                            option.name === 'Custom Cleaning' ? 'text-blue-700' : 
+                            option.name === 'Cleanse and Survey' ? 'text-purple-700' : 'text-orange-700'
                           }`}>
                             {option.name === 'Custom Cleaning' 
-                              ? 'Click to add custom cleaning method' 
+                              ? 'Click to add custom cleaning method'
+                              : option.name === 'Cleanse and Survey'
+                              ? 'Click to set up cleanse and survey category'
                               : option.configurationMessage
                             }
                           </div>

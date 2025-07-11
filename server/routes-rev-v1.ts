@@ -902,31 +902,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         {
           id: 3,
+          name: 'Cleanse and Survey',
+          description: 'Complete cleaning followed by verification survey to confirm completion',
+          category: 'cleaning'
+        },
+        {
+          id: 4,
           name: 'Custom Cleaning',
           description: 'User-defined cleaning method with custom specifications',
           category: 'cleaning'
         },
         // Structural repair methods (for structural defects)
         {
-          id: 4,
+          id: 5,
           name: 'Patch',
           description: 'Localized structural repair using resin-based patching materials',
           category: 'structural'
         },
         {
-          id: 5,
+          id: 6,
           name: 'Lining',
           description: 'Full pipe rehabilitation using CIPP or other lining technologies',
           category: 'structural'
         },
         {
-          id: 6,
+          id: 7,
           name: 'Excavation',
           description: 'Complete pipe replacement through open excavation',
           category: 'structural'
         },
         {
-          id: 7,
+          id: 8,
           name: 'Custom',
           description: 'User-defined repair method with custom specifications',
           category: 'structural'
