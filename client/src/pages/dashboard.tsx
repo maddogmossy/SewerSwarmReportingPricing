@@ -363,33 +363,14 @@ export default function Dashboard() {
     });
   };
 
-  // Get inline style for columns based on hidden count
+  // Simplified column styling - no dynamic changes
   const getColumnStyle = (key: string) => {
-    const hiddenCount = hiddenColumns.size;
-    if (key === 'defects' || key === 'recommendations') {
-      if (hiddenCount >= 8) {
-        return { width: '400px' };
-      } else if (hiddenCount >= 6) {
-        return { width: '350px' };
-      } else if (hiddenCount >= 4) {
-        return { width: '300px' };
-      } else if (hiddenCount >= 2) {
-        return { width: '250px' };
-      }
-    }
     return {};
   };
 
-  // Get CSS classes for dynamic content columns
+  // Clean CSS classes for all columns
   const getColumnClasses = (key: string) => {
-    const hiddenCount = hiddenColumns.size;
-    if (key === 'defects' || key === 'recommendations') {
-      if (hiddenCount >= 2) {
-        return 'expanded-column-text';
-      }
-      return 'text-left align-top whitespace-normal break-words';
-    }
-    return '';
+    return 'text-left align-top whitespace-normal break-words';
   };
 
   // Column definitions with clean, fixed widths
@@ -2364,9 +2345,8 @@ export default function Dashboard() {
                                 }
                               }}
                               className={`
-                                border border-slate-300 font-semibold text-xs align-middle
+                                border border-slate-300 font-semibold text-xs align-middle ${column.width}
                                 ${column.priority === 'pretty' ? 'px-2 py-2 text-left' : 'px-1 py-1 text-center'}
-                                ${getColumnClasses(column.key) || ''}
                                 ${showColumnSelector && !canBeHidden 
                                   ? 'bg-slate-200 cursor-not-allowed opacity-60'
                                   : showColumnSelector && canBeHidden
@@ -2374,7 +2354,6 @@ export default function Dashboard() {
                                   : ''
                                 }
                               `}
-                              style={getColumnStyle(column.key)}
                               title={showColumnSelector ? (canBeHidden ? 'Click to hide this column' : 'Essential column - cannot be hidden') : ''}
                             >
                               {column.label}
@@ -2401,7 +2380,7 @@ export default function Dashboard() {
                               <td 
                                 key={column.key} 
                                 className={`
-                                  border border-slate-300 text-xs align-top
+                                  border border-slate-300 text-xs align-top ${column.width}
                                   ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed text-left' : 'px-1 py-1 text-center'}
                                   ${
                                     // Standard Grade 0 adoptable highlighting only
@@ -2415,8 +2394,7 @@ export default function Dashboard() {
                                   whiteSpace: 'normal',
                                   wordBreak: 'break-word',
                                   overflowWrap: 'break-word',
-                                  hyphens: 'auto',
-                                  ...getColumnStyle(column.key) 
+                                  hyphens: 'auto'
                                 }}
                               >
                                 {renderCellContent(column.key, section)}
