@@ -368,29 +368,13 @@ export default function Dashboard() {
     const hiddenCount = hiddenColumns.size;
     if (key === 'defects' || key === 'recommendations') {
       if (hiddenCount >= 8) {
-        return { 
-          width: '400px', 
-          minWidth: '400px',
-          maxWidth: '400px'
-        };
+        return { width: '400px' };
       } else if (hiddenCount >= 6) {
-        return { 
-          width: '350px', 
-          minWidth: '350px',
-          maxWidth: '350px'
-        };
+        return { width: '350px' };
       } else if (hiddenCount >= 4) {
-        return { 
-          width: '300px', 
-          minWidth: '300px',
-          maxWidth: '300px'
-        };
+        return { width: '300px' };
       } else if (hiddenCount >= 2) {
-        return { 
-          width: '250px', 
-          minWidth: '250px',
-          maxWidth: '250px'
-        };
+        return { width: '250px' };
       }
     }
     return {};
@@ -2422,7 +2406,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 <div className="overflow-x-auto">
-                  <table className="w-full text-xs border-collapse border border-slate-300 table-fixed">
+                  <table className="w-full text-xs border-collapse border border-slate-300" style={{ tableLayout: 'fixed' }}>
                     <thead>
                       <tr className="bg-slate-100">
                         {columns.map((column) => {
@@ -2476,8 +2460,7 @@ export default function Dashboard() {
                                 key={column.key} 
                                 className={`
                                   border border-slate-300 text-xs align-top
-                                  ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
-                                  ${getColumnClasses(column.key) || 'text-center'}
+                                  ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed text-left' : 'px-1 py-1 text-center'}
                                   ${
                                     // Standard Grade 0 adoptable highlighting only
                                     (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
@@ -2485,7 +2468,11 @@ export default function Dashboard() {
                                     : ''
                                   }
                                 `}
-                                style={getColumnStyle(column.key)}
+                                style={{ 
+                                  wordWrap: 'break-word',
+                                  whiteSpace: 'normal',
+                                  ...getColumnStyle(column.key) 
+                                }}
                               >
                                 {renderCellContent(column.key, section)}
                               </td>
