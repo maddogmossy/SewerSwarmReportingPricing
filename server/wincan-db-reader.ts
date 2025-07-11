@@ -296,12 +296,15 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       let adoptable = 'Yes';
       
       if (observations.length > 0) {
+        console.log(`🎯 Applying MSCC5 classification to: "${defectText.substring(0, 100)}..."`);
         const classification = classifyWincanObservations(defectText, 'utilities');
         severityGrade = classification.severityGrade;
         recommendations = classification.recommendations;
         adoptable = classification.adoptable;
         
-        console.log(`📊 MSCC5 Classification: Grade ${severityGrade}, ${adoptable}, ${recommendations.substring(0, 50)}...`);
+        console.log(`📊 MSCC5 Classification Result: Grade ${severityGrade}, ${adoptable}, Recommendations: ${recommendations.substring(0, 80)}...`);
+      } else {
+        console.log(`📊 No observations found, using default Grade 0`);
       }
       
       const sectionData: WincanSectionData = {
