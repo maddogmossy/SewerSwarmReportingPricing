@@ -54,7 +54,7 @@ export function AddressAutocomplete({
         }
         
         const result = await response.json();
-        console.log("Raw API response:", response);
+        console.log("Raw API response:", result);
         console.log("Parsed suggestions:", result);
         console.log("Is array?", Array.isArray(result));
         
