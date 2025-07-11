@@ -280,7 +280,7 @@ function classifyWincanObservations(observationText: string, sector: string) {
     // Fine deposits (DES) - WRc Sewer Cleaning Manual
     else {
       severityGrade = 2;
-      recommendations = 'WRc Sewer Cleaning Manual: Desilting using vacuum or jet-vac combo unit, flush and re-inspect, assess for upstream source if recurring';
+      recommendations = 'WRc Sewer Cleaning Manual: Desilting using vacuum or jet-vac combo unit, final survey to confirm completion, assess for upstream source if recurring';
       adoptable = 'Conditional';
     }
   }
