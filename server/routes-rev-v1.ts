@@ -139,7 +139,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Delete physical file
-      const fs = require('fs');
+      const fs = await import('fs');
       try {
         if (upload.filePath && fs.existsSync(upload.filePath)) {
           fs.unlinkSync(upload.filePath);
@@ -208,7 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const uploadsInFolder = await storage.getFileUploadsByFolder(folderId);
       
       // Delete physical files
-      const fs = require('fs');
+      const fs = await import('fs');
       for (const upload of uploadsInFolder) {
         try {
           if (upload.filePath && fs.existsSync(upload.filePath)) {
