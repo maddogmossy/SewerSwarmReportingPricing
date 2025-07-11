@@ -1986,11 +1986,20 @@ export default function Dashboard() {
                           // Refresh the page to show extracted data
                           window.location.reload();
                         } else {
-                          toast({
-                            title: "Processing Failed",
-                            description: response.message || "Could not extract data from database file",
-                            variant: "destructive",
-                          });
+                          // Handle the case where no inspection data is found (this is correct behavior for Meta.db3 files)
+                          if (response.message && response.message.includes("No inspection data found")) {
+                            toast({
+                              title: "Configuration File Detected",
+                              description: "This is a Meta.db3 configuration file with no inspection data. Upload a Wincan inspection database file (.db) instead.",
+                              variant: "default",
+                            });
+                          } else {
+                            toast({
+                              title: "Processing Failed",
+                              description: response.message || "Could not extract data from database file",
+                              variant: "destructive",
+                            });
+                          }
                         }
                       } catch (error) {
                         console.error('Processing error:', error);
