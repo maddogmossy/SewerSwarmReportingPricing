@@ -511,7 +511,7 @@ export default function Upload() {
                   <FileUpload
                     onFileSelect={setSelectedFile}
                     selectedFile={selectedFile}
-                    accept=".pdf,.db"
+                    accept=".pdf,.db3"
                     maxSize={50 * 1024 * 1024} // 50MB
                     requiresSector={false}
                   />
