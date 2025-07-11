@@ -170,12 +170,18 @@ export default function Upload() {
     queryKey: ["/api/folders"],
   });
 
-  // Auto-expand folders when they're loaded
+  // Auto-expand folders that contain reports
   useEffect(() => {
-    if (folders.length > 0) {
-      setExpandedFolders(new Set(folders.map(f => f.id)));
+    if (uploads.length > 0 && folders.length > 0) {
+      const foldersWithReports = new Set<number>();
+      uploads.forEach(upload => {
+        if (upload.folderId) {
+          foldersWithReports.add(upload.folderId);
+        }
+      });
+      setExpandedFolders(foldersWithReports);
     }
-  }, [folders]);
+  }, [uploads, folders]);
 
   const uploadMutation = useMutation({
     mutationFn: async ({ file, sector, folderId, pauseForReview }: { file: File; sector: string; folderId: number | null; pauseForReview: boolean }) => {
@@ -631,26 +637,26 @@ export default function Upload() {
                   }
 
                   return (
-                    <div key={folderKey} className="border rounded-lg">
-                      {/* Folder Header */}
+                    <div key={folderKey} className="border-2 rounded-lg border-blue-200 bg-blue-50/30">
+                      {/* Folder Header - Enhanced styling */}
                       <div 
-                        className="flex items-center justify-between p-4 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors"
+                        className="flex items-center justify-between p-4 bg-blue-100/50 cursor-pointer hover:bg-blue-200/50 transition-colors rounded-t-lg border-b-2 border-blue-200"
                         onClick={() => toggleFolder(parseInt(folderKey))}
                       >
                         <div className="flex items-center gap-3">
-                          {isExpanded ? <FolderOpen className="h-5 w-5 text-blue-600" /> : <Folder className="h-5 w-5 text-blue-600" />}
+                          {isExpanded ? <FolderOpen className="h-6 w-6 text-blue-700" /> : <Folder className="h-6 w-6 text-blue-700" />}
                           <div>
-                            <div className="font-medium">
-                              {folder?.projectAddress || `Folder ${folderKey}`}
+                            <div className="font-bold text-blue-900 text-lg">
+                              📁 {folder?.projectAddress || `Folder ${folderKey}`}
                             </div>
-                            <div className="text-sm text-muted-foreground">
+                            <div className="text-sm text-blue-700">
                               {folder?.projectNumber && `Project: ${folder.projectNumber} • `}
-                              {folderUploads.length} report{folderUploads.length !== 1 ? 's' : ''}
+                              {folderUploads.length} report{folderUploads.length !== 1 ? 's' : ''} • Click to {isExpanded ? 'collapse' : 'expand'}
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline">{folderUploads.length}</Badge>
+                          <Badge variant="default" className="bg-blue-600 text-white">{folderUploads.length}</Badge>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -670,16 +676,17 @@ export default function Upload() {
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                          {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                          {isExpanded ? <ChevronDown className="h-5 w-5 text-blue-700" /> : <ChevronRight className="h-5 w-5 text-blue-700" />}
                         </div>
                       </div>
 
                       {/* Folder Contents - Only show when expanded */}
                       {isExpanded && (
-                        <div className="border-t">
-                          {folderUploads.map((upload) => (
-                            <div key={upload.id} className="flex items-center justify-between p-4 border-b last:border-b-0">
+                        <div className="bg-white rounded-b-lg">
+                          {folderUploads.map((upload, index) => (
+                            <div key={upload.id} className={`flex items-center justify-between p-4 ml-6 border-l-4 border-blue-300 ${index !== folderUploads.length - 1 ? 'border-b border-gray-200' : ''}`}>
                               <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                                 {getStatusIcon(upload.status || 'pending')}
                                 <div>
                                   <div className="font-medium">{upload.fileName}</div>
