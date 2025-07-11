@@ -416,25 +416,25 @@ export default function Dashboard() {
     };
 
     return [
-      { key: 'projectNo', label: 'Project No', hideable: true, width: getColumnWidth('projectNo', 'w-10 break-words'), priority: 'tight' },
-      { key: 'itemNo', label: 'Item No', hideable: false, width: getColumnWidth('itemNo', 'w-10 break-words'), priority: 'tight' },
-      { key: 'inspectionNo', label: 'Inspec. No', hideable: true, width: getColumnWidth('inspectionNo', 'w-10 break-words'), priority: 'tight' },
-      { key: 'date', label: 'Date', hideable: true, width: getColumnWidth('date', 'w-14 break-words'), priority: 'tight' },
-      { key: 'time', label: 'Time', hideable: true, width: getColumnWidth('time', 'w-10 break-words'), priority: 'tight' },
-      { key: 'startMH', label: 'Start MH', hideable: false, width: getColumnWidth('startMH', 'w-14 break-words'), priority: 'tight' },
-      { key: 'startMHDepth', label: 'Start MH Depth', hideable: true, width: getColumnWidth('startMHDepth', 'w-12 break-words'), priority: 'tight' },
-      { key: 'finishMH', label: 'Finish MH', hideable: false, width: getColumnWidth('finishMH', 'w-14 break-words'), priority: 'tight' },
-      { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true, width: getColumnWidth('finishMHDepth', 'w-12 break-words'), priority: 'tight' },
-      { key: 'pipeSize', label: 'Pipe Size', hideable: true, width: getColumnWidth('pipeSize', 'w-14 break-words'), priority: 'tight' },
-      { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: getColumnWidth('pipeMaterial', 'w-20 break-words'), priority: 'tight' },
-      { key: 'totalLength', label: 'Total Length (m)', hideable: true, width: getColumnWidth('totalLength', 'w-14 break-words'), priority: 'tight' },
-      { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: true, width: getColumnWidth('lengthSurveyed', 'w-14 break-words'), priority: 'tight' },
-      { key: 'defects', label: 'Observations', hideable: false, width: getColumnWidth('defects', hiddenCount === 0 ? 'w-80 break-words' : 'w-64 break-words'), priority: 'pretty' },
-      { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: getColumnWidth('severityGrade', 'w-14 break-words'), priority: 'tight' },
-      { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: getColumnWidth('srmGrading', 'w-14 break-words'), priority: 'tight' },
-      { key: 'recommendations', label: 'Recommendations', hideable: false, width: getColumnWidth('recommendations', hiddenCount === 0 ? 'w-80 break-words' : 'w-64 break-words'), priority: 'pretty' },
-      { key: 'adoptable', label: 'Adoptable', hideable: false, width: getColumnWidth('adoptable', 'w-14 break-words'), priority: 'tight' },
-      { key: 'cost', label: 'Cost (£)', hideable: false, width: getColumnWidth('cost', 'w-16 break-words'), priority: 'tight' }
+      { key: 'projectNo', label: 'Project No', hideable: true, width: getColumnWidth('projectNo', 'w-16 break-words'), priority: 'tight' },
+      { key: 'itemNo', label: 'Item No', hideable: false, width: getColumnWidth('itemNo', 'w-14 break-words'), priority: 'tight' },
+      { key: 'inspectionNo', label: 'Inspec. No', hideable: true, width: getColumnWidth('inspectionNo', 'w-16 break-words'), priority: 'tight' },
+      { key: 'date', label: 'Date', hideable: true, width: getColumnWidth('date', 'w-20 break-words'), priority: 'tight' },
+      { key: 'time', label: 'Time', hideable: true, width: getColumnWidth('time', 'w-16 break-words'), priority: 'tight' },
+      { key: 'startMH', label: 'Start MH', hideable: false, width: getColumnWidth('startMH', 'w-20 break-words'), priority: 'tight' },
+      { key: 'startMHDepth', label: 'Start MH Depth', hideable: true, width: getColumnWidth('startMHDepth', 'w-20 break-words'), priority: 'tight' },
+      { key: 'finishMH', label: 'Finish MH', hideable: false, width: getColumnWidth('finishMH', 'w-20 break-words'), priority: 'tight' },
+      { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true, width: getColumnWidth('finishMHDepth', 'w-20 break-words'), priority: 'tight' },
+      { key: 'pipeSize', label: 'Pipe Size', hideable: true, width: getColumnWidth('pipeSize', 'w-20 break-words'), priority: 'tight' },
+      { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: getColumnWidth('pipeMaterial', 'w-24 break-words'), priority: 'tight' },
+      { key: 'totalLength', label: 'Total Length (m)', hideable: true, width: getColumnWidth('totalLength', 'w-20 break-words'), priority: 'tight' },
+      { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: true, width: getColumnWidth('lengthSurveyed', 'w-20 break-words'), priority: 'tight' },
+      { key: 'defects', label: 'Observations', hideable: false, width: getColumnWidth('defects', hiddenCount === 0 ? 'w-96 break-words' : 'w-80 break-words'), priority: 'pretty' },
+      { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: getColumnWidth('severityGrade', 'w-20 break-words'), priority: 'tight' },
+      { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: getColumnWidth('srmGrading', 'w-20 break-words'), priority: 'tight' },
+      { key: 'recommendations', label: 'Recommendations', hideable: false, width: getColumnWidth('recommendations', hiddenCount === 0 ? 'w-96 break-words' : 'w-80 break-words'), priority: 'pretty' },
+      { key: 'adoptable', label: 'Adoptable', hideable: false, width: getColumnWidth('adoptable', 'w-20 break-words'), priority: 'tight' },
+      { key: 'cost', label: 'Cost (£)', hideable: false, width: getColumnWidth('cost', 'w-20 break-words'), priority: 'tight' }
     ];
   }, [hiddenColumns]);
 
@@ -534,7 +534,7 @@ export default function Dashboard() {
         const hiddenCount = hiddenColumns.size;
         const useExpandedWidth = hiddenCount >= 2;
         // When all columns visible, give priority to observations with larger width
-        const observationWidth = hiddenCount === 0 ? 'w-80' : (useExpandedWidth ? 'w-full' : 'w-48');
+        const observationWidth = hiddenCount === 0 ? 'w-96' : (useExpandedWidth ? 'w-full' : 'w-64');
         return (
           <div 
             className={`text-xs p-1 ${observationWidth}`} 
@@ -590,7 +590,7 @@ export default function Dashboard() {
         const hiddenCountRec = hiddenColumns.size;
         const useExpandedWidthRec = hiddenCountRec >= 2;
         // When all columns visible, give priority to recommendations with larger width
-        const recommendationWidth = hiddenCountRec === 0 ? 'w-80' : (useExpandedWidthRec ? 'w-full' : 'w-48');
+        const recommendationWidth = hiddenCountRec === 0 ? 'w-96' : (useExpandedWidthRec ? 'w-full' : 'w-64');
         
         // Check if section has defects requiring repair (not Grade 0)
         const hasRepairableDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
