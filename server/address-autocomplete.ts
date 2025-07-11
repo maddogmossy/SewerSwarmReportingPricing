@@ -28,10 +28,7 @@ const UK_ADDRESSES = [
   "St Albans City Centre, French Row, St Albans, AL3 5DU",
   "Warwick Castle, Warwick, CV34 4QU",
   
-  // Project specific addresses
-  "40 Hollow Road, Bury St Edmunds, IP32 7AY",
-  "Hollow Road, Bury St Edmunds, IP32 7AY",
-  "Bury St Edmunds, Suffolk, IP32 7AY",
+  // Project specific addresses will be added only from authentic user uploads
   "Industrial Estate, Location TBD",
   "Infrastructure Site, Location TBD",
   
