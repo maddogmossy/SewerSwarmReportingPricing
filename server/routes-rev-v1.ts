@@ -53,17 +53,7 @@ let folderStorage = [
 ];
 
 // In-memory storage for uploads (REV_V1 simulation) - empty since 218 ECL was deleted
-let uploadsStorage = [
-  {
-    id: 71,
-    fileName: 'GR7188 - 40 Hollow Road - Bury St Edmunds - IP32 7AY_1752225336490.db3',
-    filePath: 'uploads/5a43fa8c697a53f101645fdcea7fb453',
-    fileType: 'database',
-    sector: 'utilities',
-    status: 'completed',
-    createdAt: new Date().toISOString()
-  }
-];
+let uploadsStorage = [];
 
 // In-memory storage for pricing data (REV_V1 simulation)
 let pricingStorage = [
