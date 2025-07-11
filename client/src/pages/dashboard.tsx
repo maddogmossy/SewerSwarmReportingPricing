@@ -2376,13 +2376,10 @@ export default function Dashboard() {
                         
                         return (
                         <tr key={`${section.id}-${section.itemNo}-${index}-${section.defects?.substring(0, 10)}`} className={`${
-                          // Special highlighting for sections with approved repair pricing
-                          repairStatus.hasApproved
-                            ? 'bg-green-200 hover:bg-green-300'
-                            : // Standard Grade 0 adoptable highlighting
-                            (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
-                            ? 'bg-green-200 hover:bg-green-300' 
-                            : 'hover:bg-slate-50'
+                          // Standard Grade 0 adoptable highlighting only
+                          (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
+                          ? 'bg-green-200 hover:bg-green-300' 
+                          : 'hover:bg-slate-50'
                         }`}>
                           {columns.map((column) => {
                             if (hiddenColumns.has(column.key)) return null;
@@ -2393,15 +2390,10 @@ export default function Dashboard() {
                                   ${column.width} border border-slate-300 text-xs text-center align-middle break-words
                                   ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
                                   ${
-                                    // Special styling for approved repair sections  
-                                    repairStatus.hasApproved
-                                      ? column.key === 'cost' 
-                                        ? 'bg-red-100' // Pastel red for cost cell in approved repairs
-                                        : 'bg-green-200' // Green for other cells in approved repairs
-                                      : // Standard Grade 0 adoptable highlighting
-                                      (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
-                                      ? 'bg-green-200' 
-                                      : ''
+                                    // Standard Grade 0 adoptable highlighting only
+                                    (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
+                                    ? 'bg-green-200' 
+                                    : ''
                                   }
                                 `}
                                 style={{ wordWrap: 'break-word', whiteSpace: 'normal' }}
