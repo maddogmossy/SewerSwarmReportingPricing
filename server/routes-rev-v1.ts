@@ -93,6 +93,40 @@ let pricingStorage = [
     rule: "Standard double layer patch for 300mm pipe",
     lengthOfRepair: "1000mm",
     selectedOption: "Option 2: Double Layer"
+  },
+  {
+    id: 4,
+    sector: "utilities",
+    workCategoryId: 3,
+    workCategory: "Patch Repair",
+    pipeSize: "150mm",
+    depth: "2-3m",
+    description: "150mm patch repair excavation and reinstatement",
+    option1Cost: "380.00",
+    option2Cost: "520.00", 
+    option3Cost: "650.00",
+    option4Cost: "750.00",
+    cost: 520.00,
+    rule: "Standard double layer patch for 150mm pipe",
+    lengthOfRepair: "1000mm",
+    selectedOption: "Option 2: Double Layer"
+  },
+  {
+    id: 5,
+    sector: "utilities",
+    workCategoryId: 3,
+    workCategory: "Patch Repair",
+    pipeSize: "225mm",
+    depth: "2-3m",
+    description: "225mm patch repair excavation and reinstatement",
+    option1Cost: "420.00",
+    option2Cost: "580.00", 
+    option3Cost: "720.00",
+    option4Cost: "820.00",
+    cost: 580.00,
+    rule: "Standard double layer patch for 225mm pipe",
+    lengthOfRepair: "1000mm",
+    selectedOption: "Option 2: Double Layer"
   }
 ];
 
@@ -285,7 +319,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get('/api/pricing/check/:sector', (req, res) => {
-    res.json({ configured: false });
+    const sector = req.params.sector;
+    
+    // Check if we have pricing data in the static pricingStorage for this sector
+    const sectorPricing = pricingStorage.filter(item => item.sector === sector);
+    const hasBasicPricing = sectorPricing.length >= 2; // Need at least CCTV and Jetting/Patch pricing
+    
+    res.json({ 
+      configured: hasBasicPricing,
+      details: {
+        sectorPricing: sectorPricing.length,
+        available: sectorPricing.map(p => p.workCategory)
+      }
+    });
   });
 
   app.get('/api/repair-pricing/:sector', (req, res) => {
