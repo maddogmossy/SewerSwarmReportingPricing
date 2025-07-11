@@ -63,6 +63,13 @@ let folderStorage = [
 // In-memory storage for uploads (REV_V1 simulation) - empty since 218 ECL was deleted
 let uploadsStorage = [];
 
+// In-memory storage for work categories (REV_V1 simulation)
+let workCategoriesStorage = [
+  { id: 1, name: "CCTV Surveys", description: "Camera inspection surveys" },
+  { id: 2, name: "Jetting/Cleaning", description: "High pressure water jetting" },
+  { id: 3, name: "Patch Repairs", description: "Localized pipe repairs" }
+];
+
 // In-memory storage for pricing data (REV_V1 simulation)
 let pricingStorage = [
   {
@@ -349,11 +356,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get('/api/work-categories', (req, res) => {
-    res.json([
-      { id: 1, name: "CCTV Surveys", description: "Camera inspection surveys" },
-      { id: 2, name: "Jetting/Cleaning", description: "High pressure water jetting" },
-      { id: 3, name: "Patch Repairs", description: "Localized pipe repairs" }
-    ]);
+    res.json(workCategoriesStorage);
+  });
+
+  app.post('/api/work-categories', (req, res) => {
+    const { name, description } = req.body;
+    
+    if (!name || !description) {
+      return res.status(400).json({ error: 'Name and description are required' });
+    }
+    
+    // Generate new ID
+    const newId = Math.max(...workCategoriesStorage.map(cat => cat.id), 0) + 1;
+    
+    // Create new work category
+    const newCategory = {
+      id: newId,
+      name: name.trim(),
+      description: description.trim()
+    };
+    
+    // Add to storage
+    workCategoriesStorage.push(newCategory);
+    
+    console.log(`✅ Added new work category: ${newCategory.name} (ID: ${newId})`);
+    
+    res.json(newCategory);
   });
 
   app.get('/api/vehicle-travel-rates', (req, res) => {
