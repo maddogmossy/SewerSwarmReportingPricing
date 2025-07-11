@@ -3,6 +3,14 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import { storage } from "./storage";
 import { readWincanDatabase, storeWincanSections } from "./wincan-db-reader";
+import { getSectorStandards, getAllSectorStandards } from "./sector-standards";
+
+// Debug: Test import at module level
+console.log('Testing sector standards import...');
+console.log('getSectorStandards function:', typeof getSectorStandards);
+const testStandards = getSectorStandards('utilities');
+console.log('Test utilities standards:', testStandards ? 'SUCCESS' : 'FAILED');
+console.log('Standards count:', testStandards?.standards?.length || 0);
 
 // REV_V1: Fixed file upload configuration to preserve database files
 const upload = multer({ 
@@ -740,8 +748,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Sector Standards API endpoints
   app.get('/api/sector-standards', async (req, res) => {
     try {
-      const sectorStandardsModule = await import('./sector-standards');
-      const allStandards = sectorStandardsModule.getAllSectorStandards();
+      const allStandards = getAllSectorStandards();
       res.json(allStandards);
     } catch (error) {
       console.error('Error fetching sector standards:', error);
@@ -751,8 +758,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/sector-standards/:sector', async (req, res) => {
     try {
-      const sectorStandardsModule = await import('./sector-standards');
-      const sectorStandards = sectorStandardsModule.getSectorStandards(req.params.sector);
+      const sectorStandards = getSectorStandards(req.params.sector);
       if (!sectorStandards) {
         return res.status(404).json({ error: 'Sector not found' });
       }
@@ -763,22 +769,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test route to verify server is running updated code
+  app.get('/api/test-route', (req, res) => {
+    res.json({ message: 'Routes updated successfully', timestamp: new Date().toISOString() });
+  });
+
+  app.get('/api/debug-test', (req, res) => {
+    console.log('=== DEBUG TEST ROUTE CALLED ===');
+    res.json({ message: 'DEBUG TEST WORKING', timestamp: new Date().toISOString() });
+  });
+
   // Individual sector profile endpoints (frontend compatibility)
-  app.get('/api/utilities/profile', async (req, res) => {
+  app.get('/api/utilities/profile', (req, res) => {
+    console.log('=== UTILITIES PROFILE ROUTE CALLED ===');
     try {
-      const sectorStandardsModule = await import('./sector-standards');
-      const sectorStandards = sectorStandardsModule.getSectorStandards('utilities');
-      res.json(sectorStandards || { sector: 'utilities', standards: [] });
+      console.log('Calling getSectorStandards with utilities...');
+      const sectorStandards = getSectorStandards('utilities');
+      console.log('Function returned:', sectorStandards);
+      
+      if (sectorStandards) {
+        console.log('Sending successful response');
+        res.json(sectorStandards);
+      } else {
+        console.log('Function returned null, sending fallback');
+        res.json({ sector: 'utilities', standards: [] });
+      }
     } catch (error) {
-      console.error('Error fetching utilities standards:', error);
+      console.error('Error in utilities route:', error);
       res.json({ sector: 'utilities', standards: [] });
     }
   });
 
   app.get('/api/adoption/profile', async (req, res) => {
     try {
-      const sectorStandardsModule = await import('./sector-standards');
-      const sectorStandards = sectorStandardsModule.getSectorStandards('adoption');
+      const sectorStandards = getSectorStandards('adoption');
       res.json(sectorStandards || { sector: 'adoption', standards: [] });
     } catch (error) {
       console.error('Error fetching adoption standards:', error);
@@ -788,8 +812,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/highways/profile', async (req, res) => {
     try {
-      const sectorStandardsModule = await import('./sector-standards');
-      const sectorStandards = sectorStandardsModule.getSectorStandards('highways');
+      const sectorStandards = getSectorStandards('highways');
       res.json(sectorStandards || { sector: 'highways', standards: [] });
     } catch (error) {
       console.error('Error fetching highways standards:', error);
@@ -799,8 +822,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/insurance/profile', async (req, res) => {
     try {
-      const sectorStandardsModule = await import('./sector-standards');
-      const sectorStandards = sectorStandardsModule.getSectorStandards('insurance');
+      const sectorStandards = getSectorStandards('insurance');
       res.json(sectorStandards || { sector: 'insurance', standards: [] });
     } catch (error) {
       console.error('Error fetching insurance standards:', error);
@@ -810,8 +832,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/construction/profile', async (req, res) => {
     try {
-      const sectorStandardsModule = await import('./sector-standards');
-      const sectorStandards = sectorStandardsModule.getSectorStandards('construction');
+      const sectorStandards = getSectorStandards('construction');
       res.json(sectorStandards || { sector: 'construction', standards: [] });
     } catch (error) {
       console.error('Error fetching construction standards:', error);
@@ -821,8 +842,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/domestic/profile', async (req, res) => {
     try {
-      const sectorStandardsModule = await import('./sector-standards');
-      const sectorStandards = sectorStandardsModule.getSectorStandards('domestic');
+      const sectorStandards = getSectorStandards('domestic');
       res.json(sectorStandards || { sector: 'domestic', standards: [] });
     } catch (error) {
       console.error('Error fetching domestic standards:', error);
