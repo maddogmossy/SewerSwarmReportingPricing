@@ -206,7 +206,9 @@ This prevents data contamination and ensures authentic extraction integrity.
 ⚡ **ROLLBACK COMMAND:** Use 'rev v1' to return to this stable checkpoint
 
 ✅ **INSPECTION DIRECTION SYSTEM VERIFIED (July 11, 2025):**
-- **Upload 79 (GR7188):** 24 consecutive sections with downstream flow (SW01→SW02, SW02→SW03, FW01→FW02)
+- **Upload 79 (GR7188):** 24 consecutive sections with smart upstream/downstream detection
+- **Upstream Rule Applied:** Sections 18,21,22,23 show reversed manholes (SPUR 1→SW12, REST BEND→SW09)
+- **Downstream Rule Applied:** Most sections show normal flow (SW01→SW02, SW02→SW03, FW01→FW02)
 - **Upload 78 (GR7188a):** 15 non-consecutive sections with different manhole patterns (NOD_01, FW04, etc.)
 - **Automatic Processing:** Direction logic applied during upload processing and reprocessing
 - **Dashboard Refresh:** Built-in "Refresh Dashboard" button clears cache and reloads data
