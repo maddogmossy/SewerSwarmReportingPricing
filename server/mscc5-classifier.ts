@@ -1032,7 +1032,7 @@ export class MSCC5Classifier {
     // =====================================================================
     
     // Check if it's a no-defect condition first
-    if (normalizedText.includes('no action required') || normalizedText.includes('acceptable condition')) {
+    if (normalizedText.includes('no action required') || normalizedText.includes('acceptable condition') || normalizedText.includes('no service or structural defect found')) {
       const srmGrading = SRM_SCORING.structural["0"] || {
         description: "No action required",
         criteria: "Pipe observed in acceptable structural and service condition",
@@ -1041,10 +1041,10 @@ export class MSCC5Classifier {
       };
       return {
         defectCode: 'N/A',
-        defectDescription: 'No action required pipe observed in acceptable structural and service condition',
+        defectDescription: 'No service or structural defect found',
         severityGrade: 0,
         defectType: 'service',
-        recommendations: 'No action required pipe observed in acceptable structural and service condition',
+        recommendations: 'No action required this pipe section is at an adoptable condition',
         riskAssessment: 'Pipe in acceptable condition',
         adoptable: 'Yes',
         estimatedCost: '£0',

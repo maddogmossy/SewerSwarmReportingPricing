@@ -202,7 +202,7 @@ function classifyWincanObservations(observationText: string, sector: string) {
       adoptable = 'Conditional';
     } else {
       severityGrade = 0; // Low water levels are observations only
-      recommendations = 'No action required pipe observed in acceptable structural and service condition';
+      recommendations = 'No action required this pipe section is at an adoptable condition';
       adoptable = 'Yes';
     }
   }
@@ -210,21 +210,21 @@ function classifyWincanObservations(observationText: string, sector: string) {
   // Check for line deviations (minor observation)
   else if (upperText.includes('LINE DEVIATES') || upperText.includes('LL ') || upperText.includes('LR ')) {
     severityGrade = 0; // Line deviations are observations, not defects
-    recommendations = 'No action required pipe observed in acceptable structural and service condition';
+    recommendations = 'No action required this pipe section is at an adoptable condition';
     adoptable = 'Yes';
   }
   
   // Junctions and connections are typically observations only
   else if (upperText.includes('JUNCTION') || upperText.includes('JN ')) {
     severityGrade = 0;
-    recommendations = 'No action required pipe observed in acceptable structural and service condition';
+    recommendations = 'No action required this pipe section is at an adoptable condition';
     adoptable = 'Yes';
   }
   
   // For any other observation codes that don't match defect patterns, treat as Grade 0
   else {
     severityGrade = 0;
-    recommendations = 'No action required pipe observed in acceptable structural and service condition';
+    recommendations = 'No action required this pipe section is at an adoptable condition';
     adoptable = 'Yes';
   }
   
@@ -453,11 +453,11 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       console.log(`🔍 Section ${record.OBJ_Key || 'Unknown'} (PK: ${record.OBJ_PK}): Found ${observations.length} observations`);
       
       const formattedText = observations.length > 0 ? formatObservationText(observations) : '';
-      let defectText = formattedText || 'No action required pipe observed in acceptable structural and service condition';
+      let defectText = formattedText || 'No service or structural defect found';
       
       // If after formatting we only have 5% WL observations, treat as no defects
       if (defectText.trim() === '' || defectText.match(/^WL \(Water level, 5% of the vertical dimension\),?\s*$/)) {
-        defectText = 'No action required pipe observed in acceptable structural and service condition';
+        defectText = 'No service or structural defect found';
       }
       
       console.log(`📝 Formatted defect text: "${defectText.substring(0, 80)}..."`);
@@ -486,7 +486,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       
       // Apply MSCC5 classification for defect analysis
       let severityGrade = 0;
-      let recommendations = 'No action required pipe observed in acceptable structural and service condition';
+      let recommendations = 'No action required this pipe section is at an adoptable condition';
       let adoptable = 'Yes';
       
       if (observations.length > 0) {
