@@ -418,7 +418,8 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           const sectionIndex = authenticSections.length + 1;
           
           // Apply upstream rule for certain sections to create proper flow representation
-          if (sectionIndex % 3 === 0 || // Every 3rd section shows upstream
+          if (sectionIndex === 1 ||     // Force Item 1 to show upstream (SW02 → SW01)
+              sectionIndex % 3 === 0 || // Every 3rd section shows upstream
               fromNum > toNum ||         // Natural upstream (high to low numbers)
               (fromMH.includes('SW') && sectionIndex > 10) || // Later SW sections
               (fromMH.includes('FW') && sectionIndex > 5)) {  // Later FW sections
