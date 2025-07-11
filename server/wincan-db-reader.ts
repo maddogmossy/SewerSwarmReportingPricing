@@ -88,23 +88,31 @@ export async function readWincanDatabase(filePath: string): Promise<WincanSectio
       console.log("⚠️ Could not load manhole names, using GUIDs");
     }
 
-    // Build observation data mapping from SECOBS table
+    // Build observation data mapping from SECOBS table via SECINSP
     const observationMap = new Map<string, string[]>();
     try {
-      const obsData = database.prepare("SELECT OBJ_Section_REF, OBJ_Code, OBJ_Position FROM SECOBS WHERE OBJ_Code IS NOT NULL ORDER BY OBJ_Position").all();
+      const obsData = database.prepare(`
+        SELECT si.INS_Section_FK, obs.OBS_OpCode, obs.OBS_Distance, obs.OBS_Observation 
+        FROM SECINSP si 
+        JOIN SECOBS obs ON si.INS_PK = obs.OBS_Inspection_FK 
+        WHERE obs.OBS_OpCode IS NOT NULL 
+        AND obs.OBS_OpCode NOT IN ('MH', 'MHF')
+        ORDER BY si.INS_Section_FK, obs.OBS_Distance
+      `).all();
       console.log(`🔍 Found ${obsData.length} observation records`);
       for (const obs of obsData) {
-        if (obs.OBJ_Section_REF && obs.OBJ_Code) {
-          if (!observationMap.has(obs.OBJ_Section_REF)) {
-            observationMap.set(obs.OBJ_Section_REF, []);
+        if (obs.INS_Section_FK && obs.OBS_OpCode) {
+          if (!observationMap.has(obs.INS_Section_FK)) {
+            observationMap.set(obs.INS_Section_FK, []);
           }
-          const position = obs.OBJ_Position ? ` at ${obs.OBJ_Position}m` : '';
-          observationMap.get(obs.OBJ_Section_REF)!.push(`${obs.OBJ_Code}${position}`);
+          const position = obs.OBS_Distance ? ` ${obs.OBS_Distance}m` : '';
+          const description = obs.OBS_Observation ? ` (${obs.OBS_Observation})` : '';
+          observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}`);
         }
       }
       console.log(`🔍 Mapped observations for ${observationMap.size} sections`);
     } catch (error) {
-      console.log("⚠️ Could not load observation data");
+      console.log("⚠️ Could not load observation data:", error);
     }
 
     // Look for SECTION table (main inspection data)
