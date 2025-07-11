@@ -366,8 +366,56 @@ export default function Dashboard() {
   // Get inline style for columns based on hidden count
   const getColumnStyle = (key: string) => {
     const hiddenCount = hiddenColumns.size;
-    if ((key === 'defects' || key === 'recommendations') && hiddenCount >= 8) {
-      return { width: '400px', minWidth: '400px' };
+    if (key === 'defects' || key === 'recommendations') {
+      if (hiddenCount >= 8) {
+        return { 
+          width: '400px !important', 
+          minWidth: '400px',
+          maxWidth: '400px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          textAlign: 'left',
+          verticalAlign: 'top'
+        };
+      } else if (hiddenCount >= 6) {
+        return { 
+          width: '350px !important', 
+          minWidth: '350px',
+          maxWidth: '350px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          textAlign: 'left',
+          verticalAlign: 'top'
+        };
+      } else if (hiddenCount >= 4) {
+        return { 
+          width: '300px !important', 
+          minWidth: '300px',
+          maxWidth: '300px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          textAlign: 'left',
+          verticalAlign: 'top'
+        };
+      } else if (hiddenCount >= 2) {
+        return { 
+          width: '250px !important', 
+          minWidth: '250px',
+          maxWidth: '250px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          textAlign: 'left',
+          verticalAlign: 'top'
+        };
+      }
     }
     return {};
   };
@@ -382,10 +430,10 @@ export default function Dashboard() {
       // Expand Observations and Recommendations columns when others are hidden
       if (key === 'defects' || key === 'recommendations') {
         let newWidth;
-        if (hiddenCount >= 8) newWidth = 'break-words'; // Use style attribute for width
-        else if (hiddenCount >= 6) newWidth = 'w-96 break-words';      // Very wide when several columns hidden
-        else if (hiddenCount >= 4) newWidth = 'w-80 break-words';      // Wide when some columns hidden
-        else if (hiddenCount >= 2) newWidth = 'w-72 break-words';      // Medium when few columns hidden
+        if (hiddenCount >= 8) newWidth = 'break-words'; // Use style attribute for width, remove Tailwind constraints
+        else if (hiddenCount >= 6) newWidth = 'break-words';      // Very wide when several columns hidden
+        else if (hiddenCount >= 4) newWidth = 'break-words';      // Wide when some columns hidden
+        else if (hiddenCount >= 2) newWidth = 'break-words';      // Medium when few columns hidden
         else newWidth = baseWidth; // Default width
         
         console.log(`Width for ${key}:`, { hiddenCount, baseWidth, newWidth });
