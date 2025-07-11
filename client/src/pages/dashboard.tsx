@@ -2350,7 +2350,7 @@ export default function Dashboard() {
                                 }
                               }}
                               className={`
-                                ${column.width} border border-slate-300 text-center font-semibold text-xs align-middle
+                                ${column.width} border border-slate-300 text-center font-semibold text-xs align-middle break-words
                                 ${column.priority === 'pretty' ? 'px-2 py-2' : 'px-1 py-1'}
                                 ${showColumnSelector && !canBeHidden 
                                   ? 'bg-slate-200 cursor-not-allowed opacity-60'
@@ -2389,7 +2389,7 @@ export default function Dashboard() {
                               <td 
                                 key={column.key} 
                                 className={`
-                                  ${column.width} border border-slate-300 text-xs text-center align-middle
+                                  ${column.width} border border-slate-300 text-xs text-center align-middle break-words
                                   ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
                                   ${
                                     // Special styling for approved repair sections  
