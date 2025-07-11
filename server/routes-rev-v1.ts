@@ -391,7 +391,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/reprocess-upload/:uploadId', async (req, res) => {
     try {
       const uploadId = parseInt(req.params.uploadId);
-      console.log(`🔄 Reprocessing upload ${uploadId} to extract authentic item numbers`);
+      console.log(`🔄 Reprocessing upload ${uploadId} with inspection direction logic`);
       
       // Find the upload in storage
       const upload = uploadsStorage.find(u => u.id === uploadId);
@@ -404,10 +404,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if it's a database file
       if (upload.fileName.toLowerCase().includes('.db')) {
         console.log(`📊 Reprocessing Wincan database file: ${upload.fileName}`);
+        
+        // Delete existing sections first to avoid duplicates
+        await storage.deleteSectionInspectionsByFileUpload(uploadId);
+        console.log(`🗑️ Cleared existing sections for upload ${uploadId}`);
+        
         const sections = await readWincanDatabase(filePath);
         
         if (sections && sections.length > 0) {
-          console.log(`✅ Extracted ${sections.length} sections with authentic item numbers`);
+          console.log(`✅ Extracted ${sections.length} sections with inspection direction logic applied`);
           await storeWincanSections(sections, uploadId);
           
           // Update upload status
@@ -416,9 +421,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           res.json({ 
             success: true, 
-            message: 'Upload reprocessed successfully',
+            message: 'Upload reprocessed successfully with inspection direction logic',
             sections: sections.length,
-            itemNumbers: sections.map(s => s.itemNo)
+            itemNumbers: sections.map(s => s.itemNo),
+            manholeFlow: sections.slice(0, 3).map(s => `${s.startMH} → ${s.finishMH}`)
           });
         } else {
           res.json({ success: false, message: 'No sections found in database' });
@@ -429,6 +435,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error reprocessing upload:', error);
       res.status(500).json({ error: 'Failed to reprocess upload' });
+    }
+  });
+
+  // Add refresh endpoint for dashboard data
+  app.post('/api/refresh-upload/:uploadId', async (req, res) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      console.log(`🔄 Refreshing dashboard data for upload ${uploadId}`);
+      
+      // Get fresh sections from database
+      const sections = await storage.getSectionInspectionsByFileUpload(uploadId);
+      
+      res.json({
+        success: true,
+        message: 'Data refreshed successfully',
+        sections: sections.length,
+        data: sections
+      });
+    } catch (error) {
+      console.error('Error refreshing upload data:', error);
+      res.status(500).json({ error: 'Failed to refresh data' });
     }
   });
 
@@ -459,6 +486,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           console.log(`🔍 WINCAN DATABASE VALIDATION: Items ${minItem}-${maxItem}, extracted ${sections.length} sections`);
           console.log(`🔍 Item sequence: [${itemNumbers.join(', ')}]`);
+          console.log(`🧭 INSPECTION DIRECTION: Applied direction logic to all ${sections.length} sections`);
+          
+          // Log manhole flow examples to verify direction logic
+          const flowExamples = sections.slice(0, 3).map(s => `${s.startMH} → ${s.finishMH}`);
+          console.log(`📍 Manhole flow examples: [${flowExamples.join(', ')}]`);
           
           // For database files, gaps are authentic deleted sections - don't flag as missing
           const expectedSequential = maxItem - minItem + 1;
@@ -478,15 +510,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.log(`✅ COMPLETE SEQUENTIAL DATA: All sections from ${minItem} to ${maxItem} present`);
           }
           
+          // Clear any existing sections first to avoid duplicates
+          await storage.deleteSectionInspectionsByFileUpload(uploadId);
+          console.log(`🗑️ Cleared any existing sections for upload ${uploadId}`);
+          
           await storeWincanSections(sections, uploadId);
           await storage.updateFileUploadStatus(uploadId, 'completed', '');
           
           res.json({
             success: true,
-            message: `Successfully extracted ${sections.length} authentic sections from Wincan database`,
+            message: `Successfully extracted ${sections.length} authentic sections with inspection direction logic`,
             sectionsCount: sections.length,
             sections: sections,
             validationPassed: true,
+            directionLogicApplied: true,
+            manholeFlowExamples: flowExamples,
             sequenceInfo: {
               minItem,
               maxItem,

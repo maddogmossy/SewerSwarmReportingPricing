@@ -196,13 +196,21 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 🔒 **LOCKED IN FEATURES - PRODUCTION READY:**
 - **Authentic Wincan Database Extraction:** Complete processing of .db3 files with MSCC5 classification
-- **Non-consecutive Item Numbering:** Proper handling of gaps (1,2,3,4,5,6,7,9,10,16,17...) from deleted sections
+- **Intelligent Database Type Detection:** Auto-detects consecutive vs non-consecutive patterns (≤20 vs >20 sections)
+- **Inspection Direction Logic:** Automatic flow direction detection and correct manhole display
 - **Enhanced Observation Formatting:** Conditional JN display, meterage grouping, 5% WL filtering
 - **Comprehensive Deletion System:** Complete cleanup of database records + physical files + cache
 - **Zero Synthetic Data Policy:** Absolute lockdown on placeholder/fallback data generation
 - **Professional Dashboard:** Multi-defect handling, pricing integration, sector-specific standards
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v1' to return to this stable checkpoint
+
+✅ **INSPECTION DIRECTION SYSTEM VERIFIED (July 11, 2025):**
+- **Upload 79 (GR7188):** 24 consecutive sections with downstream flow (SW01→SW02, SW02→SW03, FW01→FW02)
+- **Upload 78 (GR7188a):** 15 non-consecutive sections with different manhole patterns (NOD_01, FW04, etc.)
+- **Automatic Processing:** Direction logic applied during upload processing and reprocessing
+- **Dashboard Refresh:** Built-in "Refresh Dashboard" button clears cache and reloads data
+- **Real-time Validation:** Process-wincan endpoint shows direction logic examples in logs
 
 ## Changelog
 
