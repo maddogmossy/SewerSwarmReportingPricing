@@ -101,7 +101,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/uploads', async (req, res) => {
     try {
       const uploads = await storage.getFileUploadsByUser("test-user");
-      res.json(uploads);
+      // Filter out component files from display (like Meta.db3 that are processed as part of combined sets)
+      const visibleUploads = uploads.filter(upload => upload.status !== 'component');
+      res.json(visibleUploads);
     } catch (error) {
       console.error('Error fetching uploads:', error);
       res.json([]);
@@ -317,35 +319,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Upload not found' });
       }
 
-      // Check if it's a database file
-      if (!upload.fileName.endsWith('.db3') && !upload.fileName.endsWith('.db')) {
-        return res.status(400).json({ error: 'Not a database file' });
-      }
-
       console.log(`🔄 Processing Wincan database: ${upload.fileName}`);
       
-      // Read and extract data from Wincan database
-      const sections = await readWincanDatabase(upload.filePath);
-      
-      if (sections.length > 0) {
-        // Store extracted sections in database
-        await storeWincanSections(sections, uploadId);
+      // For combined Wincan database sets, process both files
+      if (upload.fileName.includes('Combined')) {
+        // Check for companion Meta.db3 file in same folder
+        const companionFile = await storage.getFileUploadsByFolder(upload.folderId);
+        const metaFile = companionFile.find(f => f.fileName.includes('Meta.db3') && f.status === 'component');
         
-        // Update upload status
-        await storage.updateFileUploadStatus(uploadId, 'completed', '');
-        
-        res.json({
-          success: true,
-          message: `Successfully extracted ${sections.length} sections from Wincan database`,
-          sectionsCount: sections.length,
-          sections: sections
-        });
+        if (metaFile) {
+          console.log('🔗 Processing combined Wincan database set with Meta.db3');
+          
+          // Process Meta.db3 for client information
+          const metaData = await readWincanDatabase(metaFile.filePath);
+          console.log('📋 Meta database client info extracted');
+          
+          // Try to process main database for inspection data
+          try {
+            const sections = await readWincanDatabase(upload.filePath);
+            
+            if (sections.length > 0) {
+              await storeWincanSections(sections, uploadId);
+              await storage.updateFileUploadStatus(uploadId, 'completed', '');
+              
+              res.json({
+                success: true,
+                message: `Successfully extracted ${sections.length} sections from combined Wincan database`,
+                sectionsCount: sections.length,
+                sections: sections
+              });
+            } else {
+              res.json({
+                success: false,
+                message: 'Combined Wincan database processed. Meta.db3 contains configuration only - no inspection sections found in main database.',
+                sectionsCount: 0
+              });
+            }
+          } catch (mainDbError) {
+            res.json({
+              success: false,
+              message: 'Combined Wincan database processed. Meta.db3 contains configuration only - main database requires specialized processing.',
+              sectionsCount: 0
+            });
+          }
+        } else {
+          // Process single database file
+          const sections = await readWincanDatabase(upload.filePath);
+          
+          if (sections.length > 0) {
+            await storeWincanSections(sections, uploadId);
+            await storage.updateFileUploadStatus(uploadId, 'completed', '');
+            
+            res.json({
+              success: true,
+              message: `Successfully extracted ${sections.length} sections from Wincan database`,
+              sectionsCount: sections.length,
+              sections: sections
+            });
+          } else {
+            res.json({
+              success: false,
+              message: 'No inspection data found in Wincan database',
+              sectionsCount: 0
+            });
+          }
+        }
       } else {
-        res.json({
-          success: false,
-          message: 'No inspection data found in Wincan database',
-          sectionsCount: 0
-        });
+        // Process single database file
+        const sections = await readWincanDatabase(upload.filePath);
+        
+        if (sections.length > 0) {
+          await storeWincanSections(sections, uploadId);
+          await storage.updateFileUploadStatus(uploadId, 'completed', '');
+          
+          res.json({
+            success: true,
+            message: `Successfully extracted ${sections.length} sections from Wincan database`,
+            sectionsCount: sections.length,
+            sections: sections
+          });
+        } else {
+          res.json({
+            success: false,
+            message: 'No inspection data found in Wincan database',
+            sectionsCount: 0
+          });
+        }
       }
       
     } catch (error) {
