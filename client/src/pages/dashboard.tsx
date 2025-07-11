@@ -523,18 +523,7 @@ export default function Dashboard() {
           </div>
         );
       case 'recommendations':
-        // Debug logging for Section 3 to track rendering path
-        if (section.itemNo === 3) {
-          console.log("Section 3 Rendering Debug:", {
-            severityGrade: section.severityGrade,
-            hasRepairableDefects: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0,
-            defects: section.defects?.substring(0, 50) + '...',
-            recommendations: section.recommendations?.substring(0, 50) + '...',
-            includesNoAction: section.recommendations?.includes('No action required'),
-            requiresCleaning: section.defects ? requiresCleaning(section.defects) : false,
-            defectType: section.defectType
-          });
-        }
+
         
         // Check if section has defects requiring repair (not Grade 0)
         const hasRepairableDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
@@ -542,12 +531,7 @@ export default function Dashboard() {
         // Check if this section has approved repair pricing configuration
         const approvedRepairStatus = hasApprovedRepairPricing(section);
         
-        if (section.itemNo === 3) {
-          console.log("Section 3 Approved Repair Check:", { 
-            hasApproved: approvedRepairStatus.hasApproved, 
-            pricingConfig: approvedRepairStatus.pricingConfig 
-          });
-        }
+
         
         // WRc recommendations take priority over generic approved repair descriptions
         // Only use approved repair pricing if no WRc recommendations exist
@@ -570,13 +554,7 @@ export default function Dashboard() {
           
           // For service defects or cleaning-based defects, show cleaning options
           const needsCleaning = requiresCleaning(section.defects || '');
-          if (section.itemNo === 3) {
-            console.log("Section 3 Path Check:", {
-              isServiceDefect,
-              needsCleaning,
-              willTakeCleaningPath: isServiceDefect || needsCleaning
-            });
-          }
+
           if (isServiceDefect || needsCleaning) {
             return (
               <CleaningOptionsPopover 
