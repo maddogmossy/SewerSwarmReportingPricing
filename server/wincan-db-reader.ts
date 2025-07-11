@@ -27,10 +27,10 @@ import { db } from "./db";
 import { sectionInspections } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
-// Format observation text to hide 5% WL and group repeated codes by meterage
+// Format observation text with detailed defect descriptions and percentages
 // JN codes only display if structural defect within one meter of junction
 function formatObservationText(observations: string[]): string {
-  console.log(`🔧 Formatting ${observations.length} observations with enhanced logic`);
+  console.log(`🔧 Formatting ${observations.length} observations with detailed defect descriptions`);
   
   // STEP 1: Pre-filter to remove all 5% WL observations immediately
   const preFiltered = observations.filter(obs => 
@@ -45,7 +45,26 @@ function formatObservationText(observations: string[]): string {
     return '';
   }
   
-  const codeGroups: { [key: string]: string[] } = {};
+  const defectDescriptions: { [key: string]: string } = {
+    'DES': 'Settled deposits, fine',
+    'DER': 'Settled deposits, coarse', 
+    'WL': 'Water level',
+    'D': 'Deformation',
+    'FC': 'Fracture - circumferential',
+    'FL': 'Fracture - longitudinal',
+    'CR': 'Crack',
+    'JN': 'Junction',
+    'LL': 'Line deviates left',
+    'LR': 'Line deviates right',
+    'RI': 'Root intrusion',
+    'JDL': 'Joint displacement - large',
+    'JDS': 'Joint displacement - small',
+    'OJM': 'Open joint - medium',
+    'OJL': 'Open joint - large',
+    'CPF': 'Catchpit/node feature'
+  };
+  
+  const codeGroups: { [key: string]: Array<{meterage: string, fullText: string}> } = {};
   const nonGroupedObservations: string[] = [];
   const junctionPositions: number[] = [];
   const structuralDefectPositions: number[] = [];
@@ -67,7 +86,7 @@ function formatObservationText(observations: string[]): string {
     }
   }
   
-  // STEP 3: Process observations with enhanced grouping
+  // STEP 3: Process observations with enhanced detailed descriptions
   for (const obs of preFiltered) {
     // Try to extract code and meterage for grouping
     let codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*m?)\s*\(/);
@@ -91,12 +110,45 @@ function formatObservationText(observations: string[]): string {
         }
       }
       
-      // Group similar codes for meterage consolidation
+      // Extract percentage and description from full observation text
+      let percentageText = '';
+      let fullDescription = '';
+      
+      // Parse percentage from observation text
+      const percentageMatch = obs.match(/(\d+)%/);
+      if (percentageMatch) {
+        const percentage = percentageMatch[1];
+        
+        // Add cross-sectional area loss for deposits and deformation
+        if (['DES', 'DER', 'D'].includes(code)) {
+          percentageText = `${percentage}% cross-sectional area loss`;
+        } else if (code === 'WL') {
+          percentageText = `${percentage}% of the vertical dimension`;
+        } else {
+          percentageText = `${percentage}%`;
+        }
+      }
+      
+      // Build full description with defect name and percentage
+      if (defectDescriptions[code]) {
+        if (percentageText) {
+          fullDescription = `${defectDescriptions[code]}, ${percentageText}`;
+        } else {
+          fullDescription = defectDescriptions[code];
+        }
+      } else {
+        fullDescription = obs; // Use original if no description mapping
+      }
+      
+      // Group similar codes for meterage consolidation with full descriptions
       if (['WL', 'LL', 'LR', 'D', 'DER', 'DES', 'JN'].includes(code)) {
         if (!codeGroups[code]) {
           codeGroups[code] = [];
         }
-        codeGroups[code].push(codeMatch[2].replace('m', '')); // Remove 'm' for grouping
+        codeGroups[code].push({
+          meterage: codeMatch[2].replace('m', ''),
+          fullText: fullDescription
+        });
       } else {
         nonGroupedObservations.push(obs);
       }
@@ -105,19 +157,32 @@ function formatObservationText(observations: string[]): string {
     }
   }
   
-  // STEP 4: Build enhanced grouped observations
+  // STEP 4: Build enhanced grouped observations with detailed descriptions
   const finalObservations: string[] = [];
   
-  // Add grouped codes with consolidated meterage
-  for (const [code, meterages] of Object.entries(codeGroups)) {
-    if (meterages.length > 1) {
-      // Enhanced grouping: "DER 13.27m, 16.63m, 17.73m"
-      const groupedText = `${code} ${meterages.join('m, ')}m`;
-      finalObservations.push(groupedText);
-      console.log(`🔧 Grouped ${code}: ${groupedText}`);
-    } else if (meterages.length === 1) {
-      // Single occurrence with enhanced format
-      const singleText = `${code} ${meterages[0]}m`;
+  // Add grouped codes with consolidated meterage and full descriptions
+  for (const [code, entries] of Object.entries(codeGroups)) {
+    if (entries.length > 1) {
+      // Check if all entries have the same description
+      const uniqueDescriptions = [...new Set(entries.map(e => e.fullText))];
+      
+      if (uniqueDescriptions.length === 1) {
+        // Same description for all - group meterage: "DER (Settled deposits, coarse, 5% cross-sectional area loss) at 13.27, 16.63, 17.73"
+        const meterages = entries.map(e => e.meterage).join(', ');
+        const groupedText = `${code} (${uniqueDescriptions[0]}) at ${meterages}`;
+        finalObservations.push(groupedText);
+        console.log(`🔧 Grouped ${code} with same description: ${groupedText}`);
+      } else {
+        // Different descriptions - list separately: "DER (Settled deposits, coarse, 5% cross-sectional area loss) at 13.27. DER (Settled deposits, coarse, 3% cross-sectional area loss) at 16.63"
+        for (const entry of entries) {
+          const individualText = `${code} (${entry.fullText}) at ${entry.meterage}`;
+          finalObservations.push(individualText);
+        }
+        console.log(`🔧 Listed ${code} with different descriptions separately`);
+      }
+    } else if (entries.length === 1) {
+      // Single occurrence with enhanced format: "DES (Settled deposits, fine, 5% cross-sectional area loss) at 13.27"
+      const singleText = `${code} (${entries[0].fullText}) at ${entries[0].meterage}`;
       finalObservations.push(singleText);
     }
   }
@@ -125,8 +190,8 @@ function formatObservationText(observations: string[]): string {
   // Add non-grouped observations (IC, ICF nodes, etc.)
   finalObservations.push(...nonGroupedObservations);
   
-  const result = finalObservations.join(', ').trim();
-  console.log(`🔧 Final formatted result: "${result.substring(0, 100)}..."`);
+  const result = finalObservations.join('. ').trim();
+  console.log(`🔧 Final formatted result with detailed descriptions: "${result.substring(0, 100)}..."`);
   
   return result;
 }

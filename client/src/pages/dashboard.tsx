@@ -11,6 +11,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { DataIntegrityWarning } from "@/components/data-integrity-warning";
 import { RepairOptionsPopover } from "@/components/repair-options-popover";
 import { CleaningOptionsPopover } from "@/components/cleaning-options-popover";
+import { SectorStandardsDisplay } from "@/components/sector-standards-display";
 import * as XLSX from 'xlsx';
 
 import { 
@@ -2462,112 +2463,8 @@ export default function Dashboard() {
 
             <Separator className="my-8" />
 
-            {/* Analysis Standards Applied */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Analysis Standards Applied - {currentSector.name} Sector</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-medium text-sm mb-3">Standards Documentation</h4>
-                    <div className="space-y-2">
-                      {currentSector.standards.map((standard, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded">
-                          <span className="text-sm font-medium">{standard.name}</span>
-                          <a 
-                            href={standard.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-primary hover:text-primary/80 text-xs"
-                          >
-                            View Documentation
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium text-sm mb-3">Output Columns</h4>
-                    <div className="space-y-1">
-                      {currentSector.outputColumns.map((column, index) => (
-                        <div key={index} className="text-sm p-1 bg-slate-50 rounded px-2">
-                          {column}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-                  <p className="text-sm text-blue-800">
-                    <strong>File Format:</strong> Coded to WRc/WTI OS19/20x MSCC5R standards
-                  </p>
-                </div>
-
-                {/* Integrated Standards Information */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">MSCC5 + SRM Scoring</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="text-xs space-y-1">
-                        <div>✓ Defect classification (FC, FL, DER, etc.)</div>
-                        <div>✓ Severity grading (1-5 scale)</div>
-                        <div>✓ Structural vs service assessment</div>
-                        <div>✓ Plain-English condition descriptions</div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">Drain Repair Book (4th Ed.)</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="text-xs space-y-1">
-                        <div>✓ Specific repair methods per defect</div>
-                        <div>✓ Priority classification (Low/Medium/High/Urgent)</div>
-                        <div>✓ CIPP lining recommendations</div>
-                        <div>✓ Excavation vs repair guidance</div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">Sewer Cleaning Manual</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="text-xs space-y-1">
-                        <div>✓ Jetting specifications per defect</div>
-                        <div>✓ Jet-Vac unit procedures</div>
-                        <div>✓ Cleaning frequency schedules</div>
-                        <div>✓ Root cutting protocols</div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {currentSector.id === 'adoption' && (
-                  <Card className="mt-4">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">OS19x Adoption Standards</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="text-xs space-y-2">
-                        <div><strong>Grade Thresholds:</strong> Structural ≤3, Service ≤3 for adoption</div>
-                        <div><strong>Banned Defects:</strong> B, CO, COL, CX, H, MRJ, F (automatic rejection)</div>
-                        <div><strong>Gradient Tolerance:</strong> ±10% variance from design drawings</div>
-                        <div><strong>Inspection Required:</strong> CCTV Survey + Post-clean verification + Hydrostatic test</div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </CardContent>
-            </Card>
+            {/* Analysis Standards Applied - Dynamic Component */}
+            <SectorStandardsDisplay sector={currentSector.id} sectorName={currentSector.name} />
           </div>
         )}
       </div>

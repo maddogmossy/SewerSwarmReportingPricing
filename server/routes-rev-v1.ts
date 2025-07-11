@@ -665,6 +665,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Sector Standards API endpoints
+  app.get('/api/sector-standards', async (req, res) => {
+    try {
+      const sectorStandardsModule = await import('./sector-standards.js');
+      const allStandards = sectorStandardsModule.getAllSectorStandards();
+      res.json(allStandards);
+    } catch (error) {
+      console.error('Error fetching sector standards:', error);
+      res.status(500).json({ error: 'Failed to fetch sector standards' });
+    }
+  });
+
+  app.get('/api/sector-standards/:sector', async (req, res) => {
+    try {
+      const sectorStandardsModule = await import('./sector-standards.js');
+      const sectorStandards = sectorStandardsModule.getSectorStandards(req.params.sector);
+      if (!sectorStandards) {
+        return res.status(404).json({ error: 'Sector not found' });
+      }
+      res.json(sectorStandards);
+    } catch (error) {
+      console.error('Error fetching sector standards:', error);
+      res.status(500).json({ error: 'Failed to fetch sector standards' });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }
