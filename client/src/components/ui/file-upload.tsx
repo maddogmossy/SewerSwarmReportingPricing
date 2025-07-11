@@ -18,7 +18,7 @@ interface FileUploadProps {
 export default function FileUpload({ 
   onFileSelect, 
   selectedFile, 
-  accept = ".pdf,.db3",
+  accept = ".pdf,.db3:not(*meta*)",
   maxSize = 50 * 1024 * 1024, // 50MB default
   className = "",
   requiresSector = false,
@@ -85,8 +85,9 @@ export default function FileUpload({
     const fileName = file.name.toLowerCase();
     const allowedExtensions = ['.pdf', '.db3'];
     
-    // Check if file has valid extension
-    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+    // Check if file has valid extension and exclude meta.db3 files
+    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext)) && 
+                              !fileName.includes('meta');
     
     // Log for debugging file browser issues
     console.log('File validation:', { fileName, type: file.type, hasValidExtension });
