@@ -688,111 +688,71 @@ export default function Dashboard() {
           );
         }
         
-        // Auto-populate cost for defective sections
-        const autoCost = calculateAutoCost(section);
-        if (autoCost) {
-          // Only show red for single 300mm patch sections or sections under minimum quantity
-          // Check if this is a 300mm pipe with single patch (not debris sections)
-          const is300mmSinglePatch = section.pipeSize === "300mm" && 
-                                   autoCost.numberOfPatches === 1 && 
-                                   section.defects && 
-                                   !section.defects.toLowerCase().includes('debris') &&
-                                   !section.defects.toLowerCase().includes('der') &&
-                                   !section.defects.toLowerCase().includes('deg');
-          
-          const costColor = (is300mmSinglePatch || autoCost.isUnderMinimum) ? 'text-red-600' : 'text-blue-600';
-          return (
-            <div className={`text-xs ${costColor} font-medium`} title={
-              autoCost.isUnderMinimum 
-                ? `Minimum quantity: ${autoCost.minQuantity} patches (Current: ${autoCost.numberOfPatches} patch${autoCost.numberOfPatches !== 1 ? 'es' : ''}) - £${autoCost.unitCost} per patch`
-                : `${autoCost.numberOfPatches} patch${autoCost.numberOfPatches !== 1 ? 'es' : ''} × £${autoCost.unitCost} = £${autoCost.cost.toFixed(2)} (${section.pipeSize})`
-            }>
-              £{autoCost.cost.toFixed(2)}
-            </div>
-          );
-        }
+        // REMOVED: Auto-populated costs replaced with warning symbols to maintain data integrity
+        // No synthetic pricing calculations - show warning symbols for unconfigured pricing
         
         // Show warning triangle when no pricing is configured for defective sections
-        // Only show warning triangle if section has defects AND no pricing is available
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
-          const autoCost = calculateAutoCost(section);
+          // Check if this section requires cleaning vs structural repair
+          const needsCleaning = requiresCleaning(section.defects || '');
           
-
-          
-          if (!autoCost) {
-            // Check if this section requires cleaning vs structural repair
-            const needsCleaning = requiresCleaning(section.defects || '');
-            
-            if (needsCleaning) {
-              return (
-                <CleaningOptionsPopover 
-                  sectionData={{
-                    pipeSize: section.pipeSize || '150mm',
-                    sector: currentSector.id,
-                    recommendations: section.recommendations || '',
-                    defects: section.defects || '',
-                    itemNo: section.itemNo,
-                    pipeMaterial: section.pipeMaterial
-                  }}
-                  onPricingNeeded={(method: string, pipeSize: string, sector: string) => {
-                    // Navigate to pricing configuration
-                    window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
+          if (needsCleaning) {
+            return (
+              <CleaningOptionsPopover 
+                sectionData={{
+                  pipeSize: section.pipeSize || '150mm',
+                  sector: currentSector.id,
+                  recommendations: section.recommendations || '',
+                  defects: section.defects || '',
+                  itemNo: section.itemNo,
+                  pipeMaterial: section.pipeMaterial
+                }}
+                onPricingNeeded={(method: string, pipeSize: string, sector: string) => {
+                  window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
+                }}
+              >
+                <div 
+                  className="flex items-center justify-center cursor-pointer hover:bg-blue-50 p-1 rounded" 
+                  title="Pricing not configured - Click to set up cleaning costs"
+                  onClick={(e) => {
+                    e.stopPropagation();
                   }}
                 >
-                  <div 
-                    className="flex items-center justify-center cursor-pointer hover:bg-blue-50 p-1 rounded" 
-                    title="Click to configure pricing for this cleaning type"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <TriangleAlert className="h-4 w-4 text-blue-500 hover:text-blue-600" />
-                  </div>
-                </CleaningOptionsPopover>
-              );
-            } else {
-              return (
-                <RepairOptionsPopover 
-                  sectionData={{
-                    pipeSize: section.pipeSize || '150mm',
-                    sector: currentSector.id,
-                    recommendations: section.recommendations || '',
-                    defects: section.defects || '',
-                    itemNo: section.itemNo,
-                    pipeMaterial: section.pipeMaterial
-                  }}
-                  onPricingNeeded={(method: string, pipeSize: string, sector: string) => {
-                    // Navigate to pricing configuration
-                    window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
+                  <TriangleAlert className="h-4 w-4 text-blue-500 hover:text-blue-600" />
+                </div>
+              </CleaningOptionsPopover>
+            );
+          } else {
+            return (
+              <RepairOptionsPopover 
+                sectionData={{
+                  pipeSize: section.pipeSize || '150mm',
+                  sector: currentSector.id,
+                  recommendations: section.recommendations || '',
+                  defects: section.defects || '',
+                  itemNo: section.itemNo,
+                  pipeMaterial: section.pipeMaterial
+                }}
+                onPricingNeeded={(method: string, pipeSize: string, sector: string) => {
+                  window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
+                }}
+              >
+                <div 
+                  className="flex items-center justify-center cursor-pointer hover:bg-orange-50 p-1 rounded" 
+                  title="Pricing not configured - Click to set up repair costs"
+                  onClick={(e) => {
+                    e.stopPropagation();
                   }}
                 >
-                  <div 
-                    className="flex items-center justify-center cursor-pointer hover:bg-orange-50 p-1 rounded" 
-                    title="Click to configure pricing for this repair type"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <TriangleAlert className="h-4 w-4 text-orange-500 hover:text-orange-600" />
-                  </div>
-                </RepairOptionsPopover>
-              );
-            }
+                  <TriangleAlert className="h-4 w-4 text-orange-500 hover:text-orange-600" />
+                </div>
+              </RepairOptionsPopover>
+            );
           }
         }
         
-        // CRITICAL FIX: Show configuration message for defective sections with no pricing
-        // This ensures no defective section ever shows as £0.00 or falls through to "Complete"
-        if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
-          return (
-            <div className="text-xs text-orange-600 font-medium">
-              Configure {currentSector.id} sector pricing first
-            </div>
-          );
-        }
-        
-        // Fallback for any other sections
-        return section.cost || '£0.00';
+        // Fallback: No cost display for sections without pricing configuration
+        return '';
       default:
         return '';
     }
