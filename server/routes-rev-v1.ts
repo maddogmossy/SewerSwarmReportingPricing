@@ -132,13 +132,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const uploadId = parseInt(req.params.id);
       
+      // Get upload details before deletion to clean up physical file
+      const upload = await storage.getFileUploadById(uploadId);
+      if (!upload) {
+        return res.status(404).json({ error: 'Upload not found' });
+      }
+      
+      // Delete physical file
+      const fs = require('fs');
+      try {
+        if (upload.filePath && fs.existsSync(upload.filePath)) {
+          fs.unlinkSync(upload.filePath);
+          console.log(`🗑️ Deleted physical file: ${upload.filePath}`);
+        }
+      } catch (fileError) {
+        console.warn(`Could not delete file ${upload.filePath}:`, fileError.message);
+      }
+      
+      // Remove from in-memory storage
+      uploadsStorage = uploadsStorage.filter(u => u.id !== uploadId);
+      
       // Use database storage to delete the upload (this also deletes associated sections)
       await storage.deleteFileUpload(uploadId);
       
-      res.json({ success: true, message: 'Upload deleted successfully' });
+      console.log(`✅ Upload ${uploadId} completely deleted: database records, sections, and physical file`);
+      
+      res.json({ success: true, message: 'Upload and all associated data deleted successfully' });
     } catch (error) {
       console.error('Error deleting upload:', error);
-      res.status(500).json({ error: 'Failed to delete upload' });
+      res.status(500).json({ error: 'Failed to delete upload: ' + error.message });
     }
   });
 
@@ -181,14 +203,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete('/api/folders/:id', async (req, res) => {
     try {
       const folderId = parseInt(req.params.id);
-      await storage.deleteProjectFolder(folderId);
       
-      console.log(`Deleted folder with ID: ${folderId}`);
+      // Get uploads in this folder before deletion to clean up physical files
+      const uploadsInFolder = await storage.getFileUploadsByFolder(folderId);
       
-      res.json({ success: true, message: 'Folder deleted successfully' });
+      // Delete physical files
+      const fs = require('fs');
+      for (const upload of uploadsInFolder) {
+        try {
+          if (upload.filePath && fs.existsSync(upload.filePath)) {
+            fs.unlinkSync(upload.filePath);
+            console.log(`🗑️ Deleted physical file: ${upload.filePath}`);
+          }
+        } catch (fileError) {
+          console.warn(`Could not delete file ${upload.filePath}:`, fileError.message);
+        }
+      }
+      
+      // Delete folder and all associated data
+      const result = await storage.deleteProjectFolder(folderId);
+      
+      // Also remove from in-memory storage
+      uploadsStorage = uploadsStorage.filter(upload => 
+        !uploadsInFolder.some(folderUpload => folderUpload.id === upload.id)
+      );
+      
+      console.log(`✅ Folder ${folderId} completely deleted: ${result.deletedCounts.uploads} uploads, ${result.deletedCounts.sections} sections`);
+      
+      res.json({ 
+        success: true, 
+        message: 'Folder and all associated data deleted successfully',
+        folderName: result.folderName,
+        deletedCounts: result.deletedCounts
+      });
     } catch (error) {
       console.error('Error deleting folder:', error);
-      res.status(500).json({ error: 'Failed to delete folder' });
+      res.status(500).json({ error: 'Failed to delete folder: ' + error.message });
     }
   });
 

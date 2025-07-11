@@ -2588,8 +2588,9 @@ export default function Dashboard() {
               <ul className="text-xs text-red-700 mt-3 list-disc list-inside">
                 <li>The project folder will be permanently removed</li>
                 <li>All {selectedFolderToDelete?.reportCount} reports in this folder will be deleted</li>
-                <li>All section inspection data will be removed</li>
-                <li>This action cannot be undone</li>
+                <li>All section inspection data will be removed from database</li>
+                <li>All uploaded database files (.db3) will be deleted from server</li>
+                <li>This action cannot be undone - complete data cleanup</li>
               </ul>
             </div>
           </div>

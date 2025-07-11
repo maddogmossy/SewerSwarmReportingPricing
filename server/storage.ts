@@ -56,7 +56,7 @@ export interface IStorage {
   getProjectFolders(userId: string): Promise<ProjectFolder[]>;
   createProjectFolder(folder: InsertProjectFolderType): Promise<ProjectFolder>;
   updateProjectFolder(id: number, folder: Partial<ProjectFolder>): Promise<ProjectFolder>;
-  deleteProjectFolder(id: number): Promise<void>;
+  deleteProjectFolder(id: number): Promise<{ folderName: string; deletedCounts: { uploads: number; sections: number } }>;
   
   // File upload operations
   createFileUpload(upload: InsertFileUpload): Promise<FileUpload>;
@@ -198,15 +198,51 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
 
-  async deleteProjectFolder(id: number): Promise<void> {
-    // First, remove folder references from any uploads pointing to this folder
-    await db
-      .update(fileUploads)
-      .set({ folderId: null })
+  async deleteProjectFolder(id: number): Promise<{ folderName: string; deletedCounts: { uploads: number; sections: number } }> {
+    // Get folder info before deletion
+    const [folder] = await db.select().from(projectFolders).where(eq(projectFolders.id, id));
+    if (!folder) {
+      throw new Error('Folder not found');
+    }
+
+    // Get all uploads in this folder
+    const uploadsInFolder = await db
+      .select()
+      .from(fileUploads)
       .where(eq(fileUploads.folderId, id));
+
+    let totalSectionsDeleted = 0;
+    let totalUploadsDeleted = 0;
+
+    // Delete all associated data for each upload in the folder
+    for (const upload of uploadsInFolder) {
+      // Delete sections for this upload
+      const deletedSections = await db
+        .delete(sectionInspections)
+        .where(eq(sectionInspections.fileUploadId, upload.id))
+        .returning();
+      
+      totalSectionsDeleted += deletedSections.length;
+      
+      // Delete the upload record
+      await db.delete(fileUploads).where(eq(fileUploads.id, upload.id));
+      totalUploadsDeleted++;
+      
+      console.log(`Deleted upload ${upload.id} from folder ${id}, removed ${deletedSections.length} sections`);
+    }
     
-    // Then delete the folder itself
+    // Finally delete the folder itself
     await db.delete(projectFolders).where(eq(projectFolders.id, id));
+    
+    console.log(`Folder ${id} completely deleted: ${totalUploadsDeleted} uploads, ${totalSectionsDeleted} sections`);
+    
+    return {
+      folderName: folder.folderName || folder.projectAddress || 'Unnamed Folder',
+      deletedCounts: {
+        uploads: totalUploadsDeleted,
+        sections: totalSectionsDeleted
+      }
+    };
   }
 
   async createFileUpload(upload: InsertFileUpload): Promise<FileUpload> {
