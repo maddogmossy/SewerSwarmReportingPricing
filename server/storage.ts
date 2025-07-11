@@ -61,6 +61,7 @@ export interface IStorage {
   // File upload operations
   createFileUpload(upload: InsertFileUpload): Promise<FileUpload>;
   getFileUploadsByUser(userId: string): Promise<FileUpload[]>;
+  getFileUploadsByFolder(folderId: number | null): Promise<FileUpload[]>;
   getFileUploadById(id: number): Promise<FileUpload | undefined>;
   updateFileUploadStatus(id: number, status: string, reportUrl?: string): Promise<FileUpload>;
   deleteFileUpload(id: number): Promise<void>;
@@ -221,6 +222,18 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(fileUploads)
       .where(eq(fileUploads.userId, userId))
+      .orderBy(desc(fileUploads.createdAt));
+  }
+
+  async getFileUploadsByFolder(folderId: number | null): Promise<FileUpload[]> {
+    return await db
+      .select()
+      .from(fileUploads)
+      .where(
+        folderId === null 
+          ? isNull(fileUploads.folderId)
+          : eq(fileUploads.folderId, folderId)
+      )
       .orderBy(desc(fileUploads.createdAt));
   }
 

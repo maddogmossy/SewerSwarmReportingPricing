@@ -331,73 +331,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`🔄 Processing Wincan database: ${upload.fileName}`);
       
-      // For combined Wincan database sets, process both files
-      if (upload.fileName.includes('Combined')) {
-        // Check for companion Meta.db3 file in same folder
-        const companionFile = await storage.getFileUploadsByFolder(upload.folderId);
-        const metaFile = companionFile.find(f => f.fileName.includes('Meta.db3') && f.status === 'component');
-        
-        if (metaFile) {
-          console.log('🔗 Processing combined Wincan database set with Meta.db3');
-          
-          // Process Meta.db3 for client information
-          const metaData = await readWincanDatabase(metaFile.filePath);
-          console.log('📋 Meta database client info extracted');
-          
-          // Try to process main database for inspection data
-          try {
-            const sections = await readWincanDatabase(upload.filePath);
-            
-            if (sections.length > 0) {
-              await storeWincanSections(sections, uploadId);
-              await storage.updateFileUploadStatus(uploadId, 'completed', '');
-              
-              res.json({
-                success: true,
-                message: `Successfully extracted ${sections.length} authentic sections from Wincan database`,
-                sectionsCount: sections.length,
-                sections: sections
-              });
-            } else {
-              res.json({
-                success: false,
-                message: 'Meta.db3 contains configuration only - no inspection sections found.',
-                sectionsCount: 0
-              });
-            }
-          } catch (mainDbError) {
-            console.error('Database processing error:', mainDbError.message);
-            res.json({
-              success: false,
-              message: `CORRUPTION DETECTED: ${mainDbError.message}. Please upload fresh database files - the fixed upload system will preserve them correctly.`,
-              sectionsCount: 0,
-              requiresFreshUpload: true
-            });
-          }
-        } else {
-          // Process single database file
-          const sections = await readWincanDatabase(upload.filePath);
-          
-          if (sections.length > 0) {
-            await storeWincanSections(sections, uploadId);
-            await storage.updateFileUploadStatus(uploadId, 'completed', '');
-            
-            res.json({
-              success: true,
-              message: `Successfully extracted ${sections.length} sections from Wincan database`,
-              sectionsCount: sections.length,
-              sections: sections
-            });
-          } else {
-            res.json({
-              success: false,
-              message: 'No inspection data found in Wincan database',
-              sectionsCount: 0
-            });
-          }
-        }
-      } else {
-        // Process single database file
+      // Try to process the main database file directly
+      console.log('🔒 LOCKDOWN: Processing authentic Wincan database file');
+      
+      try {
         const sections = await readWincanDatabase(upload.filePath);
         
         if (sections.length > 0) {
@@ -406,17 +343,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           res.json({
             success: true,
-            message: `Successfully extracted ${sections.length} sections from Wincan database`,
+            message: `Successfully extracted ${sections.length} authentic sections from Wincan database`,
             sectionsCount: sections.length,
             sections: sections
           });
         } else {
           res.json({
             success: false,
-            message: 'No inspection data found in Wincan database',
+            message: 'No inspection data found in database file - may be a configuration-only file',
             sectionsCount: 0
           });
         }
+      } catch (dbError) {
+        console.error('Database processing error:', dbError.message);
+        res.json({
+          success: false,
+          message: `CORRUPTION DETECTED: ${dbError.message}. Please upload fresh database files - the fixed upload system will preserve them correctly.`,
+          sectionsCount: 0,
+          requiresFreshUpload: true
+        });
       }
       
     } catch (error) {
