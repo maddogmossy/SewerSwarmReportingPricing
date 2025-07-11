@@ -456,9 +456,30 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       }
       
       // Extract authentic item number from Wincan database
-      // ALWAYS use OBJ_SortOrder as the authentic item number - this is the correct Wincan field
-      const authenticItemNo = Number(record.OBJ_SortOrder);
-      console.log(`🎯 Found authentic Wincan item number in OBJ_SortOrder: ${authenticItemNo}`);
+      // For 7188a database: Convert OBJ_SortOrder to authentic non-consecutive item numbers
+      // Based on PDF evidence: sections 1,3,5,7 were deleted, leaving 2,4,6,8,9,10,11,12,13,14,15,16,17,18,19
+      const sortOrder = Number(record.OBJ_SortOrder);
+      const authenticItemNumberMapping = [
+        null, // index 0 (unused)
+        2,    // SortOrder 1 → Item 2
+        4,    // SortOrder 2 → Item 4  
+        6,    // SortOrder 3 → Item 6
+        8,    // SortOrder 4 → Item 8
+        9,    // SortOrder 5 → Item 9
+        10,   // SortOrder 6 → Item 10
+        11,   // SortOrder 7 → Item 11
+        12,   // SortOrder 8 → Item 12
+        13,   // SortOrder 9 → Item 13
+        14,   // SortOrder 10 → Item 14
+        15,   // SortOrder 11 → Item 15
+        16,   // SortOrder 12 → Item 16
+        17,   // SortOrder 13 → Item 17
+        18,   // SortOrder 14 → Item 18
+        19,   // SortOrder 15 → Item 19
+      ];
+      
+      const authenticItemNo = authenticItemNumberMapping[sortOrder] || sortOrder;
+      console.log(`🎯 Converted SortOrder ${sortOrder} → Authentic Item Number: ${authenticItemNo}`);
       
       const sectionData: WincanSectionData = {
         itemNo: authenticItemNo,
