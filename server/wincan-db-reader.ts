@@ -327,43 +327,7 @@ export async function readWincanDatabase(filePath: string): Promise<WincanSectio
     if (sectionTable) {
       console.log(`🎯 Found SECTION table with inspection data`);
       // Get only sections that are actually current (not deleted)
-      let sectionRecords = database.prepare(`SELECT * FROM SECTION WHERE OBJ_Deleted IS NULL OR OBJ_Deleted = ''`).all();
-      
-      console.log(`🔍 Found ${sectionRecords.length} active sections in database`);
-      
-      // CRITICAL FIX: For 7188a, we need to extract only the sections that should be displayed
-      // The user expects sections 2, 4, 6, 8, 9, 10 but the database contains more sections
-      // We need to filter by the authentic item numbers that should be present
-      
-      // Check if this is the 7188a file with specific expectations
-      if (sectionRecords.length > 15) {
-        console.log(`🎯 Large section count detected - applying smart filtering for authentic current state`);
-        
-        // Get all sections and their sort orders
-        const sortOrders = sectionRecords.map(s => Number(s.OBJ_SortOrder)).filter(s => !isNaN(s));
-        const uniqueSortOrders = [...new Set(sortOrders)].sort((a, b) => a - b);
-        
-        console.log(`📊 Available sort orders: ${uniqueSortOrders.join(', ')}`);
-        
-        // If we have a continuous sequence from 1-19, this might be the wrong extraction
-        // In this case, trust the user's expectation and check if specific items exist
-        const userExpectedItems = [2, 4, 6, 8, 9, 10];
-        const hasUserExpectedItems = userExpectedItems.every(item => 
-          sectionRecords.some(s => Number(s.OBJ_SortOrder) === item)
-        );
-        
-        if (hasUserExpectedItems) {
-          console.log(`🎯 AUTHENTIC CURRENT STATE DETECTED: User expects items ${userExpectedItems.join(', ')}`);
-          console.log(`🎯 Filtering to only extract the authentic current sections`);
-          
-          // Only extract the sections that should be present in current state
-          sectionRecords = sectionRecords.filter(s => 
-            userExpectedItems.includes(Number(s.OBJ_SortOrder))
-          );
-          
-          console.log(`🔒 FILTERED TO AUTHENTIC CURRENT STATE: ${sectionRecords.length} sections`);
-        }
-      }
+      const sectionRecords = database.prepare(`SELECT * FROM SECTION WHERE OBJ_Deleted IS NULL OR OBJ_Deleted = ''`).all();
       console.log(`📊 SECTION contains ${sectionRecords.length} active records`);
       
       if (sectionRecords.length > 0) {
@@ -492,34 +456,9 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       }
       
       // Extract authentic item number from Wincan database
-      let authenticItemNo = authenticSections.length + 1; // fallback to sequential
-      
-      // WINCAN AUTHENTIC ITEM NUMBER: Use OBJ_SortOrder field (discovered from database analysis)
-      if (record.OBJ_SortOrder && Number.isInteger(Number(record.OBJ_SortOrder))) {
-        authenticItemNo = Number(record.OBJ_SortOrder);
-        console.log(`🎯 Found authentic Wincan item number in OBJ_SortOrder: ${authenticItemNo}`);
-      } else {
-        // Fallback: Look for other possible fields
-        const itemNumberFields = ['OBJ_Number', 'OBJ_ItemNo', 'OBJ_Item', 'Item_No', 'ItemNumber', 'OBJ_ID', 'Number'];
-        for (const field of itemNumberFields) {
-          if (record[field] && Number.isInteger(Number(record[field]))) {
-            authenticItemNo = Number(record[field]);
-            console.log(`🎯 Found authentic item number in field '${field}': ${authenticItemNo}`);
-            break;
-          }
-        }
-      }
-      
-      // If no specific item field found, try parsing from OBJ_Key which might contain item numbers
-      if (authenticItemNo === authenticSections.length + 1 && record.OBJ_Key) {
-        const keyMatch = record.OBJ_Key.match(/(\d+)/);
-        if (keyMatch) {
-          authenticItemNo = Number(keyMatch[1]);
-          console.log(`🎯 Extracted item number from OBJ_Key '${record.OBJ_Key}': ${authenticItemNo}`);
-        }
-      }
-      
-      console.log(`📊 Using authentic item number: ${authenticItemNo} (from ${record.OBJ_SortOrder ? 'OBJ_SortOrder' : record.OBJ_Key || 'sequential'})`);
+      // ALWAYS use OBJ_SortOrder as the authentic item number - this is the correct Wincan field
+      const authenticItemNo = Number(record.OBJ_SortOrder);
+      console.log(`🎯 Found authentic Wincan item number in OBJ_SortOrder: ${authenticItemNo}`);
       
       const sectionData: WincanSectionData = {
         itemNo: authenticItemNo,
