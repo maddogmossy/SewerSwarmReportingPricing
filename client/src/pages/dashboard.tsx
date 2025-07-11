@@ -373,10 +373,10 @@ export default function Dashboard() {
     { key: 'startMHDepth', label: 'Start MH Depth', hideable: true, width: 'w-12 break-words', priority: 'tight' },
     { key: 'finishMH', label: 'Finish MH', hideable: false, width: 'w-16 break-words', priority: 'tight' },
     { key: 'finishMHDepth', label: 'Finish MH Depth', hideable: true, width: 'w-12 break-words', priority: 'tight' },
-    { key: 'pipeSize', label: 'Pipe Size', hideable: false, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'pipeSize', label: 'Pipe Size', hideable: true, width: 'w-16 break-words', priority: 'tight' },
     { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: 'w-24 break-words', priority: 'tight' },
-    { key: 'totalLength', label: 'Total Length (m)', hideable: false, width: 'w-16 break-words', priority: 'tight' },
-    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: false, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'totalLength', label: 'Total Length (m)', hideable: true, width: 'w-16 break-words', priority: 'tight' },
+    { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: true, width: 'w-16 break-words', priority: 'tight' },
     { key: 'defects', label: 'Observations', hideable: false, width: 'w-64 break-words', priority: 'pretty' },
     { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: 'w-16 break-words', priority: 'tight' },
     { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: 'w-16 break-words', priority: 'tight' },
@@ -2139,6 +2139,19 @@ export default function Dashboard() {
                       className="text-xs"
                     >
                       {showColumnSelector ? 'Done Selecting' : 'Hide Columns'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        // Get all hideable columns
+                        const hideableColumns = columns.filter(col => col.hideable).map(col => col.key);
+                        setHiddenColumns(new Set(hideableColumns));
+                      }}
+                      className="text-xs"
+                      disabled={columns.filter(col => col.hideable).every(col => hiddenColumns.has(col.key))}
+                    >
+                      Hide All
                     </Button>
                     <Button
                       variant="outline"
