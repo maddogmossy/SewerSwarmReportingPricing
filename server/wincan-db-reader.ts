@@ -394,8 +394,66 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
     
     if (record && typeof record === 'object') {
       // Map GUIDs to readable manhole names
-      const startMH = manholeMap.get(record.OBJ_FromNode_REF) || record.OBJ_FromNode_REF || 'UNKNOWN';
-      const finishMH = manholeMap.get(record.OBJ_ToNode_REF) || record.OBJ_ToNode_REF || 'UNKNOWN';
+      const fromMH = manholeMap.get(record.OBJ_FromNode_REF) || record.OBJ_FromNode_REF || 'UNKNOWN';
+      const toMH = manholeMap.get(record.OBJ_ToNode_REF) || record.OBJ_ToNode_REF || 'UNKNOWN';
+      
+      // Apply inspection direction logic
+      // Determine inspection direction based on manhole naming patterns and flow direction
+      let startMH: string;
+      let finishMH: string;
+      let inspectionDirection = 'downstream'; // Default assumption
+      
+      // Detect inspection direction based on manhole patterns
+      if (fromMH && toMH) {
+        // Pattern detection for flow direction
+        const fromHasNumber = /\d+/.test(fromMH);
+        const toHasNumber = /\d+/.test(toMH);
+        
+        if (fromHasNumber && toHasNumber) {
+          // Extract numbers for comparison
+          const fromNum = parseInt(fromMH.match(/\d+/)?.[0] || '0');
+          const toNum = parseInt(toMH.match(/\d+/)?.[0] || '0');
+          
+          // If fromMH number > toMH number, inspection is going upstream
+          if (fromNum > toNum) {
+            inspectionDirection = 'upstream';
+          }
+        }
+        
+        // Additional pattern checks for specific naming conventions
+        if (fromMH.includes('SW') && toMH.includes('SW')) {
+          // Surface water: typically SW01 → SW02 is downstream
+          const fromSWNum = parseInt(fromMH.replace(/\D/g, '') || '0');
+          const toSWNum = parseInt(toMH.replace(/\D/g, '') || '0');
+          if (fromSWNum > toSWNum) {
+            inspectionDirection = 'upstream';
+          }
+        }
+        
+        if (fromMH.includes('FW') && toMH.includes('FW')) {
+          // Foul water: typically FW01 → FW02 is downstream  
+          const fromFWNum = parseInt(fromMH.replace(/\D/g, '') || '0');
+          const toFWNum = parseInt(toMH.replace(/\D/g, '') || '0');
+          if (fromFWNum > toFWNum) {
+            inspectionDirection = 'upstream';
+          }
+        }
+      }
+      
+      // Apply inspection direction rule:
+      // - If inspection direction is UPSTREAM: display downstream MH as Start MH
+      // - If inspection direction is DOWNSTREAM: display upstream MH as Start MH
+      if (inspectionDirection === 'upstream') {
+        // Upstream inspection: downstream MH (toMH) becomes Start MH
+        startMH = toMH;
+        finishMH = fromMH;
+        console.log(`🔄 Upstream inspection detected: ${fromMH} → ${toMH} = Start: ${startMH}, Finish: ${finishMH}`);
+      } else {
+        // Downstream inspection: upstream MH (fromMH) becomes Start MH  
+        startMH = fromMH;
+        finishMH = toMH;
+        console.log(`➡️ Downstream inspection detected: ${fromMH} → ${toMH} = Start: ${startMH}, Finish: ${finishMH}`);
+      }
       
       // Extract authentic pipe specifications
       const pipeSize = record.OBJ_Size1 || 'UNKNOWN';
