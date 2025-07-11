@@ -354,22 +354,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
               res.json({
                 success: true,
-                message: `Successfully extracted ${sections.length} sections from combined Wincan database`,
+                message: `Successfully extracted ${sections.length} authentic sections from Wincan database`,
                 sectionsCount: sections.length,
                 sections: sections
               });
             } else {
               res.json({
                 success: false,
-                message: 'Combined Wincan database processed. Meta.db3 contains configuration only - no inspection sections found in main database.',
+                message: 'Meta.db3 contains configuration only - no inspection sections found.',
                 sectionsCount: 0
               });
             }
           } catch (mainDbError) {
+            console.error('Database processing error:', mainDbError.message);
             res.json({
               success: false,
-              message: 'Combined Wincan database processed. Meta.db3 contains configuration only - main database requires specialized processing.',
-              sectionsCount: 0
+              message: `CORRUPTION DETECTED: ${mainDbError.message}. Please upload fresh database files - the fixed upload system will preserve them correctly.`,
+              sectionsCount: 0,
+              requiresFreshUpload: true
             });
           }
         } else {

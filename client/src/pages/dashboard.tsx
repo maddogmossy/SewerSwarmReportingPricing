@@ -1981,24 +1981,20 @@ export default function Dashboard() {
                         if (response.success) {
                           toast({
                             title: "Success!",
-                            description: `Extracted ${response.sectionsCount} sections from Wincan database`,
+                            description: `Extracted ${response.sectionsCount} authentic sections from database`,
+                            variant: "default"
                           });
-                          // Refresh the page to show extracted data
+                          // Refresh page to show extracted data
                           window.location.reload();
                         } else {
-                          // Handle the case where no inspection data is found (this is correct behavior for Meta.db3 files)
-                          if (response.message && response.message.includes("No inspection data found")) {
-                            toast({
-                              title: "Configuration File Detected",
-                              description: "This is a Meta.db3 configuration file with no inspection data. Upload a Wincan inspection database file (.db) instead.",
-                              variant: "default",
-                            });
-                          } else {
-                            toast({
-                              title: "Processing Failed",
-                              description: response.message || "Could not extract data from database file",
-                              variant: "destructive",
-                            });
+                          toast({
+                            title: response.requiresFreshUpload ? "Upload Corruption Detected" : "Processing Failed",
+                            description: response.message,
+                            variant: "destructive"
+                          });
+                          if (response.requiresFreshUpload) {
+                            // Show corruption message and suggest re-upload
+                            console.log("🚫 LOCKDOWN: Database file corrupted - requires fresh upload");
                           }
                         }
                       } catch (error) {
