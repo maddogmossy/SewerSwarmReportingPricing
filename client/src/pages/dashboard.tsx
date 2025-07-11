@@ -366,16 +366,21 @@ export default function Dashboard() {
   // Calculate dynamic columns with reactive widths based on hidden columns
   const columns = useMemo(() => {
     const hiddenCount = hiddenColumns.size;
+    console.log('Dynamic Column Calculation:', { hiddenCount, hiddenColumns: Array.from(hiddenColumns) });
     
     // Calculate dynamic widths based on hidden columns to give more space to content
     const getColumnWidth = (key: string, baseWidth: string) => {
       // Expand Observations and Recommendations columns when others are hidden
       if (key === 'defects' || key === 'recommendations') {
-        if (hiddenCount >= 8) return 'w-[400px] break-words'; // Extra wide when many columns hidden
-        if (hiddenCount >= 6) return 'w-96 break-words';      // Very wide when several columns hidden
-        if (hiddenCount >= 4) return 'w-80 break-words';      // Wide when some columns hidden
-        if (hiddenCount >= 2) return 'w-72 break-words';      // Medium when few columns hidden
-        return baseWidth; // Default width
+        let newWidth;
+        if (hiddenCount >= 8) newWidth = 'w-[400px] break-words'; // Extra wide when many columns hidden
+        else if (hiddenCount >= 6) newWidth = 'w-96 break-words';      // Very wide when several columns hidden
+        else if (hiddenCount >= 4) newWidth = 'w-80 break-words';      // Wide when some columns hidden
+        else if (hiddenCount >= 2) newWidth = 'w-72 break-words';      // Medium when few columns hidden
+        else newWidth = baseWidth; // Default width
+        
+        console.log(`Width for ${key}:`, { hiddenCount, baseWidth, newWidth });
+        return newWidth;
       }
       
       return baseWidth;
