@@ -10,7 +10,7 @@ interface SectorStandardsDisplayProps {
 
 export function SectorStandardsDisplay({ sector, sectorName }: SectorStandardsDisplayProps) {
   const { data: sectorStandards, isLoading } = useQuery({
-    queryKey: [`/api/sector-standards/${sector}`],
+    queryKey: [`/api/${sector}/profile`],
     enabled: !!sector,
   });
 

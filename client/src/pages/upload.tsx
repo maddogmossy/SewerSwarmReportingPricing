@@ -450,10 +450,12 @@ export default function Upload() {
                                 Applicable Standards
                               </h4>
                               <ul className="text-xs text-gray-700 space-y-2">
-                                {standards.map((standard: string, index: number) => (
+                                {standards.map((standard: any, index: number) => (
                                   <li key={index} className="flex items-start gap-2">
                                     <span className="font-bold mt-0.5" style={{ color: sectorColor }}>•</span>
-                                    <span className="leading-relaxed">{standard}</span>
+                                    <span className="leading-relaxed">
+                                      {typeof standard === 'string' ? standard : standard.name || standard}
+                                    </span>
                                   </li>
                                 ))}
                               </ul>
