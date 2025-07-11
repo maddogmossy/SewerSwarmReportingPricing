@@ -498,6 +498,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fileType = 'database';
       }
 
+      // Filter out Meta database files since they're not needed for processing
+      if (req.file.originalname.toLowerCase().includes('meta') && 
+          (fileExtension.endsWith('.db3') || fileExtension.endsWith('.db'))) {
+        console.log('❌ Meta database file rejected:', req.file.originalname);
+        return res.status(400).json({ 
+          error: 'Meta database files are not needed for processing. Please upload the main database file instead.',
+          fileName: req.file.originalname,
+          reason: 'meta_file_not_supported'
+        });
+      }
+
       console.log('File uploaded:', {
         originalName: req.file.originalname,
         mimetype: req.file.mimetype,

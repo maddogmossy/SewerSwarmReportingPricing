@@ -18,7 +18,7 @@ interface FileUploadProps {
 export default function FileUpload({ 
   onFileSelect, 
   selectedFile, 
-  accept = ".pdf,.db3:not(*meta*)",
+  accept = ".pdf,.db,.db3",
   maxSize = 50 * 1024 * 1024, // 50MB default
   className = "",
   requiresSector = false,
@@ -86,11 +86,16 @@ export default function FileUpload({
     const allowedExtensions = ['.pdf', '.db3'];
     
     // Check if file has valid extension and exclude meta.db3 files
-    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext)) && 
-                              !fileName.includes('meta');
+    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+    const isMetaFile = fileName.includes('meta');
     
     // Log for debugging file browser issues
-    console.log('File validation:', { fileName, type: file.type, hasValidExtension });
+    console.log('File validation:', { fileName, type: file.type, hasValidExtension, isMetaFile });
+
+    if (isMetaFile && hasValidExtension) {
+      alert('Meta database files are not needed for processing.\nPlease select the main database file instead.');
+      return false;
+    }
 
     if (!hasValidExtension) {
       alert('Please select a valid PDF or DB3 file (.pdf, .db3)');
