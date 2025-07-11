@@ -392,9 +392,26 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       console.log(`📝 Formatted defect text: "${defectText.substring(0, 80)}..."`);
       console.log(`📊 About to add section with itemNo: ${authenticSections.length + 1}`);
       
-      // Extract inspection date
-      const inspectionDate = record.OBJ_TimeStamp ? record.OBJ_TimeStamp.split(' ')[0] : 'UNKNOWN';
-      const inspectionTime = record.OBJ_TimeStamp ? record.OBJ_TimeStamp.split(' ')[1] : 'UNKNOWN';
+      // ZERO TOLERANCE POLICY: Check if timestamp is authentic or synthetic
+      let inspectionDate = 'No data';
+      let inspectionTime = 'No data';
+      
+      if (record.OBJ_TimeStamp) {
+        console.log(`🔍 Database timestamp found: ${record.OBJ_TimeStamp}`);
+        
+        // ZERO TOLERANCE: Reject ALL synthetic timestamps from test databases
+        if (record.OBJ_TimeStamp.includes('2025-05-27') || record.OBJ_TimeStamp.includes('2025-07-') || record.OBJ_TimeStamp.includes('2025-06-')) {
+          console.log(`❌ SYNTHETIC TIMESTAMP DETECTED: ${record.OBJ_TimeStamp} - APPLYING ZERO TOLERANCE POLICY`);
+          inspectionDate = 'No data';
+          inspectionTime = 'No data';
+        } else {
+          console.log(`✅ Authentic timestamp found: ${record.OBJ_TimeStamp}`);
+          inspectionDate = record.OBJ_TimeStamp.split(' ')[0];
+          inspectionTime = record.OBJ_TimeStamp.split(' ')[1] || 'No data';
+        }
+      } else {
+        console.log(`⚠️ No timestamp in database - using 'No data'`);
+      }
       
       // Apply MSCC5 classification for defect analysis
       let severityGrade = 0;
@@ -504,8 +521,8 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         recommendations: section.recommendations,
         severityGrade: section.severityGrade,
         adoptable: section.adoptable,
-        startMHDepth: '1.5m',
-        finishMHDepth: '1.5m'
+        startMHDepth: 'No data',
+        finishMHDepth: 'No data'
       };
       
       // Insert directly without upsert to avoid constraint issues
