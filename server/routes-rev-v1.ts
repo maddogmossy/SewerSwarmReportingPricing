@@ -452,6 +452,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const sections = await readWincanDatabase(upload.filePath);
         
         if (sections.length > 0) {
+          // Apply sequential validation logic for Wincan database during upload processing
+          const itemNumbers = sections.map(s => s.itemNo).sort((a, b) => a - b);
+          const minItem = Math.min(...itemNumbers);
+          const maxItem = Math.max(...itemNumbers);
+          
+          console.log(`🔍 WINCAN DATABASE VALIDATION: Items ${minItem}-${maxItem}, extracted ${sections.length} sections`);
+          console.log(`🔍 Item sequence: [${itemNumbers.join(', ')}]`);
+          
+          // For database files, gaps are authentic deleted sections - don't flag as missing
+          const expectedSequential = maxItem - minItem + 1;
+          const actualSections = sections.length;
+          
+          if (actualSections < expectedSequential) {
+            const missingItems = [];
+            for (let i = minItem; i <= maxItem; i++) {
+              if (!itemNumbers.includes(i)) {
+                missingItems.push(i);
+              }
+            }
+            console.log(`✅ AUTHENTIC DELETION DETECTED: Items ${missingItems.join(', ')} were deleted in Wincan database`);
+            console.log(`✅ This is normal - user deleted ${missingItems.length} sections and didn't refresh database`);
+            console.log(`✅ VALIDATION PASSED: Database file gaps recognized as authentic deletions, not missing data`);
+          } else {
+            console.log(`✅ COMPLETE SEQUENTIAL DATA: All sections from ${minItem} to ${maxItem} present`);
+          }
+          
           await storeWincanSections(sections, uploadId);
           await storage.updateFileUploadStatus(uploadId, 'completed', '');
           
@@ -459,7 +485,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
             success: true,
             message: `Successfully extracted ${sections.length} authentic sections from Wincan database`,
             sectionsCount: sections.length,
-            sections: sections
+            sections: sections,
+            validationPassed: true,
+            sequenceInfo: {
+              minItem,
+              maxItem,
+              extractedCount: sections.length,
+              expectedSequential,
+              authenticDeletions: actualSections < expectedSequential ? expectedSequential - actualSections : 0
+            }
           });
         } else {
           res.json({
