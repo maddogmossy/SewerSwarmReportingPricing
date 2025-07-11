@@ -145,7 +145,7 @@ function classifyWincanObservations(observationText: string, sector: string) {
     } else {
       severityGrade = 2;
       recommendations = 'We recommend monitoring and consideration of relining';
-      adoptable = 'Yes';
+      adoptable = 'Conditional';
     }
   }
   
@@ -165,7 +165,7 @@ function classifyWincanObservations(observationText: string, sector: string) {
     } else {
       severityGrade = 2;
       recommendations = 'We recommend routine jetting and cleaning to prevent deposit accumulation';
-      adoptable = 'Yes';
+      adoptable = 'Conditional';
     }
   }
   
@@ -181,7 +181,7 @@ function classifyWincanObservations(observationText: string, sector: string) {
     } else if (percentage >= 25) {
       severityGrade = 2;
       recommendations = 'We recommend investigation of downstream conditions and potential cleansing';
-      adoptable = 'Yes';
+      adoptable = 'Conditional';
     } else {
       severityGrade = 0; // Low water levels are observations only
       recommendations = 'No action required pipe observed in acceptable structural and service condition';

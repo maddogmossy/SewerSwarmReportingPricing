@@ -1184,11 +1184,16 @@ export class MSCC5Classifier {
         highestGrade = Math.max(highestGrade, 3);
       }
       
-      // Determine adoptability
+      // Determine adoptability based on MSCC5 standards
       let adoptable: 'Yes' | 'No' | 'Conditional' = 'Yes';
       if (highestGrade >= 4) {
         adoptable = 'No';
-      } else if (highestGrade === 3 && (sector === 'adoption' || mainDefectType === 'structural')) {
+      } else if (highestGrade === 3) {
+        adoptable = 'Conditional';
+      } else if (highestGrade === 2 && mainDefectType === 'structural') {
+        adoptable = 'Conditional';
+      } else if (highestGrade >= 2) {
+        // Service defects Grade 2+ require conditional adoption
         adoptable = 'Conditional';
       }
       
@@ -1371,10 +1376,16 @@ export class MSCC5Classifier {
       adjustedGrade = Math.max(adjustedGrade, 3);
     }
     
+    // Determine adoptability based on MSCC5 standards
     let adoptable: 'Yes' | 'No' | 'Conditional' = 'Yes';
     if (adjustedGrade >= 4) {
       adoptable = 'No';
-    } else if (adjustedGrade === 3 && (sector === 'adoption' || detectedDefect.type === 'structural')) {
+    } else if (adjustedGrade === 3) {
+      adoptable = 'Conditional';
+    } else if (adjustedGrade === 2 && detectedDefect.type === 'structural') {
+      adoptable = 'Conditional';
+    } else if (adjustedGrade >= 2) {
+      // Service defects Grade 2+ require conditional adoption
       adoptable = 'Conditional';
     }
     
