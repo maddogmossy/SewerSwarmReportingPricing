@@ -2402,8 +2402,8 @@ export default function Dashboard() {
                                 }
                               }}
                               className={`
-                                ${column.width} border border-slate-300 text-center font-semibold text-xs align-middle break-words
-                                ${column.priority === 'pretty' ? 'px-2 py-2' : 'px-1 py-1'}
+                                ${column.width} border border-slate-300 font-semibold text-xs align-middle break-words
+                                ${column.priority === 'pretty' ? 'px-2 py-2 text-left' : 'px-1 py-1 text-center'}
                                 ${showColumnSelector && !canBeHidden 
                                   ? 'bg-slate-200 cursor-not-allowed opacity-60'
                                   : showColumnSelector && canBeHidden
@@ -2438,8 +2438,8 @@ export default function Dashboard() {
                               <td 
                                 key={column.key} 
                                 className={`
-                                  ${column.width} border border-slate-300 text-xs text-center align-middle break-words
-                                  ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed' : 'px-1 py-1'}
+                                  ${column.width} border border-slate-300 text-xs align-top break-words
+                                  ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed text-left' : 'px-1 py-1 text-center'}
                                   ${
                                     // Standard Grade 0 adoptable highlighting only
                                     (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
@@ -2447,7 +2447,13 @@ export default function Dashboard() {
                                     : ''
                                   }
                                 `}
-                                style={{ wordWrap: 'break-word', whiteSpace: 'normal', ...getColumnStyle(column.key) }}
+                                style={{ 
+                                  wordWrap: 'break-word', 
+                                  whiteSpace: 'normal', 
+                                  wordBreak: 'break-word',
+                                  hyphens: 'auto',
+                                  ...getColumnStyle(column.key) 
+                                }}
                               >
                                 {renderCellContent(column.key, section)}
                               </td>
