@@ -29,6 +29,9 @@ const UK_ADDRESSES = [
   "Warwick Castle, Warwick, CV34 4QU",
   
   // Project specific addresses
+  "40 Hollow Road, Bury St Edmunds, IP32 7AY",
+  "Hollow Road, Bury St Edmunds, IP32 7AY",
+  "Bury St Edmunds, Suffolk, IP32 7AY",
   "Industrial Estate, Location TBD",
   "Infrastructure Site, Location TBD",
   

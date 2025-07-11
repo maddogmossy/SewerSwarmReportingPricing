@@ -242,27 +242,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/search-addresses', (req, res) => {
+  app.get('/api/search-addresses', async (req, res) => {
     const query = req.query.q as string;
-    if (!query || query.length < 3) {
+    if (!query || query.length < 1) {
       return res.json([]);
     }
     
-    // Return relevant UK addresses for Newark area
-    const addresses = [
-      "Bowbridge Lane, Newark, NG24 3BX",
-      "Bowbridge Road, Newark, NG24 3BY", 
-      "Bridge Street, Newark, NG24 1RZ",
-      "Castle Gate, Newark, NG24 1AZ",
-      "London Road, Newark, NG24 1TN",
-      "Lombard Street, Newark, NG24 1XE"
-    ];
-    
-    const filtered = addresses.filter(addr => 
-      addr.toLowerCase().includes(query.toLowerCase())
-    );
-    
-    res.json(filtered.slice(0, 5));
+    try {
+      const { searchUKAddresses } = await import('./address-autocomplete');
+      const suggestions = searchUKAddresses(query, 10);
+      res.json(suggestions);
+    } catch (error) {
+      console.error('Address autocomplete error:', error);
+      // Fallback to basic search
+      const basicAddresses = [
+        "40 Hollow Road - Bury St Edmunds - IP32 7AY",
+        "Bowbridge Lane, Newark, NG24 3BX",
+        "High Street, Birmingham, B4 7SL",
+        "Victoria Street, Manchester, M3 1GA",
+        "Church Street, Liverpool, L1 3AX",
+        "Station Road, Leeds, LS1 4DY",
+        "Queen Street, Sheffield, S1 2DX",
+        "King Street, Newcastle, NE1 1HP",
+        "Market Street, Bristol, BS1 2AA",
+        "Park Road, Leicester, LE1 5TD"
+      ];
+      
+      const filtered = basicAddresses.filter(addr => 
+        addr.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      res.json(filtered.slice(0, 10));
+    }
   });
 
   app.get('/api/equipment-types/:id', (req, res) => {
