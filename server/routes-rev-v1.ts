@@ -4,10 +4,20 @@ import multer from "multer";
 import { storage } from "./storage";
 import { readWincanDatabase, storeWincanSections } from "./wincan-db-reader";
 
-// REV_V1: Simple file upload configuration
+// REV_V1: Fixed file upload configuration to preserve database files
 const upload = multer({ 
   dest: 'uploads/',
-  limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+  fileFilter: (req, file, cb) => {
+    // Allow PDF and database files
+    const allowedTypes = ['.pdf', '.db', '.db3', '.sqlite', '.sqlite3'];
+    const ext = file.originalname.toLowerCase().substring(file.originalname.lastIndexOf('.'));
+    if (allowedTypes.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF and database files are allowed'));
+    }
+  }
 });
 
 // In-memory storage for folders (REV_V1 simulation)
