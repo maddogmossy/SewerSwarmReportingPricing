@@ -907,6 +907,18 @@ export default function Dashboard() {
   // We'll check this after we fetch the section data below
   const currentUpload = potentialCurrentUpload;
   
+  // Invalidate cache when switching between reports
+  useEffect(() => {
+    if (currentUpload?.id) {
+      console.log(`🔄 Cache invalidation for report ${currentUpload.id}`);
+      // Force fresh data when switching reports
+      queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+      queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload.id}/defects`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/defects`] });
+    }
+  }, [currentUpload?.id, queryClient]);
+
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
