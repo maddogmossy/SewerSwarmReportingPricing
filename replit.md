@@ -112,17 +112,18 @@ This is a full-stack TypeScript application built with React frontend and Expres
 
 ## Authentic Data Requirements
 
-**CRITICAL: Section 1 Authentic Data (User-Verified)**
-From attached inspection report image (image_1751896855881.png):
-- Start MH: F01-10A (NOT F01-10)
-- Finish MH: F01-10 (NOT F01-10A) 
-- Pipe Size: 150mm (NOT 225mm)
-- Pipe Material: Vitrified clay (NOT Concrete)
-- Observations: "WL Water level, 5% of the vertical dimension"
-- Pipe Length: 14.27m total length
-- Date: 14/02/25, Time: 11:22
-- Inspection Direction: Downstream
-- Upstream Node: F01-10A, Downstream Node: F01-10
+**CRITICAL: Wincan Database Authentic Data (User-Verified)**
+From attached inspection report image (image_1752222072920.png):
+- **Section**: SW01X 
+- **Start MH**: SW02, **Finish MH**: SW01
+- **Pipe Size**: 150mm, **Material**: Polyvinyl chloride
+- **Length**: 15.56m total length
+- **Observations**: WL 0.00m (Water level, 5% of vertical dimension), JN at 0.96m, 3.99m, 8.20m, 11.75m (Junction at 10 oclock, 100mm dia)
+- **Client**: Wilkinson Environmental Ltd, Unit 12A Canyon Industrial Estate, Carlton, Nottinghamshire
+- **Project**: GR7188 - 40 Hollow Road - Bury St Edmunds - IP32 7AY
+- **Date**: Not specified in image
+- **Inspection Direction**: Upstream
+- **Database file corruption fixed**: Multer configuration updated to preserve binary files
 
 **CRITICAL: Section 2 Authentic Data (User-Verified)**
 From PDF extraction (July 7, 2025):
