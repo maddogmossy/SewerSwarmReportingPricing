@@ -523,6 +523,15 @@ export default function Dashboard() {
           </div>
         );
       case 'recommendations':
+        // Debug logging for Section 3 to track rendering path
+        if (section.itemNo === 3) {
+          console.log("Section 3 Rendering Debug:", {
+            severityGrade: section.severityGrade,
+            defects: section.defects?.substring(0, 50) + '...',
+            recommendations: section.recommendations?.substring(0, 50) + '...'
+          });
+        }
+        
         // Check if section has defects requiring repair (not Grade 0)
         const hasRepairableDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
         
