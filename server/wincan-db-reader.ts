@@ -26,6 +26,57 @@ import fs from 'fs';
 import { db } from "./db";
 import { sectionInspections } from "@shared/schema";
 
+// Format observation text to hide 5% WL and group repeated codes by meterage
+function formatObservationText(observations: string[]): string {
+  const codeGroups: { [key: string]: string[] } = {};
+  const filteredObservations: string[] = [];
+  
+  for (const obs of observations) {
+    // Skip WL observations that are exactly 5%
+    if (obs.includes('Water level,  5% of the vertical dimension')) {
+      continue;
+    }
+    
+    // Extract code and meterage from observations like "JN 0.96m (Junction...)" 
+    const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*m?)\s*\(/);
+    if (codeMatch) {
+      const code = codeMatch[1];
+      const meterage = codeMatch[2];
+      
+      if (!codeGroups[code]) {
+        codeGroups[code] = [];
+      }
+      codeGroups[code].push(meterage);
+    } else {
+      // Keep observations that don't match the pattern (like WL with higher percentages)
+      filteredObservations.push(obs);
+    }
+  }
+  
+  // Build grouped observations
+  const groupedObservations: string[] = [];
+  
+  // Add grouped codes with meterage lists
+  for (const [code, meterages] of Object.entries(codeGroups)) {
+    if (meterages.length > 1) {
+      // Group multiple occurrences: "JN 0.96, 3.99, 8.2, 11.75"
+      const groupedText = `${code} ${meterages.join(', ')}`;
+      groupedObservations.push(groupedText);
+    } else {
+      // Single occurrence: keep original format from first observation
+      const originalObs = observations.find(obs => obs.startsWith(`${code} ${meterages[0]}`));
+      if (originalObs) {
+        groupedObservations.push(originalObs);
+      }
+    }
+  }
+  
+  // Add any remaining non-grouped observations
+  groupedObservations.push(...filteredObservations);
+  
+  return groupedObservations.join(', ');
+}
+
 // Classify Wincan observations using MSCC5 standards
 function classifyWincanObservations(observationText: string, sector: string) {
   let severityGrade = 0;
@@ -282,7 +333,8 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       
       // Extract authentic observations for this section
       const observations = observationMap.get(record.OBJ_PK) || [];
-      const defectText = observations.length > 0 ? observations.join(', ') : 'No action required pipe observed in acceptable structural and service condition';
+      const formattedText = observations.length > 0 ? formatObservationText(observations) : '';
+      const defectText = formattedText || 'No action required pipe observed in acceptable structural and service condition';
       
       console.log(`🔍 Section ${record.OBJ_Key || 'Unknown'}: Found ${observations.length} observations:`, observations.slice(0, 3));
       

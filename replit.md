@@ -137,6 +137,12 @@ Successfully implemented complete authentic data extraction from Wincan database
 - **Adoptability Assessment**: Determines Yes/No/Conditional status based on severity and standards
 - **Pricing Integration**: Ready for cost calculations based on MSCC5 severity grades
 
+**✅ Enhanced Observation Formatting:**
+- **5% WL Filtering**: Automatically hides "Water level, 5% of vertical dimension" observations to reduce clutter
+- **Meterage Grouping**: Groups repeated observation codes by meterage (e.g., "JN 0.96m, 3.99m, 8.2m, 11.75m")
+- **Smart Display**: Shows only significant water levels (>5%) and meaningful observations for cleaner reporting
+- **Professional Output**: Reduces observation text length while maintaining all critical defect information
+
 **✅ Technical Implementation:**
 - **File**: server/wincan-db-reader.ts - handles all database extraction and MSCC5 classification
 - **Manhole Mapping**: manholeMap builds GUID→readable name lookup
