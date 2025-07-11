@@ -363,9 +363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ]);
   });
 
-  app.get('/api/:sector/profile', (req, res) => {
-    res.json({ sector: req.params.sector, standards: [] });
-  });
+  // Removed generic sector profile route - using specific routes instead
 
   // Add DELETE endpoint for repair pricing
   app.delete('/api/repair-pricing/:id', (req, res) => {
@@ -800,7 +798,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/adoption/profile', async (req, res) => {
+  app.get('/api/adoption/profile', (req, res) => {
+    console.log('=== ADOPTION PROFILE ROUTE CALLED ===');
     try {
       const sectorStandards = getSectorStandards('adoption');
       res.json(sectorStandards || { sector: 'adoption', standards: [] });
@@ -810,7 +809,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/highways/profile', async (req, res) => {
+  app.get('/api/highways/profile', (req, res) => {
+    console.log('=== HIGHWAYS PROFILE ROUTE CALLED ===');
     try {
       const sectorStandards = getSectorStandards('highways');
       res.json(sectorStandards || { sector: 'highways', standards: [] });
@@ -820,7 +820,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/insurance/profile', async (req, res) => {
+  app.get('/api/insurance/profile', (req, res) => {
+    console.log('=== INSURANCE PROFILE ROUTE CALLED ===');
     try {
       const sectorStandards = getSectorStandards('insurance');
       res.json(sectorStandards || { sector: 'insurance', standards: [] });
@@ -830,7 +831,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/construction/profile', async (req, res) => {
+  app.get('/api/construction/profile', (req, res) => {
+    console.log('=== CONSTRUCTION PROFILE ROUTE CALLED ===');
     try {
       const sectorStandards = getSectorStandards('construction');
       res.json(sectorStandards || { sector: 'construction', standards: [] });
@@ -840,7 +842,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/domestic/profile', async (req, res) => {
+  app.get('/api/domestic/profile', (req, res) => {
+    console.log('=== DOMESTIC PROFILE ROUTE CALLED ===');
     try {
       const sectorStandards = getSectorStandards('domestic');
       res.json(sectorStandards || { sector: 'domestic', standards: [] });
