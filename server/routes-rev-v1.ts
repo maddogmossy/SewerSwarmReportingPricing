@@ -484,7 +484,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Add refresh endpoint for dashboard data
+  // Add refresh endpoint for dashboard data with cache busting
   app.post('/api/refresh-upload/:uploadId', async (req, res) => {
     try {
       const uploadId = parseInt(req.params.uploadId);
@@ -497,11 +497,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: true,
         message: 'Data refreshed successfully',
         sections: sections.length,
-        data: sections
+        data: sections,
+        timestamp: new Date().toISOString() // Add timestamp for cache busting
       });
     } catch (error) {
       console.error('Error refreshing upload data:', error);
       res.status(500).json({ error: 'Failed to refresh data' });
+    }
+  });
+
+  // Add cache invalidation endpoint for frontend
+  app.post('/api/invalidate-cache/:uploadId', async (req, res) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      console.log(`🔄 Cache invalidation requested for upload ${uploadId}`);
+      
+      // Get fresh sections to confirm data is available
+      const sections = await storage.getSectionInspectionsByFileUpload(uploadId);
+      
+      res.json({
+        success: true,
+        message: 'Cache invalidated - please refresh page',
+        sections: sections.length,
+        timestamp: new Date().toISOString(),
+        sampleRecommendations: sections.slice(2, 6).map(s => ({ 
+          itemNo: s.itemNo, 
+          recommendations: s.recommendations 
+        }))
+      });
+    } catch (error) {
+      console.error('Error invalidating cache:', error);
+      res.status(500).json({ error: 'Failed to invalidate cache' });
     }
   });
 
