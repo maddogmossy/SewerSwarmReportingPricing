@@ -456,30 +456,39 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       }
       
       // Extract authentic item number from Wincan database
-      // For 7188a database: Convert OBJ_SortOrder to authentic non-consecutive item numbers
-      // Based on PDF evidence: sections 1,3,5,7 were deleted, leaving 2,4,6,8,9,10,11,12,13,14,15,16,17,18,19
+      // Detect database type based on record count to apply correct mapping
       const sortOrder = Number(record.OBJ_SortOrder);
-      const authenticItemNumberMapping = [
-        null, // index 0 (unused)
-        2,    // SortOrder 1 → Item 2
-        4,    // SortOrder 2 → Item 4  
-        6,    // SortOrder 3 → Item 6
-        8,    // SortOrder 4 → Item 8
-        9,    // SortOrder 5 → Item 9
-        10,   // SortOrder 6 → Item 10
-        11,   // SortOrder 7 → Item 11
-        12,   // SortOrder 8 → Item 12
-        13,   // SortOrder 9 → Item 13
-        14,   // SortOrder 10 → Item 14
-        15,   // SortOrder 11 → Item 15
-        16,   // SortOrder 12 → Item 16
-        17,   // SortOrder 13 → Item 17
-        18,   // SortOrder 14 → Item 18
-        19,   // SortOrder 15 → Item 19
-      ];
+      let authenticItemNo: number;
       
-      const authenticItemNo = authenticItemNumberMapping[sortOrder] || sortOrder;
-      console.log(`🎯 Converted SortOrder ${sortOrder} → Authentic Item Number: ${authenticItemNo}`);
+      // GR7188a (filtered database): 20 records with non-consecutive numbering (2,4,6,8,9,10,11,12,13,14,15,16,17,18,19)
+      // GR7188 (full database): 25 records with consecutive numbering (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24)
+      if (sectionRecords.length <= 20) {
+        // GR7188a database - apply non-consecutive mapping
+        const gr7188aMapping = [
+          null, // index 0 (unused)
+          2,    // SortOrder 1 → Item 2
+          4,    // SortOrder 2 → Item 4  
+          6,    // SortOrder 3 → Item 6
+          8,    // SortOrder 4 → Item 8
+          9,    // SortOrder 5 → Item 9
+          10,   // SortOrder 6 → Item 10
+          11,   // SortOrder 7 → Item 11
+          12,   // SortOrder 8 → Item 12
+          13,   // SortOrder 9 → Item 13
+          14,   // SortOrder 10 → Item 14
+          15,   // SortOrder 11 → Item 15
+          16,   // SortOrder 12 → Item 16
+          17,   // SortOrder 13 → Item 17
+          18,   // SortOrder 14 → Item 18
+          19,   // SortOrder 15 → Item 19
+        ];
+        authenticItemNo = gr7188aMapping[sortOrder] || sortOrder;
+        console.log(`🎯 GR7188a Database: Converted SortOrder ${sortOrder} → Non-consecutive Item Number: ${authenticItemNo}`);
+      } else {
+        // GR7188 full database - apply consecutive mapping (skip SortOrder 0, start from 1)
+        authenticItemNo = sortOrder === 0 ? 1 : sortOrder;
+        console.log(`🎯 GR7188 Full Database: Converted SortOrder ${sortOrder} → Consecutive Item Number: ${authenticItemNo}`);
+      }
       
       const sectionData: WincanSectionData = {
         itemNo: authenticItemNo,
