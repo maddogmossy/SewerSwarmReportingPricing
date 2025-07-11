@@ -331,6 +331,7 @@ export async function readWincanDatabase(filePath: string): Promise<WincanSectio
       
       if (sectionRecords.length > 0) {
         console.log(`📄 Sample SECTION data:`, sectionRecords[0]);
+        console.log(`🔍 SECTION table fields:`, Object.keys(sectionRecords[0]));
         sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap);
       }
     }
@@ -453,8 +454,38 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         console.log(`📊 No observations found, using default Grade 0`);
       }
       
+      // Extract authentic item number from Wincan database
+      let authenticItemNo = authenticSections.length + 1; // fallback to sequential
+      
+      // WINCAN AUTHENTIC ITEM NUMBER: Use OBJ_SortOrder field (discovered from database analysis)
+      if (record.OBJ_SortOrder && Number.isInteger(Number(record.OBJ_SortOrder))) {
+        authenticItemNo = Number(record.OBJ_SortOrder);
+        console.log(`🎯 Found authentic Wincan item number in OBJ_SortOrder: ${authenticItemNo}`);
+      } else {
+        // Fallback: Look for other possible fields
+        const itemNumberFields = ['OBJ_Number', 'OBJ_ItemNo', 'OBJ_Item', 'Item_No', 'ItemNumber', 'OBJ_ID', 'Number'];
+        for (const field of itemNumberFields) {
+          if (record[field] && Number.isInteger(Number(record[field]))) {
+            authenticItemNo = Number(record[field]);
+            console.log(`🎯 Found authentic item number in field '${field}': ${authenticItemNo}`);
+            break;
+          }
+        }
+      }
+      
+      // If no specific item field found, try parsing from OBJ_Key which might contain item numbers
+      if (authenticItemNo === authenticSections.length + 1 && record.OBJ_Key) {
+        const keyMatch = record.OBJ_Key.match(/(\d+)/);
+        if (keyMatch) {
+          authenticItemNo = Number(keyMatch[1]);
+          console.log(`🎯 Extracted item number from OBJ_Key '${record.OBJ_Key}': ${authenticItemNo}`);
+        }
+      }
+      
+      console.log(`📊 Using authentic item number: ${authenticItemNo} (from ${record.OBJ_SortOrder ? 'OBJ_SortOrder' : record.OBJ_Key || 'sequential'})`);
+      
       const sectionData: WincanSectionData = {
-        itemNo: authenticSections.length + 1,
+        itemNo: authenticItemNo,
         projectNo: record.OBJ_Name || 'GR7188',
         startMH: startMH,
         finishMH: finishMH,

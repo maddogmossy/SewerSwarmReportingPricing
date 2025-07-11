@@ -53,7 +53,17 @@ let folderStorage = [
 ];
 
 // In-memory storage for uploads (REV_V1 simulation) - empty since 218 ECL was deleted
-let uploadsStorage = [];
+let uploadsStorage = [
+  {
+    id: 71,
+    fileName: 'GR7188 - 40 Hollow Road - Bury St Edmunds - IP32 7AY_1752225336490.db3',
+    filePath: 'uploads/5a43fa8c697a53f101645fdcea7fb453',
+    fileType: 'database',
+    sector: 'utilities',
+    status: 'completed',
+    createdAt: new Date().toISOString()
+  }
+];
 
 // In-memory storage for pricing data (REV_V1 simulation)
 let pricingStorage = [
@@ -326,6 +336,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json([]);
   });
 
+  // Add reprocessing endpoint to test authentic item number extraction
+  app.post('/api/reprocess-upload/:uploadId', async (req, res) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      console.log(`🔄 Reprocessing upload ${uploadId} to extract authentic item numbers`);
+      
+      // Find the upload in storage
+      const upload = uploadsStorage.find(u => u.id === uploadId);
+      if (!upload) {
+        return res.status(404).json({ error: 'Upload not found' });
+      }
+      
+      const filePath = upload.filePath;
+      
+      // Check if it's a database file
+      if (upload.fileName.toLowerCase().includes('.db')) {
+        console.log(`📊 Reprocessing Wincan database file: ${upload.fileName}`);
+        const sections = await readWincanDatabase(filePath);
+        
+        if (sections && sections.length > 0) {
+          console.log(`✅ Extracted ${sections.length} sections with authentic item numbers`);
+          await storeWincanSections(sections, uploadId);
+          
+          // Update upload status
+          upload.status = 'completed';
+          upload.extractedSections = sections.length;
+          
+          res.json({ 
+            success: true, 
+            message: 'Upload reprocessed successfully',
+            sections: sections.length,
+            itemNumbers: sections.map(s => s.itemNo)
+          });
+        } else {
+          res.json({ success: false, message: 'No sections found in database' });
+        }
+      } else {
+        res.json({ success: false, message: 'Not a database file' });
+      }
+    } catch (error) {
+      console.error('Error reprocessing upload:', error);
+      res.status(500).json({ error: 'Failed to reprocess upload' });
+    }
+  });
+
   // Process Wincan database file endpoint
   app.post('/api/uploads/:id/process-wincan', async (req, res) => {
     try {
@@ -427,6 +482,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'completed',
         '/dashboard?report=' + upload.id
       );
+      
+      // Add to in-memory storage for reprocessing
+      uploadsStorage.push({
+        id: upload.id,
+        fileName: req.file.originalname,
+        filePath: req.file.path,
+        fileType: fileType,
+        sector: req.body.sector || 'utilities',
+        status: 'completed',
+        createdAt: new Date().toISOString()
+      });
 
       res.json({
         success: true,
