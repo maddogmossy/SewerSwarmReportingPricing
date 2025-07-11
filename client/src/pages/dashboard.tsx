@@ -363,6 +363,15 @@ export default function Dashboard() {
     });
   };
 
+  // Get inline style for columns based on hidden count
+  const getColumnStyle = (key: string) => {
+    const hiddenCount = hiddenColumns.size;
+    if ((key === 'defects' || key === 'recommendations') && hiddenCount >= 8) {
+      return { width: '400px', minWidth: '400px' };
+    }
+    return {};
+  };
+
   // Calculate dynamic columns with reactive widths based on hidden columns
   const columns = useMemo(() => {
     const hiddenCount = hiddenColumns.size;
@@ -373,7 +382,7 @@ export default function Dashboard() {
       // Expand Observations and Recommendations columns when others are hidden
       if (key === 'defects' || key === 'recommendations') {
         let newWidth;
-        if (hiddenCount >= 8) newWidth = 'w-[400px] break-words'; // Extra wide when many columns hidden
+        if (hiddenCount >= 8) newWidth = 'break-words'; // Use style attribute for width
         else if (hiddenCount >= 6) newWidth = 'w-96 break-words';      // Very wide when several columns hidden
         else if (hiddenCount >= 4) newWidth = 'w-80 break-words';      // Wide when some columns hidden
         else if (hiddenCount >= 2) newWidth = 'w-72 break-words';      // Medium when few columns hidden
@@ -2377,7 +2386,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 <div className="overflow-x-auto">
-                  <table className="w-full text-xs border-collapse border border-slate-300">
+                  <table className="w-full text-xs border-collapse border border-slate-300 table-fixed">
                     <thead>
                       <tr className="bg-slate-100">
                         {columns.map((column) => {
@@ -2402,7 +2411,7 @@ export default function Dashboard() {
                                   : ''
                                 }
                               `}
-                              style={{ wordWrap: 'break-word', whiteSpace: 'normal' }}
+                              style={{ wordWrap: 'break-word', whiteSpace: 'normal', ...getColumnStyle(column.key) }}
                               title={showColumnSelector ? (canBeHidden ? 'Click to hide this column' : 'Essential column - cannot be hidden') : ''}
                             >
                               {column.label}
@@ -2438,7 +2447,7 @@ export default function Dashboard() {
                                     : ''
                                   }
                                 `}
-                                style={{ wordWrap: 'break-word', whiteSpace: 'normal' }}
+                                style={{ wordWrap: 'break-word', whiteSpace: 'normal', ...getColumnStyle(column.key) }}
                               >
                                 {renderCellContent(column.key, section)}
                               </td>
