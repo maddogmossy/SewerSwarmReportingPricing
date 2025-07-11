@@ -532,7 +532,7 @@ export default function Dashboard() {
         return section.lengthSurveyed;
       case 'defects':
         return (
-          <div className="text-xs max-w-48 p-1">
+          <div className="text-xs p-1 w-full" style={{ wordWrap: 'break-word', whiteSpace: 'normal', wordBreak: 'break-word' }}>
             {section.defects || 'No defects recorded'}
           </div>
         );
@@ -624,7 +624,7 @@ export default function Dashboard() {
                   window.location.href = `/repair-pricing/${sector}`;
                 }}
               >
-                <div className="text-xs max-w-48 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
+                <div className="text-xs w-full bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
                   <div className="font-medium text-blue-800 mb-1">💧 SERVICE CLEANING</div>
                   <div className="text-blue-700">{section.recommendations || 'No recommendations available'}</div>
                   <div className="text-xs text-blue-600 mt-1 font-medium">→ Click for cleaning pricing options</div>
@@ -650,7 +650,7 @@ export default function Dashboard() {
                   window.location.href = `/repair-pricing/${sector}`;
                 }}
               >
-                <div className="text-xs max-w-48 bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 hover:border-orange-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
+                <div className="text-xs w-full bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 hover:border-orange-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
                   <div className="font-medium text-orange-800 mb-1">🔧 STRUCTURAL REPAIR</div>
                   <div className="text-orange-700">{section.recommendations || 'No recommendations available'}</div>
                   <div className="text-xs text-orange-600 mt-1 font-medium">→ Click for repair pricing options</div>
@@ -661,7 +661,7 @@ export default function Dashboard() {
         } else {
           // Grade 0 sections or sections without repairable defects - no hover needed
           return (
-            <div className="text-xs max-w-48 p-1">
+            <div className="text-xs p-1 w-full" style={{ wordWrap: 'break-word', whiteSpace: 'normal', wordBreak: 'break-word' }}>
               {section.recommendations || 'No recommendations available'}
             </div>
           );
@@ -2431,6 +2431,9 @@ export default function Dashboard() {
                                 style={{ 
                                   wordWrap: 'break-word',
                                   whiteSpace: 'normal',
+                                  wordBreak: 'break-word',
+                                  overflowWrap: 'break-word',
+                                  hyphens: 'auto',
                                   ...getColumnStyle(column.key) 
                                 }}
                               >
