@@ -116,6 +116,125 @@ const UK_ADDRESSES = [
   "Union Street, Bath, BA1 1RH",
   "Stonegate, York, YO1 8ZW",
   "Bridge Street, Chester, CH1 1NG",
+  
+  // Additional comprehensive UK streets
+  "Hempsted Lane, Gloucester, GL2 5JS",
+  "Hollow Road, Bury St Edmunds, IP32 7AY",
+  "Abbey Road, London, NW8 9AY",
+  "Baker Street, London, NW1 6XE",
+  "Carnaby Street, London, W1F 9PS",
+  "Downing Street, London, SW1A 2AA",
+  "Fleet Street, London, EC4Y 1AU",
+  "Jermyn Street, London, SW1Y 6HP",
+  "Oxford Street, London, W1C 1JN",
+  "Piccadilly, London, W1J 0BH",
+  "Regent Street, London, W1B 5AH",
+  "The Strand, London, WC2R 0EU",
+  "Whitehall, London, SW1A 2HB",
+  
+  // Birmingham areas
+  "Bull Ring, Birmingham, B5 4BU",
+  "Corporation Street, Birmingham, B2 4LP",
+  "New Street, Birmingham, B2 4QA",
+  "Broad Street, Birmingham, B1 2EA",
+  "Colmore Row, Birmingham, B3 2QA",
+  
+  // Manchester areas
+  "Deansgate, Manchester, M3 2EN",
+  "Market Street, Manchester, M1 1PT",
+  "Oldham Street, Manchester, M1 1JQ",
+  "Portland Street, Manchester, M1 3LA",
+  "Spring Gardens, Manchester, M2 1FB",
+  
+  // Leeds areas
+  "Briggate, Leeds, LS1 6HD",
+  "The Headrow, Leeds, LS1 8TL",
+  "Boar Lane, Leeds, LS1 5DA",
+  "Wellington Street, Leeds, LS1 2DE",
+  
+  // Liverpool areas
+  "Mathew Street, Liverpool, L2 6RE",
+  "Lord Street, Liverpool, L2 1RJ",
+  "Castle Street, Liverpool, L2 3SX",
+  "Dale Street, Liverpool, L2 2EZ",
+  
+  // Sheffield areas
+  "Division Street, Sheffield, S1 4GF",
+  "West Street, Sheffield, S1 4EZ",
+  "Pinstone Street, Sheffield, S1 2HN",
+  "Howard Street, Sheffield, S1 1LX",
+  
+  // Bristol areas
+  "Cabot Circus, Bristol, BS1 3BX",
+  "Broadmead, Bristol, BS1 3HZ",
+  "Queen Street, Bristol, BS1 4LN",
+  "Wine Street, Bristol, BS1 2AG",
+  
+  // Newcastle areas
+  "Collingwood Street, Newcastle, NE1 1JF",
+  "Clayton Street, Newcastle, NE1 5PN",
+  "Pilgrim Street, Newcastle, NE1 6QG",
+  "Dean Street, Newcastle, NE1 1PG",
+  
+  // Scotland - Glasgow
+  "Sauchiehall Street, Glasgow, G2 3AD",
+  "Argyle Street, Glasgow, G2 8BG",
+  "Merchant City, Glasgow, G1 1RE",
+  "West End, Glasgow, G12 8QQ",
+  
+  // Scotland - Edinburgh
+  "Princes Street, Edinburgh, EH2 2BY",
+  "George Street, Edinburgh, EH2 2LR",
+  "Rose Street, Edinburgh, EH2 2NG",
+  "Grassmarket, Edinburgh, EH1 2HJ",
+  
+  // Wales - Cardiff
+  "St Mary Street, Cardiff, CF10 1FA",
+  "The Hayes, Cardiff, CF10 1AH",
+  "Mill Lane, Cardiff, CF10 1FL",
+  "Castle Street, Cardiff, CF10 1BU",
+  
+  // Northern England
+  "Shambles, York, YO1 7LZ",
+  "Stonegate, York, YO1 8AS",
+  "Parliament Street, York, YO1 8RS",
+  "Market Place, Durham, DH1 3NJ",
+  "Elvet Bridge, Durham, DH1 3AG",
+  
+  // South West England
+  "Union Street, Plymouth, PL1 3EZ",
+  "Royal Parade, Plymouth, PL1 2TR",
+  "Torquay Road, Paignton, TQ3 3AF",
+  "Exeter High Street, Exeter, EX4 3LF",
+  
+  // East England
+  "Market Hill, Cambridge, CB2 3NJ",
+  "King's Parade, Cambridge, CB2 1SJ",
+  "Trinity Street, Cambridge, CB2 1TQ",
+  "Norwich Market, Norwich, NR2 1ND",
+  "Gentleman's Walk, Norwich, NR2 1NA",
+  
+  // Midlands
+  "Corporation Street, Coventry, CV1 1GF",
+  "Hertford Street, Coventry, CV1 1LB",
+  "Market Square, Nottingham, NG1 2DP",
+  "Long Row, Nottingham, NG1 2DH",
+  "Lace Market, Nottingham, NG1 1LA",
+  
+  // South England
+  "Above Bar Street, Southampton, SO14 7DX",
+  "West Quay, Southampton, SO15 1QD",
+  "Commercial Road, Portsmouth, PO1 4BZ",
+  "Gunwharf Quays, Portsmouth, PO1 3TZ",
+  "Churchill Square, Brighton, BN1 2RG",
+  "North Laine, Brighton, BN1 1HG",
+];
+
+// Add common street name patterns for better matching
+const COMMON_STREET_TYPES = [
+  "Lane", "Road", "Street", "Avenue", "Close", "Drive", "Way", "Court", 
+  "Place", "Gardens", "Grove", "Rise", "Hill", "View", "Walk", "Path",
+  "Crescent", "Square", "Circus", "Parade", "Terrace", "Row", "Bridge"
 ];
 
 export function searchUKAddresses(query: string, limit: number = 10): string[] {
@@ -134,10 +253,20 @@ export function searchUKAddresses(query: string, limit: number = 10): string[] {
       addressLower.includes(word)
     );
     
-    // Also check for partial matches on street names
+    // Check for partial matches on street names
     const streetMatch = addressLower.includes(searchTerm);
     
-    return allWordsMatch || streetMatch;
+    // Check for word boundary matches for better relevance
+    const wordBoundaryMatch = queryWords.every(word => 
+      new RegExp(`\\b${word}`, 'i').test(address)
+    );
+    
+    // Check for street type matches (e.g., "lane" matches "Hempsted Lane")
+    const streetTypeMatch = COMMON_STREET_TYPES.some(type => 
+      searchTerm.includes(type.toLowerCase()) && addressLower.includes(type.toLowerCase())
+    );
+    
+    return allWordsMatch || streetMatch || wordBoundaryMatch || streetTypeMatch;
   });
 
   // Advanced relevance scoring
