@@ -944,12 +944,12 @@ export default function Dashboard() {
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`],
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'wrc-refresh'], // Cache bust for WRc update
     enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
     retry: false
   });
 
@@ -1190,6 +1190,17 @@ export default function Dashboard() {
 
   // CRITICAL: If database is empty, ignore upload parameter to prevent stuck state
   // This allows folder selection to appear again instead of showing "Viewing report:"
+
+  // DEBUG: Log WRc recommendations check
+  if (rawSectionData && rawSectionData.length > 0) {
+    const section3 = rawSectionData.find(s => s.itemNo === 3);
+    if (section3) {
+      console.log("WRc CHECK - Section 3:", {
+        recommendations: section3.recommendations?.substring(0, 100) + '...',
+        hasWRc: section3.recommendations?.includes('WRc')
+      });
+    }
+  }
 
   // AUDIT TRAIL: Log data source for verification
   console.log("AUDIT TRAIL:", {
