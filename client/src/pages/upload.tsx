@@ -170,18 +170,7 @@ export default function Upload() {
     queryKey: ["/api/folders"],
   });
 
-  // Auto-expand folders that contain reports
-  useEffect(() => {
-    if (uploads.length > 0 && folders.length > 0) {
-      const foldersWithReports = new Set<number>();
-      uploads.forEach(upload => {
-        if (upload.folderId) {
-          foldersWithReports.add(upload.folderId);
-        }
-      });
-      setExpandedFolders(foldersWithReports);
-    }
-  }, [uploads, folders]);
+  // Keep folders collapsed by default - users can click to expand
 
   const uploadMutation = useMutation({
     mutationFn: async ({ file, sector, folderId, pauseForReview }: { file: File; sector: string; folderId: number | null; pauseForReview: boolean }) => {
