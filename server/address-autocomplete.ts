@@ -269,33 +269,145 @@ export function searchUKAddresses(query: string, limit: number = 10): string[] {
     return allWordsMatch || streetMatch || wordBoundaryMatch || streetTypeMatch;
   });
 
-  // Advanced relevance scoring
+  // Smart relevance scoring with phonetic matching
   matches.sort((a, b) => {
     const aLower = a.toLowerCase();
     const bLower = b.toLowerCase();
+    const aStreet = aLower.split(',')[0].trim();
+    const bStreet = bLower.split(',')[0].trim();
     
-    // Exact start match gets highest priority
-    if (aLower.startsWith(searchTerm) && !bLower.startsWith(searchTerm)) return -1;
-    if (!aLower.startsWith(searchTerm) && bLower.startsWith(searchTerm)) return 1;
+    // 1. Exact match gets highest priority
+    if (aLower === searchTerm && bLower !== searchTerm) return -1;
+    if (aLower !== searchTerm && bLower === searchTerm) return 1;
     
-    // Street name start match gets next priority
-    const aStreetStart = aLower.split(',')[0].startsWith(searchTerm);
-    const bStreetStart = bLower.split(',')[0].startsWith(searchTerm);
-    if (aStreetStart && !bStreetStart) return -1;
-    if (!aStreetStart && bStreetStart) return 1;
+    // 2. Exact street name match (before comma)
+    if (aStreet === searchTerm && bStreet !== searchTerm) return -1;
+    if (aStreet !== searchTerm && bStreet === searchTerm) return 1;
     
-    // Word boundary matches
+    // 3. Phonetic similarity (hallow ≈ hollow)
+    const aPhonetic = calculatePhoneticSimilarity(searchTerm, aStreet);
+    const bPhonetic = calculatePhoneticSimilarity(searchTerm, bStreet);
+    if (aPhonetic > bPhonetic) return -1;
+    if (aPhonetic < bPhonetic) return 1;
+    
+    // 4. Starts with match
+    if (aStreet.startsWith(searchTerm) && !bStreet.startsWith(searchTerm)) return -1;
+    if (!aStreet.startsWith(searchTerm) && bStreet.startsWith(searchTerm)) return 1;
+    
+    // 5. Word boundary matches
     const aWordMatch = queryWords.every(word => 
-      new RegExp(`\\b${word}`, 'i').test(a)
+      new RegExp(`\\b${word}`, 'i').test(aStreet)
     );
     const bWordMatch = queryWords.every(word => 
-      new RegExp(`\\b${word}`, 'i').test(b)
+      new RegExp(`\\b${word}`, 'i').test(bStreet)
     );
     if (aWordMatch && !bWordMatch) return -1;
     if (!aWordMatch && bWordMatch) return 1;
+    
+    // 6. Length similarity (shorter is more relevant)
+    const aLength = Math.abs(aStreet.length - searchTerm.length);
+    const bLength = Math.abs(bStreet.length - searchTerm.length);
+    if (aLength < bLength) return -1;
+    if (aLength > bLength) return 1;
     
     return a.localeCompare(b);
   });
 
   return matches.slice(0, limit);
+}
+
+// Smart phonetic similarity calculation
+function calculatePhoneticSimilarity(query: string, target: string): number {
+  const q = query.toLowerCase().trim();
+  const t = target.toLowerCase().trim();
+  
+  // Exact match
+  if (q === t) return 100;
+  
+  // Handle multi-word queries like "hallow road"
+  const queryWords = q.split(/\s+/);
+  const targetWords = t.split(/\s+/);
+  
+  // If both are multi-word, check word-by-word phonetic matching
+  if (queryWords.length > 1 && targetWords.length > 1) {
+    let totalSimilarity = 0;
+    let matchCount = 0;
+    
+    for (let i = 0; i < Math.max(queryWords.length, targetWords.length); i++) {
+      const qWord = queryWords[i] || '';
+      const tWord = targetWords[i] || '';
+      
+      if (qWord && tWord) {
+        totalSimilarity += getWordPhoneticSimilarity(qWord, tWord);
+        matchCount++;
+      }
+    }
+    
+    return matchCount > 0 ? totalSimilarity / matchCount : 0;
+  }
+  
+  // Single word comparison
+  return getWordPhoneticSimilarity(q, t);
+}
+
+function getWordPhoneticSimilarity(query: string, target: string): number {
+  // Handle common phonetic patterns
+  const phoneticMap: Record<string, string[]> = {
+    'hallow': ['hollow'],
+    'hollow': ['hallow'], 
+    'road': ['rd'],
+    'street': ['st'],
+    'lane': ['ln'],
+    'avenue': ['ave'],
+    'close': ['cl'],
+    'court': ['ct']
+  };
+  
+  // Check if query maps to target phonetically
+  if (phoneticMap[query]?.includes(target) || phoneticMap[target]?.includes(query)) {
+    return 95;
+  }
+  
+  // Check for partial phonetic matches
+  for (const [key, variants] of Object.entries(phoneticMap)) {
+    if (query.includes(key) && variants.some(v => target.includes(v))) {
+      return 90;
+    }
+  }
+  
+  // Check for similar-sounding words (1-2 character differences)
+  if (Math.abs(query.length - target.length) <= 2) {
+    const distance = levenshteinDistance(query, target);
+    if (distance <= 2) {
+      return 85 - (distance * 10); // 85, 75, 65 for 1, 2, 3 char diff
+    }
+  }
+  
+  // Levenshtein distance similarity
+  const distance = levenshteinDistance(query, target);
+  const maxLength = Math.max(query.length, target.length);
+  const similarity = ((maxLength - distance) / maxLength) * 100;
+  
+  return Math.max(0, similarity);
+}
+
+// Calculate edit distance between two strings
+function levenshteinDistance(str1: string, str2: string): number {
+  const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
+  
+  for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
+  for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
+  
+  for (let j = 1; j <= str2.length; j++) {
+    for (let i = 1; i <= str1.length; i++) {
+      const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
+      matrix[j][i] = Math.min(
+        matrix[j][i - 1] + 1,
+        matrix[j - 1][i] + 1,
+        matrix[j - 1][i - 1] + indicator
+      );
+    }
+  }
+  
+  return matrix[str2.length][str1.length];
 }
