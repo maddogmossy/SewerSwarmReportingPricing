@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -40,6 +41,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const [showSetupDialog, setShowSetupDialog] = useState(false);
   const [customDescription, setCustomDescription] = useState("");
   const [customPrice, setCustomPrice] = useState("");
 
@@ -140,6 +142,23 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     }
   });
 
+  const handleSetupConfirm = () => {
+    setShowSetupDialog(false);
+    setIsOpen(false);
+    
+    // Navigate to work category creation with pre-filled data for Cleanse and Survey
+    const sector = sectionData.sector || 'utilities';
+    const params = new URLSearchParams({
+      categoryName: 'Cleanse and Survey',
+      categoryDescription: 'Complete cleaning followed by verification survey to confirm completion',
+      suggestedColor: 'Blue',
+      pipeSize: sectionData.pipeSize || '150mm',
+      autoSetup: 'true'
+    });
+    
+    setLocation(`/pricing?category=new&${params.toString()}`);
+  };
+
   const handleOptionClick = (option: CleaningOption) => {
     // Handle custom cleaning option differently
     if (option.name === 'Custom Cleaning' && !option.configured) {
@@ -149,20 +168,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     
     // Handle Cleanse and Survey option - prompt to set up work category
     if (option.name === 'Cleanse and Survey' && !option.configured) {
-      alert('This requires setting up a "Cleanse and Survey" work category. You will now be redirected to create this category and select the fields you want to include.');
-      
-      // Navigate to work category creation with pre-filled data for Cleanse and Survey
-      const sector = sectionData.sector || 'utilities';
-      const params = new URLSearchParams({
-        categoryName: 'Cleanse and Survey',
-        categoryDescription: 'Complete cleaning followed by verification survey to confirm completion',
-        suggestedColor: 'Blue',
-        pipeSize: sectionData.pipeSize || '150mm',
-        autoSetup: 'true'
-      });
-      
-      setLocation(`/pricing?category=new&${params.toString()}`);
-      setIsOpen(false);
+      setShowSetupDialog(true);
       return;
     }
     
@@ -214,6 +220,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
   };
 
   return (
+    <>
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <div className="cursor-pointer hover:bg-blue-50 transition-colors duration-200 rounded px-1">
@@ -399,5 +406,35 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
         </div>
       </PopoverContent>
     </Popover>
+
+    {/* Setup Dialog for Cleanse and Survey */}
+    <Dialog open={showSetupDialog} onOpenChange={setShowSetupDialog}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5 text-purple-600" />
+            Set Up Cleanse and Survey Category
+          </DialogTitle>
+          <DialogDescription>
+            This requires setting up a "Cleanse and Survey" work category. You will be redirected to create this category and select the fields you want to include.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowSetupDialog(false)}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSetupConfirm}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            Set Up Category
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
