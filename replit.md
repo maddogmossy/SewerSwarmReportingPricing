@@ -197,27 +197,28 @@ This prevents data contamination and ensures authentic extraction integrity.
 🔒 **LOCKED IN FEATURES - PRODUCTION READY:**
 - **Authentic Wincan Database Extraction:** Complete processing of .db3 files with MSCC5 classification
 - **Intelligent Database Type Detection:** Auto-detects consecutive vs non-consecutive patterns (≤20 vs >20 sections)
-- **Inspection Direction Logic:** Automatic flow direction detection and correct manhole display
-- **Item 1 Upstream Direction:** Fixed SW02→SW01 (reversed manholes) for upstream inspection
+- **Authentic Flow Direction Logic:** Reads OBJ_FlowDir field from database for 100% authentic inspection direction
+- **All Sections Downstream:** SW01→SW02, SW02→SW03, SW03→SW04 per authentic OBJ_FlowDir=1 database values
 - **Professional Clean Section Wording:** "No service or structural defect found" + "No action required this pipe section is at an adoptable condition"
 - **Enhanced Styling Consistency:** "Complete" text styled with lighter green background matching adoptable/severity grade boxes
 - **Enhanced Observation Formatting:** Conditional JN display, meterage grouping, 5% WL filtering
+- **Hide All Column Functionality:** Complete column visibility control with Hide All/Unhide All buttons
 - **Comprehensive Deletion System:** Complete cleanup of database records + physical files + cache
 - **Zero Synthetic Data Policy:** Absolute lockdown on placeholder/fallback data generation
 - **Professional Dashboard:** Multi-defect handling, pricing integration, sector-specific standards
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v1' to return to this stable checkpoint
 
-✅ **AUTHENTIC INSPECTION DIRECTION DISCOVERED (July 11, 2025):**
+🔒 **AUTHENTIC INSPECTION DIRECTION LOCKED (July 11, 2025):**
 - **CRITICAL DISCOVERY:** Database contains OBJ_FlowDir field (column 46) with authentic inspection direction values
 - **DATABASE FACT:** All sections have OBJ_FlowDir = 1 (downstream flow) - no artificial patterns needed
 - **AUTHENTIC DIRECTION:** All inspections were performed downstream according to database
 - **CORRECTED LOGIC:** Now reads authentic OBJ_FlowDir field instead of applying synthetic upstream/downstream rules
-- **Item 1 Should Be:** SW01→SW02 (downstream, not reversed) based on authentic database
-- **Item 2 Correct:** SW02→SW03 (downstream) ✅ 
-- **Item 3 Should Be:** SW03→SW04 (downstream, not reversed) based on authentic database
+- **Item 1 LOCKED:** SW01→SW02 (downstream per database) ✅ CORRECTED
+- **Item 2 LOCKED:** SW02→SW03 (downstream per database) ✅ 
+- **Item 3 LOCKED:** SW03→SW04 (downstream per database) ✅ CORRECTED
 - **Zero Synthetic Data:** System now uses only authentic flow direction from Wincan database OBJ_FlowDir field
-- **Upload 78 (GR7188a):** 15 non-consecutive sections with authentic flow patterns from database
+- **Upload 80:** 24 sections with authentic downstream flow per OBJ_FlowDir=1 database values
 - **Real-time Processing:** OBJ_FlowDir field read during upload processing for authentic direction
 
 ## Changelog
