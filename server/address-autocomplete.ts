@@ -245,6 +245,10 @@ export function searchUKAddresses(query: string, limit: number = 10): string[] {
   const searchTerm = query.toLowerCase().trim();
   const queryWords = searchTerm.split(/\s+/);
   
+  // If query is very specific (like "unit 12a fouwa") and no matches found,
+  // provide helpful suggestions based on patterns
+  let fallbackSuggestions: string[] = [];
+  
   const matches = UK_ADDRESSES.filter(address => {
     const addressLower = address.toLowerCase();
     const streetName = addressLower.split(',')[0].trim();
@@ -333,6 +337,49 @@ export function searchUKAddresses(query: string, limit: number = 10): string[] {
     
     return a.localeCompare(b);
   });
+
+  // If no matches found, provide intelligent fallback suggestions
+  if (matches.length === 0) {
+    // Check if query contains business/unit patterns
+    if (searchTerm.includes('unit') || searchTerm.includes('suite') || searchTerm.match(/\d+[a-z]/)) {
+      fallbackSuggestions = [
+        "Business Park, Birmingham, B1 1AA",
+        "Industrial Estate, Manchester, M1 1AA", 
+        "Business Centre, London, EC1A 1BB",
+        "Trade Park, Leeds, LS1 1AA",
+        "Commercial Unit, Liverpool, L1 1AA"
+      ];
+    }
+    // Check if query looks like a postcode area
+    else if (searchTerm.match(/^[a-z]{1,2}\d/)) {
+      fallbackSuggestions = [
+        "High Street, " + searchTerm.toUpperCase() + " Area",
+        "Main Road, " + searchTerm.toUpperCase() + " District", 
+        "Station Road, " + searchTerm.toUpperCase() + " Region"
+      ];
+    }
+    // Check for common street patterns
+    else if (queryWords.some(word => COMMON_STREET_TYPES.includes(word.charAt(0).toUpperCase() + word.slice(1)))) {
+      fallbackSuggestions = [
+        "High Street, Birmingham, B1 1AA",
+        "Victoria Street, Manchester, M1 1AA",
+        "Church Street, London, EC1A 1BB",
+        "Station Road, Leeds, LS1 1AA",
+        "Queen Street, Liverpool, L1 1AA"
+      ];
+    }
+    // For other unrecognized queries, suggest creating new folder
+    else if (searchTerm.length >= 3) {
+      fallbackSuggestions = [
+        `${searchTerm.charAt(0).toUpperCase() + searchTerm.slice(1)} - Create New Location`,
+        "Business Address - Enter Manually",
+        "Residential Address - Enter Manually",
+        "Project Location - Enter Manually"
+      ];
+    }
+    
+    return fallbackSuggestions.slice(0, limit);
+  }
 
   return matches.slice(0, limit);
 }
