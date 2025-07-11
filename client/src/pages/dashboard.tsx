@@ -542,6 +542,13 @@ export default function Dashboard() {
         // Check if this section has approved repair pricing configuration
         const approvedRepairStatus = hasApprovedRepairPricing(section);
         
+        if (section.itemNo === 3) {
+          console.log("Section 3 Approved Repair Check:", { 
+            hasApproved: approvedRepairStatus.hasApproved, 
+            pricingConfig: approvedRepairStatus.pricingConfig 
+          });
+        }
+        
         // If section has approved repair pricing, display the actual repair description
         if (approvedRepairStatus.hasApproved && approvedRepairStatus.pricingConfig) {
           const pricingConfig = approvedRepairStatus.pricingConfig;
