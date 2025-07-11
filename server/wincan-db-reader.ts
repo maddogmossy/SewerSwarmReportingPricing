@@ -30,14 +30,28 @@ import { eq } from "drizzle-orm";
 // Format observation text to hide 5% WL and group repeated codes by meterage
 // JN codes only display if structural defect within one meter of junction
 function formatObservationText(observations: string[]): string {
+  console.log(`🔧 Formatting ${observations.length} observations with enhanced logic`);
+  
+  // STEP 1: Pre-filter to remove all 5% WL observations immediately
+  const preFiltered = observations.filter(obs => 
+    !obs.includes('Water level, 5% of the vertical dimension') &&
+    !obs.includes('Water level,  5% of the vertical dimension')
+  );
+  
+  console.log(`🔧 After 5% WL filtering: ${preFiltered.length} observations remain`);
+  
+  if (preFiltered.length === 0) {
+    console.log(`🔧 No meaningful observations after filtering`);
+    return '';
+  }
+  
   const codeGroups: { [key: string]: string[] } = {};
-  const filteredObservations: string[] = [];
+  const nonGroupedObservations: string[] = [];
   const junctionPositions: number[] = [];
   const structuralDefectPositions: number[] = [];
   
-  // First pass: identify junction positions and structural defects
-  for (const obs of observations) {
-    // Extract code and meterage
+  // STEP 2: First pass - identify junction positions and structural defects
+  for (const obs of preFiltered) {
     const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)/);
     if (codeMatch) {
       const code = codeMatch[1];
@@ -47,25 +61,17 @@ function formatObservationText(observations: string[]): string {
         junctionPositions.push(meterage);
       }
       
-      // Structural defect codes: D (deformation), FC/FL (fractures), CR (cracks), 
-      // JDL/JDS (joint displacement), DEF (deformed), OJM/OJL (open joints)
       if (['D', 'FC', 'FL', 'CR', 'JDL', 'JDS', 'DEF', 'OJM', 'OJL'].includes(code)) {
         structuralDefectPositions.push(meterage);
       }
     }
   }
   
-  // Second pass: process observations with conditional JN filtering
-  for (const obs of observations) {
-    // Skip WL observations that are exactly 5%
-    if (obs.includes('Water level, 5% of the vertical dimension')) {
-      continue;
-    }
-    
-    // Extract code and meterage - handle different formats
+  // STEP 3: Process observations with enhanced grouping
+  for (const obs of preFiltered) {
+    // Try to extract code and meterage for grouping
     let codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*m?)\s*\(/);
     if (!codeMatch) {
-      // Try alternative format: "WL 1.9m, 6.88m" (simple meterage list)
       codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*m?)/);
     }
     
@@ -73,56 +79,56 @@ function formatObservationText(observations: string[]): string {
       const code = codeMatch[1];
       const meterage = parseFloat(codeMatch[2]);
       
-      // Special handling for JN codes - only include if structural defect within 1m
+      // Conditional JN filtering - only include if structural defect within 1m
       if (code === 'JN') {
         const hasNearbyStructuralDefect = structuralDefectPositions.some(
           structPos => Math.abs(structPos - meterage) <= 1.0
         );
         
         if (!hasNearbyStructuralDefect) {
-          continue; // Skip this JN observation
+          console.log(`🔧 Skipping JN ${meterage}m - no structural defect within 1m`);
+          continue;
         }
       }
       
-      if (!codeGroups[code]) {
-        codeGroups[code] = [];
+      // Group similar codes for meterage consolidation
+      if (['WL', 'LL', 'LR', 'D', 'DER', 'DES', 'JN'].includes(code)) {
+        if (!codeGroups[code]) {
+          codeGroups[code] = [];
+        }
+        codeGroups[code].push(codeMatch[2].replace('m', '')); // Remove 'm' for grouping
+      } else {
+        nonGroupedObservations.push(obs);
       }
-      codeGroups[code].push(codeMatch[2]); // Keep original meterage format
-    } else if (!obs.includes('Water level, 5% of the vertical dimension')) {
-      // Keep observations that don't match the pattern (like higher % WL or IC/ICF nodes)
-      filteredObservations.push(obs);
+    } else {
+      nonGroupedObservations.push(obs);
     }
   }
   
-  // Build grouped observations
-  const groupedObservations: string[] = [];
+  // STEP 4: Build enhanced grouped observations
+  const finalObservations: string[] = [];
   
-  // Add grouped codes with meterage lists
+  // Add grouped codes with consolidated meterage
   for (const [code, meterages] of Object.entries(codeGroups)) {
     if (meterages.length > 1) {
-      // Group multiple occurrences: "JN 0.96, 3.99, 8.2, 11.75"
-      const groupedText = `${code} ${meterages.join(', ')}`;
-      groupedObservations.push(groupedText);
-    } else {
-      // Single occurrence: keep original format from first observation
-      const originalObs = observations.find(obs => obs.startsWith(`${code} ${meterages[0]}`));
-      if (originalObs) {
-        groupedObservations.push(originalObs);
-      }
+      // Enhanced grouping: "DER 13.27m, 16.63m, 17.73m"
+      const groupedText = `${code} ${meterages.join('m, ')}m`;
+      finalObservations.push(groupedText);
+      console.log(`🔧 Grouped ${code}: ${groupedText}`);
+    } else if (meterages.length === 1) {
+      // Single occurrence with enhanced format
+      const singleText = `${code} ${meterages[0]}m`;
+      finalObservations.push(singleText);
     }
   }
   
-  // Add any remaining non-grouped observations (excluding 5% WL)
-  const finalFilteredObservations = filteredObservations.filter(obs => 
-    !obs.includes('Water level, 5% of the vertical dimension')
-  );
-  groupedObservations.push(...finalFilteredObservations);
+  // Add non-grouped observations (IC, ICF nodes, etc.)
+  finalObservations.push(...nonGroupedObservations);
   
-  // Final cleanup: remove any remaining 5% WL references from the entire result
-  const result = groupedObservations.join(', ');
-  return result.replace(/,?\s*WL \(Water level, 5% of the vertical dimension\)/g, '')
-              .replace(/,\s*$/, '') // Remove trailing comma
-              .trim();
+  const result = finalObservations.join(', ').trim();
+  console.log(`🔧 Final formatted result: "${result.substring(0, 100)}..."`);
+  
+  return result;
 }
 
 // Classify Wincan observations using MSCC5 standards
