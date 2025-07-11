@@ -1219,7 +1219,7 @@ export default function Dashboard() {
   // Check sequential validation when sections data changes
   useEffect(() => {
     if (rawSectionData && rawSectionData.length > 0) {
-      const validation = validateSequentialSections(rawSectionData);
+      const validation = validateSequentialSections(rawSectionData, currentUpload);
       if (!validation.isValid) {
         setMissingSequences(validation.missing);
         setShowSequenceWarning(true);
@@ -1228,7 +1228,7 @@ export default function Dashboard() {
         setShowSequenceWarning(false);
       }
     }
-  }, [rawSectionData]);
+  }, [rawSectionData, currentUpload]);
 
   // Combine sections with individual defects - create multiple rows for sections with multiple defects
   const expandedSectionData = rawFilteredData.reduce((acc: any[], section: any) => {
