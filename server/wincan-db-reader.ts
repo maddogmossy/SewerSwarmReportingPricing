@@ -198,6 +198,8 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       const observations = observationMap.get(record.OBJ_PK) || [];
       const defectText = observations.length > 0 ? observations.join(', ') : 'No action required pipe observed in acceptable structural and service condition';
       
+      console.log(`🔍 Section ${record.OBJ_Key || 'Unknown'}: Found ${observations.length} observations:`, observations.slice(0, 3));
+      
       // Extract inspection date
       const inspectionDate = record.OBJ_TimeStamp ? record.OBJ_TimeStamp.split(' ')[0] : 'UNKNOWN';
       const inspectionTime = record.OBJ_TimeStamp ? record.OBJ_TimeStamp.split(' ')[1] : 'UNKNOWN';

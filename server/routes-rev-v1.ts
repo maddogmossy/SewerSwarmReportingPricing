@@ -385,19 +385,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'No file uploaded' });
       }
 
-      console.log('File uploaded:', {
-        originalName: req.file.originalname,
-        mimetype: req.file.mimetype,
-        size: req.file.size,
-        path: req.file.path
-      });
-
       // Determine file type based on extension
       const fileExtension = req.file.originalname.toLowerCase();
       let fileType = 'pdf';
       if (fileExtension.endsWith('.db3') || fileExtension.endsWith('.db')) {
         fileType = 'database';
       }
+
+      console.log('File uploaded:', {
+        originalName: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        path: req.file.path,
+        detectedType: fileType
+      });
 
       // Create upload record in database
       const uploadData = {
@@ -413,7 +414,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const upload = await storage.createFileUpload(uploadData);
       
-      // For REV_V1, immediately mark as completed with basic response
+      // Process database files with Wincan reader for authentic data extraction
+      if (fileType === 'database') {
+        console.log('🔒 PROCESSING WINCAN DATABASE FILE FOR AUTHENTIC DATA');
+        try {
+          const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
+          const sections = await readWincanDatabase(req.file.path);
+          
+          if (sections.length > 0) {
+            console.log(`✅ Extracted ${sections.length} authentic sections from database`);
+            await storeWincanSections(sections, upload.id);
+          } else {
+            console.log('⚠️ No sections extracted from database file');
+          }
+        } catch (error) {
+          console.error('Error processing Wincan database:', error);
+        }
+      }
+
+      // Mark as completed after processing
       const completedUpload = await storage.updateFileUploadStatus(
         upload.id, 
         'completed',
