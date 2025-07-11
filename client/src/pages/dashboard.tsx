@@ -308,22 +308,31 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Sequential section validation function
-  const validateSequentialSections = (sections: any[]) => {
+  // Sequential section validation function - Updated for authentic Wincan data
+  const validateSequentialSections = (sections: any[], uploadData: any) => {
     if (!sections || sections.length === 0) return { isValid: true, missing: [] };
     
     const itemNumbers = sections.map(s => s.itemNo).sort((a, b) => a - b);
     const missing: number[] = [];
     
-    // Check for missing sequential numbers from 1 to max
-    const maxItem = Math.max(...itemNumbers);
-    for (let i = 1; i <= maxItem; i++) {
-      if (!itemNumbers.includes(i)) {
-        missing.push(i);
-      }
-    }
+    // For Wincan database files, gaps in sequence are authentic (deleted sections)
+    // Only flag as missing if it's clearly a PDF extraction issue
+    const isWincanDatabase = uploadData?.fileType === 'database' || 
+                             uploadData?.fileName?.toLowerCase().includes('.db');
     
-    return { isValid: missing.length === 0, missing };
+    if (isWincanDatabase) {
+      // For Wincan databases, gaps are normal - don't show warnings
+      return { isValid: true, missing: [] };
+    } else {
+      // For PDF files, check for missing sequential numbers from 1 to max
+      const maxItem = Math.max(...itemNumbers);
+      for (let i = 1; i <= maxItem; i++) {
+        if (!itemNumbers.includes(i)) {
+          missing.push(i);
+        }
+      }
+      return { isValid: missing.length === 0, missing };
+    }
   };
 
   // Save hidden columns to localStorage whenever they change
