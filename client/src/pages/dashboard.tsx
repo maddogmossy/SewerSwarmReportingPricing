@@ -549,8 +549,10 @@ export default function Dashboard() {
           });
         }
         
-        // If section has approved repair pricing, display the actual repair description
-        if (approvedRepairStatus.hasApproved && approvedRepairStatus.pricingConfig) {
+        // WRc recommendations take priority over generic approved repair descriptions
+        // Only use approved repair pricing if no WRc recommendations exist
+        if (approvedRepairStatus.hasApproved && approvedRepairStatus.pricingConfig && 
+            (!section.recommendations || !section.recommendations.includes('WRc'))) {
           const pricingConfig = approvedRepairStatus.pricingConfig;
           const repairDescription = pricingConfig.description || "Approved repair configuration available";
           
