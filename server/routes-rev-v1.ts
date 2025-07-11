@@ -9,13 +9,21 @@ const upload = multer({
   dest: 'uploads/',
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
   fileFilter: (req, file, cb) => {
-    // Allow PDF and database files
-    const allowedTypes = ['.pdf', '.db', '.db3', '.sqlite', '.sqlite3'];
-    const ext = file.originalname.toLowerCase().substring(file.originalname.lastIndexOf('.'));
-    if (allowedTypes.includes(ext)) {
+    // Allow PDF and database files - improved validation
+    const fileName = file.originalname.toLowerCase();
+    const allowedExtensions = ['.pdf', '.db', '.db3', '.sqlite', '.sqlite3'];
+    
+    // Check for standard extensions or meta.db3
+    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext)) || 
+                              fileName.endsWith('meta.db3') ||
+                              fileName.includes('.db3');
+    
+    console.log('Server file validation:', { fileName, hasValidExtension });
+    
+    if (hasValidExtension) {
       cb(null, true);
     } else {
-      cb(new Error('Only PDF and database files are allowed'));
+      cb(new Error('Only PDF and database files are allowed (.pdf, .db, .db3, .sqlite, meta.db3)'));
     }
   }
 });

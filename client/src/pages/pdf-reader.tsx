@@ -136,7 +136,7 @@ export default function PDFReaderPage() {
             <div className="flex items-center gap-4">
               <Input
                 type="file"
-                accept=".pdf,.db,.db3"
+                accept=".pdf,.db,.db3,.sqlite,.sqlite3"
                 onChange={handleFileSelect}
                 className="flex-1"
               />

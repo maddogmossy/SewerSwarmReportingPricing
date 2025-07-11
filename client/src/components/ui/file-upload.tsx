@@ -18,7 +18,7 @@ interface FileUploadProps {
 export default function FileUpload({ 
   onFileSelect, 
   selectedFile, 
-  accept = ".pdf,.db,.db3",
+  accept = ".pdf,.db,.db3,.sqlite,.sqlite3",
   maxSize = 50 * 1024 * 1024, // 50MB default
   className = "",
   requiresSector = false,
@@ -83,20 +83,18 @@ export default function FileUpload({
 
     // Check file type - improved validation for Wincan database files
     const fileName = file.name.toLowerCase();
-    const allowedExtensions = ['.pdf', '.db', '.db3'];
+    const allowedExtensions = ['.pdf', '.db', '.db3', '.sqlite', '.sqlite3'];
     
-    // Check if file has valid extension
+    // Check if file has valid extension (including meta.db3)
     const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext)) || 
-                              fileName.endsWith('meta.db3');
+                              fileName.endsWith('meta.db3') ||
+                              fileName.includes('.db3');
     
-    // Additional check for common database MIME types
-    const hasValidMimeType = file.type === 'application/pdf' || 
-                            file.type === 'application/octet-stream' || 
-                            file.type === 'application/x-sqlite3' ||
-                            file.type === '';
+    // Log for debugging file browser issues
+    console.log('File validation:', { fileName, type: file.type, hasValidExtension });
 
     if (!hasValidExtension) {
-      alert('Please select a valid PDF or database file (.db, .db3, meta.db3)');
+      alert('Please select a valid PDF or database file (.pdf, .db, .db3, .sqlite, meta.db3)');
       return false;
     }
 
@@ -148,7 +146,7 @@ export default function FileUpload({
               Drag and drop your file here, or click to browse
             </p>
             <p className="text-sm text-slate-500 mb-4">
-              Supports: PDF, .db, .db3, meta.db3 files (Max {Math.round(maxSize / (1024 * 1024))}MB)
+              Supports: PDF, .db, .db3, .sqlite, meta.db3 files (Max {Math.round(maxSize / (1024 * 1024))}MB)
             </p>
             <Button type="button" className="bg-primary hover:bg-primary/90">
               Choose File
