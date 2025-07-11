@@ -527,8 +527,12 @@ export default function Dashboard() {
         if (section.itemNo === 3) {
           console.log("Section 3 Rendering Debug:", {
             severityGrade: section.severityGrade,
+            hasRepairableDefects: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0,
             defects: section.defects?.substring(0, 50) + '...',
-            recommendations: section.recommendations?.substring(0, 50) + '...'
+            recommendations: section.recommendations?.substring(0, 50) + '...',
+            includesNoAction: section.recommendations?.includes('No action required'),
+            requiresCleaning: section.defects ? requiresCleaning(section.defects) : false,
+            defectType: section.defectType
           });
         }
         
@@ -556,7 +560,15 @@ export default function Dashboard() {
           const isStructuralDefect = section.defectType === 'structural';
           
           // For service defects or cleaning-based defects, show cleaning options
-          if (isServiceDefect || requiresCleaning(section.defects || '')) {
+          const needsCleaning = requiresCleaning(section.defects || '');
+          if (section.itemNo === 3) {
+            console.log("Section 3 Path Check:", {
+              isServiceDefect,
+              needsCleaning,
+              willTakeCleaningPath: isServiceDefect || needsCleaning
+            });
+          }
+          if (isServiceDefect || needsCleaning) {
             return (
               <CleaningOptionsPopover 
                 sectionData={{
@@ -953,7 +965,7 @@ export default function Dashboard() {
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'wrc-refresh'], // Cache bust for WRc update
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'wrc-refresh-v2'], // Cache bust for WRc update
     enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
