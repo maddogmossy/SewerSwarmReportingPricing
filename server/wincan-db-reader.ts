@@ -167,23 +167,46 @@ function formatObservationText(observations: string[]): string {
       const uniqueDescriptions = [...new Set(entries.map(e => e.fullText))];
       
       if (uniqueDescriptions.length === 1) {
-        // Same description for all - group meterage: "DER (Settled deposits, coarse, 5% cross-sectional area loss) at 13.27, 16.63, 17.73"
-        const meterages = entries.map(e => e.meterage).join(', ');
-        const groupedText = `${code} (${uniqueDescriptions[0]}) at ${meterages}`;
-        finalObservations.push(groupedText);
-        console.log(`🔧 Grouped ${code} with same description: ${groupedText}`);
+        // Same description for all - show full description with grouped meterage
+        const meterages = entries.map(e => `${e.meterage}m`).join(', ');
+        
+        // If we have detailed descriptions, show them, otherwise fall back to basic format
+        if (uniqueDescriptions[0] && uniqueDescriptions[0].length > 5) {
+          const groupedText = `${uniqueDescriptions[0]} at ${meterages}`;
+          finalObservations.push(groupedText);
+          console.log(`🔧 Grouped ${code} with detailed description: ${groupedText}`);
+        } else {
+          // Basic format with defect description
+          const basicDescription = defectDescriptions[code] || code;
+          const groupedText = `${basicDescription} at ${meterages}`;
+          finalObservations.push(groupedText);
+          console.log(`🔧 Grouped ${code} with basic description: ${groupedText}`);
+        }
       } else {
-        // Different descriptions - list separately: "DER (Settled deposits, coarse, 5% cross-sectional area loss) at 13.27. DER (Settled deposits, coarse, 3% cross-sectional area loss) at 16.63"
+        // Different descriptions - list separately with full descriptions
         for (const entry of entries) {
-          const individualText = `${code} (${entry.fullText}) at ${entry.meterage}`;
-          finalObservations.push(individualText);
+          if (entry.fullText && entry.fullText.length > 5) {
+            const individualText = `${entry.fullText} at ${entry.meterage}m`;
+            finalObservations.push(individualText);
+          } else {
+            const basicDescription = defectDescriptions[code] || code;
+            const individualText = `${basicDescription} at ${entry.meterage}m`;
+            finalObservations.push(individualText);
+          }
         }
         console.log(`🔧 Listed ${code} with different descriptions separately`);
       }
     } else if (entries.length === 1) {
-      // Single occurrence with enhanced format: "DES (Settled deposits, fine, 5% cross-sectional area loss) at 13.27"
-      const singleText = `${code} (${entries[0].fullText}) at ${entries[0].meterage}`;
-      finalObservations.push(singleText);
+      // Single occurrence with enhanced format
+      const entry = entries[0];
+      if (entry.fullText && entry.fullText.length > 5) {
+        const singleText = `${entry.fullText} at ${entry.meterage}m`;
+        finalObservations.push(singleText);
+      } else {
+        const basicDescription = defectDescriptions[code] || code;
+        const singleText = `${basicDescription} at ${entry.meterage}m`;
+        finalObservations.push(singleText);
+      }
     }
   }
   
