@@ -1951,7 +1951,7 @@ export default function Dashboard() {
           </div>
         ) : sectionData.length === 0 && currentUpload && !sectionsLoading && !sectionsError ? (
           // Show appropriate message based on file type when upload exists but no sections data
-          currentUpload.fileName?.endsWith('.db3') || currentUpload.fileName?.endsWith('.db') ? (
+          currentUpload.fileName?.endsWith('.db3') || currentUpload.fileName?.endsWith('.db') || currentUpload.fileName?.includes('Wincan Database') || currentUpload.fileName?.includes('Combined') ? (
             // Database file - show processing status
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
@@ -1966,8 +1966,7 @@ export default function Dashboard() {
                     <div>
                       <p className="text-sm font-medium text-yellow-800">Processing Required</p>
                       <p className="text-sm text-yellow-700">
-                        Wincan database files need specialized processing to extract section inspection data. 
-                        This feature is in development.
+                        Click "Process Database" below to extract authentic section inspection data from your Wincan database file.
                       </p>
                     </div>
                   </div>
