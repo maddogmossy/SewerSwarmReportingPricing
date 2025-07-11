@@ -246,58 +246,57 @@ function classifyWincanObservations(observationText: string, sector: string) {
   // Extract defect patterns from Wincan observation format
   const upperText = observationText.toUpperCase();
   
-  // Check for structural defects
+  // Check for structural defects - WRc Drain Repair Book recommendations
   if (upperText.includes('DEFORMED') || upperText.includes('D ')) {
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
     
     if (percentage >= 20) {
       severityGrade = 4;
-      recommendations = 'We recommend excavation and replacement due to severe deformation affecting structural integrity';
+      recommendations = 'WRc Drain Repair Book: Excavate and replace affected section due to severe deformation compromising structural integrity';
       adoptable = 'No';
     } else if (percentage >= 10) {
       severityGrade = 3;
-      recommendations = 'We recommend structural repair or relining to address deformation';
+      recommendations = 'WRc Drain Repair Book: Install full-length CIPP liner or consider excavation if at joint or severely displaced';
       adoptable = 'Conditional';
     } else {
       severityGrade = 2;
-      recommendations = 'We recommend monitoring and consideration of relining';
+      recommendations = 'WRc Drain Repair Book: Local patch lining (glass mat or silicate) recommended for minor deformation';
       adoptable = 'Conditional';
     }
   }
   
-  // Check for deposits (DES/DER equivalent)
+  // Check for deposits (DES/DER equivalent) - WRc Drain Repair Book recommendations
   else if (upperText.includes('SETTLED DEPOSITS') || upperText.includes('DES ') || upperText.includes('DER ')) {
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
     
-    if (percentage >= 25) {
-      severityGrade = 4;
-      recommendations = 'We recommend immediate high-pressure jetting and root cutting to remove severe blockage deposits';
-      adoptable = 'Conditional';
-    } else if (percentage >= 10) {
+    // Coarse deposits (DER) - WRc Drain Repair Book 4th Edition
+    if (upperText.includes('COARSE') || percentage >= 10) {
       severityGrade = 3;
-      recommendations = 'We recommend high-pressure jetting to remove accumulated deposits and improve flow capacity';
-      adoptable = 'Yes';
-    } else {
+      recommendations = 'WRc Drain Repair Book: Jet-vac cleaning for material removal, high-pressure jetting with rotating nozzle, post-clean CCTV verification survey required';
+      adoptable = 'Conditional';
+    } 
+    // Fine deposits (DES) - WRc Sewer Cleaning Manual
+    else {
       severityGrade = 2;
-      recommendations = 'We recommend routine jetting and cleaning to prevent deposit accumulation';
+      recommendations = 'WRc Sewer Cleaning Manual: Desilting using vacuum or jet-vac combo unit, flush and re-inspect, assess for upstream source if recurring';
       adoptable = 'Conditional';
     }
   }
   
-  // Check for high water levels indicating downstream blockage
+  // Check for high water levels - WRc Drain Repair Book recommendations
   else if (upperText.includes('WATER LEVEL')) {
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
     
     if (percentage >= 50) {
       severityGrade = 3;
-      recommendations = 'We recommend cleanse and survey to investigate the high water levels, consideration should be given to downstream access';
+      recommendations = 'WRc Drain Repair Book: Investigate downstream blockage, check pipe gradient or backfall, flush or survey upstream/downstream to locate issue';
       adoptable = 'Conditional';
     } else if (percentage >= 25) {
       severityGrade = 2;
-      recommendations = 'We recommend investigation of downstream conditions and potential cleansing';
+      recommendations = 'WRc Sewer Cleaning Manual: Investigation of downstream conditions required, potential cleansing to address water retention';
       adoptable = 'Conditional';
     } else {
       severityGrade = 0; // Low water levels are observations only
