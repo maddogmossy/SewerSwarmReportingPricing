@@ -69,7 +69,6 @@ let workCategoriesStorage = [
   { id: 2, name: "Jetting/Cleaning", description: "High pressure water jetting" },
   { id: 3, name: "Patch Repairs", description: "Localized pipe repairs" },
   { id: 4, name: "Cleanse/Survey", description: "Complete cleaning followed by verification survey to confirm completion" },
-  { id: 5, name: "Lining - UV", description: "Lining - UV work category" },
   { id: 6, name: "Lining - Hot Cure", description: "Lining - Hot Cure work category" }
 ];
 
