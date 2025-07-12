@@ -246,19 +246,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
   };
 
   const handleOptionClick = (option: CleaningOption) => {
-    // Handle custom cleaning option - show setup dialog like Cleanse and Survey
-    if (option.name === 'Custom Cleaning' && !option.configured) {
-      setShowCustomSetupDialog(true);
-      return;
-    }
-    
-    // Handle Cleanse and Survey option - prompt to set up work category
-    if (option.name === 'Cleanse and Survey' && !option.configured) {
-      setShowSetupDialog(true);
-      return;
-    }
-    
-    // For both configured and unconfigured options, navigate to the pricing page
+    // For both configured and unconfigured options, navigate directly to the pricing page
     const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
     const meterage = extractMeterage(sectionData.defects || '');
     const sector = sectionData.sector || 'utilities';
@@ -275,6 +263,19 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       pipeMaterial: sectionData.pipeMaterial || '',
       category: 'cleaning'
     });
+    
+    // Add auto-setup parameters for unconfigured options
+    if (!option.configured) {
+      if (option.name === 'Cleanse and Survey') {
+        params.set('categoryName', 'Cleanse/Survey');
+        params.set('categoryDescription', 'Complete cleaning followed by verification survey to confirm completion');
+      } else if (option.name === 'Custom Cleaning') {
+        params.set('categoryName', 'Custom Cleaning');
+        params.set('categoryDescription', 'User-defined cleaning method for specific requirements');
+      }
+      params.set('autoSetup', 'true');
+      params.set('newCategory', 'true');
+    }
     
     // Add edit mode parameter for configured options
     if (option.configured) {
