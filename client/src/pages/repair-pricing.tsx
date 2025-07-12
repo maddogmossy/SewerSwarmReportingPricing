@@ -2905,18 +2905,6 @@ export default function RepairPricing() {
                       <Button 
                         type="button"
                         size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-orange-600 hover:bg-orange-700 text-white"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowMinQuantityDialog(true);
-                        }}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add
-                      </Button>
-                      <Button 
-                        type="button"
-                        size="sm" 
                         className="text-xs px-2 py-1 h-6 bg-orange-500 hover:bg-orange-600 text-white"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -2948,6 +2936,18 @@ export default function RepairPricing() {
                       >
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
+                      </Button>
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-orange-600 hover:bg-orange-700 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowMinQuantityDialog(true);
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
                       </Button>
                     </div>
                   </div>
@@ -3030,32 +3030,6 @@ export default function RepairPricing() {
                           ].filter(Boolean).join(', ')}
                         </span>
                       )}
-                      {(formData.pricingStructure?.includeDepth || formData.pricingStructure?.includeTotalLength) && (
-                        <Button 
-                          type="button"
-                          size="sm" 
-                          className="text-xs px-2 py-1 h-6 bg-purple-500 hover:bg-purple-600 text-white"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShowAdditionalDialog(true);
-                          }}
-                        >
-                          <Edit className="h-3 w-3 mr-1" />
-                          Edit
-                        </Button>
-                      )}
-                      <Button 
-                        type="button"
-                        size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-purple-600 hover:bg-purple-700 text-white"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowAdditionalDialog(true);
-                        }}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add
-                      </Button>
                       <Button 
                         type="button"
                         size="sm" 
@@ -3067,6 +3041,18 @@ export default function RepairPricing() {
                       >
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
+                      </Button>
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-purple-600 hover:bg-purple-700 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowAdditionalDialog(true);
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
                       </Button>
                     </div>
                   </div>
