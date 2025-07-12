@@ -3505,7 +3505,7 @@ export default function RepairPricing() {
             <DialogHeader>
               <DialogTitle>Edit Price/Cost Options</DialogTitle>
               <DialogDescription>
-                Edit the text labels and manage your price/cost options. You can modify the text for each option or delete options you no longer need.
+                Edit the text labels for your price/cost options. You can modify the label text or delete options you no longer need.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -3513,16 +3513,6 @@ export default function RepairPricing() {
                 {editablePriceOptions.map((option, index) => (
                   <div key={option.id} className="flex items-center justify-between p-3 border rounded-lg bg-blue-50">
                     <div className="flex items-center space-x-3 flex-1">
-                      <input
-                        type="checkbox"
-                        checked={option.enabled}
-                        onChange={(e) => {
-                          const updatedOptions = [...editablePriceOptions];
-                          updatedOptions[index].enabled = e.target.checked;
-                          setEditablePriceOptions(updatedOptions);
-                        }}
-                        className="rounded border-slate-300"
-                      />
                       <Input
                         value={option.label}
                         onChange={(e) => {
