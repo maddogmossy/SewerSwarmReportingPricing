@@ -251,6 +251,14 @@ export default function RepairPricing() {
   const [showQuantityDialog, setShowQuantityDialog] = useState(false);
   const [showMinQuantityDialog, setShowMinQuantityDialog] = useState(false);
   const [showAdditionalDialog, setShowAdditionalDialog] = useState(false);
+  
+  // Collapsible state for option windows
+  const [collapsedWindows, setCollapsedWindows] = useState({
+    priceOptions: false,
+    quantityOptions: false,
+    minQuantityOptions: false,
+    additionalOptions: false
+  });
   const [newOptionName, setNewOptionName] = useState('');
   const [categoryDeleteDialogOpen, setCategoryDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<any>(null);
@@ -2146,21 +2154,97 @@ export default function RepairPricing() {
                 <Label className="text-sm font-medium text-slate-700 mb-3 block">Pricing Structure Options</Label>
                 <p className="text-xs text-slate-500 mb-4">Select pricing options organized by category:</p>
                 
+                {/* Selected Options Summary - Only show if options are selected */}
+                {(function() {
+                  const selectedOptions = [];
+                  if (formData.pricingStructure?.meterage) selectedOptions.push({key: 'meterage', label: 'Meterage (£ per meter)', type: 'cost'});
+                  if (formData.pricingStructure?.hourlyRate) selectedOptions.push({key: 'hourlyRate', label: 'Hourly rate (£ per hour)', type: 'cost'});
+                  if (formData.pricingStructure?.dayRate) selectedOptions.push({key: 'dayRate', label: 'Day rate (£ per day)', type: 'cost'});
+                  if (formData.pricingStructure?.setupRate) selectedOptions.push({key: 'setupRate', label: 'Setup rate (£ per setup)', type: 'cost'});
+                  if (formData.pricingStructure?.minCharge) selectedOptions.push({key: 'minCharge', label: 'Min charge (£ minimum)', type: 'cost'});
+                  if (formData.pricingStructure?.numberPerShift) selectedOptions.push({key: 'numberPerShift', label: 'Units per shift', type: 'quantity'});
+                  if (formData.pricingStructure?.metersPerShift) selectedOptions.push({key: 'metersPerShift', label: 'Meters per shift', type: 'quantity'});
+                  if (formData.pricingStructure?.runsPerShift) selectedOptions.push({key: 'runsPerShift', label: 'Runs per shift', type: 'quantity'});
+                  if (formData.pricingStructure?.repeatFree) selectedOptions.push({key: 'repeatFree', label: 'Repeat free (no charge)', type: 'quantity'});
+                  
+                  if (selectedOptions.length > 0) {
+                    return (
+                      <div className="border border-blue-200 rounded-lg p-4 bg-blue-50 mb-4">
+                        <h4 className="text-sm font-medium text-blue-700 mb-3">💰 Selected Pricing Options - Enter Values</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          {selectedOptions.map((option) => (
+                            <div key={option.key} className="space-y-1">
+                              <Label htmlFor={`value_${option.key}`} className="text-xs font-medium text-slate-600">
+                                {option.label}
+                              </Label>
+                              <Input
+                                id={`value_${option.key}`}
+                                type="number"
+                                step="0.01"
+                                placeholder="Enter value"
+                                className="h-8 text-sm"
+                                value={formData[option.key] || ''}
+                                onChange={(e) => setFormData({
+                                  ...formData,
+                                  [option.key]: e.target.value
+                                })}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-blue-600 mt-2">
+                          Enter values for your selected pricing options. These will be used for calculations in the dashboard.
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+                
                 {/* Option Window 1: Price/Cost */}
-                <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="border border-blue-200 rounded-lg bg-blue-50">
+                  <div 
+                    className="flex items-center justify-between p-4 cursor-pointer"
+                    onClick={() => {
+                      const hasSelected = formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge;
+                      if (hasSelected) {
+                        setCollapsedWindows(prev => ({
+                          ...prev,
+                          priceOptions: !prev.priceOptions
+                        }));
+                      }
+                    }}
+                  >
                     <h4 className="text-sm font-medium text-blue-700">💰 Price/Cost Options</h4>
-                    <Button 
-                      type="button"
-                      size="sm" 
-                      className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white"
-                      onClick={() => setShowPriceCostDialog(true)}
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      Add
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      {(formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge) && (
+                        <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
+                          {[
+                            formData.pricingStructure?.meterage && 'Meterage',
+                            formData.pricingStructure?.hourlyRate && 'Hourly',
+                            formData.pricingStructure?.dayRate && 'Daily',
+                            formData.pricingStructure?.setupRate && 'Setup',
+                            formData.pricingStructure?.minCharge && 'Min Charge'
+                          ].filter(Boolean).join(', ')}
+                        </span>
+                      )}
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowPriceCostDialog(true);
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  {!collapsedWindows.priceOptions && (
+                    <div className="px-4 pb-4">
+                      <div className="grid grid-cols-2 gap-3">
                     <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
@@ -2246,23 +2330,53 @@ export default function RepairPricing() {
                       <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
                     </div>
                   </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Option Window 2: Quantity Options */}
-                <div className="border border-green-200 rounded-lg p-4 bg-green-50">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="border border-green-200 rounded-lg bg-green-50">
+                  <div 
+                    className="flex items-center justify-between p-4 cursor-pointer"
+                    onClick={() => {
+                      const hasSelected = formData.pricingStructure?.numberPerShift || formData.pricingStructure?.metersPerShift || formData.pricingStructure?.runsPerShift || formData.pricingStructure?.repeatFree;
+                      if (hasSelected) {
+                        setCollapsedWindows(prev => ({
+                          ...prev,
+                          quantityOptions: !prev.quantityOptions
+                        }));
+                      }
+                    }}
+                  >
                     <h4 className="text-sm font-medium text-green-700">📊 Quantity Options</h4>
-                    <Button 
-                      type="button"
-                      size="sm" 
-                      className="text-xs px-2 py-1 h-6 bg-green-600 hover:bg-green-700 text-white"
-                      onClick={() => setShowQuantityDialog(true)}
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      Add
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      {(formData.pricingStructure?.numberPerShift || formData.pricingStructure?.metersPerShift || formData.pricingStructure?.runsPerShift || formData.pricingStructure?.repeatFree) && (
+                        <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
+                          {[
+                            formData.pricingStructure?.numberPerShift && 'Units',
+                            formData.pricingStructure?.metersPerShift && 'Meters',
+                            formData.pricingStructure?.runsPerShift && 'Runs',
+                            formData.pricingStructure?.repeatFree && 'Repeat Free'
+                          ].filter(Boolean).join(', ')}
+                        </span>
+                      )}
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-green-600 hover:bg-green-700 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowQuantityDialog(true);
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  {!collapsedWindows.quantityOptions && (
+                    <div className="px-4 pb-4">
+                      <div className="grid grid-cols-2 gap-3">
                     <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
@@ -2331,6 +2445,8 @@ export default function RepairPricing() {
                       <Label htmlFor="repeatFree" className="text-sm">Repeat free (no charge)</Label>
                     </div>
                   </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Option Window 3: Minimum Quantities */}
