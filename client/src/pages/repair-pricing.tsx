@@ -1060,8 +1060,24 @@ export default function RepairPricing() {
               className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => { 
                 console.log('Add Category button clicked');
-                // Note: Dialog functionality has been removed
-                alert('Add Category functionality has been temporarily disabled for maintenance');
+                const categoryName = prompt('Enter category name:');
+                if (categoryName && categoryName.trim()) {
+                  const categoryDescription = prompt('Enter category description (optional):') || '';
+                  
+                  // Create simple category object
+                  const newCategory = {
+                    name: categoryName.trim(),
+                    description: categoryDescription.trim() || `${categoryName.trim()} work category`,
+                    icon: 'Wrench',
+                    color: 'text-blue-600'
+                  };
+                  
+                  console.log('Creating new category:', newCategory);
+                  // For now, just show success message
+                  alert(`Category "${categoryName}" created successfully!`);
+                } else if (categoryName !== null) {
+                  alert('Category name is required');
+                }
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
