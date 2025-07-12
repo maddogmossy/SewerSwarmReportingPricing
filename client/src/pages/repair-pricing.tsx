@@ -2661,12 +2661,6 @@ export default function RepairPricing() {
                   return null;
                 })()}
                 
-                {/* Range Option - Enter Values Window */}
-                <div className="border border-indigo-200 rounded-lg p-4 bg-indigo-50 mb-4">
-                  <h4 className="text-sm font-medium text-indigo-700 mb-3">📊 Range Option - Enter Values</h4>
-                  <p className="text-xs text-indigo-600 mb-2">Configure range-based pricing options for dynamic calculations</p>
-                </div>
-                
                 {/* Option Window 1: Price/Cost */}
                 <div className="border border-blue-200 rounded-lg bg-blue-50">
                   <div 
@@ -2757,7 +2751,7 @@ export default function RepairPricing() {
                       </Button>
                     </div>
                   </div>
-                  {(true || !collapsedWindows.priceOptions) && (
+                  {!collapsedWindows.priceOptions && (
                     <div className="px-4 pb-4">
                       <div className="grid grid-cols-4 gap-3">
                         {/* Dynamic Options in Reordered Sequence */}
