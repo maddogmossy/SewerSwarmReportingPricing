@@ -100,10 +100,21 @@ const generateDynamicRecommendation = (section: any): string => {
     }
     
     // Fallback: extract basic defect codes without percentages
+    // Filter out LL (line deviation) codes unless this is for structural repair/lining
     const basicMatches = defectsText.match(/([A-Z]{2,3})/g);
     if (basicMatches) {
       const uniqueDefects = [...new Set(basicMatches)];
-      return uniqueDefects.join(' and ');
+      
+      // For cleaning recommendations, exclude LL codes (only include for lining/patch repairs)
+      const cleaningRelevantDefects = uniqueDefects.filter(code => {
+        // Exclude LL unless the recommendation involves lining or patching
+        if (code === 'LL') {
+          return false; // LL only relevant for structural repairs, not cleaning
+        }
+        return true;
+      });
+      
+      return cleaningRelevantDefects.length > 0 ? cleaningRelevantDefects.join(' and ') : 'defects';
     }
     
     return 'defects';
@@ -617,11 +628,12 @@ export default function Dashboard() {
       case 'srmGrading':
         return (
           <div className="text-xs">
-            {section.severityGrade === "0" ? "No service issues" :
-             section.severityGrade === "1" ? "Minor service impacts" :
-             section.severityGrade === "2" ? "Moderate service defects" :
-             section.severityGrade === "3" ? "Major service defects" :
-             "Blocked or non-functional"}
+            {section.srmGrading?.description || 
+             (section.severityGrade === "0" ? "No service issues" :
+              section.severityGrade === "1" ? "Minor service impacts" :
+              section.severityGrade === "2" ? "Moderate service defects" :
+              section.severityGrade === "3" ? "Major service defects" :
+              "Blocked or non-functional")}
           </div>
         );
       case 'recommendations':

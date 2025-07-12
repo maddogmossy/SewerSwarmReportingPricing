@@ -235,12 +235,22 @@ function classifyWincanObservations(observationText: string, sector: string) {
   let severityGrade = 0;
   let recommendations = 'No action required pipe observed in acceptable structural and service condition';
   let adoptable = 'Yes';
+  let defectType: 'structural' | 'service' = 'service';
   
   // If no defects text or observation-only text, return Grade 0
   if (!observationText || 
       observationText === 'No action required pipe observed in acceptable structural and service condition' ||
       observationText.trim() === '') {
-    return { severityGrade: 0, recommendations, adoptable: 'Yes' };
+    
+    // Get SRM grading for Grade 0
+    const srmGrading = getSRMGrading(0, 'service');
+    
+    return { 
+      severityGrade: 0, 
+      recommendations, 
+      adoptable: 'Yes',
+      srmGrading 
+    };
   }
   
   // Extract defect patterns from Wincan observation format
@@ -248,6 +258,7 @@ function classifyWincanObservations(observationText: string, sector: string) {
   
   // Check for structural defects - WRc Drain Repair Book recommendations
   if (upperText.includes('DEFORMED') || upperText.includes('D ')) {
+    defectType = 'structural';
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
     
@@ -268,6 +279,7 @@ function classifyWincanObservations(observationText: string, sector: string) {
   
   // Check for deposits (DES/DER equivalent) - WRc Drain Repair Book recommendations
   else if (upperText.includes('SETTLED DEPOSITS') || upperText.includes('DES ') || upperText.includes('DER ')) {
+    defectType = 'service';
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
     
@@ -287,6 +299,7 @@ function classifyWincanObservations(observationText: string, sector: string) {
   
   // Check for high water levels - WRc Drain Repair Book recommendations
   else if (upperText.includes('WATER LEVEL')) {
+    defectType = 'service';
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
     
@@ -326,7 +339,35 @@ function classifyWincanObservations(observationText: string, sector: string) {
     adoptable = 'Yes';
   }
   
-  return { severityGrade, recommendations, adoptable };
+  // Get SRM grading for final result
+  const srmGrading = getSRMGrading(severityGrade, defectType);
+  
+  return { severityGrade, recommendations, adoptable, srmGrading };
+}
+
+// Get SRM grading based on severity grade and defect type
+function getSRMGrading(grade: number, type: 'structural' | 'service') {
+  const srmScoring = {
+    structural: {
+      "0": { description: "No action required", criteria: "Pipe observed in acceptable structural and service condition", action_required: "No action required", adoptable: true },
+      "1": { description: "Excellent structural condition", criteria: "No defects observed", action_required: "None", adoptable: true },
+      "2": { description: "Minor defects", criteria: "Some minor wear or joint displacement", action_required: "No immediate action", adoptable: true },
+      "3": { description: "Moderate deterioration", criteria: "Isolated fractures, minor infiltration", action_required: "Medium-term repair or monitoring", adoptable: true },
+      "4": { description: "Significant deterioration", criteria: "Multiple fractures, poor alignment, heavy infiltration", action_required: "Consider near-term repair", adoptable: false },
+      "5": { description: "Severe structural failure", criteria: "Collapse, deformation, major cracking", action_required: "Immediate repair or replacement", adoptable: false }
+    },
+    service: {
+      "0": { description: "No action required", criteria: "Pipe observed in acceptable structural and service condition", action_required: "No action required", adoptable: true },
+      "1": { description: "No service issues", criteria: "Free flowing, no obstructions or deposits", action_required: "None", adoptable: true },
+      "2": { description: "Minor service impacts", criteria: "Minor settled deposits or water levels", action_required: "Routine monitoring", adoptable: true },
+      "3": { description: "Moderate service defects", criteria: "Partial blockages, 5–20% cross-sectional loss", action_required: "Desilting or cleaning recommended", adoptable: true },
+      "4": { description: "Major service defects", criteria: "Severe deposits, 20–50% loss, significant flow restriction", action_required: "Cleaning or partial repair", adoptable: false },
+      "5": { description: "Blocked or non-functional", criteria: "Over 50% flow loss or complete blockage", action_required: "Immediate action required", adoptable: false }
+    }
+  };
+  
+  const gradeKey = Math.min(grade, 5).toString();
+  return srmScoring[type][gradeKey] || srmScoring.service["1"];
 }
 
 export interface WincanSectionData {
@@ -344,6 +385,7 @@ export interface WincanSectionData {
   adoptable: string;
   inspectionDate: string;
   inspectionTime: string;
+  srmGrading?: any; // SRM grading data
 }
 
 export async function readWincanDatabase(filePath: string): Promise<WincanSectionData[]> {
@@ -572,6 +614,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       let severityGrade = 0;
       let recommendations = 'No action required this pipe section is at an adoptable condition';
       let adoptable = 'Yes';
+      let srmGrading = getSRMGrading(0, 'service');
       
       if (observations.length > 0) {
         console.log(`🎯 Applying MSCC5 classification to: "${defectText.substring(0, 100)}..."`);
@@ -579,8 +622,9 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         severityGrade = classification.severityGrade;
         recommendations = classification.recommendations;
         adoptable = classification.adoptable;
+        srmGrading = classification.srmGrading;
         
-        console.log(`📊 MSCC5 Classification Result: Grade ${severityGrade}, ${adoptable}, Recommendations: ${recommendations.substring(0, 80)}...`);
+        console.log(`📊 MSCC5 Classification Result: Grade ${severityGrade}, ${adoptable}, SRM: ${srmGrading.description}, Recommendations: ${recommendations.substring(0, 80)}...`);
       } else {
         console.log(`📊 No observations found, using default Grade 0`);
       }
@@ -634,7 +678,8 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         severityGrade: severityGrade,
         adoptable: adoptable,
         inspectionDate: inspectionDate,
-        inspectionTime: inspectionTime
+        inspectionTime: inspectionTime,
+        srmGrading: srmGrading
       };
       
       // Only add if we have meaningful data
