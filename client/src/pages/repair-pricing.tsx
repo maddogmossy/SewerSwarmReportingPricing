@@ -913,29 +913,41 @@ export default function RepairPricing() {
   const deletePricing = useMutation({
     mutationFn: ({ id, scope }: { id: number; scope: 'current' | 'all' }) => 
       apiRequest('DELETE', `/api/repair-pricing/${id}?scope=${scope}&currentSector=${sector}`),
-    onSuccess: (_, variables) => {
+    onSuccess: async (_, variables) => {
       // Close dialog first
       setDeleteDialogOpen(false);
       setItemToDelete(null);
       setDeleteScope('current');
       
-      // Comprehensive cache invalidation to ensure complete removal
-      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
-      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${sector}`] });
+      // Aggressive cache removal and refresh
+      const activeSector = sector || currentSector?.id || 'utilities';
       
-      // Force immediate refetch to ensure UI updates
-      queryClient.refetchQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
+      // Remove existing cached data
+      queryClient.removeQueries({ queryKey: [`/api/repair-pricing/${activeSector}`] });
+      queryClient.removeQueries({ queryKey: ['/api/user-pricing'] });
+      queryClient.removeQueries({ queryKey: [`/api/pricing/check/${activeSector}`] });
+      
+      // Force immediate refetch
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: [`/api/repair-pricing/${activeSector}`] }),
+        queryClient.refetchQueries({ queryKey: ['/api/user-pricing'] }),
+        refetch() // Also call the component's refetch
+      ]);
+      
+      // As a final fallback, refresh the page to ensure UI updates
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
       
       if (variables.scope === 'all') {
-        // Invalidate all sector queries when deleting from all sectors
-        SECTORS.forEach(s => {
-          queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${s.id}`] });
-          queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${s.id}`] });
-          queryClient.refetchQueries({ queryKey: [`/api/repair-pricing/${s.id}`] });
+        // Remove and refetch all sector queries
+        SECTORS.forEach(async (s) => {
+          queryClient.removeQueries({ queryKey: [`/api/repair-pricing/${s.id}`] });
+          queryClient.removeQueries({ queryKey: [`/api/pricing/check/${s.id}`] });
+          await queryClient.refetchQueries({ queryKey: [`/api/repair-pricing/${s.id}`] });
         });
-        queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
-        queryClient.refetchQueries({ queryKey: ['/api/work-categories'] });
+        queryClient.removeQueries({ queryKey: ['/api/work-categories'] });
+        await queryClient.refetchQueries({ queryKey: ['/api/work-categories'] });
         toast({ 
           title: "✅ Complete removal successful", 
           description: "Pricing deleted from all sectors and all traces cleared"
