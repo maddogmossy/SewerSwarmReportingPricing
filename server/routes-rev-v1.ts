@@ -338,10 +338,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get('/api/repair-pricing/:sector', (req, res) => {
-    // Return pricing data for the requested sector
-    const sectorPricing = pricingStorage.filter(item => item.sector === req.params.sector);
-    res.json(sectorPricing);
+  app.get('/api/repair-pricing/:sector', async (req, res) => {
+    try {
+      // Get pricing data from database first
+      const dbPricing = await db
+        .select()
+        .from(repairPricing)
+        .where(eq(repairPricing.sector, req.params.sector));
+
+      // If database has data, use it; otherwise fall back to memory
+      if (dbPricing.length > 0) {
+        console.log(`✅ Loading ${dbPricing.length} pricing records from DATABASE for sector: ${req.params.sector}`);
+        res.json(dbPricing);
+      } else {
+        // Create database record from memory storage if it exists
+        const sectorPricing = pricingStorage.filter(item => item.sector === req.params.sector);
+        if (sectorPricing.length > 0) {
+          console.log(`🔄 Migrating ${sectorPricing.length} memory records to DATABASE for sector: ${req.params.sector}`);
+          // Create database records for each memory item
+          for (const item of sectorPricing) {
+            await db.insert(repairPricing).values({
+              userId: "test-user",
+              sector: item.sector,
+              workCategoryId: item.workCategoryId,
+              repairMethodId: item.repairMethodId,
+              pipeSize: item.pipeSize,
+              description: item.description,
+              cost: String(item.cost || 0),
+              dayRate: item.dayRate || null,
+              runsPerShift: item.runsPerShift || null,
+              pricingStructure: item.pricingStructure || {},
+            }).onConflictDoNothing();
+          }
+          // Now fetch the newly created records
+          const newDbPricing = await db
+            .select()
+            .from(repairPricing)
+            .where(eq(repairPricing.sector, req.params.sector));
+          res.json(newDbPricing);
+        } else {
+          console.log(`⚠️  No memory records found for sector: ${req.params.sector}`);
+          res.json([]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching pricing from database:', error);
+      // Fallback to memory storage
+      const sectorPricing = pricingStorage.filter(item => item.sector === req.params.sector);
+      res.json(sectorPricing);
+    }
   });
 
 
