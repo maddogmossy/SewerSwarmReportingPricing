@@ -611,8 +611,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const uploadId = parseInt(req.params.uploadId);
       console.log(`🔄 Reprocessing upload ${uploadId} with inspection direction logic`);
       
-      // Find the upload in storage
-      const upload = uploadsStorage.find(u => u.id === uploadId);
+      // Find the upload from database storage
+      console.log(`Looking for upload with ID: ${uploadId}`);
+      const upload = await storage.getFileUploadById(uploadId);
+      console.log(`Upload found:`, upload);
       if (!upload) {
         return res.status(404).json({ error: 'Upload not found' });
       }
