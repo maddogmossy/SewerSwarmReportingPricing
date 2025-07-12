@@ -3901,7 +3901,8 @@ export default function RepairPricing() {
               </Button>
               <Button 
                 onClick={() => {
-                  console.log("Saving reordered min quantity options:", editableMinQuantityOptions);
+                  console.log("🔥 DEBUGGING ORANGE DELETION - editableMinQuantityOptions:", editableMinQuantityOptions);
+                  console.log("🔥 DEBUGGING ORANGE DELETION - formData.pricingStructure BEFORE:", formData.pricingStructure);
                   
                   // CRITICAL FIX: Start with a clean pricing structure and remove ALL deleted options
                   const newPricingStructure = { ...formData.pricingStructure };
@@ -3920,14 +3921,19 @@ export default function RepairPricing() {
                   });
                   
                   // Apply enabled state for standard options and re-add current minquantity_ options
+                  console.log("🔥 APPLYING OPTIONS FROM editableMinQuantityOptions:");
                   editableMinQuantityOptions.forEach(option => {
+                    console.log("🔥 Processing option:", option);
                     if (standardOptionIds.includes(option.id)) {
                       newPricingStructure[option.id] = option.enabled;
+                      console.log("🔥 Set standard option:", option.id, "=", option.enabled);
                     } else if (option.id.startsWith('minquantity_')) {
                       // Re-add only the minquantity_ options that still exist in editableMinQuantityOptions
                       newPricingStructure[option.id] = true;
+                      console.log("🔥 Set custom option:", option.id, "= true");
                     }
                   });
+                  console.log("🔥 FINAL newPricingStructure AFTER APPLYING OPTIONS:", newPricingStructure);
                   
                   // Update custom min quantity options with new labels and order (use minquantity_ prefix, not custom_min_quantity_)
                   const updatedCustomMinQuantityOptions = editableMinQuantityOptions
