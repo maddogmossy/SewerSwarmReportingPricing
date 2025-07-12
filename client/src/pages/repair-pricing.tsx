@@ -2502,22 +2502,25 @@ export default function RepairPricing() {
                             <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
                           </div>
                           {formData.pricingStructure?.dayRate && (
-                            <Select
-                              value={mathOperators.dayRate}
-                              onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                setMathOperators(prev => ({ ...prev, dayRate: value }))
-                              }
-                            >
-                              <SelectTrigger className="w-16 h-6 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="add">+</SelectItem>
-                                <SelectItem value="subtract">-</SelectItem>
-                                <SelectItem value="multiply">×</SelectItem>
-                                <SelectItem value="divide">÷</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <div className="flex items-center">
+                              <span className="text-xs mr-1">Math:</span>
+                              <Select
+                                value={mathOperators.dayRate}
+                                onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                  setMathOperators(prev => ({ ...prev, dayRate: value }))
+                                }
+                              >
+                                <SelectTrigger className="w-16 h-6 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="add">+</SelectItem>
+                                  <SelectItem value="subtract">-</SelectItem>
+                                  <SelectItem value="multiply">×</SelectItem>
+                                  <SelectItem value="divide">÷</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
                           )}
                         </div>
 
