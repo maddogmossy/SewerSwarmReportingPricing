@@ -60,6 +60,50 @@ const requiresCleaning = (defects: string): boolean => {
   return cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
 };
 
+// Generate dynamic recommendations based on section data
+const generateDynamicRecommendation = (section: any): string => {
+  const { startMH, finishMH, pipeSize, totalLength, defects, recommendations } = section;
+  
+  // Extract defect percentages and types from observations
+  const extractDefectSummary = (defectsText: string): string => {
+    if (!defectsText || defectsText.includes('No service or structural defect found')) {
+      return '';
+    }
+    
+    // Extract percentage-based defects like "DES 5%" and "DER 10%"
+    const percentageMatches = defectsText.match(/([A-Z]{2,3})\s*(\d+)%/g);
+    if (percentageMatches) {
+      return percentageMatches.join(' and ');
+    }
+    
+    // Extract basic defect codes if no percentages
+    const basicMatches = defectsText.match(/([A-Z]{2,3})/g);
+    if (basicMatches) {
+      const uniqueDefects = [...new Set(basicMatches)];
+      return uniqueDefects.join(' and ');
+    }
+    
+    return 'defects';
+  };
+  
+  const defectSummary = extractDefectSummary(defects || '');
+  const length = totalLength || '30.00m';
+  const pipe = pipeSize || '150mm';
+  const from = startMH || 'Start';
+  const to = finishMH || 'Finish';
+  
+  // Generate contextual recommendation based on defect type
+  if (defectSummary) {
+    if (requiresCleaning(defects || '')) {
+      return `To cleanse and survey ${length} from ${from} to ${to}, ${pipe} to remove ${defectSummary}`;
+    } else {
+      return `To repair ${length} from ${from} to ${to}, ${pipe} addressing ${defectSummary}`;
+    }
+  } else {
+    return `${length} section from ${from} to ${to}, ${pipe} - No action required, pipe section is in adoptable condition`;
+  }
+};
+
 // Calculate depth range from MH depths for pricing calculations
 const calculateDepthRangeFromMHDepths = (startDepth: string, finishDepth: string): string => {
   // Handle 'no data recorded' or empty values
@@ -600,7 +644,7 @@ export default function Dashboard() {
               >
                 <div className="text-xs max-w-sm bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer">
                   <div className="font-medium text-blue-800 mb-1">💧 SERVICE CLEANING</div>
-                  <div className="text-blue-700">{section.recommendations || 'No recommendations available'}</div>
+                  <div className="text-blue-700">{generateDynamicRecommendation(section)}</div>
                   <div className="text-xs text-blue-600 mt-1 font-medium">→ Click for cleaning pricing options</div>
                 </div>
               </CleaningOptionsPopover>
@@ -626,7 +670,7 @@ export default function Dashboard() {
               >
                 <div className="text-xs max-w-sm bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 hover:border-orange-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer">
                   <div className="font-medium text-orange-800 mb-1">🔧 STRUCTURAL REPAIR</div>
-                  <div className="text-orange-700">{section.recommendations || 'No recommendations available'}</div>
+                  <div className="text-orange-700">{generateDynamicRecommendation(section)}</div>
                   <div className="text-xs text-orange-600 mt-1 font-medium">→ Click for repair pricing options</div>
                 </div>
               </RepairOptionsPopover>
