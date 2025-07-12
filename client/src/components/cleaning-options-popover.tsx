@@ -107,8 +107,34 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
           );
         }
         
+        // Enhanced fallback: try matching method name with "Cleanse/Survey" work category
+        if (!pricing && method.name === 'Cleanse and Survey') {
+          pricing = pricingData.find((p: any) => 
+            p.workCategory === 'Cleanse/Survey' && 
+            p.pipeSize === sectionData.pipeSize
+          );
+        }
+        
+        // If still no exact pipe size match, try finding any pricing for this method regardless of pipe size
+        if (!pricing) {
+          pricing = pricingData.find((p: any) => 
+            (p.repairMethodId === method.id || 
+             p.methodName === method.name || 
+             (method.name === 'Cleanse and Survey' && p.workCategory === 'Cleanse/Survey'))
+          );
+          
+          // If found a different pipe size, mark as needs configuration for specific size
+          if (pricing && pricing.pipeSize !== sectionData.pipeSize) {
+            pricing = {
+              ...pricing,
+              needsPipeSizeConfig: true,
+              originalPipeSize: pricing.pipeSize
+            };
+          }
+        }
+        
         const option = {
-          id: pricing ? pricing.id : method.id, // Use pricing ID if configured, method ID if not
+          id: pricing ? pricing.id : method.id,
           name: method.name,
           description: pricing?.description ? 
             populateDescription(pricing.description, method.name) : 
@@ -116,10 +142,10 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
           cost: pricing?.cost,
           rule: pricing?.rule,
           minimumQuantity: pricing?.minimumQuantity || 1,
-          configured: !!pricing,
-          configurationMessage: pricing ? 
-            undefined : 
-            `Add pricing for ${sectionData.pipeSize} ${method.name.toLowerCase()}`
+          configured: !!pricing && !pricing.needsPipeSizeConfig,
+          configurationMessage: pricing?.needsPipeSizeConfig ? 
+            `Configure pricing for ${sectionData.pipeSize} (currently set for ${pricing.originalPipeSize})` :
+            pricing ? undefined : `Add pricing for ${sectionData.pipeSize} ${method.name.toLowerCase()}`
         };
         
         return option;
