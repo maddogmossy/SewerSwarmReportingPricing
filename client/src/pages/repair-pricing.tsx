@@ -2805,7 +2805,7 @@ export default function RepairPricing() {
                             { id: 'setupRate', label: getPriceOptionLabel('setupRate'), type: 'standard' },
                             { id: 'minCharge', label: getPriceOptionLabel('minCharge'), type: 'standard' },
                             { id: 'dayRate', label: getPriceOptionLabel('dayRate'), type: 'standard' },
-                            ...(customOptions.priceOptions && Array.isArray(customOptions.priceOptions)
+                            ...(customOptions?.priceOptions && Array.isArray(customOptions.priceOptions)
                               ? customOptions.priceOptions.map((option, index) => ({
                                   id: `custom_price_${index}`,
                                   label: option,
@@ -2919,7 +2919,7 @@ export default function RepairPricing() {
                               ];
                               
                               // Add custom quantity options to the editable list
-                              const customQuantityOptions = (customOptions.quantityOptions && Array.isArray(customOptions.quantityOptions))
+                              const customQuantityOptions = (customOptions?.quantityOptions && Array.isArray(customOptions.quantityOptions))
                                 ? customOptions.quantityOptions.map((option, index) => ({
                                     id: `custom_quantity_${index}`,
                                     label: option,
@@ -2949,7 +2949,7 @@ export default function RepairPricing() {
                             { id: 'metersPerShift', label: getQuantityOptionLabel('metersPerShift'), type: 'standard' },
                             { id: 'runsPerShift', label: getQuantityOptionLabel('runsPerShift'), type: 'standard' },
                             { id: 'repeatFree', label: getQuantityOptionLabel('repeatFree'), type: 'standard' },
-                            ...(customOptions.quantityOptions && Array.isArray(customOptions.quantityOptions)
+                            ...(customOptions?.quantityOptions && Array.isArray(customOptions.quantityOptions)
                               ? customOptions.quantityOptions.map((option, index) => ({
                                   id: `custom_quantity_${index}`,
                                   label: option,
@@ -3837,7 +3837,7 @@ export default function RepairPricing() {
                     ];
                     
                     // Include custom price options in reset
-                    const customPriceOptions = customOptions.priceOptions.map((option, index) => ({
+                    const customPriceOptions = (customOptions?.priceOptions || []).map((option, index) => ({
                       id: `custom_price_${index}`,
                       label: option,
                       enabled: true
@@ -4004,7 +4004,7 @@ export default function RepairPricing() {
                     ];
                     
                     // Include custom quantity options in reset
-                    const customQuantityOptions = customOptions.quantityOptions.map((option, index) => ({
+                    const customQuantityOptions = (customOptions?.quantityOptions || []).map((option, index) => ({
                       id: `custom_quantity_${index}`,
                       label: option,
                       enabled: true
@@ -4170,7 +4170,7 @@ export default function RepairPricing() {
                     ];
                     
                     // Include custom min quantity options in reset
-                    const customMinQuantityOptions = customOptions.minQuantityOptions.map((option, index) => ({
+                    const customMinQuantityOptions = (customOptions?.minQuantityOptions || []).map((option, index) => ({
                       id: `custom_min_quantity_${index}`,
                       label: option,
                       enabled: true
@@ -4262,7 +4262,7 @@ export default function RepairPricing() {
                 {[
                   { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), enabled: formData.pricingStructure?.includeDepth || false, type: 'standard' },
                   { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), enabled: formData.pricingStructure?.includeTotalLength || false, type: 'standard' },
-                  ...customOptions.additionalOptions.map((option, index) => ({
+                  ...(customOptions?.additionalOptions || []).map((option, index) => ({
                     id: `custom_additional_${index}`,
                     label: option,
                     enabled: true,
