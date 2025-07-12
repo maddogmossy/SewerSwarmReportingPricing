@@ -1156,15 +1156,15 @@ export default function RepairPricing() {
     };
 
     if (editingItem) {
-      // Update existing item
-      const submitData = { ...baseData, sector };
+      // Update existing item - wrap in data object for backend compatibility
+      const submitData = { data: { ...baseData, sector } };
       updatePricing.mutate({ id: editingItem.id, ...submitData });
       
       // Handle sectors that were added (new selections)
       const sectorsToAdd = applySectors.filter(s => !originalApplySectors.includes(s));
       if (sectorsToAdd.length > 0) {
         sectorsToAdd.forEach(targetSector => {
-          const additionalData = { ...baseData, sector: targetSector };
+          const additionalData = { data: { ...baseData, sector: targetSector } };
           createPricing.mutate(additionalData);
         });
       }
@@ -1211,14 +1211,14 @@ export default function RepairPricing() {
       // Create new pricing rule(s)
       const sectorsToApply = [sector, ...applySectors];
       
-      // Create pricing for current sector first
-      const submitData = { ...baseData, sector };
+      // Create pricing for current sector first - wrap in data object for backend compatibility
+      const submitData = { data: { ...baseData, sector } };
       createPricing.mutate(submitData);
       
       // Create pricing for additional selected sectors
       if (applySectors.length > 0) {
         applySectors.forEach(targetSector => {
-          const additionalData = { ...baseData, sector: targetSector };
+          const additionalData = { data: { ...baseData, sector: targetSector } };
           createPricing.mutate(additionalData);
         });
         
