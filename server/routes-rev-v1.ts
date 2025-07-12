@@ -463,8 +463,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       minSetupCount,
       // Map runsPerShift to numberPerShift for backend compatibility
       runsPerShift,
-      // Pricing structure selections
-      pricingStructure
+      // Pricing structure selections and math operators
+      pricingStructure,
+      mathOperators,
+      customOptions
     } = requestData;
 
     // Handle field mapping - runsPerShift from frontend maps to numberPerShift in backend
@@ -506,6 +508,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       minSetupCount: minSetupCount || null,
       // Store pricing structure selections for UI persistence
       pricingStructure: pricingStructure || {},
+      // Store math operators and custom options
+      mathOperators: mathOperators || [],
+      customOptions: customOptions || {},
       createdAt: new Date().toISOString()
     };
 
@@ -550,8 +555,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       minSetupCount,
       // Map runsPerShift to numberPerShift for backend compatibility
       runsPerShift,
-      // Pricing structure selections
-      pricingStructure
+      // Pricing structure selections and math operators
+      pricingStructure,
+      mathOperators,
+      customOptions
     } = requestData;
 
     // Handle field mapping - runsPerShift from frontend maps to numberPerShift in backend
@@ -561,6 +568,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log(`Extracted pricing structure:`, pricingStructure);
     console.log(`Request data structure:`, { requestData });
     console.log(`Field mapping - runsPerShift:`, runsPerShift, 'mappedNumberPerShift:', mappedNumberPerShift);
+    console.log(`Math operators received:`, mathOperators);
+    console.log(`Custom options received:`, customOptions);
 
     // Find the pricing item to update
     const pricingIndex = pricingStorage.findIndex(p => p.id === pricingId);
@@ -596,6 +605,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       minSetupCount: minSetupCount !== undefined ? minSetupCount : pricingStorage[pricingIndex].minSetupCount,
       // Store pricing structure selections for UI persistence
       pricingStructure: pricingStructure || pricingStorage[pricingIndex].pricingStructure || {},
+      // Store math operators and custom options
+      mathOperators: mathOperators || pricingStorage[pricingIndex].mathOperators || [],
+      customOptions: customOptions || pricingStorage[pricingIndex].customOptions || {},
       updatedAt: new Date().toISOString()
     };
 

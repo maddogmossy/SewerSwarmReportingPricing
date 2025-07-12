@@ -861,10 +861,19 @@ export default function RepairPricing() {
       pipeSize: formData.pipeSize
     });
     
+    console.log('🔥 CRITICAL DEBUG - Form data values:', {
+      'formData.runsPerShift': formData.runsPerShift,
+      'formData.numberPerShift': formData.numberPerShift,
+      'formData.dayRate': formData.dayRate,
+      'mathOperators': mathOperators,
+      'entire formData object': formData
+    });
+    
     console.log('🔥 CRITICAL DEBUG - Final baseData being sent:', {
       runsPerShift: formData.runsPerShift,
       numberPerShift: formData.runsPerShift || formData.numberPerShift,
-      dayRate: formData.dayRate
+      dayRate: formData.dayRate,
+      mathOperators: mathOperators
     });
     
     // Calculate cost from selected pricing options
@@ -904,8 +913,9 @@ export default function RepairPricing() {
       minInspectionsPerShift: formData.minInspectionsPerShift,
       minSetupCount: formData.minSetupCount,
       cost: calculatedCost.toString(),
-      // Include custom options
-      customOptions: customOptions
+      // Include custom options and math operators
+      customOptions: customOptions,
+      mathOperators: mathOperators
     };
 
     if (editingItem) {
