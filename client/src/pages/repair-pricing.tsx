@@ -2443,32 +2443,44 @@ export default function RepairPricing() {
                   >
                     <h4 className="text-sm font-medium text-blue-700">💰 Price/Cost Options</h4>
                     <div className="flex items-center gap-2">
-                      {(formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge) && (
+                      {((formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge) || customOptions.priceOptions.length > 0) && (
                         <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
                           {[
-                            formData.pricingStructure?.meterage && getPriceOptionLabel('meterage').split(' ')[0],
-                            formData.pricingStructure?.hourlyRate && getPriceOptionLabel('hourlyRate').split(' ')[0],
-                            formData.pricingStructure?.dayRate && getPriceOptionLabel('dayRate').split(' ')[0],
-                            formData.pricingStructure?.setupRate && getPriceOptionLabel('setupRate').split(' ')[0],
-                            formData.pricingStructure?.minCharge && getPriceOptionLabel('minCharge').split(' ')[0]
-                          ].filter(Boolean).join(', ')}
+                            ...([
+                              formData.pricingStructure?.meterage && getPriceOptionLabel('meterage').split(' ')[0],
+                              formData.pricingStructure?.hourlyRate && getPriceOptionLabel('hourlyRate').split(' ')[0],
+                              formData.pricingStructure?.dayRate && getPriceOptionLabel('dayRate').split(' ')[0],
+                              formData.pricingStructure?.setupRate && getPriceOptionLabel('setupRate').split(' ')[0],
+                              formData.pricingStructure?.minCharge && getPriceOptionLabel('minCharge').split(' ')[0]
+                            ].filter(Boolean)),
+                            ...(customOptions.priceOptions.length > 0 ? [`${customOptions.priceOptions.length} custom`] : [])
+                          ].join(', ')}
                         </span>
                       )}
-                      {(formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge) && (
+                      {(formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge || customOptions.priceOptions.length > 0) && (
                         <Button 
                           type="button"
                           size="sm" 
                           className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white"
                           onClick={(e) => {
                             e.stopPropagation();
-                            // Sync current form state to editable options with current labels
-                            setEditablePriceOptions([
+                            // Sync current form state to editable options with current labels including custom options
+                            const standardOptions = [
                               { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false },
                               { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
                               { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
                               { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
                               { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false }
-                            ]);
+                            ];
+                            
+                            // Add custom price options to the editable list
+                            const customPriceOptions = customOptions.priceOptions.map((option, index) => ({
+                              id: `custom_price_${index}`,
+                              label: option,
+                              enabled: true // Custom options are always considered enabled
+                            }));
+                            
+                            setEditablePriceOptions([...standardOptions, ...customPriceOptions]);
                             setShowEditPriceOptionsDialog(true);
                           }}
                         >
@@ -2581,43 +2593,13 @@ export default function RepairPricing() {
 
                         {/* Custom Price Options */}
                         {customOptions.priceOptions && customOptions.priceOptions.map((option, index) => (
-                          <div key={index} className="flex items-center space-x-2 p-2 bg-green-50 border border-green-200 rounded col-span-2">
+                          <div key={index} className="flex items-center space-x-2">
                             <input
                               type="checkbox"
                               id={`custom_price_${index}`}
                               className="rounded border-slate-300"
                             />
-                            <Label htmlFor={`custom_price_${index}`} className="text-sm text-green-700 font-medium">{option}</Label>
-                            <div className="flex gap-1 ml-auto">
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                                onClick={() => {
-                                  setEditingOptionIndex(index);
-                                  setEditingOptionType('priceOptions');
-                                  setEditingOptionName(option);
-                                  setShowEditOptionsDialog(true);
-                                }}
-                              >
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
-                                onClick={() => {
-                                  setCustomOptions(prev => ({
-                                    ...prev,
-                                    priceOptions: prev.priceOptions.filter((_, i) => i !== index)
-                                  }));
-                                }}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
+                            <Label htmlFor={`custom_price_${index}`} className="text-sm">{option}</Label>
                           </div>
                         ))}
                       </div>
@@ -3545,32 +3527,52 @@ export default function RepairPricing() {
                 onClick={() => {
                   setShowEditPriceOptionsDialog(false);
                   // Reset to current saved state without saving changes
-                  setEditablePriceOptions([
+                  const standardOptions = [
                     { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false },
                     { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
                     { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
                     { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
                     { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false }
-                  ]);
+                  ];
+                  
+                  // Include custom price options in reset
+                  const customPriceOptions = customOptions.priceOptions.map((option, index) => ({
+                    id: `custom_price_${index}`,
+                    label: option,
+                    enabled: true
+                  }));
+                  
+                  setEditablePriceOptions([...standardOptions, ...customPriceOptions]);
                 }}
               >
                 Cancel
               </Button>
               <Button 
                 onClick={() => {
-                  // Apply changes back to form data
+                  // Apply changes back to form data for standard options
                   const newPricingStructure = { ...formData.pricingStructure };
+                  const standardOptionIds = ['meterage', 'hourlyRate', 'setupRate', 'minCharge', 'dayRate'];
+                  
                   editablePriceOptions.forEach(option => {
-                    newPricingStructure[option.id] = option.enabled;
+                    if (standardOptionIds.includes(option.id)) {
+                      newPricingStructure[option.id] = option.enabled;
+                    }
                   });
+                  
+                  // Update custom price options with new labels
+                  const updatedCustomPriceOptions = editablePriceOptions
+                    .filter(option => option.id.startsWith('custom_price_'))
+                    .map(option => option.label);
                   
                   setFormData({
                     ...formData,
                     pricingStructure: newPricingStructure
                   });
                   
-                  // Keep the edited labels persistent by not resetting editablePriceOptions
-                  // The current editablePriceOptions state now contains the saved changes
+                  setCustomOptions(prev => ({
+                    ...prev,
+                    priceOptions: updatedCustomPriceOptions
+                  }));
                   
                   setShowEditPriceOptionsDialog(false);
                   toast({
