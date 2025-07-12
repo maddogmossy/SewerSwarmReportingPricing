@@ -2283,6 +2283,8 @@ export default function RepairPricing() {
                 {(function() {
                   const priceOptions = [];
                   const quantityOptions = [];
+                  const orangeOptions = [];
+                  const purpleOptions = [];
                   
                   // Categorize price/cost options (blue)
                   if (formData.pricingStructure?.meterage) priceOptions.push({key: 'meterage', label: 'Meterage', type: 'cost'});
@@ -2297,113 +2299,107 @@ export default function RepairPricing() {
                   if (formData.pricingStructure?.runsPerShift) quantityOptions.push({key: 'runsPerShift', label: 'Runs per shift', type: 'quantity'});
                   if (formData.pricingStructure?.repeatFree) quantityOptions.push({key: 'repeatFree', label: 'Repeat free', type: 'quantity'});
                   
-                  const allOptions = [...priceOptions, ...quantityOptions];
+                  // Categorize orange options (min quantity per shift)
+                  if (formData.pricingStructure?.minUnitsPerShift) orangeOptions.push({key: 'minUnitsPerShift', label: 'Min units/shift', type: 'orange'});
+                  if (formData.pricingStructure?.minMetersPerShift) orangeOptions.push({key: 'minMetersPerShift', label: 'Min meters/shift', type: 'orange'});
+                  if (formData.pricingStructure?.minInspectionsPerShift) orangeOptions.push({key: 'minInspectionsPerShift', label: 'Min inspections/shift', type: 'orange'});
+                  if (formData.pricingStructure?.minSetupCount) orangeOptions.push({key: 'minSetupCount', label: 'Min setup count', type: 'orange'});
+                  
+                  // Categorize purple options (additional items)
+                  if (formData.pricingStructure?.includeDepth) purpleOptions.push({key: 'includeDepth', label: 'Include depth', type: 'purple'});
+                  if (formData.pricingStructure?.includeTotalLength) purpleOptions.push({key: 'includeTotalLength', label: 'Include total length', type: 'purple'});
+                  
+                  const allOptions = [...priceOptions, ...quantityOptions, ...orangeOptions, ...purpleOptions];
                   
                   if (allOptions.length > 0) {
+                    let mathOperatorIndex = 0;
+                    
                     return (
                       <div className="border border-slate-200 rounded-lg p-4 bg-slate-50 mb-4">
                         <h4 className="text-sm font-medium text-slate-700 mb-3">💰 Selected Pricing Options - Enter Values</h4>
                         <div className="flex items-center gap-2 flex-wrap">
                           
-                          {/* Display price options in blue boxes */}
-                          {priceOptions.map((option, index) => (
-                            <div key={option.key} className="flex items-center gap-2">
-                              <div className="bg-blue-100 border border-blue-300 rounded-lg p-2">
-                                <Label className="text-xs text-blue-700 block mb-1 font-medium">
-                                  {option.label}
-                                </Label>
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  placeholder="Value"
-                                  className="h-6 text-xs w-20 bg-white border-blue-200"
-                                  value={formData[option.key] || ''}
-                                  onChange={(e) => setFormData({
-                                    ...formData,
-                                    [option.key]: e.target.value
-                                  })}
-                                />
-                              </div>
-                              
-                              {/* Math operator after price option and before quantity option */}
-                              {index === priceOptions.length - 1 && quantityOptions.length > 0 && (
-                                <div className="bg-orange-100 border border-orange-300 rounded-lg p-2">
-                                  <Label className="text-xs text-orange-700 block mb-1 font-medium">
-                                    Math
+                          {/* Display all option types with math operators between them */}
+                          {[...priceOptions, ...quantityOptions, ...orangeOptions, ...purpleOptions].map((option, index) => {
+                            const isLast = index === allOptions.length - 1;
+                            let bgColor = 'bg-blue-100';
+                            let borderColor = 'border-blue-300';
+                            let textColor = 'text-blue-700';
+                            
+                            // Set colors based on option type
+                            if (option.type === 'quantity') {
+                              bgColor = 'bg-green-100';
+                              borderColor = 'border-green-300';
+                              textColor = 'text-green-700';
+                            } else if (option.type === 'orange') {
+                              bgColor = 'bg-orange-100';
+                              borderColor = 'border-orange-300';
+                              textColor = 'text-orange-700';
+                            } else if (option.type === 'purple') {
+                              bgColor = 'bg-purple-100';
+                              borderColor = 'border-purple-300';
+                              textColor = 'text-purple-700';
+                            }
+                            
+                            return (
+                              <div key={option.key} className="flex items-center gap-2">
+                                <div className={`${bgColor} ${borderColor} rounded-lg p-2`}>
+                                  <Label className={`text-xs ${textColor} block mb-1 font-medium`}>
+                                    {option.label}
                                   </Label>
-                                  <Select
-                                    value={mathOperators[`operator_${index}`] || ''}
-                                    onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                      setMathOperators(prev => ({ ...prev, [`operator_${index}`]: value }))
-                                    }
-                                  >
-                                    <SelectTrigger className="w-12 h-6 text-xs bg-white border-orange-200">
-                                      <SelectValue placeholder="÷" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="add">+</SelectItem>
-                                      <SelectItem value="subtract">-</SelectItem>
-                                      <SelectItem value="multiply">×</SelectItem>
-                                      <SelectItem value="divide">÷</SelectItem>
-                                    </SelectContent>
-                                  </Select>
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    placeholder="Value"
+                                    className={`h-6 text-xs w-20 bg-white ${borderColor.replace('border-', 'border-')}`}
+                                    value={formData[option.key] || ''}
+                                    onChange={(e) => setFormData({
+                                      ...formData,
+                                      [option.key]: e.target.value
+                                    })}
+                                  />
                                 </div>
-                              )}
-                            </div>
-                          ))}
-                          
-                          {/* Display quantity options in green boxes */}
-                          {quantityOptions.map((option, index) => (
-                            <div key={option.key} className="flex items-center gap-2">
-                              <div className="bg-green-100 border border-green-300 rounded-lg p-2">
-                                <Label className="text-xs text-green-700 block mb-1 font-medium">
-                                  {option.label}
-                                </Label>
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  placeholder="Value"
-                                  className="h-6 text-xs w-20 bg-white border-green-200"
-                                  value={formData[option.key] || ''}
-                                  onChange={(e) => setFormData({
-                                    ...formData,
-                                    [option.key]: e.target.value
-                                  })}
-                                />
+                                
+                                {/* Math operator between options (grey) */}
+                                {!isLast && (
+                                  <div className="bg-slate-100 border border-slate-300 rounded-lg p-2">
+                                    <Label className="text-xs text-slate-700 block mb-1 font-medium">
+                                      {mathOperatorIndex === 0 ? 'Math' : `Math ${mathOperatorIndex + 1}`}
+                                    </Label>
+                                    <Select
+                                      value={mathOperators[`operator_${mathOperatorIndex}`] || ''}
+                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                        setMathOperators(prev => ({ ...prev, [`operator_${mathOperatorIndex}`]: value }))
+                                      }
+                                    >
+                                      <SelectTrigger className="w-12 h-6 text-xs bg-white border-slate-200">
+                                        <SelectValue placeholder={mathOperatorIndex === 0 ? "÷" : "+"} />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="add">+</SelectItem>
+                                        <SelectItem value="subtract">-</SelectItem>
+                                        <SelectItem value="multiply">×</SelectItem>
+                                        <SelectItem value="divide">÷</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                )}
+                                
+                                {(() => {
+                                  if (!isLast) mathOperatorIndex++;
+                                  return null;
+                                })()}
                               </div>
-                              
-                              {/* Additional math operators between quantity options */}
-                              {index < quantityOptions.length - 1 && (
-                                <div className="bg-orange-100 border border-orange-300 rounded-lg p-2">
-                                  <Label className="text-xs text-orange-700 block mb-1 font-medium">
-                                    Math {index + 2}
-                                  </Label>
-                                  <Select
-                                    value={mathOperators[`operator_${priceOptions.length + index}`] || ''}
-                                    onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                      setMathOperators(prev => ({ ...prev, [`operator_${priceOptions.length + index}`]: value }))
-                                    }
-                                  >
-                                    <SelectTrigger className="w-12 h-6 text-xs bg-white border-orange-200">
-                                      <SelectValue placeholder="+" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="add">+</SelectItem>
-                                      <SelectItem value="subtract">-</SelectItem>
-                                      <SelectItem value="multiply">×</SelectItem>
-                                      <SelectItem value="divide">÷</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                            );
+                          })}
                           
                         </div>
                         <p className="text-xs text-slate-600 mt-2">
-                          <span className="text-blue-600">Blue boxes</span>: Price/Cost options | 
-                          <span className="text-green-600 ml-1">Green boxes</span>: Quantity options | 
-                          <span className="text-orange-600 ml-1">Orange buttons</span>: Math operators
+                          <span className="text-blue-600">Blue</span>: Price/Cost | 
+                          <span className="text-green-600 ml-1">Green</span>: Quantity | 
+                          <span className="text-orange-600 ml-1">Orange</span>: Min Quantity | 
+                          <span className="text-purple-600 ml-1">Purple</span>: Additional | 
+                          <span className="text-slate-600 ml-1">Grey</span>: Math operators
                         </p>
                       </div>
                     );
