@@ -582,19 +582,54 @@ export default function Dashboard() {
 
           if (isServiceDefect || needsCleaning) {
             return (
-              <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-200 p-3 rounded-lg">
-                <div className="font-medium text-blue-800 mb-1">💧 SERVICE CLEANING</div>
-                <div className="text-blue-700">{section.recommendations || 'No recommendations available'}</div>
-              </div>
+              <CleaningOptionsPopover 
+                sectionData={{
+                  pipeSize: section.pipeSize,
+                  sector: currentSector.id,
+                  recommendations: section.recommendations,
+                  defects: section.defects,
+                  itemNo: section.itemNo,
+                  pipeMaterial: section.pipeMaterial,
+                  pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth),
+                  totalLength: section.totalLength,
+                  defectType: section.defectType // Pass defect type for proper classification
+                }}
+                onPricingNeeded={(method, pipeSize, sector) => {
+                  window.location.href = `/repair-pricing/${sector}`;
+                }}
+              >
+                <div className="text-xs max-w-sm bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer">
+                  <div className="font-medium text-blue-800 mb-1">💧 SERVICE CLEANING</div>
+                  <div className="text-blue-700">{section.recommendations || 'No recommendations available'}</div>
+                  <div className="text-xs text-blue-600 mt-1 font-medium">→ Click for cleaning pricing options</div>
+                </div>
+              </CleaningOptionsPopover>
             );
           } 
           // For structural defects or non-cleaning defects, show repair options  
           else {
             return (
-              <div className="text-xs max-w-sm bg-orange-50 border-2 border-orange-200 p-3 rounded-lg">
-                <div className="font-medium text-orange-800 mb-1">🔧 STRUCTURAL REPAIR</div>
-                <div className="text-orange-700">{section.recommendations || 'No recommendations available'}</div>
-              </div>
+              <RepairOptionsPopover 
+                sectionData={{
+                  pipeSize: section.pipeSize,
+                  sector: currentSector.id,
+                  recommendations: section.recommendations,
+                  defects: section.defects,
+                  itemNo: section.itemNo,
+                  pipeMaterial: section.pipeMaterial,
+                  pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth),
+                  defectType: section.defectType // Pass defect type for proper classification
+                }}
+                onPricingNeeded={(method, pipeSize, sector) => {
+                  window.location.href = `/repair-pricing/${sector}`;
+                }}
+              >
+                <div className="text-xs max-w-sm bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 hover:border-orange-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer">
+                  <div className="font-medium text-orange-800 mb-1">🔧 STRUCTURAL REPAIR</div>
+                  <div className="text-orange-700">{section.recommendations || 'No recommendations available'}</div>
+                  <div className="text-xs text-orange-600 mt-1 font-medium">→ Click for repair pricing options</div>
+                </div>
+              </RepairOptionsPopover>
             );
           }
         } else {
@@ -639,55 +674,21 @@ export default function Dashboard() {
           
           if (needsCleaning) {
             return (
-              <CleaningOptionsPopover 
-                sectionData={{
-                  pipeSize: section.pipeSize || '150mm',
-                  sector: currentSector.id,
-                  recommendations: section.recommendations || '',
-                  defects: section.defects || '',
-                  itemNo: section.itemNo,
-                  pipeMaterial: section.pipeMaterial
-                }}
-                onPricingNeeded={(method: string, pipeSize: string, sector: string) => {
-                  window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
-                }}
+              <div 
+                className="flex items-center justify-center p-1 rounded" 
+                title="Pricing not configured - Use recommendation box to set up cleaning costs"
               >
-                <div 
-                  className="flex items-center justify-center cursor-pointer hover:bg-blue-50 p-1 rounded" 
-                  title="Pricing not configured - Click to set up cleaning costs"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <TriangleAlert className="h-4 w-4 text-blue-500 hover:text-blue-600" />
-                </div>
-              </CleaningOptionsPopover>
+                <TriangleAlert className="h-4 w-4 text-blue-500" />
+              </div>
             );
           } else {
             return (
-              <RepairOptionsPopover 
-                sectionData={{
-                  pipeSize: section.pipeSize || '150mm',
-                  sector: currentSector.id,
-                  recommendations: section.recommendations || '',
-                  defects: section.defects || '',
-                  itemNo: section.itemNo,
-                  pipeMaterial: section.pipeMaterial
-                }}
-                onPricingNeeded={(method: string, pipeSize: string, sector: string) => {
-                  window.location.href = `/repair-pricing/${sector}?autoFocus=${method.toLowerCase()}&pipeSize=${pipeSize.replace('mm', '')}&itemNo=${section.itemNo}`;
-                }}
+              <div 
+                className="flex items-center justify-center p-1 rounded" 
+                title="Pricing not configured - Use recommendation box to set up repair costs"
               >
-                <div 
-                  className="flex items-center justify-center cursor-pointer hover:bg-orange-50 p-1 rounded" 
-                  title="Pricing not configured - Click to set up repair costs"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <TriangleAlert className="h-4 w-4 text-orange-500 hover:text-orange-600" />
-                </div>
-              </RepairOptionsPopover>
+                <TriangleAlert className="h-4 w-4 text-orange-500" />
+              </div>
             );
           }
         }

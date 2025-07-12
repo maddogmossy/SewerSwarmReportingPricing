@@ -33,6 +33,7 @@ interface CleaningOptionsPopoverProps {
     itemNo?: number;
     pipeMaterial?: string;
     pipeDepth?: string;
+    totalLength?: string;
   };
   onPricingNeeded: (method: string, pipeSize: string, sector: string) => void;
 }
@@ -68,15 +69,15 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       .replace(/[^\w/]/g, '');     // keep only word chars and /
   };
 
-  // Populate description template with pipe size and meterage
+  // Populate description template with pipe size and total length
   const populateDescription = (template: string, method: string): string => {
     const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
-    const meterage = extractMeterage(sectionData.defects || '');
+    const totalLength = sectionData.totalLength || '30.00m';
     
-    // Replace () placeholders sequentially - first with pipe size, second with meterage
+    // Replace () placeholders sequentially - first with pipe size, second with total length
     let result = template;
-    result = result.replace(/\(\)/, pipeSize); // First () becomes pipe size
-    result = result.replace(/\(\)/, meterage); // Second () becomes meterage
+    result = result.replace(/\(\)/, `${pipeSize}mm`); // First () becomes pipe size with mm
+    result = result.replace(/\(\)/, totalLength); // Second () becomes total length
     return result;
   };
   
