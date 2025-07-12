@@ -3928,16 +3928,16 @@ export default function RepairPricing() {
                     }
                   });
                   
-                  // Update custom min quantity options with new labels and order
+                  // Update custom min quantity options with new labels and order (use minquantity_ prefix, not custom_min_quantity_)
                   const updatedCustomMinQuantityOptions = editableMinQuantityOptions
-                    .filter(option => option.id.startsWith('custom_min_quantity_'))
+                    .filter(option => option.id.startsWith('minquantity_'))
                     .map(option => option.label);
                   
                   console.log("Updated custom min quantity options in order:", updatedCustomMinQuantityOptions);
                   
                   // CRITICAL FIX: Update pricingStructure.minQuantityOptions to only include current options
                   const enabledStandardMinQuantityOptions = editableMinQuantityOptions
-                    .filter(option => !option.id.startsWith('custom_min_quantity_') && option.enabled)
+                    .filter(option => !option.id.startsWith('minquantity_') && option.enabled)
                     .map(option => option.label);
                   
                   const finalMinQuantityOptions = [...enabledStandardMinQuantityOptions, ...updatedCustomMinQuantityOptions];
@@ -3952,7 +3952,7 @@ export default function RepairPricing() {
                     minQuantityDisplayOrder: editableMinQuantityOptions.map(option => ({
                       id: option.id,
                       label: option.label,
-                      type: option.id.startsWith('custom_min_quantity_') ? 'custom' : 'standard'
+                      type: option.id.startsWith('minquantity_') ? 'custom' : 'standard'
                     }))
                   });
                   
