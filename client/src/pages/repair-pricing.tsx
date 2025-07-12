@@ -2704,65 +2704,10 @@ export default function RepairPricing() {
                   >
                     <h4 className="text-sm font-medium text-blue-700">💰 Price/Cost Options</h4>
                     <div className="flex items-center gap-2">
-                      {((formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge) || (customOptions?.priceOptions?.length > 0)) && (
+                      {Object.keys(formData.pricingStructure || {}).filter(key => !['priceOptions', 'mathOperators'].includes(key) && formData.pricingStructure[key]).length > 0 && (
                         <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
-                          {[
-                            ...([
-                              formData.pricingStructure?.meterage && getPriceOptionLabel('meterage').split(' ')[0],
-                              formData.pricingStructure?.hourlyRate && getPriceOptionLabel('hourlyRate').split(' ')[0],
-                              formData.pricingStructure?.dayRate && getPriceOptionLabel('dayRate').split(' ')[0],
-                              formData.pricingStructure?.setupRate && getPriceOptionLabel('setupRate').split(' ')[0],
-                              formData.pricingStructure?.minCharge && getPriceOptionLabel('minCharge').split(' ')[0]
-                            ].filter(Boolean)),
-                            ...(customOptions?.priceOptions?.length > 0 ? [`${customOptions.priceOptions.length} custom`] : [])
-                          ].join(', ')}
+                          {Object.keys(formData.pricingStructure || {}).filter(key => !['priceOptions', 'mathOperators'].includes(key) && formData.pricingStructure[key]).length} selected
                         </span>
-                      )}
-                      {(formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge || (customOptions?.priceOptions?.length > 0)) && (
-                        <Button 
-                          type="button"
-                          size="sm" 
-                          className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Use saved order if available, otherwise use default order
-                            if (formData.optionDisplayOrder && formData.optionDisplayOrder.length > 0) {
-                              console.log("Loading saved order for edit dialog:", formData.optionDisplayOrder);
-                              // Use the saved reordered sequence
-                              const reorderedOptions = formData.optionDisplayOrder.map(option => ({
-                                id: option.id,
-                                label: option.label,
-                                enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
-                              }));
-                              setEditablePriceOptions(reorderedOptions);
-                            } else {
-                              console.log("Using default order for edit dialog");
-                              // Fall back to default order if no saved order exists
-                              const standardOptions = [
-                                { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false },
-                                { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
-                                { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
-                                { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
-                                { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false }
-                              ];
-                              
-                              // Add custom price options to the editable list
-                              const customPriceOptions = (customOptions.priceOptions && Array.isArray(customOptions.priceOptions))
-                                ? customOptions.priceOptions.map((option, index) => ({
-                                    id: `custom_price_${index}`,
-                                    label: option,
-                                    enabled: true // Custom options are always considered enabled
-                                  }))
-                                : [];
-                              
-                              setEditablePriceOptions([...standardOptions, ...customPriceOptions]);
-                            }
-                            setShowEditPriceOptionsDialog(true);
-                          }}
-                        >
-                          <Edit className="h-3 w-3 mr-1" />
-                          Edit
-                        </Button>
                       )}
                       <Button 
                         type="button"
@@ -2781,61 +2726,35 @@ export default function RepairPricing() {
                   {!collapsedWindows.priceOptions && (
                     <div className="px-4 pb-4">
                       <div className="grid grid-cols-4 gap-3">
-                        {/* Dynamic Options in Reordered Sequence */}
-                        {(() => {
-                          // Build custom price options from database
-                          const customPriceOptions = (customOptions?.priceOptions && Array.isArray(customOptions.priceOptions))
-                            ? customOptions.priceOptions.map((option, index) => ({
-                                id: `custom_price_${index}`,
-                                label: option,
-                                type: 'custom'
-                              }))
-                            : [];
+                        {/* Show all pricing structure options that exist */}
+                        {formData.pricingStructure && Object.keys(formData.pricingStructure).map((optionKey) => {
+                          // Skip these standard field names that aren't price options
+                          if (['priceOptions', 'mathOperators'].includes(optionKey)) return null;
                           
-                          // Build default order with standard + custom options
-                          const defaultOrder = [
-                            { id: 'meterage', label: getPriceOptionLabel('meterage'), type: 'standard' },
-                            { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), type: 'standard' },
-                            { id: 'setupRate', label: getPriceOptionLabel('setupRate'), type: 'standard' },
-                            { id: 'minCharge', label: getPriceOptionLabel('minCharge'), type: 'standard' },
-                            { id: 'dayRate', label: getPriceOptionLabel('dayRate'), type: 'standard' },
-                            ...customPriceOptions
-                          ];
+                          const isChecked = !!formData.pricingStructure[optionKey];
+                          const optionLabel = getPriceOptionLabel(optionKey) || optionKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                           
-                          // CRITICAL FIX: Only use saved order if it has content, otherwise use defaultOrder
-                          const displayOrder = (formData.optionDisplayOrder && formData.optionDisplayOrder.length > 0) 
-                            ? formData.optionDisplayOrder 
-                            : defaultOrder;
-                          
-                          return (displayOrder || []).map((option, index) => {
-                            const isCustom = option.type === 'custom';
-                            // CRITICAL FIX: Custom options should always be checked when they exist in customOptions.priceOptions
-                            const isChecked = isCustom 
-                              ? true // Custom options are always enabled when they exist in the array
-                              : (formData.pricingStructure?.[option.id] || false);
-                            
-                            return (
-                              <div key={option.id} className="flex items-center space-x-2">
-                                <input
-                                  type="checkbox"
-                                  id={option.id}
-                                  checked={isChecked}
-                                  onChange={(e) => {
-                                    setFormData({
-                                      ...formData,
-                                      pricingStructure: {
-                                        ...formData.pricingStructure,
-                                        [option.id]: e.target.checked
-                                      }
-                                    });
-                                  }}
-                                  className="rounded border-slate-300"
-                                />
-                                <Label htmlFor={option.id} className="text-sm">{option.label}</Label>
-                              </div>
-                            );
-                          });
-                        })()}
+                          return (
+                            <div key={optionKey} className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={optionKey}
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  setFormData({
+                                    ...formData,
+                                    pricingStructure: {
+                                      ...formData.pricingStructure,
+                                      [optionKey]: e.target.checked
+                                    }
+                                  });
+                                }}
+                                className="rounded border-slate-300"
+                              />
+                              <Label htmlFor={optionKey} className="text-sm">{optionLabel}</Label>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -3397,32 +3316,14 @@ export default function RepairPricing() {
                   if (newOptionName.trim()) {
                     console.log("Adding price/cost option as new STANDARD option:", newOptionName);
                     
-                    // Add to optionDisplayOrder as a standard option (not custom)
+                    // Simply add to formData pricing structure - no complex display orders
                     setFormData(prev => {
-                      const newStandardOptionId = `userAdded_${Date.now()}`;
-                      const newDisplayItem = {
-                        id: newStandardOptionId,
-                        label: newOptionName.trim(),
-                        type: 'standard' // Make it a standard option, not custom
-                      };
-                      
-                      const currentOrder = prev.optionDisplayOrder || [
-                        { id: 'dayRate', label: getPriceOptionLabel('dayRate'), type: 'standard' },
-                        { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), type: 'standard' },
-                        { id: 'setupRate', label: getPriceOptionLabel('setupRate'), type: 'standard' },
-                        { id: 'minCharge', label: getPriceOptionLabel('minCharge'), type: 'standard' },
-                        { id: 'meterage', label: getPriceOptionLabel('meterage'), type: 'standard' }
-                      ];
-                      
-                      const updatedOrder = [...currentOrder, newDisplayItem];
-                      console.log("Added new standard option to display order:", updatedOrder);
-                      
+                      const fieldName = newOptionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
                       return {
                         ...prev,
-                        optionDisplayOrder: updatedOrder,
                         pricingStructure: {
                           ...prev.pricingStructure,
-                          [newStandardOptionId]: false // Add as unchecked standard option
+                          [fieldName]: true // Add as checked standard option
                         }
                       };
                     });
