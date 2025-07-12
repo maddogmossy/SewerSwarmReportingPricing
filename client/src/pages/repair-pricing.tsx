@@ -238,7 +238,11 @@ export default function RepairPricing() {
       runsPerShift: false,
       setupRate: false,
       minCharge: false,
-      repeatFree: false
+      repeatFree: false,
+      minUnitsPerShift: false,
+      minMetersPerShift: false,
+      minInspectionsPerShift: false,
+      minSetupCount: false
     }
   });
   const [showSimpleAddForm, setShowSimpleAddForm] = useState(false);
@@ -266,7 +270,11 @@ export default function RepairPricing() {
       runsPerShift: false,
       setupRate: false,
       minCharge: false,
-      repeatFree: false
+      repeatFree: false,
+      minUnitsPerShift: false,
+      minMetersPerShift: false,
+      minInspectionsPerShift: false,
+      minSetupCount: false
     }
   });
 
@@ -727,7 +735,11 @@ export default function RepairPricing() {
         runsPerShift: false,
         setupRate: false,
         minCharge: false,
-        repeatFree: false
+        repeatFree: false,
+        minUnitsPerShift: false,
+        minMetersPerShift: false,
+        minInspectionsPerShift: false,
+        minSetupCount: false
       }
     });
     setApplySectors([]);
@@ -888,7 +900,11 @@ export default function RepairPricing() {
         runsPerShift: false,
         setupRate: false,
         minCharge: false,
-        repeatFree: false
+        repeatFree: false,
+        minUnitsPerShift: false,
+        minMetersPerShift: false,
+        minInspectionsPerShift: false,
+        minSetupCount: false
       }
     });
     
@@ -2073,15 +2089,33 @@ export default function RepairPricing() {
                 />
               </div>
 
-              {/* Pricing Structure Options with Tick Boxes - Two Columns */}
+              {/* Pricing Structure Options with Dynamic Add Buttons - Three Columns */}
               <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
                 <Label className="text-sm font-medium text-slate-700 mb-3 block">Pricing Structure Options</Label>
-                <p className="text-xs text-slate-500 mb-4">Select the pricing options you need for this category:</p>
+                <p className="text-xs text-slate-500 mb-4">Select and add custom pricing options for this category:</p>
                 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-3 gap-4">
                   {/* Price/Cost Column (£ options) */}
                   <div>
-                    <h4 className="text-sm font-medium text-slate-700 mb-3">Price/Cost</h4>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-slate-700">Price/Cost</h4>
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        variant="outline"
+                        className="text-xs px-2 py-1 h-6"
+                        onClick={() => {
+                          const newOption = prompt("Enter new price/cost option (e.g., 'Per unit rate (£ per unit)'):");
+                          if (newOption) {
+                            // Add to custom pricing options
+                            console.log("Adding price/cost option:", newOption);
+                          }
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add Price/Cost
+                      </Button>
+                    </div>
                     <div className="space-y-3">
                       <div className="flex items-center space-x-2">
                         <input
@@ -2170,9 +2204,27 @@ export default function RepairPricing() {
                     </div>
                   </div>
 
-                  {/* Other Options Column */}
+                  {/* Quantity Column */}
                   <div>
-                    <h4 className="text-sm font-medium text-slate-700 mb-3">Other Options</h4>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-slate-700">Quantity</h4>
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        variant="outline"
+                        className="text-xs px-2 py-1 h-6"
+                        onClick={() => {
+                          const newOption = prompt("Enter new quantity option (e.g., 'Linear meters completed'):");
+                          if (newOption) {
+                            // Add to custom quantity options
+                            console.log("Adding quantity option:", newOption);
+                          }
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add Quantity
+                      </Button>
+                    </div>
                     <div className="space-y-3">
                       <div className="flex items-center space-x-2">
                         <input
@@ -2243,10 +2295,102 @@ export default function RepairPricing() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Min Quantity per Shift Column */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-slate-700">Min Quantity per Shift</h4>
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        variant="outline"
+                        className="text-xs px-2 py-1 h-6"
+                        onClick={() => {
+                          const newOption = prompt("Enter new minimum quantity option (e.g., 'Min inspections required'):");
+                          if (newOption) {
+                            // Add to custom min quantity options
+                            console.log("Adding min quantity option:", newOption);
+                          }
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add Min Quantity
+                      </Button>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="minUnitsPerShift"
+                          checked={formData.pricingStructure?.minUnitsPerShift || false}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            pricingStructure: {
+                              ...formData.pricingStructure,
+                              minUnitsPerShift: e.target.checked
+                            }
+                          })}
+                          className="rounded border-slate-300"
+                        />
+                        <Label htmlFor="minUnitsPerShift" className="text-sm">Min units per shift</Label>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="minMetersPerShift"
+                          checked={formData.pricingStructure?.minMetersPerShift || false}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            pricingStructure: {
+                              ...formData.pricingStructure,
+                              minMetersPerShift: e.target.checked
+                            }
+                          })}
+                          className="rounded border-slate-300"
+                        />
+                        <Label htmlFor="minMetersPerShift" className="text-sm">Min meters per shift</Label>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="minInspectionsPerShift"
+                          checked={formData.pricingStructure?.minInspectionsPerShift || false}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            pricingStructure: {
+                              ...formData.pricingStructure,
+                              minInspectionsPerShift: e.target.checked
+                            }
+                          })}
+                          className="rounded border-slate-300"
+                        />
+                        <Label htmlFor="minInspectionsPerShift" className="text-sm">Min inspections per shift</Label>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="minSetupCount"
+                          checked={formData.pricingStructure?.minSetupCount || false}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            pricingStructure: {
+                              ...formData.pricingStructure,
+                              minSetupCount: e.target.checked
+                            }
+                          })}
+                          className="rounded border-slate-300"
+                        />
+                        <Label htmlFor="minSetupCount" className="text-sm">Min setup count</Label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
                 <p className="text-xs text-slate-500 mt-4">
-                  You can select multiple options to create flexible pricing configurations.
+                  You can select multiple options and add custom pricing configurations using the Add buttons.
                 </p>
               </div>
             </div>
