@@ -4043,9 +4043,15 @@ export default function RepairPricing() {
                   
                   setFormData({
                     ...formData,
-                    pricingStructure: newPricingStructure
+                    pricingStructure: newPricingStructure,
+                    minQuantityDisplayOrder: editableMinQuantityOptions.map(option => ({
+                      id: option.id,
+                      label: option.label,
+                      type: option.id.startsWith('custom_min_quantity_') ? 'custom' : 'standard'
+                    }))
                   });
                   
+                  setShowEditMinQuantityOptionsDialog(false);
                 }}
                 className="bg-orange-600 hover:bg-orange-700 text-white"
               >
@@ -4111,7 +4117,19 @@ export default function RepairPricing() {
             <DialogFooter>
               <Button
                 onClick={() => {
-                  // Save changes for additional options
+                  console.log("Saving additional options changes");
+                  
+                  // Update additionalDisplayOrder if needed
+                  const currentAdditionalOrder = [
+                    { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), type: 'standard' },
+                    { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), type: 'standard' }
+                  ];
+                  
+                  setFormData(prev => ({
+                    ...prev,
+                    additionalDisplayOrder: currentAdditionalOrder
+                  }));
+                  
                   setShowEditAdditionalOptionsDialog(false);
                 }}
                 className="bg-purple-600 hover:bg-purple-700 text-white"
