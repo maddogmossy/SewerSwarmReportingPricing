@@ -1312,9 +1312,20 @@ export default function RepairPricing() {
       // CRITICAL FIX: Extract custom options from database pricingStructure
       if (item.pricingStructure && item.pricingStructure.priceOptions && Array.isArray(item.pricingStructure.priceOptions)) {
         console.log("🔥 EXTRACTING custom options from DATABASE pricingStructure:", item.pricingStructure.priceOptions);
-        // Filter out standard options to get only custom ones like "range"
+        // Filter out ALL standard options to get only custom ones like "range"
+        const standardOptions = [
+          'Day rate', 'Day rate (£ per day)',
+          'Hourly rate', 'Hourly rate (£ per hour)', 
+          'Setup rate', 'Setup rate (£ per setup)',
+          'Min charge', 'Min charge (£ minimum)',
+          'Meterage', 'Meterage (£ per meter)',
+          'Number per shift',
+          'Meters per shift', 
+          'Runs per shift',
+          'Repeat free'
+        ];
         const customPriceOptions = item.pricingStructure.priceOptions.filter(opt => 
-          !['Day rate', 'Hourly rate', 'Setup rate', 'Min charge', 'Meterage'].includes(opt)
+          !standardOptions.includes(opt)
         );
         console.log("🔥 FILTERED custom price options:", customPriceOptions);
         return {
