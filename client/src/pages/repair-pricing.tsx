@@ -2227,6 +2227,23 @@ export default function RepairPricing() {
                       />
                       <Label htmlFor="minCharge" className="text-sm">Min charge (£ minimum)</Label>
                     </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="dayRate"
+                        checked={formData.pricingStructure?.dayRate || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            dayRate: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
+                    </div>
                   </div>
                 </div>
 
