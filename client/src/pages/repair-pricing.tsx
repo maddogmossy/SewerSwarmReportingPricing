@@ -1091,8 +1091,24 @@ export default function RepairPricing() {
                   });
                   setShowAddCategory(true);
                 } else {
+                  // Force complete state reset
                   resetForm(); 
-                  setEditingItem(null); 
+                  setEditingItem(null);
+                  setShowAddCategory(false);
+                  setFormData({
+                    workCategoryId: '',
+                    defectCode: '',
+                    vehicleId: '',
+                    pipeSize: '',
+                    depth: '',
+                    meterage: '',
+                    costPerUnit: '',
+                    description: '',
+                    notes: '',
+                    isTravel: false,
+                    patchLayers: 'single',
+                    sectionCount: '1'
+                  });
                   setIsAddDialogOpen(true);
                 }
               }}
@@ -1216,7 +1232,7 @@ export default function RepairPricing() {
         </div>
 
         {/* Add/Edit Dialog */}
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <Dialog key={`pricing-dialog-${Date.now()}`} open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
