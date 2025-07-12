@@ -2839,41 +2839,7 @@ export default function RepairPricing() {
                                 
 
                                 
-                                {isCustomOption && (
-                                  <div className="flex items-center gap-1 ml-auto">
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                                      onClick={() => {
-                                        const customIndex = parseInt(option.id.replace('custom_quantity_', ''));
-                                        setEditingOptionIndex(customIndex);
-                                        setEditingOptionType('quantityOptions');
-                                        setEditingOptionName(option.label);
-                                        setShowEditOptionsDialog(true);
-                                      }}
-                                    >
-                                      <Edit className="h-3 w-3" />
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
-                                      onClick={() => {
-                                        const customIndex = parseInt(option.id.replace('custom_quantity_', ''));
-                                        const updatedQuantityOptions = customOptions.quantityOptions.filter((_, i) => i !== customIndex);
-                                        setCustomOptions(prev => ({
-                                          ...prev,
-                                          quantityOptions: updatedQuantityOptions
-                                        }));
-                                      }}
-                                    >
-                                      <Trash2 className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                )}
+
                               </div>
                             );
                           });
@@ -3005,41 +2971,7 @@ export default function RepairPricing() {
                                   {option.label}
                                 </Label>
                                 
-                                {isCustomOption && (
-                                  <div className="flex items-center gap-1 ml-auto">
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                                      onClick={() => {
-                                        const customIndex = parseInt(option.id.replace('custom_min_quantity_', ''));
-                                        setEditingOptionIndex(customIndex);
-                                        setEditingOptionType('minQuantityOptions');
-                                        setEditingOptionName(option.label);
-                                        setShowEditOptionsDialog(true);
-                                      }}
-                                    >
-                                      <Edit className="h-3 w-3" />
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
-                                      onClick={() => {
-                                        const customIndex = parseInt(option.id.replace('custom_min_quantity_', ''));
-                                        const updatedMinQuantityOptions = customOptions.minQuantityOptions.filter((_, i) => i !== customIndex);
-                                        setCustomOptions(prev => ({
-                                          ...prev,
-                                          minQuantityOptions: updatedMinQuantityOptions
-                                        }));
-                                      }}
-                                    >
-                                      <Trash2 className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                )}
+
                               </div>
                             );
                           });
@@ -3167,41 +3099,7 @@ export default function RepairPricing() {
                                   {option.label}
                                 </Label>
                                 
-                                {isCustomOption && (
-                                  <div className="flex items-center gap-1 ml-auto">
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                                      onClick={() => {
-                                        const customIndex = parseInt(option.id.replace('custom_additional_', ''));
-                                        setEditingOptionIndex(customIndex);
-                                        setEditingOptionType('additionalOptions');
-                                        setEditingOptionName(option.label);
-                                        setShowEditOptionsDialog(true);
-                                      }}
-                                    >
-                                      <Edit className="h-3 w-3" />
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
-                                      onClick={() => {
-                                        const customIndex = parseInt(option.id.replace('custom_additional_', ''));
-                                        const updatedAdditionalOptions = customOptions.additionalOptions.filter((_, i) => i !== customIndex);
-                                        setCustomOptions(prev => ({
-                                          ...prev,
-                                          additionalOptions: updatedAdditionalOptions
-                                        }));
-                                      }}
-                                    >
-                                      <Trash2 className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                )}
+
                               </div>
                             );
                           });
