@@ -516,6 +516,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Extract data from request body - handle nested data structure
     const requestData = req.body.data || req.body;
     
+    // Extract all range fields dynamically (min/max values)
+    const rangeFields = {};
+    Object.keys(requestData).forEach(key => {
+      if (key.startsWith('range_') && (key.endsWith('_min') || key.endsWith('_max'))) {
+        rangeFields[key] = requestData[key];
+      }
+    });
+    
     const {
       sector,
       workCategoryId,
@@ -554,6 +562,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log(`Field mapping - runsPerShift:`, runsPerShift, 'mappedNumberPerShift:', mappedNumberPerShift);
     console.log(`Math operators received:`, mathOperators);
     console.log(`Custom options received:`, customOptions);
+    console.log(`Range fields extracted:`, rangeFields);
 
     try {
       // Update in database first
@@ -579,6 +588,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         minSetupCount: minSetupCount,
         // Store pricing structure selections for UI persistence
         pricingStructure: pricingStructure || {},
+        // Include all range min/max fields dynamically
+        ...rangeFields,
         updatedAt: sql`now()`
       };
 

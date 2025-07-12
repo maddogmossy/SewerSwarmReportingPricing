@@ -2658,24 +2658,7 @@ export default function RepairPricing() {
                           </div>
                         )}
                         
-                        {/* Range Display Section */}
-                        {displayOptions.length > 0 && (
-                          <div className="mb-4">
-                            <Label className="text-xs font-medium text-slate-600 mb-2 block">Ranges (Display Only)</Label>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {displayOptions.map((option, index) => (
-                                <div key={option.key} className="bg-purple-100 border-purple-300 rounded-lg p-2">
-                                  <Label className="text-xs text-purple-700 block font-medium">
-                                    {option.label}
-                                  </Label>
-                                  <p className="text-xs text-purple-600 mt-1">
-                                    Display only - not used in calculations
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                        {/* Purple ranges are not displayed in the pricing options section per user request */}
                         
                         <p className="text-xs text-slate-600 mt-2">
                           <span className="text-blue-600">Blue</span>: Price/Cost | 
@@ -3408,6 +3391,14 @@ export default function RepairPricing() {
                       }
                     });
 
+                    // Extract all range min/max fields dynamically
+                    const rangeFields = {};
+                    Object.keys(formData).forEach(key => {
+                      if (key.startsWith('range_') && (key.endsWith('_min') || key.endsWith('_max'))) {
+                        rangeFields[key] = formData[key];
+                      }
+                    });
+
                     const pricingData = {
                       sector,
                       workCategoryId: parseInt(formData.workCategoryId || "1"), // Default to first category if not set
@@ -3438,7 +3429,9 @@ export default function RepairPricing() {
                       mathOperators: mathOperators,
                       optionDisplayOrder: formData.optionDisplayOrder,
                       quantityDisplayOrder: formData.quantityDisplayOrder,
-                      minQuantityDisplayOrder: formData.minQuantityDisplayOrder
+                      minQuantityDisplayOrder: formData.minQuantityDisplayOrder,
+                      // Include all range min/max fields dynamically
+                      ...rangeFields
                     };
 
                     if (editingItem) {
