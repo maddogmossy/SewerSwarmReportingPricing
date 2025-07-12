@@ -2337,7 +2337,7 @@ export default function RepairPricing() {
                       <div className="grid grid-cols-1 gap-3">
                         {/* Standard Options */}
                         <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-3">
                             <input
                               type="checkbox"
                               id="meterage"
@@ -2352,29 +2352,32 @@ export default function RepairPricing() {
                               className="rounded border-slate-300"
                             />
                             <Label htmlFor="meterage" className="text-sm">Meterage (£ per meter)</Label>
+                            {formData.pricingStructure?.meterage && (
+                              <div className="flex items-center space-x-1">
+                                <span className="text-xs text-gray-500">Math:</span>
+                                <Select
+                                  value={mathOperators.meterage}
+                                  onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                    setMathOperators(prev => ({ ...prev, meterage: value }))
+                                  }
+                                >
+                                  <SelectTrigger className="w-12 h-6 text-xs">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="add">+</SelectItem>
+                                    <SelectItem value="subtract">-</SelectItem>
+                                    <SelectItem value="multiply">×</SelectItem>
+                                    <SelectItem value="divide">÷</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
                           </div>
-                          {formData.pricingStructure?.meterage && (
-                            <Select
-                              value={mathOperators.meterage}
-                              onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                setMathOperators(prev => ({ ...prev, meterage: value }))
-                              }
-                            >
-                              <SelectTrigger className="w-16 h-6 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="add">+</SelectItem>
-                                <SelectItem value="subtract">-</SelectItem>
-                                <SelectItem value="multiply">×</SelectItem>
-                                <SelectItem value="divide">÷</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          )}
                         </div>
                         
                         <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-3">
                             <input
                               type="checkbox"
                               id="hourlyRate"
@@ -2389,25 +2392,28 @@ export default function RepairPricing() {
                               className="rounded border-slate-300"
                             />
                             <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
+                            {formData.pricingStructure?.hourlyRate && (
+                              <div className="flex items-center space-x-1">
+                                <span className="text-xs text-gray-500">Math:</span>
+                                <Select
+                                  value={mathOperators.hourlyRate}
+                                  onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                    setMathOperators(prev => ({ ...prev, hourlyRate: value }))
+                                  }
+                                >
+                                  <SelectTrigger className="w-12 h-6 text-xs">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="add">+</SelectItem>
+                                    <SelectItem value="subtract">-</SelectItem>
+                                    <SelectItem value="multiply">×</SelectItem>
+                                    <SelectItem value="divide">÷</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
                           </div>
-                          {formData.pricingStructure?.hourlyRate && (
-                            <Select
-                              value={mathOperators.hourlyRate}
-                              onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                setMathOperators(prev => ({ ...prev, hourlyRate: value }))
-                              }
-                            >
-                              <SelectTrigger className="w-16 h-6 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="add">+</SelectItem>
-                                <SelectItem value="subtract">-</SelectItem>
-                                <SelectItem value="multiply">×</SelectItem>
-                                <SelectItem value="divide">÷</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          )}
                         </div>
                         
                         <div className="flex items-center justify-between space-x-2">
@@ -2485,7 +2491,7 @@ export default function RepairPricing() {
                         </div>
                         
                         <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-3">
                             <input
                               type="checkbox"
                               id="dayRate"
@@ -2500,28 +2506,28 @@ export default function RepairPricing() {
                               className="rounded border-slate-300"
                             />
                             <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
+                            {formData.pricingStructure?.dayRate && (
+                              <div className="flex items-center space-x-1">
+                                <span className="text-xs text-gray-500">Math:</span>
+                                <Select
+                                  value={mathOperators.dayRate}
+                                  onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                    setMathOperators(prev => ({ ...prev, dayRate: value }))
+                                  }
+                                >
+                                  <SelectTrigger className="w-12 h-6 text-xs">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="add">+</SelectItem>
+                                    <SelectItem value="subtract">-</SelectItem>
+                                    <SelectItem value="multiply">×</SelectItem>
+                                    <SelectItem value="divide">÷</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
                           </div>
-                          {formData.pricingStructure?.dayRate && (
-                            <div className="flex items-center">
-                              <span className="text-xs mr-1">Math:</span>
-                              <Select
-                                value={mathOperators.dayRate}
-                                onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                  setMathOperators(prev => ({ ...prev, dayRate: value }))
-                                }
-                              >
-                                <SelectTrigger className="w-16 h-6 text-xs">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="add">+</SelectItem>
-                                  <SelectItem value="subtract">-</SelectItem>
-                                  <SelectItem value="multiply">×</SelectItem>
-                                  <SelectItem value="divide">÷</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          )}
                         </div>
 
                         {/* Custom Price Options */}
@@ -2700,7 +2706,7 @@ export default function RepairPricing() {
                         </div>
                         
                         <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-3">
                             <input
                               type="checkbox"
                               id="runsPerShift"
@@ -2715,25 +2721,28 @@ export default function RepairPricing() {
                               className="rounded border-slate-300"
                             />
                             <Label htmlFor="runsPerShift" className="text-sm">Runs per shift</Label>
+                            {formData.pricingStructure?.runsPerShift && (
+                              <div className="flex items-center space-x-1">
+                                <span className="text-xs text-gray-500">Math:</span>
+                                <Select
+                                  value={mathOperators.runsPerShift}
+                                  onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                    setMathOperators(prev => ({ ...prev, runsPerShift: value }))
+                                  }
+                                >
+                                  <SelectTrigger className="w-12 h-6 text-xs">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="add">+</SelectItem>
+                                    <SelectItem value="subtract">-</SelectItem>
+                                    <SelectItem value="multiply">×</SelectItem>
+                                    <SelectItem value="divide">÷</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
                           </div>
-                          {formData.pricingStructure?.runsPerShift && (
-                            <Select
-                              value={mathOperators.runsPerShift}
-                              onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                setMathOperators(prev => ({ ...prev, runsPerShift: value }))
-                              }
-                            >
-                              <SelectTrigger className="w-16 h-6 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="add">+</SelectItem>
-                                <SelectItem value="subtract">-</SelectItem>
-                                <SelectItem value="multiply">×</SelectItem>
-                                <SelectItem value="divide">÷</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          )}
                         </div>
                         
                         <div className="flex items-center justify-between space-x-2">
