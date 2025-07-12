@@ -2311,7 +2311,7 @@ export default function RepairPricing() {
                         })}
                         className="rounded border-slate-300"
                       />
-                      <Label htmlFor="runsPerShift" className="text-sm">Survey runs per shift</Label>
+                      <Label htmlFor="runsPerShift" className="text-sm">Runs per shift</Label>
                     </div>
                     
                     <div className="flex items-center space-x-2">
