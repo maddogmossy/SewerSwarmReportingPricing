@@ -2756,7 +2756,7 @@ export default function RepairPricing() {
                   </div>
                   {!collapsedWindows.quantityOptions && (
                     <div className="px-4 pb-4">
-                      <div className="grid grid-cols-1 gap-3">
+                      <div className="grid grid-cols-4 gap-3">
                         {/* Dynamic Quantity Options in Reordered Sequence */}
                         {(() => {
                           // Use quantityDisplayOrder if available, otherwise fall back to default order
@@ -2787,9 +2787,9 @@ export default function RepairPricing() {
                             if (!isStandardOption && !isCustomOption) return null;
 
                             return (
-                              <div key={option.id} className={`flex items-center justify-between space-x-2 ${
-                                isCustomOption ? 'p-2 bg-green-50 border border-green-200 rounded' : ''
-                              }`}>
+                              <div key={option.id} className={`flex flex-col items-center space-y-2 p-3 border-2 rounded-lg transition-colors ${
+                                isEnabled ? 'border-green-300 bg-green-50' : 'border-slate-200 bg-slate-50'
+                              } ${isCustomOption ? 'border-green-400 bg-green-100' : ''}`}>
                                 <div className="flex items-center space-x-2">
                                   <input
                                     type="checkbox"
@@ -2810,20 +2810,21 @@ export default function RepairPricing() {
                                   />
                                   <Label 
                                     htmlFor={option.id} 
-                                    className={`text-sm ${isCustomOption ? 'text-green-700 font-medium' : ''}`}
+                                    className={`text-sm font-medium text-center ${isEnabled ? 'text-green-700' : 'text-slate-600'} ${isCustomOption ? 'text-green-800' : ''}`}
                                   >
                                     {option.label}
                                   </Label>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                  {isStandardOption && isEnabled && (
+                                
+                                {isStandardOption && isEnabled && (
+                                  <div className="w-full">
                                     <Select
                                       value={mathOperators[option.id] || 'add'}
                                       onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
                                         setMathOperators(prev => ({ ...prev, [option.id]: value }))
                                       }
                                     >
-                                      <SelectTrigger className="w-16 h-6 text-xs">
+                                      <SelectTrigger className="w-full h-6 text-xs">
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -2833,43 +2834,44 @@ export default function RepairPricing() {
                                         <SelectItem value="divide">÷</SelectItem>
                                       </SelectContent>
                                     </Select>
-                                  )}
-                                  {isCustomOption && (
-                                    <>
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                                        onClick={() => {
-                                          const customIndex = parseInt(option.id.replace('custom_quantity_', ''));
-                                          setEditingOptionIndex(customIndex);
-                                          setEditingOptionType('quantityOptions');
-                                          setEditingOptionName(option.label);
-                                          setShowEditOptionsDialog(true);
-                                        }}
-                                      >
-                                        <Edit className="h-3 w-3" />
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
-                                        onClick={() => {
-                                          const customIndex = parseInt(option.id.replace('custom_quantity_', ''));
-                                          const updatedQuantityOptions = customOptions.quantityOptions.filter((_, i) => i !== customIndex);
-                                          setCustomOptions(prev => ({
-                                            ...prev,
-                                            quantityOptions: updatedQuantityOptions
-                                          }));
-                                        }}
-                                      >
-                                        <Trash2 className="h-3 w-3" />
-                                      </Button>
-                                    </>
-                                  )}
-                                </div>
+                                  </div>
+                                )}
+                                
+                                {isCustomOption && (
+                                  <div className="flex items-center gap-1">
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                                      onClick={() => {
+                                        const customIndex = parseInt(option.id.replace('custom_quantity_', ''));
+                                        setEditingOptionIndex(customIndex);
+                                        setEditingOptionType('quantityOptions');
+                                        setEditingOptionName(option.label);
+                                        setShowEditOptionsDialog(true);
+                                      }}
+                                    >
+                                      <Edit className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
+                                      onClick={() => {
+                                        const customIndex = parseInt(option.id.replace('custom_quantity_', ''));
+                                        const updatedQuantityOptions = customOptions.quantityOptions.filter((_, i) => i !== customIndex);
+                                        setCustomOptions(prev => ({
+                                          ...prev,
+                                          quantityOptions: updatedQuantityOptions
+                                        }));
+                                      }}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
                               </div>
                             );
                           });
