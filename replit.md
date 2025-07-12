@@ -226,6 +226,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 ## REV V1 CHECKPOINT - STABLE PRODUCTION STATE (July 12, 2025)
 
 🔒 **LOCKED IN FEATURES - PRODUCTION READY:**
+- **Cleanse/Survey Pricing System Only:** Single unified storage system with only Cleanse/Survey pricing configuration
 - **Complete Color-Coded Pricing System:** All four option categories with proper color-coded display (Blue: Price/Cost, Green: Quantity, Orange: Min Quantity, Purple: Additional Items)
 - **Consistent Checkbox Layout:** All custom options display as checkboxes with color-coded backgrounds instead of old edit/delete buttons
 - **Clean Green Quantity Window:** Math operators removed from green window, no longer showing next to "runs per shift"
@@ -236,6 +237,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **🔒 COMPLETE REORDERING SYNCHRONIZATION:** Full bidirectional edit dialog system with up/down arrow reordering, complete persistence between edit dialog and main blue Price/Cost Options window, saved order remembered across dialog opens/closes, dynamic option display respects reordered sequence, enhanced logging for order tracking, and optionDisplayOrder field in formData stores complete reordered sequence
 - **🔒 UNIFORM CUSTOM OPTIONS DISPLAY:** Custom options in all color-coded windows display as proper checkboxes with 4-column grid layouts and respective color themes
 - **🔒 COMPLETE CUSTOM OPTIONS FUNCTIONALITY:** Custom options can be added to all four color-coded windows (blue, green, orange, purple), properly checked/unchecked with full state management, appear in "Selected Pricing Options - Enter Values" section only when enabled, and disappear when unchecked with authentic filtering logic. Zero issues with custom option toggle behavior.
+- **🔒 UNIFIED STORAGE SYSTEM:** All old pricing systems removed, only single pricingStorage array with Cleanse/Survey configuration
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v1' to return to this stable checkpoint
 

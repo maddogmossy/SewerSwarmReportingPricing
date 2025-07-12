@@ -327,7 +327,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Check if we have pricing data in the static pricingStorage for this sector
     const sectorPricing = pricingStorage.filter(item => item.sector === sector);
-    const hasBasicPricing = sectorPricing.length >= 2; // Need at least CCTV and Jetting/Patch pricing
+    const hasBasicPricing = sectorPricing.length >= 1; // Only need Cleanse/Survey pricing
     
     res.json({ 
       configured: hasBasicPricing,
