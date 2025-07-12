@@ -2184,26 +2184,7 @@ export default function RepairPricing() {
               })()}
 
               {/* Standard Configuration Fields */}
-              <div className={`grid gap-4 ${formData.pricingStructure?.includeTotalLength ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                <div>
-                  <Label className="text-sm font-medium">Pipe Size</Label>
-                  <Select value={formData.pipeSize} onValueChange={(value) => setFormData({...formData, pipeSize: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select pipe size" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="75mm">75mm</SelectItem>
-                      <SelectItem value="100mm">100mm</SelectItem>
-                      <SelectItem value="150mm">150mm</SelectItem>
-                      <SelectItem value="225mm">225mm</SelectItem>
-                      <SelectItem value="300mm">300mm</SelectItem>
-                      <SelectItem value="375mm">375mm</SelectItem>
-                      <SelectItem value="450mm">450mm</SelectItem>
-                      <SelectItem value="525mm">525mm</SelectItem>
-                      <SelectItem value="600mm">600mm</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="grid gap-4">
                 {formData.pricingStructure?.includeTotalLength && (
                   <div>
                     <Label className="text-sm font-medium">Total Length</Label>
