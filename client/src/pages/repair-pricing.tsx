@@ -2368,14 +2368,15 @@ export default function RepairPricing() {
                                     </Label>
                                     <Select
                                       value={mathOperators[`operator_${mathOperatorIndex}`] || ''}
-                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide' | 'none') => 
                                         setMathOperators(prev => ({ ...prev, [`operator_${mathOperatorIndex}`]: value }))
                                       }
                                     >
-                                      <SelectTrigger className="w-12 h-6 text-xs bg-white border-slate-200">
-                                        <SelectValue placeholder={mathOperatorIndex === 0 ? "÷" : "+"} />
+                                      <SelectTrigger className="w-16 h-6 text-xs bg-white border-slate-200">
+                                        <SelectValue placeholder="N/A" />
                                       </SelectTrigger>
                                       <SelectContent>
+                                        <SelectItem value="none">N/A</SelectItem>
                                         <SelectItem value="add">+</SelectItem>
                                         <SelectItem value="subtract">-</SelectItem>
                                         <SelectItem value="multiply">×</SelectItem>
