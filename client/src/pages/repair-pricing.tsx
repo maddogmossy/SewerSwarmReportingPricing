@@ -1885,7 +1885,9 @@ export default function RepairPricing() {
                         });
                         setShowSimpleAddForm(false);
                         setSimpleCategoryName('');
-                        window.location.reload();
+                        // Refresh data instead of full page reload
+                        queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
+                        queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
                       } else {
                         toast({
                           title: "Error",
@@ -1962,7 +1964,9 @@ export default function RepairPricing() {
                           });
                           setCategoryDeleteDialogOpen(false);
                           setCategoryToDelete(null);
-                          window.location.reload();
+                          // Refresh data instead of full page reload
+                          queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
+                          queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
                         } else {
                           toast({
                             title: "Error",
