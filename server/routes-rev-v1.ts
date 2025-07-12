@@ -4,6 +4,9 @@ import multer from "multer";
 import { storage } from "./storage";
 import { readWincanDatabase, storeWincanSections } from "./wincan-db-reader";
 import { getSectorStandards, getAllSectorStandards } from "./sector-standards";
+import { db } from "./db";
+import { repairPricing } from "../shared/schema";
+import { eq, sql } from "drizzle-orm";
 
 // Debug: Test import at module level
 console.log('Testing sector standards import...');
@@ -431,7 +434,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // PUT endpoint to update existing repair pricing
-  app.put('/api/repair-pricing/:id', (req, res) => {
+  app.put('/api/repair-pricing/:id', async (req, res) => {
     const { id } = req.params;
     const pricingId = parseInt(id);
     
@@ -477,52 +480,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log(`Math operators received:`, mathOperators);
     console.log(`Custom options received:`, customOptions);
 
-    // Find the pricing item to update
-    const pricingIndex = pricingStorage.findIndex(p => p.id === pricingId);
-    
-    if (pricingIndex === -1) {
-      return res.status(404).json({ error: 'Pricing item not found' });
+    try {
+      // Update in database first
+      const updateData = {
+        sector: sector,
+        workCategoryId: workCategoryId,
+        repairMethodId: repairMethodId,
+        pipeSize: pipeSize,
+        description: description,
+        cost: String(cost || 0),
+        // Dynamic pricing structure values
+        meterage: meterage,
+        hourlyRate: hourlyRate,
+        dayRate: dayRate,
+        setupRate: setupRate,
+        minCharge: minCharge,
+        numberPerShift: String(mappedNumberPerShift || ''),
+        runsPerShift: String(runsPerShift || ''),
+        metersPerShift: metersPerShift,
+        minUnitsPerShift: minUnitsPerShift,
+        minMetersPerShift: minMetersPerShift,
+        minInspectionsPerShift: minInspectionsPerShift,
+        minSetupCount: minSetupCount,
+        // Store pricing structure selections for UI persistence
+        pricingStructure: pricingStructure || {},
+        updatedAt: sql`now()`
+      };
+
+      // Update in database
+      const [updatedPricing] = await db
+        .update(repairPricing)
+        .set(updateData)
+        .where(eq(repairPricing.id, pricingId))
+        .returning();
+
+      if (!updatedPricing) {
+        return res.status(404).json({ error: 'Pricing item not found' });
+      }
+
+      // Also update in-memory storage for backwards compatibility
+      const pricingIndex = pricingStorage.findIndex(p => p.id === pricingId);
+      if (pricingIndex !== -1) {
+        pricingStorage[pricingIndex] = {
+          ...pricingStorage[pricingIndex],
+          ...updateData,
+          // Store math operators and custom options in memory too
+          mathOperators: mathOperators || {},
+          customOptions: customOptions || {},
+          updatedAt: new Date().toISOString()
+        };
+      }
+      
+      console.log(`✅ Updated repair pricing ${pricingId} in DATABASE`);
+      console.log('Updated pricing structure:', pricingStructure);
+      
+      res.json({
+        ...updatedPricing,
+        mathOperators: mathOperators || {},
+        customOptions: customOptions || {}
+      });
+      
+    } catch (error) {
+      console.error('Error updating pricing in database:', error);
+      res.status(500).json({ error: 'Failed to update pricing in database' });
     }
-
-    // Update the pricing item with all dynamic fields
-    const updatedPricing = {
-      ...pricingStorage[pricingIndex],
-      sector: sector || pricingStorage[pricingIndex].sector,
-      workCategoryId: workCategoryId || pricingStorage[pricingIndex].workCategoryId,
-      repairMethodId: repairMethodId || pricingStorage[pricingIndex].repairMethodId,
-      pipeSize: pipeSize || pricingStorage[pricingIndex].pipeSize,
-      description: description || pricingStorage[pricingIndex].description,
-      cost: cost || pricingStorage[pricingIndex].cost,
-      // Dynamic pricing structure values
-      meterage: meterage !== undefined ? meterage : pricingStorage[pricingIndex].meterage,
-      hourlyRate: hourlyRate !== undefined ? hourlyRate : pricingStorage[pricingIndex].hourlyRate,
-      dayRate: dayRate !== undefined ? dayRate : pricingStorage[pricingIndex].dayRate,
-      setupRate: setupRate !== undefined ? setupRate : pricingStorage[pricingIndex].setupRate,
-      minCharge: minCharge !== undefined ? minCharge : pricingStorage[pricingIndex].minCharge,
-      repeatFree: repeatFree !== undefined ? repeatFree : pricingStorage[pricingIndex].repeatFree,
-      numberPerShift: mappedNumberPerShift !== undefined ? mappedNumberPerShift : pricingStorage[pricingIndex].numberPerShift,
-      runsPerShift: runsPerShift !== undefined ? runsPerShift : pricingStorage[pricingIndex].runsPerShift,
-      metersPerShift: metersPerShift !== undefined ? metersPerShift : pricingStorage[pricingIndex].metersPerShift,
-      inspectionsPerShift: inspectionsPerShift !== undefined ? inspectionsPerShift : pricingStorage[pricingIndex].inspectionsPerShift,
-      minUnitsPerShift: minUnitsPerShift !== undefined ? minUnitsPerShift : pricingStorage[pricingIndex].minUnitsPerShift,
-      minMetersPerShift: minMetersPerShift !== undefined ? minMetersPerShift : pricingStorage[pricingIndex].minMetersPerShift,
-      minInspectionsPerShift: minInspectionsPerShift !== undefined ? minInspectionsPerShift : pricingStorage[pricingIndex].minInspectionsPerShift,
-      minSetupCount: minSetupCount !== undefined ? minSetupCount : pricingStorage[pricingIndex].minSetupCount,
-      // Store pricing structure selections for UI persistence
-      pricingStructure: pricingStructure || pricingStorage[pricingIndex].pricingStructure || {},
-      // Store math operators and custom options
-      mathOperators: mathOperators || pricingStorage[pricingIndex].mathOperators || [],
-      customOptions: customOptions || pricingStorage[pricingIndex].customOptions || {},
-      updatedAt: new Date().toISOString()
-    };
-
-    // Replace the item in storage
-    pricingStorage[pricingIndex] = updatedPricing;
-    
-    console.log(`✅ Updated repair pricing ${pricingId}`);
-    console.log('Updated pricing structure:', pricingStructure);
-    
-    res.json(updatedPricing);
   });
 
   app.get('/api/work-categories', (req, res) => {
