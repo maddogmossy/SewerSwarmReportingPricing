@@ -2757,7 +2757,7 @@ export default function RepairPricing() {
                       </Button>
                     </div>
                   </div>
-                  {!collapsedWindows.priceOptions && (
+                  {(true || !collapsedWindows.priceOptions) && (
                     <div className="px-4 pb-4">
                       <div className="grid grid-cols-4 gap-3">
                         {/* Dynamic Options in Reordered Sequence */}
