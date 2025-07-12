@@ -2322,92 +2322,147 @@ export default function RepairPricing() {
                   </div>
                   {!collapsedWindows.priceOptions && (
                     <div className="px-4 pb-4">
-                      <div className="grid grid-cols-2 gap-3">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="meterage"
-                        checked={formData.pricingStructure?.meterage || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            meterage: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="meterage" className="text-sm">Meterage (£ per meter)</Label>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="hourlyRate"
-                        checked={formData.pricingStructure?.hourlyRate || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            hourlyRate: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="setupRate"
-                        checked={formData.pricingStructure?.setupRate || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            setupRate: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="setupRate" className="text-sm">Setup rate (£ per setup)</Label>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="minCharge"
-                        checked={formData.pricingStructure?.minCharge || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            minCharge: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="minCharge" className="text-sm">Min charge (£ minimum)</Label>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="dayRate"
-                        checked={formData.pricingStructure?.dayRate || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            dayRate: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
-                    </div>
-                  </div>
+                      <div className="grid grid-cols-1 gap-3">
+                        {/* Standard Options */}
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="meterage"
+                              checked={formData.pricingStructure?.meterage || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  meterage: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="meterage" className="text-sm">Meterage (£ per meter)</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="hourlyRate"
+                              checked={formData.pricingStructure?.hourlyRate || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  hourlyRate: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="setupRate"
+                              checked={formData.pricingStructure?.setupRate || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  setupRate: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="setupRate" className="text-sm">Setup rate (£ per setup)</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="minCharge"
+                              checked={formData.pricingStructure?.minCharge || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  minCharge: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="minCharge" className="text-sm">Min charge (£ minimum)</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="dayRate"
+                              checked={formData.pricingStructure?.dayRate || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  dayRate: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
+                          </div>
+                        </div>
+
+                        {/* Custom Price Options */}
+                        {customOptions.priceOptions && customOptions.priceOptions.map((option, index) => (
+                          <div key={index} className="flex items-center justify-between space-x-2 p-2 bg-green-50 border border-green-200 rounded">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`custom_price_${index}`}
+                                className="rounded border-slate-300"
+                              />
+                              <Label htmlFor={`custom_price_${index}`} className="text-sm text-green-700 font-medium">{option}</Label>
+                            </div>
+                            <div className="flex gap-1">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                                onClick={() => {
+                                  setEditingOptionIndex(index);
+                                  setEditingOptionType('priceOptions');
+                                  setEditingOptionName(option);
+                                  setShowEditOptionsDialog(true);
+                                }}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
+                                onClick={() => {
+                                  setCustomOptions(prev => ({
+                                    ...prev,
+                                    priceOptions: prev.priceOptions.filter((_, i) => i !== index)
+                                  }));
+                                }}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -2463,87 +2518,125 @@ export default function RepairPricing() {
                   </div>
                   {!collapsedWindows.quantityOptions && (
                     <div className="px-4 pb-4">
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 gap-3">
                         {/* Standard quantity options */}
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="numberPerShift"
-                            checked={formData.pricingStructure?.numberPerShift || false}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricingStructure: {
-                                ...formData.pricingStructure,
-                                numberPerShift: e.target.checked
-                              }
-                            })}
-                            className="rounded border-slate-300"
-                          />
-                          <Label htmlFor="numberPerShift" className="text-sm">Number per shift</Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="metersPerShift"
-                            checked={formData.pricingStructure?.metersPerShift || false}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricingStructure: {
-                                ...formData.pricingStructure,
-                                metersPerShift: e.target.checked
-                              }
-                            })}
-                            className="rounded border-slate-300"
-                          />
-                          <Label htmlFor="metersPerShift" className="text-sm">Meters per shift</Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="runsPerShift"
-                            checked={formData.pricingStructure?.runsPerShift || false}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricingStructure: {
-                                ...formData.pricingStructure,
-                                runsPerShift: e.target.checked
-                              }
-                            })}
-                            className="rounded border-slate-300"
-                          />
-                          <Label htmlFor="runsPerShift" className="text-sm">Runs per shift</Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="repeatFree"
-                            checked={formData.pricingStructure?.repeatFree || false}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricingStructure: {
-                                ...formData.pricingStructure,
-                                repeatFree: e.target.checked
-                              }
-                            })}
-                            className="rounded border-slate-300"
-                          />
-                          <Label htmlFor="repeatFree" className="text-sm">Repeat free</Label>
-                        </div>
-
-                        {/* Custom quantity options as checkboxes */}
-                        {customOptions.quantityOptions.map((option, index) => (
-                          <div key={`custom-${index}`} className="flex items-center space-x-2">
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
                             <input
                               type="checkbox"
-                              id={`custom-quantity-${index}`}
-                              checked={false} // These are just display options for now
-                              onChange={() => {}} // No-op for display
+                              id="numberPerShift"
+                              checked={formData.pricingStructure?.numberPerShift || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  numberPerShift: e.target.checked
+                                }
+                              })}
                               className="rounded border-slate-300"
                             />
-                            <Label htmlFor={`custom-quantity-${index}`} className="text-sm text-green-700 font-medium">{option}</Label>
+                            <Label htmlFor="numberPerShift" className="text-sm">Number per shift</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="metersPerShift"
+                              checked={formData.pricingStructure?.metersPerShift || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  metersPerShift: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="metersPerShift" className="text-sm">Meters per shift</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="runsPerShift"
+                              checked={formData.pricingStructure?.runsPerShift || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  runsPerShift: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="runsPerShift" className="text-sm">Runs per shift</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="repeatFree"
+                              checked={formData.pricingStructure?.repeatFree || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  repeatFree: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="repeatFree" className="text-sm">Repeat free</Label>
+                          </div>
+                        </div>
+
+                        {/* Custom Quantity Options */}
+                        {customOptions.quantityOptions && customOptions.quantityOptions.map((option, index) => (
+                          <div key={index} className="flex items-center justify-between space-x-2 p-2 bg-green-50 border border-green-200 rounded">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`custom_quantity_${index}`}
+                                className="rounded border-slate-300"
+                              />
+                              <Label htmlFor={`custom_quantity_${index}`} className="text-sm text-green-700 font-medium">{option}</Label>
+                            </div>
+                            <div className="flex gap-1">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                                onClick={() => {
+                                  setEditingOptionIndex(index);
+                                  setEditingOptionType('quantityOptions');
+                                  setEditingOptionName(option);
+                                  setShowEditOptionsDialog(true);
+                                }}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
+                                onClick={() => {
+                                  setCustomOptions(prev => ({
+                                    ...prev,
+                                    quantityOptions: prev.quantityOptions.filter((_, i) => i !== index)
+                                  }));
+                                }}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -2552,142 +2645,302 @@ export default function RepairPricing() {
                 </div>
 
                 {/* Option Window 3: Minimum Quantities */}
-                <div className="border border-orange-200 rounded-lg p-4 bg-orange-50">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-medium text-orange-700">⚖️ Minimum Quantities</h4>
-                    <Button 
-                      type="button"
-                      size="sm" 
-                      className="text-xs px-2 py-1 h-6 bg-orange-600 hover:bg-orange-700 text-white"
-                      onClick={() => setShowMinQuantityDialog(true)}
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      Add
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="minUnitsPerShift"
-                        checked={formData.pricingStructure?.minUnitsPerShift || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            minUnitsPerShift: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="minUnitsPerShift" className="text-sm">Min units per shift</Label>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="minMetersPerShift"
-                        checked={formData.pricingStructure?.minMetersPerShift || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            minMetersPerShift: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="minMetersPerShift" className="text-sm">Min meters per shift</Label>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="minInspectionsPerShift"
-                        checked={formData.pricingStructure?.minInspectionsPerShift || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            minInspectionsPerShift: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="minInspectionsPerShift" className="text-sm">Min inspections per shift</Label>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="minSetupCount"
-                        checked={formData.pricingStructure?.minSetupCount || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            minSetupCount: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="minSetupCount" className="text-sm">Min setup count</Label>
+                <div className="border border-orange-200 rounded-lg bg-orange-50">
+                  <div 
+                    className="flex items-center justify-between p-4 cursor-pointer"
+                    onClick={() => {
+                      const hasSelected = formData.pricingStructure?.minUnitsPerShift || formData.pricingStructure?.minMetersPerShift || formData.pricingStructure?.minInspectionsPerShift || formData.pricingStructure?.minSetupCount;
+                      if (hasSelected) {
+                        setCollapsedWindows(prev => ({
+                          ...prev,
+                          minQuantityOptions: !prev.minQuantityOptions
+                        }));
+                      }
+                    }}
+                  >
+                    <h4 className="text-sm font-medium text-orange-700">⚖️ Min Quantity per Shift Options</h4>
+                    <div className="flex items-center gap-2">
+                      {(formData.pricingStructure?.minUnitsPerShift || formData.pricingStructure?.minMetersPerShift || formData.pricingStructure?.minInspectionsPerShift || formData.pricingStructure?.minSetupCount) && (
+                        <span className="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded">
+                          {[
+                            formData.pricingStructure?.minUnitsPerShift && 'Min Units',
+                            formData.pricingStructure?.minMetersPerShift && 'Min Meters',
+                            formData.pricingStructure?.minInspectionsPerShift && 'Min Inspections',
+                            formData.pricingStructure?.minSetupCount && 'Min Setup'
+                          ].filter(Boolean).join(', ')}
+                        </span>
+                      )}
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-orange-600 hover:bg-orange-700 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowMinQuantityDialog(true);
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
                     </div>
                   </div>
+                  {!collapsedWindows.minQuantityOptions && (
+                    <div className="px-4 pb-4">
+                      <div className="grid grid-cols-1 gap-3">
+                        {/* Standard min quantity options */}
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="minUnitsPerShift"
+                              checked={formData.pricingStructure?.minUnitsPerShift || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  minUnitsPerShift: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="minUnitsPerShift" className="text-sm">Min units per shift</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="minMetersPerShift"
+                              checked={formData.pricingStructure?.minMetersPerShift || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  minMetersPerShift: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="minMetersPerShift" className="text-sm">Min meters per shift</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="minInspectionsPerShift"
+                              checked={formData.pricingStructure?.minInspectionsPerShift || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  minInspectionsPerShift: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="minInspectionsPerShift" className="text-sm">Min inspections per shift</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="minSetupCount"
+                              checked={formData.pricingStructure?.minSetupCount || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  minSetupCount: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="minSetupCount" className="text-sm">Min setup count</Label>
+                          </div>
+                        </div>
+
+                        {/* Custom Min Quantity Options */}
+                        {customOptions.minQuantityOptions && customOptions.minQuantityOptions.map((option, index) => (
+                          <div key={index} className="flex items-center justify-between space-x-2 p-2 bg-orange-50 border border-orange-200 rounded">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`custom_min_quantity_${index}`}
+                                className="rounded border-slate-300"
+                              />
+                              <Label htmlFor={`custom_min_quantity_${index}`} className="text-sm text-orange-700 font-medium">{option}</Label>
+                            </div>
+                            <div className="flex gap-1">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                                onClick={() => {
+                                  setEditingOptionIndex(index);
+                                  setEditingOptionType('minQuantityOptions');
+                                  setEditingOptionName(option);
+                                  setShowEditOptionsDialog(true);
+                                }}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
+                                onClick={() => {
+                                  setCustomOptions(prev => ({
+                                    ...prev,
+                                    minQuantityOptions: prev.minQuantityOptions.filter((_, i) => i !== index)
+                                  }));
+                                }}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Option Window 4: Additional Items */}
-                <div className="border border-purple-200 rounded-lg p-4 bg-purple-50">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="border border-purple-200 rounded-lg bg-purple-50">
+                  <div 
+                    className="flex items-center justify-between p-4 cursor-pointer"
+                    onClick={() => {
+                      const hasSelected = formData.pricingStructure?.includeDepth || formData.pricingStructure?.includeTotalLength;
+                      if (hasSelected) {
+                        setCollapsedWindows(prev => ({
+                          ...prev,
+                          additionalOptions: !prev.additionalOptions
+                        }));
+                      }
+                    }}
+                  >
                     <h4 className="text-sm font-medium text-purple-700">🔧 Additional Items</h4>
-                    <Button 
-                      type="button"
-                      size="sm" 
-                      className="text-xs px-2 py-1 h-6 bg-purple-600 hover:bg-purple-700 text-white"
-                      onClick={() => setShowAdditionalDialog(true)}
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      Add
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="includeDepth"
-                        checked={formData.pricingStructure?.includeDepth || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            includeDepth: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="includeDepth" className="text-sm">Include pipe depth</Label>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="includeTotalLength"
-                        checked={formData.pricingStructure?.includeTotalLength || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            includeTotalLength: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="includeTotalLength" className="text-sm">Include total length</Label>
+                    <div className="flex items-center gap-2">
+                      {(formData.pricingStructure?.includeDepth || formData.pricingStructure?.includeTotalLength) && (
+                        <span className="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded">
+                          {[
+                            formData.pricingStructure?.includeDepth && 'Depth',
+                            formData.pricingStructure?.includeTotalLength && 'Total Length'
+                          ].filter(Boolean).join(', ')}
+                        </span>
+                      )}
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-purple-600 hover:bg-purple-700 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowAdditionalDialog(true);
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
                     </div>
                   </div>
-                  <p className="text-xs text-purple-600 mt-2">
-                    Additional items can be included in pricing calculations when available from inspection data.
-                  </p>
+                  {!collapsedWindows.additionalOptions && (
+                    <div className="px-4 pb-4">
+                      <div className="grid grid-cols-1 gap-3">
+                        {/* Standard additional options */}
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="includeDepth"
+                              checked={formData.pricingStructure?.includeDepth || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  includeDepth: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="includeDepth" className="text-sm">Include pipe depth</Label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between space-x-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="includeTotalLength"
+                              checked={formData.pricingStructure?.includeTotalLength || false}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                pricingStructure: {
+                                  ...formData.pricingStructure,
+                                  includeTotalLength: e.target.checked
+                                }
+                              })}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor="includeTotalLength" className="text-sm">Include total length</Label>
+                          </div>
+                        </div>
+
+                        {/* Custom Additional Options */}
+                        {customOptions.additionalOptions && customOptions.additionalOptions.map((option, index) => (
+                          <div key={index} className="flex items-center justify-between space-x-2 p-2 bg-purple-50 border border-purple-200 rounded">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={`custom_additional_${index}`}
+                                className="rounded border-slate-300"
+                              />
+                              <Label htmlFor={`custom_additional_${index}`} className="text-sm text-purple-700 font-medium">{option}</Label>
+                            </div>
+                            <div className="flex gap-1">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                                onClick={() => {
+                                  setEditingOptionIndex(index);
+                                  setEditingOptionType('additionalOptions');
+                                  setEditingOptionName(option);
+                                  setShowEditOptionsDialog(true);
+                                }}
+                              >
+                                <Edit className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
+                                onClick={() => {
+                                  setCustomOptions(prev => ({
+                                    ...prev,
+                                    additionalOptions: prev.additionalOptions.filter((_, i) => i !== index)
+                                  }));
+                                }}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-purple-600 mt-3">
+                        Additional items can be included in pricing calculations when available from inspection data.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -2888,68 +3141,51 @@ export default function RepairPricing() {
           </DialogContent>
         </Dialog>
 
-        {/* Edit Options Dialog - Manage All Quantity Options */}
+        {/* Edit Custom Options Dialog */}
         <Dialog open={showEditOptionsDialog} onOpenChange={setShowEditOptionsDialog}>
-          <DialogContent className="sm:max-w-lg">
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Manage Quantity Options</DialogTitle>
+              <DialogTitle>Edit Custom Option</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 max-h-96 overflow-y-auto">
-              {editingOptionType === 'quantity' && customOptions.quantityOptions.length > 0 ? (
-                <div className="space-y-3">
-                  {customOptions.quantityOptions.map((option, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-green-50 rounded border border-green-200">
-                      <div className="flex-1">
-                        <Input
-                          value={option}
-                          onChange={(e) => {
-                            const newOptions = [...customOptions.quantityOptions];
-                            newOptions[index] = e.target.value;
-                            setCustomOptions(prev => ({
-                              ...prev,
-                              quantityOptions: newOptions
-                            }));
-                          }}
-                          className="bg-white"
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        className="ml-2 h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => {
-                          setCustomOptions(prev => ({
-                            ...prev,
-                            quantityOptions: prev.quantityOptions.filter((_, i) => i !== index)
-                          }));
-                        }}
-                      >
-                        ×
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-gray-500 py-8">No quantity options to manage</p>
-              )}
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="editOptionName" className="text-sm font-medium">Option Name</Label>
+                <Input
+                  id="editOptionName"
+                  value={editingOptionName}
+                  onChange={(e) => setEditingOptionName(e.target.value)}
+                  placeholder="Enter option name..."
+                  className="mt-1"
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => {
                 setShowEditOptionsDialog(false);
+                setEditingOptionName('');
+                setEditingOptionIndex(-1);
                 setEditingOptionType('');
               }}>
-                Close
+                Cancel
               </Button>
               <Button 
                 onClick={() => {
-                  setShowQuantityDialog(true);
-                  setShowEditOptionsDialog(false);
+                  if (editingOptionName.trim() && editingOptionType && editingOptionIndex >= 0) {
+                    setCustomOptions(prev => {
+                      const newOptions = { ...prev };
+                      newOptions[editingOptionType][editingOptionIndex] = editingOptionName.trim();
+                      return newOptions;
+                    });
+                    
+                    setShowEditOptionsDialog(false);
+                    setEditingOptionName('');
+                    setEditingOptionIndex(-1);
+                    setEditingOptionType('');
+                  }
                 }}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                <Plus className="h-4 w-4 mr-1" />
-                Add New Option
+                Save Changes
               </Button>
             </DialogFooter>
           </DialogContent>
