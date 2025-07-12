@@ -3760,9 +3760,15 @@ export default function RepairPricing() {
                     pricingStructure: {
                       ...newPricingStructure,
                       priceOptions: finalPriceOptions // Sync the priceOptions array properly
-                    }
+                    },
+                    optionDisplayOrder: editablePriceOptions.map(option => ({
+                      id: option.id,
+                      label: option.label,
+                      type: option.id.startsWith('custom_price_') ? 'custom' : 'standard'
+                    }))
                   });
                   
+                  setShowEditPriceOptionsDialog(false);
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
@@ -3895,9 +3901,15 @@ export default function RepairPricing() {
                   
                   setFormData({
                     ...formData,
-                    pricingStructure: newPricingStructure
+                    pricingStructure: newPricingStructure,
+                    quantityDisplayOrder: editableQuantityOptions.map(option => ({
+                      id: option.id,
+                      label: option.label,
+                      type: option.id.startsWith('custom_quantity_') ? 'custom' : 'standard'
+                    }))
                   });
                   
+                  setShowEditQuantityOptionsDialog(false);
                 }}
                 className="bg-green-600 hover:bg-green-700 text-white"
               >
