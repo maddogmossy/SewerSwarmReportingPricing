@@ -610,6 +610,35 @@ export default function RepairPricing() {
     }
   });
 
+  // Delete category mutation
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (categoryId: number) => apiRequest('DELETE', `/api/work-categories/${categoryId}`),
+    onSuccess: (data: any) => {
+      toast({
+        title: "Success",
+        description: data.message || "Category deleted successfully!"
+      });
+      setCategoryDeleteDialogOpen(false);
+      setCategoryToDelete(null);
+      
+      // Force complete cache invalidation and refetch
+      queryClient.removeQueries({ queryKey: ['/api/work-categories'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
+      
+      // Force immediate refetch
+      queryClient.refetchQueries({ queryKey: ['/api/work-categories'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete category",
+        variant: "destructive"
+      });
+    }
+  });
+
   // Update pricing mutation
   const updatePricing = useMutation({
     mutationFn: ({ id, ...data }: any) => apiRequest('PUT', `/api/repair-pricing/${id}`, data),
@@ -2012,39 +2041,12 @@ export default function RepairPricing() {
                 </Button>
                 <Button
                   variant="destructive"
-                  onClick={async () => {
+                  onClick={() => {
                     if (categoryToDelete) {
-                      try {
-                        await apiRequest('DELETE', `/api/work-categories/${categoryToDelete.id}`);
-                        toast({
-                          title: "Success",
-                          description: `Category "${categoryToDelete.name}" deleted successfully!`
-                        });
-                        setCategoryDeleteDialogOpen(false);
-                        setCategoryToDelete(null);
-                        
-                        // Comprehensive cache invalidation
-                        queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
-                        queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
-                        queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
-                        
-                        // Force cache clearing to ensure immediate update
-                        queryClient.clear();
-                        
-                        // Immediate UI refresh without page reload
-                        setTimeout(() => {
-                          queryClient.refetchQueries({ queryKey: ['/api/work-categories'] });
-                          queryClient.refetchQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
-                        }, 100);
-                      } catch (error: any) {
-                        toast({
-                          title: "Error",
-                          description: error.message || "Failed to delete category",
-                          variant: "destructive"
-                        });
-                      }
+                      deleteCategoryMutation.mutate(categoryToDelete.id);
                     }
                   }}
+                  disabled={deleteCategoryMutation.isPending}
                   className="flex-1"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
