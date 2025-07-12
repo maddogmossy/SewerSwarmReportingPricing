@@ -1307,15 +1307,34 @@ export default function RepairPricing() {
       : {}; // Initialize with empty object if not available
     setMathOperators(mathOps);
     
-    // Initialize custom options with fallback to preserve existing custom data
-    const customOpts = item.customOptions && typeof item.customOptions === 'object' 
-      ? item.customOptions 
-      : {
-          priceOptions: [],
-          quantityOptions: customOptions.quantityOptions || [], // Preserve existing quantity options
+    // Extract custom options from database pricingStructure.priceOptions
+    const customOpts = (() => {
+      // CRITICAL FIX: Extract custom options from database pricingStructure
+      if (item.pricingStructure && item.pricingStructure.priceOptions && Array.isArray(item.pricingStructure.priceOptions)) {
+        console.log("🔥 EXTRACTING custom options from DATABASE pricingStructure:", item.pricingStructure.priceOptions);
+        // Filter out standard options to get only custom ones like "range"
+        const customPriceOptions = item.pricingStructure.priceOptions.filter(opt => 
+          !['Day rate', 'Hourly rate', 'Setup rate', 'Min charge', 'Meterage'].includes(opt)
+        );
+        console.log("🔥 FILTERED custom price options:", customPriceOptions);
+        return {
+          priceOptions: customPriceOptions,
+          quantityOptions: [],
           minQuantityOptions: [],
           additionalOptions: []
         };
+      }
+      // Fallback to stored custom options 
+      return item.customOptions && typeof item.customOptions === 'object' 
+        ? item.customOptions 
+        : {
+            priceOptions: [],
+            quantityOptions: [],
+            minQuantityOptions: [],
+            additionalOptions: []
+          };
+    })();
+    console.log("🔥 FINAL custom options being set:", customOpts);
     setCustomOptions(customOpts);
     
     // Pre-select sectors that already have this pricing rule
