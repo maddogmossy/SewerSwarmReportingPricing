@@ -63,6 +63,7 @@ function Router() {
           <Route path="/pdf-reader" component={PDFReader} />
           <Route path="/pricing" component={Pricing} />
           <Route path="/sector-pricing" component={SectorPricing} />
+          <Route path="/sector-pricing/:sector" component={RepairPricing} />
 
           <Route path="/pricing/surveys" component={SurveyPricing} />
           <Route path="/pricing/cleansing" component={CleansingPricing} />
