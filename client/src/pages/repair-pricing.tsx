@@ -409,8 +409,8 @@ export default function RepairPricing() {
             pipeSize: pipeSize || prev.pipeSize,
             depth: depthRange,
             description: description || generateDescriptionFromRecommendations(recommendations, defects),
-            lengthOfRepair: meterage || "15.56m", // Use actual length from dashboard
-            dayRate: "800.00",
+            lengthOfRepair: meterage || "", // Use actual length from dashboard
+            dayRate: "",
             vehicleId: "",
             rule: rule,
             pricingStructure: {
@@ -714,21 +714,21 @@ export default function RepairPricing() {
       pipeSize: "",
       depth: "",
       description: "",
-      option1Cost: "N/A",
-      option2Cost: "",
-      option3Cost: "",
-      option4Cost: "",
-      option1PerShift: "",
-      option2PerShift: "",
-      option3PerShift: "",
-      option4PerShift: "",
-      selectedOption: "",
       rule: "",
-      lengthOfRepair: "1000mm",
-      minInstallationPerDay: "",
+      lengthOfRepair: "",
       dayRate: "",
       vehicleId: "",
-      lockSingleLayer: true // Lock single layer by default
+      pricingStructure: {
+        meterage: false,
+        numberPerShift: false,
+        metersPerShift: false,
+        dayRate: false,
+        hourlyRate: false,
+        runsPerShift: false,
+        setupRate: false,
+        minCharge: false,
+        repeatFree: false
+      }
     });
     setApplySectors([]);
     setOriginalApplySectors([]);
@@ -1133,20 +1133,20 @@ export default function RepairPricing() {
                               depth: "",
                               description: "",
                               rule: "",
-                              lengthOfRepair: "1000mm",
-                              minInstallationPerDay: "",
+                              lengthOfRepair: "",
                               dayRate: "",
-                              option1Cost: "",
-                              option2Cost: "",
-                              option3Cost: "",
-                              option4Cost: "",
-                              option1PerShift: "",
-                              option2PerShift: "",
-                              option3PerShift: "",
-                              option4PerShift: "",
-                              selectedOption: "",
                               vehicleId: "",
-                              lockSingleLayer: false
+                              pricingStructure: {
+                                meterage: false,
+                                numberPerShift: false,
+                                metersPerShift: false,
+                                dayRate: false,
+                                hourlyRate: false,
+                                runsPerShift: false,
+                                setupRate: false,
+                                minCharge: false,
+                                repeatFree: false
+                              }
                             });
                             setEditingItem(null);
                             setApplySectors([sector]);
@@ -1240,20 +1240,20 @@ export default function RepairPricing() {
                               depth: "",
                               description: "",
                               rule: "",
-                              lengthOfRepair: "1000mm",
-                              minInstallationPerDay: "",
+                              lengthOfRepair: "",
                               dayRate: "",
-                              option1Cost: "",
-                              option2Cost: "",
-                              option3Cost: "",
-                              option4Cost: "",
-                              option1PerShift: "",
-                              option2PerShift: "",
-                              option3PerShift: "",
-                              option4PerShift: "",
-                              selectedOption: "",
                               vehicleId: "",
-                              lockSingleLayer: false
+                              pricingStructure: {
+                                meterage: false,
+                                numberPerShift: false,
+                                metersPerShift: false,
+                                dayRate: false,
+                                hourlyRate: false,
+                                runsPerShift: false,
+                                setupRate: false,
+                                minCharge: false,
+                                repeatFree: false
+                              }
                             });
                             setEditingItem(null);
                             setApplySectors([sector]);
