@@ -252,10 +252,7 @@ export default function RepairPricing() {
   });
   const [showSimpleAddForm, setShowSimpleAddForm] = useState(false);
   const [simpleCategoryName, setSimpleCategoryName] = useState('');
-  const [showPriceCostDialog, setShowPriceCostDialog] = useState(false);
-  const [showQuantityDialog, setShowQuantityDialog] = useState(false);
-  const [showMinQuantityDialog, setShowMinQuantityDialog] = useState(false);
-  const [showAdditionalDialog, setShowAdditionalDialog] = useState(false);
+
   
   // Collapsible state for option windows
   const [collapsedWindows, setCollapsedWindows] = useState({
@@ -264,13 +261,14 @@ export default function RepairPricing() {
     minQuantityOptions: false,
     additionalOptions: false
   });
-  const [newOptionName, setNewOptionName] = useState('');
+
   const [categoryDeleteDialogOpen, setCategoryDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<any>(null);
   const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
   const [tempDescription, setTempDescription] = useState("");
   const [isDescriptionEditable, setIsDescriptionEditable] = useState(false);
-  
+
+
 
 
   // Math operators state for pricing calculations
@@ -445,7 +443,9 @@ export default function RepairPricing() {
     },
     // Keep track of option display order
     optionDisplayOrder: [],
-    quantityDisplayOrder: []
+    quantityDisplayOrder: [],
+    minQuantityDisplayOrder: [],
+    additionalDisplayOrder: []
   });
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
@@ -2663,18 +2663,7 @@ export default function RepairPricing() {
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
                       </Button>
-                      <Button 
-                        type="button"
-                        size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowPriceCostDialog(true);
-                        }}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add
-                      </Button>
+
                     </div>
                   </div>
                   {!collapsedWindows.priceOptions && (
@@ -2802,18 +2791,7 @@ export default function RepairPricing() {
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
                       </Button>
-                      <Button 
-                        type="button"
-                        size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-green-600 hover:bg-green-700 text-white"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowQuantityDialog(true);
-                        }}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add
-                      </Button>
+
                     </div>
                   </div>
                   {!collapsedWindows.quantityOptions && (
@@ -2937,18 +2915,7 @@ export default function RepairPricing() {
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
                       </Button>
-                      <Button 
-                        type="button"
-                        size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-orange-600 hover:bg-orange-700 text-white"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowMinQuantityDialog(true);
-                        }}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add
-                      </Button>
+
                     </div>
                   </div>
                   {!collapsedWindows.minQuantityOptions && (
@@ -3042,18 +3009,7 @@ export default function RepairPricing() {
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
                       </Button>
-                      <Button 
-                        type="button"
-                        size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-purple-600 hover:bg-purple-700 text-white"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowAdditionalDialog(true);
-                        }}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add
-                      </Button>
+
                     </div>
                   </div>
                   {!collapsedWindows.additionalOptions && (
@@ -3210,419 +3166,14 @@ export default function RepairPricing() {
           </DialogContent>
         </Dialog>
 
-        {/* Price/Cost Option Dialog */}
-        <Dialog open={showPriceCostDialog} onOpenChange={setShowPriceCostDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Add Price/Cost Option</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="priceCostOption" className="text-sm font-medium">Option Name</Label>
-                <Input
-                  id="priceCostOption"
-                  value={newOptionName}
-                  onChange={(e) => setNewOptionName(e.target.value)}
-                  placeholder="e.g., Per unit rate (£ per unit)"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setShowPriceCostDialog(false);
-                setNewOptionName('');
-              }}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (newOptionName.trim()) {
-                    console.log("Adding price/cost option as new STANDARD option:", newOptionName);
-                    
-                    // Simply add to formData pricing structure - no complex display orders
-                    setFormData(prev => {
-                      const fieldName = newOptionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-                      return {
-                        ...prev,
-                        pricingStructure: {
-                          ...prev.pricingStructure,
-                          [fieldName]: true // Add as checked standard option
-                        }
-                      };
-                    });
-                    
-                    setShowPriceCostDialog(false);
-                    setNewOptionName('');
-                  }
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Add Option
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
 
-        {/* Quantity Option Dialog */}
-        <Dialog open={showQuantityDialog} onOpenChange={setShowQuantityDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Add Quantity Option</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="quantityOption" className="text-sm font-medium">Option Name</Label>
-                <Input
-                  id="quantityOption"
-                  value={newOptionName}
-                  onChange={(e) => setNewOptionName(e.target.value)}
-                  placeholder="e.g., Linear meters completed"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setShowQuantityDialog(false);
-                setNewOptionName('');
-              }}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (newOptionName.trim()) {
-                    console.log("Adding quantity option as new STANDARD option:", newOptionName);
-                    
-                    // Add to quantityDisplayOrder as a standard option (not custom)
-                    setFormData(prev => {
-                      const newStandardOptionId = `userAdded_${Date.now()}`;
-                      const newDisplayItem = {
-                        id: newStandardOptionId,
-                        label: newOptionName.trim(),
-                        type: 'standard' // Make it a standard option, not custom
-                      };
-                      
-                      const currentOrder = prev.quantityDisplayOrder || [
-                        { id: 'numberPerShift', label: getQuantityOptionLabel('numberPerShift'), type: 'standard' },
-                        { id: 'metersPerShift', label: getQuantityOptionLabel('metersPerShift'), type: 'standard' },
-                        { id: 'runsPerShift', label: getQuantityOptionLabel('runsPerShift'), type: 'standard' },
-                        { id: 'repeatFree', label: getQuantityOptionLabel('repeatFree'), type: 'standard' }
-                      ];
-                      
-                      const updatedOrder = [...currentOrder, newDisplayItem];
-                      console.log("Added new standard quantity option to display order:", updatedOrder);
-                      
-                      return {
-                        ...prev,
-                        quantityDisplayOrder: updatedOrder,
-                        pricingStructure: {
-                          ...prev.pricingStructure,
-                          [newStandardOptionId]: false // Add as unchecked standard option
-                        }
-                      };
-                    });
-                    
-                    setShowQuantityDialog(false);
-                    setNewOptionName('');
-                  }
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Add Option
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
 
-        {/* Min Quantity Option Dialog */}
-        <Dialog open={showMinQuantityDialog} onOpenChange={setShowMinQuantityDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Add Min Quantity Option</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="minQuantityOption" className="text-sm font-medium">Option Name</Label>
-                <Input
-                  id="minQuantityOption"
-                  value={newOptionName}
-                  onChange={(e) => setNewOptionName(e.target.value)}
-                  placeholder="e.g., Min pipes per day"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setShowMinQuantityDialog(false);
-                setNewOptionName('');
-              }}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (newOptionName.trim()) {
-                    console.log("Adding min quantity option as new STANDARD option:", newOptionName);
-                    
-                    // Add to minQuantityDisplayOrder as a standard option (not custom)
-                    setFormData(prev => {
-                      const newStandardOptionId = `userAdded_${Date.now()}`;
-                      const newDisplayItem = {
-                        id: newStandardOptionId,
-                        label: newOptionName.trim(),
-                        type: 'standard' // Make it a standard option, not custom
-                      };
-                      
-                      const currentOrder = prev.minQuantityDisplayOrder || [
-                        { id: 'minUnitsPerShift', label: getMinQuantityOptionLabel('minUnitsPerShift'), type: 'standard' },
-                        { id: 'minMetersPerShift', label: getMinQuantityOptionLabel('minMetersPerShift'), type: 'standard' },
-                        { id: 'minInspectionsPerShift', label: getMinQuantityOptionLabel('minInspectionsPerShift'), type: 'standard' },
-                        { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), type: 'standard' }
-                      ];
-                      
-                      const updatedOrder = [...currentOrder, newDisplayItem];
-                      console.log("Added new standard min quantity option to display order:", updatedOrder);
-                      
-                      return {
-                        ...prev,
-                        minQuantityDisplayOrder: updatedOrder,
-                        pricingStructure: {
-                          ...prev.pricingStructure,
-                          [newStandardOptionId]: false // Add as unchecked standard option
-                        }
-                      };
-                    });
-                    
-                    setShowMinQuantityDialog(false);
-                    setNewOptionName('');
-                  }
-                }}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
-              >
-                Add Option
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
 
-        {/* Additional Option Dialog */}
-        <Dialog open={showAdditionalDialog} onOpenChange={setShowAdditionalDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Add Additional Option</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="additionalOption" className="text-sm font-medium">Option Name</Label>
-                <Input
-                  id="additionalOption"
-                  value={newOptionName}
-                  onChange={(e) => setNewOptionName(e.target.value)}
-                  placeholder="e.g., Include survey time"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setShowAdditionalDialog(false);
-                setNewOptionName('');
-              }}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (newOptionName.trim()) {
 
-                    // Add to additionalDisplayOrder to ensure it appears in the main window
-                    setFormData(prev => {
-                      const newCustomOptionId = `custom_additional_${Date.now()}`;
-                      const newDisplayItem = {
-                        id: newCustomOptionId,
-                        label: newOptionName.trim(),
-                        type: 'custom'
-                      };
-                      
-                      const currentOrder = prev.additionalDisplayOrder || [
-                        { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), type: 'standard' },
-                        { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), type: 'standard' }
-                      ];
-                      
-                      const updatedOrder = [...currentOrder, newDisplayItem];
-                      
-                      return {
-                        ...prev,
-                        additionalDisplayOrder: updatedOrder
-                      };
-                    });
-                    
-                    setShowAdditionalDialog(false);
-                    setNewOptionName('');
-                  }
-                }}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                Add Option
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
 
-        {/* Min Quantity Option Dialog */}
-        <Dialog open={showMinQuantityDialog} onOpenChange={setShowMinQuantityDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Add Min Quantity Option</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="minQuantityOption" className="text-sm font-medium">Option Name</Label>
-                <Input
-                  id="minQuantityOption"
-                  value={newOptionName}
-                  onChange={(e) => setNewOptionName(e.target.value)}
-                  placeholder="e.g., Min inspections required"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setShowMinQuantityDialog(false);
-                setNewOptionName('');
-              }}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (newOptionName.trim()) {
-                    console.log("Adding min quantity option:", newOptionName);
-                    // Add the minimum quantity option to pricing structure
-                    const optionKey = newOptionName.toLowerCase().includes('units') ? 'minUnitsPerShift' :
-                                     newOptionName.toLowerCase().includes('meters') ? 'minMetersPerShift' :
-                                     newOptionName.toLowerCase().includes('inspections') ? 'minInspectionsPerShift' :
-                                     newOptionName.toLowerCase().includes('setup') ? 'minSetupCount' :
-                                     'minUnitsPerShift'; // default
-                    
-                    setFormData({
-                      ...formData,
-                      pricingStructure: {
-                        ...formData.pricingStructure,
-                        [optionKey]: true
-                      }
-                    });
-                    
-                    setShowMinQuantityDialog(false);
-                    setNewOptionName('');
-                  }
-                }}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
-              >
-                Add Option
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
 
-        {/* Edit Custom Options Dialog */}
-        <Dialog open={showEditOptionsDialog} onOpenChange={setShowEditOptionsDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Edit Custom Option</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="editOptionName" className="text-sm font-medium">Option Name</Label>
-                <Input
-                  id="editOptionName"
-                  value={editingOptionName}
-                  onChange={(e) => setEditingOptionName(e.target.value)}
-                  placeholder="Enter option name..."
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setShowEditOptionsDialog(false);
-                setEditingOptionName('');
-                setEditingOptionIndex(-1);
-                setEditingOptionType('');
-              }}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (editingOptionName.trim() && editingOptionType && editingOptionIndex >= 0) {
-                    
-                    setShowEditOptionsDialog(false);
-                    setEditingOptionName('');
-                    setEditingOptionIndex(-1);
-                    setEditingOptionType('');
-                  }
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Save Changes
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
 
-        {/* Additional Items Dialog */}
-        <Dialog open={showAdditionalDialog} onOpenChange={setShowAdditionalDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Add Additional Item</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="additionalItem" className="text-sm font-medium">Item Name</Label>
-                <Input
-                  id="additionalItem"
-                  value={newOptionName}
-                  onChange={(e) => setNewOptionName(e.target.value)}
-                  placeholder="e.g., Include equipment setup time"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setShowAdditionalDialog(false);
-                setNewOptionName('');
-              }}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (newOptionName.trim()) {
-                    console.log("Adding additional item:", newOptionName);
-                    // Add the additional item to pricing structure
-                    const optionKey = newOptionName.toLowerCase().includes('depth') ? 'includeDepth' :
-                                     newOptionName.toLowerCase().includes('length') ? 'includeTotalLength' :
-                                     'includeDepth'; // default
-                    
-                    setFormData({
-                      ...formData,
-                      pricingStructure: {
-                        ...formData.pricingStructure,
-                        [optionKey]: true
-                      }
-                    });
-                    
-                    setShowAdditionalDialog(false);
-                    setNewOptionName('');
-                  }
-                }}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                Add Item
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+
 
         {/* Edit Price/Cost Options Dialog */}
         <Dialog open={showEditPriceOptionsDialog} onOpenChange={setShowEditPriceOptionsDialog}>
@@ -3906,11 +3457,26 @@ export default function RepairPricing() {
                   
                   const finalQuantityOptions = [...enabledStandardQuantityOptions, ...updatedCustomQuantityOptions];
                   console.log("Final quantityOptions array:", finalQuantityOptions);
+                  console.log("DELETED OPTIONS CHECK: editableQuantityOptions:", editableQuantityOptions);
+                  
+                  // CRITICAL: Clean up any remaining custom options in pricingStructure
+                  const cleanedPricingStructure = { ...newPricingStructure };
+                  
+                  // Remove any custom quantity option keys that are no longer in editableQuantityOptions
+                  Object.keys(cleanedPricingStructure).forEach(key => {
+                    if (key.startsWith('custom_quantity_')) {
+                      const stillExists = editableQuantityOptions.some(opt => opt.id === key);
+                      if (!stillExists) {
+                        delete cleanedPricingStructure[key];
+                        console.log("CLEANUP: Removed custom option from pricingStructure:", key);
+                      }
+                    }
+                  });
                   
                   setFormData({
                     ...formData,
                     pricingStructure: {
-                      ...newPricingStructure,
+                      ...cleanedPricingStructure,
                       quantityOptions: finalQuantityOptions // Sync the quantityOptions array properly
                     },
                     quantityDisplayOrder: editableQuantityOptions.map(option => ({
@@ -4173,6 +3739,8 @@ export default function RepairPricing() {
           </DialogContent>
           </Dialog>
         </div>
+        
+
       </div>
   );
 }
