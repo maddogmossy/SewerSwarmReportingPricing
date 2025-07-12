@@ -2769,6 +2769,21 @@ export default function RepairPricing() {
                 onClick={() => {
                   if (newOptionName.trim()) {
                     console.log("Adding quantity option:", newOptionName);
+                    // Add the option to the pricing structure based on common patterns
+                    const optionKey = newOptionName.toLowerCase().includes('units') ? 'numberPerShift' :
+                                     newOptionName.toLowerCase().includes('meters') ? 'metersPerShift' :
+                                     newOptionName.toLowerCase().includes('runs') ? 'runsPerShift' :
+                                     newOptionName.toLowerCase().includes('repeat') ? 'repeatFree' :
+                                     'numberPerShift'; // default
+                    
+                    setFormData({
+                      ...formData,
+                      pricingStructure: {
+                        ...formData.pricingStructure,
+                        [optionKey]: true
+                      }
+                    });
+                    
                     setShowQuantityDialog(false);
                     setNewOptionName('');
                   }
@@ -2810,11 +2825,26 @@ export default function RepairPricing() {
                 onClick={() => {
                   if (newOptionName.trim()) {
                     console.log("Adding min quantity option:", newOptionName);
+                    // Add the minimum quantity option to pricing structure
+                    const optionKey = newOptionName.toLowerCase().includes('units') ? 'minUnitsPerShift' :
+                                     newOptionName.toLowerCase().includes('meters') ? 'minMetersPerShift' :
+                                     newOptionName.toLowerCase().includes('inspections') ? 'minInspectionsPerShift' :
+                                     newOptionName.toLowerCase().includes('setup') ? 'minSetupCount' :
+                                     'minUnitsPerShift'; // default
+                    
+                    setFormData({
+                      ...formData,
+                      pricingStructure: {
+                        ...formData.pricingStructure,
+                        [optionKey]: true
+                      }
+                    });
+                    
                     setShowMinQuantityDialog(false);
                     setNewOptionName('');
                   }
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-orange-600 hover:bg-orange-700 text-white"
               >
                 Add Option
               </Button>
@@ -2851,6 +2881,19 @@ export default function RepairPricing() {
                 onClick={() => {
                   if (newOptionName.trim()) {
                     console.log("Adding additional item:", newOptionName);
+                    // Add the additional item to pricing structure
+                    const optionKey = newOptionName.toLowerCase().includes('depth') ? 'includeDepth' :
+                                     newOptionName.toLowerCase().includes('length') ? 'includeTotalLength' :
+                                     'includeDepth'; // default
+                    
+                    setFormData({
+                      ...formData,
+                      pricingStructure: {
+                        ...formData.pricingStructure,
+                        [optionKey]: true
+                      }
+                    });
+                    
                     setShowAdditionalDialog(false);
                     setNewOptionName('');
                   }
