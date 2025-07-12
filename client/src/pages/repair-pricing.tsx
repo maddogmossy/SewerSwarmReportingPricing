@@ -2671,7 +2671,7 @@ export default function RepairPricing() {
                           e.stopPropagation();
                           const optionName = prompt("Enter new price/cost option name:");
                           if (optionName && optionName.trim()) {
-                            const fieldName = optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                            const fieldName = `price_${optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}`;
                             setFormData(prev => ({
                               ...prev,
                               pricingStructure: {
@@ -2680,8 +2680,8 @@ export default function RepairPricing() {
                               }
                             }));
                             toast({
-                              title: "Option Added",
-                              description: `${optionName} has been added as a standard option.`,
+                              title: "Price Option Added",
+                              description: `${optionName} has been added to Price/Cost options.`,
                             });
                           }
                         }}
@@ -2722,12 +2722,12 @@ export default function RepairPricing() {
                           );
                         })}
                         
-                        {/* Show user-added options (those not in standard list) */}
+                        {/* Show blue/price-specific added options */}
                         {formData.pricingStructure && Object.keys(formData.pricingStructure).filter(key => 
-                          !['dayRate', 'hourlyRate', 'setupRate', 'minCharge', 'meterage', 'priceOptions', 'mathOperators', 'numberPerShift', 'metersPerShift', 'runsPerShift', 'repeatFree', 'minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount', 'includeDepth', 'includeTotalLength'].includes(key)
+                          key.startsWith('price_')
                         ).map((optionKey) => {
                           const isChecked = !!formData.pricingStructure[optionKey];
-                          const optionLabel = optionKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          const optionLabel = optionKey.replace('price_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                           
                           return (
                             <div key={optionKey} className="flex items-center space-x-2">
@@ -2825,7 +2825,7 @@ export default function RepairPricing() {
                           e.stopPropagation();
                           const optionName = prompt("Enter new quantity option name:");
                           if (optionName && optionName.trim()) {
-                            const fieldName = optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                            const fieldName = `quantity_${optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}`;
                             setFormData(prev => ({
                               ...prev,
                               pricingStructure: {
@@ -2834,8 +2834,8 @@ export default function RepairPricing() {
                               }
                             }));
                             toast({
-                              title: "Option Added",
-                              description: `${optionName} has been added as a standard option.`,
+                              title: "Quantity Option Added",
+                              description: `${optionName} has been added to Quantity options.`,
                             });
                           }
                         }}
@@ -2893,14 +2893,39 @@ export default function RepairPricing() {
                                 <Label htmlFor={option.id} className="text-sm">
                                   {option.label}
                                 </Label>
-                                
-
-                                
-
                               </div>
                             );
                           });
                         })()}
+
+                        {/* Show green/quantity-specific added options */}
+                        {formData.pricingStructure && Object.keys(formData.pricingStructure).filter(key => 
+                          key.startsWith('quantity_')
+                        ).map((optionKey) => {
+                          const isChecked = !!formData.pricingStructure[optionKey];
+                          const optionLabel = optionKey.replace('quantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          
+                          return (
+                            <div key={optionKey} className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={optionKey}
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  setFormData({
+                                    ...formData,
+                                    pricingStructure: {
+                                      ...formData.pricingStructure,
+                                      [optionKey]: e.target.checked
+                                    }
+                                  });
+                                }}
+                                className="rounded border-slate-300"
+                              />
+                              <Label htmlFor={optionKey} className="text-sm">{optionLabel}</Label>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -2975,7 +3000,7 @@ export default function RepairPricing() {
                           e.stopPropagation();
                           const optionName = prompt("Enter new minimum quantity option name:");
                           if (optionName && optionName.trim()) {
-                            const fieldName = optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                            const fieldName = `minquantity_${optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}`;
                             setFormData(prev => ({
                               ...prev,
                               pricingStructure: {
@@ -2984,8 +3009,8 @@ export default function RepairPricing() {
                               }
                             }));
                             toast({
-                              title: "Option Added",
-                              description: `${optionName} has been added as a standard option.`,
+                              title: "Min Quantity Option Added",
+                              description: `${optionName} has been added to Min Quantity options.`,
                             });
                           }
                         }}
@@ -3046,6 +3071,35 @@ export default function RepairPricing() {
                             );
                           });
                         })()}
+
+                        {/* Show orange/minquantity-specific added options */}
+                        {formData.pricingStructure && Object.keys(formData.pricingStructure).filter(key => 
+                          key.startsWith('minquantity_')
+                        ).map((optionKey) => {
+                          const isChecked = !!formData.pricingStructure[optionKey];
+                          const optionLabel = optionKey.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          
+                          return (
+                            <div key={optionKey} className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={optionKey}
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  setFormData({
+                                    ...formData,
+                                    pricingStructure: {
+                                      ...formData.pricingStructure,
+                                      [optionKey]: e.target.checked
+                                    }
+                                  });
+                                }}
+                                className="rounded border-slate-300"
+                              />
+                              <Label htmlFor={optionKey} className="text-sm">{optionLabel}</Label>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -3095,7 +3149,7 @@ export default function RepairPricing() {
                           e.stopPropagation();
                           const optionName = prompt("Enter new additional item name:");
                           if (optionName && optionName.trim()) {
-                            const fieldName = optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                            const fieldName = `additional_${optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}`;
                             setFormData(prev => ({
                               ...prev,
                               pricingStructure: {
@@ -3104,8 +3158,8 @@ export default function RepairPricing() {
                               }
                             }));
                             toast({
-                              title: "Option Added",
-                              description: `${optionName} has been added as a standard option.`,
+                              title: "Additional Item Added",
+                              description: `${optionName} has been added to Additional Items.`,
                             });
                           }
                         }}
@@ -3164,6 +3218,35 @@ export default function RepairPricing() {
                             );
                           });
                         })()}
+
+                        {/* Show purple/additional-specific added options */}
+                        {formData.pricingStructure && Object.keys(formData.pricingStructure).filter(key => 
+                          key.startsWith('additional_')
+                        ).map((optionKey) => {
+                          const isChecked = !!formData.pricingStructure[optionKey];
+                          const optionLabel = optionKey.replace('additional_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          
+                          return (
+                            <div key={optionKey} className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={optionKey}
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  setFormData({
+                                    ...formData,
+                                    pricingStructure: {
+                                      ...formData.pricingStructure,
+                                      [optionKey]: e.target.checked
+                                    }
+                                  });
+                                }}
+                                className="rounded border-slate-300"
+                              />
+                              <Label htmlFor={optionKey} className="text-sm">{optionLabel}</Label>
+                            </div>
+                          );
+                        })}
                       </div>
                       <p className="text-xs text-purple-600 mt-3">
                         Additional items can be included in pricing calculations when available from inspection data.
