@@ -2787,58 +2787,52 @@ export default function RepairPricing() {
                             if (!isStandardOption && !isCustomOption) return null;
 
                             return (
-                              <div key={option.id} className={`flex flex-col items-center space-y-2 p-3 border-2 rounded-lg transition-colors ${
-                                isEnabled ? 'border-green-300 bg-green-50' : 'border-slate-200 bg-slate-50'
-                              } ${isCustomOption ? 'border-green-400 bg-green-100' : ''}`}>
-                                <div className="flex items-center space-x-2">
-                                  <input
-                                    type="checkbox"
-                                    id={option.id}
-                                    checked={isEnabled}
-                                    onChange={(e) => {
-                                      if (isStandardOption) {
-                                        setFormData({
-                                          ...formData,
-                                          pricingStructure: {
-                                            ...formData.pricingStructure,
-                                            [option.id]: e.target.checked
-                                          }
-                                        });
-                                      }
-                                    }}
-                                    className="rounded border-slate-300"
-                                  />
-                                  <Label 
-                                    htmlFor={option.id} 
-                                    className={`text-sm font-medium text-center ${isEnabled ? 'text-green-700' : 'text-slate-600'} ${isCustomOption ? 'text-green-800' : ''}`}
-                                  >
-                                    {option.label}
-                                  </Label>
-                                </div>
+                              <div key={option.id} className={`flex items-center space-x-2 ${isCustomOption ? 'p-2 bg-green-100 border border-green-300 rounded' : ''}`}>
+                                <input
+                                  type="checkbox"
+                                  id={option.id}
+                                  checked={isEnabled}
+                                  onChange={(e) => {
+                                    if (isStandardOption) {
+                                      setFormData({
+                                        ...formData,
+                                        pricingStructure: {
+                                          ...formData.pricingStructure,
+                                          [option.id]: e.target.checked
+                                        }
+                                      });
+                                    }
+                                  }}
+                                  className="rounded border-slate-300"
+                                />
+                                <Label 
+                                  htmlFor={option.id} 
+                                  className={`text-sm ${isCustomOption ? 'text-green-700 font-medium' : 'text-slate-700'}`}
+                                >
+                                  {option.label}
+                                </Label>
                                 
                                 {isStandardOption && isEnabled && (
-                                  <div className="w-full">
-                                    <Select
-                                      value={mathOperators[option.id] || 'add'}
-                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                        setMathOperators(prev => ({ ...prev, [option.id]: value }))
-                                      }
-                                    >
-                                      <SelectTrigger className="w-full h-6 text-xs">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="add">+</SelectItem>
-                                        <SelectItem value="subtract">-</SelectItem>
-                                        <SelectItem value="multiply">×</SelectItem>
-                                        <SelectItem value="divide">÷</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
+                                  <Select
+                                    value={mathOperators[option.id] || 'add'}
+                                    onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                      setMathOperators(prev => ({ ...prev, [option.id]: value }))
+                                    }
+                                  >
+                                    <SelectTrigger className="w-16 h-6 text-xs ml-2">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="add">+</SelectItem>
+                                      <SelectItem value="subtract">-</SelectItem>
+                                      <SelectItem value="multiply">×</SelectItem>
+                                      <SelectItem value="divide">÷</SelectItem>
+                                    </SelectContent>
+                                  </Select>
                                 )}
                                 
                                 {isCustomOption && (
-                                  <div className="flex items-center gap-1">
+                                  <div className="flex items-center gap-1 ml-auto">
                                     <Button
                                       type="button"
                                       size="sm"
