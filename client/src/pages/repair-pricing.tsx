@@ -571,10 +571,10 @@ export default function RepairPricing() {
       resetForm();
       setIsAddDialogOpen(false);
       
-      // Clear URL parameters to prevent auto-focus from triggering again
-      const currentUrl = new URL(window.location.href);
-      currentUrl.search = ''; // Clear all search parameters
-      window.history.replaceState({}, '', currentUrl.toString());
+      // Navigate back to dashboard after successful save
+      setTimeout(() => {
+        setLocation('/dashboard');
+      }, 500);
     },
     onError: (error: any) => {
       toast({ 
@@ -661,14 +661,10 @@ export default function RepairPricing() {
       setEditingItem(null);
       setIsAddDialogOpen(false);
       
-      // Navigate back to dashboard if user came from repair options (has itemNo parameter)
-      const urlParams = new URLSearchParams(location.split('?')[1] || '');
-      const itemNo = urlParams.get('itemNo');
-      if (itemNo) {
-        setTimeout(() => {
-          setLocation('/dashboard');
-        }, 500);
-      }
+      // Navigate back to dashboard after successful save
+      setTimeout(() => {
+        setLocation('/dashboard');
+      }, 500);
     },
     onError: (error: any) => {
       toast({ 
