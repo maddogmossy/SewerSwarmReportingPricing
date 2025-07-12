@@ -109,10 +109,8 @@ let folderStorage = [
 // In-memory storage for uploads (REV_V1 simulation) - empty since 218 ECL was deleted
 let uploadsStorage = [];
 
-// In-memory storage for work categories (REV_V1 simulation)
+// In-memory storage for work categories (REV_V1 simulation) - Only Cleanse/Survey
 let workCategoriesStorage = [
-  { id: 1, name: "CCTV Surveys", description: "Camera inspection surveys" },
-  { id: 2, name: "Jetting/Cleaning", description: "High pressure water jetting" },
   { id: 4, name: "Cleanse/Survey", description: "Complete cleaning followed by verification survey to confirm completion" }
 ];
 
