@@ -1324,12 +1324,21 @@ export default function RepairPricing() {
     });
     
     // Load existing math operators and custom options
-    if (item.mathOperators && typeof item.mathOperators === 'object') {
-      setMathOperators(item.mathOperators);
-    }
-    if (item.customOptions && typeof item.customOptions === 'object') {
-      setCustomOptions(item.customOptions);
-    }
+    const mathOps = item.mathOperators && typeof item.mathOperators === 'object' 
+      ? item.mathOperators 
+      : {}; // Initialize with empty object if not available
+    setMathOperators(mathOps);
+    
+    // Initialize custom options with fallback to preserve existing custom data
+    const customOpts = item.customOptions && typeof item.customOptions === 'object' 
+      ? item.customOptions 
+      : {
+          priceOptions: [],
+          quantityOptions: customOptions.quantityOptions || [], // Preserve existing quantity options
+          minQuantityOptions: [],
+          additionalOptions: []
+        };
+    setCustomOptions(customOpts);
     
     // Pre-select sectors that already have this pricing rule
     const matchingSectors = findMatchingSectors(item);
@@ -2807,7 +2816,7 @@ export default function RepairPricing() {
                           
                           const displayOrder = formData.optionDisplayOrder || defaultOrder;
                           
-                          return displayOrder.map((option, index) => {
+                          return (displayOrder || []).map((option, index) => {
                             const isCustom = option.type === 'custom';
                             const isChecked = isCustom ? (formData.pricingStructure?.[option.id] !== false) : (formData.pricingStructure?.[option.id] || false);
                             
