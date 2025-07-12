@@ -2433,11 +2433,21 @@ export default function RepairPricing() {
                   if (formData.pricingStructure?.setupRate) priceOptions.push({key: 'setupRate', label: 'Setup rate', type: 'cost'});
                   if (formData.pricingStructure?.minCharge) priceOptions.push({key: 'minCharge', label: 'Min charge', type: 'cost'});
                   
+                  // Add custom price options (blue)
+                  customOptions.priceOptions.forEach((option, index) => {
+                    priceOptions.push({key: `custom_price_${index}`, label: option, type: 'cost'});
+                  });
+                  
                   // Categorize quantity options (green)
                   if (formData.pricingStructure?.numberPerShift) quantityOptions.push({key: 'numberPerShift', label: 'Number per shift', type: 'quantity'});
                   if (formData.pricingStructure?.metersPerShift) quantityOptions.push({key: 'metersPerShift', label: 'Meters per shift', type: 'quantity'});
                   if (formData.pricingStructure?.runsPerShift) quantityOptions.push({key: 'runsPerShift', label: 'Runs per shift', type: 'quantity'});
                   if (formData.pricingStructure?.repeatFree) quantityOptions.push({key: 'repeatFree', label: 'Repeat free', type: 'quantity'});
+                  
+                  // Add custom quantity options (green)
+                  customOptions.quantityOptions.forEach((option, index) => {
+                    quantityOptions.push({key: `custom_quantity_${index}`, label: option, type: 'quantity'});
+                  });
                   
                   // Categorize orange options (min quantity per shift)
                   if (formData.pricingStructure?.minUnitsPerShift) orangeOptions.push({key: 'minUnitsPerShift', label: 'Min units/shift', type: 'orange'});
@@ -2445,9 +2455,19 @@ export default function RepairPricing() {
                   if (formData.pricingStructure?.minInspectionsPerShift) orangeOptions.push({key: 'minInspectionsPerShift', label: 'Min inspections/shift', type: 'orange'});
                   if (formData.pricingStructure?.minSetupCount) orangeOptions.push({key: 'minSetupCount', label: 'Min setup count', type: 'orange'});
                   
+                  // Add custom min quantity options (orange)
+                  customOptions.minQuantityOptions.forEach((option, index) => {
+                    orangeOptions.push({key: `custom_min_quantity_${index}`, label: option, type: 'orange'});
+                  });
+                  
                   // Categorize purple options (additional items)
                   if (formData.pricingStructure?.includeDepth) purpleOptions.push({key: 'includeDepth', label: 'Include depth', type: 'purple'});
                   if (formData.pricingStructure?.includeTotalLength) purpleOptions.push({key: 'includeTotalLength', label: 'Include total length', type: 'purple'});
+                  
+                  // Add custom additional options (purple)
+                  customOptions.additionalOptions.forEach((option, index) => {
+                    purpleOptions.push({key: `custom_additional_${index}`, label: option, type: 'purple'});
+                  });
                   
                   const allOptions = [...priceOptions, ...quantityOptions, ...orangeOptions, ...purpleOptions];
                   
