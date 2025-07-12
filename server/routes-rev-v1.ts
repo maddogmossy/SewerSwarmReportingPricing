@@ -144,16 +144,19 @@ let pricingStorage = [
     lengthOfRepair: "1000mm",
     selectedOption: "Option 2: Double Layer"
   },
-  // Placeholder entry for "Cleanse and Survey" repair method - user will configure actual pricing
+  // Cleanse/Survey pricing entry - properly configured for both systems
   {
     id: 6,
     sector: "utilities",
+    workCategoryId: 4, // Links to "Cleanse/Survey" work category
+    workCategory: "Cleanse/Survey",
     repairMethodId: 1, // Links to "Cleanse and Survey" repair method
     methodName: "Cleanse and Survey",
     pipeSize: "150mm",
-    cost: 0, // User will set actual cost
-    description: "Complete cleaning followed by verification survey to confirm completion",
-    rule: "User-configured cleaning method"
+    costPerMetre: 35.00, // Sample pricing - user can edit
+    cost: 35.00,
+    description: "Complete cleaning followed by verification survey to confirm completion (150mm pipe)",
+    rule: "Standard cleaning and verification process"
   }
 ];
 
@@ -378,6 +381,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ error: 'Name and description are required' });
     }
     
+    // Check for duplicates before adding
+    const existingCategory = workCategoriesStorage.find(cat => 
+      cat.name.toLowerCase() === name.trim().toLowerCase()
+    );
+    
+    if (existingCategory) {
+      return res.json(existingCategory); // Return existing instead of creating duplicate
+    }
+    
     // Generate new ID
     const newId = Math.max(...workCategoriesStorage.map(cat => cat.id), 0) + 1;
     
@@ -394,6 +406,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log(`✅ Added new work category: ${newCategory.name} (ID: ${newId})`);
     
     res.json(newCategory);
+  });
+
+  // Cleanup endpoint for removing duplicate categories
+  app.post('/api/work-categories/cleanup', (req, res) => {
+    // Remove duplicate "Cleanse/Survey" category (ID: 5)
+    const initialLength = workCategoriesStorage.length;
+    workCategoriesStorage = workCategoriesStorage.filter(cat => 
+      !(cat.id === 5 && cat.name === "Cleanse/Survey")
+    );
+    const removedCount = initialLength - workCategoriesStorage.length;
+    
+    console.log(`🧹 Removed ${removedCount} duplicate work categories`);
+    res.json({ success: true, removedCount });
   });
 
   app.get('/api/vehicle-travel-rates', (req, res) => {
