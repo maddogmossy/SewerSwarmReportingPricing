@@ -768,27 +768,18 @@ export default function RepairPricing() {
   const createPricing = useMutation({
     mutationFn: (data: any) => apiRequest('POST', '/api/repair-pricing', data),
     onSuccess: () => {
-      const activeSector = sector || currentSector?.id || 'utilities';
-      // Invalidate all pricing-related queries to ensure dashboard updates
-      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${activeSector}`] });
-      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${activeSector}`] });
-      
-      // Also invalidate all sector pricing queries to ensure cross-sector data is updated
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/utilities'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/adoption'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/highways'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/insurance'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/construction'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/domestic'] });
-      
-      // Force refetch the main pricing data
-      refetch();
+      // Clear all caches to prevent old data conflicts
+      queryClient.clear();
       
       toast({ title: "Pricing configuration saved successfully!" });
       
       // Close dialog and return to dashboard after successful save
       setIsAddDialogOpen(false);
+      
+      // Refresh page to ensure clean state
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       
       // Navigate back to dashboard to see calculated pricing
       setTimeout(() => {
@@ -877,28 +868,22 @@ export default function RepairPricing() {
   const updatePricing = useMutation({
     mutationFn: ({ id, ...data }: any) => apiRequest('PUT', `/api/repair-pricing/${id}`, data),
     onSuccess: () => {
-      const activeSector = sector || currentSector?.id || 'utilities';
-      // Invalidate all pricing-related queries to ensure dashboard updates
-      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${activeSector}`] });
-      queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${activeSector}`] });
+      // Clear all caches to prevent old data conflicts
+      queryClient.clear();
       
-      // Also invalidate all sector pricing queries to ensure cross-sector data is updated
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/utilities'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/adoption'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/highways'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/insurance'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/construction'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/domestic'] });
-      
-      // Force refetch the main pricing data
-      refetch();
+      // Clear localStorage cache that might interfere
+      localStorage.removeItem('editingPricing');
       
       toast({ title: "Pricing configuration updated successfully!" });
       
       // Close dialog and reset editing state
       setIsAddDialogOpen(false);
       setEditingItem(null);
+      
+      // Refresh page to ensure clean state
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     },
     onError: (error: any) => {
       toast({ 
@@ -919,25 +904,33 @@ export default function RepairPricing() {
       setItemToDelete(null);
       setDeleteScope('current');
       
-      // Aggressive cache removal and refresh
+      // COMPREHENSIVE CACHE CLEARING - ALL LAYERS
       const activeSector = sector || currentSector?.id || 'utilities';
       
-      // Remove existing cached data
-      queryClient.removeQueries({ queryKey: [`/api/repair-pricing/${activeSector}`] });
-      queryClient.removeQueries({ queryKey: ['/api/user-pricing'] });
-      queryClient.removeQueries({ queryKey: [`/api/pricing/check/${activeSector}`] });
+      // 1. Clear TanStack Query cache completely
+      queryClient.clear();
       
-      // Force immediate refetch
-      await Promise.all([
-        queryClient.refetchQueries({ queryKey: [`/api/repair-pricing/${activeSector}`] }),
-        queryClient.refetchQueries({ queryKey: ['/api/user-pricing'] }),
-        refetch() // Also call the component's refetch
-      ]);
+      // 2. Clear localStorage pricing data that might be interfering
+      localStorage.removeItem('customPricingOptions');
+      localStorage.removeItem('pricingFormData');
+      localStorage.removeItem('editingPricing');
       
-      // As a final fallback, refresh the page to ensure UI updates
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
+      // 3. Reset component state
+      setCustomOptions({
+        priceOptions: [],
+        quantityOptions: [],
+        minQuantityOptions: [],
+        additionalOptions: []
+      });
+      
+      // 4. Force complete refetch after clearing everything
+      setTimeout(async () => {
+        await Promise.all([
+          queryClient.refetchQueries({ queryKey: [`/api/repair-pricing/${activeSector}`] }),
+          queryClient.refetchQueries({ queryKey: ['/api/work-categories'] }),
+          refetch()
+        ]);
+      }, 100);
       
       if (variables.scope === 'all') {
         // Remove and refetch all sector queries
