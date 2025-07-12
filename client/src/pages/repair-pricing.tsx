@@ -2524,38 +2524,34 @@ export default function RepairPricing() {
                   const orangeOptions = [];
                   const purpleOptions = [];
                   
-                  // Categorize price/cost options (blue)
+                  // Categorize price/cost options (blue) - standard options
+                  const standardPriceOptions = ['meterage', 'hourlyRate', 'dayRate', 'setupRate', 'minCharge'];
                   if (formData.pricingStructure?.meterage) priceOptions.push({key: 'meterage', label: 'Meterage', type: 'cost'});
                   if (formData.pricingStructure?.hourlyRate) priceOptions.push({key: 'hourlyRate', label: 'Hourly rate', type: 'cost'});
                   if (formData.pricingStructure?.dayRate) priceOptions.push({key: 'dayRate', label: 'Day rate', type: 'cost'});
                   if (formData.pricingStructure?.setupRate) priceOptions.push({key: 'setupRate', label: 'Setup rate', type: 'cost'});
                   if (formData.pricingStructure?.minCharge) priceOptions.push({key: 'minCharge', label: 'Min charge', type: 'cost'});
                   
-                  // Add custom price options (blue) - only if enabled
-                  if (customOptions.priceOptions && Array.isArray(customOptions.priceOptions)) {
-                    customOptions.priceOptions.forEach((option, index) => {
-                      const customKey = `custom_price_${index}`;
-                      if (formData.pricingStructure?.[customKey] !== false) {
-                        priceOptions.push({key: customKey, label: option, type: 'cost'});
-                      }
-                    });
-                  }
+                  // Add user-added price options (blue) - check for any non-standard options that are enabled
+                  const standardQuantityOptions = ['numberPerShift', 'metersPerShift', 'runsPerShift', 'repeatFree'];
+                  const standardMinOptions = ['minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount'];
+                  const standardAdditionalOptions = ['includeDepth', 'includeTotalLength'];
+                  const reservedKeys = ['priceOptions', 'mathOperators', 'optionDisplayOrder', 'quantityDisplayOrder'];
+                  const allStandardOptions = [...standardPriceOptions, ...standardQuantityOptions, ...standardMinOptions, ...standardAdditionalOptions, ...reservedKeys];
+                  
+                  Object.keys(formData.pricingStructure || {}).forEach(key => {
+                    // If this is not a standard option and it's enabled, it's a user-added price option
+                    if (!allStandardOptions.includes(key) && formData.pricingStructure[key] === true) {
+                      const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                      priceOptions.push({key: key, label: label, type: 'cost'});
+                    }
+                  });
                   
                   // Categorize quantity options (green)
                   if (formData.pricingStructure?.numberPerShift) quantityOptions.push({key: 'numberPerShift', label: 'Number per shift', type: 'quantity'});
                   if (formData.pricingStructure?.metersPerShift) quantityOptions.push({key: 'metersPerShift', label: 'Meters per shift', type: 'quantity'});
                   if (formData.pricingStructure?.runsPerShift) quantityOptions.push({key: 'runsPerShift', label: 'Runs per shift', type: 'quantity'});
                   if (formData.pricingStructure?.repeatFree) quantityOptions.push({key: 'repeatFree', label: 'Repeat free', type: 'quantity'});
-                  
-                  // Add custom quantity options (green) - only if enabled
-                  if (customOptions.quantityOptions && Array.isArray(customOptions.quantityOptions)) {
-                    customOptions.quantityOptions.forEach((option, index) => {
-                      const customKey = `custom_quantity_${index}`;
-                      if (formData.pricingStructure?.[customKey] !== false) {
-                        quantityOptions.push({key: customKey, label: option, type: 'quantity'});
-                      }
-                    });
-                  }
                   
                   // Categorize orange options (min quantity per shift)
                   if (formData.pricingStructure?.minUnitsPerShift) orangeOptions.push({key: 'minUnitsPerShift', label: 'Min units/shift', type: 'orange'});
