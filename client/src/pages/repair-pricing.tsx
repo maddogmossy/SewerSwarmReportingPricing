@@ -2772,10 +2772,7 @@ export default function RepairPricing() {
                       <div className="grid grid-cols-4 gap-3">
                         {/* Dynamic Options in Reordered Sequence */}
                         {(() => {
-                          // Use optionDisplayOrder if available, otherwise fall back to default order
-                          console.log("🔥 CHECKBOX DEBUG - customOptions.priceOptions:", customOptions?.priceOptions);
-                          console.log("🔥 CHECKBOX DEBUG - Array.isArray check:", Array.isArray(customOptions?.priceOptions));
-                          
+                          // Build custom price options from database
                           const customPriceOptions = (customOptions?.priceOptions && Array.isArray(customOptions.priceOptions))
                             ? customOptions.priceOptions.map((option, index) => ({
                                 id: `custom_price_${index}`,
@@ -2783,9 +2780,8 @@ export default function RepairPricing() {
                                 type: 'custom'
                               }))
                             : [];
-                            
-                          console.log("🔥 CHECKBOX DEBUG - customPriceOptions:", customPriceOptions);
                           
+                          // Build default order with standard + custom options
                           const defaultOrder = [
                             { id: 'meterage', label: getPriceOptionLabel('meterage'), type: 'standard' },
                             { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), type: 'standard' },
@@ -2795,14 +2791,10 @@ export default function RepairPricing() {
                             ...customPriceOptions
                           ];
                           
-                          console.log("🔥 CHECKBOX DEBUG - defaultOrder:", defaultOrder);
-                          
-                          // CRITICAL FIX: Only use optionDisplayOrder if it has content, otherwise use defaultOrder
+                          // CRITICAL FIX: Only use saved order if it has content, otherwise use defaultOrder
                           const displayOrder = (formData.optionDisplayOrder && formData.optionDisplayOrder.length > 0) 
                             ? formData.optionDisplayOrder 
                             : defaultOrder;
-                          console.log("🔥 CHECKBOX DEBUG - displayOrder:", displayOrder);
-                          console.log("🔥 CHECKBOX DEBUG - formData.optionDisplayOrder:", formData.optionDisplayOrder);
                           
                           return (displayOrder || []).map((option, index) => {
                             const isCustom = option.type === 'custom';
