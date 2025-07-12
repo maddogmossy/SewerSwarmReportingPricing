@@ -1259,10 +1259,10 @@ export default function RepairPricing() {
                             setApplySectors([sector]);
                             setIsAddDialogOpen(true);
                           }}
-                          className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                           <Plus className="h-3 w-3 mr-1" />
-                          Add Another Price Option
+                          Add Price
                         </Button>
                       </div>
                     </div>
