@@ -275,12 +275,30 @@ export default function RepairPricing() {
   const [customOptions, setCustomOptions] = useState(() => {
     try {
       const saved = localStorage.getItem('customPricingOptions');
-      return saved ? JSON.parse(saved) : {
+      const parsed = saved ? JSON.parse(saved) : {
         priceOptions: [],
         quantityOptions: [],
         minQuantityOptions: [],
         additionalOptions: []
       };
+      
+      // Clean up any old test data like "Sections Per Shift"
+      const cleanedOptions = {
+        ...parsed,
+        quantityOptions: parsed.quantityOptions?.filter((option: string) => 
+          !option.toLowerCase().includes('sections per shift') && 
+          !option.toLowerCase().includes('section per shift') &&
+          option.trim().length > 0
+        ) || []
+      };
+      
+      // Save cleaned options back to localStorage if changes were made
+      if (JSON.stringify(cleanedOptions) !== JSON.stringify(parsed)) {
+        localStorage.setItem('customPricingOptions', JSON.stringify(cleanedOptions));
+        console.log('Cleaned up old custom options:', parsed.quantityOptions, '→', cleanedOptions.quantityOptions);
+      }
+      
+      return cleanedOptions;
     } catch (error) {
       console.error('Error loading custom options from localStorage:', error);
       return {
@@ -2698,22 +2716,7 @@ export default function RepairPricing() {
                           ].filter(Boolean).join(', ')}
                         </span>
                       )}
-                      {/* Show values next to Add button */}
-                      {formData.runsPerShift && (
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          Runs: {formData.runsPerShift}
-                        </span>
-                      )}
-                      {formData.numberPerShift && (
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          Number: {formData.numberPerShift}
-                        </span>
-                      )}
-                      {formData.metersPerShift && (
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          Meters: {formData.metersPerShift}
-                        </span>
-                      )}
+
                       {customOptions.quantityOptions.length > 0 && (
                         <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
                           {customOptions.quantityOptions.length} custom option{customOptions.quantityOptions.length !== 1 ? 's' : ''}
@@ -4028,6 +4031,167 @@ export default function RepairPricing() {
                   });
                 }}
                 className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Orange Min Quantity Options Dialog */}
+        <Dialog open={showEditMinQuantityOptionsDialog} onOpenChange={setShowEditMinQuantityOptionsDialog}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Min Quantity Options</DialogTitle>
+              <DialogDescription>
+                Edit the text labels for your minimum quantity options. You can modify the label text or delete options you no longer need.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3">
+                {[
+                  { id: 'minUnitsPerShift', label: getMinQuantityOptionLabel('minUnitsPerShift'), enabled: formData.pricingStructure?.minUnitsPerShift || false },
+                  { id: 'minMetersPerShift', label: getMinQuantityOptionLabel('minMetersPerShift'), enabled: formData.pricingStructure?.minMetersPerShift || false },
+                  { id: 'minInspectionsPerShift', label: getMinQuantityOptionLabel('minInspectionsPerShift'), enabled: formData.pricingStructure?.minInspectionsPerShift || false },
+                  { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), enabled: formData.pricingStructure?.minSetupCount || false }
+                ].filter(option => option.enabled).map((option, index) => (
+                  <div key={option.id} className="flex items-center justify-between p-3 border rounded-lg bg-orange-50">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <div className="flex flex-col">
+                        <Input
+                          value={option.label}
+                          onChange={(e) => {
+                            // Update label logic here if needed
+                          }}
+                          className="text-sm"
+                          placeholder="Option label"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            pricingStructure: {
+                              ...formData.pricingStructure,
+                              [option.id]: false
+                            }
+                          });
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowEditMinQuantityOptionsDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  setShowEditMinQuantityOptionsDialog(false);
+                  toast({
+                    title: "Min quantity options updated",
+                    description: "Your minimum quantity options have been updated successfully.",
+                  });
+                }}
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+              >
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Purple Additional Options Dialog */}
+        <Dialog open={showEditAdditionalOptionsDialog} onOpenChange={setShowEditAdditionalOptionsDialog}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Additional Options</DialogTitle>
+              <DialogDescription>
+                Edit the text labels for your additional options. You can modify the label text or delete custom options you no longer need.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3">
+                {[
+                  { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), enabled: formData.pricingStructure?.includeDepth || false, type: 'standard' },
+                  { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), enabled: formData.pricingStructure?.includeTotalLength || false, type: 'standard' },
+                  ...customOptions.additionalOptions.map((option, index) => ({
+                    id: `custom_additional_${index}`,
+                    label: option,
+                    enabled: true,
+                    type: 'custom'
+                  }))
+                ].filter(option => option.enabled).map((option, index) => (
+                  <div key={option.id} className="flex items-center justify-between p-3 border rounded-lg bg-purple-50">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <div className="flex flex-col">
+                        {option.type === 'custom' ? (
+                          <Input
+                            value={option.label}
+                            onChange={(e) => {
+                              const customIndex = parseInt(option.id.replace('custom_additional_', ''));
+                              const updatedAdditionalOptions = [...customOptions.additionalOptions];
+                              updatedAdditionalOptions[customIndex] = e.target.value;
+                              setCustomOptions(prev => ({
+                                ...prev,
+                                additionalOptions: updatedAdditionalOptions
+                              }));
+                            }}
+                            className="text-sm"
+                            placeholder="Custom option label"
+                          />
+                        ) : (
+                          <span className="text-sm font-medium text-gray-700">{option.label}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {option.type === 'custom' && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
+                          onClick={() => {
+                            const customIndex = parseInt(option.id.replace('custom_additional_', ''));
+                            const updatedAdditionalOptions = customOptions.additionalOptions.filter((_, i) => i !== customIndex);
+                            setCustomOptions(prev => ({
+                              ...prev,
+                              additionalOptions: updatedAdditionalOptions
+                            }));
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowEditAdditionalOptionsDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  setShowEditAdditionalOptionsDialog(false);
+                  toast({
+                    title: "Additional options updated",
+                    description: "Your additional options have been updated successfully.",
+                  });
+                }}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
               >
                 Save Changes
               </Button>
