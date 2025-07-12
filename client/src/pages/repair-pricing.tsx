@@ -855,6 +855,8 @@ export default function RepairPricing() {
       formData,
       pricingStructure: formData.pricingStructure,
       dayRate: formData.dayRate,
+      runsPerShift: formData.runsPerShift,
+      numberPerShift: formData.numberPerShift,
       description: formData.description,
       pipeSize: formData.pipeSize
     });
@@ -2601,9 +2603,35 @@ export default function RepairPricing() {
                   >
                     <h4 className="text-sm font-medium text-green-700">📊 Quantity Options</h4>
                     <div className="flex items-center gap-2">
+                      {(formData.pricingStructure?.numberPerShift || formData.pricingStructure?.metersPerShift || formData.pricingStructure?.runsPerShift || formData.pricingStructure?.repeatFree) && (
+                        <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
+                          {[
+                            formData.pricingStructure?.numberPerShift && 'Number per shift',
+                            formData.pricingStructure?.metersPerShift && 'Meters per shift',
+                            formData.pricingStructure?.runsPerShift && 'Runs per shift',
+                            formData.pricingStructure?.repeatFree && 'Repeat free'
+                          ].filter(Boolean).join(', ')}
+                        </span>
+                      )}
+                      {/* Show values next to Add button */}
+                      {formData.runsPerShift && (
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          Runs: {formData.runsPerShift}
+                        </span>
+                      )}
+                      {formData.numberPerShift && (
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          Number: {formData.numberPerShift}
+                        </span>
+                      )}
+                      {formData.metersPerShift && (
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          Meters: {formData.metersPerShift}
+                        </span>
+                      )}
                       {customOptions.quantityOptions.length > 0 && (
                         <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
-                          {customOptions.quantityOptions.length} option{customOptions.quantityOptions.length !== 1 ? 's' : ''}
+                          {customOptions.quantityOptions.length} custom option{customOptions.quantityOptions.length !== 1 ? 's' : ''}
                         </span>
                       )}
                       <Button 
