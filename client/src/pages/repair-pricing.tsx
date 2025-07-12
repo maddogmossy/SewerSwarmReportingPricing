@@ -1243,15 +1243,10 @@ export default function RepairPricing() {
                   required
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder="Click to add new category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {workCategories.map((category: any, index: number) => (
-                      <SelectItem key={category.id || index} value={(category.id || index).toString()}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="add_new" className="border-t border-dashed border-gray-300 text-blue-600 font-medium">
+                    <SelectItem value="add_new" className="text-blue-600 font-medium">
                       <div className="flex items-center gap-2">
                         <Plus className="h-4 w-4" />
                         Add New Category
