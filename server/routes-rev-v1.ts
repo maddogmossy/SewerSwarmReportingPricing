@@ -417,6 +417,156 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(sectorPricing);
   });
 
+  // POST endpoint to create new repair pricing
+  app.post('/api/repair-pricing', (req, res) => {
+    const {
+      sector,
+      workCategoryId,
+      repairMethodId,
+      pipeSize,
+      description,
+      cost,
+      rule,
+      // Dynamic pricing structure values
+      meterage,
+      hourlyRate,
+      dayRate,
+      setupRate,
+      minCharge,
+      repeatFree,
+      numberPerShift,
+      metersPerShift,
+      inspectionsPerShift,
+      minUnitsPerShift,
+      minMetersPerShift,
+      minInspectionsPerShift,
+      minSetupCount,
+      // Pricing structure selections
+      pricingStructure
+    } = req.body;
+
+    console.log('Creating new repair pricing with data:', req.body);
+
+    // Generate new ID
+    const newId = Math.max(...pricingStorage.map(p => p.id), 0) + 1;
+    
+    // Create new pricing entry with all dynamic fields
+    const newPricing = {
+      id: newId,
+      userId: "test-user",
+      sector: sector || "utilities",
+      workCategoryId,
+      repairMethodId,
+      pipeSize: pipeSize || "150mm",
+      description: description || "User-defined pricing configuration",
+      cost: cost || "0.00",
+      rule: rule || "Standard pricing rule",
+      // Dynamic pricing structure values
+      meterage: meterage || null,
+      hourlyRate: hourlyRate || null,
+      dayRate: dayRate || null,
+      setupRate: setupRate || null,
+      minCharge: minCharge || null,
+      repeatFree: repeatFree || null,
+      numberPerShift: numberPerShift || null,
+      metersPerShift: metersPerShift || null,
+      inspectionsPerShift: inspectionsPerShift || null,
+      minUnitsPerShift: minUnitsPerShift || null,
+      minMetersPerShift: minMetersPerShift || null,
+      minInspectionsPerShift: minInspectionsPerShift || null,
+      minSetupCount: minSetupCount || null,
+      // Store pricing structure selections for UI persistence
+      pricingStructure: pricingStructure || {},
+      createdAt: new Date().toISOString()
+    };
+
+    // Add to storage
+    pricingStorage.push(newPricing);
+    
+    console.log(`✅ Created repair pricing with ID: ${newId}`);
+    console.log('Pricing structure:', pricingStructure);
+    
+    res.json(newPricing);
+  });
+
+  // PUT endpoint to update existing repair pricing
+  app.put('/api/repair-pricing/:id', (req, res) => {
+    const { id } = req.params;
+    const pricingId = parseInt(id);
+    
+    const {
+      sector,
+      workCategoryId,
+      repairMethodId,
+      pipeSize,
+      description,
+      cost,
+      rule,
+      // Dynamic pricing structure values
+      meterage,
+      hourlyRate,
+      dayRate,
+      setupRate,
+      minCharge,
+      repeatFree,
+      numberPerShift,
+      metersPerShift,
+      inspectionsPerShift,
+      minUnitsPerShift,
+      minMetersPerShift,
+      minInspectionsPerShift,
+      minSetupCount,
+      // Pricing structure selections
+      pricingStructure
+    } = req.body;
+
+    console.log(`Updating repair pricing ${pricingId} with data:`, req.body);
+
+    // Find the pricing item to update
+    const pricingIndex = pricingStorage.findIndex(p => p.id === pricingId);
+    
+    if (pricingIndex === -1) {
+      return res.status(404).json({ error: 'Pricing item not found' });
+    }
+
+    // Update the pricing item with all dynamic fields
+    const updatedPricing = {
+      ...pricingStorage[pricingIndex],
+      sector: sector || pricingStorage[pricingIndex].sector,
+      workCategoryId: workCategoryId || pricingStorage[pricingIndex].workCategoryId,
+      repairMethodId: repairMethodId || pricingStorage[pricingIndex].repairMethodId,
+      pipeSize: pipeSize || pricingStorage[pricingIndex].pipeSize,
+      description: description || pricingStorage[pricingIndex].description,
+      cost: cost || pricingStorage[pricingIndex].cost,
+      rule: rule || pricingStorage[pricingIndex].rule,
+      // Dynamic pricing structure values
+      meterage: meterage !== undefined ? meterage : pricingStorage[pricingIndex].meterage,
+      hourlyRate: hourlyRate !== undefined ? hourlyRate : pricingStorage[pricingIndex].hourlyRate,
+      dayRate: dayRate !== undefined ? dayRate : pricingStorage[pricingIndex].dayRate,
+      setupRate: setupRate !== undefined ? setupRate : pricingStorage[pricingIndex].setupRate,
+      minCharge: minCharge !== undefined ? minCharge : pricingStorage[pricingIndex].minCharge,
+      repeatFree: repeatFree !== undefined ? repeatFree : pricingStorage[pricingIndex].repeatFree,
+      numberPerShift: numberPerShift !== undefined ? numberPerShift : pricingStorage[pricingIndex].numberPerShift,
+      metersPerShift: metersPerShift !== undefined ? metersPerShift : pricingStorage[pricingIndex].metersPerShift,
+      inspectionsPerShift: inspectionsPerShift !== undefined ? inspectionsPerShift : pricingStorage[pricingIndex].inspectionsPerShift,
+      minUnitsPerShift: minUnitsPerShift !== undefined ? minUnitsPerShift : pricingStorage[pricingIndex].minUnitsPerShift,
+      minMetersPerShift: minMetersPerShift !== undefined ? minMetersPerShift : pricingStorage[pricingIndex].minMetersPerShift,
+      minInspectionsPerShift: minInspectionsPerShift !== undefined ? minInspectionsPerShift : pricingStorage[pricingIndex].minInspectionsPerShift,
+      minSetupCount: minSetupCount !== undefined ? minSetupCount : pricingStorage[pricingIndex].minSetupCount,
+      // Store pricing structure selections for UI persistence
+      pricingStructure: pricingStructure || pricingStorage[pricingIndex].pricingStructure || {},
+      updatedAt: new Date().toISOString()
+    };
+
+    // Replace the item in storage
+    pricingStorage[pricingIndex] = updatedPricing;
+    
+    console.log(`✅ Updated repair pricing ${pricingId}`);
+    console.log('Updated pricing structure:', pricingStructure);
+    
+    res.json(updatedPricing);
+  });
+
   app.get('/api/work-categories', (req, res) => {
     res.json(workCategoriesStorage);
   });

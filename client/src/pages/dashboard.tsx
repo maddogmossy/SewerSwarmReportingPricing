@@ -1186,45 +1186,63 @@ export default function Dashboard() {
       return null;
     }
     
-    // Determine which option cost to use based on description analysis (prioritized over selectedOption)
-    let unitCost = 450; // Default fallback
+    // Calculate cost based on dynamic pricing structure values
+    let calculatedCost = 0;
     
-    // Analyze description first for accurate patch type detection
-    const description = (matchingPricing.description || '').toLowerCase();
+    console.log('Cost calculation debug:', {
+      pricingId: matchingPricing.id,
+      meterage: matchingPricing.meterage,
+      dayRate: matchingPricing.dayRate,
+      hourlyRate: matchingPricing.hourlyRate,
+      setupRate: matchingPricing.setupRate,
+      minCharge: matchingPricing.minCharge,
+      numberOfPatches,
+      sectionLength: section.totalLength
+    });
     
-
-    
-    if (description.includes('single') && matchingPricing.option1Cost && matchingPricing.option1Cost !== 'N/A') {
-      unitCost = parseFloat(matchingPricing.option1Cost);
-    } else if (description.includes('double') && matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
-      unitCost = parseFloat(matchingPricing.option2Cost);
-    } else if (description.includes('triple') && matchingPricing.option3Cost && matchingPricing.option3Cost !== 'N/A') {
-      unitCost = parseFloat(matchingPricing.option3Cost);
-    } else if (matchingPricing.selectedOption && matchingPricing.selectedOption.includes('Option')) {
-      // Fallback to selected option if description analysis fails
-      if (matchingPricing.selectedOption.includes('Option 1') && matchingPricing.option1Cost && matchingPricing.option1Cost !== 'N/A') {
+    // Check which pricing structure option has been configured and calculate accordingly
+    if (matchingPricing.meterage && parseFloat(matchingPricing.meterage) > 0) {
+      // Cost per meterage calculation
+      const totalLength = parseFloat(section.totalLength || "0");
+      calculatedCost = parseFloat(matchingPricing.meterage) * totalLength;
+      console.log('Using meterage pricing:', {meterage: matchingPricing.meterage, totalLength, calculatedCost});
+    } else if (matchingPricing.dayRate && parseFloat(matchingPricing.dayRate) > 0) {
+      // Day rate calculation  
+      calculatedCost = parseFloat(matchingPricing.dayRate) * numberOfPatches;
+      console.log('Using day rate pricing:', {dayRate: matchingPricing.dayRate, numberOfPatches, calculatedCost});
+    } else if (matchingPricing.hourlyRate && parseFloat(matchingPricing.hourlyRate) > 0) {
+      // Hourly rate calculation (assuming 8 hours per day for patches)
+      calculatedCost = parseFloat(matchingPricing.hourlyRate) * 8 * numberOfPatches;
+      console.log('Using hourly rate pricing:', {hourlyRate: matchingPricing.hourlyRate, numberOfPatches, calculatedCost});
+    } else if (matchingPricing.setupRate && parseFloat(matchingPricing.setupRate) > 0) {
+      // Setup rate (fixed cost regardless of number of patches)
+      calculatedCost = parseFloat(matchingPricing.setupRate);
+      console.log('Using setup rate pricing:', {setupRate: matchingPricing.setupRate, calculatedCost});
+    } else if (matchingPricing.minCharge && parseFloat(matchingPricing.minCharge) > 0) {
+      // Minimum charge (fixed cost)
+      calculatedCost = parseFloat(matchingPricing.minCharge);
+      console.log('Using min charge pricing:', {minCharge: matchingPricing.minCharge, calculatedCost});
+    } else {
+      // Fallback to legacy option costs if new pricing structure not configured
+      const description = (matchingPricing.description || '').toLowerCase();
+      let unitCost = 450; // Default fallback
+      
+      if (description.includes('single') && matchingPricing.option1Cost && matchingPricing.option1Cost !== 'N/A') {
         unitCost = parseFloat(matchingPricing.option1Cost);
-      } else if (matchingPricing.selectedOption.includes('Option 2') && matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
+      } else if (description.includes('double') && matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
         unitCost = parseFloat(matchingPricing.option2Cost);
-      } else if (matchingPricing.selectedOption.includes('Option 3') && matchingPricing.option3Cost && matchingPricing.option3Cost !== 'N/A') {
+      } else if (description.includes('triple') && matchingPricing.option3Cost && matchingPricing.option3Cost !== 'N/A') {
         unitCost = parseFloat(matchingPricing.option3Cost);
-      } else if (matchingPricing.selectedOption.includes('Option 4') && matchingPricing.option4Cost && matchingPricing.option4Cost !== 'N/A') {
-        unitCost = parseFloat(matchingPricing.option4Cost);
+      } else if (matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
+        unitCost = parseFloat(matchingPricing.option2Cost);
       }
-    } else if (matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
-      // Default to double layer (option 2) if available
-      unitCost = parseFloat(matchingPricing.option2Cost);
-    }
-    
-    // If parsing failed, use the base cost as fallback
-    if (isNaN(unitCost)) {
-      unitCost = parseFloat(matchingPricing.cost) || 450;
+      
+      calculatedCost = numberOfPatches * unitCost;
+      console.log('Using legacy option cost pricing:', {unitCost, numberOfPatches, calculatedCost});
     }
     
     const minQuantity = parseInt(matchingPricing.minimumQuantity) || 2;
-
-    // Total cost = number of patches × cost per patch
-    const totalCost = numberOfPatches * unitCost;
+    const totalCost = calculatedCost;
     const isUnderMinimum = numberOfPatches < minQuantity;
 
     return {
