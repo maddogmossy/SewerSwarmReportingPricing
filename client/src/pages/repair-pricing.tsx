@@ -318,6 +318,13 @@ export default function RepairPricing() {
     { id: 'minCharge', label: 'Min charge (£ minimum)', enabled: false },
     { id: 'dayRate', label: 'Day rate (£ per day)', enabled: false }
   ]);
+  const [showEditQuantityOptionsDialog, setShowEditQuantityOptionsDialog] = useState(false);
+  const [editableQuantityOptions, setEditableQuantityOptions] = useState([
+    { id: 'numberPerShift', label: 'Number per shift', enabled: false },
+    { id: 'metersPerShift', label: 'Meters per shift', enabled: false },
+    { id: 'runsPerShift', label: 'Runs per shift', enabled: false },
+    { id: 'repeatFree', label: 'Repeat free', enabled: false }
+  ]);
 
   // Function to get current label for an option
   const getPriceOptionLabel = (optionId: string) => {
@@ -330,7 +337,7 @@ export default function RepairPricing() {
       optionId === 'dayRate' ? 'Day rate (£ per day)' : optionId;
   };
 
-  // Functions for reordering options
+  // Functions for reordering price options
   const moveOptionUp = (index: number) => {
     if (index > 0) {
       const updatedOptions = [...editablePriceOptions];
@@ -345,6 +352,35 @@ export default function RepairPricing() {
       [updatedOptions[index], updatedOptions[index + 1]] = [updatedOptions[index + 1], updatedOptions[index]];
       setEditablePriceOptions(updatedOptions);
     }
+  };
+
+  // Functions for reordering quantity options
+  const moveQuantityOptionUp = (index: number) => {
+    if (index > 0) {
+      const updatedOptions = [...editableQuantityOptions];
+      [updatedOptions[index - 1], updatedOptions[index]] = [updatedOptions[index], updatedOptions[index - 1]];
+      setEditableQuantityOptions(updatedOptions);
+      console.log("Moved quantity option up:", updatedOptions);
+    }
+  };
+
+  const moveQuantityOptionDown = (index: number) => {
+    if (index < editableQuantityOptions.length - 1) {
+      const updatedOptions = [...editableQuantityOptions];
+      [updatedOptions[index], updatedOptions[index + 1]] = [updatedOptions[index + 1], updatedOptions[index]];
+      setEditableQuantityOptions(updatedOptions);
+      console.log("Moved quantity option down:", updatedOptions);
+    }
+  };
+
+  // Function to get current label for a quantity option
+  const getQuantityOptionLabel = (optionId: string) => {
+    const editableOption = editableQuantityOptions.find(opt => opt.id === optionId);
+    return editableOption ? editableOption.label : 
+      optionId === 'numberPerShift' ? 'Number per shift' :
+      optionId === 'metersPerShift' ? 'Meters per shift' :
+      optionId === 'runsPerShift' ? 'Runs per shift' :
+      optionId === 'repeatFree' ? 'Repeat free' : optionId;
   };
   const [formData, setFormData] = useState({
     workCategoryId: "",
@@ -381,7 +417,10 @@ export default function RepairPricing() {
       minMetersPerShift: false,
       minInspectionsPerShift: false,
       minSetupCount: false
-    }
+    },
+    // Keep track of option display order
+    optionDisplayOrder: [],
+    quantityDisplayOrder: []
   });
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
@@ -2670,17 +2709,46 @@ export default function RepairPricing() {
                         <Plus className="h-3 w-3 mr-1" />
                         Add
                       </Button>
-                      {customOptions.quantityOptions.length > 0 && (
+                      {(formData.pricingStructure?.numberPerShift || formData.pricingStructure?.metersPerShift || formData.pricingStructure?.runsPerShift || formData.pricingStructure?.repeatFree || customOptions.quantityOptions.length > 0) && (
                         <Button 
                           type="button"
                           size="sm" 
-                          className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white"
+                          className="text-xs px-2 py-1 h-6 bg-green-500 hover:bg-green-600 text-white"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setEditingOptionType('quantity');
-                            setShowEditOptionsDialog(true);
+                            // Use saved order if available, otherwise use default order
+                            if (formData.quantityDisplayOrder && formData.quantityDisplayOrder.length > 0) {
+                              console.log("Loading saved quantity order for edit dialog:", formData.quantityDisplayOrder);
+                              // Use the saved reordered sequence
+                              const reorderedOptions = formData.quantityDisplayOrder.map(option => ({
+                                id: option.id,
+                                label: option.label,
+                                enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
+                              }));
+                              setEditableQuantityOptions(reorderedOptions);
+                            } else {
+                              console.log("Using default quantity order for edit dialog");
+                              // Fall back to default order if no saved order exists
+                              const standardOptions = [
+                                { id: 'numberPerShift', label: 'Number per shift', enabled: formData.pricingStructure?.numberPerShift || false },
+                                { id: 'metersPerShift', label: 'Meters per shift', enabled: formData.pricingStructure?.metersPerShift || false },
+                                { id: 'runsPerShift', label: 'Runs per shift', enabled: formData.pricingStructure?.runsPerShift || false },
+                                { id: 'repeatFree', label: 'Repeat free', enabled: formData.pricingStructure?.repeatFree || false }
+                              ];
+                              
+                              // Add custom quantity options to the editable list
+                              const customQuantityOptions = customOptions.quantityOptions.map((option, index) => ({
+                                id: `custom_quantity_${index}`,
+                                label: option,
+                                enabled: true // Custom options are always considered enabled
+                              }));
+                              
+                              setEditableQuantityOptions([...standardOptions, ...customQuantityOptions]);
+                            }
+                            setShowEditQuantityOptionsDialog(true);
                           }}
                         >
+                          <Edit className="h-3 w-3 mr-1" />
                           Edit
                         </Button>
                       )}
@@ -2689,164 +2757,123 @@ export default function RepairPricing() {
                   {!collapsedWindows.quantityOptions && (
                     <div className="px-4 pb-4">
                       <div className="grid grid-cols-1 gap-3">
-                        {/* Standard quantity options */}
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="numberPerShift"
-                              checked={formData.pricingStructure?.numberPerShift || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  numberPerShift: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="numberPerShift" className="text-sm">Number per shift</Label>
-                          </div>
-                          {formData.pricingStructure?.numberPerShift && (
-                            <Select
-                              value={mathOperators.numberPerShift}
-                              onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                setMathOperators(prev => ({ ...prev, numberPerShift: value }))
-                              }
-                            >
-                              <SelectTrigger className="w-16 h-6 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="add">+</SelectItem>
-                                <SelectItem value="subtract">-</SelectItem>
-                                <SelectItem value="multiply">×</SelectItem>
-                                <SelectItem value="divide">÷</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="metersPerShift"
-                              checked={formData.pricingStructure?.metersPerShift || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  metersPerShift: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="metersPerShift" className="text-sm">Meters per shift</Label>
-                          </div>
-                          {formData.pricingStructure?.metersPerShift && (
-                            <Select
-                              value={mathOperators.metersPerShift}
-                              onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                setMathOperators(prev => ({ ...prev, metersPerShift: value }))
-                              }
-                            >
-                              <SelectTrigger className="w-16 h-6 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="add">+</SelectItem>
-                                <SelectItem value="subtract">-</SelectItem>
-                                <SelectItem value="multiply">×</SelectItem>
-                                <SelectItem value="divide">÷</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="runsPerShift"
-                              checked={formData.pricingStructure?.runsPerShift || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  runsPerShift: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="runsPerShift" className="text-sm">Runs per shift</Label>
-                          </div>
-                        </div>
+                        {/* Dynamic Quantity Options in Reordered Sequence */}
+                        {(() => {
+                          // Use quantityDisplayOrder if available, otherwise fall back to default order
+                          const defaultQuantityOrder = [
+                            { id: 'numberPerShift', label: getQuantityOptionLabel('numberPerShift'), type: 'standard' },
+                            { id: 'metersPerShift', label: getQuantityOptionLabel('metersPerShift'), type: 'standard' },
+                            { id: 'runsPerShift', label: getQuantityOptionLabel('runsPerShift'), type: 'standard' },
+                            { id: 'repeatFree', label: getQuantityOptionLabel('repeatFree'), type: 'standard' },
+                            ...customOptions.quantityOptions.map((option, index) => ({
+                              id: `custom_quantity_${index}`,
+                              label: option,
+                              type: 'custom'
+                            }))
+                          ];
 
+                          const displayOrder = formData.quantityDisplayOrder && formData.quantityDisplayOrder.length > 0 
+                            ? formData.quantityDisplayOrder 
+                            : defaultQuantityOrder;
 
-                        
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="repeatFree"
-                              checked={formData.pricingStructure?.repeatFree || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  repeatFree: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="repeatFree" className="text-sm">Repeat free</Label>
-                          </div>
-                        </div>
+                          console.log("Quantity display order:", displayOrder);
 
-                        {/* Custom Quantity Options */}
-                        {customOptions.quantityOptions && customOptions.quantityOptions.map((option, index) => (
-                          <div key={index} className="flex items-center justify-between space-x-2 p-2 bg-green-50 border border-green-200 rounded">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="checkbox"
-                                id={`custom_quantity_${index}`}
-                                className="rounded border-slate-300"
-                              />
-                              <Label htmlFor={`custom_quantity_${index}`} className="text-sm text-green-700 font-medium">{option}</Label>
-                            </div>
-                            <div className="flex gap-1">
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                                onClick={() => {
-                                  setEditingOptionIndex(index);
-                                  setEditingOptionType('quantityOptions');
-                                  setEditingOptionName(option);
-                                  setShowEditOptionsDialog(true);
-                                }}
-                              >
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
-                                onClick={() => {
-                                  setCustomOptions(prev => ({
-                                    ...prev,
-                                    quantityOptions: prev.quantityOptions.filter((_, i) => i !== index)
-                                  }));
-                                }}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
+                          return displayOrder.map((option, index) => {
+                            const isStandardOption = ['numberPerShift', 'metersPerShift', 'runsPerShift', 'repeatFree'].includes(option.id);
+                            const isCustomOption = option.id.startsWith('custom_quantity_');
+                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : true;
+                            
+                            // Only render if it's a valid option
+                            if (!isStandardOption && !isCustomOption) return null;
+
+                            return (
+                              <div key={option.id} className={`flex items-center justify-between space-x-2 ${
+                                isCustomOption ? 'p-2 bg-green-50 border border-green-200 rounded' : ''
+                              }`}>
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="checkbox"
+                                    id={option.id}
+                                    checked={isEnabled}
+                                    onChange={(e) => {
+                                      if (isStandardOption) {
+                                        setFormData({
+                                          ...formData,
+                                          pricingStructure: {
+                                            ...formData.pricingStructure,
+                                            [option.id]: e.target.checked
+                                          }
+                                        });
+                                      }
+                                    }}
+                                    className="rounded border-slate-300"
+                                  />
+                                  <Label 
+                                    htmlFor={option.id} 
+                                    className={`text-sm ${isCustomOption ? 'text-green-700 font-medium' : ''}`}
+                                  >
+                                    {option.label}
+                                  </Label>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  {isStandardOption && isEnabled && (
+                                    <Select
+                                      value={mathOperators[option.id] || 'add'}
+                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                        setMathOperators(prev => ({ ...prev, [option.id]: value }))
+                                      }
+                                    >
+                                      <SelectTrigger className="w-16 h-6 text-xs">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="add">+</SelectItem>
+                                        <SelectItem value="subtract">-</SelectItem>
+                                        <SelectItem value="multiply">×</SelectItem>
+                                        <SelectItem value="divide">÷</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  )}
+                                  {isCustomOption && (
+                                    <>
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                                        onClick={() => {
+                                          const customIndex = parseInt(option.id.replace('custom_quantity_', ''));
+                                          setEditingOptionIndex(customIndex);
+                                          setEditingOptionType('quantityOptions');
+                                          setEditingOptionName(option.label);
+                                          setShowEditOptionsDialog(true);
+                                        }}
+                                      >
+                                        <Edit className="h-3 w-3" />
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
+                                        onClick={() => {
+                                          const customIndex = parseInt(option.id.replace('custom_quantity_', ''));
+                                          const updatedQuantityOptions = customOptions.quantityOptions.filter((_, i) => i !== customIndex);
+                                          setCustomOptions(prev => ({
+                                            ...prev,
+                                            quantityOptions: updatedQuantityOptions
+                                          }));
+                                        }}
+                                      >
+                                        <Trash2 className="h-3 w-3" />
+                                      </Button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          });
+                        })()}
                       </div>
                     </div>
                   )}
@@ -3646,6 +3673,172 @@ export default function RepairPricing() {
                   });
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Green Quantity Options Dialog */}
+        <Dialog open={showEditQuantityOptionsDialog} onOpenChange={setShowEditQuantityOptionsDialog}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Quantity Options</DialogTitle>
+              <DialogDescription>
+                Edit the text labels for your quantity options. You can modify the label text, reorder using the up/down arrows, or delete options you no longer need.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3">
+                {editableQuantityOptions.map((option, index) => (
+                  <div key={option.id} className="flex items-center justify-between p-3 border rounded-lg bg-green-50">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <div className="flex flex-col space-y-1">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          onClick={() => moveQuantityOptionUp(index)}
+                          disabled={index === 0}
+                        >
+                          <ArrowUp className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          onClick={() => moveQuantityOptionDown(index)}
+                          disabled={index === editableQuantityOptions.length - 1}
+                        >
+                          <ArrowDown className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <Input
+                        value={option.label}
+                        onChange={(e) => {
+                          const updatedOptions = [...editableQuantityOptions];
+                          updatedOptions[index].label = e.target.value;
+                          setEditableQuantityOptions(updatedOptions);
+                        }}
+                        className="flex-1"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-100 ml-2"
+                      onClick={() => {
+                        const updatedOptions = editableQuantityOptions.filter((_, i) => i !== index);
+                        setEditableQuantityOptions(updatedOptions);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowEditQuantityOptionsDialog(false);
+                  // Reset to current saved state without saving changes
+                  if (formData.quantityDisplayOrder && formData.quantityDisplayOrder.length > 0) {
+                    console.log("Resetting to saved quantity order on cancel:", formData.quantityDisplayOrder);
+                    // Reset to the saved reordered sequence
+                    const reorderedOptions = formData.quantityDisplayOrder.map(option => ({
+                      id: option.id,
+                      label: option.label,
+                      enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
+                    }));
+                    setEditableQuantityOptions(reorderedOptions);
+                  } else {
+                    console.log("Resetting to default quantity order on cancel");
+                    // Fall back to default order
+                    const standardOptions = [
+                      { id: 'numberPerShift', label: getQuantityOptionLabel('numberPerShift'), enabled: formData.pricingStructure?.numberPerShift || false },
+                      { id: 'metersPerShift', label: getQuantityOptionLabel('metersPerShift'), enabled: formData.pricingStructure?.metersPerShift || false },
+                      { id: 'runsPerShift', label: getQuantityOptionLabel('runsPerShift'), enabled: formData.pricingStructure?.runsPerShift || false },
+                      { id: 'repeatFree', label: getQuantityOptionLabel('repeatFree'), enabled: formData.pricingStructure?.repeatFree || false }
+                    ];
+                    
+                    // Include custom quantity options in reset
+                    const customQuantityOptions = customOptions.quantityOptions.map((option, index) => ({
+                      id: `custom_quantity_${index}`,
+                      label: option,
+                      enabled: true
+                    }));
+                    
+                    setEditableQuantityOptions([...standardOptions, ...customQuantityOptions]);
+                  }
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  console.log("Saving reordered quantity options:", editableQuantityOptions);
+                  
+                  // Reset all standard quantity options to false first
+                  const newPricingStructure = { 
+                    ...formData.pricingStructure,
+                    numberPerShift: false,
+                    metersPerShift: false,
+                    runsPerShift: false,
+                    repeatFree: false
+                  };
+                  const standardQuantityOptionIds = ['numberPerShift', 'metersPerShift', 'runsPerShift', 'repeatFree'];
+                  
+                  // Apply enabled state for standard options in their new order
+                  editableQuantityOptions.forEach(option => {
+                    if (standardQuantityOptionIds.includes(option.id)) {
+                      newPricingStructure[option.id] = option.enabled;
+                    }
+                  });
+                  
+                  // Update custom quantity options with new labels and order
+                  const updatedCustomQuantityOptions = editableQuantityOptions
+                    .filter(option => option.id.startsWith('custom_quantity_'))
+                    .map(option => option.label);
+                  
+                  console.log("Updated custom quantity options in order:", updatedCustomQuantityOptions);
+                  
+                  setFormData({
+                    ...formData,
+                    pricingStructure: newPricingStructure
+                  });
+                  
+                  setCustomOptions(prev => ({
+                    ...prev,
+                    quantityOptions: updatedCustomQuantityOptions
+                  }));
+                  
+                  // Store the complete reordered options for display order
+                  const reorderedQuantityDisplayOptions = editableQuantityOptions.map(option => ({
+                    id: option.id,
+                    label: option.label,
+                    type: option.id.startsWith('custom_quantity_') ? 'custom' : 'standard'
+                  }));
+                  
+                  // Update the quantity display order in formData
+                  setFormData(prev => ({
+                    ...prev,
+                    pricingStructure: newPricingStructure,
+                    quantityDisplayOrder: reorderedQuantityDisplayOptions
+                  }));
+                  
+                  setShowEditQuantityOptionsDialog(false);
+                  toast({
+                    title: "Quantity options updated",
+                    description: "Your quantity options have been reordered and updated successfully.",
+                  });
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white"
               >
                 Save Changes
               </Button>
