@@ -268,12 +268,25 @@ export default function RepairPricing() {
   const [tempDescription, setTempDescription] = useState("");
   const [isDescriptionEditable, setIsDescriptionEditable] = useState(false);
   
-  // Custom options state
-  const [customOptions, setCustomOptions] = useState({
-    priceOptions: [],
-    quantityOptions: [],
-    minQuantityOptions: [],
-    additionalOptions: []
+  // Custom options state with localStorage persistence
+  const [customOptions, setCustomOptions] = useState(() => {
+    try {
+      const saved = localStorage.getItem('customPricingOptions');
+      return saved ? JSON.parse(saved) : {
+        priceOptions: [],
+        quantityOptions: [],
+        minQuantityOptions: [],
+        additionalOptions: []
+      };
+    } catch (error) {
+      console.error('Error loading custom options from localStorage:', error);
+      return {
+        priceOptions: [],
+        quantityOptions: [],
+        minQuantityOptions: [],
+        additionalOptions: []
+      };
+    }
   });
 
   // Math operators state for pricing calculations
@@ -421,6 +434,15 @@ export default function RepairPricing() {
       }, 1000);
     }
   }, [location]); // Remove pricingData dependency to prevent infinite loops
+
+  // Save custom options to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('customPricingOptions', JSON.stringify(customOptions));
+    } catch (error) {
+      console.error('Error saving custom options to localStorage:', error);
+    }
+  }, [customOptions]);
 
   // Separate useEffect for auto-selection when data is loaded
   useEffect(() => {
