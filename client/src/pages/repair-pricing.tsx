@@ -2757,58 +2757,56 @@ export default function RepairPricing() {
                       </Button>
                     </div>
                   </div>
-                  {!collapsedWindows.priceOptions && (
-                    <div className="px-4 pb-4">
-                      <div className="grid grid-cols-4 gap-3">
-                        {/* Dynamic Options in Reordered Sequence */}
-                        {(() => {
-                          // Use optionDisplayOrder if available, otherwise fall back to default order
-                          const defaultOrder = [
-                            { id: 'meterage', label: getPriceOptionLabel('meterage'), type: 'standard' },
-                            { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), type: 'standard' },
-                            { id: 'setupRate', label: getPriceOptionLabel('setupRate'), type: 'standard' },
-                            { id: 'minCharge', label: getPriceOptionLabel('minCharge'), type: 'standard' },
-                            { id: 'dayRate', label: getPriceOptionLabel('dayRate'), type: 'standard' },
-                            ...(customOptions?.priceOptions && Array.isArray(customOptions.priceOptions)
-                              ? customOptions.priceOptions.map((option, index) => ({
-                                  id: `custom_price_${index}`,
-                                  label: option,
-                                  type: 'custom'
-                                }))
-                              : [])
-                          ];
+                  <div className="px-4 pb-4">
+                    <div className="grid grid-cols-4 gap-3">
+                      {/* Dynamic Options in Reordered Sequence */}
+                      {(() => {
+                        // Use optionDisplayOrder if available, otherwise fall back to default order
+                        const defaultOrder = [
+                          { id: 'meterage', label: getPriceOptionLabel('meterage'), type: 'standard' },
+                          { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), type: 'standard' },
+                          { id: 'setupRate', label: getPriceOptionLabel('setupRate'), type: 'standard' },
+                          { id: 'minCharge', label: getPriceOptionLabel('minCharge'), type: 'standard' },
+                          { id: 'dayRate', label: getPriceOptionLabel('dayRate'), type: 'standard' },
+                          ...(customOptions?.priceOptions && Array.isArray(customOptions.priceOptions)
+                            ? customOptions.priceOptions.map((option, index) => ({
+                                id: `custom_price_${index}`,
+                                label: option,
+                                type: 'custom'
+                              }))
+                            : [])
+                        ];
+                        
+                        const displayOrder = formData.optionDisplayOrder || defaultOrder;
+                        
+                        return (displayOrder || []).map((option, index) => {
+                          const isCustom = option.type === 'custom';
+                          const isChecked = isCustom ? (formData.pricingStructure?.[option.id] !== false) : (formData.pricingStructure?.[option.id] || false);
                           
-                          const displayOrder = formData.optionDisplayOrder || defaultOrder;
-                          
-                          return (displayOrder || []).map((option, index) => {
-                            const isCustom = option.type === 'custom';
-                            const isChecked = isCustom ? (formData.pricingStructure?.[option.id] !== false) : (formData.pricingStructure?.[option.id] || false);
-                            
-                            return (
-                              <div key={option.id} className="flex items-center space-x-2">
-                                <input
-                                  type="checkbox"
-                                  id={option.id}
-                                  checked={isChecked}
-                                  onChange={(e) => {
-                                    setFormData({
-                                      ...formData,
-                                      pricingStructure: {
-                                        ...formData.pricingStructure,
-                                        [option.id]: e.target.checked
-                                      }
-                                    });
-                                  }}
-                                  className="rounded border-slate-300"
-                                />
-                                <Label htmlFor={option.id} className="text-sm">{option.label}</Label>
-                              </div>
-                            );
-                          });
-                        })()}
-                      </div>
+                          return (
+                            <div key={option.id} className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={option.id}
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  setFormData({
+                                    ...formData,
+                                    pricingStructure: {
+                                      ...formData.pricingStructure,
+                                      [option.id]: e.target.checked
+                                    }
+                                  });
+                                }}
+                                className="rounded border-slate-300"
+                              />
+                              <Label htmlFor={option.id} className="text-sm">{option.label}</Label>
+                            </div>
+                          );
+                        });
+                      })()}
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* Option Window 2: Quantity Options */}
