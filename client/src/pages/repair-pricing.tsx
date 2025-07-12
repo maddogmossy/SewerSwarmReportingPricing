@@ -2632,39 +2632,37 @@ export default function RepairPricing() {
                           {Object.keys(formData.pricingStructure || {}).filter(key => !['priceOptions', 'mathOperators'].includes(key) && formData.pricingStructure[key]).length} selected
                         </span>
                       )}
-                      {Object.keys(formData.pricingStructure || {}).filter(key => !['priceOptions', 'mathOperators'].includes(key) && formData.pricingStructure[key]).length > 0 && (
-                        <Button 
-                          type="button"
-                          size="sm" 
-                          className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Set up edit dialog with current options
-                            const standardOptions = [
-                              { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false },
-                              { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
-                              { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
-                              { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
-                              { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false }
-                            ];
-                            
-                            // Add user-added options 
-                            const userAddedOptions = Object.keys(formData.pricingStructure || {}).filter(key => 
-                              !['dayRate', 'hourlyRate', 'setupRate', 'minCharge', 'meterage', 'priceOptions', 'mathOperators', 'numberPerShift', 'metersPerShift', 'runsPerShift', 'repeatFree', 'minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount', 'includeDepth', 'includeTotalLength'].includes(key)
-                            ).map(key => ({
-                              id: key,
-                              label: key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()),
-                              enabled: formData.pricingStructure[key] || false
-                            }));
-                            
-                            setEditablePriceOptions([...standardOptions, ...userAddedOptions]);
-                            setShowEditPriceOptionsDialog(true);
-                          }}
-                        >
-                          <Edit className="h-3 w-3 mr-1" />
-                          Edit
-                        </Button>
-                      )}
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Set up edit dialog with current options
+                          const standardOptions = [
+                            { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false },
+                            { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
+                            { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
+                            { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
+                            { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false }
+                          ];
+                          
+                          // Add user-added options 
+                          const userAddedOptions = Object.keys(formData.pricingStructure || {}).filter(key => 
+                            !['dayRate', 'hourlyRate', 'setupRate', 'minCharge', 'meterage', 'priceOptions', 'mathOperators', 'numberPerShift', 'metersPerShift', 'runsPerShift', 'repeatFree', 'minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount', 'includeDepth', 'includeTotalLength'].includes(key)
+                          ).map(key => ({
+                            id: key,
+                            label: key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()),
+                            enabled: formData.pricingStructure[key] || false
+                          }));
+                          
+                          setEditablePriceOptions([...standardOptions, ...userAddedOptions]);
+                          setShowEditPriceOptionsDialog(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Edit
+                      </Button>
                       <Button 
                         type="button"
                         size="sm" 
@@ -2773,6 +2771,40 @@ export default function RepairPricing() {
                       <Button 
                         type="button"
                         size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-green-500 hover:bg-green-600 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Use saved order if available, otherwise use default order
+                          if (formData.quantityDisplayOrder && formData.quantityDisplayOrder.length > 0) {
+                            console.log("Loading saved quantity order for edit dialog:", formData.quantityDisplayOrder);
+                            // Use the saved reordered sequence
+                            const reorderedOptions = formData.quantityDisplayOrder.map(option => ({
+                              id: option.id,
+                              label: option.label,
+                              enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
+                            }));
+                            setEditableQuantityOptions(reorderedOptions);
+                          } else {
+                            console.log("Using default quantity order for edit dialog");
+                            // Fall back to default order if no saved order exists
+                            const standardOptions = [
+                              { id: 'numberPerShift', label: 'Number per shift', enabled: formData.pricingStructure?.numberPerShift || false },
+                              { id: 'metersPerShift', label: 'Meters per shift', enabled: formData.pricingStructure?.metersPerShift || false },
+                              { id: 'runsPerShift', label: 'Runs per shift', enabled: formData.pricingStructure?.runsPerShift || false },
+                              { id: 'repeatFree', label: 'Repeat free', enabled: formData.pricingStructure?.repeatFree || false }
+                            ];
+                            
+                            setEditableQuantityOptions(standardOptions);
+                          }
+                          setShowEditQuantityOptionsDialog(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Edit
+                      </Button>
+                      <Button 
+                        type="button"
+                        size="sm" 
                         className="text-xs px-2 py-1 h-6 bg-green-600 hover:bg-green-700 text-white"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -2782,42 +2814,6 @@ export default function RepairPricing() {
                         <Plus className="h-3 w-3 mr-1" />
                         Add
                       </Button>
-                      {(formData.pricingStructure?.numberPerShift || formData.pricingStructure?.metersPerShift || formData.pricingStructure?.runsPerShift || formData.pricingStructure?.repeatFree) && (
-                        <Button 
-                          type="button"
-                          size="sm" 
-                          className="text-xs px-2 py-1 h-6 bg-green-500 hover:bg-green-600 text-white"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Use saved order if available, otherwise use default order
-                            if (formData.quantityDisplayOrder && formData.quantityDisplayOrder.length > 0) {
-                              console.log("Loading saved quantity order for edit dialog:", formData.quantityDisplayOrder);
-                              // Use the saved reordered sequence
-                              const reorderedOptions = formData.quantityDisplayOrder.map(option => ({
-                                id: option.id,
-                                label: option.label,
-                                enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
-                              }));
-                              setEditableQuantityOptions(reorderedOptions);
-                            } else {
-                              console.log("Using default quantity order for edit dialog");
-                              // Fall back to default order if no saved order exists
-                              const standardOptions = [
-                                { id: 'numberPerShift', label: 'Number per shift', enabled: formData.pricingStructure?.numberPerShift || false },
-                                { id: 'metersPerShift', label: 'Meters per shift', enabled: formData.pricingStructure?.metersPerShift || false },
-                                { id: 'runsPerShift', label: 'Runs per shift', enabled: formData.pricingStructure?.runsPerShift || false },
-                                { id: 'repeatFree', label: 'Repeat free', enabled: formData.pricingStructure?.repeatFree || false }
-                              ];
-                              
-                              setEditableQuantityOptions(standardOptions);
-                            }
-                            setShowEditQuantityOptionsDialog(true);
-                          }}
-                        >
-                          <Edit className="h-3 w-3 mr-1" />
-                          Edit
-                        </Button>
-                      )}
                     </div>
                   </div>
                   {!collapsedWindows.quantityOptions && (
