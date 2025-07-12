@@ -423,6 +423,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ success: true, removedCount });
   });
 
+  app.delete('/api/work-categories/:id', (req, res) => {
+    const { id } = req.params;
+    const categoryId = parseInt(id);
+    
+    console.log(`🗑️ Deleting work category with ID: ${categoryId}`);
+    
+    // Find the category before deletion for logging
+    const categoryToDelete = workCategoriesStorage.find(cat => cat.id === categoryId);
+    
+    if (!categoryToDelete) {
+      console.log(`❌ Category with ID ${categoryId} not found`);
+      return res.status(404).json({ error: 'Category not found' });
+    }
+    
+    console.log(`🗑️ Found category to delete: "${categoryToDelete.name}"`);
+    
+    // Remove the category from storage
+    const initialLength = workCategoriesStorage.length;
+    workCategoriesStorage = workCategoriesStorage.filter(cat => cat.id !== categoryId);
+    const finalLength = workCategoriesStorage.length;
+    
+    console.log(`✅ Removal complete. Categories: ${initialLength} → ${finalLength}`);
+    console.log(`📦 Remaining categories:`, workCategoriesStorage.map(cat => `${cat.id}: ${cat.name}`));
+    
+    // Also remove any associated pricing data for this category
+    const pricingInitialLength = pricingStorage.length;
+    pricingStorage = pricingStorage.filter(pricing => pricing.workCategoryId !== categoryId);
+    const pricingFinalLength = pricingStorage.length;
+    
+    if (pricingInitialLength !== pricingFinalLength) {
+      console.log(`🧹 Also removed ${pricingInitialLength - pricingFinalLength} associated pricing entries`);
+    }
+    
+    res.json({ 
+      success: true, 
+      deletedCategory: categoryToDelete,
+      message: `Category "${categoryToDelete.name}" deleted successfully`
+    });
+  });
+
   app.get('/api/vehicle-travel-rates', (req, res) => {
     res.json([
       { id: 1, vehicleType: "Van", ratePerMile: 0.45 },
