@@ -2610,12 +2610,23 @@ export default function RepairPricing() {
                                     </Label>
                                     <Select
                                       value={mathOperators[`operator_${mathOperatorIndex}`] || ''}
-                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide' | 'none') => 
-                                        setMathOperators(prev => ({ ...prev, [`operator_${mathOperatorIndex}`]: value }))
-                                      }
+                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide' | 'none') => {
+                                        console.log('Math operator selection:', { mathOperatorIndex, value, currentMathOperators: mathOperators });
+                                        setMathOperators(prev => {
+                                          const newMathOperators = { ...prev, [`operator_${mathOperatorIndex}`]: value };
+                                          console.log('Updated math operators:', newMathOperators);
+                                          return newMathOperators;
+                                        });
+                                      }}
                                     >
                                       <SelectTrigger className="w-16 h-6 text-xs bg-white border-slate-200">
-                                        <SelectValue placeholder="N/A" />
+                                        <SelectValue placeholder="N/A">
+                                          {mathOperators[`operator_${mathOperatorIndex}`] === 'add' ? '+' :
+                                           mathOperators[`operator_${mathOperatorIndex}`] === 'subtract' ? '-' :
+                                           mathOperators[`operator_${mathOperatorIndex}`] === 'multiply' ? '×' :
+                                           mathOperators[`operator_${mathOperatorIndex}`] === 'divide' ? '÷' :
+                                           mathOperators[`operator_${mathOperatorIndex}`] === 'none' ? 'N/A' : 'N/A'}
+                                        </SelectValue>
                                       </SelectTrigger>
                                       <SelectContent>
                                         <SelectItem value="none">N/A</SelectItem>
