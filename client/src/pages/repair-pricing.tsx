@@ -483,11 +483,7 @@ export default function RepairPricing() {
     },
     // Keep track of option display order
     optionDisplayOrder: [],
-    quantityDisplayOrder: [],
-    // Range option fields
-    rangeMin: "",
-    rangeMax: "",
-    rangeStep: ""
+    quantityDisplayOrder: []
   });
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
@@ -1010,11 +1006,7 @@ export default function RepairPricing() {
       },
       // Keep track of option display order
       optionDisplayOrder: [],
-      quantityDisplayOrder: [],
-      // Range option fields
-      rangeMin: "",
-      rangeMax: "",
-      rangeStep: ""
+      quantityDisplayOrder: []
     });
     setApplySectors([]);
     setOriginalApplySectors([]);
@@ -1306,11 +1298,7 @@ export default function RepairPricing() {
       pricingStructure: preservedPricingStructure,
       // Keep track of option display order
       optionDisplayOrder: [],
-      quantityDisplayOrder: [],
-      // Range option fields
-      rangeMin: item.rangeMin?.toString() || "",
-      rangeMax: item.rangeMax?.toString() || "",
-      rangeStep: item.rangeStep?.toString() || ""
+      quantityDisplayOrder: []
     });
     
     // Load existing math operators and custom options
@@ -2676,71 +2664,7 @@ export default function RepairPricing() {
                 {/* Range Option - Enter Values Window */}
                 <div className="border border-indigo-200 rounded-lg p-4 bg-indigo-50 mb-4">
                   <h4 className="text-sm font-medium text-indigo-700 mb-3">📊 Range Option - Enter Values</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    
-                    {/* Minimum Value */}
-                    <div className="bg-indigo-100 border border-indigo-300 rounded-lg p-3">
-                      <Label className="text-xs text-indigo-700 block mb-2 font-medium">
-                        Minimum Value
-                      </Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="Min value"
-                        className="h-8 text-sm bg-white border-indigo-300"
-                        value={formData.rangeMin || ''}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          rangeMin: e.target.value
-                        })}
-                      />
-                    </div>
-                    
-                    {/* Maximum Value */}
-                    <div className="bg-indigo-100 border border-indigo-300 rounded-lg p-3">
-                      <Label className="text-xs text-indigo-700 block mb-2 font-medium">
-                        Maximum Value
-                      </Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="Max value"
-                        className="h-8 text-sm bg-white border-indigo-300"
-                        value={formData.rangeMax || ''}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          rangeMax: e.target.value
-                        })}
-                      />
-                    </div>
-                    
-                    {/* Step/Increment Value */}
-                    <div className="bg-indigo-100 border border-indigo-300 rounded-lg p-3">
-                      <Label className="text-xs text-indigo-700 block mb-2 font-medium">
-                        Step/Increment
-                      </Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="Step value"
-                        className="h-8 text-sm bg-white border-indigo-300"
-                        value={formData.rangeStep || ''}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          rangeStep: e.target.value
-                        })}
-                      />
-                    </div>
-                    
-                  </div>
-                  
-                  {/* Range Display */}
-                  {(formData.rangeMin || formData.rangeMax) && (
-                    <div className="mt-3 p-2 bg-white border border-indigo-200 rounded text-sm text-indigo-600">
-                      <strong>Range:</strong> {formData.rangeMin || '0'} - {formData.rangeMax || '∞'}
-                      {formData.rangeStep && ` (Step: ${formData.rangeStep})`}
-                    </div>
-                  )}
+                  <p className="text-xs text-indigo-600 mb-2">Configure range-based pricing options for dynamic calculations</p>
                 </div>
                 
                 {/* Option Window 1: Price/Cost */}
