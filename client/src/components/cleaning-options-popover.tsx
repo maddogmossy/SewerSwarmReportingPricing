@@ -42,6 +42,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
   const [, setLocation] = useLocation();
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [showSetupDialog, setShowSetupDialog] = useState(false);
+  const [showCustomSetupDialog, setShowCustomSetupDialog] = useState(false);
   const [customDescription, setCustomDescription] = useState("");
   const [customPrice, setCustomPrice] = useState("");
 
@@ -146,23 +147,42 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     setShowSetupDialog(false);
     setIsOpen(false);
     
-    // Navigate to work category creation with pre-filled data for Cleanse and Survey
+    // Navigate to sector-specific pricing page with pre-filled data for Cleanse and Survey
     const sector = sectionData.sector || 'utilities';
     const params = new URLSearchParams({
       categoryName: 'Cleanse/Survey',
       categoryDescription: 'Complete cleaning followed by verification survey to confirm completion',
       suggestedColor: 'Blue',
       pipeSize: sectionData.pipeSize || '150mm',
-      autoSetup: 'true'
+      autoSetup: 'true',
+      newCategory: 'true'
     });
     
-    setLocation(`/pricing?category=new&${params.toString()}`);
+    setLocation(`/repair-pricing/${sector}?${params.toString()}`);
+  };
+
+  const handleCustomSetupConfirm = () => {
+    setShowCustomSetupDialog(false);
+    setIsOpen(false);
+    
+    // Navigate to sector-specific pricing page with pre-filled data for Custom Cleaning
+    const sector = sectionData.sector || 'utilities';
+    const params = new URLSearchParams({
+      categoryName: 'Custom Cleaning',
+      categoryDescription: 'User-defined cleaning method for specific requirements',
+      suggestedColor: 'Purple',
+      pipeSize: sectionData.pipeSize || '150mm',
+      autoSetup: 'true',
+      newCategory: 'true'
+    });
+    
+    setLocation(`/repair-pricing/${sector}?${params.toString()}`);
   };
 
   const handleOptionClick = (option: CleaningOption) => {
-    // Handle custom cleaning option differently
+    // Handle custom cleaning option - show setup dialog like Cleanse and Survey
     if (option.name === 'Custom Cleaning' && !option.configured) {
-      setShowCustomForm(true);
+      setShowCustomSetupDialog(true);
       return;
     }
     
@@ -429,6 +449,35 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
           <Button 
             onClick={handleSetupConfirm}
             className="bg-purple-600 hover:bg-purple-700"
+          >
+            Set Up Category
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    {/* Setup Dialog for Custom Cleaning */}
+    <Dialog open={showCustomSetupDialog} onOpenChange={setShowCustomSetupDialog}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Plus className="h-5 w-5 text-blue-600" />
+            Set Up Custom Cleaning Category
+          </DialogTitle>
+          <DialogDescription>
+            This requires setting up a "Custom Cleaning" work category. You will be redirected to create this category and configure your custom cleaning method.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowCustomSetupDialog(false)}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleCustomSetupConfirm}
+            className="bg-blue-600 hover:bg-blue-700"
           >
             Set Up Category
           </Button>
