@@ -113,33 +113,11 @@ let uploadsStorage = [];
 let workCategoriesStorage = [
   { id: 1, name: "CCTV Surveys", description: "Camera inspection surveys" },
   { id: 2, name: "Jetting/Cleaning", description: "High pressure water jetting" },
-  { id: 3, name: "Patch Repairs", description: "Localized pipe repairs" },
-  { id: 4, name: "Cleanse/Survey", description: "Complete cleaning followed by verification survey to confirm completion" },
-  { id: 6, name: "Lining - Hot Cure", description: "Lining - Hot Cure work category" }
+  { id: 4, name: "Cleanse/Survey", description: "Complete cleaning followed by verification survey to confirm completion" }
 ];
 
 // In-memory storage for pricing data (REV_V1 simulation)
 let pricingStorage = [
-  {
-    id: 1,
-    sector: "utilities",
-    workCategoryId: 1,
-    workCategory: "CCTV Survey",
-    pipeSize: "150mm",
-    costPerMetre: 15.50,
-    cost: 15.50,
-    description: "Standard CCTV inspection"
-  },
-  {
-    id: 2,
-    sector: "utilities",
-    workCategoryId: 2,
-    workCategory: "High Pressure Jetting",
-    pipeSize: "150mm", 
-    costPerMetre: 25.00,
-    cost: 25.00,
-    description: "Water jetting cleaning"
-  },
   // Cleanse/Survey pricing entry - properly configured for both systems
   {
     id: 6,
@@ -149,7 +127,7 @@ let pricingStorage = [
     repairMethodId: 1, // Links to "Cleanse and Survey" repair method
     methodName: "Cleanse and Survey",
     pipeSize: "150mm",
-    costPerMetre: 0.00, // Default until user configures pricing
+    costPerMetre: 0.00, // Default until user configured pricing
     cost: 0.00,
     description: "Complete cleaning followed by verification survey to confirm completion (150mm pipe)",
     rule: "Standard cleaning and verification process"
