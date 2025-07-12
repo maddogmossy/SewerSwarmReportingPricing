@@ -2792,7 +2792,10 @@ export default function RepairPricing() {
                           
                           return (displayOrder || []).map((option, index) => {
                             const isCustom = option.type === 'custom';
-                            const isChecked = isCustom ? (formData.pricingStructure?.[option.id] !== false) : (formData.pricingStructure?.[option.id] || false);
+                            // CRITICAL FIX: Custom options should always be checked when they exist in customOptions.priceOptions
+                            const isChecked = isCustom 
+                              ? true // Custom options are always enabled when they exist in the array
+                              : (formData.pricingStructure?.[option.id] || false);
                             
                             return (
                               <div key={option.id} className="flex items-center space-x-2">
