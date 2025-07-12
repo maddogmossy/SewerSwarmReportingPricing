@@ -3899,9 +3899,20 @@ export default function RepairPricing() {
                   
                   console.log("Updated custom quantity options in order:", updatedCustomQuantityOptions);
                   
+                  // CRITICAL FIX: Update pricingStructure.quantityOptions to only include current options
+                  const enabledStandardQuantityOptions = editableQuantityOptions
+                    .filter(option => !option.id.startsWith('custom_quantity_') && option.enabled)
+                    .map(option => option.label);
+                  
+                  const finalQuantityOptions = [...enabledStandardQuantityOptions, ...updatedCustomQuantityOptions];
+                  console.log("Final quantityOptions array:", finalQuantityOptions);
+                  
                   setFormData({
                     ...formData,
-                    pricingStructure: newPricingStructure,
+                    pricingStructure: {
+                      ...newPricingStructure,
+                      quantityOptions: finalQuantityOptions // Sync the quantityOptions array properly
+                    },
                     quantityDisplayOrder: editableQuantityOptions.map(option => ({
                       id: option.id,
                       label: option.label,
@@ -4041,9 +4052,20 @@ export default function RepairPricing() {
                   
                   console.log("Updated custom min quantity options in order:", updatedCustomMinQuantityOptions);
                   
+                  // CRITICAL FIX: Update pricingStructure.minQuantityOptions to only include current options
+                  const enabledStandardMinQuantityOptions = editableMinQuantityOptions
+                    .filter(option => !option.id.startsWith('custom_min_quantity_') && option.enabled)
+                    .map(option => option.label);
+                  
+                  const finalMinQuantityOptions = [...enabledStandardMinQuantityOptions, ...updatedCustomMinQuantityOptions];
+                  console.log("Final minQuantityOptions array:", finalMinQuantityOptions);
+                  
                   setFormData({
                     ...formData,
-                    pricingStructure: newPricingStructure,
+                    pricingStructure: {
+                      ...newPricingStructure,
+                      minQuantityOptions: finalMinQuantityOptions // Sync the minQuantityOptions array properly
+                    },
                     minQuantityDisplayOrder: editableMinQuantityOptions.map(option => ({
                       id: option.id,
                       label: option.label,
@@ -4119,15 +4141,26 @@ export default function RepairPricing() {
                 onClick={() => {
                   console.log("Saving additional options changes");
                   
-                  // Update additionalDisplayOrder if needed
-                  const currentAdditionalOrder = [
-                    { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), type: 'standard' },
-                    { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), type: 'standard' }
-                  ];
+                  // CRITICAL FIX: Update pricingStructure.additionalOptions to only include current options
+                  const currentAdditionalOptions = [
+                    { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), enabled: formData.pricingStructure?.includeDepth || false, type: 'standard' },
+                    { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), enabled: formData.pricingStructure?.includeTotalLength || false, type: 'standard' }
+                  ].filter(option => option.enabled);
+                  
+                  const enabledAdditionalOptions = currentAdditionalOptions.map(option => option.label);
+                  console.log("Final additionalOptions array:", enabledAdditionalOptions);
                   
                   setFormData(prev => ({
                     ...prev,
-                    additionalDisplayOrder: currentAdditionalOrder
+                    pricingStructure: {
+                      ...prev.pricingStructure,
+                      additionalOptions: enabledAdditionalOptions // Sync the additionalOptions array properly
+                    },
+                    additionalDisplayOrder: currentAdditionalOptions.map(option => ({
+                      id: option.id,
+                      label: option.label,
+                      type: option.type
+                    }))
                   }));
                   
                   setShowEditAdditionalOptionsDialog(false);
