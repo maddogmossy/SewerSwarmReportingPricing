@@ -201,9 +201,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     setIsOpen(false);
   };
 
-  // Fixed order for cleaning options: Van Pack, Jet Vac, Cleanse and Survey, Custom Cleaning
+  // Fixed order for cleaning options: Cleanse and Survey, Custom Cleaning
   const orderedCleaningOptions = cleaningOptions.sort((a, b) => {
-    const order = ['Van Pack', 'Jet Vac', 'Cleanse and Survey', 'Custom Cleaning'];
+    const order = ['Cleanse and Survey', 'Custom Cleaning'];
     const aIndex = order.indexOf(a.name);
     const bIndex = order.indexOf(b.name);
     return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
