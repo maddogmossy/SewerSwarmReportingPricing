@@ -2466,193 +2466,103 @@ export default function RepairPricing() {
                   </div>
                   {!collapsedWindows.priceOptions && (
                     <div className="px-4 pb-4">
-                      <div className="grid grid-cols-1 gap-3">
+                      <div className="grid grid-cols-4 gap-3">
                         {/* Standard Options */}
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-3">
-                            <input
-                              type="checkbox"
-                              id="meterage"
-                              checked={formData.pricingStructure?.meterage || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  meterage: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="meterage" className="text-sm">Meterage (£ per meter)</Label>
-                            {formData.pricingStructure?.meterage && (
-                              <div className="flex items-center space-x-1">
-                                <span className="text-xs text-gray-500">Math:</span>
-                                <Select
-                                  value={mathOperators.meterage}
-                                  onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                    setMathOperators(prev => ({ ...prev, meterage: value }))
-                                  }
-                                >
-                                  <SelectTrigger className="w-12 h-6 text-xs">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="add">+</SelectItem>
-                                    <SelectItem value="subtract">-</SelectItem>
-                                    <SelectItem value="multiply">×</SelectItem>
-                                    <SelectItem value="divide">÷</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-3">
-                            <input
-                              type="checkbox"
-                              id="hourlyRate"
-                              checked={formData.pricingStructure?.hourlyRate || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  hourlyRate: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
-                            {formData.pricingStructure?.hourlyRate && (
-                              <div className="flex items-center space-x-1">
-                                <span className="text-xs text-gray-500">Math:</span>
-                                <Select
-                                  value={mathOperators.hourlyRate}
-                                  onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                    setMathOperators(prev => ({ ...prev, hourlyRate: value }))
-                                  }
-                                >
-                                  <SelectTrigger className="w-12 h-6 text-xs">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="add">+</SelectItem>
-                                    <SelectItem value="subtract">-</SelectItem>
-                                    <SelectItem value="multiply">×</SelectItem>
-                                    <SelectItem value="divide">÷</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="setupRate"
-                              checked={formData.pricingStructure?.setupRate || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  setupRate: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="setupRate" className="text-sm">Setup rate (£ per setup)</Label>
-                          </div>
-                          {formData.pricingStructure?.setupRate && (
-                            <Select
-                              value={mathOperators.setupRate}
-                              onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                setMathOperators(prev => ({ ...prev, setupRate: value }))
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="meterage"
+                            checked={formData.pricingStructure?.meterage || false}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricingStructure: {
+                                ...formData.pricingStructure,
+                                meterage: e.target.checked
                               }
-                            >
-                              <SelectTrigger className="w-16 h-6 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="add">+</SelectItem>
-                                <SelectItem value="subtract">-</SelectItem>
-                                <SelectItem value="multiply">×</SelectItem>
-                                <SelectItem value="divide">÷</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          )}
+                            })}
+                            className="rounded border-slate-300"
+                          />
+                          <Label htmlFor="meterage" className="text-sm">Meterage (£ per meter)</Label>
                         </div>
                         
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="minCharge"
-                              checked={formData.pricingStructure?.minCharge || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  minCharge: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="minCharge" className="text-sm">Min charge (£ minimum)</Label>
-                          </div>
-                          {formData.pricingStructure?.minCharge && (
-                            <Select
-                              value={mathOperators.minCharge}
-                              onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                setMathOperators(prev => ({ ...prev, minCharge: value }))
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="hourlyRate"
+                            checked={formData.pricingStructure?.hourlyRate || false}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricingStructure: {
+                                ...formData.pricingStructure,
+                                hourlyRate: e.target.checked
                               }
-                            >
-                              <SelectTrigger className="w-16 h-6 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="add">+</SelectItem>
-                                <SelectItem value="subtract">-</SelectItem>
-                                <SelectItem value="multiply">×</SelectItem>
-                                <SelectItem value="divide">÷</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          )}
+                            })}
+                            className="rounded border-slate-300"
+                          />
+                          <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
                         </div>
                         
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="dayRate"
-                              checked={formData.pricingStructure?.dayRate || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  dayRate: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
-                          </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="setupRate"
+                            checked={formData.pricingStructure?.setupRate || false}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricingStructure: {
+                                ...formData.pricingStructure,
+                                setupRate: e.target.checked
+                              }
+                            })}
+                            className="rounded border-slate-300"
+                          />
+                          <Label htmlFor="setupRate" className="text-sm">Setup rate (£ per setup)</Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="minCharge"
+                            checked={formData.pricingStructure?.minCharge || false}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricingStructure: {
+                                ...formData.pricingStructure,
+                                minCharge: e.target.checked
+                              }
+                            })}
+                            className="rounded border-slate-300"
+                          />
+                          <Label htmlFor="minCharge" className="text-sm">Min charge (£ minimum)</Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="dayRate"
+                            checked={formData.pricingStructure?.dayRate || false}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricingStructure: {
+                                ...formData.pricingStructure,
+                                dayRate: e.target.checked
+                              }
+                            })}
+                            className="rounded border-slate-300"
+                          />
+                          <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
                         </div>
 
                         {/* Custom Price Options */}
                         {customOptions.priceOptions && customOptions.priceOptions.map((option, index) => (
-                          <div key={index} className="flex items-center justify-between space-x-2 p-2 bg-green-50 border border-green-200 rounded">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="checkbox"
-                                id={`custom_price_${index}`}
-                                className="rounded border-slate-300"
-                              />
-                              <Label htmlFor={`custom_price_${index}`} className="text-sm text-green-700 font-medium">{option}</Label>
-                            </div>
-                            <div className="flex gap-1">
+                          <div key={index} className="flex items-center space-x-2 p-2 bg-green-50 border border-green-200 rounded col-span-2">
+                            <input
+                              type="checkbox"
+                              id={`custom_price_${index}`}
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor={`custom_price_${index}`} className="text-sm text-green-700 font-medium">{option}</Label>
+                            <div className="flex gap-1 ml-auto">
                               <Button
                                 type="button"
                                 size="sm"
