@@ -2464,47 +2464,90 @@ export default function RepairPricing() {
                   </div>
                   {!collapsedWindows.quantityOptions && (
                     <div className="px-4 pb-4">
-                      {customOptions.quantityOptions.length === 0 ? (
-                        <p className="text-sm text-gray-500 text-center py-4">No quantity options added yet</p>
-                      ) : (
-                        <div className="space-y-2">
-                          {customOptions.quantityOptions.map((option, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-white rounded border">
-                              <span className="text-sm">{option}</span>
-                              <div className="flex gap-2">
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700"
-                                  onClick={() => {
-                                    setEditingOptionType('quantity');
-                                    setEditingOptionIndex(index);
-                                    setEditingOptionName(option);
-                                    setShowEditOptionsDialog(true);
-                                  }}
-                                >
-                                  ✏️
-                                </Button>
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                                  onClick={() => {
-                                    setCustomOptions(prev => ({
-                                      ...prev,
-                                      quantityOptions: prev.quantityOptions.filter((_, i) => i !== index)
-                                    }));
-                                  }}
-                                >
-                                  ×
-                                </Button>
-                              </div>
-                            </div>
-                          ))}
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* Standard quantity options */}
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="numberPerShift"
+                            checked={formData.pricingStructure?.numberPerShift || false}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricingStructure: {
+                                ...formData.pricingStructure,
+                                numberPerShift: e.target.checked
+                              }
+                            })}
+                            className="rounded border-slate-300"
+                          />
+                          <Label htmlFor="numberPerShift" className="text-sm">Number per shift</Label>
                         </div>
-                      )}
+                        
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="metersPerShift"
+                            checked={formData.pricingStructure?.metersPerShift || false}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricingStructure: {
+                                ...formData.pricingStructure,
+                                metersPerShift: e.target.checked
+                              }
+                            })}
+                            className="rounded border-slate-300"
+                          />
+                          <Label htmlFor="metersPerShift" className="text-sm">Meters per shift</Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="runsPerShift"
+                            checked={formData.pricingStructure?.runsPerShift || false}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricingStructure: {
+                                ...formData.pricingStructure,
+                                runsPerShift: e.target.checked
+                              }
+                            })}
+                            className="rounded border-slate-300"
+                          />
+                          <Label htmlFor="runsPerShift" className="text-sm">Runs per shift</Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="repeatFree"
+                            checked={formData.pricingStructure?.repeatFree || false}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              pricingStructure: {
+                                ...formData.pricingStructure,
+                                repeatFree: e.target.checked
+                              }
+                            })}
+                            className="rounded border-slate-300"
+                          />
+                          <Label htmlFor="repeatFree" className="text-sm">Repeat free</Label>
+                        </div>
+
+                        {/* Custom quantity options as checkboxes */}
+                        {customOptions.quantityOptions.map((option, index) => (
+                          <div key={`custom-${index}`} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`custom-quantity-${index}`}
+                              checked={false} // These are just display options for now
+                              onChange={() => {}} // No-op for display
+                              className="rounded border-slate-300"
+                            />
+                            <Label htmlFor={`custom-quantity-${index}`} className="text-sm text-green-700 font-medium">{option}</Label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
