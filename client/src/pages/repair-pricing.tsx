@@ -2679,7 +2679,7 @@ export default function RepairPricing() {
                           
                           return displayOrder.map((option, index) => {
                             const isCustom = option.type === 'custom';
-                            const isChecked = isCustom ? true : (formData.pricingStructure?.[option.id] || false);
+                            const isChecked = isCustom ? (formData.pricingStructure?.[option.id] !== false) : (formData.pricingStructure?.[option.id] || false);
                             
                             return (
                               <div key={option.id} className="flex items-center space-x-2">
@@ -2688,15 +2688,13 @@ export default function RepairPricing() {
                                   id={option.id}
                                   checked={isChecked}
                                   onChange={(e) => {
-                                    if (!isCustom) {
-                                      setFormData({
-                                        ...formData,
-                                        pricingStructure: {
-                                          ...formData.pricingStructure,
-                                          [option.id]: e.target.checked
-                                        }
-                                      });
-                                    }
+                                    setFormData({
+                                      ...formData,
+                                      pricingStructure: {
+                                        ...formData.pricingStructure,
+                                        [option.id]: e.target.checked
+                                      }
+                                    });
                                   }}
                                   className="rounded border-slate-300"
                                 />
@@ -2826,7 +2824,7 @@ export default function RepairPricing() {
                           return displayOrder.map((option, index) => {
                             const isStandardOption = ['numberPerShift', 'metersPerShift', 'runsPerShift', 'repeatFree'].includes(option.id);
                             const isCustomOption = option.id.startsWith('custom_quantity_');
-                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : true;
+                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : (formData.pricingStructure?.[option.id] !== false);
                             
                             // Only render if it's a valid option
                             if (!isStandardOption && !isCustomOption) return null;
@@ -2838,15 +2836,13 @@ export default function RepairPricing() {
                                   id={option.id}
                                   checked={isEnabled}
                                   onChange={(e) => {
-                                    if (isStandardOption) {
-                                      setFormData({
-                                        ...formData,
-                                        pricingStructure: {
-                                          ...formData.pricingStructure,
-                                          [option.id]: e.target.checked
-                                        }
-                                      });
-                                    }
+                                    setFormData({
+                                      ...formData,
+                                      pricingStructure: {
+                                        ...formData.pricingStructure,
+                                        [option.id]: e.target.checked
+                                      }
+                                    });
                                   }}
                                   className="rounded border-slate-300"
                                 />
@@ -2958,7 +2954,7 @@ export default function RepairPricing() {
                           return displayOrder.map((option, index) => {
                             const isStandardOption = ['minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount'].includes(option.id);
                             const isCustomOption = option.id.startsWith('custom_min_quantity_');
-                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : true;
+                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : (formData.pricingStructure?.[option.id] !== false);
                             
                             if (!isStandardOption && !isCustomOption) return null;
 
@@ -2969,15 +2965,13 @@ export default function RepairPricing() {
                                   id={option.id}
                                   checked={isEnabled}
                                   onChange={(e) => {
-                                    if (isStandardOption) {
-                                      setFormData({
-                                        ...formData,
-                                        pricingStructure: {
-                                          ...formData.pricingStructure,
-                                          [option.id]: e.target.checked
-                                        }
-                                      });
-                                    }
+                                    setFormData({
+                                      ...formData,
+                                      pricingStructure: {
+                                        ...formData.pricingStructure,
+                                        [option.id]: e.target.checked
+                                      }
+                                    });
                                   }}
                                   className="rounded border-slate-300"
                                 />
@@ -3083,7 +3077,7 @@ export default function RepairPricing() {
                           return displayOrder.map((option, index) => {
                             const isStandardOption = ['includeDepth', 'includeTotalLength'].includes(option.id);
                             const isCustomOption = option.id.startsWith('custom_additional_');
-                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : true;
+                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : (formData.pricingStructure?.[option.id] !== false);
                             
                             if (!isStandardOption && !isCustomOption) return null;
 
@@ -3094,15 +3088,13 @@ export default function RepairPricing() {
                                   id={option.id}
                                   checked={isEnabled}
                                   onChange={(e) => {
-                                    if (isStandardOption) {
-                                      setFormData({
-                                        ...formData,
-                                        pricingStructure: {
-                                          ...formData.pricingStructure,
-                                          [option.id]: e.target.checked
-                                        }
-                                      });
-                                    }
+                                    setFormData({
+                                      ...formData,
+                                      pricingStructure: {
+                                        ...formData.pricingStructure,
+                                        [option.id]: e.target.checked
+                                      }
+                                    });
                                   }}
                                   className="rounded border-slate-300"
                                 />
