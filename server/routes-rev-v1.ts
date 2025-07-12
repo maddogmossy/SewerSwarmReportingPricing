@@ -349,7 +349,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // If database has data, use it; otherwise fall back to memory
       if (dbPricing.length > 0) {
         console.log(`✅ Loading ${dbPricing.length} pricing records from DATABASE for sector: ${req.params.sector}`);
-        res.json(dbPricing);
+        
+        // Enhance pricing data with workCategory names from workCategoriesStorage
+        const enhancedPricing = dbPricing.map(pricing => {
+          const workCategory = workCategoriesStorage.find(cat => cat.id === pricing.workCategoryId);
+          return {
+            ...pricing,
+            workCategory: workCategory?.name || undefined,
+            methodName: workCategory?.name || undefined
+          };
+        });
+        
+        res.json(enhancedPricing);
       } else {
         // Create database record from memory storage if it exists
         const sectorPricing = pricingStorage.filter(item => item.sector === req.params.sector);
@@ -375,7 +386,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
             .select()
             .from(repairPricing)
             .where(eq(repairPricing.sector, req.params.sector));
-          res.json(newDbPricing);
+            
+          // Enhance with workCategory names
+          const enhancedNewPricing = newDbPricing.map(pricing => {
+            const workCategory = workCategoriesStorage.find(cat => cat.id === pricing.workCategoryId);
+            return {
+              ...pricing,
+              workCategory: workCategory?.name || undefined,
+              methodName: workCategory?.name || undefined
+            };
+          });
+          
+          res.json(enhancedNewPricing);
         } else {
           console.log(`⚠️  No memory records found for sector: ${req.params.sector}`);
           res.json([]);
@@ -383,9 +405,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       console.error('Error fetching pricing from database:', error);
-      // Fallback to memory storage
+      // Fallback to memory storage with workCategory names
       const sectorPricing = pricingStorage.filter(item => item.sector === req.params.sector);
-      res.json(sectorPricing);
+      const enhancedSectorPricing = sectorPricing.map(pricing => {
+        const workCategory = workCategoriesStorage.find(cat => cat.id === pricing.workCategoryId);
+        return {
+          ...pricing,
+          workCategory: workCategory?.name || undefined,
+          methodName: workCategory?.name || undefined
+        };
+      });
+      res.json(enhancedSectorPricing);
     }
   });
 

@@ -127,27 +127,16 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
         // Enhanced fallback: try matching with normalized names for variations like "Cleanse and Survey" vs "Cleanse/Survey"
         if (!pricing) {
           const normalizedMethodName = normalizeMethodName(method.name);
-          console.log(`🔍 Looking for pricing match for method "${method.name}" (normalized: "${normalizedMethodName}")`);
           
           pricing = pricingData.find((p: any) => {
             const normalizedWorkCategory = normalizeMethodName(p.workCategory || '');
             const normalizedPricingPipeSize = normalizePipeSize(p.pipeSize);
             
-            console.log(`📊 Checking pricing record: workCategory="${p.workCategory}" (normalized: "${normalizedWorkCategory}"), pipeSize="${p.pipeSize}" (normalized: "${normalizedPricingPipeSize}")`);
-            
             const nameMatch = normalizedWorkCategory === normalizedMethodName;
             const sizeMatch = normalizedPricingPipeSize === normalizedSectionPipeSize;
             
-            console.log(`🎯 Match results: nameMatch=${nameMatch}, sizeMatch=${sizeMatch}`);
-            
             return nameMatch && sizeMatch;
           });
-          
-          if (pricing) {
-            console.log(`✅ Found pricing match for "${method.name}":`, pricing);
-          } else {
-            console.log(`❌ No pricing match found for "${method.name}"`);
-          }
         }
         
         // If still no exact pipe size match, try finding any pricing for this method regardless of pipe size
