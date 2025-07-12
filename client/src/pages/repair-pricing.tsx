@@ -2547,103 +2547,52 @@ export default function RepairPricing() {
                   {!collapsedWindows.priceOptions && (
                     <div className="px-4 pb-4">
                       <div className="grid grid-cols-4 gap-3">
-                        {/* Standard Options */}
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="meterage"
-                            checked={formData.pricingStructure?.meterage || false}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricingStructure: {
-                                ...formData.pricingStructure,
-                                meterage: e.target.checked
-                              }
-                            })}
-                            className="rounded border-slate-300"
-                          />
-                          <Label htmlFor="meterage" className="text-sm">{getPriceOptionLabel('meterage')}</Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="hourlyRate"
-                            checked={formData.pricingStructure?.hourlyRate || false}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricingStructure: {
-                                ...formData.pricingStructure,
-                                hourlyRate: e.target.checked
-                              }
-                            })}
-                            className="rounded border-slate-300"
-                          />
-                          <Label htmlFor="hourlyRate" className="text-sm">{getPriceOptionLabel('hourlyRate')}</Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="setupRate"
-                            checked={formData.pricingStructure?.setupRate || false}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricingStructure: {
-                                ...formData.pricingStructure,
-                                setupRate: e.target.checked
-                              }
-                            })}
-                            className="rounded border-slate-300"
-                          />
-                          <Label htmlFor="setupRate" className="text-sm">{getPriceOptionLabel('setupRate')}</Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="minCharge"
-                            checked={formData.pricingStructure?.minCharge || false}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricingStructure: {
-                                ...formData.pricingStructure,
-                                minCharge: e.target.checked
-                              }
-                            })}
-                            className="rounded border-slate-300"
-                          />
-                          <Label htmlFor="minCharge" className="text-sm">{getPriceOptionLabel('minCharge')}</Label>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="dayRate"
-                            checked={formData.pricingStructure?.dayRate || false}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              pricingStructure: {
-                                ...formData.pricingStructure,
-                                dayRate: e.target.checked
-                              }
-                            })}
-                            className="rounded border-slate-300"
-                          />
-                          <Label htmlFor="dayRate" className="text-sm">{getPriceOptionLabel('dayRate')}</Label>
-                        </div>
-
-                        {/* Custom Price Options */}
-                        {customOptions.priceOptions && customOptions.priceOptions.map((option, index) => (
-                          <div key={index} className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id={`custom_price_${index}`}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor={`custom_price_${index}`} className="text-sm">{option}</Label>
-                          </div>
-                        ))}
+                        {/* Dynamic Options in Reordered Sequence */}
+                        {(() => {
+                          // Use optionDisplayOrder if available, otherwise fall back to default order
+                          const defaultOrder = [
+                            { id: 'meterage', label: getPriceOptionLabel('meterage'), type: 'standard' },
+                            { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), type: 'standard' },
+                            { id: 'setupRate', label: getPriceOptionLabel('setupRate'), type: 'standard' },
+                            { id: 'minCharge', label: getPriceOptionLabel('minCharge'), type: 'standard' },
+                            { id: 'dayRate', label: getPriceOptionLabel('dayRate'), type: 'standard' },
+                            ...customOptions.priceOptions.map((option, index) => ({
+                              id: `custom_price_${index}`,
+                              label: option,
+                              type: 'custom'
+                            }))
+                          ];
+                          
+                          const displayOrder = formData.optionDisplayOrder || defaultOrder;
+                          
+                          return displayOrder.map((option, index) => {
+                            const isCustom = option.type === 'custom';
+                            const isChecked = isCustom ? true : (formData.pricingStructure?.[option.id] || false);
+                            
+                            return (
+                              <div key={option.id} className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={option.id}
+                                  checked={isChecked}
+                                  onChange={(e) => {
+                                    if (!isCustom) {
+                                      setFormData({
+                                        ...formData,
+                                        pricingStructure: {
+                                          ...formData.pricingStructure,
+                                          [option.id]: e.target.checked
+                                        }
+                                      });
+                                    }
+                                  }}
+                                  className="rounded border-slate-300"
+                                />
+                                <Label htmlFor={option.id} className="text-sm">{option.label}</Label>
+                              </div>
+                            );
+                          });
+                        })()}
                       </div>
                     </div>
                   )}
@@ -3613,20 +3562,32 @@ export default function RepairPricing() {
               </Button>
               <Button 
                 onClick={() => {
-                  // Apply changes back to form data for standard options
-                  const newPricingStructure = { ...formData.pricingStructure };
+                  console.log("Saving reordered options:", editablePriceOptions);
+                  
+                  // Reset all standard options to false first
+                  const newPricingStructure = { 
+                    ...formData.pricingStructure,
+                    meterage: false,
+                    hourlyRate: false,
+                    setupRate: false,
+                    minCharge: false,
+                    dayRate: false
+                  };
                   const standardOptionIds = ['meterage', 'hourlyRate', 'setupRate', 'minCharge', 'dayRate'];
                   
+                  // Apply enabled state for standard options in their new order
                   editablePriceOptions.forEach(option => {
                     if (standardOptionIds.includes(option.id)) {
                       newPricingStructure[option.id] = option.enabled;
                     }
                   });
                   
-                  // Update custom price options with new labels
+                  // Update custom price options with new labels and order
                   const updatedCustomPriceOptions = editablePriceOptions
                     .filter(option => option.id.startsWith('custom_price_'))
                     .map(option => option.label);
+                  
+                  console.log("Updated custom options in order:", updatedCustomPriceOptions);
                   
                   setFormData({
                     ...formData,
@@ -3638,10 +3599,24 @@ export default function RepairPricing() {
                     priceOptions: updatedCustomPriceOptions
                   }));
                   
+                  // Store the complete reordered options for display order
+                  const reorderedDisplayOptions = editablePriceOptions.map(option => ({
+                    id: option.id,
+                    label: option.label,
+                    type: option.id.startsWith('custom_price_') ? 'custom' : 'standard'
+                  }));
+                  
+                  // Update the display order in formData
+                  setFormData(prev => ({
+                    ...prev,
+                    pricingStructure: newPricingStructure,
+                    optionDisplayOrder: reorderedDisplayOptions
+                  }));
+                  
                   setShowEditPriceOptionsDialog(false);
                   toast({
                     title: "Options updated",
-                    description: "Your price/cost options have been updated successfully.",
+                    description: "Your price/cost options have been reordered and updated successfully.",
                   });
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
