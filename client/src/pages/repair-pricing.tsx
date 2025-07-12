@@ -3024,13 +3024,15 @@ export default function RepairPricing() {
                           e.stopPropagation();
                           // Initialize editableMinQuantityOptions with current state
                           if (formData.minQuantityDisplayOrder && formData.minQuantityDisplayOrder.length > 0) {
-                            console.log("Using saved min quantity display order:", formData.minQuantityDisplayOrder);
+                            console.log("🔥 EDIT DIALOG INIT - Using saved min quantity display order:", formData.minQuantityDisplayOrder);
+                            console.log("🔥 EDIT DIALOG INIT - Current pricingStructure:", formData.pricingStructure);
                             // Use the saved reordered sequence
                             const reorderedOptions = formData.minQuantityDisplayOrder.map(option => ({
                               id: option.id,
                               label: option.label,
-                              enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
+                              enabled: formData.pricingStructure?.[option.id] || false
                             }));
+                            console.log("🔥 EDIT DIALOG INIT - Mapped reorderedOptions:", reorderedOptions);
                             
                             // Don't add options that were intentionally deleted in the saved order
                             // Only add NEW custom options that weren't in the saved order AND are set to true
