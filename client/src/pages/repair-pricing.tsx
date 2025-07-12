@@ -878,7 +878,9 @@ export default function RepairPricing() {
       minMetersPerShift: formData.minMetersPerShift,
       minInspectionsPerShift: formData.minInspectionsPerShift,
       minSetupCount: formData.minSetupCount,
-      cost: calculatedCost.toString()
+      cost: calculatedCost.toString(),
+      // Include custom options
+      customOptions: customOptions
     };
 
     if (editingItem) {
@@ -2422,14 +2424,9 @@ export default function RepairPricing() {
                   >
                     <h4 className="text-sm font-medium text-green-700">📊 Quantity Options</h4>
                     <div className="flex items-center gap-2">
-                      {(formData.pricingStructure?.numberPerShift || formData.pricingStructure?.metersPerShift || formData.pricingStructure?.runsPerShift || formData.pricingStructure?.repeatFree) && (
+                      {customOptions.quantityOptions.length > 0 && (
                         <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
-                          {[
-                            formData.pricingStructure?.numberPerShift && 'Units',
-                            formData.pricingStructure?.metersPerShift && 'Meters',
-                            formData.pricingStructure?.runsPerShift && 'Runs',
-                            formData.pricingStructure?.repeatFree && 'Repeat Free'
-                          ].filter(Boolean).join(', ')}
+                          {customOptions.quantityOptions.length} option{customOptions.quantityOptions.length !== 1 ? 's' : ''}
                         </span>
                       )}
                       <Button 
@@ -2444,6 +2441,22 @@ export default function RepairPricing() {
                         <Plus className="h-3 w-3 mr-1" />
                         Add
                       </Button>
+                      {customOptions.quantityOptions.length > 0 && (
+                        <Button 
+                          type="button"
+                          size="sm" 
+                          className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCollapsedWindows(prev => ({
+                              ...prev,
+                              quantityOptions: false
+                            }));
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      )}
                     </div>
                   </div>
                   {!collapsedWindows.quantityOptions && (
