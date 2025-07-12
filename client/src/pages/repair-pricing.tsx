@@ -1023,14 +1023,14 @@ export default function RepairPricing() {
             <Button 
               className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => { 
-                console.log('Add Pricing button clicked');
+                console.log('Add Category button clicked');
                 resetForm(); 
                 setEditingItem(null); 
                 setIsAddDialogOpen(true);
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Pricing
+              Add Category
             </Button>
           </div>
         </div>
