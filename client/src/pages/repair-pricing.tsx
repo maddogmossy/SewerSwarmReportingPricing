@@ -2451,10 +2451,8 @@ export default function RepairPricing() {
                           className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setCollapsedWindows(prev => ({
-                              ...prev,
-                              quantityOptions: false
-                            }));
+                            setEditingOptionType('quantity');
+                            setShowEditOptionsDialog(true);
                           }}
                         >
                           Edit
@@ -2889,56 +2887,68 @@ export default function RepairPricing() {
           </DialogContent>
         </Dialog>
 
-        {/* Edit Options Dialog */}
+        {/* Edit Options Dialog - Manage All Quantity Options */}
         <Dialog open={showEditOptionsDialog} onOpenChange={setShowEditOptionsDialog}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle>Edit Option</DialogTitle>
+              <DialogTitle>Manage Quantity Options</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="editOptionName" className="text-sm font-medium">Option Name</Label>
-                <Input
-                  id="editOptionName"
-                  value={editingOptionName}
-                  onChange={(e) => setEditingOptionName(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {editingOptionType === 'quantity' && customOptions.quantityOptions.length > 0 ? (
+                <div className="space-y-3">
+                  {customOptions.quantityOptions.map((option, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-green-50 rounded border border-green-200">
+                      <div className="flex-1">
+                        <Input
+                          value={option}
+                          onChange={(e) => {
+                            const newOptions = [...customOptions.quantityOptions];
+                            newOptions[index] = e.target.value;
+                            setCustomOptions(prev => ({
+                              ...prev,
+                              quantityOptions: newOptions
+                            }));
+                          }}
+                          className="bg-white"
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="ml-2 h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => {
+                          setCustomOptions(prev => ({
+                            ...prev,
+                            quantityOptions: prev.quantityOptions.filter((_, i) => i !== index)
+                          }));
+                        }}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 py-8">No quantity options to manage</p>
+              )}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => {
                 setShowEditOptionsDialog(false);
-                setEditingOptionName('');
-                setEditingOptionIndex(-1);
                 setEditingOptionType('');
               }}>
-                Cancel
+                Close
               </Button>
               <Button 
                 onClick={() => {
-                  if (editingOptionName.trim() && editingOptionIndex >= 0) {
-                    setCustomOptions(prev => {
-                      const newOptions = { ...prev };
-                      if (editingOptionType === 'quantity') {
-                        newOptions.quantityOptions[editingOptionIndex] = editingOptionName.trim();
-                      } else if (editingOptionType === 'minQuantity') {
-                        newOptions.minQuantityOptions[editingOptionIndex] = editingOptionName.trim();
-                      } else if (editingOptionType === 'additional') {
-                        newOptions.additionalOptions[editingOptionIndex] = editingOptionName.trim();
-                      }
-                      return newOptions;
-                    });
-                    
-                    setShowEditOptionsDialog(false);
-                    setEditingOptionName('');
-                    setEditingOptionIndex(-1);
-                    setEditingOptionType('');
-                  }
+                  setShowQuantityDialog(true);
+                  setShowEditOptionsDialog(false);
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-green-600 hover:bg-green-700 text-white"
               >
-                Save Changes
+                <Plus className="h-4 w-4 mr-1" />
+                Add New Option
               </Button>
             </DialogFooter>
           </DialogContent>
