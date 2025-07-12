@@ -1058,7 +1058,7 @@ export default function RepairPricing() {
             
             <Button 
               className="bg-blue-600 hover:bg-blue-700 text-white"
-              onClick={() => { 
+              onClick={async () => { 
                 console.log('Add Category button clicked');
                 const categoryName = prompt('Enter category name:');
                 if (categoryName && categoryName.trim()) {
@@ -1067,14 +1067,30 @@ export default function RepairPricing() {
                   // Create simple category object
                   const newCategory = {
                     name: categoryName.trim(),
-                    description: categoryDescription.trim() || `${categoryName.trim()} work category`,
-                    icon: 'Wrench',
-                    color: 'text-blue-600'
+                    description: categoryDescription.trim() || `${categoryName.trim()} work category`
                   };
                   
-                  console.log('Creating new category:', newCategory);
-                  // For now, just show success message
-                  alert(`Category "${categoryName}" created successfully!`);
+                  try {
+                    console.log('Creating new category:', newCategory);
+                    const response = await fetch('/api/work-categories', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify(newCategory)
+                    });
+                    
+                    if (response.ok) {
+                      alert(`Category "${categoryName}" created successfully!`);
+                      // Refresh the page to show the new category
+                      window.location.reload();
+                    } else {
+                      alert('Failed to create category. Please try again.');
+                    }
+                  } catch (error) {
+                    console.error('Error creating category:', error);
+                    alert('Error creating category. Please try again.');
+                  }
                 } else if (categoryName !== null) {
                   alert('Category name is required');
                 }
