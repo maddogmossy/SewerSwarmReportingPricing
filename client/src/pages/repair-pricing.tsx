@@ -504,8 +504,8 @@ export default function RepairPricing() {
 
   // Fetch existing pricing for this sector
   const { data: pricingData = [], refetch, isLoading: pricingLoading } = useQuery({
-    queryKey: [`/api/repair-pricing/${sector}`],
-    enabled: !!sector,
+    queryKey: [`/api/repair-pricing/${sector || currentSector?.id || 'utilities'}`],
+    enabled: !!(sector || currentSector?.id),
   });
 
   // Auto-focus functionality for navigation from repair options
