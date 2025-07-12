@@ -270,10 +270,13 @@ export default function RepairPricing() {
   
   // Custom options state
   const [customOptions, setCustomOptions] = useState({
+    priceOptions: [],
     quantityOptions: [],
     minQuantityOptions: [],
     additionalOptions: []
   });
+
+  console.log("Current customOptions in render:", customOptions);
   const [showEditOptionsDialog, setShowEditOptionsDialog] = useState(false);
   const [editingOptionType, setEditingOptionType] = useState('');
   const [editingOptionIndex, setEditingOptionIndex] = useState(-1);
@@ -2766,10 +2769,14 @@ export default function RepairPricing() {
                   if (newOptionName.trim()) {
                     console.log("Adding quantity option:", newOptionName);
                     
-                    setCustomOptions(prev => ({
-                      ...prev,
-                      quantityOptions: [...prev.quantityOptions, newOptionName.trim()]
-                    }));
+                    setCustomOptions(prev => {
+                      const newOptions = {
+                        ...prev,
+                        quantityOptions: [...prev.quantityOptions, newOptionName.trim()]
+                      };
+                      console.log("Updated customOptions:", newOptions);
+                      return newOptions;
+                    });
                     
                     setShowQuantityDialog(false);
                     setNewOptionName('');
