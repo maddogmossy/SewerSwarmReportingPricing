@@ -2837,24 +2837,7 @@ export default function RepairPricing() {
                                   {option.label}
                                 </Label>
                                 
-                                {isStandardOption && isEnabled && (
-                                  <Select
-                                    value={mathOperators[option.id] || 'add'}
-                                    onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                      setMathOperators(prev => ({ ...prev, [option.id]: value }))
-                                    }
-                                  >
-                                    <SelectTrigger className="w-16 h-6 text-xs ml-2">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="add">+</SelectItem>
-                                      <SelectItem value="subtract">-</SelectItem>
-                                      <SelectItem value="multiply">×</SelectItem>
-                                      <SelectItem value="divide">÷</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                )}
+
                                 
                                 {isCustomOption && (
                                   <div className="flex items-center gap-1 ml-auto">
