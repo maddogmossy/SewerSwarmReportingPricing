@@ -385,7 +385,6 @@ export interface WincanSectionData {
   adoptable: string;
   inspectionDate: string;
   inspectionTime: string;
-  srmGrading?: any; // SRM grading data
 }
 
 export async function readWincanDatabase(filePath: string): Promise<WincanSectionData[]> {
@@ -679,7 +678,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         adoptable: adoptable,
         inspectionDate: inspectionDate,
         inspectionTime: inspectionTime,
-        srmGrading: srmGrading
+        // Note: srmGrading will be calculated in API response
       };
       
       // Only add if we have meaningful data

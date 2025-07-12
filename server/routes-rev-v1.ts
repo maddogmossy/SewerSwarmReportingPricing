@@ -12,6 +12,52 @@ const testStandards = getSectorStandards('utilities');
 console.log('Test utilities standards:', testStandards ? 'SUCCESS' : 'FAILED');
 console.log('Standards count:', testStandards?.standards?.length || 0);
 
+// Helper function to determine defect type from defects text
+function determineDefectType(defectsText: string): 'structural' | 'service' {
+  if (!defectsText || defectsText === 'No service or structural defect found') {
+    return 'service';
+  }
+  
+  const upperText = defectsText.toUpperCase();
+  
+  // Check for structural defects
+  if (upperText.includes('DEFORMED') || upperText.includes('FRACTURE') || 
+      upperText.includes('CRACK') || upperText.includes('JOINT') ||
+      upperText.includes('D ') || upperText.includes('FC ') || 
+      upperText.includes('FL ') || upperText.includes('CR ') ||
+      upperText.includes('JDL') || upperText.includes('JDS')) {
+    return 'structural';
+  }
+  
+  // Otherwise assume service defect
+  return 'service';
+}
+
+// SRM grading calculation function
+function getSRMGrading(grade: number, type: 'structural' | 'service') {
+  const srmScoring = {
+    structural: {
+      "0": { description: "No action required", criteria: "Pipe observed in acceptable structural and service condition", action_required: "No action required", adoptable: true },
+      "1": { description: "Excellent structural condition", criteria: "No defects observed", action_required: "None", adoptable: true },
+      "2": { description: "Minor defects", criteria: "Some minor wear or joint displacement", action_required: "No immediate action", adoptable: true },
+      "3": { description: "Moderate deterioration", criteria: "Isolated fractures, minor infiltration", action_required: "Medium-term repair or monitoring", adoptable: true },
+      "4": { description: "Significant deterioration", criteria: "Multiple fractures, poor alignment, heavy infiltration", action_required: "Consider near-term repair", adoptable: false },
+      "5": { description: "Severe structural failure", criteria: "Collapse, deformation, major cracking", action_required: "Immediate repair or replacement", adoptable: false }
+    },
+    service: {
+      "0": { description: "No action required", criteria: "Pipe observed in acceptable structural and service condition", action_required: "No action required", adoptable: true },
+      "1": { description: "No service issues", criteria: "Free flowing, no obstructions or deposits", action_required: "None", adoptable: true },
+      "2": { description: "Minor service impacts", criteria: "Minor settled deposits or water levels", action_required: "Routine monitoring", adoptable: true },
+      "3": { description: "Moderate service defects", criteria: "Partial blockages, 5–20% cross-sectional loss", action_required: "Desilting or cleaning recommended", adoptable: true },
+      "4": { description: "Major service defects", criteria: "Severe deposits, 20–50% loss, significant flow restriction", action_required: "Cleaning or partial repair", adoptable: false },
+      "5": { description: "Blocked or non-functional", criteria: "Over 50% flow loss or complete blockage", action_required: "Immediate action required", adoptable: false }
+    }
+  };
+  
+  const gradeKey = Math.min(grade, 5).toString();
+  return srmScoring[type][gradeKey] || srmScoring.service["1"];
+}
+
 // REV_V1: Fixed file upload configuration to preserve database files
 const upload = multer({ 
   dest: 'uploads/',
@@ -529,7 +575,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sections = await storage.getSectionInspectionsByFileUpload(uploadId);
       
       if (sections.length > 0) {
-        res.json(sections);
+        // Add SRM grading calculation to each section
+        const sectionsWithSRM = sections.map(section => {
+          // Determine defect type based on defects text
+          const defectType = determineDefectType(section.defects || '');
+          
+          // Calculate SRM grading
+          const srmGrading = getSRMGrading(section.severityGrade || 0, defectType);
+          
+          return {
+            ...section,
+            srmGrading
+          };
+        });
+        
+        res.json(sectionsWithSRM);
       } else {
         // No sections found for this upload
         res.json([]);
