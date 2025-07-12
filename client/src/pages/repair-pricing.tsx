@@ -2461,13 +2461,13 @@ export default function RepairPricing() {
                           className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white"
                           onClick={(e) => {
                             e.stopPropagation();
-                            // Sync current form state to editable options
+                            // Sync current form state to editable options with current labels
                             setEditablePriceOptions([
-                              { id: 'meterage', label: 'Meterage (£ per meter)', enabled: formData.pricingStructure?.meterage || false },
-                              { id: 'hourlyRate', label: 'Hourly rate (£ per hour)', enabled: formData.pricingStructure?.hourlyRate || false },
-                              { id: 'setupRate', label: 'Setup rate (£ per setup)', enabled: formData.pricingStructure?.setupRate || false },
-                              { id: 'minCharge', label: 'Min charge (£ minimum)', enabled: formData.pricingStructure?.minCharge || false },
-                              { id: 'dayRate', label: 'Day rate (£ per day)', enabled: formData.pricingStructure?.dayRate || false }
+                              { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false },
+                              { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
+                              { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
+                              { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
+                              { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false }
                             ]);
                             setShowEditPriceOptionsDialog(true);
                           }}
@@ -3554,13 +3554,13 @@ export default function RepairPricing() {
                 variant="outline" 
                 onClick={() => {
                   setShowEditPriceOptionsDialog(false);
-                  // Reset to original state without saving changes
+                  // Reset to current saved state without saving changes
                   setEditablePriceOptions([
-                    { id: 'meterage', label: 'Meterage (£ per meter)', enabled: formData.pricingStructure?.meterage || false },
-                    { id: 'hourlyRate', label: 'Hourly rate (£ per hour)', enabled: formData.pricingStructure?.hourlyRate || false },
-                    { id: 'setupRate', label: 'Setup rate (£ per setup)', enabled: formData.pricingStructure?.setupRate || false },
-                    { id: 'minCharge', label: 'Min charge (£ minimum)', enabled: formData.pricingStructure?.minCharge || false },
-                    { id: 'dayRate', label: 'Day rate (£ per day)', enabled: formData.pricingStructure?.dayRate || false }
+                    { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false },
+                    { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
+                    { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
+                    { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
+                    { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false }
                   ]);
                 }}
               >
@@ -3579,11 +3579,8 @@ export default function RepairPricing() {
                     pricingStructure: newPricingStructure
                   });
                   
-                  // Force a re-render to update the main pricing window display
-                  setTimeout(() => {
-                    // Trigger component update by touching the state
-                    setFormData(prev => ({ ...prev }));
-                  }, 100);
+                  // Keep the edited labels persistent by not resetting editablePriceOptions
+                  // The current editablePriceOptions state now contains the saved changes
                   
                   setShowEditPriceOptionsDialog(false);
                   toast({
