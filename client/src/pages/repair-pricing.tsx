@@ -924,13 +924,18 @@ export default function RepairPricing() {
       queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
       queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${sector}`] });
       
+      // Force immediate refetch to ensure UI updates
+      queryClient.refetchQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
+      
       if (variables.scope === 'all') {
         // Invalidate all sector queries when deleting from all sectors
         SECTORS.forEach(s => {
           queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${s.id}`] });
           queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${s.id}`] });
+          queryClient.refetchQueries({ queryKey: [`/api/repair-pricing/${s.id}`] });
         });
         queryClient.invalidateQueries({ queryKey: ['/api/work-categories'] });
+        queryClient.refetchQueries({ queryKey: ['/api/work-categories'] });
         toast({ 
           title: "✅ Complete removal successful", 
           description: "Pricing deleted from all sectors and all traces cleared"
