@@ -342,22 +342,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(sectorPricing);
   });
 
-  // DELETE endpoint to clear all pricing configurations for a sector
-  app.delete('/api/repair-pricing-clear/:sector', (req, res) => {
-    const sector = req.params.sector;
-    const beforeCount = pricingStorage.length;
-    
-    // Remove all pricing for this sector
-    pricingStorage.splice(0, pricingStorage.length, 
-      ...pricingStorage.filter(item => item.sector !== sector)
-    );
-    
-    const afterCount = pricingStorage.length;
-    const deletedCount = beforeCount - afterCount;
-    
-    console.log(`✅ Cleared ${deletedCount} pricing configurations for ${sector} sector`);
-    res.json({ deletedCount, sector });
-  });
+
 
   // POST endpoint to create new repair pricing
   app.post('/api/repair-pricing', (req, res) => {
@@ -676,23 +661,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // Add endpoint to clear ALL old pricing configurations
-  app.delete('/api/repair-pricing-clear/:sector', (req, res) => {
-    const { sector } = req.params;
-    
-    console.log(`Clearing all pricing configurations for sector: ${sector}`);
-    
-    const initialLength = pricingStorage.length;
-    pricingStorage = pricingStorage.filter(item => item.sector !== sector);
-    const deletedCount = initialLength - pricingStorage.length;
-    
-    res.json({ 
-      success: true, 
-      message: `Cleared ${deletedCount} old pricing configurations for ${sector} sector`,
-      sector: sector,
-      deletedCount: deletedCount
-    });
-  });
+
 
   // REV_V1: Critical endpoints for dashboard data display
   app.get('/api/uploads/:id/sections', async (req, res) => {
