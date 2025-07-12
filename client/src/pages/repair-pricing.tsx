@@ -1056,6 +1056,17 @@ export default function RepairPricing() {
               </Button>
             )}
             
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => { 
+                console.log('Add Category button clicked');
+                // Note: Dialog functionality has been removed
+                alert('Add Category functionality has been temporarily disabled for maintenance');
+              }}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Category
+            </Button>
 
           </div>
         </div>
