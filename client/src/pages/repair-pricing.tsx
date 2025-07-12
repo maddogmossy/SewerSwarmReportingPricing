@@ -243,6 +243,8 @@ export default function RepairPricing() {
   });
   const [showSimpleAddForm, setShowSimpleAddForm] = useState(false);
   const [simpleCategoryName, setSimpleCategoryName] = useState('');
+  const [categoryDeleteDialogOpen, setCategoryDeleteDialogOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<any>(null);
   const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
   const [tempDescription, setTempDescription] = useState("");
   const [isDescriptionEditable, setIsDescriptionEditable] = useState(false);
@@ -1118,7 +1120,53 @@ export default function RepairPricing() {
                     <div className="text-center py-4 text-slate-500">
                       <AlertTriangle className="h-6 w-6 mx-auto mb-2 text-orange-400" />
                       <p className="text-xs">No pricing configured</p>
-                      <p className="text-xs">Click "Add Pricing" to configure</p>
+                      <div className="flex gap-2 justify-center mt-3">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setFormData({
+                              workCategoryId: category.id.toString(),
+                              pipeSize: "",
+                              depth: "",
+                              description: "",
+                              rule: "",
+                              lengthOfRepair: "1000mm",
+                              minInstallationPerDay: "",
+                              dayRate: "",
+                              option1Cost: "",
+                              option2Cost: "",
+                              option3Cost: "",
+                              option4Cost: "",
+                              option1PerShift: "",
+                              option2PerShift: "",
+                              option3PerShift: "",
+                              option4PerShift: "",
+                              selectedOption: "",
+                              vehicleId: "",
+                              lockSingleLayer: false
+                            });
+                            setEditingItem(null);
+                            setApplySectors([sector]);
+                            setIsAddDialogOpen(true);
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          Add Price
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setCategoryToDelete(category);
+                            setCategoryDeleteDialogOpen(true);
+                          }}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -1177,6 +1225,44 @@ export default function RepairPricing() {
                           )}
                         </div>
                       ))}
+                      
+                      {/* Add Price button for categories with existing pricing */}
+                      <div className="text-center pt-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setFormData({
+                              workCategoryId: category.id.toString(),
+                              pipeSize: "",
+                              depth: "",
+                              description: "",
+                              rule: "",
+                              lengthOfRepair: "1000mm",
+                              minInstallationPerDay: "",
+                              dayRate: "",
+                              option1Cost: "",
+                              option2Cost: "",
+                              option3Cost: "",
+                              option4Cost: "",
+                              option1PerShift: "",
+                              option2PerShift: "",
+                              option3PerShift: "",
+                              option4PerShift: "",
+                              selectedOption: "",
+                              vehicleId: "",
+                              lockSingleLayer: false
+                            });
+                            setEditingItem(null);
+                            setApplySectors([sector]);
+                            setIsAddDialogOpen(true);
+                          }}
+                          className="w-full border-dashed border-2 hover:border-blue-400 hover:text-blue-600"
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          Add Another Price Option
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </CardContent>
@@ -1828,6 +1914,75 @@ export default function RepairPricing() {
                   }}
                 >
                   Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Category Delete Confirmation Dialog */}
+        <Dialog open={categoryDeleteDialogOpen} onOpenChange={setCategoryDeleteDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+                Delete Category
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p>Are you sure you want to delete the "{categoryToDelete?.name}" category? This will remove it completely.</p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-xs text-red-800">
+                  This action cannot be undone. The category and any associated pricing will be permanently removed.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setCategoryDeleteDialogOpen(false);
+                    setCategoryToDelete(null);
+                  }}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={async () => {
+                    if (categoryToDelete) {
+                      try {
+                        const response = await fetch(`/api/work-categories/${categoryToDelete.id}`, {
+                          method: 'DELETE'
+                        });
+                        if (response.ok) {
+                          toast({
+                            title: "Success",
+                            description: `Category "${categoryToDelete.name}" deleted successfully!`
+                          });
+                          setCategoryDeleteDialogOpen(false);
+                          setCategoryToDelete(null);
+                          window.location.reload();
+                        } else {
+                          toast({
+                            title: "Error",
+                            description: "Failed to delete category",
+                            variant: "destructive"
+                          });
+                        }
+                      } catch (error) {
+                        toast({
+                          title: "Error", 
+                          description: "Error deleting category",
+                          variant: "destructive"
+                        });
+                      }
+                    }
+                  }}
+                  className="flex-1"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Category
                 </Button>
               </div>
             </div>
