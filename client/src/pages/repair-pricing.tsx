@@ -2258,104 +2258,53 @@ export default function RepairPricing() {
                   if (formData.pricingStructure?.repeatFree) selectedOptions.push({key: 'repeatFree', label: 'Repeat free (no charge)', type: 'quantity'});
                   
                   if (selectedOptions.length > 0) {
-                    // Check if both Day rate and Runs per shift are selected
-                    const hasDayRate = selectedOptions.some(opt => opt.key === 'dayRate');
-                    const hasRunsPerShift = selectedOptions.some(opt => opt.key === 'runsPerShift');
-                    const showMathOperator = hasDayRate && hasRunsPerShift;
-                    
                     return (
                       <div className="border border-blue-200 rounded-lg p-4 bg-blue-50 mb-4">
                         <h4 className="text-sm font-medium text-blue-700 mb-3">💰 Selected Pricing Options - Enter Values</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          {selectedOptions.map((option) => {
-                            // Special handling for Day rate and Runs per shift to include math operator
-                            if (showMathOperator && (option.key === 'dayRate' || option.key === 'runsPerShift')) {
-                              if (option.key === 'dayRate') {
-                                return (
-                                  <div key={option.key} className="space-y-1 col-span-2">
-                                    <div className="flex items-center gap-3">
-                                      <div className="flex-1 space-y-1">
-                                        <Label htmlFor={`value_${option.key}`} className="text-xs font-medium text-slate-600">
-                                          Day rate (£ per day)
-                                        </Label>
-                                        <Input
-                                          id={`value_${option.key}`}
-                                          type="number"
-                                          step="0.01"
-                                          placeholder="Enter value"
-                                          className="h-8 text-sm"
-                                          value={formData[option.key] || ''}
-                                          onChange={(e) => setFormData({
-                                            ...formData,
-                                            [option.key]: e.target.value
-                                          })}
-                                        />
-                                      </div>
-                                      
-                                      <div className="flex items-center mt-6">
-                                        <Select
-                                          value={mathOperators.dayRateOperator || 'divide'}
-                                          onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                            setMathOperators(prev => ({ ...prev, dayRateOperator: value }))
-                                          }
-                                        >
-                                          <SelectTrigger className="w-16 h-8 text-sm">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            <SelectItem value="add">+</SelectItem>
-                                            <SelectItem value="subtract">-</SelectItem>
-                                            <SelectItem value="multiply">×</SelectItem>
-                                            <SelectItem value="divide">÷</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                      </div>
-                                      
-                                      <div className="flex-1 space-y-1">
-                                        <Label htmlFor="value_runsPerShift" className="text-xs font-medium text-slate-600">
-                                          Runs per shift
-                                        </Label>
-                                        <Input
-                                          id="value_runsPerShift"
-                                          type="number"
-                                          step="0.01"
-                                          placeholder="Enter value"
-                                          className="h-8 text-sm"
-                                          value={formData.runsPerShift || ''}
-                                          onChange={(e) => setFormData({
-                                            ...formData,
-                                            runsPerShift: e.target.value
-                                          })}
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              }
-                              // Skip rendering runsPerShift separately since it's handled above
-                              if (option.key === 'runsPerShift') {
-                                return null;
-                              }
-                            }
-                            
-                            // Regular field rendering for other options
+                        <div className="space-y-3">
+                          {selectedOptions.map((option, index) => {
                             return (
-                              <div key={option.key} className="space-y-1">
-                                <Label htmlFor={`value_${option.key}`} className="text-xs font-medium text-slate-600">
-                                  {option.label}
-                                </Label>
-                                <Input
-                                  id={`value_${option.key}`}
-                                  type="number"
-                                  step="0.01"
-                                  placeholder="Enter value"
-                                  className="h-8 text-sm"
-                                  value={formData[option.key] || ''}
-                                  onChange={(e) => setFormData({
-                                    ...formData,
-                                    [option.key]: e.target.value
-                                  })}
-                                />
+                              <div key={option.key} className="flex items-center gap-3">
+                                {/* Math operator before each option except the first */}
+                                {index > 0 && (
+                                  <div className="flex items-center">
+                                    <Select
+                                      value={mathOperators[`operator_${index}`] || 'add'}
+                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                        setMathOperators(prev => ({ ...prev, [`operator_${index}`]: value }))
+                                      }
+                                    >
+                                      <SelectTrigger className="w-16 h-8 text-sm">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="add">+</SelectItem>
+                                        <SelectItem value="subtract">-</SelectItem>
+                                        <SelectItem value="multiply">×</SelectItem>
+                                        <SelectItem value="divide">÷</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                )}
+                                
+                                {/* Input field for the option */}
+                                <div className="flex-1 space-y-1">
+                                  <Label htmlFor={`value_${option.key}`} className="text-xs font-medium text-slate-600">
+                                    {option.label}
+                                  </Label>
+                                  <Input
+                                    id={`value_${option.key}`}
+                                    type="number"
+                                    step="0.01"
+                                    placeholder="Enter value"
+                                    className="h-8 text-sm"
+                                    value={formData[option.key] || ''}
+                                    onChange={(e) => setFormData({
+                                      ...formData,
+                                      [option.key]: e.target.value
+                                    })}
+                                  />
+                                </div>
                               </div>
                             );
                           })}
