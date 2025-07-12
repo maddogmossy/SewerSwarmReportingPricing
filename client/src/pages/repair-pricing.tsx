@@ -3246,7 +3246,23 @@ export default function RepairPricing() {
                       lengthOfRepair: formData.lengthOfRepair,
                       dayRate: formData.dayRate,
                       pricingStructure: formData.pricingStructure,
-                      vehicleId: formData.vehicleId
+                      vehicleId: formData.vehicleId,
+                      // Include all pricing option values
+                      meterage: formData.meterage,
+                      hourlyRate: formData.hourlyRate,
+                      setupRate: formData.setupRate,
+                      minCharge: formData.minCharge,
+                      repeatFree: formData.repeatFree,
+                      numberPerShift: formData.numberPerShift,
+                      runsPerShift: formData.runsPerShift,
+                      metersPerShift: formData.metersPerShift,
+                      minUnitsPerShift: formData.minUnitsPerShift,
+                      minMetersPerShift: formData.minMetersPerShift,
+                      minInspectionsPerShift: formData.minInspectionsPerShift,
+                      minSetupCount: formData.minSetupCount,
+                      // Include math operators and custom options
+                      mathOperators: mathOperators,
+                      customOptions: customOptions
                     };
 
                     if (editingItem) {
