@@ -3876,9 +3876,20 @@ export default function RepairPricing() {
                   
                   console.log("Updated custom options in order:", updatedCustomPriceOptions);
                   
+                  // CRITICAL FIX: Update pricingStructure.priceOptions to only include enabled standard options + custom options
+                  const enabledStandardOptions = editablePriceOptions
+                    .filter(option => !option.id.startsWith('custom_price_') && option.enabled)
+                    .map(option => option.label);
+                  
+                  const finalPriceOptions = [...enabledStandardOptions, ...updatedCustomPriceOptions];
+                  console.log("Final priceOptions array:", finalPriceOptions);
+                  
                   setFormData({
                     ...formData,
-                    pricingStructure: newPricingStructure
+                    pricingStructure: {
+                      ...newPricingStructure,
+                      priceOptions: finalPriceOptions // Sync the priceOptions array properly
+                    }
                   });
                   
                   setCustomOptions(prev => ({
@@ -3896,7 +3907,10 @@ export default function RepairPricing() {
                   // Update the display order in formData
                   setFormData(prev => ({
                     ...prev,
-                    pricingStructure: newPricingStructure,
+                    pricingStructure: {
+                      ...newPricingStructure,
+                      priceOptions: finalPriceOptions // Ensure consistency
+                    },
                     optionDisplayOrder: reorderedDisplayOptions
                   }));
                   
