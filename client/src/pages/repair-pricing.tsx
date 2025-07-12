@@ -345,6 +345,12 @@ export default function RepairPricing() {
     { id: 'runsPerShift', label: 'Runs per shift', enabled: false },
     { id: 'repeatFree', label: 'Repeat free', enabled: false }
   ]);
+  const [editableMinQuantityOptions, setEditableMinQuantityOptions] = useState([
+    { id: 'minUnitsPerShift', label: 'Min units per shift', enabled: false },
+    { id: 'minMetersPerShift', label: 'Min meters per shift', enabled: false },
+    { id: 'minInspectionsPerShift', label: 'Min inspections per shift', enabled: false },
+    { id: 'minSetupCount', label: 'Min setup count', enabled: false }
+  ]);
 
   // Function to get current label for an option
   const getPriceOptionLabel = (optionId: string) => {
@@ -403,15 +409,33 @@ export default function RepairPricing() {
       optionId === 'repeatFree' ? 'Repeat free' : optionId;
   }
 
-  // Function to get min quantity option labels
-  const getMinQuantityOptionLabel = (optionId: string): string => {
-    const labels = {
-      'minUnitsPerShift': 'Min units per shift',
-      'minMetersPerShift': 'Min meters per shift',
-      'minInspectionsPerShift': 'Min inspections per shift',
-      'minSetupCount': 'Min setup count'
-    };
-    return labels[optionId] || optionId;
+  // Functions for reordering min quantity options
+  const moveMinQuantityOptionUp = (index: number) => {
+    if (index > 0) {
+      const updatedOptions = [...editableMinQuantityOptions];
+      [updatedOptions[index - 1], updatedOptions[index]] = [updatedOptions[index], updatedOptions[index - 1]];
+      setEditableMinQuantityOptions(updatedOptions);
+      console.log("Moved min quantity option up:", updatedOptions);
+    }
+  };
+
+  const moveMinQuantityOptionDown = (index: number) => {
+    if (index < editableMinQuantityOptions.length - 1) {
+      const updatedOptions = [...editableMinQuantityOptions];
+      [updatedOptions[index], updatedOptions[index + 1]] = [updatedOptions[index + 1], updatedOptions[index]];
+      setEditableMinQuantityOptions(updatedOptions);
+      console.log("Moved min quantity option down:", updatedOptions);
+    }
+  };
+
+  // Function to get current label for a min quantity option
+  const getMinQuantityOptionLabel = (optionId: string) => {
+    const editableOption = editableMinQuantityOptions.find(opt => opt.id === optionId);
+    return editableOption ? editableOption.label : 
+      optionId === 'minUnitsPerShift' ? 'Min units per shift' :
+      optionId === 'minMetersPerShift' ? 'Min meters per shift' :
+      optionId === 'minInspectionsPerShift' ? 'Min inspections per shift' :
+      optionId === 'minSetupCount' ? 'Min setup count' : optionId;
   };
 
   // Function to get additional option labels
@@ -2933,6 +2957,35 @@ export default function RepairPricing() {
                           className="text-xs px-2 py-1 h-6 bg-orange-500 hover:bg-orange-600 text-white"
                           onClick={(e) => {
                             e.stopPropagation();
+                            // Initialize editableMinQuantityOptions with current state
+                            if (formData.minQuantityDisplayOrder && formData.minQuantityDisplayOrder.length > 0) {
+                              console.log("Using saved min quantity display order:", formData.minQuantityDisplayOrder);
+                              // Use the saved reordered sequence
+                              const reorderedOptions = formData.minQuantityDisplayOrder.map(option => ({
+                                id: option.id,
+                                label: option.label,
+                                enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
+                              }));
+                              setEditableMinQuantityOptions(reorderedOptions);
+                            } else {
+                              console.log("Using default min quantity order");
+                              // Fall back to default order
+                              const standardOptions = [
+                                { id: 'minUnitsPerShift', label: getMinQuantityOptionLabel('minUnitsPerShift'), enabled: formData.pricingStructure?.minUnitsPerShift || false },
+                                { id: 'minMetersPerShift', label: getMinQuantityOptionLabel('minMetersPerShift'), enabled: formData.pricingStructure?.minMetersPerShift || false },
+                                { id: 'minInspectionsPerShift', label: getMinQuantityOptionLabel('minInspectionsPerShift'), enabled: formData.pricingStructure?.minInspectionsPerShift || false },
+                                { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), enabled: formData.pricingStructure?.minSetupCount || false }
+                              ];
+                              
+                              // Add custom min quantity options to the editable list
+                              const customMinQuantityOptions = customOptions.minQuantityOptions.map((option, index) => ({
+                                id: `custom_min_quantity_${index}`,
+                                label: option,
+                                enabled: true // Custom options are always considered enabled
+                              }));
+                              
+                              setEditableMinQuantityOptions([...standardOptions, ...customMinQuantityOptions]);
+                            }
                             setShowEditMinQuantityOptionsDialog(true);
                           }}
                         >
@@ -3940,63 +3993,156 @@ export default function RepairPricing() {
             <DialogHeader>
               <DialogTitle>Edit Min Quantity Options</DialogTitle>
               <DialogDescription>
-                Edit the text labels for your minimum quantity options. You can modify the label text or delete options you no longer need.
+                Edit the text labels for your min quantity options. You can modify the label text, reorder using the up/down arrows, or delete options you no longer need.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               <div className="grid grid-cols-1 gap-3">
-                {[
-                  { id: 'minUnitsPerShift', label: getMinQuantityOptionLabel('minUnitsPerShift'), enabled: formData.pricingStructure?.minUnitsPerShift || false },
-                  { id: 'minMetersPerShift', label: getMinQuantityOptionLabel('minMetersPerShift'), enabled: formData.pricingStructure?.minMetersPerShift || false },
-                  { id: 'minInspectionsPerShift', label: getMinQuantityOptionLabel('minInspectionsPerShift'), enabled: formData.pricingStructure?.minInspectionsPerShift || false },
-                  { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), enabled: formData.pricingStructure?.minSetupCount || false }
-                ].filter(option => option.enabled).map((option, index) => (
+                {editableMinQuantityOptions.map((option, index) => (
                   <div key={option.id} className="flex items-center justify-between p-3 border rounded-lg bg-orange-50">
                     <div className="flex items-center space-x-3 flex-1">
-                      <div className="flex flex-col">
-                        <Input
-                          value={option.label}
-                          onChange={(e) => {
-                            // Update label logic here if needed
-                          }}
-                          className="text-sm"
-                          placeholder="Option label"
-                        />
+                      <div className="flex flex-col space-y-1">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          onClick={() => moveMinQuantityOptionUp(index)}
+                          disabled={index === 0}
+                        >
+                          <ArrowUp className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          onClick={() => moveMinQuantityOptionDown(index)}
+                          disabled={index === editableMinQuantityOptions.length - 1}
+                        >
+                          <ArrowDown className="h-3 w-3" />
+                        </Button>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
-                        onClick={() => {
-                          setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              [option.id]: false
-                            }
-                          });
+                      <Input
+                        value={option.label}
+                        onChange={(e) => {
+                          const updatedOptions = [...editableMinQuantityOptions];
+                          updatedOptions[index].label = e.target.value;
+                          setEditableMinQuantityOptions(updatedOptions);
                         }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                        className="flex-1"
+                      />
                     </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-100 ml-2"
+                      onClick={() => {
+                        const updatedOptions = editableMinQuantityOptions.filter((_, i) => i !== index);
+                        setEditableMinQuantityOptions(updatedOptions);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowEditMinQuantityOptionsDialog(false)}>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowEditMinQuantityOptionsDialog(false);
+                  // Reset to current saved state without saving changes
+                  if (formData.minQuantityDisplayOrder && formData.minQuantityDisplayOrder.length > 0) {
+                    console.log("Resetting to saved min quantity order on cancel:", formData.minQuantityDisplayOrder);
+                    // Reset to the saved reordered sequence
+                    const reorderedOptions = formData.minQuantityDisplayOrder.map(option => ({
+                      id: option.id,
+                      label: option.label,
+                      enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
+                    }));
+                    setEditableMinQuantityOptions(reorderedOptions);
+                  } else {
+                    console.log("Resetting to default min quantity order on cancel");
+                    // Fall back to default order
+                    const standardOptions = [
+                      { id: 'minUnitsPerShift', label: getMinQuantityOptionLabel('minUnitsPerShift'), enabled: formData.pricingStructure?.minUnitsPerShift || false },
+                      { id: 'minMetersPerShift', label: getMinQuantityOptionLabel('minMetersPerShift'), enabled: formData.pricingStructure?.minMetersPerShift || false },
+                      { id: 'minInspectionsPerShift', label: getMinQuantityOptionLabel('minInspectionsPerShift'), enabled: formData.pricingStructure?.minInspectionsPerShift || false },
+                      { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), enabled: formData.pricingStructure?.minSetupCount || false }
+                    ];
+                    
+                    // Include custom min quantity options in reset
+                    const customMinQuantityOptions = customOptions.minQuantityOptions.map((option, index) => ({
+                      id: `custom_min_quantity_${index}`,
+                      label: option,
+                      enabled: true
+                    }));
+                    
+                    setEditableMinQuantityOptions([...standardOptions, ...customMinQuantityOptions]);
+                  }
+                }}
+              >
                 Cancel
               </Button>
               <Button 
                 onClick={() => {
+                  console.log("Saving reordered min quantity options:", editableMinQuantityOptions);
+                  
+                  // Reset all standard min quantity options to false first
+                  const newPricingStructure = { 
+                    ...formData.pricingStructure,
+                    minUnitsPerShift: false,
+                    minMetersPerShift: false,
+                    minInspectionsPerShift: false,
+                    minSetupCount: false
+                  };
+                  const standardOptionIds = ['minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount'];
+                  
+                  // Apply enabled state for standard options in their new order
+                  editableMinQuantityOptions.forEach(option => {
+                    if (standardOptionIds.includes(option.id)) {
+                      newPricingStructure[option.id] = option.enabled;
+                    }
+                  });
+                  
+                  // Update custom min quantity options with new labels and order
+                  const updatedCustomMinQuantityOptions = editableMinQuantityOptions
+                    .filter(option => option.id.startsWith('custom_min_quantity_'))
+                    .map(option => option.label);
+                  
+                  console.log("Updated custom min quantity options in order:", updatedCustomMinQuantityOptions);
+                  
+                  setFormData({
+                    ...formData,
+                    pricingStructure: newPricingStructure
+                  });
+                  
+                  setCustomOptions(prev => ({
+                    ...prev,
+                    minQuantityOptions: updatedCustomMinQuantityOptions
+                  }));
+                  
+                  // Store the complete reordered options for display order
+                  const reorderedDisplayOptions = editableMinQuantityOptions.map(option => ({
+                    id: option.id,
+                    label: option.label,
+                    type: option.id.startsWith('custom_min_quantity_') ? 'custom' : 'standard'
+                  }));
+                  
+                  // Update the display order in formData
+                  setFormData(prev => ({
+                    ...prev,
+                    pricingStructure: newPricingStructure,
+                    minQuantityDisplayOrder: reorderedDisplayOptions
+                  }));
+                  
                   setShowEditMinQuantityOptionsDialog(false);
                   toast({
                     title: "Min quantity options updated",
-                    description: "Your minimum quantity options have been updated successfully.",
+                    description: "Your min quantity options have been reordered and updated successfully.",
                   });
                 }}
                 className="bg-orange-600 hover:bg-orange-700 text-white"
