@@ -991,6 +991,8 @@ export default function RepairPricing() {
       mathOperators: mathOperators
     });
     
+    console.log('🔥 ORANGE OPTIONS DEBUG - pricingStructure being sent:', formData.pricingStructure);
+    
     // Calculate cost from selected pricing options with math operators
     const calculatePricingSum = () => {
       const priceOptions = [];
