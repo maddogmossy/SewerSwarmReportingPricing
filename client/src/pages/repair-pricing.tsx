@@ -1247,6 +1247,7 @@ export default function RepairPricing() {
               <div>
                 <Label htmlFor="workCategoryId">Work Category</Label>
                 <Select
+                  key={`work-category-select-${Date.now()}`}
                   value={formData.workCategoryId}
                   onValueChange={(value) => {
                     console.log("Category selected:", value, "Type:", typeof value);
@@ -1262,6 +1263,7 @@ export default function RepairPricing() {
                     <SelectValue placeholder="Add new category" />
                   </SelectTrigger>
                   <SelectContent>
+                    {console.log("SelectContent rendering - only showing Add New Category")}
                     <SelectItem value="add_new" className="text-blue-600 font-medium">
                       <div className="flex items-center gap-2">
                         <Plus className="h-4 w-4" />
