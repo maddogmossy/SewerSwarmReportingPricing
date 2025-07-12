@@ -2726,13 +2726,39 @@ export default function RepairPricing() {
                   {!collapsedWindows.priceOptions && (
                     <div className="px-4 pb-4">
                       <div className="grid grid-cols-4 gap-3">
-                        {/* Show all pricing structure options that exist */}
-                        {formData.pricingStructure && Object.keys(formData.pricingStructure).map((optionKey) => {
-                          // Skip these standard field names that aren't price options
-                          if (['priceOptions', 'mathOperators'].includes(optionKey)) return null;
+                        {/* Show only authentic standard price options */}
+                        {['dayRate', 'hourlyRate', 'setupRate', 'minCharge', 'meterage'].map((optionKey) => {
+                          const isChecked = !!formData.pricingStructure?.[optionKey];
+                          const optionLabel = getPriceOptionLabel(optionKey);
                           
+                          return (
+                            <div key={optionKey} className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id={optionKey}
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  setFormData({
+                                    ...formData,
+                                    pricingStructure: {
+                                      ...formData.pricingStructure,
+                                      [optionKey]: e.target.checked
+                                    }
+                                  });
+                                }}
+                                className="rounded border-slate-300"
+                              />
+                              <Label htmlFor={optionKey} className="text-sm">{optionLabel}</Label>
+                            </div>
+                          );
+                        })}
+                        
+                        {/* Show user-added options (those not in standard list) */}
+                        {formData.pricingStructure && Object.keys(formData.pricingStructure).filter(key => 
+                          !['dayRate', 'hourlyRate', 'setupRate', 'minCharge', 'meterage', 'priceOptions', 'mathOperators', 'numberPerShift', 'metersPerShift', 'runsPerShift', 'repeatFree', 'minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount', 'includeDepth', 'includeTotalLength'].includes(key)
+                        ).map((optionKey) => {
                           const isChecked = !!formData.pricingStructure[optionKey];
-                          const optionLabel = getPriceOptionLabel(optionKey) || optionKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          const optionLabel = optionKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                           
                           return (
                             <div key={optionKey} className="flex items-center space-x-2">
