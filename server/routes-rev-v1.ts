@@ -143,40 +143,6 @@ let pricingStorage = [
     rule: "Standard double layer patch for 225mm pipe",
     lengthOfRepair: "1000mm",
     selectedOption: "Option 2: Double Layer"
-  },
-  // Cleanse/Survey pricing entries - auto-generated for existing category
-  {
-    id: 6,
-    sector: "utilities",
-    workCategoryId: 4,
-    workCategory: "Cleanse/Survey",
-    methodName: "Cleanse and Survey",
-    pipeSize: "150mm",
-    cost: 0,
-    description: "Complete cleaning followed by verification survey to confirm completion",
-    rule: "User-defined cleaning method"
-  },
-  {
-    id: 7,
-    sector: "utilities", 
-    workCategoryId: 4,
-    workCategory: "Cleanse/Survey",
-    methodName: "Cleanse and Survey",
-    pipeSize: "225mm",
-    cost: 0,
-    description: "Complete cleaning followed by verification survey to confirm completion",
-    rule: "User-defined cleaning method"
-  },
-  {
-    id: 8,
-    sector: "utilities",
-    workCategoryId: 4,
-    workCategory: "Cleanse/Survey", 
-    methodName: "Cleanse and Survey",
-    pipeSize: "300mm",
-    cost: 0,
-    description: "Complete cleaning followed by verification survey to confirm completion",
-    rule: "User-defined cleaning method"
   }
 ];
 
@@ -413,30 +379,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Add to storage
     workCategoriesStorage.push(newCategory);
-    
-    // If this is a cleaning-related category, create basic pricing entries for common pipe sizes
-    if (name.toLowerCase().includes('cleanse') || name.toLowerCase().includes('clean') || name.toLowerCase().includes('survey')) {
-      const commonPipeSizes = ['150mm', '225mm', '300mm'];
-      const newPricingId = Math.max(...pricingStorage.map(p => p.id), 0) + 1;
-      
-      commonPipeSizes.forEach((pipeSize, index) => {
-        const pricingEntry = {
-          id: newPricingId + index,
-          sector: "utilities", // Default to utilities, can be expanded later
-          workCategoryId: newId,
-          workCategory: name.trim(),
-          methodName: name.trim(), // Add method name for cleaning options popover lookup
-          pipeSize: pipeSize,
-          cost: 0, // Will be configured by user
-          description: description.trim(),
-          rule: 'User-defined cleaning method'
-        };
-        
-        pricingStorage.push(pricingEntry);
-      });
-      
-      console.log(`✅ Created basic pricing entries for cleaning category: ${name}`);
-    }
     
     console.log(`✅ Added new work category: ${newCategory.name} (ID: ${newId})`);
     
