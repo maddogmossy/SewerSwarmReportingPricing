@@ -2710,7 +2710,7 @@ export default function RepairPricing() {
                   >
                     <h4 className="text-sm font-medium text-blue-700">💰 Price/Cost Options</h4>
                     <div className="flex items-center gap-2">
-                      {((formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge) || customOptions.priceOptions.length > 0) && (
+                      {((formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge) || (customOptions?.priceOptions?.length > 0)) && (
                         <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
                           {[
                             ...([
@@ -2720,11 +2720,11 @@ export default function RepairPricing() {
                               formData.pricingStructure?.setupRate && getPriceOptionLabel('setupRate').split(' ')[0],
                               formData.pricingStructure?.minCharge && getPriceOptionLabel('minCharge').split(' ')[0]
                             ].filter(Boolean)),
-                            ...(customOptions.priceOptions.length > 0 ? [`${customOptions.priceOptions.length} custom`] : [])
+                            ...(customOptions?.priceOptions?.length > 0 ? [`${customOptions.priceOptions.length} custom`] : [])
                           ].join(', ')}
                         </span>
                       )}
-                      {(formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge || customOptions.priceOptions.length > 0) && (
+                      {(formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge || (customOptions?.priceOptions?.length > 0)) && (
                         <Button 
                           type="button"
                           size="sm" 
@@ -2865,7 +2865,7 @@ export default function RepairPricing() {
                         </span>
                       )}
 
-                      {(customOptions.quantityOptions && Array.isArray(customOptions.quantityOptions) && customOptions.quantityOptions.length > 0) && (
+                      {(customOptions?.quantityOptions && Array.isArray(customOptions.quantityOptions) && customOptions.quantityOptions.length > 0) && (
                         <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
                           {customOptions.quantityOptions.length} custom option{customOptions.quantityOptions.length !== 1 ? 's' : ''}
                         </span>
@@ -2882,7 +2882,7 @@ export default function RepairPricing() {
                         <Plus className="h-3 w-3 mr-1" />
                         Add
                       </Button>
-                      {(formData.pricingStructure?.numberPerShift || formData.pricingStructure?.metersPerShift || formData.pricingStructure?.runsPerShift || formData.pricingStructure?.repeatFree || (customOptions.quantityOptions && Array.isArray(customOptions.quantityOptions) && customOptions.quantityOptions.length > 0)) && (
+                      {(formData.pricingStructure?.numberPerShift || formData.pricingStructure?.metersPerShift || formData.pricingStructure?.runsPerShift || formData.pricingStructure?.repeatFree || (customOptions?.quantityOptions && Array.isArray(customOptions.quantityOptions) && customOptions.quantityOptions.length > 0)) && (
                         <Button 
                           type="button"
                           size="sm" 
@@ -3402,7 +3402,7 @@ export default function RepairPricing() {
 
                     // Add to quantityDisplayOrder to ensure it appears in the main window
                     setFormData(prev => {
-                      const newCustomOptionId = `custom_quantity_${customOptions.quantityOptions.length}`;
+                      const newCustomOptionId = `custom_quantity_${customOptions?.quantityOptions?.length || 0}`;
                       const newDisplayItem = {
                         id: newCustomOptionId,
                         label: newOptionName.trim(),
@@ -3475,7 +3475,7 @@ export default function RepairPricing() {
 
                     // Add to minQuantityDisplayOrder to ensure it appears in the main window
                     setFormData(prev => {
-                      const newCustomOptionId = `custom_min_quantity_${customOptions.minQuantityOptions.length}`;
+                      const newCustomOptionId = `custom_min_quantity_${customOptions?.minQuantityOptions?.length || 0}`;
                       const newDisplayItem = {
                         id: newCustomOptionId,
                         label: newOptionName.trim(),
@@ -3547,7 +3547,7 @@ export default function RepairPricing() {
 
                     // Add to additionalDisplayOrder to ensure it appears in the main window
                     setFormData(prev => {
-                      const newCustomOptionId = `custom_additional_${customOptions.additionalOptions.length}`;
+                      const newCustomOptionId = `custom_additional_${customOptions?.additionalOptions?.length || 0}`;
                       const newDisplayItem = {
                         id: newCustomOptionId,
                         label: newOptionName.trim(),
