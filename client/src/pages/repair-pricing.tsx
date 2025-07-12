@@ -3128,9 +3128,11 @@ export default function RepairPricing() {
 
                           return displayOrder.map((option, index) => {
                             const isStandardOption = ['minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount'].includes(option.id);
-                            const isCustomOption = option.id.startsWith('custom_min_quantity_');
-                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : (formData.pricingStructure?.[option.id] !== false);
+                            const isCustomOption = option.id.startsWith('custom_min_quantity_') || option.id.startsWith('minquantity_');
+                            const isEnabled = formData.pricingStructure?.[option.id] || false;
                             
+                            // 🔥 CRITICAL FIX: Only show options that are actually enabled
+                            if (!isEnabled) return null;
                             if (!isStandardOption && !isCustomOption) return null;
 
                             return (
@@ -3160,9 +3162,9 @@ export default function RepairPricing() {
                           });
                         })()}
 
-                        {/* Show orange/minquantity-specific added options */}
+                        {/* Show orange/minquantity-specific added options (only if enabled) */}
                         {formData.pricingStructure && Object.keys(formData.pricingStructure).filter(key => 
-                          key.startsWith('minquantity_')
+                          key.startsWith('minquantity_') && formData.pricingStructure[key] === true
                         ).map((optionKey) => {
                           const isChecked = !!formData.pricingStructure[optionKey];
                           const optionLabel = optionKey.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
