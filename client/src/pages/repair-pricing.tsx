@@ -768,10 +768,23 @@ export default function RepairPricing() {
   const createPricing = useMutation({
     mutationFn: (data: any) => apiRequest('POST', '/api/repair-pricing', data),
     onSuccess: () => {
+      const activeSector = sector || currentSector?.id || 'utilities';
       // Invalidate all pricing-related queries to ensure dashboard updates
-      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${activeSector}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${sector}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${activeSector}`] });
+      
+      // Also invalidate all sector pricing queries to ensure cross-sector data is updated
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/utilities'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/adoption'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/highways'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/insurance'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/construction'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/domestic'] });
+      
+      // Force refetch the main pricing data
+      refetch();
+      
       toast({ title: "Pricing configuration saved successfully!" });
       
       // Close dialog and return to dashboard after successful save
@@ -864,20 +877,28 @@ export default function RepairPricing() {
   const updatePricing = useMutation({
     mutationFn: ({ id, ...data }: any) => apiRequest('PUT', `/api/repair-pricing/${id}`, data),
     onSuccess: () => {
+      const activeSector = sector || currentSector?.id || 'utilities';
       // Invalidate all pricing-related queries to ensure dashboard updates
-      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${activeSector}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${sector}`] });
-      toast({ title: "Pricing configuration saved successfully!" });
+      queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${activeSector}`] });
       
-      // Close dialog and return to dashboard after successful save
+      // Also invalidate all sector pricing queries to ensure cross-sector data is updated
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/utilities'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/adoption'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/highways'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/insurance'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/construction'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/repair-pricing/domestic'] });
+      
+      // Force refetch the main pricing data
+      refetch();
+      
+      toast({ title: "Pricing configuration updated successfully!" });
+      
+      // Close dialog and reset editing state
       setIsAddDialogOpen(false);
       setEditingItem(null);
-      
-      // Navigate back to dashboard to see calculated pricing
-      setTimeout(() => {
-        setLocation('/dashboard');
-      }, 500);
     },
     onError: (error: any) => {
       toast({ 
