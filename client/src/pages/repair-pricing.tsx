@@ -2183,7 +2183,7 @@ export default function RepairPricing() {
               })()}
 
               {/* Standard Configuration Fields */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className={`grid gap-4 ${formData.pricingStructure?.includeTotalLength ? 'grid-cols-2' : 'grid-cols-1'}`}>
                 <div>
                   <Label className="text-sm font-medium">Pipe Size</Label>
                   <Select value={formData.pipeSize} onValueChange={(value) => setFormData({...formData, pipeSize: value})}>
@@ -2203,14 +2203,16 @@ export default function RepairPricing() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label className="text-sm font-medium">Total Length</Label>
-                  <Input
-                    value={formData.lengthOfRepair}
-                    onChange={(e) => setFormData({...formData, lengthOfRepair: e.target.value})}
-                    placeholder="e.g., 15.56m"
-                  />
-                </div>
+                {formData.pricingStructure?.includeTotalLength && (
+                  <div>
+                    <Label className="text-sm font-medium">Total Length</Label>
+                    <Input
+                      value={formData.lengthOfRepair}
+                      onChange={(e) => setFormData({...formData, lengthOfRepair: e.target.value})}
+                      placeholder="e.g., 15.56m"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Depth, Total Length, and Day Rate fields removed - moved to Additional Items */}
