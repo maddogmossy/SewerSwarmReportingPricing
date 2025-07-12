@@ -582,53 +582,19 @@ export default function Dashboard() {
 
           if (isServiceDefect || needsCleaning) {
             return (
-              <CleaningOptionsPopover 
-                sectionData={{
-                  pipeSize: section.pipeSize,
-                  sector: currentSector.id,
-                  recommendations: section.recommendations,
-                  defects: section.defects,
-                  itemNo: section.itemNo,
-                  pipeMaterial: section.pipeMaterial,
-                  pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth),
-                  defectType: section.defectType // Pass defect type for proper classification
-                }}
-                onPricingNeeded={(method, pipeSize, sector) => {
-                  window.location.href = `/repair-pricing/${sector}`;
-                }}
-              >
-                <div className="text-xs max-w-sm bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
-                  <div className="font-medium text-blue-800 mb-1">💧 SERVICE CLEANING</div>
-                  <div className="text-blue-700">{section.recommendations || 'No recommendations available'}</div>
-                  <div className="text-xs text-blue-600 mt-1 font-medium">→ Click for cleaning pricing options</div>
-                </div>
-              </CleaningOptionsPopover>
+              <div className="text-xs max-w-sm bg-blue-50 border-2 border-blue-200 p-3 rounded-lg">
+                <div className="font-medium text-blue-800 mb-1">💧 SERVICE CLEANING</div>
+                <div className="text-blue-700">{section.recommendations || 'No recommendations available'}</div>
+              </div>
             );
           } 
           // For structural defects or non-cleaning defects, show repair options  
           else {
             return (
-              <RepairOptionsPopover 
-                sectionData={{
-                  pipeSize: section.pipeSize,
-                  sector: currentSector.id,
-                  recommendations: section.recommendations,
-                  defects: section.defects,
-                  itemNo: section.itemNo,
-                  pipeMaterial: section.pipeMaterial,
-                  pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth),
-                  defectType: section.defectType // Pass defect type for proper classification
-                }}
-                onPricingNeeded={(method, pipeSize, sector) => {
-                  window.location.href = `/repair-pricing/${sector}`;
-                }}
-              >
-                <div className="text-xs max-w-sm bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 hover:border-orange-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md">
-                  <div className="font-medium text-orange-800 mb-1">🔧 STRUCTURAL REPAIR</div>
-                  <div className="text-orange-700">{section.recommendations || 'No recommendations available'}</div>
-                  <div className="text-xs text-orange-600 mt-1 font-medium">→ Click for repair pricing options</div>
-                </div>
-              </RepairOptionsPopover>
+              <div className="text-xs max-w-sm bg-orange-50 border-2 border-orange-200 p-3 rounded-lg">
+                <div className="font-medium text-orange-800 mb-1">🔧 STRUCTURAL REPAIR</div>
+                <div className="text-orange-700">{section.recommendations || 'No recommendations available'}</div>
+              </div>
             );
           }
         } else {
