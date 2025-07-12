@@ -3417,6 +3417,8 @@ export default function RepairPricing() {
                       }
                     });
 
+                    console.log('🔥 REAL SUBMIT DEBUG - formData.pricingStructure BEFORE save:', formData.pricingStructure);
+                    
                     const pricingData = {
                       sector,
                       workCategoryId: parseInt(formData.workCategoryId || "1"), // Default to first category if not set
