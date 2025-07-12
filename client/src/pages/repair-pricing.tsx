@@ -26,7 +26,10 @@ import {
   Wrench,
   BarChart3,
   Shield,
-  AlertCircle
+  AlertCircle,
+  ArrowUp,
+  ArrowDown,
+  GripVertical
 } from "lucide-react";
 
 const PIPE_SIZES = [
@@ -325,6 +328,23 @@ export default function RepairPricing() {
       optionId === 'setupRate' ? 'Setup rate (£ per setup)' :
       optionId === 'minCharge' ? 'Min charge (£ minimum)' :
       optionId === 'dayRate' ? 'Day rate (£ per day)' : optionId;
+  };
+
+  // Functions for reordering options
+  const moveOptionUp = (index: number) => {
+    if (index > 0) {
+      const updatedOptions = [...editablePriceOptions];
+      [updatedOptions[index - 1], updatedOptions[index]] = [updatedOptions[index], updatedOptions[index - 1]];
+      setEditablePriceOptions(updatedOptions);
+    }
+  };
+
+  const moveOptionDown = (index: number) => {
+    if (index < editablePriceOptions.length - 1) {
+      const updatedOptions = [...editablePriceOptions];
+      [updatedOptions[index], updatedOptions[index + 1]] = [updatedOptions[index + 1], updatedOptions[index]];
+      setEditablePriceOptions(updatedOptions);
+    }
   };
   const [formData, setFormData] = useState({
     workCategoryId: "",
@@ -3509,7 +3529,7 @@ export default function RepairPricing() {
             <DialogHeader>
               <DialogTitle>Edit Price/Cost Options</DialogTitle>
               <DialogDescription>
-                Edit the text labels for your price/cost options. You can modify the label text or delete options you no longer need.
+                Edit the text labels for your price/cost options. You can modify the label text, reorder using the up/down arrows, or delete options you no longer need.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -3517,6 +3537,28 @@ export default function RepairPricing() {
                 {editablePriceOptions.map((option, index) => (
                   <div key={option.id} className="flex items-center justify-between p-3 border rounded-lg bg-blue-50">
                     <div className="flex items-center space-x-3 flex-1">
+                      <div className="flex flex-col space-y-1">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          onClick={() => moveOptionUp(index)}
+                          disabled={index === 0}
+                        >
+                          <ArrowUp className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                          onClick={() => moveOptionDown(index)}
+                          disabled={index === editablePriceOptions.length - 1}
+                        >
+                          <ArrowDown className="h-3 w-3" />
+                        </Button>
+                      </div>
                       <Input
                         value={option.label}
                         onChange={(e) => {
