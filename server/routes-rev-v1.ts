@@ -143,6 +143,17 @@ let pricingStorage = [
     rule: "Standard double layer patch for 225mm pipe",
     lengthOfRepair: "1000mm",
     selectedOption: "Option 2: Double Layer"
+  },
+  // Placeholder entry for "Cleanse and Survey" repair method - user will configure actual pricing
+  {
+    id: 6,
+    sector: "utilities",
+    repairMethodId: 1, // Links to "Cleanse and Survey" repair method
+    methodName: "Cleanse and Survey",
+    pipeSize: "150mm",
+    cost: 0, // User will set actual cost
+    description: "Complete cleaning followed by verification survey to confirm completion",
+    rule: "User-configured cleaning method"
   }
 ];
 
