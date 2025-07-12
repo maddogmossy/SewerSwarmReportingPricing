@@ -2506,11 +2506,24 @@ export default function RepairPricing() {
                   if (formData.pricingStructure?.minInspectionsPerShift) orangeOptions.push({key: 'minInspectionsPerShift', label: 'Min inspections/shift', type: 'orange'});
                   if (formData.pricingStructure?.minSetupCount) orangeOptions.push({key: 'minSetupCount', label: 'Min setup count', type: 'orange'});
                   
+                  // Also check for user-added orange options with "minquantity_" prefix
+                  Object.keys(formData.pricingStructure || {}).forEach(key => {
+                    if (key.startsWith('minquantity_') && formData.pricingStructure[key] === true) {
+                      const label = key.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                      orangeOptions.push({key: key, label: label, type: 'orange'});
+                    }
+                  });
+                  
                   // Categorize purple options (additional items)
                   if (formData.pricingStructure?.includeDepth) purpleOptions.push({key: 'includeDepth', label: 'Include depth', type: 'purple'});
                   if (formData.pricingStructure?.includeTotalLength) purpleOptions.push({key: 'includeTotalLength', label: 'Include total length', type: 'purple'});
                   
                   const allOptions = [...priceOptions, ...quantityOptions, ...orangeOptions, ...purpleOptions];
+                  
+                  // Debug logging for orange options only when they exist
+                  if (orangeOptions.length > 0) {
+                    console.log('Orange options found:', orangeOptions);
+                  }
                   
                   if (allOptions.length > 0) {
                     let mathOperatorIndex = 0;
