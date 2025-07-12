@@ -276,6 +276,10 @@ export const repairPricing = pgTable("repair_pricing", {
   vehicleId: integer("vehicle_id").references(() => vehicleTravelRates.id),
   // Pricing structure options (stored as JSON object)
   pricingStructure: jsonb("pricing_structure"),
+  // Math operators for calculation chains
+  mathOperators: jsonb("math_operators"),
+  // Custom options for user-added fields
+  customOptions: jsonb("custom_options"),
   // Individual pricing option values
   meterage: varchar("meterage"),
   setupRate: varchar("setup_rate"),

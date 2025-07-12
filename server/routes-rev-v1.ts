@@ -502,7 +502,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Store pricing structure selections for UI persistence
       pricingStructure: pricingStructure || {},
       // Store math operators and custom options
-      mathOperators: mathOperators || [],
+      mathOperators: mathOperators || {},
       customOptions: customOptions || {},
       // Store all range fields for flexibility
       range_fields: rangeFields || {},
@@ -598,6 +598,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         minSetupCount: minSetupCount || null,
         // Store pricing structure selections for UI persistence
         pricingStructure: pricingStructure || {},
+        // Store math operators and custom options
+        mathOperators: mathOperators || {},
+        customOptions: customOptions || {},
         // Store all range fields in JSON column for flexibility
         range_fields: rangeFields || {},
         updatedAt: sql`now()`
