@@ -2770,18 +2770,25 @@ export default function RepairPricing() {
                   if (newOptionName.trim()) {
                     console.log("Adding quantity option:", newOptionName);
                     // Add the option to the pricing structure based on common patterns
-                    const optionKey = newOptionName.toLowerCase().includes('units') ? 'numberPerShift' :
-                                     newOptionName.toLowerCase().includes('meters') ? 'metersPerShift' :
-                                     newOptionName.toLowerCase().includes('runs') ? 'runsPerShift' :
-                                     newOptionName.toLowerCase().includes('repeat') ? 'repeatFree' :
-                                     'numberPerShift'; // default
+                    const lowerName = newOptionName.toLowerCase();
+                    const optionKey = lowerName.includes('units') || lowerName.includes('number') ? 'numberPerShift' :
+                                     lowerName.includes('meters') || lowerName.includes('metres') || lowerName.includes('linear') ? 'metersPerShift' :
+                                     lowerName.includes('runs') || lowerName.includes('run') ? 'runsPerShift' :
+                                     lowerName.includes('repeat') || lowerName.includes('free') ? 'repeatFree' :
+                                     'numberPerShift'; // default - for anything else like "Range From"
                     
-                    setFormData({
-                      ...formData,
-                      pricingStructure: {
-                        ...formData.pricingStructure,
-                        [optionKey]: true
-                      }
+                    console.log("Mapping:", newOptionName, "->", optionKey);
+                    
+                    setFormData(prevData => {
+                      const newData = {
+                        ...prevData,
+                        pricingStructure: {
+                          ...prevData.pricingStructure,
+                          [optionKey]: true
+                        }
+                      };
+                      console.log("Updated formData pricingStructure:", newData.pricingStructure);
+                      return newData;
                     });
                     
                     setShowQuantityDialog(false);
