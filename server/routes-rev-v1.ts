@@ -417,6 +417,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(sectorPricing);
   });
 
+  // DELETE endpoint to clear all pricing configurations for a sector
+  app.delete('/api/repair-pricing-clear/:sector', (req, res) => {
+    const sector = req.params.sector;
+    const beforeCount = pricingStorage.length;
+    
+    // Remove all pricing for this sector
+    pricingStorage.splice(0, pricingStorage.length, 
+      ...pricingStorage.filter(item => item.sector !== sector)
+    );
+    
+    const afterCount = pricingStorage.length;
+    const deletedCount = beforeCount - afterCount;
+    
+    console.log(`✅ Cleared ${deletedCount} pricing configurations for ${sector} sector`);
+    res.json({ deletedCount, sector });
+  });
+
   // POST endpoint to create new repair pricing
   app.post('/api/repair-pricing', (req, res) => {
     const {
