@@ -3063,17 +3063,17 @@ export default function RepairPricing() {
                               { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), enabled: formData.pricingStructure?.minSetupCount || false }
                             ];
                             
-                            // Add custom min quantity options to the editable list (only if enabled)
+                            // Add custom min quantity options to the editable list (ALL custom options, not just enabled ones)
                             const customMinQuantityOptions = [];
                             Object.keys(formData.pricingStructure || {}).forEach(key => {
-                              if (key.startsWith('minquantity_') && formData.pricingStructure[key] === true) {
+                              if (key.startsWith('minquantity_') && !key.endsWith('_label')) {
                                 // Use stored label if available, otherwise reconstruct from field name
                                 const storedLabel = formData.pricingStructure[`${key}_label`];
                                 const label = storedLabel || key.replace('minquantity_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                                 customMinQuantityOptions.push({
                                   id: key,
                                   label: label,
-                                  enabled: true
+                                  enabled: !!formData.pricingStructure[key]
                                 });
                               }
                             });
@@ -3928,9 +3928,9 @@ export default function RepairPricing() {
                     newPricingStructure[id] = false;
                   });
                   
-                  // Remove ALL minquantity_ prefixed options first (clean slate)
+                  // Remove ALL minquantity_ prefixed options first (clean slate), but preserve labels
                   Object.keys(newPricingStructure).forEach(key => {
-                    if (key.startsWith('minquantity_')) {
+                    if (key.startsWith('minquantity_') && !key.endsWith('_label')) {
                       delete newPricingStructure[key];
                     }
                   });
@@ -3943,9 +3943,14 @@ export default function RepairPricing() {
                       newPricingStructure[option.id] = option.enabled;
                       console.log("🔥 Set standard option:", option.id, "=", option.enabled);
                     } else if (option.id.startsWith('minquantity_')) {
-                      // Re-add only the minquantity_ options that still exist in editableMinQuantityOptions
-                      newPricingStructure[option.id] = true;
-                      console.log("🔥 Set custom option:", option.id, "= true");
+                      // Re-add only the minquantity_ options that are enabled in editableMinQuantityOptions
+                      newPricingStructure[option.id] = option.enabled;
+                      // Also ensure the label is preserved
+                      const labelKey = `${option.id}_label`;
+                      if (formData.pricingStructure[labelKey]) {
+                        newPricingStructure[labelKey] = formData.pricingStructure[labelKey];
+                      }
+                      console.log("🔥 Set custom option:", option.id, "=", option.enabled);
                     }
                   });
                   console.log("🔥 FINAL newPricingStructure AFTER APPLYING OPTIONS:", newPricingStructure);
