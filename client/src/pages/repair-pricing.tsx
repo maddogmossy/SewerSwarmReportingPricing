@@ -250,6 +250,7 @@ export default function RepairPricing() {
   const [showPriceCostDialog, setShowPriceCostDialog] = useState(false);
   const [showQuantityDialog, setShowQuantityDialog] = useState(false);
   const [showMinQuantityDialog, setShowMinQuantityDialog] = useState(false);
+  const [showAdditionalDialog, setShowAdditionalDialog] = useState(false);
   const [newOptionName, setNewOptionName] = useState('');
   const [categoryDeleteDialogOpen, setCategoryDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<any>(null);
@@ -2421,6 +2422,15 @@ export default function RepairPricing() {
                 <div className="border border-purple-200 rounded-lg p-4 bg-purple-50">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="text-sm font-medium text-purple-700">🔧 Additional Items</h4>
+                    <Button 
+                      type="button"
+                      size="sm" 
+                      className="text-xs px-2 py-1 h-6 bg-purple-600 hover:bg-purple-700 text-white"
+                      onClick={() => setShowAdditionalDialog(true)}
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add
+                    </Button>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="flex items-center space-x-2">
@@ -2439,26 +2449,9 @@ export default function RepairPricing() {
                       />
                       <Label htmlFor="includeDepth" className="text-sm">Include pipe depth</Label>
                     </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="includeTotalLength"
-                        checked={formData.pricingStructure?.includeTotalLength || false}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          pricingStructure: {
-                            ...formData.pricingStructure,
-                            includeTotalLength: e.target.checked
-                          }
-                        })}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="includeTotalLength" className="text-sm">Include total length</Label>
-                    </div>
                   </div>
                   <p className="text-xs text-purple-600 mt-2">
-                    These items can be included in pricing calculations when available from inspection data.
+                    Additional items can be included in pricing calculations when available from inspection data.
                   </p>
                 </div>
               </div>
@@ -2630,6 +2623,47 @@ export default function RepairPricing() {
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 Add Option
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Additional Items Dialog */}
+        <Dialog open={showAdditionalDialog} onOpenChange={setShowAdditionalDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Additional Item</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="additionalItem" className="text-sm font-medium">Item Name</Label>
+                <Input
+                  id="additionalItem"
+                  value={newOptionName}
+                  onChange={(e) => setNewOptionName(e.target.value)}
+                  placeholder="e.g., Include equipment setup time"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setShowAdditionalDialog(false);
+                setNewOptionName('');
+              }}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (newOptionName.trim()) {
+                    console.log("Adding additional item:", newOptionName);
+                    setShowAdditionalDialog(false);
+                    setNewOptionName('');
+                  }
+                }}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                Add Item
               </Button>
             </DialogFooter>
           </DialogContent>
