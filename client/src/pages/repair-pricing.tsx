@@ -581,9 +581,15 @@ export default function RepairPricing() {
       queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
       queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${sector}`] });
-      toast({ title: "Pricing added successfully - form kept open for further editing" });
-      // Keep form open with current values and checkbox states for continued editing
-      // Don't reset form, close dialog, or navigate away
+      toast({ title: "Pricing configuration saved successfully!" });
+      
+      // Close dialog and return to dashboard after successful save
+      setIsAddDialogOpen(false);
+      
+      // Navigate back to dashboard to see calculated pricing
+      setTimeout(() => {
+        setLocation('/dashboard');
+      }, 500);
     },
     onError: (error: any) => {
       toast({ 
@@ -671,9 +677,16 @@ export default function RepairPricing() {
       queryClient.invalidateQueries({ queryKey: [`/api/repair-pricing/${sector}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/user-pricing'] });
       queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${sector}`] });
-      toast({ title: "Pricing updated successfully - form kept open for further editing" });
-      // Keep form open with current values and checkbox states for continued editing
-      // Don't reset form, close dialog, or navigate away
+      toast({ title: "Pricing configuration saved successfully!" });
+      
+      // Close dialog and return to dashboard after successful save
+      setIsAddDialogOpen(false);
+      setEditingItem(null);
+      
+      // Navigate back to dashboard to see calculated pricing
+      setTimeout(() => {
+        setLocation('/dashboard');
+      }, 500);
     },
     onError: (error: any) => {
       toast({ 

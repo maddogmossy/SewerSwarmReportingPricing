@@ -436,6 +436,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // POST endpoint to create new repair pricing
   app.post('/api/repair-pricing', (req, res) => {
+    // Extract data from request body - handle nested data structure
+    const requestData = req.body.data || req.body;
+    
     const {
       sector,
       workCategoryId,
@@ -460,10 +463,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       minSetupCount,
       // Pricing structure selections
       pricingStructure
-    } = req.body;
+    } = requestData;
 
     console.log('Creating new repair pricing with data:', req.body);
     console.log('Extracted pricing structure:', pricingStructure);
+    console.log('Request data structure:', { requestData });
 
     // Generate new ID
     const newId = Math.max(...pricingStorage.map(p => p.id), 0) + 1;
@@ -512,6 +516,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const { id } = req.params;
     const pricingId = parseInt(id);
     
+    // Extract data from request body - handle nested data structure
+    const requestData = req.body.data || req.body;
+    
     const {
       sector,
       workCategoryId,
@@ -536,10 +543,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       minSetupCount,
       // Pricing structure selections
       pricingStructure
-    } = req.body;
+    } = requestData;
 
     console.log(`Updating repair pricing ${pricingId} with data:`, req.body);
     console.log(`Extracted pricing structure:`, pricingStructure);
+    console.log(`Request data structure:`, { requestData });
 
     // Find the pricing item to update
     const pricingIndex = pricingStorage.findIndex(p => p.id === pricingId);

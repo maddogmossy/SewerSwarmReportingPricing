@@ -1207,9 +1207,35 @@ export default function Dashboard() {
       calculatedCost = parseFloat(matchingPricing.meterage) * totalLength;
       console.log('Using meterage pricing:', {meterage: matchingPricing.meterage, totalLength, calculatedCost});
     } else if (matchingPricing.dayRate && parseFloat(matchingPricing.dayRate) > 0) {
-      // Day rate calculation  
-      calculatedCost = parseFloat(matchingPricing.dayRate) * numberOfPatches;
-      console.log('Using day rate pricing:', {dayRate: matchingPricing.dayRate, numberOfPatches, calculatedCost});
+      // Day rate ÷ runs per shift calculation
+      const dayRate = parseFloat(matchingPricing.dayRate);
+      const runsPerShift = matchingPricing.numberPerShift ? parseFloat(matchingPricing.numberPerShift) : 1;
+      const minRunsRequired = matchingPricing.minUnitsPerShift ? parseFloat(matchingPricing.minUnitsPerShift) : 1;
+      
+      // Calculate cost per section
+      const costPerSection = dayRate / runsPerShift;
+      calculatedCost = costPerSection * numberOfPatches;
+      
+      console.log('Using day rate ÷ runs per shift pricing:', {
+        dayRate, 
+        runsPerShift, 
+        minRunsRequired,
+        costPerSection,
+        numberOfPatches, 
+        calculatedCost,
+        hasMinimumRuns: numberOfPatches >= minRunsRequired
+      });
+      
+      // Check if minimum runs threshold is met for proper pricing
+      if (numberOfPatches < minRunsRequired) {
+        // Return red pricing indicator - insufficient runs for proper calculation
+        return {
+          cost: calculatedCost,
+          status: 'insufficient_runs',
+          message: `Need ${minRunsRequired} runs minimum (current: ${numberOfPatches})`,
+          costPerSection: costPerSection
+        };
+      }
     } else if (matchingPricing.hourlyRate && parseFloat(matchingPricing.hourlyRate) > 0) {
       // Hourly rate calculation (assuming 8 hours per day for patches)
       calculatedCost = parseFloat(matchingPricing.hourlyRate) * 8 * numberOfPatches;
@@ -1680,7 +1706,7 @@ export default function Dashboard() {
   };
 
   // Cost calculation function for enhanced table
-  const calculateCost = (section: any): string => {
+  const calculateCost = (section: any): string | JSX.Element => {
     // Check if section actually has defects based on severity grade
     const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
     
@@ -1691,6 +1717,10 @@ export default function Dashboard() {
     // For defective sections, use the repair pricing logic instead of old hardcoded logic
     const autoCost = calculateAutoCost(section);
     if (autoCost) {
+      // Check if insufficient runs for proper pricing calculation
+      if (autoCost.status === 'insufficient_runs') {
+        return <span className="text-red-600 font-medium" title={autoCost.message}>£{autoCost.cost.toFixed(2)}</span>;
+      }
       return `£${autoCost.cost.toFixed(2)}`;
     }
     
