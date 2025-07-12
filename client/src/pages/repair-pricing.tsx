@@ -2936,49 +2936,47 @@ export default function RepairPricing() {
                         <Plus className="h-3 w-3 mr-1" />
                         Add
                       </Button>
-                      {(formData.pricingStructure?.minUnitsPerShift || formData.pricingStructure?.minMetersPerShift || formData.pricingStructure?.minInspectionsPerShift || formData.pricingStructure?.minSetupCount || customOptions.minQuantityOptions.length > 0) && (
-                        <Button 
-                          type="button"
-                          size="sm" 
-                          className="text-xs px-2 py-1 h-6 bg-orange-500 hover:bg-orange-600 text-white"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Initialize editableMinQuantityOptions with current state
-                            if (formData.minQuantityDisplayOrder && formData.minQuantityDisplayOrder.length > 0) {
-                              console.log("Using saved min quantity display order:", formData.minQuantityDisplayOrder);
-                              // Use the saved reordered sequence
-                              const reorderedOptions = formData.minQuantityDisplayOrder.map(option => ({
-                                id: option.id,
-                                label: option.label,
-                                enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
-                              }));
-                              setEditableMinQuantityOptions(reorderedOptions);
-                            } else {
-                              console.log("Using default min quantity order");
-                              // Fall back to default order
-                              const standardOptions = [
-                                { id: 'minUnitsPerShift', label: getMinQuantityOptionLabel('minUnitsPerShift'), enabled: formData.pricingStructure?.minUnitsPerShift || false },
-                                { id: 'minMetersPerShift', label: getMinQuantityOptionLabel('minMetersPerShift'), enabled: formData.pricingStructure?.minMetersPerShift || false },
-                                { id: 'minInspectionsPerShift', label: getMinQuantityOptionLabel('minInspectionsPerShift'), enabled: formData.pricingStructure?.minInspectionsPerShift || false },
-                                { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), enabled: formData.pricingStructure?.minSetupCount || false }
-                              ];
-                              
-                              // Add custom min quantity options to the editable list
-                              const customMinQuantityOptions = customOptions.minQuantityOptions.map((option, index) => ({
-                                id: `custom_min_quantity_${index}`,
-                                label: option,
-                                enabled: true // Custom options are always considered enabled
-                              }));
-                              
-                              setEditableMinQuantityOptions([...standardOptions, ...customMinQuantityOptions]);
-                            }
-                            setShowEditMinQuantityOptionsDialog(true);
-                          }}
-                        >
-                          <Edit className="h-3 w-3 mr-1" />
-                          Edit
-                        </Button>
-                      )}
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-orange-500 hover:bg-orange-600 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Initialize editableMinQuantityOptions with current state
+                          if (formData.minQuantityDisplayOrder && formData.minQuantityDisplayOrder.length > 0) {
+                            console.log("Using saved min quantity display order:", formData.minQuantityDisplayOrder);
+                            // Use the saved reordered sequence
+                            const reorderedOptions = formData.minQuantityDisplayOrder.map(option => ({
+                              id: option.id,
+                              label: option.label,
+                              enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
+                            }));
+                            setEditableMinQuantityOptions(reorderedOptions);
+                          } else {
+                            console.log("Using default min quantity order");
+                            // Fall back to default order
+                            const standardOptions = [
+                              { id: 'minUnitsPerShift', label: getMinQuantityOptionLabel('minUnitsPerShift'), enabled: formData.pricingStructure?.minUnitsPerShift || false },
+                              { id: 'minMetersPerShift', label: getMinQuantityOptionLabel('minMetersPerShift'), enabled: formData.pricingStructure?.minMetersPerShift || false },
+                              { id: 'minInspectionsPerShift', label: getMinQuantityOptionLabel('minInspectionsPerShift'), enabled: formData.pricingStructure?.minInspectionsPerShift || false },
+                              { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), enabled: formData.pricingStructure?.minSetupCount || false }
+                            ];
+                            
+                            // Add custom min quantity options to the editable list
+                            const customMinQuantityOptions = customOptions.minQuantityOptions.map((option, index) => ({
+                              id: `custom_min_quantity_${index}`,
+                              label: option,
+                              enabled: true // Custom options are always considered enabled
+                            }));
+                            
+                            setEditableMinQuantityOptions([...standardOptions, ...customMinQuantityOptions]);
+                          }
+                          setShowEditMinQuantityOptionsDialog(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Edit
+                      </Button>
                     </div>
                   </div>
                   {!collapsedWindows.minQuantityOptions && (
