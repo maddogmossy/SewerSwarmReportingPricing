@@ -247,6 +247,10 @@ export default function RepairPricing() {
   });
   const [showSimpleAddForm, setShowSimpleAddForm] = useState(false);
   const [simpleCategoryName, setSimpleCategoryName] = useState('');
+  const [showPriceCostDialog, setShowPriceCostDialog] = useState(false);
+  const [showQuantityDialog, setShowQuantityDialog] = useState(false);
+  const [showMinQuantityDialog, setShowMinQuantityDialog] = useState(false);
+  const [newOptionName, setNewOptionName] = useState('');
   const [categoryDeleteDialogOpen, setCategoryDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<any>(null);
   const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
@@ -1767,6 +1771,74 @@ export default function RepairPricing() {
                     />
                     <Label htmlFor="repeatFree" className="text-sm">Repeat Free (no charge for repeat visits)</Label>
                   </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="minUnitsPerShift"
+                      checked={newCategory.pricingStructure.minUnitsPerShift}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          minUnitsPerShift: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="minUnitsPerShift" className="text-sm">Min units per shift</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="minMetersPerShift"
+                      checked={newCategory.pricingStructure.minMetersPerShift}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          minMetersPerShift: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="minMetersPerShift" className="text-sm">Min meters per shift</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="minInspectionsPerShift"
+                      checked={newCategory.pricingStructure.minInspectionsPerShift}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          minInspectionsPerShift: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="minInspectionsPerShift" className="text-sm">Min inspections per shift</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="minSetupCount"
+                      checked={newCategory.pricingStructure.minSetupCount}
+                      onChange={(e) => setNewCategory({
+                        ...newCategory,
+                        pricingStructure: {
+                          ...newCategory.pricingStructure,
+                          minSetupCount: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="minSetupCount" className="text-sm">Min setup count</Label>
+                  </div>
                 </div>
                 <p className="text-xs text-slate-500 mt-2">
                   You can select multiple options to create flexible pricing configurations.
@@ -2102,18 +2174,11 @@ export default function RepairPricing() {
                       <Button 
                         type="button"
                         size="sm" 
-                        variant="outline"
-                        className="text-xs px-2 py-1 h-6"
-                        onClick={() => {
-                          const newOption = prompt("Enter new price/cost option (e.g., 'Per unit rate (£ per unit)'):");
-                          if (newOption) {
-                            // Add to custom pricing options
-                            console.log("Adding price/cost option:", newOption);
-                          }
-                        }}
+                        className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                        onClick={() => setShowPriceCostDialog(true)}
                       >
                         <Plus className="h-3 w-3 mr-1" />
-                        Add Price/Cost
+                        Add
                       </Button>
                     </div>
                     <div className="space-y-3">
@@ -2211,18 +2276,11 @@ export default function RepairPricing() {
                       <Button 
                         type="button"
                         size="sm" 
-                        variant="outline"
-                        className="text-xs px-2 py-1 h-6"
-                        onClick={() => {
-                          const newOption = prompt("Enter new quantity option (e.g., 'Linear meters completed'):");
-                          if (newOption) {
-                            // Add to custom quantity options
-                            console.log("Adding quantity option:", newOption);
-                          }
-                        }}
+                        className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                        onClick={() => setShowQuantityDialog(true)}
                       >
                         <Plus className="h-3 w-3 mr-1" />
-                        Add Quantity
+                        Add
                       </Button>
                     </div>
                     <div className="space-y-3">
@@ -2303,18 +2361,11 @@ export default function RepairPricing() {
                       <Button 
                         type="button"
                         size="sm" 
-                        variant="outline"
-                        className="text-xs px-2 py-1 h-6"
-                        onClick={() => {
-                          const newOption = prompt("Enter new minimum quantity option (e.g., 'Min inspections required'):");
-                          if (newOption) {
-                            // Add to custom min quantity options
-                            console.log("Adding min quantity option:", newOption);
-                          }
-                        }}
+                        className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                        onClick={() => setShowMinQuantityDialog(true)}
                       >
                         <Plus className="h-3 w-3 mr-1" />
-                        Add Min Quantity
+                        Add
                       </Button>
                     </div>
                     <div className="space-y-3">
@@ -2438,6 +2489,129 @@ export default function RepairPricing() {
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 {createPricing.isPending || updatePricing.isPending ? 'Saving...' : (editingItem ? 'Update Pricing' : 'Add Pricing')}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Price/Cost Option Dialog */}
+        <Dialog open={showPriceCostDialog} onOpenChange={setShowPriceCostDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Price/Cost Option</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="priceCostOption" className="text-sm font-medium">Option Name</Label>
+                <Input
+                  id="priceCostOption"
+                  value={newOptionName}
+                  onChange={(e) => setNewOptionName(e.target.value)}
+                  placeholder="e.g., Per unit rate (£ per unit)"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setShowPriceCostDialog(false);
+                setNewOptionName('');
+              }}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (newOptionName.trim()) {
+                    console.log("Adding price/cost option:", newOptionName);
+                    setShowPriceCostDialog(false);
+                    setNewOptionName('');
+                  }
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Add Option
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Quantity Option Dialog */}
+        <Dialog open={showQuantityDialog} onOpenChange={setShowQuantityDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Quantity Option</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="quantityOption" className="text-sm font-medium">Option Name</Label>
+                <Input
+                  id="quantityOption"
+                  value={newOptionName}
+                  onChange={(e) => setNewOptionName(e.target.value)}
+                  placeholder="e.g., Linear meters completed"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setShowQuantityDialog(false);
+                setNewOptionName('');
+              }}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (newOptionName.trim()) {
+                    console.log("Adding quantity option:", newOptionName);
+                    setShowQuantityDialog(false);
+                    setNewOptionName('');
+                  }
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Add Option
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Min Quantity Option Dialog */}
+        <Dialog open={showMinQuantityDialog} onOpenChange={setShowMinQuantityDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Min Quantity Option</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="minQuantityOption" className="text-sm font-medium">Option Name</Label>
+                <Input
+                  id="minQuantityOption"
+                  value={newOptionName}
+                  onChange={(e) => setNewOptionName(e.target.value)}
+                  placeholder="e.g., Min inspections required"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setShowMinQuantityDialog(false);
+                setNewOptionName('');
+              }}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (newOptionName.trim()) {
+                    console.log("Adding min quantity option:", newOptionName);
+                    setShowMinQuantityDialog(false);
+                    setNewOptionName('');
+                  }
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Add Option
               </Button>
             </DialogFooter>
           </DialogContent>
