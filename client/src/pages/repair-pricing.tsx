@@ -267,6 +267,17 @@ export default function RepairPricing() {
   const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
   const [tempDescription, setTempDescription] = useState("");
   const [isDescriptionEditable, setIsDescriptionEditable] = useState(false);
+  
+  // Custom options state
+  const [customOptions, setCustomOptions] = useState({
+    quantityOptions: [],
+    minQuantityOptions: [],
+    additionalOptions: []
+  });
+  const [showEditOptionsDialog, setShowEditOptionsDialog] = useState(false);
+  const [editingOptionType, setEditingOptionType] = useState('');
+  const [editingOptionIndex, setEditingOptionIndex] = useState(-1);
+  const [editingOptionName, setEditingOptionName] = useState('');
   const [formData, setFormData] = useState({
     workCategoryId: "",
     pipeSize: "",
@@ -2437,151 +2448,47 @@ export default function RepairPricing() {
                   </div>
                   {!collapsedWindows.quantityOptions && (
                     <div className="px-4 pb-4">
-                      <div className="grid grid-cols-2 gap-3">
-                    <div className="flex items-center justify-between space-x-2">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="numberPerShift"
-                          checked={formData.pricingStructure?.numberPerShift || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              numberPerShift: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="numberPerShift" className="text-sm">Units per shift</Label>
-                      </div>
-                      {formData.pricingStructure?.numberPerShift && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                          onClick={() => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              numberPerShift: false
-                            }
-                          })}
-                        >
-                          ×
-                        </Button>
+                      {customOptions.quantityOptions.length === 0 ? (
+                        <p className="text-sm text-gray-500 text-center py-4">No quantity options added yet</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {customOptions.quantityOptions.map((option, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 bg-white rounded border">
+                              <span className="text-sm">{option}</span>
+                              <div className="flex gap-2">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700"
+                                  onClick={() => {
+                                    setEditingOptionType('quantity');
+                                    setEditingOptionIndex(index);
+                                    setEditingOptionName(option);
+                                    setShowEditOptionsDialog(true);
+                                  }}
+                                >
+                                  ✏️
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                                  onClick={() => {
+                                    setCustomOptions(prev => ({
+                                      ...prev,
+                                      quantityOptions: prev.quantityOptions.filter((_, i) => i !== index)
+                                    }));
+                                  }}
+                                >
+                                  ×
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       )}
-                    </div>
-                    
-                    <div className="flex items-center justify-between space-x-2">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="metersPerShift"
-                          checked={formData.pricingStructure?.metersPerShift || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              metersPerShift: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="metersPerShift" className="text-sm">Meters per shift</Label>
-                      </div>
-                      {formData.pricingStructure?.metersPerShift && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                          onClick={() => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              metersPerShift: false
-                            }
-                          })}
-                        >
-                          ×
-                        </Button>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center justify-between space-x-2">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="runsPerShift"
-                          checked={formData.pricingStructure?.runsPerShift || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              runsPerShift: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="runsPerShift" className="text-sm">Runs per shift</Label>
-                      </div>
-                      {formData.pricingStructure?.runsPerShift && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                          onClick={() => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              runsPerShift: false
-                            }
-                          })}
-                        >
-                          ×
-                        </Button>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center justify-between space-x-2">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="repeatFree"
-                          checked={formData.pricingStructure?.repeatFree || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              repeatFree: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="repeatFree" className="text-sm">Repeat free (no charge)</Label>
-                      </div>
-                      {formData.pricingStructure?.repeatFree && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                          onClick={() => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              repeatFree: false
-                            }
-                          })}
-                        >
-                          ×
-                        </Button>
-                      )}
-                    </div>
-                  </div>
                     </div>
                   )}
                 </div>
@@ -2845,27 +2752,11 @@ export default function RepairPricing() {
                 onClick={() => {
                   if (newOptionName.trim()) {
                     console.log("Adding quantity option:", newOptionName);
-                    // Add the option to the pricing structure based on common patterns
-                    const lowerName = newOptionName.toLowerCase();
-                    const optionKey = lowerName.includes('units') || lowerName.includes('number') ? 'numberPerShift' :
-                                     lowerName.includes('meters') || lowerName.includes('metres') || lowerName.includes('linear') ? 'metersPerShift' :
-                                     lowerName.includes('runs') || lowerName.includes('run') ? 'runsPerShift' :
-                                     lowerName.includes('repeat') || lowerName.includes('free') ? 'repeatFree' :
-                                     'numberPerShift'; // default - for anything else like "Range From"
                     
-                    console.log("Mapping:", newOptionName, "->", optionKey);
-                    
-                    setFormData(prevData => {
-                      const newData = {
-                        ...prevData,
-                        pricingStructure: {
-                          ...prevData.pricingStructure,
-                          [optionKey]: true
-                        }
-                      };
-                      console.log("Updated formData pricingStructure:", newData.pricingStructure);
-                      return newData;
-                    });
+                    setCustomOptions(prev => ({
+                      ...prev,
+                      quantityOptions: [...prev.quantityOptions, newOptionName.trim()]
+                    }));
                     
                     setShowQuantityDialog(false);
                     setNewOptionName('');
@@ -2930,6 +2821,61 @@ export default function RepairPricing() {
                 className="bg-orange-600 hover:bg-orange-700 text-white"
               >
                 Add Option
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Options Dialog */}
+        <Dialog open={showEditOptionsDialog} onOpenChange={setShowEditOptionsDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Option</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="editOptionName" className="text-sm font-medium">Option Name</Label>
+                <Input
+                  id="editOptionName"
+                  value={editingOptionName}
+                  onChange={(e) => setEditingOptionName(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setShowEditOptionsDialog(false);
+                setEditingOptionName('');
+                setEditingOptionIndex(-1);
+                setEditingOptionType('');
+              }}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (editingOptionName.trim() && editingOptionIndex >= 0) {
+                    setCustomOptions(prev => {
+                      const newOptions = { ...prev };
+                      if (editingOptionType === 'quantity') {
+                        newOptions.quantityOptions[editingOptionIndex] = editingOptionName.trim();
+                      } else if (editingOptionType === 'minQuantity') {
+                        newOptions.minQuantityOptions[editingOptionIndex] = editingOptionName.trim();
+                      } else if (editingOptionType === 'additional') {
+                        newOptions.additionalOptions[editingOptionIndex] = editingOptionName.trim();
+                      }
+                      return newOptions;
+                    });
+                    
+                    setShowEditOptionsDialog(false);
+                    setEditingOptionName('');
+                    setEditingOptionIndex(-1);
+                    setEditingOptionType('');
+                  }
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Save Changes
               </Button>
             </DialogFooter>
           </DialogContent>
