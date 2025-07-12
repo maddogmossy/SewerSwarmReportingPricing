@@ -2630,7 +2630,6 @@ export default function RepairPricing() {
                                         </SelectValue>
                                       </SelectTrigger>
                                       <SelectContent>
-                                        <SelectItem value="none">N/A</SelectItem>
                                         <SelectItem value="add">+</SelectItem>
                                         <SelectItem value="subtract">-</SelectItem>
                                         <SelectItem value="multiply">×</SelectItem>
