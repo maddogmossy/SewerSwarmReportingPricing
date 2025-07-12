@@ -2564,6 +2564,7 @@ export default function RepairPricing() {
                           {/* Display all option types with math operators between them */}
                           {[...priceOptions, ...quantityOptions, ...orangeOptions, ...purpleOptions].map((option, index) => {
                             const isLast = index === allOptions.length - 1;
+                            const currentMathOperatorIndex = index; // Use the index directly for math operators
                             let bgColor = 'bg-blue-100';
                             let borderColor = 'border-blue-300';
                             let textColor = 'text-blue-700';
@@ -2606,14 +2607,14 @@ export default function RepairPricing() {
                                 {!isLast && (
                                   <div className="bg-slate-100 border border-slate-300 rounded-lg p-2">
                                     <Label className="text-xs text-slate-700 block mb-1 font-medium">
-                                      {mathOperatorIndex === 0 ? 'Math' : `Math ${mathOperatorIndex + 1}`}
+                                      {currentMathOperatorIndex === 0 ? 'Math' : `Math ${currentMathOperatorIndex + 1}`}
                                     </Label>
                                     <Select
-                                      value={mathOperators[`operator_${mathOperatorIndex}`] || ''}
+                                      value={mathOperators[`operator_${currentMathOperatorIndex}`] || ''}
                                       onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide' | 'none') => {
-                                        console.log('Math operator selection:', { mathOperatorIndex, value, currentMathOperators: mathOperators });
+                                        console.log('Math operator selection:', { currentMathOperatorIndex, value, currentMathOperators: mathOperators });
                                         setMathOperators(prev => {
-                                          const newMathOperators = { ...prev, [`operator_${mathOperatorIndex}`]: value };
+                                          const newMathOperators = { ...prev, [`operator_${currentMathOperatorIndex}`]: value };
                                           console.log('Updated math operators:', newMathOperators);
                                           return newMathOperators;
                                         });
@@ -2621,11 +2622,11 @@ export default function RepairPricing() {
                                     >
                                       <SelectTrigger className="w-16 h-6 text-xs bg-white border-slate-200">
                                         <SelectValue placeholder="N/A">
-                                          {mathOperators[`operator_${mathOperatorIndex}`] === 'add' ? '+' :
-                                           mathOperators[`operator_${mathOperatorIndex}`] === 'subtract' ? '-' :
-                                           mathOperators[`operator_${mathOperatorIndex}`] === 'multiply' ? '×' :
-                                           mathOperators[`operator_${mathOperatorIndex}`] === 'divide' ? '÷' :
-                                           mathOperators[`operator_${mathOperatorIndex}`] === 'none' ? 'N/A' : 'N/A'}
+                                          {mathOperators[`operator_${currentMathOperatorIndex}`] === 'add' ? '+' :
+                                           mathOperators[`operator_${currentMathOperatorIndex}`] === 'subtract' ? '-' :
+                                           mathOperators[`operator_${currentMathOperatorIndex}`] === 'multiply' ? '×' :
+                                           mathOperators[`operator_${currentMathOperatorIndex}`] === 'divide' ? '÷' :
+                                           mathOperators[`operator_${currentMathOperatorIndex}`] === 'none' ? 'N/A' : 'N/A'}
                                         </SelectValue>
                                       </SelectTrigger>
                                       <SelectContent>
@@ -2638,11 +2639,6 @@ export default function RepairPricing() {
                                     </Select>
                                   </div>
                                 )}
-                                
-                                {(() => {
-                                  if (!isLast) mathOperatorIndex++;
-                                  return null;
-                                })()}
                               </div>
                             );
                           })}
