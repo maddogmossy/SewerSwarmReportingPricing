@@ -2528,43 +2528,44 @@ export default function RepairPricing() {
                     }
                   });
                   
-                  const allOptions = [...priceOptions, ...quantityOptions, ...orangeOptions, ...purpleOptions];
+                  // Separate calculation options (blue, green, purple) from validation options (orange)
+                  const calculationOptions = [...priceOptions, ...quantityOptions, ...purpleOptions];
+                  const validationOptions = [...orangeOptions];
                   
                   // Debug logging for orange options only when they exist
                   if (orangeOptions.length > 0) {
                     console.log('Orange options found:', orangeOptions);
                   }
                   
-                  if (allOptions.length > 0) {
+                  if (calculationOptions.length > 0 || validationOptions.length > 0) {
                     let mathOperatorIndex = 0;
                     
                     return (
                       <div className="border border-slate-200 rounded-lg p-4 bg-slate-50 mb-4">
                         <h4 className="text-sm font-medium text-slate-700 mb-3">💰 Selected Pricing Options - Enter Values</h4>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          
-                          {/* Display all option types with math operators between them */}
-                          {[...priceOptions, ...quantityOptions, ...orangeOptions, ...purpleOptions].map((option, index) => {
-                            const isLast = index === allOptions.length - 1;
-                            const currentMathOperatorIndex = index; // Use the index directly for math operators
-                            let bgColor = 'bg-blue-100';
-                            let borderColor = 'border-blue-300';
-                            let textColor = 'text-blue-700';
-                            
-                            // Set colors based on option type
-                            if (option.type === 'quantity') {
-                              bgColor = 'bg-green-100';
-                              borderColor = 'border-green-300';
-                              textColor = 'text-green-700';
-                            } else if (option.type === 'orange') {
-                              bgColor = 'bg-orange-100';
-                              borderColor = 'border-orange-300';
-                              textColor = 'text-orange-700';
-                            } else if (option.type === 'purple') {
-                              bgColor = 'bg-purple-100';
-                              borderColor = 'border-purple-300';
-                              textColor = 'text-purple-700';
-                            }
+                        
+                        {/* Calculation Chain Section */}
+                        {calculationOptions.length > 0 && (
+                          <div className="mb-4">
+                            <Label className="text-xs font-medium text-slate-600 mb-2 block">Calculation Chain</Label>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {calculationOptions.map((option, index) => {
+                                const isLast = index === calculationOptions.length - 1;
+                                const currentMathOperatorIndex = index;
+                                let bgColor = 'bg-blue-100';
+                                let borderColor = 'border-blue-300';
+                                let textColor = 'text-blue-700';
+                                
+                                // Set colors based on option type
+                                if (option.type === 'quantity') {
+                                  bgColor = 'bg-green-100';
+                                  borderColor = 'border-green-300';
+                                  textColor = 'text-green-700';
+                                } else if (option.type === 'purple') {
+                                  bgColor = 'bg-purple-100';
+                                  borderColor = 'border-purple-300';
+                                  textColor = 'text-purple-700';
+                                }
                             
                             return (
                               <div key={option.key} className="flex items-center gap-2">
@@ -2621,13 +2622,44 @@ export default function RepairPricing() {
                                 )}
                               </div>
                             );
-                          })}
-                          
-                        </div>
+                              })}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Minimum Quantity Validation Section */}
+                        {validationOptions.length > 0 && (
+                          <div className="mb-4">
+                            <Label className="text-xs font-medium text-slate-600 mb-2 block">Minimum Quantity Validators</Label>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {validationOptions.map((option, index) => (
+                                <div key={option.key} className="flex items-center gap-2">
+                                  <div className="bg-orange-100 border-orange-300 rounded-lg p-2">
+                                    <Label className="text-xs text-orange-700 block mb-1 font-medium">
+                                      {option.label}
+                                    </Label>
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      placeholder="Min Value"
+                                      className="h-6 text-xs w-20 bg-white border-orange-300"
+                                      value={formData[option.key] || ''}
+                                      onChange={(e) => setFormData({
+                                        ...formData,
+                                        [option.key]: e.target.value
+                                      })}
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
                         <p className="text-xs text-slate-600 mt-2">
                           <span className="text-blue-600">Blue</span>: Price/Cost | 
                           <span className="text-green-600 ml-1">Green</span>: Quantity | 
-                          <span className="text-orange-600 ml-1">Orange</span>: Min Quantity | 
+                          <span className="text-orange-600 ml-1">Orange</span>: Min Quantity Validators | 
                           <span className="text-purple-600 ml-1">Purple</span>: Additional | 
                           <span className="text-slate-600 ml-1">Grey</span>: Math operators
                         </p>
