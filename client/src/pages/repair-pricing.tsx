@@ -2491,7 +2491,7 @@ export default function RepairPricing() {
                         </div>
                         
                         <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-3">
+                          <div className="flex items-center space-x-2">
                             <input
                               type="checkbox"
                               id="dayRate"
@@ -2506,27 +2506,6 @@ export default function RepairPricing() {
                               className="rounded border-slate-300"
                             />
                             <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
-                            {formData.pricingStructure?.dayRate && (
-                              <div className="flex items-center space-x-1">
-                                <span className="text-xs text-gray-500">Math:</span>
-                                <Select
-                                  value={mathOperators.dayRate}
-                                  onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                    setMathOperators(prev => ({ ...prev, dayRate: value }))
-                                  }
-                                >
-                                  <SelectTrigger className="w-12 h-6 text-xs">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="add">+</SelectItem>
-                                    <SelectItem value="subtract">-</SelectItem>
-                                    <SelectItem value="multiply">×</SelectItem>
-                                    <SelectItem value="divide">÷</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            )}
                           </div>
                         </div>
 
@@ -2706,7 +2685,7 @@ export default function RepairPricing() {
                         </div>
                         
                         <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-3">
+                          <div className="flex items-center space-x-2">
                             <input
                               type="checkbox"
                               id="runsPerShift"
@@ -2721,29 +2700,34 @@ export default function RepairPricing() {
                               className="rounded border-slate-300"
                             />
                             <Label htmlFor="runsPerShift" className="text-sm">Runs per shift</Label>
-                            {formData.pricingStructure?.runsPerShift && (
-                              <div className="flex items-center space-x-1">
-                                <span className="text-xs text-gray-500">Math:</span>
-                                <Select
-                                  value={mathOperators.runsPerShift}
-                                  onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
-                                    setMathOperators(prev => ({ ...prev, runsPerShift: value }))
-                                  }
-                                >
-                                  <SelectTrigger className="w-12 h-6 text-xs">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="add">+</SelectItem>
-                                    <SelectItem value="subtract">-</SelectItem>
-                                    <SelectItem value="multiply">×</SelectItem>
-                                    <SelectItem value="divide">÷</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            )}
                           </div>
                         </div>
+
+                        {/* Single Math Operator for Day Rate and Runs Per Shift combination */}
+                        {formData.pricingStructure?.dayRate && formData.pricingStructure?.runsPerShift && (
+                          <div className="flex items-center justify-center py-2 bg-blue-50 border border-blue-200 rounded">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-sm text-blue-700 font-medium">Day Rate</span>
+                              <Select
+                                value={mathOperators.dayRateOperator || 'divide'}
+                                onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
+                                  setMathOperators(prev => ({ ...prev, dayRateOperator: value }))
+                                }
+                              >
+                                <SelectTrigger className="w-16 h-7 text-sm">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="add">+</SelectItem>
+                                  <SelectItem value="subtract">-</SelectItem>
+                                  <SelectItem value="multiply">×</SelectItem>
+                                  <SelectItem value="divide">÷</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <span className="text-sm text-blue-700 font-medium">Runs Per Shift</span>
+                            </div>
+                          </div>
+                        )}
                         
                         <div className="flex items-center justify-between space-x-2">
                           <div className="flex items-center space-x-2">
