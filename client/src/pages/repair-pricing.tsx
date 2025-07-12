@@ -2773,22 +2773,32 @@ export default function RepairPricing() {
                         {/* Dynamic Options in Reordered Sequence */}
                         {(() => {
                           // Use optionDisplayOrder if available, otherwise fall back to default order
+                          console.log("🔥 CHECKBOX DEBUG - customOptions.priceOptions:", customOptions?.priceOptions);
+                          console.log("🔥 CHECKBOX DEBUG - Array.isArray check:", Array.isArray(customOptions?.priceOptions));
+                          
+                          const customPriceOptions = (customOptions?.priceOptions && Array.isArray(customOptions.priceOptions))
+                            ? customOptions.priceOptions.map((option, index) => ({
+                                id: `custom_price_${index}`,
+                                label: option,
+                                type: 'custom'
+                              }))
+                            : [];
+                            
+                          console.log("🔥 CHECKBOX DEBUG - customPriceOptions:", customPriceOptions);
+                          
                           const defaultOrder = [
                             { id: 'meterage', label: getPriceOptionLabel('meterage'), type: 'standard' },
                             { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), type: 'standard' },
                             { id: 'setupRate', label: getPriceOptionLabel('setupRate'), type: 'standard' },
                             { id: 'minCharge', label: getPriceOptionLabel('minCharge'), type: 'standard' },
                             { id: 'dayRate', label: getPriceOptionLabel('dayRate'), type: 'standard' },
-                            ...(customOptions?.priceOptions && Array.isArray(customOptions.priceOptions)
-                              ? customOptions.priceOptions.map((option, index) => ({
-                                  id: `custom_price_${index}`,
-                                  label: option,
-                                  type: 'custom'
-                                }))
-                              : [])
+                            ...customPriceOptions
                           ];
                           
+                          console.log("🔥 CHECKBOX DEBUG - defaultOrder:", defaultOrder);
+                          
                           const displayOrder = formData.optionDisplayOrder || defaultOrder;
+                          console.log("🔥 CHECKBOX DEBUG - displayOrder:", displayOrder);
                           
                           return (displayOrder || []).map((option, index) => {
                             const isCustom = option.type === 'custom';
