@@ -2564,7 +2564,7 @@ export default function RepairPricing() {
                                     </Label>
                                     <Select
                                       value={mathOperators[`operator_${mathOperatorIndex}`] || ''}
-                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide' | 'none') => 
+                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide' | 'none' | 'range') => 
                                         setMathOperators(prev => ({ ...prev, [`operator_${mathOperatorIndex}`]: value }))
                                       }
                                     >
@@ -2577,6 +2577,7 @@ export default function RepairPricing() {
                                         <SelectItem value="subtract">-</SelectItem>
                                         <SelectItem value="multiply">×</SelectItem>
                                         <SelectItem value="divide">÷</SelectItem>
+                                        <SelectItem value="range">&gt;</SelectItem>
                                       </SelectContent>
                                     </Select>
                                   </div>
