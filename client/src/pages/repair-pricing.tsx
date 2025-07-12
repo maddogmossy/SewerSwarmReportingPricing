@@ -738,54 +738,25 @@ export default function RepairPricing() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Determine which cost to use - find the first non-empty cost value
-    let selectedCost = "0";
-    if (formData.option2Cost && formData.option2Cost !== "" && formData.option2Cost !== "N/A") {
-      selectedCost = formData.option2Cost;
-    } else if (formData.option3Cost && formData.option3Cost !== "" && formData.option3Cost !== "N/A") {
-      selectedCost = formData.option3Cost;
-    } else if (formData.option4Cost && formData.option4Cost !== "" && formData.option4Cost !== "N/A") {
-      selectedCost = formData.option4Cost;
-    } else if (formData.option1Cost && formData.option1Cost !== "" && formData.option1Cost !== "N/A") {
-      selectedCost = formData.option1Cost;
-    }
-    
     console.log('Form submission debug:', {
-      selectedOption: formData.selectedOption,
-      selectedCost: selectedCost,
-      allCosts: {
-        option1: formData.option1Cost,
-        option2: formData.option2Cost,
-        option3: formData.option3Cost,
-        option4: formData.option4Cost
-      },
-      allShiftRates: {
-        option1PerShift: formData.option1PerShift,
-        option2PerShift: formData.option2PerShift,
-        option3PerShift: formData.option3PerShift,
-        option4PerShift: formData.option4PerShift
-      },
+      formData,
+      pricingStructure: formData.pricingStructure,
       dayRate: formData.dayRate,
       description: formData.description,
       pipeSize: formData.pipeSize
     });
     
     const baseData = {
-      ...formData,
-      cost: selectedCost, // Map selected option cost to the cost field
-      selectedOption: formData.selectedOption,
-      option1Cost: formData.option1Cost,
-      option2Cost: formData.option2Cost,
-      option3Cost: formData.option3Cost,
-      option4Cost: formData.option4Cost,
-      option1PerShift: formData.option1PerShift,
-      option2PerShift: formData.option2PerShift,
-      option3PerShift: formData.option3PerShift,
-      option4PerShift: formData.option4PerShift,
-      dayRate: formData.dayRate,
+      workCategoryId: formData.workCategoryId,
+      pipeSize: formData.pipeSize,
+      depth: formData.depth,
+      description: formData.description,
+      rule: formData.rule,
       lengthOfRepair: formData.lengthOfRepair,
-      minInstallationPerDay: formData.minInstallationPerDay,
-      vehicleId: formData.vehicleId
+      dayRate: formData.dayRate,
+      vehicleId: formData.vehicleId,
+      pricingStructure: formData.pricingStructure,
+      cost: formData.dayRate || "0" // Use dayRate as the primary cost for now
     };
 
     if (editingItem) {
@@ -901,24 +872,24 @@ export default function RepairPricing() {
     
     setFormData({
       workCategoryId: item.workCategoryId?.toString() || "",
-      pipeSize: item.pipeSize,
+      pipeSize: item.pipeSize || "",
       depth: item.depth || "",
       description: item.description || "",
       rule: item.rule || "",
-      lengthOfRepair: item.lengthOfRepair || "1000mm",
-      minInstallationPerDay: item.minInstallationPerDay?.toString() || "",
+      lengthOfRepair: item.lengthOfRepair || "",
       dayRate: item.dayRate?.toString() || "",
-      option1Cost: item.option1Cost?.toString() || "N/A",
-      option2Cost: item.option2Cost?.toString() || "",
-      option3Cost: item.option3Cost?.toString() || "",
-      option4Cost: item.option4Cost?.toString() || "",
-      option1PerShift: item.option1PerShift?.toString() || "",
-      option2PerShift: item.option2PerShift?.toString() || "",
-      option3PerShift: item.option3PerShift?.toString() || "",
-      option4PerShift: item.option4PerShift?.toString() || "",
-      selectedOption: item.selectedOption || "",
       vehicleId: item.vehicleId?.toString() || "",
-      lockSingleLayer: true // Lock single layer by default
+      pricingStructure: item.pricingStructure || {
+        meterage: false,
+        numberPerShift: false,
+        metersPerShift: false,
+        dayRate: false,
+        hourlyRate: false,
+        runsPerShift: false,
+        setupRate: false,
+        minCharge: false,
+        repeatFree: false
+      }
     });
     
     // Pre-select sectors that already have this pricing rule
