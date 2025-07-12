@@ -3032,15 +3032,16 @@ export default function RepairPricing() {
                               enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
                             }));
                             
-                            // Add any new custom options that weren't in the saved order
+                            // Don't add options that were intentionally deleted in the saved order
+                            // Only add NEW custom options that weren't in the saved order AND are set to true
                             const existingIds = reorderedOptions.map(opt => opt.id);
                             Object.keys(formData.pricingStructure || {}).forEach(key => {
-                              if (key.startsWith('minquantity_') && !existingIds.includes(key)) {
+                              if (key.startsWith('minquantity_') && !existingIds.includes(key) && formData.pricingStructure[key] === true) {
                                 const label = key.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                                 reorderedOptions.push({
                                   id: key,
                                   label: label,
-                                  enabled: formData.pricingStructure[key] || false
+                                  enabled: true
                                 });
                               }
                             });
@@ -3056,15 +3057,15 @@ export default function RepairPricing() {
                               { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), enabled: formData.pricingStructure?.minSetupCount || false }
                             ];
                             
-                            // Add custom min quantity options to the editable list
+                            // Add custom min quantity options to the editable list (only if enabled)
                             const customMinQuantityOptions = [];
                             Object.keys(formData.pricingStructure || {}).forEach(key => {
-                              if (key.startsWith('minquantity_')) {
+                              if (key.startsWith('minquantity_') && formData.pricingStructure[key] === true) {
                                 const label = key.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                                 customMinQuantityOptions.push({
                                   id: key,
                                   label: label,
-                                  enabled: formData.pricingStructure[key] || false
+                                  enabled: true
                                 });
                               }
                             });
