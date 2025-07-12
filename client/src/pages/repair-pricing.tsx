@@ -3088,20 +3088,18 @@ export default function RepairPricing() {
                         <Plus className="h-3 w-3 mr-1" />
                         Add
                       </Button>
-                      {(formData.pricingStructure?.includeDepth || formData.pricingStructure?.includeTotalLength || customOptions.additionalOptions.length > 0) && (
-                        <Button 
-                          type="button"
-                          size="sm" 
-                          className="text-xs px-2 py-1 h-6 bg-purple-500 hover:bg-purple-600 text-white"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShowEditAdditionalOptionsDialog(true);
-                          }}
-                        >
-                          <Edit className="h-3 w-3 mr-1" />
-                          Edit
-                        </Button>
-                      )}
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-purple-500 hover:bg-purple-600 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowEditAdditionalOptionsDialog(true);
+                        }}
+                      >
+                        <Edit className="h-3 w-3 mr-1" />
+                        Edit
+                      </Button>
                     </div>
                   </div>
                   {!collapsedWindows.additionalOptions && (
