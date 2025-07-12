@@ -1087,10 +1087,7 @@ export default function RepairPricing() {
           case 'divide':
             result = value !== 0 ? result / value : result;
             break;
-          case 'range':
-            // For range operations, just continue with next value
-            result = value;
-            break;
+
           case 'none':
           default:
             // N/A - no operation, just continue
@@ -2613,7 +2610,7 @@ export default function RepairPricing() {
                                     </Label>
                                     <Select
                                       value={mathOperators[`operator_${mathOperatorIndex}`] || ''}
-                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide' | 'none' | 'range') => 
+                                      onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide' | 'none') => 
                                         setMathOperators(prev => ({ ...prev, [`operator_${mathOperatorIndex}`]: value }))
                                       }
                                     >
@@ -2626,7 +2623,6 @@ export default function RepairPricing() {
                                         <SelectItem value="subtract">-</SelectItem>
                                         <SelectItem value="multiply">×</SelectItem>
                                         <SelectItem value="divide">÷</SelectItem>
-                                        <SelectItem value="range">&gt;</SelectItem>
                                       </SelectContent>
                                     </Select>
                                   </div>
