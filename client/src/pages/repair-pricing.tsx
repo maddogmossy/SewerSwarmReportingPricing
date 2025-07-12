@@ -243,7 +243,6 @@ export default function RepairPricing() {
   });
   const [showSimpleAddForm, setShowSimpleAddForm] = useState(false);
   const [simpleCategoryName, setSimpleCategoryName] = useState('');
-  const [simpleCategoryDescription, setSimpleCategoryDescription] = useState('');
   const [isDescriptionEditOpen, setIsDescriptionEditOpen] = useState(false);
   const [tempDescription, setTempDescription] = useState("");
   const [isDescriptionEditable, setIsDescriptionEditable] = useState(false);
@@ -1063,113 +1062,15 @@ export default function RepairPricing() {
               className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => { 
                 console.log('Add Category button clicked');
-                setShowSimpleAddForm(!showSimpleAddForm);
+                setShowSimpleAddForm(true);
                 setSimpleCategoryName('');
-                setSimpleCategoryDescription('');
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              {showSimpleAddForm ? 'Cancel' : 'Add Category'}
+              Add Category
             </Button>
 
           </div>
-
-          {/* Simple Add Category Form */}
-          {showSimpleAddForm && (
-            <div className="mt-4 p-4 border border-blue-200 rounded-lg bg-blue-50">
-              <h3 className="text-lg font-semibold text-blue-800 mb-3">Create New Category</h3>
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="categoryName" className="text-sm font-medium">Category Name *</Label>
-                  <Input
-                    id="categoryName"
-                    value={simpleCategoryName}
-                    onChange={(e) => setSimpleCategoryName(e.target.value)}
-                    placeholder="e.g., Excavation Work"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="categoryDesc" className="text-sm font-medium">Description (optional)</Label>
-                  <Input
-                    id="categoryDesc"
-                    value={simpleCategoryDescription}
-                    onChange={(e) => setSimpleCategoryDescription(e.target.value)}
-                    placeholder="Brief description of this work category"
-                    className="mt-1"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                    onClick={async () => {
-                      if (!simpleCategoryName.trim()) {
-                        toast({
-                          title: "Error",
-                          description: "Category name is required",
-                          variant: "destructive"
-                        });
-                        return;
-                      }
-
-                      const newCategory = {
-                        name: simpleCategoryName.trim(),
-                        description: simpleCategoryDescription.trim() || `${simpleCategoryName.trim()} work category`
-                      };
-
-                      try {
-                        console.log('Creating new category:', newCategory);
-                        const response = await fetch('/api/work-categories', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify(newCategory)
-                        });
-
-                        if (response.ok) {
-                          toast({
-                            title: "Success",
-                            description: `Category "${simpleCategoryName}" created successfully!`
-                          });
-                          setShowSimpleAddForm(false);
-                          setSimpleCategoryName('');
-                          setSimpleCategoryDescription('');
-                          window.location.reload();
-                        } else {
-                          toast({
-                            title: "Error",
-                            description: "Failed to create category. Please try again.",
-                            variant: "destructive"
-                          });
-                        }
-                      } catch (error) {
-                        console.error('Error creating category:', error);
-                        toast({
-                          title: "Error",
-                          description: "Error creating category. Please try again.",
-                          variant: "destructive"
-                        });
-                      }
-                    }}
-                  >
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Create Category
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowSimpleAddForm(false);
-                      setSimpleCategoryName('');
-                      setSimpleCategoryDescription('');
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Sector Header */}
@@ -1838,6 +1739,94 @@ export default function RepairPricing() {
                     }
                   });
                 }}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Simple Add Category Dialog */}
+        <Dialog open={showSimpleAddForm} onOpenChange={setShowSimpleAddForm}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Create New Category</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="simpleCategoryName" className="text-sm font-medium">Category Name *</Label>
+                <Input
+                  id="simpleCategoryName"
+                  value={simpleCategoryName}
+                  onChange={(e) => setSimpleCategoryName(e.target.value)}
+                  placeholder="e.g., Excavation Work"
+                  className="mt-1"
+                  autoFocus
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  className="bg-green-600 hover:bg-green-700 text-white flex-1"
+                  onClick={async () => {
+                    if (!simpleCategoryName.trim()) {
+                      toast({
+                        title: "Error",
+                        description: "Category name is required",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+
+                    const newCategory = {
+                      name: simpleCategoryName.trim(),
+                      description: `${simpleCategoryName.trim()} work category`
+                    };
+
+                    try {
+                      console.log('Creating new category:', newCategory);
+                      const response = await fetch('/api/work-categories', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(newCategory)
+                      });
+
+                      if (response.ok) {
+                        toast({
+                          title: "Success",
+                          description: `Category "${simpleCategoryName}" created successfully!`
+                        });
+                        setShowSimpleAddForm(false);
+                        setSimpleCategoryName('');
+                        window.location.reload();
+                      } else {
+                        toast({
+                          title: "Error",
+                          description: "Failed to create category. Please try again.",
+                          variant: "destructive"
+                        });
+                      }
+                    } catch (error) {
+                      console.error('Error creating category:', error);
+                      toast({
+                        title: "Error",
+                        description: "Error creating category. Please try again.",
+                        variant: "destructive"
+                      });
+                    }
+                  }}
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Create Category
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowSimpleAddForm(false);
+                    setSimpleCategoryName('');
+                  }}
+                >
                   Cancel
                 </Button>
               </div>
