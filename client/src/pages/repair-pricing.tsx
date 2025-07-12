@@ -174,6 +174,42 @@ const SECTORS = [
   { id: 'domestic', name: 'Domestic', color: 'yellow' }
 ];
 
+// Generate description from WRc recommendations
+const generateDescriptionFromRecommendations = (recommendations: string | null, defects: string | null): string => {
+  if (!recommendations) return 'Work category for specialized cleaning and maintenance';
+  
+  const rec = recommendations.toLowerCase();
+  
+  if (rec.includes('desilting') && rec.includes('vacuum')) {
+    return 'Desilting using vacuum or jet-vac combo unit with verification survey';
+  }
+  
+  if (rec.includes('jetting') || rec.includes('jet')) {
+    return 'High-pressure jetting for debris clearance and pipe cleaning';
+  }
+  
+  if (rec.includes('cleaning') && rec.includes('manual')) {
+    return 'Manual cleaning procedures following WRc Sewer Cleaning Manual guidelines';
+  }
+  
+  if (rec.includes('flush') && rec.includes('re-inspect')) {
+    return 'Cleaning with flush and re-inspection to verify completion';
+  }
+  
+  // Extract specific defect for targeted description
+  if (defects) {
+    const def = defects.toLowerCase();
+    if (def.includes('der') || def.includes('debris')) {
+      return 'Specialized debris removal and pipe cleansing operations';
+    }
+    if (def.includes('des') || def.includes('deposit')) {
+      return 'Deposit removal and pipe restoration services';
+    }
+  }
+  
+  return 'Custom cleaning and maintenance operations based on WRc recommendations';
+};
+
 export default function RepairPricing() {
   const { sector } = useParams<{ sector: string }>();
   const [location, setLocation] = useLocation();
@@ -1024,9 +1060,41 @@ export default function RepairPricing() {
               className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => { 
                 console.log('Add Category button clicked');
-                resetForm(); 
-                setEditingItem(null); 
-                setIsAddDialogOpen(true);
+                
+                // Check for URL parameters to auto-populate category
+                const urlParams = new URLSearchParams(window.location.search);
+                const categoryName = urlParams.get('categoryName');
+                const categoryDescription = urlParams.get('categoryDescription');
+                const pipeSize = urlParams.get('pipeSize');
+                const autoSetup = urlParams.get('autoSetup');
+                const recommendations = urlParams.get('recommendations');
+                const defects = urlParams.get('defects');
+                
+                // Auto-populate category if coming from cleaning options
+                if (autoSetup === 'true' && categoryName) {
+                  setNewCategory({
+                    name: categoryName,
+                    description: categoryDescription || generateDescriptionFromRecommendations(recommendations, defects),
+                    icon: categoryName.toLowerCase().includes('clean') ? 'Droplets' : 'Wrench',
+                    color: categoryName.toLowerCase().includes('custom') ? 'text-purple-600' : 'text-blue-600',
+                    pricingStructure: {
+                      meterage: true,
+                      numberPerShift: false,
+                      metersPerShift: true,
+                      dayRate: true,
+                      hourlyRate: false,
+                      runsPerShift: false,
+                      setupRate: false,
+                      minCharge: false,
+                      repeatFree: false
+                    }
+                  });
+                  setShowAddCategory(true);
+                } else {
+                  resetForm(); 
+                  setEditingItem(null); 
+                  setIsAddDialogOpen(true);
+                }
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -2371,6 +2439,28 @@ export default function RepairPricing() {
                 </Select>
               </div>
               
+              {/* Show auto-populated data if available */}
+              {(function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const autoSetup = urlParams.get('autoSetup');
+                const pipeSize = urlParams.get('pipeSize');
+                const recommendations = urlParams.get('recommendations');
+                
+                if (autoSetup === 'true') {
+                  return (
+                    <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <Label className="text-sm font-medium text-green-800">Auto-populated from Section Data</Label>
+                      <div className="text-xs text-green-700 mt-1 space-y-1">
+                        {pipeSize && <div>• Pipe Size: {pipeSize}</div>}
+                        {recommendations && <div>• Based on: {recommendations.substring(0, 80)}...</div>}
+                        <div>• Pre-selected pricing options for cleaning operations</div>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+
               <div>
                 <Label className="text-sm font-medium text-slate-700">Pricing Structure Options</Label>
                 <p className="text-xs text-slate-500 mb-3">Select the pricing options you need for this category:</p>

@@ -155,7 +155,10 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       suggestedColor: 'Blue',
       pipeSize: sectionData.pipeSize || '150mm',
       autoSetup: 'true',
-      newCategory: 'true'
+      newCategory: 'true',
+      recommendations: sectionData.recommendations || '',
+      defects: sectionData.defects || '',
+      itemNo: sectionData.itemNo?.toString() || '1'
     });
     
     setLocation(`/repair-pricing/${sector}?${params.toString()}`);
@@ -173,7 +176,10 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       suggestedColor: 'Purple',
       pipeSize: sectionData.pipeSize || '150mm',
       autoSetup: 'true',
-      newCategory: 'true'
+      newCategory: 'true',
+      recommendations: sectionData.recommendations || '',
+      defects: sectionData.defects || '',
+      itemNo: sectionData.itemNo?.toString() || '1'
     });
     
     setLocation(`/repair-pricing/${sector}?${params.toString()}`);
