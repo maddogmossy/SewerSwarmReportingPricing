@@ -2830,10 +2830,7 @@ export default function RepairPricing() {
                                   }}
                                   className="rounded border-slate-300"
                                 />
-                                <Label 
-                                  htmlFor={option.id} 
-                                  className={`text-sm ${isCustomOption ? 'text-green-700 font-medium' : 'text-slate-700'}`}
-                                >
+                                <Label htmlFor={option.id} className="text-sm">
                                   {option.label}
                                 </Label>
                                 
@@ -2964,10 +2961,7 @@ export default function RepairPricing() {
                                   }}
                                   className="rounded border-slate-300"
                                 />
-                                <Label 
-                                  htmlFor={option.id} 
-                                  className={`text-sm ${isCustomOption ? 'text-orange-700 font-medium' : 'text-slate-700'}`}
-                                >
+                                <Label htmlFor={option.id} className="text-sm">
                                   {option.label}
                                 </Label>
                                 
@@ -3092,10 +3086,7 @@ export default function RepairPricing() {
                                   }}
                                   className="rounded border-slate-300"
                                 />
-                                <Label 
-                                  htmlFor={option.id} 
-                                  className={`text-sm ${isCustomOption ? 'text-purple-700 font-medium' : 'text-slate-700'}`}
-                                >
+                                <Label htmlFor={option.id} className="text-sm">
                                   {option.label}
                                 </Label>
                                 
