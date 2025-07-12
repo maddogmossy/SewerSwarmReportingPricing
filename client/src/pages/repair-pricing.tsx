@@ -451,7 +451,6 @@ export default function RepairPricing() {
     pipeSize: "",
     depth: "",
     description: "",
-    rule: "",
     lengthOfRepair: "",
     dayRate: "",
     vehicleId: "",
@@ -624,9 +623,6 @@ export default function RepairPricing() {
           depth: depthRange
         });
         
-        // Set rule - removed depth warning
-        const rule = "";
-        
         // Set form data and open dialog
         setTimeout(() => {
           setFormData(prev => ({
@@ -638,7 +634,6 @@ export default function RepairPricing() {
             lengthOfRepair: meterage || "", // Use actual length from dashboard
             dayRate: "",
             vehicleId: "",
-            rule: rule,
             pricingStructure: {
               ...prev.pricingStructure,
               meterage: true, // Default to meterage pricing for repairs
@@ -977,7 +972,6 @@ export default function RepairPricing() {
       pipeSize: "",
       depth: "",
       description: "",
-      rule: "",
       lengthOfRepair: "",
       dayRate: "",
       vehicleId: "",
@@ -1115,7 +1109,6 @@ export default function RepairPricing() {
       pipeSize: formData.pipeSize,
       depth: formData.depth,
       description: formData.description,
-      rule: formData.rule,
       lengthOfRepair: formData.lengthOfRepair,
       dayRate: formData.dayRate,
       vehicleId: formData.vehicleId,
@@ -1287,7 +1280,6 @@ export default function RepairPricing() {
       pipeSize: item.pipeSize || "",
       depth: item.depth || "",
       description: item.description || "",
-      rule: item.rule || "",
       lengthOfRepair: item.lengthOfRepair || "",
       dayRate: item.dayRate?.toString() || (item.id === 6 ? "1850" : ""), // TEMP FIX: Restore dayRate for item 6
       vehicleId: item.vehicleId?.toString() || "",
@@ -1345,7 +1337,6 @@ export default function RepairPricing() {
       pipeSize: item.pipeSize,
       depth: item.depth || "",
       description: item.description || "",
-      rule: item.rule || "",
       lengthOfRepair: item.lengthOfRepair || "1000mm",
       minInstallationPerDay: item.minInstallationPerDay?.toString() || "",
       dayRate: item.dayRate?.toString() || "",
@@ -1517,7 +1508,6 @@ export default function RepairPricing() {
                               pipeSize: "",
                               depth: "",
                               description: "",
-                              rule: "",
                               lengthOfRepair: "",
                               dayRate: "",
                               vehicleId: "",
@@ -1606,11 +1596,7 @@ export default function RepairPricing() {
                             </div>
                           </div>
                           
-                          {item.rule && (
-                            <div className="text-xs p-2 bg-yellow-50 border border-yellow-200 rounded">
-                              <span className="font-medium">Rule:</span> {item.rule}
-                            </div>
-                          )}
+
                         </div>
                       ))}
                       
@@ -1624,7 +1610,6 @@ export default function RepairPricing() {
                               pipeSize: "",
                               depth: "",
                               description: "",
-                              rule: "",
                               lengthOfRepair: "",
                               dayRate: "",
                               vehicleId: "",
@@ -3262,7 +3247,6 @@ export default function RepairPricing() {
                       pipeSize: formData.pipeSize,
                       depth: formData.depth,
                       description: formData.description,
-                      rule: formData.rule,
                       lengthOfRepair: formData.lengthOfRepair,
                       dayRate: formData.dayRate,
                       pricingStructure: formData.pricingStructure,

@@ -127,8 +127,7 @@ let pricingStorage = [
     pipeSize: "150mm",
     costPerMetre: 0.00, // Default until user configured pricing
     cost: 0.00,
-    description: "Complete cleaning followed by verification survey to confirm completion (150mm pipe)",
-    rule: "Standard cleaning and verification process"
+    description: "Complete cleaning followed by verification survey to confirm completion (150mm pipe)"
   }
 ];
 
@@ -356,7 +355,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       pipeSize,
       description,
       cost,
-      rule,
       // Dynamic pricing structure values
       meterage,
       hourlyRate,
@@ -400,7 +398,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       pipeSize: pipeSize || "150mm",
       description: description || "User-defined pricing configuration",
       cost: cost || "0.00",
-      rule: rule || "Standard pricing rule",
       // Dynamic pricing structure values
       meterage: meterage || null,
       hourlyRate: hourlyRate || null,
@@ -448,7 +445,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       pipeSize,
       description,
       cost,
-      rule,
       // Dynamic pricing structure values
       meterage,
       hourlyRate,
@@ -497,7 +493,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       pipeSize: pipeSize || pricingStorage[pricingIndex].pipeSize,
       description: description || pricingStorage[pricingIndex].description,
       cost: cost || pricingStorage[pricingIndex].cost,
-      rule: rule || pricingStorage[pricingIndex].rule,
       // Dynamic pricing structure values
       meterage: meterage !== undefined ? meterage : pricingStorage[pricingIndex].meterage,
       hourlyRate: hourlyRate !== undefined ? hourlyRate : pricingStorage[pricingIndex].hourlyRate,
