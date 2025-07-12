@@ -2797,8 +2797,12 @@ export default function RepairPricing() {
                           
                           console.log("🔥 CHECKBOX DEBUG - defaultOrder:", defaultOrder);
                           
-                          const displayOrder = formData.optionDisplayOrder || defaultOrder;
+                          // CRITICAL FIX: Only use optionDisplayOrder if it has content, otherwise use defaultOrder
+                          const displayOrder = (formData.optionDisplayOrder && formData.optionDisplayOrder.length > 0) 
+                            ? formData.optionDisplayOrder 
+                            : defaultOrder;
                           console.log("🔥 CHECKBOX DEBUG - displayOrder:", displayOrder);
+                          console.log("🔥 CHECKBOX DEBUG - formData.optionDisplayOrder:", formData.optionDisplayOrder);
                           
                           return (displayOrder || []).map((option, index) => {
                             const isCustom = option.type === 'custom';
