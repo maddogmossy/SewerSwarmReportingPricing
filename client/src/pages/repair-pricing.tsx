@@ -242,7 +242,9 @@ export default function RepairPricing() {
       minUnitsPerShift: false,
       minMetersPerShift: false,
       minInspectionsPerShift: false,
-      minSetupCount: false
+      minSetupCount: false,
+      includeDepth: false,
+      includeTotalLength: false
     }
   });
   const [showSimpleAddForm, setShowSimpleAddForm] = useState(false);
@@ -618,7 +620,13 @@ export default function RepairPricing() {
           runsPerShift: false,
           setupRate: false,
           minCharge: false,
-          repeatFree: false
+          repeatFree: false,
+          minUnitsPerShift: false,
+          minMetersPerShift: false,
+          minInspectionsPerShift: false,
+          minSetupCount: false,
+          includeDepth: false,
+          includeTotalLength: false
         }
       });
     },
@@ -801,7 +809,9 @@ export default function RepairPricing() {
         minUnitsPerShift: false,
         minMetersPerShift: false,
         minInspectionsPerShift: false,
-        minSetupCount: false
+        minSetupCount: false,
+        includeDepth: false,
+        includeTotalLength: false
       }
     });
     setApplySectors([]);
@@ -1981,7 +1991,13 @@ export default function RepairPricing() {
                       runsPerShift: false,
                       setupRate: false,
                       minCharge: false,
-                      repeatFree: false
+                      repeatFree: false,
+                      minUnitsPerShift: false,
+                      minMetersPerShift: false,
+                      minInspectionsPerShift: false,
+                      minSetupCount: false,
+                      includeDepth: false,
+                      includeTotalLength: false
                     }
                   });
                 }}>
@@ -2625,6 +2641,23 @@ export default function RepairPricing() {
                         className="rounded border-slate-300"
                       />
                       <Label htmlFor="includeDepth" className="text-sm">Include pipe depth</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="includeTotalLength"
+                        checked={formData.pricingStructure?.includeTotalLength || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            includeTotalLength: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="includeTotalLength" className="text-sm">Include total length</Label>
                     </div>
                   </div>
                   <p className="text-xs text-purple-600 mt-2">
