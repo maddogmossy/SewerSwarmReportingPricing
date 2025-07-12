@@ -2511,7 +2511,9 @@ export default function RepairPricing() {
                   // Also check for user-added orange options with "minquantity_" prefix
                   Object.keys(formData.pricingStructure || {}).forEach(key => {
                     if (key.startsWith('minquantity_') && formData.pricingStructure[key] === true) {
-                      const label = key.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                      // Use stored label if available, otherwise reconstruct from field name  
+                      const storedLabel = formData.pricingStructure[`${key}_label`];
+                      const label = storedLabel || key.replace('minquantity_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                       orangeOptions.push({key: key, label: label, type: 'orange'});
                     }
                   });
@@ -3039,7 +3041,9 @@ export default function RepairPricing() {
                             const existingIds = reorderedOptions.map(opt => opt.id);
                             Object.keys(formData.pricingStructure || {}).forEach(key => {
                               if (key.startsWith('minquantity_') && !existingIds.includes(key) && formData.pricingStructure[key] === true) {
-                                const label = key.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                                // Use stored label if available, otherwise reconstruct from field name
+                                const storedLabel = formData.pricingStructure[`${key}_label`];
+                                const label = storedLabel || key.replace('minquantity_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                                 reorderedOptions.push({
                                   id: key,
                                   label: label,
@@ -3063,7 +3067,9 @@ export default function RepairPricing() {
                             const customMinQuantityOptions = [];
                             Object.keys(formData.pricingStructure || {}).forEach(key => {
                               if (key.startsWith('minquantity_') && formData.pricingStructure[key] === true) {
-                                const label = key.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                                // Use stored label if available, otherwise reconstruct from field name
+                                const storedLabel = formData.pricingStructure[`${key}_label`];
+                                const label = storedLabel || key.replace('minquantity_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                                 customMinQuantityOptions.push({
                                   id: key,
                                   label: label,
@@ -3088,12 +3094,15 @@ export default function RepairPricing() {
                           e.stopPropagation();
                           const optionName = prompt("Enter new minimum quantity option name:");
                           if (optionName && optionName.trim()) {
-                            const fieldName = `minquantity_${optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+                            // Create field name by replacing spaces with underscores and keeping readable format
+                            const fieldName = `minquantity_${optionName.trim().toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')}`;
                             setFormData(prev => ({
                               ...prev,
                               pricingStructure: {
                                 ...prev.pricingStructure,
-                                [fieldName]: true
+                                [fieldName]: true,
+                                // Store original label for proper display
+                                [`${fieldName}_label`]: optionName.trim()
                               }
                             }));
                             toast({
@@ -3167,7 +3176,9 @@ export default function RepairPricing() {
                           key.startsWith('minquantity_') && formData.pricingStructure[key] === true
                         ).map((optionKey) => {
                           const isChecked = !!formData.pricingStructure[optionKey];
-                          const optionLabel = optionKey.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          // Use stored label if available, otherwise reconstruct from field name
+                          const storedLabel = formData.pricingStructure[`${optionKey}_label`];
+                          const optionLabel = storedLabel || optionKey.replace('minquantity_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                           
                           return (
                             <div key={optionKey} className="flex items-center space-x-2">
