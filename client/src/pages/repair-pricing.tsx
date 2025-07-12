@@ -2506,23 +2506,36 @@ export default function RepairPricing() {
                           className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white"
                           onClick={(e) => {
                             e.stopPropagation();
-                            // Sync current form state to editable options with current labels including custom options
-                            const standardOptions = [
-                              { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false },
-                              { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
-                              { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
-                              { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
-                              { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false }
-                            ];
-                            
-                            // Add custom price options to the editable list
-                            const customPriceOptions = customOptions.priceOptions.map((option, index) => ({
-                              id: `custom_price_${index}`,
-                              label: option,
-                              enabled: true // Custom options are always considered enabled
-                            }));
-                            
-                            setEditablePriceOptions([...standardOptions, ...customPriceOptions]);
+                            // Use saved order if available, otherwise use default order
+                            if (formData.optionDisplayOrder && formData.optionDisplayOrder.length > 0) {
+                              console.log("Loading saved order for edit dialog:", formData.optionDisplayOrder);
+                              // Use the saved reordered sequence
+                              const reorderedOptions = formData.optionDisplayOrder.map(option => ({
+                                id: option.id,
+                                label: option.label,
+                                enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
+                              }));
+                              setEditablePriceOptions(reorderedOptions);
+                            } else {
+                              console.log("Using default order for edit dialog");
+                              // Fall back to default order if no saved order exists
+                              const standardOptions = [
+                                { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false },
+                                { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
+                                { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
+                                { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
+                                { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false }
+                              ];
+                              
+                              // Add custom price options to the editable list
+                              const customPriceOptions = customOptions.priceOptions.map((option, index) => ({
+                                id: `custom_price_${index}`,
+                                label: option,
+                                enabled: true // Custom options are always considered enabled
+                              }));
+                              
+                              setEditablePriceOptions([...standardOptions, ...customPriceOptions]);
+                            }
                             setShowEditPriceOptionsDialog(true);
                           }}
                         >
@@ -3540,22 +3553,35 @@ export default function RepairPricing() {
                 onClick={() => {
                   setShowEditPriceOptionsDialog(false);
                   // Reset to current saved state without saving changes
-                  const standardOptions = [
-                    { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false },
-                    { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
-                    { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
-                    { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
-                    { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false }
-                  ];
-                  
-                  // Include custom price options in reset
-                  const customPriceOptions = customOptions.priceOptions.map((option, index) => ({
-                    id: `custom_price_${index}`,
-                    label: option,
-                    enabled: true
-                  }));
-                  
-                  setEditablePriceOptions([...standardOptions, ...customPriceOptions]);
+                  if (formData.optionDisplayOrder && formData.optionDisplayOrder.length > 0) {
+                    console.log("Resetting to saved order on cancel:", formData.optionDisplayOrder);
+                    // Reset to the saved reordered sequence
+                    const reorderedOptions = formData.optionDisplayOrder.map(option => ({
+                      id: option.id,
+                      label: option.label,
+                      enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
+                    }));
+                    setEditablePriceOptions(reorderedOptions);
+                  } else {
+                    console.log("Resetting to default order on cancel");
+                    // Fall back to default order
+                    const standardOptions = [
+                      { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false },
+                      { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
+                      { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
+                      { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
+                      { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false }
+                    ];
+                    
+                    // Include custom price options in reset
+                    const customPriceOptions = customOptions.priceOptions.map((option, index) => ({
+                      id: `custom_price_${index}`,
+                      label: option,
+                      enabled: true
+                    }));
+                    
+                    setEditablePriceOptions([...standardOptions, ...customPriceOptions]);
+                  }
                 }}
               >
                 Cancel
