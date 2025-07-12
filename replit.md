@@ -223,9 +223,22 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Upload 80:** 24 sections with authentic downstream flow per OBJ_FlowDir=1 database values
 - **Real-time Processing:** OBJ_FlowDir field read during upload processing for authentic direction
 
+## REV V1 CHECKPOINT - STABLE PRODUCTION STATE (July 12, 2025)
+
+🔒 **LOCKED IN FEATURES - PRODUCTION READY:**
+- **Complete Color-Coded Pricing System:** All four option categories with proper color-coded display (Blue: Price/Cost, Green: Quantity, Orange: Min Quantity, Purple: Additional Items)
+- **Grey Math Operator Buttons:** Progressive numbering (Math, Math 2, Math 3, Math 4) with comprehensive calculation control
+- **N/A Option for Math Operations:** Flexible calculation control allowing users to disable math operations when not needed
+- **Dynamic Chaining UI:** Horizontal layout with proper spacing and seamless flow between all color categories
+- **Comprehensive Field Mapping:** Backend properly handles all pricing option types with correct data persistence
+- **Professional Visual Hierarchy:** Enhanced color-coded legend and organized pricing form structure
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v1' to return to this stable checkpoint
+
 ## Changelog
 
 ```
+- July 12, 2025. 🔒 **REV V1 LOCKED: COMPLETE PRICING SYSTEM WITH N/A MATH CONTROL** - Successfully locked in comprehensive color-coded pricing system with all four option categories and flexible math operation control. Final features: Blue boxes (Price/Cost options), Green boxes (Quantity options), Orange boxes (Min Quantity per Shift), Purple boxes (Additional Items), Grey math operator buttons with progressive numbering and N/A option for disabling calculations. System supports unlimited pricing options with seamless horizontal flow, proper data persistence, and complete user control over calculation chains. Enhanced dropdown width and clear N/A placeholder for optimal user experience.
 - July 12, 2025. ✅ **FIXED CUSTOM OPTIONS DISPLAY SYSTEM** - Successfully resolved issue where custom options appeared only in edit/delete dialogs instead of as proper checkboxes in expanded view. Custom options (like "range") now display as green-labeled checkboxes alongside standard options (Number per shift, Meters per shift, Runs per shift, Repeat free) in the Quantity Options window. Fixed missing priceOptions array in customOptions state that was causing display problems. Enhanced debugging with console logging to track option addition and state updates. Users can now add custom options and see them immediately as checkboxes in the main pricing interface.
 - July 12, 2025. ✅ **DYNAMIC CHAINING UI AND DATA PERSISTENCE ENHANCEMENT** - Successfully implemented horizontal layout for pricing options with compact sizing (w-40 for options, w-12 for operators) to fit three elements on one line: "Day rate | ÷ | Runs per shift". Enhanced value display next to green Add buttons showing current values (e.g., "Runs: 3"). Added comprehensive debugging and fixed backend field mapping to store both `numberPerShift` (mapped) and `runsPerShift` (original) fields in both POST and PUT endpoints. Dynamic chaining system now creates proper calculation chains with math operators (+, -, ×, ÷) between sequential pricing options while maintaining data persistence.
 - July 12, 2025. ✅ **COMPLETE PRICING WORKFLOW FIXED** - Successfully resolved critical field mapping issue preventing automatic cost calculation. Fixed frontend `runsPerShift` to backend `numberPerShift` field mapping in both POST and PUT endpoints (server/routes-rev-v1.ts). Backend now properly extracts and stores runs per shift values from pricing form submissions. Enhanced frontend form initialization to map `numberPerShift` from database to `runsPerShift` form field for proper editing. Automatic cost calculation formula (Day rate ÷ Number of runs per shift) now works correctly with red pricing indicators until minimum threshold reached. Complete workflow: dashboard → pricing configuration → save with proper field mapping → return to dashboard → automatic cost calculation display.
