@@ -2516,28 +2516,30 @@ export default function RepairPricing() {
                     }
                   });
                   
-                  // Categorize purple options (additional items)
-                  if (formData.pricingStructure?.includeDepth) purpleOptions.push({key: 'includeDepth', label: 'Include depth', type: 'purple'});
-                  if (formData.pricingStructure?.includeTotalLength) purpleOptions.push({key: 'includeTotalLength', label: 'Include total length', type: 'purple'});
-                  
-                  // Add user-added purple options with "additional_" prefix
+                  // Categorize purple options (ranges)
                   Object.keys(formData.pricingStructure || {}).forEach(key => {
-                    if (key.startsWith('additional_') && formData.pricingStructure[key] === true) {
-                      const label = key.replace('additional_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                      purpleOptions.push({key: key, label: label, type: 'purple'});
+                    if (key.startsWith('range_') && formData.pricingStructure[key] === true) {
+                      const label = key.replace('range_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                      const minKey = `${key}_min`;
+                      const maxKey = `${key}_max`;
+                      const minValue = formData[minKey] || '';
+                      const maxValue = formData[maxKey] || '';
+                      const displayLabel = minValue && maxValue ? `${label} (${minValue} - ${maxValue})` : label;
+                      purpleOptions.push({key: key, label: displayLabel, type: 'purple', isRange: true, minKey, maxKey});
                     }
                   });
                   
-                  // Separate calculation options (blue, green, purple) from validation options (orange)
-                  const calculationOptions = [...priceOptions, ...quantityOptions, ...purpleOptions];
+                  // Separate calculation options (blue, green only) from validation/display options (orange, purple)
+                  const calculationOptions = [...priceOptions, ...quantityOptions];
                   const validationOptions = [...orangeOptions];
+                  const displayOptions = [...purpleOptions];
                   
                   // Debug logging for orange options only when they exist
                   if (orangeOptions.length > 0) {
                     console.log('Orange options found:', orangeOptions);
                   }
                   
-                  if (calculationOptions.length > 0 || validationOptions.length > 0) {
+                  if (calculationOptions.length > 0 || validationOptions.length > 0 || displayOptions.length > 0) {
                     let mathOperatorIndex = 0;
                     
                     return (
@@ -2656,11 +2658,30 @@ export default function RepairPricing() {
                           </div>
                         )}
                         
+                        {/* Range Display Section */}
+                        {displayOptions.length > 0 && (
+                          <div className="mb-4">
+                            <Label className="text-xs font-medium text-slate-600 mb-2 block">Ranges (Display Only)</Label>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {displayOptions.map((option, index) => (
+                                <div key={option.key} className="bg-purple-100 border-purple-300 rounded-lg p-2">
+                                  <Label className="text-xs text-purple-700 block font-medium">
+                                    {option.label}
+                                  </Label>
+                                  <p className="text-xs text-purple-600 mt-1">
+                                    Display only - not used in calculations
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
                         <p className="text-xs text-slate-600 mt-2">
                           <span className="text-blue-600">Blue</span>: Price/Cost | 
                           <span className="text-green-600 ml-1">Green</span>: Quantity | 
                           <span className="text-orange-600 ml-1">Orange</span>: Min Quantity Validators | 
-                          <span className="text-purple-600 ml-1">Purple</span>: Additional | 
+                          <span className="text-purple-600 ml-1">Purple</span>: Ranges (Display Only) | 
                           <span className="text-slate-600 ml-1">Grey</span>: Math operators
                         </p>
                       </div>
@@ -3186,12 +3207,14 @@ export default function RepairPricing() {
                   )}
                 </div>
 
-                {/* Option Window 4: Additional Items */}
+                {/* Option Window 4: Ranges */}
                 <div className="border border-purple-200 rounded-lg bg-purple-50">
                   <div 
                     className="flex items-center justify-between p-4 cursor-pointer"
                     onClick={() => {
-                      const hasSelected = formData.pricingStructure?.includeDepth || formData.pricingStructure?.includeTotalLength;
+                      const hasSelected = formData.pricingStructure && Object.keys(formData.pricingStructure).some(key => 
+                        key.startsWith('range_') && formData.pricingStructure[key]
+                      );
                       if (hasSelected) {
                         setCollapsedWindows(prev => ({
                           ...prev,
@@ -3200,14 +3223,17 @@ export default function RepairPricing() {
                       }
                     }}
                   >
-                    <h4 className="text-sm font-medium text-purple-700">🔧 Additional Items</h4>
+                    <h4 className="text-sm font-medium text-purple-700">📊 Ranges</h4>
                     <div className="flex items-center gap-2">
-                      {(formData.pricingStructure?.includeDepth || formData.pricingStructure?.includeTotalLength) && (
+                      {formData.pricingStructure && Object.keys(formData.pricingStructure).some(key => 
+                        key.startsWith('range_') && formData.pricingStructure[key]
+                      ) && (
                         <span className="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded">
-                          {[
-                            formData.pricingStructure?.includeDepth && 'Depth',
-                            formData.pricingStructure?.includeTotalLength && 'Total Length'
-                          ].filter(Boolean).join(', ')}
+                          {Object.keys(formData.pricingStructure).filter(key => 
+                            key.startsWith('range_') && formData.pricingStructure[key]
+                          ).length} Range{Object.keys(formData.pricingStructure).filter(key => 
+                            key.startsWith('range_') && formData.pricingStructure[key]
+                          ).length > 1 ? 's' : ''}
                         </span>
                       )}
                       <Button 
@@ -3228,109 +3254,112 @@ export default function RepairPricing() {
                         className="text-xs px-2 py-1 h-6 bg-purple-600 hover:bg-purple-700 text-white"
                         onClick={(e) => {
                           e.stopPropagation();
-                          const optionName = prompt("Enter new additional item name:");
-                          if (optionName && optionName.trim()) {
-                            const fieldName = `additional_${optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+                          const rangeName = prompt("Enter range name:");
+                          if (rangeName && rangeName.trim()) {
+                            const rangeKey = `range_${rangeName.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}`;
                             setFormData(prev => ({
                               ...prev,
                               pricingStructure: {
                                 ...prev.pricingStructure,
-                                [fieldName]: true
+                                [rangeKey]: true
                               }
                             }));
                             toast({
-                              title: "Additional Item Added",
-                              description: `${optionName} has been added to Additional Items.`,
+                              title: "Range Added",
+                              description: `${rangeName} range has been added.`,
                             });
                           }
                         }}
                       >
                         <Plus className="h-3 w-3 mr-1" />
-                        Add
+                        Add Range
                       </Button>
 
                     </div>
                   </div>
                   {!collapsedWindows.additionalOptions && (
                     <div className="px-4 pb-4">
-                      <div className="grid grid-cols-4 gap-3">
-                        {/* Dynamic Additional Options in Reordered Sequence */}
-                        {(() => {
-                          const defaultAdditionalOrder = [
-                            { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), type: 'standard' },
-                            { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), type: 'standard' },
-                            // User-added options are now part of additionalDisplayOrder
-                          ];
-
-                          const displayOrder = formData.additionalDisplayOrder && formData.additionalDisplayOrder.length > 0 
-                            ? formData.additionalDisplayOrder 
-                            : defaultAdditionalOrder;
-
-                          return displayOrder.map((option, index) => {
-                            const isStandardOption = ['includeDepth', 'includeTotalLength'].includes(option.id);
-                            const isCustomOption = option.id.startsWith('custom_additional_');
-                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : (formData.pricingStructure?.[option.id] !== false);
-                            
-                            if (!isStandardOption && !isCustomOption) return null;
-
-                            return (
-                              <div key={option.id} className="flex items-center space-x-2">
-                                <input
-                                  type="checkbox"
-                                  id={option.id}
-                                  checked={isEnabled}
-                                  onChange={(e) => {
-                                    setFormData({
-                                      ...formData,
-                                      pricingStructure: {
-                                        ...formData.pricingStructure,
-                                        [option.id]: e.target.checked
-                                      }
-                                    });
-                                  }}
-                                  className="rounded border-slate-300"
-                                />
-                                <Label htmlFor={option.id} className="text-sm">
-                                  {option.label}
-                                </Label>
-                                
-
-                              </div>
-                            );
-                          });
-                        })()}
-
-                        {/* Show purple/additional-specific added options */}
+                      <div className="space-y-3">
+                        {/* Display Range Options */}
                         {formData.pricingStructure && Object.keys(formData.pricingStructure).filter(key => 
-                          key.startsWith('additional_')
-                        ).map((optionKey) => {
-                          const isChecked = !!formData.pricingStructure[optionKey];
-                          const optionLabel = optionKey.replace('additional_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          key.startsWith('range_') && formData.pricingStructure[key]
+                        ).map((rangeKey, index) => {
+                          const rangeName = rangeKey.replace('range_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          const minKey = `${rangeKey}_min`;
+                          const maxKey = `${rangeKey}_max`;
                           
                           return (
-                            <div key={optionKey} className="flex items-center space-x-2">
-                              <input
-                                type="checkbox"
-                                id={optionKey}
-                                checked={isChecked}
-                                onChange={(e) => {
-                                  setFormData({
-                                    ...formData,
-                                    pricingStructure: {
-                                      ...formData.pricingStructure,
-                                      [optionKey]: e.target.checked
-                                    }
-                                  });
-                                }}
-                                className="rounded border-slate-300"
-                              />
-                              <Label htmlFor={optionKey} className="text-sm">{optionLabel}</Label>
+                            <div key={rangeKey} className="bg-purple-100 border-purple-300 rounded-lg p-3">
+                              <div className="flex items-center justify-between mb-2">
+                                <Label className="text-sm font-medium text-purple-700">{rangeName}</Label>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs border-purple-300 text-purple-600 hover:bg-purple-200"
+                                  onClick={() => {
+                                    const newPricingStructure = { ...formData.pricingStructure };
+                                    delete newPricingStructure[rangeKey];
+                                    delete newPricingStructure[minKey];
+                                    delete newPricingStructure[maxKey];
+                                    
+                                    setFormData({
+                                      ...formData,
+                                      pricingStructure: newPricingStructure,
+                                      [minKey]: '',
+                                      [maxKey]: ''
+                                    });
+                                  }}
+                                >
+                                  Remove
+                                </Button>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1">
+                                  <Label className="text-xs text-purple-600">Min</Label>
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    placeholder="Min value"
+                                    className="h-7 text-xs bg-white border-purple-300"
+                                    value={formData[minKey] || ''}
+                                    onChange={(e) => setFormData({
+                                      ...formData,
+                                      [minKey]: e.target.value
+                                    })}
+                                  />
+                                </div>
+                                <span className="text-purple-600 text-xs mt-4">to</span>
+                                <div className="flex-1">
+                                  <Label className="text-xs text-purple-600">Max</Label>
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    placeholder="Max value"
+                                    className="h-7 text-xs bg-white border-purple-300"
+                                    value={formData[maxKey] || ''}
+                                    onChange={(e) => setFormData({
+                                      ...formData,
+                                      [maxKey]: e.target.value
+                                    })}
+                                  />
+                                </div>
+                              </div>
                             </div>
                           );
                         })}
+                        
+                        {/* Show message when no ranges are added */}
+                        {!formData.pricingStructure || !Object.keys(formData.pricingStructure).some(key => 
+                          key.startsWith('range_') && formData.pricingStructure[key]
+                        ) && (
+                          <div className="text-center py-4 text-slate-500 text-sm">
+                            No ranges added yet. Click "Add Range" to create your first range.
+                          </div>
+                        )}
                       </div>
                       <p className="text-xs text-purple-600 mt-3">
-                        Additional items can be included in pricing calculations when available from inspection data.
+                        Ranges define min/max values for display purposes. They don't affect calculations.
                       </p>
                     </div>
                   )}
