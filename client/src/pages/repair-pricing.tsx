@@ -3460,21 +3460,29 @@ export default function RepairPricing() {
                 onClick={() => {
                   console.log("Saving reordered options:", editablePriceOptions);
                   
-                  // Reset all standard options to false first
-                  const newPricingStructure = { 
-                    ...formData.pricingStructure,
-                    meterage: false,
-                    hourlyRate: false,
-                    setupRate: false,
-                    minCharge: false,
-                    dayRate: false
-                  };
-                  const standardOptionIds = ['meterage', 'hourlyRate', 'setupRate', 'minCharge', 'dayRate'];
+                  // CRITICAL FIX: Start with a clean pricing structure and remove ALL deleted options
+                  const newPricingStructure = { ...formData.pricingStructure };
                   
-                  // Apply enabled state for standard options in their new order
+                  // Reset all standard options to false first
+                  const standardOptionIds = ['meterage', 'hourlyRate', 'setupRate', 'minCharge', 'dayRate'];
+                  standardOptionIds.forEach(id => {
+                    newPricingStructure[id] = false;
+                  });
+                  
+                  // Remove ALL price_ prefixed options first (clean slate)
+                  Object.keys(newPricingStructure).forEach(key => {
+                    if (key.startsWith('price_')) {
+                      delete newPricingStructure[key];
+                    }
+                  });
+                  
+                  // Apply enabled state for standard options that still exist in editablePriceOptions
                   editablePriceOptions.forEach(option => {
                     if (standardOptionIds.includes(option.id)) {
                       newPricingStructure[option.id] = option.enabled;
+                    } else if (option.id.startsWith('price_')) {
+                      // Re-add only the price_ options that still exist in editablePriceOptions
+                      newPricingStructure[option.id] = true;
                     }
                   });
                   
@@ -3623,10 +3631,20 @@ export default function RepairPricing() {
                   };
                   const standardQuantityOptionIds = ['numberPerShift', 'metersPerShift', 'runsPerShift', 'repeatFree'];
                   
-                  // Apply enabled state for standard options in their new order
+                  // Remove ALL quantity_ prefixed options first (clean slate)
+                  Object.keys(newPricingStructure).forEach(key => {
+                    if (key.startsWith('quantity_')) {
+                      delete newPricingStructure[key];
+                    }
+                  });
+                  
+                  // Apply enabled state for standard options and re-add current quantity_ options
                   editableQuantityOptions.forEach(option => {
                     if (standardQuantityOptionIds.includes(option.id)) {
                       newPricingStructure[option.id] = option.enabled;
+                    } else if (option.id.startsWith('quantity_')) {
+                      // Re-add only the quantity_ options that still exist in editableQuantityOptions
+                      newPricingStructure[option.id] = true;
                     }
                   });
                   
@@ -3781,20 +3799,29 @@ export default function RepairPricing() {
                 onClick={() => {
                   console.log("Saving reordered min quantity options:", editableMinQuantityOptions);
                   
-                  // Reset all standard min quantity options to false first
-                  const newPricingStructure = { 
-                    ...formData.pricingStructure,
-                    minUnitsPerShift: false,
-                    minMetersPerShift: false,
-                    minInspectionsPerShift: false,
-                    minSetupCount: false
-                  };
-                  const standardOptionIds = ['minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount'];
+                  // CRITICAL FIX: Start with a clean pricing structure and remove ALL deleted options
+                  const newPricingStructure = { ...formData.pricingStructure };
                   
-                  // Apply enabled state for standard options in their new order
+                  // Reset all standard min quantity options to false first
+                  const standardOptionIds = ['minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount'];
+                  standardOptionIds.forEach(id => {
+                    newPricingStructure[id] = false;
+                  });
+                  
+                  // Remove ALL minquantity_ prefixed options first (clean slate)
+                  Object.keys(newPricingStructure).forEach(key => {
+                    if (key.startsWith('minquantity_')) {
+                      delete newPricingStructure[key];
+                    }
+                  });
+                  
+                  // Apply enabled state for standard options and re-add current minquantity_ options
                   editableMinQuantityOptions.forEach(option => {
                     if (standardOptionIds.includes(option.id)) {
                       newPricingStructure[option.id] = option.enabled;
+                    } else if (option.id.startsWith('minquantity_')) {
+                      // Re-add only the minquantity_ options that still exist in editableMinQuantityOptions
+                      newPricingStructure[option.id] = true;
                     }
                   });
                   
@@ -3894,22 +3921,45 @@ export default function RepairPricing() {
                 onClick={() => {
                   console.log("Saving additional options changes");
                   
-                  // CRITICAL FIX: Update pricingStructure.additionalOptions to only include current options
+                  // CRITICAL FIX: Start with a clean pricing structure and remove ALL deleted options
+                  const newPricingStructure = { ...formData.pricingStructure };
+                  
+                  // Reset all standard additional options to false first
+                  const standardAdditionalIds = ['includeDepth', 'includeTotalLength'];
+                  standardAdditionalIds.forEach(id => {
+                    newPricingStructure[id] = false;
+                  });
+                  
+                  // Remove ALL additional_ prefixed options first (clean slate)
+                  Object.keys(newPricingStructure).forEach(key => {
+                    if (key.startsWith('additional_')) {
+                      delete newPricingStructure[key];
+                    }
+                  });
+                  
+                  // CRITICAL FIX: Update enabled options based on what currently exists
                   const currentAdditionalOptions = [
                     { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), enabled: formData.pricingStructure?.includeDepth || false, type: 'standard' },
                     { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), enabled: formData.pricingStructure?.includeTotalLength || false, type: 'standard' }
-                  ].filter(option => option.enabled);
+                  ];
                   
-                  const enabledAdditionalOptions = currentAdditionalOptions.map(option => option.label);
+                  // Apply enabled state for standard options 
+                  currentAdditionalOptions.forEach(option => {
+                    if (standardAdditionalIds.includes(option.id)) {
+                      newPricingStructure[option.id] = option.enabled;
+                    }
+                  });
+                  
+                  const enabledAdditionalOptions = currentAdditionalOptions.filter(option => option.enabled).map(option => option.label);
                   console.log("Final additionalOptions array:", enabledAdditionalOptions);
                   
                   setFormData(prev => ({
                     ...prev,
                     pricingStructure: {
-                      ...prev.pricingStructure,
+                      ...newPricingStructure,
                       additionalOptions: enabledAdditionalOptions // Sync the additionalOptions array properly
                     },
-                    additionalDisplayOrder: currentAdditionalOptions.map(option => ({
+                    additionalDisplayOrder: currentAdditionalOptions.filter(option => option.enabled).map(option => ({
                       id: option.id,
                       label: option.label,
                       type: option.type
