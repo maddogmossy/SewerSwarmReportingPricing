@@ -274,6 +274,18 @@ export default function RepairPricing() {
     lengthOfRepair: "",
     dayRate: "",
     vehicleId: "",
+    // Add pricing option value fields
+    meterage: "",
+    hourlyRate: "",
+    setupRate: "",
+    minCharge: "",
+    numberPerShift: "",
+    metersPerShift: "",
+    runsPerShift: "",
+    minUnitsPerShift: "",
+    minMetersPerShift: "",
+    minInspectionsPerShift: "",
+    minSetupCount: "",
     pricingStructure: {
       meterage: false,
       numberPerShift: false,
@@ -764,6 +776,18 @@ export default function RepairPricing() {
       lengthOfRepair: "",
       dayRate: "",
       vehicleId: "",
+      // Add pricing option value fields
+      meterage: "",
+      hourlyRate: "",
+      setupRate: "",
+      minCharge: "",
+      numberPerShift: "",
+      metersPerShift: "",
+      runsPerShift: "",
+      minUnitsPerShift: "",
+      minMetersPerShift: "",
+      minInspectionsPerShift: "",
+      minSetupCount: "",
       pricingStructure: {
         meterage: false,
         numberPerShift: false,
@@ -796,6 +820,20 @@ export default function RepairPricing() {
       pipeSize: formData.pipeSize
     });
     
+    // Calculate cost from selected pricing options
+    let calculatedCost = 0;
+    if (formData.meterage && parseFloat(formData.meterage)) {
+      calculatedCost = parseFloat(formData.meterage);
+    } else if (formData.dayRate && parseFloat(formData.dayRate)) {
+      calculatedCost = parseFloat(formData.dayRate);
+    } else if (formData.hourlyRate && parseFloat(formData.hourlyRate)) {
+      calculatedCost = parseFloat(formData.hourlyRate);
+    } else if (formData.setupRate && parseFloat(formData.setupRate)) {
+      calculatedCost = parseFloat(formData.setupRate);
+    } else if (formData.minCharge && parseFloat(formData.minCharge)) {
+      calculatedCost = parseFloat(formData.minCharge);
+    }
+
     const baseData = {
       workCategoryId: formData.workCategoryId,
       pipeSize: formData.pipeSize,
@@ -806,7 +844,19 @@ export default function RepairPricing() {
       dayRate: formData.dayRate,
       vehicleId: formData.vehicleId,
       pricingStructure: formData.pricingStructure,
-      cost: formData.dayRate || "0" // Use dayRate as the primary cost for now
+      // Include all pricing option values
+      meterage: formData.meterage,
+      hourlyRate: formData.hourlyRate,
+      setupRate: formData.setupRate,
+      minCharge: formData.minCharge,
+      numberPerShift: formData.numberPerShift,
+      metersPerShift: formData.metersPerShift,
+      runsPerShift: formData.runsPerShift,
+      minUnitsPerShift: formData.minUnitsPerShift,
+      minMetersPerShift: formData.minMetersPerShift,
+      minInspectionsPerShift: formData.minInspectionsPerShift,
+      minSetupCount: formData.minSetupCount,
+      cost: calculatedCost.toString()
     };
 
     if (editingItem) {

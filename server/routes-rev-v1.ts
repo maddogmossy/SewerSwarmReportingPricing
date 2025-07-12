@@ -200,8 +200,8 @@ let pricingStorage = [
     repairMethodId: 1, // Links to "Cleanse and Survey" repair method
     methodName: "Cleanse and Survey",
     pipeSize: "150mm",
-    costPerMetre: 35.00, // Sample pricing - user can edit
-    cost: 35.00,
+    costPerMetre: 0.00, // Default until user configures pricing
+    cost: 0.00,
     description: "Complete cleaning followed by verification survey to confirm completion (150mm pipe)",
     rule: "Standard cleaning and verification process"
   }
