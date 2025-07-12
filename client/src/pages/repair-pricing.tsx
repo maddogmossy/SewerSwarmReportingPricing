@@ -889,6 +889,7 @@ export default function RepairPricing() {
       setupRate: formData.setupRate,
       minCharge: formData.minCharge,
       numberPerShift: formData.runsPerShift || formData.numberPerShift, // Map runs per shift to numberPerShift
+      runsPerShift: formData.runsPerShift, // Also include runsPerShift field
       metersPerShift: formData.metersPerShift,
       minUnitsPerShift: formData.minUnitsPerShift,
       minMetersPerShift: formData.minMetersPerShift,
@@ -2261,20 +2262,20 @@ export default function RepairPricing() {
                     return (
                       <div className="border border-blue-200 rounded-lg p-4 bg-blue-50 mb-4">
                         <h4 className="text-sm font-medium text-blue-700 mb-3">💰 Selected Pricing Options - Enter Values</h4>
-                        <div className="space-y-3">
+                        <div className="flex items-end gap-2 flex-wrap">
                           {selectedOptions.map((option, index) => {
                             return (
-                              <div key={option.key} className="flex items-center gap-3">
+                              <div key={option.key} className="flex items-end gap-2">
                                 {/* Math operator before each option except the first */}
                                 {index > 0 && (
-                                  <div className="flex items-center">
+                                  <div className="flex items-center pb-2">
                                     <Select
                                       value={mathOperators[`operator_${index}`] || 'add'}
                                       onValueChange={(value: 'add' | 'subtract' | 'multiply' | 'divide') => 
                                         setMathOperators(prev => ({ ...prev, [`operator_${index}`]: value }))
                                       }
                                     >
-                                      <SelectTrigger className="w-16 h-8 text-sm">
+                                      <SelectTrigger className="w-12 h-8 text-sm">
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -2288,8 +2289,8 @@ export default function RepairPricing() {
                                 )}
                                 
                                 {/* Input field for the option */}
-                                <div className="flex-1 space-y-1">
-                                  <Label htmlFor={`value_${option.key}`} className="text-xs font-medium text-slate-600">
+                                <div className="w-40 space-y-1">
+                                  <Label htmlFor={`value_${option.key}`} className="text-xs font-medium text-slate-600 block">
                                     {option.label}
                                   </Label>
                                   <Input
@@ -2297,7 +2298,7 @@ export default function RepairPricing() {
                                     type="number"
                                     step="0.01"
                                     placeholder="Enter value"
-                                    className="h-8 text-sm"
+                                    className="h-8 text-sm w-full"
                                     value={formData[option.key] || ''}
                                     onChange={(e) => setFormData({
                                       ...formData,
