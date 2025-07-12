@@ -2621,12 +2621,11 @@ export default function RepairPricing() {
                                       }}
                                     >
                                       <SelectTrigger className="w-16 h-6 text-xs bg-white border-slate-200">
-                                        <SelectValue placeholder="N/A">
+                                        <SelectValue placeholder="+">
                                           {mathOperators[`operator_${currentMathOperatorIndex}`] === 'add' ? '+' :
                                            mathOperators[`operator_${currentMathOperatorIndex}`] === 'subtract' ? '-' :
                                            mathOperators[`operator_${currentMathOperatorIndex}`] === 'multiply' ? '×' :
-                                           mathOperators[`operator_${currentMathOperatorIndex}`] === 'divide' ? '÷' :
-                                           mathOperators[`operator_${currentMathOperatorIndex}`] === 'none' ? 'N/A' : 'N/A'}
+                                           mathOperators[`operator_${currentMathOperatorIndex}`] === 'divide' ? '÷' : '+'}
                                         </SelectValue>
                                       </SelectTrigger>
                                       <SelectContent>
