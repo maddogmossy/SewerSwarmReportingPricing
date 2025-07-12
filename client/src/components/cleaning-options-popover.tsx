@@ -99,6 +99,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
           );
         }
         
+        // Try matching by work category name (for new categories created from pricing page)
+        if (!pricing) {
+          pricing = pricingData.find((p: any) => 
+            p.workCategory === method.name && 
+            p.pipeSize === sectionData.pipeSize
+          );
+        }
+        
         const option = {
           id: pricing ? pricing.id : method.id, // Use pricing ID if configured, method ID if not
           name: method.name,

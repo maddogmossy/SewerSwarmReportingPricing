@@ -2496,7 +2496,7 @@ export default function RepairPricing() {
                       })}
                       className="rounded border-slate-300"
                     />
-                    <Label htmlFor="numberPerShift" className="text-sm">Number per shift</Label>
+                    <Label htmlFor="numberPerShift" className="text-sm">Units per shift (installations/jobs)</Label>
                   </div>
                   
                   <div className="flex items-center space-x-2">
@@ -2564,7 +2564,7 @@ export default function RepairPricing() {
                       })}
                       className="rounded border-slate-300"
                     />
-                    <Label htmlFor="runsPerShift" className="text-sm">Number of runs per shift</Label>
+                    <Label htmlFor="runsPerShift" className="text-sm">Survey runs per shift (CCTV passes)</Label>
                   </div>
                   
                   <div className="flex items-center space-x-2">
