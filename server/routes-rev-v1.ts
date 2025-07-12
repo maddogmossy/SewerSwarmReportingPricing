@@ -67,7 +67,8 @@ let uploadsStorage = [];
 let workCategoriesStorage = [
   { id: 1, name: "CCTV Surveys", description: "Camera inspection surveys" },
   { id: 2, name: "Jetting/Cleaning", description: "High pressure water jetting" },
-  { id: 3, name: "Patch Repairs", description: "Localized pipe repairs" }
+  { id: 3, name: "Patch Repairs", description: "Localized pipe repairs" },
+  { id: 4, name: "Cleanse/Survey", description: "Complete cleaning followed by verification survey to confirm completion" }
 ];
 
 // In-memory storage for pricing data (REV_V1 simulation)
