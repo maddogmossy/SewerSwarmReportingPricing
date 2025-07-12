@@ -3452,6 +3452,13 @@ export default function RepairPricing() {
               <Button 
                 onClick={() => {
                   if (newOptionName.trim()) {
+                    setCustomOptions(prev => {
+                      const newOptions = {
+                        ...prev,
+                        additionalOptions: [...prev.additionalOptions, newOptionName.trim()]
+                      };
+                      return newOptions;
+                    });
 
                     // Add to additionalDisplayOrder to ensure it appears in the main window
                     setFormData(prev => {
@@ -3573,6 +3580,11 @@ export default function RepairPricing() {
               <Button 
                 onClick={() => {
                   if (editingOptionName.trim() && editingOptionType && editingOptionIndex >= 0) {
+                    setCustomOptions(prev => {
+                      const newOptions = { ...prev };
+                      newOptions[editingOptionType][editingOptionIndex] = editingOptionName.trim();
+                      return newOptions;
+                    });
                     
                     setShowEditOptionsDialog(false);
                     setEditingOptionName('');
@@ -3781,6 +3793,33 @@ export default function RepairPricing() {
                     }
                   });
                   
+                  setCustomOptions(prev => ({
+                    ...prev,
+                    priceOptions: updatedCustomPriceOptions
+                  }));
+                  
+                  // Store the complete reordered options for display order
+                  const reorderedDisplayOptions = editablePriceOptions.map(option => ({
+                    id: option.id,
+                    label: option.label,
+                    type: option.id.startsWith('custom_price_') ? 'custom' : 'standard'
+                  }));
+                  
+                  // Update the display order in formData
+                  setFormData(prev => ({
+                    ...prev,
+                    pricingStructure: {
+                      ...newPricingStructure,
+                      priceOptions: finalPriceOptions // Ensure consistency
+                    },
+                    optionDisplayOrder: reorderedDisplayOptions
+                  }));
+                  
+                  setShowEditPriceOptionsDialog(false);
+                  toast({
+                    title: "Options updated",
+                    description: "Your price/cost options have been reordered and updated successfully.",
+                  });
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
@@ -3916,6 +3955,30 @@ export default function RepairPricing() {
                     pricingStructure: newPricingStructure
                   });
                   
+                  setCustomOptions(prev => ({
+                    ...prev,
+                    quantityOptions: updatedCustomQuantityOptions
+                  }));
+                  
+                  // Store the complete reordered options for display order
+                  const reorderedQuantityDisplayOptions = editableQuantityOptions.map(option => ({
+                    id: option.id,
+                    label: option.label,
+                    type: option.id.startsWith('custom_quantity_') ? 'custom' : 'standard'
+                  }));
+                  
+                  // Update the quantity display order in formData
+                  setFormData(prev => ({
+                    ...prev,
+                    pricingStructure: newPricingStructure,
+                    quantityDisplayOrder: reorderedQuantityDisplayOptions
+                  }));
+                  
+                  setShowEditQuantityOptionsDialog(false);
+                  toast({
+                    title: "Quantity options updated",
+                    description: "Your quantity options have been reordered and updated successfully.",
+                  });
                 }}
                 className="bg-green-600 hover:bg-green-700 text-white"
               >
@@ -4052,6 +4115,30 @@ export default function RepairPricing() {
                     pricingStructure: newPricingStructure
                   });
                   
+                  setCustomOptions(prev => ({
+                    ...prev,
+                    minQuantityOptions: updatedCustomMinQuantityOptions
+                  }));
+                  
+                  // Store the complete reordered options for display order
+                  const reorderedDisplayOptions = editableMinQuantityOptions.map(option => ({
+                    id: option.id,
+                    label: option.label,
+                    type: option.id.startsWith('custom_min_quantity_') ? 'custom' : 'standard'
+                  }));
+                  
+                  // Update the display order in formData
+                  setFormData(prev => ({
+                    ...prev,
+                    pricingStructure: newPricingStructure,
+                    minQuantityDisplayOrder: reorderedDisplayOptions
+                  }));
+                  
+                  setShowEditMinQuantityOptionsDialog(false);
+                  toast({
+                    title: "Min quantity options updated",
+                    description: "Your min quantity options have been reordered and updated successfully.",
+                  });
                 }}
                 className="bg-orange-600 hover:bg-orange-700 text-white"
               >
@@ -4102,8 +4189,12 @@ export default function RepairPricing() {
                           variant="ghost"
                           className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
                           onClick={() => {
-                            // Handle custom option deletion
-                            console.log("Deleting custom additional option:", option.id);
+                            const customIndex = parseInt(option.id.replace('custom_additional_', ''));
+                            const updatedAdditionalOptions = , i) => i !== customIndex);
+                            setCustomOptions(prev => ({
+                              ...prev,
+                              additionalOptions: updatedAdditionalOptions
+                            }));
                           }}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -4115,10 +4206,16 @@ export default function RepairPricing() {
               </div>
             </div>
             <DialogFooter>
-              <Button
+              <Button variant="outline" onClick={() => setShowEditAdditionalOptionsDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
                 onClick={() => {
-                  // Save changes for additional options
                   setShowEditAdditionalOptionsDialog(false);
+                  toast({
+                    title: "Additional options updated",
+                    description: "Your additional options have been updated successfully.",
+                  });
                 }}
                 className="bg-purple-600 hover:bg-purple-700 text-white"
               >
@@ -4126,8 +4223,8 @@ export default function RepairPricing() {
               </Button>
             </DialogFooter>
           </DialogContent>
-          </Dialog>
-        </div>
+        </Dialog>
       </div>
+    </div>
   );
 }
