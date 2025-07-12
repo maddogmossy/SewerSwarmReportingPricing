@@ -1243,7 +1243,7 @@ export default function RepairPricing() {
                   required
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Click to add new category" />
+                    <SelectValue placeholder="Add new category" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="add_new" className="text-blue-600 font-medium">
