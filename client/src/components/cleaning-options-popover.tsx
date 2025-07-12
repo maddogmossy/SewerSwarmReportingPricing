@@ -92,6 +92,10 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     queryKey: [`/api/repair-pricing/${sectionData.sector}`],
     enabled: isOpen && cleaningMethods.length > 0,
     select: (pricingData) => {
+      console.log('DEBUG Pricing Data:', pricingData);
+      console.log('DEBUG Methods:', cleaningMethods);
+      console.log('DEBUG Section Data:', sectionData);
+      
       return cleaningMethods.map((method: any) => {
         // Try multiple matching strategies for cleaning methods
         let pricing = pricingData.find((p: any) => 
@@ -118,11 +122,20 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
         // Enhanced fallback: try matching with normalized names for variations like "Cleanse and Survey" vs "Cleanse/Survey"
         if (!pricing) {
           const normalizedMethodName = normalizeMethodName(method.name);
+          console.log(`DEBUG: Normalized method name "${method.name}" -> "${normalizedMethodName}"`);
+          
           pricing = pricingData.find((p: any) => {
             const normalizedWorkCategory = normalizeMethodName(p.workCategory || '');
+            console.log(`DEBUG: Checking work category "${p.workCategory}" -> "${normalizedWorkCategory}" vs "${normalizedMethodName}"`);
+            console.log(`DEBUG: Pipe size match: "${p.pipeSize}" === "${sectionData.pipeSize}" = ${p.pipeSize === sectionData.pipeSize}`);
+            
             return normalizedWorkCategory === normalizedMethodName && 
                    p.pipeSize === sectionData.pipeSize;
           });
+          
+          if (pricing) {
+            console.log('DEBUG: Found pricing match with normalized names:', pricing);
+          }
         }
         
         // If still no exact pipe size match, try finding any pricing for this method regardless of pipe size
