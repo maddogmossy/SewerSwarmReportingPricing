@@ -2666,13 +2666,10 @@ export default function RepairPricing() {
                   <div 
                     className="flex items-center justify-between p-4 cursor-pointer"
                     onClick={() => {
-                      const hasSelected = formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge || (customOptions?.priceOptions?.length > 0);
-                      if (hasSelected) {
-                        setCollapsedWindows(prev => ({
-                          ...prev,
-                          priceOptions: !prev.priceOptions
-                        }));
-                      }
+                      setCollapsedWindows(prev => ({
+                        ...prev,
+                        priceOptions: !prev.priceOptions
+                      }));
                     }}
                   >
                     <h4 className="text-sm font-medium text-blue-700">💰 Price/Cost Options</h4>
