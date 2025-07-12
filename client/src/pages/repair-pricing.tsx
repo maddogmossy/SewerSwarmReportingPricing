@@ -2812,7 +2812,7 @@ export default function RepairPricing() {
                             if (!isStandardOption && !isCustomOption) return null;
 
                             return (
-                              <div key={option.id} className={`flex items-center space-x-2 ${isCustomOption ? 'p-2 bg-green-100 border border-green-300 rounded' : ''}`}>
+                              <div key={option.id} className="flex items-center space-x-2">
                                 <input
                                   type="checkbox"
                                   id={option.id}
@@ -2946,7 +2946,7 @@ export default function RepairPricing() {
                             if (!isStandardOption && !isCustomOption) return null;
 
                             return (
-                              <div key={option.id} className={`flex items-center space-x-2 ${isCustomOption ? 'p-2 bg-orange-100 border border-orange-300 rounded' : ''}`}>
+                              <div key={option.id} className="flex items-center space-x-2">
                                 <input
                                   type="checkbox"
                                   id={option.id}
@@ -3074,7 +3074,7 @@ export default function RepairPricing() {
                             if (!isStandardOption && !isCustomOption) return null;
 
                             return (
-                              <div key={option.id} className={`flex items-center space-x-2 ${isCustomOption ? 'p-2 bg-purple-100 border border-purple-300 rounded' : ''}`}>
+                              <div key={option.id} className="flex items-center space-x-2">
                                 <input
                                   type="checkbox"
                                   id={option.id}
