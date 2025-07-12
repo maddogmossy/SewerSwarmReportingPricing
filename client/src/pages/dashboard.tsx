@@ -70,13 +70,36 @@ const generateDynamicRecommendation = (section: any): string => {
       return '';
     }
     
-    // Extract percentage-based defects like "DES 5%" and "DER 10%"
-    const percentageMatches = defectsText.match(/([A-Z]{2,3})\s*(\d+)%/g);
-    if (percentageMatches) {
-      return percentageMatches.join(' and ');
+    // Extract defects with percentages from detailed observation text
+    const defectMatches = [];
+    
+    // Look for percentage patterns in full descriptions
+    // "Settled deposits, fine, 5% cross-sectional area loss" -> "DES 5%"
+    // "Settled deposits, coarse, 10% cross-sectional area loss" -> "DER 10%"
+    
+    // Pattern for deposits (fine = DES, coarse = DER)
+    const depositPattern = /Settled deposits, (fine|coarse), (\d+)% cross-sectional area loss/g;
+    let depositMatch;
+    while ((depositMatch = depositPattern.exec(defectsText)) !== null) {
+      const depositType = depositMatch[1] === 'fine' ? 'DES' : 'DER';
+      const percentage = depositMatch[2];
+      defectMatches.push(`${depositType} ${percentage}%`);
     }
     
-    // Extract basic defect codes if no percentages
+    // Pattern for water level percentages
+    const waterLevelPattern = /Water level, (\d+)% of the vertical dimension/g;
+    let waterMatch;
+    while ((waterMatch = waterLevelPattern.exec(defectsText)) !== null) {
+      const percentage = waterMatch[1];
+      defectMatches.push(`WL ${percentage}%`);
+    }
+    
+    // If we found percentage-based defects, return them
+    if (defectMatches.length > 0) {
+      return defectMatches.join(' and ');
+    }
+    
+    // Fallback: extract basic defect codes without percentages
     const basicMatches = defectsText.match(/([A-Z]{2,3})/g);
     if (basicMatches) {
       const uniqueDefects = [...new Set(basicMatches)];
@@ -87,8 +110,17 @@ const generateDynamicRecommendation = (section: any): string => {
   };
   
   const defectSummary = extractDefectSummary(defects || '');
-  const length = totalLength || '30.00m';
-  const pipe = pipeSize || '150mm';
+  
+  // Ensure totalLength has 'm' suffix
+  const length = totalLength ? 
+    (totalLength.includes('m') ? totalLength : `${totalLength}m`) : 
+    '30.00m';
+  
+  // Ensure pipeSize has 'mm' suffix  
+  const pipe = pipeSize ? 
+    (pipeSize.includes('mm') ? pipeSize : `${pipeSize}mm`) : 
+    '150mm';
+    
   const from = startMH || 'Start';
   const to = finishMH || 'Finish';
   
