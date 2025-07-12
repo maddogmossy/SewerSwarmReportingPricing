@@ -2995,6 +2995,20 @@ export default function RepairPricing() {
                               label: option.label,
                               enabled: option.type === 'custom' ? true : (formData.pricingStructure?.[option.id] || false)
                             }));
+                            
+                            // Add any new custom options that weren't in the saved order
+                            const existingIds = reorderedOptions.map(opt => opt.id);
+                            Object.keys(formData.pricingStructure || {}).forEach(key => {
+                              if (key.startsWith('minquantity_') && !existingIds.includes(key)) {
+                                const label = key.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                                reorderedOptions.push({
+                                  id: key,
+                                  label: label,
+                                  enabled: formData.pricingStructure[key] || false
+                                });
+                              }
+                            });
+                            
                             setEditableMinQuantityOptions(reorderedOptions);
                           } else {
                             console.log("Using default min quantity order");
@@ -3007,7 +3021,19 @@ export default function RepairPricing() {
                             ];
                             
                             // Add custom min quantity options to the editable list
-                            setEditableMinQuantityOptions(standardOptions);
+                            const customMinQuantityOptions = [];
+                            Object.keys(formData.pricingStructure || {}).forEach(key => {
+                              if (key.startsWith('minquantity_')) {
+                                const label = key.replace('minquantity_', '').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                                customMinQuantityOptions.push({
+                                  id: key,
+                                  label: label,
+                                  enabled: formData.pricingStructure[key] || false
+                                });
+                              }
+                            });
+                            
+                            setEditableMinQuantityOptions([...standardOptions, ...customMinQuantityOptions]);
                           }
                           setShowEditMinQuantityOptionsDialog(true);
                         }}
