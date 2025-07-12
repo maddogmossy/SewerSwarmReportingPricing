@@ -856,14 +856,13 @@ export default function RepairPricing() {
       dayRate: formData.dayRate,
       vehicleId: formData.vehicleId,
       pricingStructure: formData.pricingStructure,
-      // Include all pricing option values
+      // Include all pricing option values - map runsPerShift to numberPerShift for backend compatibility
       meterage: formData.meterage,
       hourlyRate: formData.hourlyRate,
       setupRate: formData.setupRate,
       minCharge: formData.minCharge,
-      numberPerShift: formData.numberPerShift,
+      numberPerShift: formData.runsPerShift || formData.numberPerShift, // Map runs per shift to numberPerShift
       metersPerShift: formData.metersPerShift,
-      runsPerShift: formData.runsPerShift,
       minUnitsPerShift: formData.minUnitsPerShift,
       minMetersPerShift: formData.minMetersPerShift,
       minInspectionsPerShift: formData.minInspectionsPerShift,
@@ -1008,14 +1007,14 @@ export default function RepairPricing() {
       lengthOfRepair: item.lengthOfRepair || "",
       dayRate: item.dayRate?.toString() || "",
       vehicleId: item.vehicleId?.toString() || "",
-      // Preserve all pricing values from database
+      // Preserve all pricing values from database - map numberPerShift to runsPerShift for form field compatibility
       meterage: item.meterage?.toString() || "",
       hourlyRate: item.hourlyRate?.toString() || "",
       setupRate: item.setupRate?.toString() || "",
       minCharge: item.minCharge?.toString() || "",
       numberPerShift: item.numberPerShift?.toString() || "",
       metersPerShift: item.metersPerShift?.toString() || "",
-      runsPerShift: item.runsPerShift?.toString() || "",
+      runsPerShift: item.numberPerShift?.toString() || item.runsPerShift?.toString() || "", // Map numberPerShift from DB to runsPerShift form field
       minUnitsPerShift: item.minUnitsPerShift?.toString() || "",
       minMetersPerShift: item.minMetersPerShift?.toString() || "",
       minInspectionsPerShift: item.minInspectionsPerShift?.toString() || "",

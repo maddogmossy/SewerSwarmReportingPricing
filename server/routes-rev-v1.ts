@@ -461,13 +461,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       minMetersPerShift,
       minInspectionsPerShift,
       minSetupCount,
+      // Map runsPerShift to numberPerShift for backend compatibility
+      runsPerShift,
       // Pricing structure selections
       pricingStructure
     } = requestData;
 
+    // Handle field mapping - runsPerShift from frontend maps to numberPerShift in backend
+    const mappedNumberPerShift = runsPerShift || numberPerShift;
+
     console.log('Creating new repair pricing with data:', req.body);
     console.log('Extracted pricing structure:', pricingStructure);
     console.log('Request data structure:', { requestData });
+    console.log('Field mapping - runsPerShift:', runsPerShift, 'mappedNumberPerShift:', mappedNumberPerShift);
 
     // Generate new ID
     const newId = Math.max(...pricingStorage.map(p => p.id), 0) + 1;
@@ -490,7 +496,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       setupRate: setupRate || null,
       minCharge: minCharge || null,
       repeatFree: repeatFree || null,
-      numberPerShift: numberPerShift || null,
+      numberPerShift: mappedNumberPerShift || null,
       metersPerShift: metersPerShift || null,
       inspectionsPerShift: inspectionsPerShift || null,
       minUnitsPerShift: minUnitsPerShift || null,
@@ -541,13 +547,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       minMetersPerShift,
       minInspectionsPerShift,
       minSetupCount,
+      // Map runsPerShift to numberPerShift for backend compatibility
+      runsPerShift,
       // Pricing structure selections
       pricingStructure
     } = requestData;
 
+    // Handle field mapping - runsPerShift from frontend maps to numberPerShift in backend
+    const mappedNumberPerShift = runsPerShift || numberPerShift;
+
     console.log(`Updating repair pricing ${pricingId} with data:`, req.body);
     console.log(`Extracted pricing structure:`, pricingStructure);
     console.log(`Request data structure:`, { requestData });
+    console.log(`Field mapping - runsPerShift:`, runsPerShift, 'mappedNumberPerShift:', mappedNumberPerShift);
 
     // Find the pricing item to update
     const pricingIndex = pricingStorage.findIndex(p => p.id === pricingId);
@@ -573,7 +585,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       setupRate: setupRate !== undefined ? setupRate : pricingStorage[pricingIndex].setupRate,
       minCharge: minCharge !== undefined ? minCharge : pricingStorage[pricingIndex].minCharge,
       repeatFree: repeatFree !== undefined ? repeatFree : pricingStorage[pricingIndex].repeatFree,
-      numberPerShift: numberPerShift !== undefined ? numberPerShift : pricingStorage[pricingIndex].numberPerShift,
+      numberPerShift: mappedNumberPerShift !== undefined ? mappedNumberPerShift : pricingStorage[pricingIndex].numberPerShift,
       metersPerShift: metersPerShift !== undefined ? metersPerShift : pricingStorage[pricingIndex].metersPerShift,
       inspectionsPerShift: inspectionsPerShift !== undefined ? inspectionsPerShift : pricingStorage[pricingIndex].inspectionsPerShift,
       minUnitsPerShift: minUnitsPerShift !== undefined ? minUnitsPerShift : pricingStorage[pricingIndex].minUnitsPerShift,
