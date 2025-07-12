@@ -2635,7 +2635,7 @@ export default function RepairPricing() {
                       <Button 
                         type="button"
                         size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white"
+                        className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white mr-2"
                         onClick={(e) => {
                           e.stopPropagation();
                           // Set up edit dialog with current options
@@ -2662,6 +2662,32 @@ export default function RepairPricing() {
                       >
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
+                      </Button>
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const optionName = prompt("Enter new price/cost option name:");
+                          if (optionName && optionName.trim()) {
+                            const fieldName = optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                            setFormData(prev => ({
+                              ...prev,
+                              pricingStructure: {
+                                ...prev.pricingStructure,
+                                [fieldName]: true
+                              }
+                            }));
+                            toast({
+                              title: "Option Added",
+                              description: `${optionName} has been added as a standard option.`,
+                            });
+                          }
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
                       </Button>
 
                     </div>
@@ -2760,7 +2786,7 @@ export default function RepairPricing() {
                       <Button 
                         type="button"
                         size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-green-500 hover:bg-green-600 text-white"
+                        className="text-xs px-2 py-1 h-6 bg-green-500 hover:bg-green-600 text-white mr-2"
                         onClick={(e) => {
                           e.stopPropagation();
                           // Use saved order if available, otherwise use default order
@@ -2790,6 +2816,32 @@ export default function RepairPricing() {
                       >
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
+                      </Button>
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-green-600 hover:bg-green-700 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const optionName = prompt("Enter new quantity option name:");
+                          if (optionName && optionName.trim()) {
+                            const fieldName = optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                            setFormData(prev => ({
+                              ...prev,
+                              pricingStructure: {
+                                ...prev.pricingStructure,
+                                [fieldName]: true
+                              }
+                            }));
+                            toast({
+                              title: "Option Added",
+                              description: `${optionName} has been added as a standard option.`,
+                            });
+                          }
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
                       </Button>
 
                     </div>
@@ -2883,7 +2935,7 @@ export default function RepairPricing() {
                       <Button 
                         type="button"
                         size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-orange-500 hover:bg-orange-600 text-white"
+                        className="text-xs px-2 py-1 h-6 bg-orange-500 hover:bg-orange-600 text-white mr-2"
                         onClick={(e) => {
                           e.stopPropagation();
                           // Initialize editableMinQuantityOptions with current state
@@ -2914,6 +2966,32 @@ export default function RepairPricing() {
                       >
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
+                      </Button>
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-orange-600 hover:bg-orange-700 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const optionName = prompt("Enter new minimum quantity option name:");
+                          if (optionName && optionName.trim()) {
+                            const fieldName = optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                            setFormData(prev => ({
+                              ...prev,
+                              pricingStructure: {
+                                ...prev.pricingStructure,
+                                [fieldName]: true
+                              }
+                            }));
+                            toast({
+                              title: "Option Added",
+                              description: `${optionName} has been added as a standard option.`,
+                            });
+                          }
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
                       </Button>
 
                     </div>
@@ -3000,7 +3078,7 @@ export default function RepairPricing() {
                       <Button 
                         type="button"
                         size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-purple-500 hover:bg-purple-600 text-white"
+                        className="text-xs px-2 py-1 h-6 bg-purple-500 hover:bg-purple-600 text-white mr-2"
                         onClick={(e) => {
                           e.stopPropagation();
                           setShowEditAdditionalOptionsDialog(true);
@@ -3008,6 +3086,32 @@ export default function RepairPricing() {
                       >
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
+                      </Button>
+                      <Button 
+                        type="button"
+                        size="sm" 
+                        className="text-xs px-2 py-1 h-6 bg-purple-600 hover:bg-purple-700 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const optionName = prompt("Enter new additional item name:");
+                          if (optionName && optionName.trim()) {
+                            const fieldName = optionName.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                            setFormData(prev => ({
+                              ...prev,
+                              pricingStructure: {
+                                ...prev.pricingStructure,
+                                [fieldName]: true
+                              }
+                            }));
+                            toast({
+                              title: "Option Added",
+                              description: `${optionName} has been added as a standard option.`,
+                            });
+                          }
+                        }}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
                       </Button>
 
                     </div>
