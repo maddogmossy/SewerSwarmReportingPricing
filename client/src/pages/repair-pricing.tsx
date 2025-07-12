@@ -1107,7 +1107,10 @@ export default function RepairPricing() {
                       <span className="text-sm font-medium text-slate-600">
                         {categoryPricing.length} item{categoryPricing.length !== 1 ? 's' : ''}
                       </span>
-                      <Badge variant={categoryPricing.length > 0 ? "default" : "secondary"}>
+                      <Badge 
+                        variant={categoryPricing.length > 0 ? "default" : "secondary"}
+                        className={categoryPricing.length > 0 ? "bg-green-100 text-green-800 hover:bg-green-200" : ""}
+                      >
                         Ready
                       </Badge>
                     </div>
@@ -1230,7 +1233,6 @@ export default function RepairPricing() {
                       <div className="text-center pt-2">
                         <Button
                           size="sm"
-                          variant="outline"
                           onClick={() => {
                             setFormData({
                               workCategoryId: category.id.toString(),
@@ -1257,7 +1259,7 @@ export default function RepairPricing() {
                             setApplySectors([sector]);
                             setIsAddDialogOpen(true);
                           }}
-                          className="w-full border-dashed border-2 hover:border-blue-400 hover:text-blue-600"
+                          className="bg-blue-600 hover:bg-blue-700 text-white w-full"
                         >
                           <Plus className="h-3 w-3 mr-1" />
                           Add Another Price Option
