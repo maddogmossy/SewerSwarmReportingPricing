@@ -2127,31 +2127,7 @@ export default function RepairPricing() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-medium">Depth</Label>
-                  <Select value={formData.depth} onValueChange={(value) => setFormData({...formData, depth: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select depth" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0-1m">0-1m</SelectItem>
-                      <SelectItem value="1-2m">1-2m</SelectItem>
-                      <SelectItem value="2-3m">2-3m</SelectItem>
-                      <SelectItem value="3-4m">3-4m</SelectItem>
-                      <SelectItem value="4m+">4m+</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Day Rate (£)</Label>
-                  <Input
-                    value={formData.dayRate}
-                    onChange={(e) => setFormData({...formData, dayRate: e.target.value})}
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
+              {/* Depth, Total Length, and Day Rate fields removed - moved to Additional Items */}
 
               {/* Description */}
               <div>
@@ -2164,288 +2140,310 @@ export default function RepairPricing() {
                 />
               </div>
 
-              {/* Pricing Structure Options with Dynamic Add Buttons - Three Columns */}
-              <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
+              {/* Pricing Structure Options - 4 Separate Option Windows */}
+              <div className="space-y-4">
                 <Label className="text-sm font-medium text-slate-700 mb-3 block">Pricing Structure Options</Label>
-                <p className="text-xs text-slate-500 mb-4">Select and add custom pricing options for this category:</p>
+                <p className="text-xs text-slate-500 mb-4">Select pricing options organized by category:</p>
                 
-                <div className="grid grid-cols-3 gap-4">
-                  {/* Price/Cost Column (£ options) */}
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-medium text-slate-700">Price/Cost</h4>
-                      <Button 
-                        type="button"
-                        size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-                        onClick={() => setShowPriceCostDialog(true)}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add
-                      </Button>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="meterage"
-                          checked={formData.pricingStructure?.meterage || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              meterage: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="meterage" className="text-sm">Meterage (£ per meter)</Label>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="dayRate"
-                          checked={formData.pricingStructure?.dayRate || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              dayRate: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="hourlyRate"
-                          checked={formData.pricingStructure?.hourlyRate || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              hourlyRate: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="setupRate"
-                          checked={formData.pricingStructure?.setupRate || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              setupRate: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="setupRate" className="text-sm">Set up rate (£ per setup)</Label>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="minCharge"
-                          checked={formData.pricingStructure?.minCharge || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              minCharge: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="minCharge" className="text-sm">Min charge (£ minimum)</Label>
-                      </div>
-                    </div>
+                {/* Option Window 1: Price/Cost */}
+                <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium text-blue-700">💰 Price/Cost Options</h4>
+                    <Button 
+                      type="button"
+                      size="sm" 
+                      className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={() => setShowPriceCostDialog(true)}
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add
+                    </Button>
                   </div>
-
-                  {/* Quantity Column */}
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-medium text-slate-700">Quantity</h4>
-                      <Button 
-                        type="button"
-                        size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-                        onClick={() => setShowQuantityDialog(true)}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add
-                      </Button>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="meterage"
+                        checked={formData.pricingStructure?.meterage || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            meterage: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="meterage" className="text-sm">Meterage (£ per meter)</Label>
                     </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="numberPerShift"
-                          checked={formData.pricingStructure?.numberPerShift || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              numberPerShift: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="numberPerShift" className="text-sm">Units per shift</Label>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="metersPerShift"
-                          checked={formData.pricingStructure?.metersPerShift || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              metersPerShift: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="metersPerShift" className="text-sm">Meters per shift</Label>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="runsPerShift"
-                          checked={formData.pricingStructure?.runsPerShift || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              runsPerShift: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="runsPerShift" className="text-sm">Survey runs per shift</Label>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="repeatFree"
-                          checked={formData.pricingStructure?.repeatFree || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              repeatFree: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="repeatFree" className="text-sm">Repeat Free</Label>
-                      </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="hourlyRate"
+                        checked={formData.pricingStructure?.hourlyRate || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            hourlyRate: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
                     </div>
-                  </div>
-
-                  {/* Min Quantity per Shift Column */}
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-medium text-slate-700">Min Quantity per Shift</h4>
-                      <Button 
-                        type="button"
-                        size="sm" 
-                        className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-                        onClick={() => setShowMinQuantityDialog(true)}
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add
-                      </Button>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="setupRate"
+                        checked={formData.pricingStructure?.setupRate || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            setupRate: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="setupRate" className="text-sm">Setup rate (£ per setup)</Label>
                     </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="minUnitsPerShift"
-                          checked={formData.pricingStructure?.minUnitsPerShift || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              minUnitsPerShift: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="minUnitsPerShift" className="text-sm">Min units per shift</Label>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="minMetersPerShift"
-                          checked={formData.pricingStructure?.minMetersPerShift || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              minMetersPerShift: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="minMetersPerShift" className="text-sm">Min meters per shift</Label>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="minInspectionsPerShift"
-                          checked={formData.pricingStructure?.minInspectionsPerShift || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              minInspectionsPerShift: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="minInspectionsPerShift" className="text-sm">Min inspections per shift</Label>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="minSetupCount"
-                          checked={formData.pricingStructure?.minSetupCount || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            pricingStructure: {
-                              ...formData.pricingStructure,
-                              minSetupCount: e.target.checked
-                            }
-                          })}
-                          className="rounded border-slate-300"
-                        />
-                        <Label htmlFor="minSetupCount" className="text-sm">Min setup count</Label>
-                      </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="minCharge"
+                        checked={formData.pricingStructure?.minCharge || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            minCharge: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="minCharge" className="text-sm">Min charge (£ minimum)</Label>
                     </div>
                   </div>
                 </div>
-                
-                <p className="text-xs text-slate-500 mt-4">
-                  You can select multiple options and add custom pricing configurations using the Add buttons.
-                </p>
+
+                {/* Option Window 2: Quantity Options */}
+                <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium text-green-700">📊 Quantity Options</h4>
+                    <Button 
+                      type="button"
+                      size="sm" 
+                      className="text-xs px-2 py-1 h-6 bg-green-600 hover:bg-green-700 text-white"
+                      onClick={() => setShowQuantityDialog(true)}
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="numberPerShift"
+                        checked={formData.pricingStructure?.numberPerShift || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            numberPerShift: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="numberPerShift" className="text-sm">Units per shift</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="metersPerShift"
+                        checked={formData.pricingStructure?.metersPerShift || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            metersPerShift: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="metersPerShift" className="text-sm">Meters per shift</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="runsPerShift"
+                        checked={formData.pricingStructure?.runsPerShift || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            runsPerShift: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="runsPerShift" className="text-sm">Survey runs per shift</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="repeatFree"
+                        checked={formData.pricingStructure?.repeatFree || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            repeatFree: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="repeatFree" className="text-sm">Repeat free (no charge)</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Option Window 3: Minimum Quantities */}
+                <div className="border border-orange-200 rounded-lg p-4 bg-orange-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium text-orange-700">⚖️ Minimum Quantities</h4>
+                    <Button 
+                      type="button"
+                      size="sm" 
+                      className="text-xs px-2 py-1 h-6 bg-orange-600 hover:bg-orange-700 text-white"
+                      onClick={() => setShowMinQuantityDialog(true)}
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="minUnitsPerShift"
+                        checked={formData.pricingStructure?.minUnitsPerShift || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            minUnitsPerShift: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="minUnitsPerShift" className="text-sm">Min units per shift</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="minMetersPerShift"
+                        checked={formData.pricingStructure?.minMetersPerShift || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            minMetersPerShift: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="minMetersPerShift" className="text-sm">Min meters per shift</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="minInspectionsPerShift"
+                        checked={formData.pricingStructure?.minInspectionsPerShift || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            minInspectionsPerShift: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="minInspectionsPerShift" className="text-sm">Min inspections per shift</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="minSetupCount"
+                        checked={formData.pricingStructure?.minSetupCount || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            minSetupCount: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="minSetupCount" className="text-sm">Min setup count</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Option Window 4: Additional Items */}
+                <div className="border border-purple-200 rounded-lg p-4 bg-purple-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium text-purple-700">🔧 Additional Items</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="includeDepth"
+                        checked={formData.pricingStructure?.includeDepth || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            includeDepth: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="includeDepth" className="text-sm">Include pipe depth</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="includeTotalLength"
+                        checked={formData.pricingStructure?.includeTotalLength || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pricingStructure: {
+                            ...formData.pricingStructure,
+                            includeTotalLength: e.target.checked
+                          }
+                        })}
+                        className="rounded border-slate-300"
+                      />
+                      <Label htmlFor="includeTotalLength" className="text-sm">Include total length</Label>
+                    </div>
+                  </div>
+                  <p className="text-xs text-purple-600 mt-2">
+                    These items can be included in pricing calculations when available from inspection data.
+                  </p>
+                </div>
               </div>
             </div>
 

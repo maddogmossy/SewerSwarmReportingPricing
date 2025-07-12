@@ -274,6 +274,8 @@ export const repairPricing = pgTable("repair_pricing", {
   hourlyRate: decimal("hourly_rate", { precision: 8, scale: 2 }).default("0.00"), // Calculated as dayRate / 8
   // Vehicle selection for travel costs
   vehicleId: integer("vehicle_id").references(() => vehicleTravelRates.id),
+  // Pricing structure options (stored as JSON object)
+  pricingStructure: jsonb("pricing_structure"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
