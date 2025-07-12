@@ -119,7 +119,42 @@ let workCategoriesStorage = [
 ];
 
 // In-memory storage for pricing data (REV_V1 simulation)
-let pricingStorage = [];
+let pricingStorage = [
+  {
+    id: 1,
+    sector: "utilities",
+    workCategoryId: 1,
+    workCategory: "CCTV Survey",
+    pipeSize: "150mm",
+    costPerMetre: 15.50,
+    cost: 15.50,
+    description: "Standard CCTV inspection"
+  },
+  {
+    id: 2,
+    sector: "utilities",
+    workCategoryId: 2,
+    workCategory: "High Pressure Jetting",
+    pipeSize: "150mm", 
+    costPerMetre: 25.00,
+    cost: 25.00,
+    description: "Water jetting cleaning"
+  },
+  // Cleanse/Survey pricing entry - properly configured for both systems
+  {
+    id: 6,
+    sector: "utilities",
+    workCategoryId: 4, // Links to "Cleanse/Survey" work category
+    workCategory: "Cleanse/Survey",
+    repairMethodId: 1, // Links to "Cleanse and Survey" repair method
+    methodName: "Cleanse and Survey",
+    pipeSize: "150mm",
+    costPerMetre: 0.00, // Default until user configures pricing
+    cost: 0.00,
+    description: "Complete cleaning followed by verification survey to confirm completion (150mm pipe)",
+    rule: "Standard cleaning and verification process"
+  }
+];
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
