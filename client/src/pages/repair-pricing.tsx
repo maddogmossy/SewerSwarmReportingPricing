@@ -319,6 +319,8 @@ export default function RepairPricing() {
     { id: 'dayRate', label: 'Day rate (£ per day)', enabled: false }
   ]);
   const [showEditQuantityOptionsDialog, setShowEditQuantityOptionsDialog] = useState(false);
+  const [showEditMinQuantityOptionsDialog, setShowEditMinQuantityOptionsDialog] = useState(false);
+  const [showEditAdditionalOptionsDialog, setShowEditAdditionalOptionsDialog] = useState(false);
   const [editableQuantityOptions, setEditableQuantityOptions] = useState([
     { id: 'numberPerShift', label: 'Number per shift', enabled: false },
     { id: 'metersPerShift', label: 'Meters per shift', enabled: false },
@@ -381,7 +383,27 @@ export default function RepairPricing() {
       optionId === 'metersPerShift' ? 'Meters per shift' :
       optionId === 'runsPerShift' ? 'Runs per shift' :
       optionId === 'repeatFree' ? 'Repeat free' : optionId;
+  }
+
+  // Function to get min quantity option labels
+  const getMinQuantityOptionLabel = (optionId: string): string => {
+    const labels = {
+      'minUnitsPerShift': 'Min units per shift',
+      'minMetersPerShift': 'Min meters per shift',
+      'minInspectionsPerShift': 'Min inspections per shift',
+      'minSetupCount': 'Min setup count'
+    };
+    return labels[optionId] || optionId;
   };
+
+  // Function to get additional option labels
+  const getAdditionalOptionLabel = (optionId: string): string => {
+    const labels = {
+      'includeDepth': 'Include depth',
+      'includeTotalLength': 'Include total length'
+    };
+    return labels[optionId] || optionId;
+  };;
   const [formData, setFormData] = useState({
     workCategoryId: "",
     pipeSize: "",
@@ -2927,131 +2949,115 @@ export default function RepairPricing() {
                         <Plus className="h-3 w-3 mr-1" />
                         Add
                       </Button>
+                      {(formData.pricingStructure?.minUnitsPerShift || formData.pricingStructure?.minMetersPerShift || formData.pricingStructure?.minInspectionsPerShift || formData.pricingStructure?.minSetupCount || customOptions.minQuantityOptions.length > 0) && (
+                        <Button 
+                          type="button"
+                          size="sm" 
+                          className="text-xs px-2 py-1 h-6 bg-orange-500 hover:bg-orange-600 text-white"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowEditMinQuantityOptionsDialog(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
+                      )}
                     </div>
                   </div>
                   {!collapsedWindows.minQuantityOptions && (
                     <div className="px-4 pb-4">
-                      <div className="grid grid-cols-1 gap-3">
-                        {/* Standard min quantity options */}
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="minUnitsPerShift"
-                              checked={formData.pricingStructure?.minUnitsPerShift || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  minUnitsPerShift: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="minUnitsPerShift" className="text-sm">Min units per shift</Label>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="minMetersPerShift"
-                              checked={formData.pricingStructure?.minMetersPerShift || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  minMetersPerShift: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="minMetersPerShift" className="text-sm">Min meters per shift</Label>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="minInspectionsPerShift"
-                              checked={formData.pricingStructure?.minInspectionsPerShift || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  minInspectionsPerShift: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="minInspectionsPerShift" className="text-sm">Min inspections per shift</Label>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="minSetupCount"
-                              checked={formData.pricingStructure?.minSetupCount || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  minSetupCount: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="minSetupCount" className="text-sm">Min setup count</Label>
-                          </div>
-                        </div>
+                      <div className="grid grid-cols-4 gap-3">
+                        {/* Dynamic Min Quantity Options in Reordered Sequence */}
+                        {(() => {
+                          const defaultMinQuantityOrder = [
+                            { id: 'minUnitsPerShift', label: getMinQuantityOptionLabel('minUnitsPerShift'), type: 'standard' },
+                            { id: 'minMetersPerShift', label: getMinQuantityOptionLabel('minMetersPerShift'), type: 'standard' },
+                            { id: 'minInspectionsPerShift', label: getMinQuantityOptionLabel('minInspectionsPerShift'), type: 'standard' },
+                            { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), type: 'standard' },
+                            ...customOptions.minQuantityOptions.map((option, index) => ({
+                              id: `custom_min_quantity_${index}`,
+                              label: option,
+                              type: 'custom'
+                            }))
+                          ];
 
-                        {/* Custom Min Quantity Options */}
-                        {customOptions.minQuantityOptions && customOptions.minQuantityOptions.map((option, index) => (
-                          <div key={index} className="flex items-center justify-between space-x-2 p-2 bg-orange-50 border border-orange-200 rounded">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="checkbox"
-                                id={`custom_min_quantity_${index}`}
-                                className="rounded border-slate-300"
-                              />
-                              <Label htmlFor={`custom_min_quantity_${index}`} className="text-sm text-orange-700 font-medium">{option}</Label>
-                            </div>
-                            <div className="flex gap-1">
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                                onClick={() => {
-                                  setEditingOptionIndex(index);
-                                  setEditingOptionType('minQuantityOptions');
-                                  setEditingOptionName(option);
-                                  setShowEditOptionsDialog(true);
-                                }}
-                              >
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
-                                onClick={() => {
-                                  setCustomOptions(prev => ({
-                                    ...prev,
-                                    minQuantityOptions: prev.minQuantityOptions.filter((_, i) => i !== index)
-                                  }));
-                                }}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
+                          const displayOrder = formData.minQuantityDisplayOrder && formData.minQuantityDisplayOrder.length > 0 
+                            ? formData.minQuantityDisplayOrder 
+                            : defaultMinQuantityOrder;
+
+                          return displayOrder.map((option, index) => {
+                            const isStandardOption = ['minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount'].includes(option.id);
+                            const isCustomOption = option.id.startsWith('custom_min_quantity_');
+                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : true;
+                            
+                            if (!isStandardOption && !isCustomOption) return null;
+
+                            return (
+                              <div key={option.id} className={`flex items-center space-x-2 ${isCustomOption ? 'p-2 bg-orange-100 border border-orange-300 rounded' : ''}`}>
+                                <input
+                                  type="checkbox"
+                                  id={option.id}
+                                  checked={isEnabled}
+                                  onChange={(e) => {
+                                    if (isStandardOption) {
+                                      setFormData({
+                                        ...formData,
+                                        pricingStructure: {
+                                          ...formData.pricingStructure,
+                                          [option.id]: e.target.checked
+                                        }
+                                      });
+                                    }
+                                  }}
+                                  className="rounded border-slate-300"
+                                />
+                                <Label 
+                                  htmlFor={option.id} 
+                                  className={`text-sm ${isCustomOption ? 'text-orange-700 font-medium' : 'text-slate-700'}`}
+                                >
+                                  {option.label}
+                                </Label>
+                                
+                                {isCustomOption && (
+                                  <div className="flex items-center gap-1 ml-auto">
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                                      onClick={() => {
+                                        const customIndex = parseInt(option.id.replace('custom_min_quantity_', ''));
+                                        setEditingOptionIndex(customIndex);
+                                        setEditingOptionType('minQuantityOptions');
+                                        setEditingOptionName(option.label);
+                                        setShowEditOptionsDialog(true);
+                                      }}
+                                    >
+                                      <Edit className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
+                                      onClick={() => {
+                                        const customIndex = parseInt(option.id.replace('custom_min_quantity_', ''));
+                                        const updatedMinQuantityOptions = customOptions.minQuantityOptions.filter((_, i) => i !== customIndex);
+                                        setCustomOptions(prev => ({
+                                          ...prev,
+                                          minQuantityOptions: updatedMinQuantityOptions
+                                        }));
+                                      }}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          });
+                        })()}
                       </div>
                     </div>
                   )}
@@ -3107,93 +3113,113 @@ export default function RepairPricing() {
                         <Plus className="h-3 w-3 mr-1" />
                         Add
                       </Button>
+                      {(formData.pricingStructure?.includeDepth || formData.pricingStructure?.includeTotalLength || customOptions.additionalOptions.length > 0) && (
+                        <Button 
+                          type="button"
+                          size="sm" 
+                          className="text-xs px-2 py-1 h-6 bg-purple-500 hover:bg-purple-600 text-white"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowEditAdditionalOptionsDialog(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
+                      )}
                     </div>
                   </div>
                   {!collapsedWindows.additionalOptions && (
                     <div className="px-4 pb-4">
-                      <div className="grid grid-cols-1 gap-3">
-                        {/* Standard additional options */}
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="includeDepth"
-                              checked={formData.pricingStructure?.includeDepth || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  includeDepth: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="includeDepth" className="text-sm">Include pipe depth</Label>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between space-x-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="includeTotalLength"
-                              checked={formData.pricingStructure?.includeTotalLength || false}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                pricingStructure: {
-                                  ...formData.pricingStructure,
-                                  includeTotalLength: e.target.checked
-                                }
-                              })}
-                              className="rounded border-slate-300"
-                            />
-                            <Label htmlFor="includeTotalLength" className="text-sm">Include total length</Label>
-                          </div>
-                        </div>
+                      <div className="grid grid-cols-4 gap-3">
+                        {/* Dynamic Additional Options in Reordered Sequence */}
+                        {(() => {
+                          const defaultAdditionalOrder = [
+                            { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), type: 'standard' },
+                            { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), type: 'standard' },
+                            ...customOptions.additionalOptions.map((option, index) => ({
+                              id: `custom_additional_${index}`,
+                              label: option,
+                              type: 'custom'
+                            }))
+                          ];
 
-                        {/* Custom Additional Options */}
-                        {customOptions.additionalOptions && customOptions.additionalOptions.map((option, index) => (
-                          <div key={index} className="flex items-center justify-between space-x-2 p-2 bg-purple-50 border border-purple-200 rounded">
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="checkbox"
-                                id={`custom_additional_${index}`}
-                                className="rounded border-slate-300"
-                              />
-                              <Label htmlFor={`custom_additional_${index}`} className="text-sm text-purple-700 font-medium">{option}</Label>
-                            </div>
-                            <div className="flex gap-1">
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                                onClick={() => {
-                                  setEditingOptionIndex(index);
-                                  setEditingOptionType('additionalOptions');
-                                  setEditingOptionName(option);
-                                  setShowEditOptionsDialog(true);
-                                }}
-                              >
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
-                                onClick={() => {
-                                  setCustomOptions(prev => ({
-                                    ...prev,
-                                    additionalOptions: prev.additionalOptions.filter((_, i) => i !== index)
-                                  }));
-                                }}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
+                          const displayOrder = formData.additionalDisplayOrder && formData.additionalDisplayOrder.length > 0 
+                            ? formData.additionalDisplayOrder 
+                            : defaultAdditionalOrder;
+
+                          return displayOrder.map((option, index) => {
+                            const isStandardOption = ['includeDepth', 'includeTotalLength'].includes(option.id);
+                            const isCustomOption = option.id.startsWith('custom_additional_');
+                            const isEnabled = isStandardOption ? (formData.pricingStructure?.[option.id] || false) : true;
+                            
+                            if (!isStandardOption && !isCustomOption) return null;
+
+                            return (
+                              <div key={option.id} className={`flex items-center space-x-2 ${isCustomOption ? 'p-2 bg-purple-100 border border-purple-300 rounded' : ''}`}>
+                                <input
+                                  type="checkbox"
+                                  id={option.id}
+                                  checked={isEnabled}
+                                  onChange={(e) => {
+                                    if (isStandardOption) {
+                                      setFormData({
+                                        ...formData,
+                                        pricingStructure: {
+                                          ...formData.pricingStructure,
+                                          [option.id]: e.target.checked
+                                        }
+                                      });
+                                    }
+                                  }}
+                                  className="rounded border-slate-300"
+                                />
+                                <Label 
+                                  htmlFor={option.id} 
+                                  className={`text-sm ${isCustomOption ? 'text-purple-700 font-medium' : 'text-slate-700'}`}
+                                >
+                                  {option.label}
+                                </Label>
+                                
+                                {isCustomOption && (
+                                  <div className="flex items-center gap-1 ml-auto">
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                                      onClick={() => {
+                                        const customIndex = parseInt(option.id.replace('custom_additional_', ''));
+                                        setEditingOptionIndex(customIndex);
+                                        setEditingOptionType('additionalOptions');
+                                        setEditingOptionName(option.label);
+                                        setShowEditOptionsDialog(true);
+                                      }}
+                                    >
+                                      <Edit className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-100"
+                                      onClick={() => {
+                                        const customIndex = parseInt(option.id.replace('custom_additional_', ''));
+                                        const updatedAdditionalOptions = customOptions.additionalOptions.filter((_, i) => i !== customIndex);
+                                        setCustomOptions(prev => ({
+                                          ...prev,
+                                          additionalOptions: updatedAdditionalOptions
+                                        }));
+                                      }}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          });
+                        })()}
                       </div>
                       <p className="text-xs text-purple-600 mt-3">
                         Additional items can be included in pricing calculations when available from inspection data.
@@ -3335,12 +3361,179 @@ export default function RepairPricing() {
                       console.log("Updated customOptions:", newOptions);
                       return newOptions;
                     });
+
+                    // Add to quantityDisplayOrder to ensure it appears in the main window
+                    setFormData(prev => {
+                      const newCustomOptionId = `custom_quantity_${customOptions.quantityOptions.length}`;
+                      const newDisplayItem = {
+                        id: newCustomOptionId,
+                        label: newOptionName.trim(),
+                        type: 'custom'
+                      };
+                      
+                      const currentOrder = prev.quantityDisplayOrder || [
+                        { id: 'numberPerShift', label: getQuantityOptionLabel('numberPerShift'), type: 'standard' },
+                        { id: 'metersPerShift', label: getQuantityOptionLabel('metersPerShift'), type: 'standard' },
+                        { id: 'runsPerShift', label: getQuantityOptionLabel('runsPerShift'), type: 'standard' },
+                        { id: 'repeatFree', label: getQuantityOptionLabel('repeatFree'), type: 'standard' }
+                      ];
+                      
+                      const updatedOrder = [...currentOrder, newDisplayItem];
+                      console.log("Updated quantityDisplayOrder:", updatedOrder);
+                      
+                      return {
+                        ...prev,
+                        quantityDisplayOrder: updatedOrder
+                      };
+                    });
                     
                     setShowQuantityDialog(false);
                     setNewOptionName('');
                   }
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Add Option
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Min Quantity Option Dialog */}
+        <Dialog open={showMinQuantityDialog} onOpenChange={setShowMinQuantityDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Min Quantity Option</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="minQuantityOption" className="text-sm font-medium">Option Name</Label>
+                <Input
+                  id="minQuantityOption"
+                  value={newOptionName}
+                  onChange={(e) => setNewOptionName(e.target.value)}
+                  placeholder="e.g., Min pipes per day"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setShowMinQuantityDialog(false);
+                setNewOptionName('');
+              }}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (newOptionName.trim()) {
+                    setCustomOptions(prev => {
+                      const newOptions = {
+                        ...prev,
+                        minQuantityOptions: [...prev.minQuantityOptions, newOptionName.trim()]
+                      };
+                      return newOptions;
+                    });
+
+                    // Add to minQuantityDisplayOrder to ensure it appears in the main window
+                    setFormData(prev => {
+                      const newCustomOptionId = `custom_min_quantity_${customOptions.minQuantityOptions.length}`;
+                      const newDisplayItem = {
+                        id: newCustomOptionId,
+                        label: newOptionName.trim(),
+                        type: 'custom'
+                      };
+                      
+                      const currentOrder = prev.minQuantityDisplayOrder || [
+                        { id: 'minUnitsPerShift', label: getMinQuantityOptionLabel('minUnitsPerShift'), type: 'standard' },
+                        { id: 'minMetersPerShift', label: getMinQuantityOptionLabel('minMetersPerShift'), type: 'standard' },
+                        { id: 'minInspectionsPerShift', label: getMinQuantityOptionLabel('minInspectionsPerShift'), type: 'standard' },
+                        { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), type: 'standard' }
+                      ];
+                      
+                      const updatedOrder = [...currentOrder, newDisplayItem];
+                      
+                      return {
+                        ...prev,
+                        minQuantityDisplayOrder: updatedOrder
+                      };
+                    });
+                    
+                    setShowMinQuantityDialog(false);
+                    setNewOptionName('');
+                  }
+                }}
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+              >
+                Add Option
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Additional Option Dialog */}
+        <Dialog open={showAdditionalDialog} onOpenChange={setShowAdditionalDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Additional Option</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="additionalOption" className="text-sm font-medium">Option Name</Label>
+                <Input
+                  id="additionalOption"
+                  value={newOptionName}
+                  onChange={(e) => setNewOptionName(e.target.value)}
+                  placeholder="e.g., Include survey time"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => {
+                setShowAdditionalDialog(false);
+                setNewOptionName('');
+              }}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (newOptionName.trim()) {
+                    setCustomOptions(prev => {
+                      const newOptions = {
+                        ...prev,
+                        additionalOptions: [...prev.additionalOptions, newOptionName.trim()]
+                      };
+                      return newOptions;
+                    });
+
+                    // Add to additionalDisplayOrder to ensure it appears in the main window
+                    setFormData(prev => {
+                      const newCustomOptionId = `custom_additional_${customOptions.additionalOptions.length}`;
+                      const newDisplayItem = {
+                        id: newCustomOptionId,
+                        label: newOptionName.trim(),
+                        type: 'custom'
+                      };
+                      
+                      const currentOrder = prev.additionalDisplayOrder || [
+                        { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), type: 'standard' },
+                        { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), type: 'standard' }
+                      ];
+                      
+                      const updatedOrder = [...currentOrder, newDisplayItem];
+                      
+                      return {
+                        ...prev,
+                        additionalDisplayOrder: updatedOrder
+                      };
+                    });
+                    
+                    setShowAdditionalDialog(false);
+                    setNewOptionName('');
+                  }
+                }}
+                className="bg-purple-600 hover:bg-purple-700 text-white"
               >
                 Add Option
               </Button>
