@@ -1105,7 +1105,7 @@ export default function Dashboard() {
     return { hasApproved: false };
   };
 
-  // Function to calculate auto-populated cost for defective sections using actual repair pricing
+  // Function to calculate auto-populated cost for defective sections using BLUE ÷ GREEN = COST with ORANGE minimum logic
   const calculateAutoCost = (section: any) => {
     // Only calculate for sections with defects
     if (!section.severityGrade || section.severityGrade === "0" || section.severityGrade === 0) {
@@ -1121,43 +1121,6 @@ export default function Dashboard() {
       return null;
     }
 
-    // Count number of repair patches needed (group defects by proximity)
-    const countRepairPatches = (defectsText: string): number => {
-      if (!defectsText) return 1;
-      
-      // Extract meterage values from defects
-      const meterageMatches = defectsText.match(/\b(\d+\.?\d*)m\b(?!\s*m)/g);
-      if (!meterageMatches) return 1;
-      
-      // Convert to numbers and remove duplicates
-      const meterages = [...new Set(meterageMatches.map(m => parseFloat(m.replace('m', ''))))];
-      
-      // Group defects that are within 1000mm (1m) of each other - single patch covers both
-      // This follows standards where patch must extend beyond defect by minimum distance
-      const patchGroups = [];
-      const sortedMeterages = meterages.sort((a, b) => a - b);
-      
-      for (const meterage of sortedMeterages) {
-        // Check if this meterage can be covered by an existing patch group
-        let addedToGroup = false;
-        for (const group of patchGroups) {
-          // If meterage is within 1m of any meterage in the group, add to that group
-          if (group.some(existingMeterage => Math.abs(existingMeterage - meterage) <= 1.0)) {
-            group.push(meterage);
-            addedToGroup = true;
-            break;
-          }
-        }
-        
-        // If not added to any existing group, create new group
-        if (!addedToGroup) {
-          patchGroups.push([meterage]);
-        }
-      }
-      
-      return patchGroups.length;
-    };
-
     // Extract pipe size (remove "mm" and convert to number)
     const extractPipeSize = (pipeSizeText: string): number => {
       if (!pipeSizeText) return 150;
@@ -1165,17 +1128,13 @@ export default function Dashboard() {
       return sizeMatch ? parseInt(sizeMatch[1]) : 150;
     };
 
-    const numberOfPatches = countRepairPatches(section.defects || "");
     const pipeSize = extractPipeSize(section.pipeSize || "");
     
     // Find matching repair pricing from database
     let matchingPricing = null;
     
-
-    
     if (Array.isArray(repairPricingData) && repairPricingData.length > 0) {
       // Only use exact pipe size match - no fallback to closest size
-      // This prevents confusion like using 300mm pricing for 225mm pipes
       matchingPricing = repairPricingData.find((pricing: any) => 
         pricing.pipeSize === `${pipeSize}mm`
       );
@@ -1186,98 +1145,107 @@ export default function Dashboard() {
       return null;
     }
     
-    // Calculate cost based on dynamic pricing structure values
-    let calculatedCost = 0;
-    
-    console.log('Cost calculation debug:', {
-      pricingId: matchingPricing.id,
-      meterage: matchingPricing.meterage,
-      dayRate: matchingPricing.dayRate,
-      hourlyRate: matchingPricing.hourlyRate,
-      setupRate: matchingPricing.setupRate,
-      minCharge: matchingPricing.minCharge,
-      numberOfPatches,
-      sectionLength: section.totalLength
-    });
-    
-    // Check which pricing structure option has been configured and calculate accordingly
-    if (matchingPricing.meterage && parseFloat(matchingPricing.meterage) > 0) {
-      // Cost per meterage calculation
-      const totalLength = parseFloat(section.totalLength || "0");
-      calculatedCost = parseFloat(matchingPricing.meterage) * totalLength;
-      console.log('Using meterage pricing:', {meterage: matchingPricing.meterage, totalLength, calculatedCost});
-    } else if (matchingPricing.dayRate && parseFloat(matchingPricing.dayRate) > 0) {
-      // Day rate ÷ runs per shift calculation
-      const dayRate = parseFloat(matchingPricing.dayRate);
-      const runsPerShift = matchingPricing.numberPerShift ? parseFloat(matchingPricing.numberPerShift) : 1;
-      const minRunsRequired = matchingPricing.minUnitsPerShift ? parseFloat(matchingPricing.minUnitsPerShift) : 1;
-      
-      // Calculate cost per section
-      const costPerSection = dayRate / runsPerShift;
-      calculatedCost = costPerSection * numberOfPatches;
-      
-      console.log('Using day rate ÷ runs per shift pricing:', {
-        dayRate, 
-        runsPerShift, 
-        minRunsRequired,
-        costPerSection,
-        numberOfPatches, 
-        calculatedCost,
-        hasMinimumRuns: numberOfPatches >= minRunsRequired
-      });
-      
-      // Check if minimum runs threshold is met for proper pricing
-      if (numberOfPatches < minRunsRequired) {
-        // Return red pricing indicator - insufficient runs for proper calculation
-        return {
-          cost: calculatedCost,
-          status: 'insufficient_runs',
-          message: `Need ${minRunsRequired} runs minimum (current: ${numberOfPatches})`,
-          costPerSection: costPerSection
-        };
-      }
+    // BLUE BOX ÷ GREEN BOX = COST (with ORANGE BOX as minimum threshold)
+    let blueBoxValue = 0;
+    let greenBoxValue = 0;
+    let orangeBoxMinimum = 0;
+    let blueBoxName = '';
+    let greenBoxName = '';
+    let orangeBoxName = '';
+
+    // Extract BLUE BOX values (cost/price values)
+    if (matchingPricing.dayRate && parseFloat(matchingPricing.dayRate) > 0) {
+      blueBoxValue = parseFloat(matchingPricing.dayRate);
+      blueBoxName = 'Day Rate';
     } else if (matchingPricing.hourlyRate && parseFloat(matchingPricing.hourlyRate) > 0) {
-      // Hourly rate calculation (assuming 8 hours per day for patches)
-      calculatedCost = parseFloat(matchingPricing.hourlyRate) * 8 * numberOfPatches;
-      console.log('Using hourly rate pricing:', {hourlyRate: matchingPricing.hourlyRate, numberOfPatches, calculatedCost});
+      blueBoxValue = parseFloat(matchingPricing.hourlyRate);
+      blueBoxName = 'Hourly Rate';
     } else if (matchingPricing.setupRate && parseFloat(matchingPricing.setupRate) > 0) {
-      // Setup rate (fixed cost regardless of number of patches)
-      calculatedCost = parseFloat(matchingPricing.setupRate);
-      console.log('Using setup rate pricing:', {setupRate: matchingPricing.setupRate, calculatedCost});
+      blueBoxValue = parseFloat(matchingPricing.setupRate);
+      blueBoxName = 'Setup Rate';
     } else if (matchingPricing.minCharge && parseFloat(matchingPricing.minCharge) > 0) {
-      // Minimum charge (fixed cost)
-      calculatedCost = parseFloat(matchingPricing.minCharge);
-      console.log('Using min charge pricing:', {minCharge: matchingPricing.minCharge, calculatedCost});
+      blueBoxValue = parseFloat(matchingPricing.minCharge);
+      blueBoxName = 'Min Charge';
+    }
+
+    // Extract GREEN BOX values (quantity values)
+    if (matchingPricing.numberPerShift && parseFloat(matchingPricing.numberPerShift) > 0) {
+      greenBoxValue = parseFloat(matchingPricing.numberPerShift);
+      greenBoxName = 'Runs per Shift';
+    } else if (matchingPricing.metersPerShift && parseFloat(matchingPricing.metersPerShift) > 0) {
+      greenBoxValue = parseFloat(matchingPricing.metersPerShift);
+      greenBoxName = 'Meters per Shift';
+    } else if (matchingPricing.inspectionsPerShift && parseFloat(matchingPricing.inspectionsPerShift) > 0) {
+      greenBoxValue = parseFloat(matchingPricing.inspectionsPerShift);
+      greenBoxName = 'Inspections per Shift';
+    }
+
+    // Extract ORANGE BOX values (minimum thresholds)
+    if (matchingPricing.minUnitsPerShift && parseFloat(matchingPricing.minUnitsPerShift) > 0) {
+      orangeBoxMinimum = parseFloat(matchingPricing.minUnitsPerShift);
+      orangeBoxName = 'Min Units per Shift';
+    } else if (matchingPricing.minMetersPerShift && parseFloat(matchingPricing.minMetersPerShift) > 0) {
+      orangeBoxMinimum = parseFloat(matchingPricing.minMetersPerShift);
+      orangeBoxName = 'Min Meters per Shift';
+    } else if (matchingPricing.minInspectionsPerShift && parseFloat(matchingPricing.minInspectionsPerShift) > 0) {
+      orangeBoxMinimum = parseFloat(matchingPricing.minInspectionsPerShift);
+      orangeBoxName = 'Min Inspections per Shift';
+    } else if (matchingPricing.minSetupCount && parseFloat(matchingPricing.minSetupCount) > 0) {
+      orangeBoxMinimum = parseFloat(matchingPricing.minSetupCount);
+      orangeBoxName = 'Min Setup Count';
     } else {
-      // Fallback to legacy option costs if new pricing structure not configured
-      const description = (matchingPricing.description || '').toLowerCase();
-      let unitCost = 450; // Default fallback
-      
-      if (description.includes('single') && matchingPricing.option1Cost && matchingPricing.option1Cost !== 'N/A') {
-        unitCost = parseFloat(matchingPricing.option1Cost);
-      } else if (description.includes('double') && matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
-        unitCost = parseFloat(matchingPricing.option2Cost);
-      } else if (description.includes('triple') && matchingPricing.option3Cost && matchingPricing.option3Cost !== 'N/A') {
-        unitCost = parseFloat(matchingPricing.option3Cost);
-      } else if (matchingPricing.option2Cost && matchingPricing.option2Cost !== 'N/A') {
-        unitCost = parseFloat(matchingPricing.option2Cost);
-      }
-      
-      calculatedCost = numberOfPatches * unitCost;
-      console.log('Using legacy option cost pricing:', {unitCost, numberOfPatches, calculatedCost});
+      orangeBoxMinimum = 3; // Default minimum threshold
+      orangeBoxName = 'Default Minimum';
     }
     
-    const minQuantity = parseInt(matchingPricing.minimumQuantity) || 2;
-    const totalCost = calculatedCost;
-    const isUnderMinimum = numberOfPatches < minQuantity;
+    console.log('BLUE ÷ GREEN = COST calculation:', {
+      pricingId: matchingPricing.id,
+      blueBox: { value: blueBoxValue, name: blueBoxName },
+      greenBox: { value: greenBoxValue, name: greenBoxName },
+      orangeBox: { value: orangeBoxMinimum, name: orangeBoxName },
+      pipeSize: `${pipeSize}mm`
+    });
+    
+    // Calculate cost using BLUE ÷ GREEN formula
+    if (blueBoxValue && greenBoxValue) {
+      const costPerItem = blueBoxValue / greenBoxValue;
+      
+      // Check if minimum threshold (ORANGE BOX) is met
+      if (greenBoxValue < orangeBoxMinimum) {
+        console.log('RED PRICING - Minimum threshold not met:', {
+          greenBoxValue,
+          orangeBoxMinimum,
+          costPerItem,
+          formula: `£${blueBoxValue} ÷ ${greenBoxValue} = £${costPerItem.toFixed(2)} (RED - below ${orangeBoxMinimum} minimum)`
+        });
+        
+        return {
+          cost: costPerItem,
+          status: 'insufficient_runs',
+          message: `${orangeBoxName}: ${orangeBoxMinimum} required. Currently: ${greenBoxValue}. Price shows in RED until minimum reached.`,
+          formula: `£${blueBoxValue} (${blueBoxName}) ÷ ${greenBoxValue} (${greenBoxName}) = £${costPerItem.toFixed(2)}`,
+          isRed: true
+        };
+      }
+      
+      console.log('BLACK PRICING - Minimum threshold met:', {
+        greenBoxValue,
+        orangeBoxMinimum,
+        costPerItem,
+        formula: `£${blueBoxValue} ÷ ${greenBoxValue} = £${costPerItem.toFixed(2)} (BLACK - minimum met)`
+      });
+      
+      return {
+        cost: costPerItem,
+        status: 'sufficient_runs',
+        message: `${orangeBoxName}: ${orangeBoxMinimum} met (current: ${greenBoxValue}). Price shows in BLACK.`,
+        formula: `£${blueBoxValue} (${blueBoxName}) ÷ ${greenBoxValue} (${greenBoxName}) = £${costPerItem.toFixed(2)}`,
+        isRed: false
+      };
+    }
 
-    return {
-      cost: totalCost,
-      numberOfPatches,
-      minQuantity,
-      isUnderMinimum,
-      unitCost
-    };
+    // No blue or green box values configured
+    return null;
   };
 
 
@@ -1714,14 +1682,28 @@ export default function Dashboard() {
       return "£0.00";
     }
     
-    // For defective sections, use the repair pricing logic instead of old hardcoded logic
+    // For defective sections, use the BLUE ÷ GREEN = COST logic
     const autoCost = calculateAutoCost(section);
     if (autoCost) {
-      // Check if insufficient runs for proper pricing calculation
-      if (autoCost.status === 'insufficient_runs') {
-        return <span className="text-red-600 font-medium" title={autoCost.message}>£{autoCost.cost.toFixed(2)}</span>;
+      // RED pricing when minimum threshold not met, BLACK when met
+      if (autoCost.status === 'insufficient_runs' || autoCost.isRed) {
+        return (
+          <span 
+            className="text-red-600 font-medium cursor-help" 
+            title={`${autoCost.formula}\n${autoCost.message}`}
+          >
+            £{autoCost.cost.toFixed(2)}
+          </span>
+        );
       }
-      return `£${autoCost.cost.toFixed(2)}`;
+      return (
+        <span 
+          className="text-black font-medium cursor-help"
+          title={`${autoCost.formula}\n${autoCost.message}`}
+        >
+          £{autoCost.cost.toFixed(2)}
+        </span>
+      );
     }
     
     // Show warning triangle icon for sections without pricing
