@@ -323,7 +323,7 @@ export default function RepairPricing() {
   });
 
   console.log("Current customOptions in render:", customOptions);
-  console.log("Edit button visibility condition:", customOptions.quantityOptions.length > 0);
+  console.log("Edit button visibility condition:", customOptions?.quantityOptions?.length > 0);
   const [showEditOptionsDialog, setShowEditOptionsDialog] = useState(false);
   const [editingOptionType, setEditingOptionType] = useState('');
   const [editingOptionIndex, setEditingOptionIndex] = useState(-1);
