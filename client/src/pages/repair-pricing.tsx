@@ -294,6 +294,14 @@ export default function RepairPricing() {
   const [editingOptionType, setEditingOptionType] = useState('');
   const [editingOptionIndex, setEditingOptionIndex] = useState(-1);
   const [editingOptionName, setEditingOptionName] = useState('');
+  const [showEditPriceOptionsDialog, setShowEditPriceOptionsDialog] = useState(false);
+  const [editablePriceOptions, setEditablePriceOptions] = useState([
+    { id: 'meterage', label: 'Meterage (£ per meter)', enabled: false },
+    { id: 'hourlyRate', label: 'Hourly rate (£ per hour)', enabled: false },
+    { id: 'setupRate', label: 'Setup rate (£ per setup)', enabled: false },
+    { id: 'minCharge', label: 'Min charge (£ minimum)', enabled: false },
+    { id: 'dayRate', label: 'Day rate (£ per day)', enabled: false }
+  ]);
   const [formData, setFormData] = useState({
     workCategoryId: "",
     pipeSize: "",
@@ -2442,8 +2450,15 @@ export default function RepairPricing() {
                           className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setShowPriceCostDialog(true);
-                            // Set edit mode for existing price options
+                            // Sync current form state to editable options
+                            setEditablePriceOptions([
+                              { id: 'meterage', label: 'Meterage (£ per meter)', enabled: formData.pricingStructure?.meterage || false },
+                              { id: 'hourlyRate', label: 'Hourly rate (£ per hour)', enabled: formData.pricingStructure?.hourlyRate || false },
+                              { id: 'setupRate', label: 'Setup rate (£ per setup)', enabled: formData.pricingStructure?.setupRate || false },
+                              { id: 'minCharge', label: 'Min charge (£ minimum)', enabled: formData.pricingStructure?.minCharge || false },
+                              { id: 'dayRate', label: 'Day rate (£ per day)', enabled: formData.pricingStructure?.dayRate || false }
+                            ]);
+                            setShowEditPriceOptionsDialog(true);
                           }}
                         >
                           <Edit className="h-3 w-3 mr-1" />
@@ -3468,6 +3483,100 @@ export default function RepairPricing() {
                 className="bg-purple-600 hover:bg-purple-700 text-white"
               >
                 Add Item
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Price/Cost Options Dialog */}
+        <Dialog open={showEditPriceOptionsDialog} onOpenChange={setShowEditPriceOptionsDialog}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Price/Cost Options</DialogTitle>
+              <DialogDescription>
+                Edit the text labels and manage your price/cost options. You can modify the text for each option or delete options you no longer need.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-1 gap-3">
+                {editablePriceOptions.map((option, index) => (
+                  <div key={option.id} className="flex items-center justify-between p-3 border rounded-lg bg-blue-50">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <input
+                        type="checkbox"
+                        checked={option.enabled}
+                        onChange={(e) => {
+                          const updatedOptions = [...editablePriceOptions];
+                          updatedOptions[index].enabled = e.target.checked;
+                          setEditablePriceOptions(updatedOptions);
+                        }}
+                        className="rounded border-slate-300"
+                      />
+                      <Input
+                        value={option.label}
+                        onChange={(e) => {
+                          const updatedOptions = [...editablePriceOptions];
+                          updatedOptions[index].label = e.target.value;
+                          setEditablePriceOptions(updatedOptions);
+                        }}
+                        className="flex-1"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-100 ml-2"
+                      onClick={() => {
+                        const updatedOptions = editablePriceOptions.filter((_, i) => i !== index);
+                        setEditablePriceOptions(updatedOptions);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowEditPriceOptionsDialog(false);
+                  // Reset to original state without saving changes
+                  setEditablePriceOptions([
+                    { id: 'meterage', label: 'Meterage (£ per meter)', enabled: formData.pricingStructure?.meterage || false },
+                    { id: 'hourlyRate', label: 'Hourly rate (£ per hour)', enabled: formData.pricingStructure?.hourlyRate || false },
+                    { id: 'setupRate', label: 'Setup rate (£ per setup)', enabled: formData.pricingStructure?.setupRate || false },
+                    { id: 'minCharge', label: 'Min charge (£ minimum)', enabled: formData.pricingStructure?.minCharge || false },
+                    { id: 'dayRate', label: 'Day rate (£ per day)', enabled: formData.pricingStructure?.dayRate || false }
+                  ]);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  // Apply changes back to form data
+                  const newPricingStructure = { ...formData.pricingStructure };
+                  editablePriceOptions.forEach(option => {
+                    newPricingStructure[option.id] = option.enabled;
+                  });
+                  
+                  setFormData({
+                    ...formData,
+                    pricingStructure: newPricingStructure
+                  });
+                  
+                  setShowEditPriceOptionsDialog(false);
+                  toast({
+                    title: "Options updated",
+                    description: "Your price/cost options have been updated successfully.",
+                  });
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Save Changes
               </Button>
             </DialogFooter>
           </DialogContent>
