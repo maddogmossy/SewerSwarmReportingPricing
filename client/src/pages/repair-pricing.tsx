@@ -1040,19 +1040,71 @@ export default function RepairPricing() {
       mathOperators: mathOperators
     });
     
-    // Calculate cost from selected pricing options
-    let calculatedCost = 0;
-    if (formData.meterage && parseFloat(formData.meterage)) {
-      calculatedCost = parseFloat(formData.meterage);
-    } else if (formData.dayRate && parseFloat(formData.dayRate)) {
-      calculatedCost = parseFloat(formData.dayRate);
-    } else if (formData.hourlyRate && parseFloat(formData.hourlyRate)) {
-      calculatedCost = parseFloat(formData.hourlyRate);
-    } else if (formData.setupRate && parseFloat(formData.setupRate)) {
-      calculatedCost = parseFloat(formData.setupRate);
-    } else if (formData.minCharge && parseFloat(formData.minCharge)) {
-      calculatedCost = parseFloat(formData.minCharge);
-    }
+    // Calculate cost from selected pricing options with math operators
+    const calculatePricingSum = () => {
+      const priceOptions = [];
+      const quantityOptions = [];
+      const orangeOptions = [];
+      const purpleOptions = [];
+      
+      // Collect enabled options and their values
+      if (formData.pricingStructure?.meterage && formData.meterage) priceOptions.push(parseFloat(formData.meterage));
+      if (formData.pricingStructure?.dayRate && formData.dayRate) priceOptions.push(parseFloat(formData.dayRate));
+      if (formData.pricingStructure?.hourlyRate && formData.hourlyRate) priceOptions.push(parseFloat(formData.hourlyRate));
+      if (formData.pricingStructure?.setupRate && formData.setupRate) priceOptions.push(parseFloat(formData.setupRate));
+      if (formData.pricingStructure?.minCharge && formData.minCharge) priceOptions.push(parseFloat(formData.minCharge));
+      
+      if (formData.pricingStructure?.numberPerShift && formData.numberPerShift) quantityOptions.push(parseFloat(formData.numberPerShift));
+      if (formData.pricingStructure?.metersPerShift && formData.metersPerShift) quantityOptions.push(parseFloat(formData.metersPerShift));
+      if (formData.pricingStructure?.runsPerShift && formData.runsPerShift) quantityOptions.push(parseFloat(formData.runsPerShift));
+      
+      if (formData.pricingStructure?.minUnitsPerShift && formData.minUnitsPerShift) orangeOptions.push(parseFloat(formData.minUnitsPerShift));
+      if (formData.pricingStructure?.minMetersPerShift && formData.minMetersPerShift) orangeOptions.push(parseFloat(formData.minMetersPerShift));
+      if (formData.pricingStructure?.minInspectionsPerShift && formData.minInspectionsPerShift) orangeOptions.push(parseFloat(formData.minInspectionsPerShift));
+      if (formData.pricingStructure?.minSetupCount && formData.minSetupCount) orangeOptions.push(parseFloat(formData.minSetupCount));
+      
+      // Combine all options in order: price, quantity, orange, purple
+      const allValues = [...priceOptions, ...quantityOptions, ...orangeOptions, ...purpleOptions];
+      
+      if (allValues.length === 0) return 0;
+      if (allValues.length === 1) return allValues[0];
+      
+      let result = allValues[0];
+      let operatorIndex = 0;
+      
+      for (let i = 1; i < allValues.length; i++) {
+        const operator = mathOperators[`operator_${operatorIndex}`] || 'add';
+        const value = allValues[i];
+        
+        switch (operator) {
+          case 'add':
+            result += value;
+            break;
+          case 'subtract':
+            result -= value;
+            break;
+          case 'multiply':
+            result *= value;
+            break;
+          case 'divide':
+            result = value !== 0 ? result / value : result;
+            break;
+          case 'range':
+            // For range operations, just continue with next value
+            result = value;
+            break;
+          case 'none':
+          default:
+            // N/A - no operation, just continue
+            break;
+        }
+        operatorIndex++;
+      }
+      
+      return Math.round(result * 100) / 100; // Round to 2 decimal places
+    };
+
+    const calculatedCost = calculatePricingSum();
 
     const baseData = {
       workCategoryId: formData.workCategoryId,
@@ -1249,6 +1301,14 @@ export default function RepairPricing() {
       minSetupCount: item.minSetupCount?.toString() || "",
       pricingStructure: preservedPricingStructure
     });
+    
+    // Load existing math operators and custom options
+    if (item.mathOperators && typeof item.mathOperators === 'object') {
+      setMathOperators(item.mathOperators);
+    }
+    if (item.customOptions && typeof item.customOptions === 'object') {
+      setCustomOptions(item.customOptions);
+    }
     
     // Pre-select sectors that already have this pricing rule
     const matchingSectors = findMatchingSectors(item);
@@ -2458,12 +2518,14 @@ export default function RepairPricing() {
                   if (formData.pricingStructure?.minCharge) priceOptions.push({key: 'minCharge', label: 'Min charge', type: 'cost'});
                   
                   // Add custom price options (blue) - only if enabled
-                  customOptions.priceOptions.forEach((option, index) => {
-                    const customKey = `custom_price_${index}`;
-                    if (formData.pricingStructure?.[customKey] !== false) {
-                      priceOptions.push({key: customKey, label: option, type: 'cost'});
-                    }
-                  });
+                  if (customOptions.priceOptions && Array.isArray(customOptions.priceOptions)) {
+                    customOptions.priceOptions.forEach((option, index) => {
+                      const customKey = `custom_price_${index}`;
+                      if (formData.pricingStructure?.[customKey] !== false) {
+                        priceOptions.push({key: customKey, label: option, type: 'cost'});
+                      }
+                    });
+                  }
                   
                   // Categorize quantity options (green)
                   if (formData.pricingStructure?.numberPerShift) quantityOptions.push({key: 'numberPerShift', label: 'Number per shift', type: 'quantity'});
@@ -2472,12 +2534,14 @@ export default function RepairPricing() {
                   if (formData.pricingStructure?.repeatFree) quantityOptions.push({key: 'repeatFree', label: 'Repeat free', type: 'quantity'});
                   
                   // Add custom quantity options (green) - only if enabled
-                  customOptions.quantityOptions.forEach((option, index) => {
-                    const customKey = `custom_quantity_${index}`;
-                    if (formData.pricingStructure?.[customKey] !== false) {
-                      quantityOptions.push({key: customKey, label: option, type: 'quantity'});
-                    }
-                  });
+                  if (customOptions.quantityOptions && Array.isArray(customOptions.quantityOptions)) {
+                    customOptions.quantityOptions.forEach((option, index) => {
+                      const customKey = `custom_quantity_${index}`;
+                      if (formData.pricingStructure?.[customKey] !== false) {
+                        quantityOptions.push({key: customKey, label: option, type: 'quantity'});
+                      }
+                    });
+                  }
                   
                   // Categorize orange options (min quantity per shift)
                   if (formData.pricingStructure?.minUnitsPerShift) orangeOptions.push({key: 'minUnitsPerShift', label: 'Min units/shift', type: 'orange'});
@@ -2486,24 +2550,28 @@ export default function RepairPricing() {
                   if (formData.pricingStructure?.minSetupCount) orangeOptions.push({key: 'minSetupCount', label: 'Min setup count', type: 'orange'});
                   
                   // Add custom min quantity options (orange) - only if enabled
-                  customOptions.minQuantityOptions.forEach((option, index) => {
-                    const customKey = `custom_min_quantity_${index}`;
-                    if (formData.pricingStructure?.[customKey] !== false) {
-                      orangeOptions.push({key: customKey, label: option, type: 'orange'});
-                    }
-                  });
+                  if (customOptions.minQuantityOptions && Array.isArray(customOptions.minQuantityOptions)) {
+                    customOptions.minQuantityOptions.forEach((option, index) => {
+                      const customKey = `custom_min_quantity_${index}`;
+                      if (formData.pricingStructure?.[customKey] !== false) {
+                        orangeOptions.push({key: customKey, label: option, type: 'orange'});
+                      }
+                    });
+                  }
                   
                   // Categorize purple options (additional items)
                   if (formData.pricingStructure?.includeDepth) purpleOptions.push({key: 'includeDepth', label: 'Include depth', type: 'purple'});
                   if (formData.pricingStructure?.includeTotalLength) purpleOptions.push({key: 'includeTotalLength', label: 'Include total length', type: 'purple'});
                   
                   // Add custom additional options (purple) - only if enabled
-                  customOptions.additionalOptions.forEach((option, index) => {
-                    const customKey = `custom_additional_${index}`;
-                    if (formData.pricingStructure?.[customKey] !== false) {
-                      purpleOptions.push({key: customKey, label: option, type: 'purple'});
-                    }
-                  });
+                  if (customOptions.additionalOptions && Array.isArray(customOptions.additionalOptions)) {
+                    customOptions.additionalOptions.forEach((option, index) => {
+                      const customKey = `custom_additional_${index}`;
+                      if (formData.pricingStructure?.[customKey] !== false) {
+                        purpleOptions.push({key: customKey, label: option, type: 'purple'});
+                      }
+                    });
+                  }
                   
                   const allOptions = [...priceOptions, ...quantityOptions, ...orangeOptions, ...purpleOptions];
                   
@@ -2664,11 +2732,13 @@ export default function RepairPricing() {
                               ];
                               
                               // Add custom price options to the editable list
-                              const customPriceOptions = customOptions.priceOptions.map((option, index) => ({
-                                id: `custom_price_${index}`,
-                                label: option,
-                                enabled: true // Custom options are always considered enabled
-                              }));
+                              const customPriceOptions = (customOptions.priceOptions && Array.isArray(customOptions.priceOptions))
+                                ? customOptions.priceOptions.map((option, index) => ({
+                                    id: `custom_price_${index}`,
+                                    label: option,
+                                    enabled: true // Custom options are always considered enabled
+                                  }))
+                                : [];
                               
                               setEditablePriceOptions([...standardOptions, ...customPriceOptions]);
                             }
@@ -2705,11 +2775,13 @@ export default function RepairPricing() {
                             { id: 'setupRate', label: getPriceOptionLabel('setupRate'), type: 'standard' },
                             { id: 'minCharge', label: getPriceOptionLabel('minCharge'), type: 'standard' },
                             { id: 'dayRate', label: getPriceOptionLabel('dayRate'), type: 'standard' },
-                            ...customOptions.priceOptions.map((option, index) => ({
-                              id: `custom_price_${index}`,
-                              label: option,
-                              type: 'custom'
-                            }))
+                            ...(customOptions.priceOptions && Array.isArray(customOptions.priceOptions)
+                              ? customOptions.priceOptions.map((option, index) => ({
+                                  id: `custom_price_${index}`,
+                                  label: option,
+                                  type: 'custom'
+                                }))
+                              : [])
                           ];
                           
                           const displayOrder = formData.optionDisplayOrder || defaultOrder;
@@ -2772,7 +2844,7 @@ export default function RepairPricing() {
                         </span>
                       )}
 
-                      {customOptions.quantityOptions.length > 0 && (
+                      {(customOptions.quantityOptions && Array.isArray(customOptions.quantityOptions) && customOptions.quantityOptions.length > 0) && (
                         <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
                           {customOptions.quantityOptions.length} custom option{customOptions.quantityOptions.length !== 1 ? 's' : ''}
                         </span>
@@ -2789,7 +2861,7 @@ export default function RepairPricing() {
                         <Plus className="h-3 w-3 mr-1" />
                         Add
                       </Button>
-                      {(formData.pricingStructure?.numberPerShift || formData.pricingStructure?.metersPerShift || formData.pricingStructure?.runsPerShift || formData.pricingStructure?.repeatFree || customOptions.quantityOptions.length > 0) && (
+                      {(formData.pricingStructure?.numberPerShift || formData.pricingStructure?.metersPerShift || formData.pricingStructure?.runsPerShift || formData.pricingStructure?.repeatFree || (customOptions.quantityOptions && Array.isArray(customOptions.quantityOptions) && customOptions.quantityOptions.length > 0)) && (
                         <Button 
                           type="button"
                           size="sm" 
@@ -2817,11 +2889,13 @@ export default function RepairPricing() {
                               ];
                               
                               // Add custom quantity options to the editable list
-                              const customQuantityOptions = customOptions.quantityOptions.map((option, index) => ({
-                                id: `custom_quantity_${index}`,
-                                label: option,
-                                enabled: true // Custom options are always considered enabled
-                              }));
+                              const customQuantityOptions = (customOptions.quantityOptions && Array.isArray(customOptions.quantityOptions))
+                                ? customOptions.quantityOptions.map((option, index) => ({
+                                    id: `custom_quantity_${index}`,
+                                    label: option,
+                                    enabled: true // Custom options are always considered enabled
+                                  }))
+                                : [];
                               
                               setEditableQuantityOptions([...standardOptions, ...customQuantityOptions]);
                             }
@@ -2845,11 +2919,13 @@ export default function RepairPricing() {
                             { id: 'metersPerShift', label: getQuantityOptionLabel('metersPerShift'), type: 'standard' },
                             { id: 'runsPerShift', label: getQuantityOptionLabel('runsPerShift'), type: 'standard' },
                             { id: 'repeatFree', label: getQuantityOptionLabel('repeatFree'), type: 'standard' },
-                            ...customOptions.quantityOptions.map((option, index) => ({
-                              id: `custom_quantity_${index}`,
-                              label: option,
-                              type: 'custom'
-                            }))
+                            ...(customOptions.quantityOptions && Array.isArray(customOptions.quantityOptions)
+                              ? customOptions.quantityOptions.map((option, index) => ({
+                                  id: `custom_quantity_${index}`,
+                                  label: option,
+                                  type: 'custom'
+                                }))
+                              : [])
                           ];
 
                           const displayOrder = formData.quantityDisplayOrder && formData.quantityDisplayOrder.length > 0 
@@ -2964,11 +3040,13 @@ export default function RepairPricing() {
                             ];
                             
                             // Add custom min quantity options to the editable list
-                            const customMinQuantityOptions = customOptions.minQuantityOptions.map((option, index) => ({
-                              id: `custom_min_quantity_${index}`,
-                              label: option,
-                              enabled: true // Custom options are always considered enabled
-                            }));
+                            const customMinQuantityOptions = (customOptions.minQuantityOptions && Array.isArray(customOptions.minQuantityOptions)) 
+                              ? customOptions.minQuantityOptions.map((option, index) => ({
+                                  id: `custom_min_quantity_${index}`,
+                                  label: option,
+                                  enabled: true // Custom options are always considered enabled
+                                }))
+                              : [];
                             
                             setEditableMinQuantityOptions([...standardOptions, ...customMinQuantityOptions]);
                           }
@@ -2990,11 +3068,13 @@ export default function RepairPricing() {
                             { id: 'minMetersPerShift', label: getMinQuantityOptionLabel('minMetersPerShift'), type: 'standard' },
                             { id: 'minInspectionsPerShift', label: getMinQuantityOptionLabel('minInspectionsPerShift'), type: 'standard' },
                             { id: 'minSetupCount', label: getMinQuantityOptionLabel('minSetupCount'), type: 'standard' },
-                            ...customOptions.minQuantityOptions.map((option, index) => ({
-                              id: `custom_min_quantity_${index}`,
-                              label: option,
-                              type: 'custom'
-                            }))
+                            ...(customOptions.minQuantityOptions && Array.isArray(customOptions.minQuantityOptions) 
+                              ? customOptions.minQuantityOptions.map((option, index) => ({
+                                  id: `custom_min_quantity_${index}`,
+                                  label: option,
+                                  type: 'custom'
+                                }))
+                              : [])
                           ];
 
                           const displayOrder = formData.minQuantityDisplayOrder && formData.minQuantityDisplayOrder.length > 0 
@@ -3111,11 +3191,13 @@ export default function RepairPricing() {
                           const defaultAdditionalOrder = [
                             { id: 'includeDepth', label: getAdditionalOptionLabel('includeDepth'), type: 'standard' },
                             { id: 'includeTotalLength', label: getAdditionalOptionLabel('includeTotalLength'), type: 'standard' },
-                            ...customOptions.additionalOptions.map((option, index) => ({
-                              id: `custom_additional_${index}`,
-                              label: option,
-                              type: 'custom'
-                            }))
+                            ...(customOptions.additionalOptions && Array.isArray(customOptions.additionalOptions)
+                              ? customOptions.additionalOptions.map((option, index) => ({
+                                  id: `custom_additional_${index}`,
+                                  label: option,
+                                  type: 'custom'
+                                }))
+                              : [])
                           ];
 
                           const displayOrder = formData.additionalDisplayOrder && formData.additionalDisplayOrder.length > 0 
