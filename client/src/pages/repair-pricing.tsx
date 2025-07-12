@@ -970,6 +970,23 @@ export default function RepairPricing() {
   const proceedWithEditDirectly = (item: any) => {
     console.log("proceedWithEditDirectly called, setting up edit mode");
     
+    // Preserve existing pricing structure options and values from database
+    const preservedPricingStructure = item.pricingStructure || {
+      meterage: !!item.meterage,  // Check if value exists to set checkbox
+      numberPerShift: !!item.numberPerShift,
+      metersPerShift: !!item.metersPerShift,
+      dayRate: !!item.dayRate,
+      hourlyRate: !!item.hourlyRate,
+      runsPerShift: !!item.runsPerShift,
+      setupRate: !!item.setupRate,
+      minCharge: !!item.minCharge,
+      repeatFree: !!item.repeatFree,
+      minUnitsPerShift: !!item.minUnitsPerShift,
+      minMetersPerShift: !!item.minMetersPerShift,
+      minInspectionsPerShift: !!item.minInspectionsPerShift,
+      minSetupCount: !!item.minSetupCount
+    };
+    
     setFormData({
       workCategoryId: item.workCategoryId?.toString() || "",
       pipeSize: item.pipeSize || "",
@@ -979,21 +996,19 @@ export default function RepairPricing() {
       lengthOfRepair: item.lengthOfRepair || "",
       dayRate: item.dayRate?.toString() || "",
       vehicleId: item.vehicleId?.toString() || "",
-      pricingStructure: item.pricingStructure || {
-        meterage: false,
-        numberPerShift: false,
-        metersPerShift: false,
-        dayRate: false,
-        hourlyRate: false,
-        runsPerShift: false,
-        setupRate: false,
-        minCharge: false,
-        repeatFree: false,
-        minUnitsPerShift: false,
-        minMetersPerShift: false,
-        minInspectionsPerShift: false,
-        minSetupCount: false
-      }
+      // Preserve all pricing values from database
+      meterage: item.meterage?.toString() || "",
+      hourlyRate: item.hourlyRate?.toString() || "",
+      setupRate: item.setupRate?.toString() || "",
+      minCharge: item.minCharge?.toString() || "",
+      numberPerShift: item.numberPerShift?.toString() || "",
+      metersPerShift: item.metersPerShift?.toString() || "",
+      runsPerShift: item.runsPerShift?.toString() || "",
+      minUnitsPerShift: item.minUnitsPerShift?.toString() || "",
+      minMetersPerShift: item.minMetersPerShift?.toString() || "",
+      minInspectionsPerShift: item.minInspectionsPerShift?.toString() || "",
+      minSetupCount: item.minSetupCount?.toString() || "",
+      pricingStructure: preservedPricingStructure
     });
     
     // Pre-select sectors that already have this pricing rule

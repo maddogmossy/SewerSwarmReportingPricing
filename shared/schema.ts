@@ -276,6 +276,17 @@ export const repairPricing = pgTable("repair_pricing", {
   vehicleId: integer("vehicle_id").references(() => vehicleTravelRates.id),
   // Pricing structure options (stored as JSON object)
   pricingStructure: jsonb("pricing_structure"),
+  // Individual pricing option values
+  meterage: varchar("meterage"),
+  setupRate: varchar("setup_rate"),
+  minCharge: varchar("min_charge"),
+  numberPerShift: varchar("number_per_shift"),
+  metersPerShift: varchar("meters_per_shift"),
+  runsPerShift: varchar("runs_per_shift"),
+  minUnitsPerShift: varchar("min_units_per_shift"),
+  minMetersPerShift: varchar("min_meters_per_shift"),
+  minInspectionsPerShift: varchar("min_inspections_per_shift"),
+  minSetupCount: varchar("min_setup_count"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
