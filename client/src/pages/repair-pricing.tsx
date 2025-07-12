@@ -2709,6 +2709,39 @@ export default function RepairPricing() {
                           {Object.keys(formData.pricingStructure || {}).filter(key => !['priceOptions', 'mathOperators'].includes(key) && formData.pricingStructure[key]).length} selected
                         </span>
                       )}
+                      {Object.keys(formData.pricingStructure || {}).filter(key => !['priceOptions', 'mathOperators'].includes(key) && formData.pricingStructure[key]).length > 0 && (
+                        <Button 
+                          type="button"
+                          size="sm" 
+                          className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Set up edit dialog with current options
+                            const standardOptions = [
+                              { id: 'dayRate', label: getPriceOptionLabel('dayRate'), enabled: formData.pricingStructure?.dayRate || false },
+                              { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), enabled: formData.pricingStructure?.hourlyRate || false },
+                              { id: 'setupRate', label: getPriceOptionLabel('setupRate'), enabled: formData.pricingStructure?.setupRate || false },
+                              { id: 'minCharge', label: getPriceOptionLabel('minCharge'), enabled: formData.pricingStructure?.minCharge || false },
+                              { id: 'meterage', label: getPriceOptionLabel('meterage'), enabled: formData.pricingStructure?.meterage || false }
+                            ];
+                            
+                            // Add user-added options 
+                            const userAddedOptions = Object.keys(formData.pricingStructure || {}).filter(key => 
+                              !['dayRate', 'hourlyRate', 'setupRate', 'minCharge', 'meterage', 'priceOptions', 'mathOperators', 'numberPerShift', 'metersPerShift', 'runsPerShift', 'repeatFree', 'minUnitsPerShift', 'minMetersPerShift', 'minInspectionsPerShift', 'minSetupCount', 'includeDepth', 'includeTotalLength'].includes(key)
+                            ).map(key => ({
+                              id: key,
+                              label: key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()),
+                              enabled: formData.pricingStructure[key] || false
+                            }));
+                            
+                            setEditablePriceOptions([...standardOptions, ...userAddedOptions]);
+                            setShowEditPriceOptionsDialog(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
+                      )}
                       <Button 
                         type="button"
                         size="sm" 
