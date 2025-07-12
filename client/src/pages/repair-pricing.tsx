@@ -302,6 +302,17 @@ export default function RepairPricing() {
     { id: 'minCharge', label: 'Min charge (£ minimum)', enabled: false },
     { id: 'dayRate', label: 'Day rate (£ per day)', enabled: false }
   ]);
+
+  // Function to get current label for an option
+  const getPriceOptionLabel = (optionId: string) => {
+    const editableOption = editablePriceOptions.find(opt => opt.id === optionId);
+    return editableOption ? editableOption.label : 
+      optionId === 'meterage' ? 'Meterage (£ per meter)' :
+      optionId === 'hourlyRate' ? 'Hourly rate (£ per hour)' :
+      optionId === 'setupRate' ? 'Setup rate (£ per setup)' :
+      optionId === 'minCharge' ? 'Min charge (£ minimum)' :
+      optionId === 'dayRate' ? 'Day rate (£ per day)' : optionId;
+  };
   const [formData, setFormData] = useState({
     workCategoryId: "",
     pipeSize: "",
@@ -2435,11 +2446,11 @@ export default function RepairPricing() {
                       {(formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge) && (
                         <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
                           {[
-                            formData.pricingStructure?.meterage && 'Meterage',
-                            formData.pricingStructure?.hourlyRate && 'Hourly',
-                            formData.pricingStructure?.dayRate && 'Daily',
-                            formData.pricingStructure?.setupRate && 'Setup',
-                            formData.pricingStructure?.minCharge && 'Min Charge'
+                            formData.pricingStructure?.meterage && getPriceOptionLabel('meterage').split(' ')[0],
+                            formData.pricingStructure?.hourlyRate && getPriceOptionLabel('hourlyRate').split(' ')[0],
+                            formData.pricingStructure?.dayRate && getPriceOptionLabel('dayRate').split(' ')[0],
+                            formData.pricingStructure?.setupRate && getPriceOptionLabel('setupRate').split(' ')[0],
+                            formData.pricingStructure?.minCharge && getPriceOptionLabel('minCharge').split(' ')[0]
                           ].filter(Boolean).join(', ')}
                         </span>
                       )}
@@ -2497,7 +2508,7 @@ export default function RepairPricing() {
                             })}
                             className="rounded border-slate-300"
                           />
-                          <Label htmlFor="meterage" className="text-sm">Meterage (£ per meter)</Label>
+                          <Label htmlFor="meterage" className="text-sm">{getPriceOptionLabel('meterage')}</Label>
                         </div>
                         
                         <div className="flex items-center space-x-2">
@@ -2514,7 +2525,7 @@ export default function RepairPricing() {
                             })}
                             className="rounded border-slate-300"
                           />
-                          <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
+                          <Label htmlFor="hourlyRate" className="text-sm">{getPriceOptionLabel('hourlyRate')}</Label>
                         </div>
                         
                         <div className="flex items-center space-x-2">
@@ -2531,7 +2542,7 @@ export default function RepairPricing() {
                             })}
                             className="rounded border-slate-300"
                           />
-                          <Label htmlFor="setupRate" className="text-sm">Setup rate (£ per setup)</Label>
+                          <Label htmlFor="setupRate" className="text-sm">{getPriceOptionLabel('setupRate')}</Label>
                         </div>
                         
                         <div className="flex items-center space-x-2">
@@ -2548,7 +2559,7 @@ export default function RepairPricing() {
                             })}
                             className="rounded border-slate-300"
                           />
-                          <Label htmlFor="minCharge" className="text-sm">Min charge (£ minimum)</Label>
+                          <Label htmlFor="minCharge" className="text-sm">{getPriceOptionLabel('minCharge')}</Label>
                         </div>
                         
                         <div className="flex items-center space-x-2">
@@ -2565,7 +2576,7 @@ export default function RepairPricing() {
                             })}
                             className="rounded border-slate-300"
                           />
-                          <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
+                          <Label htmlFor="dayRate" className="text-sm">{getPriceOptionLabel('dayRate')}</Label>
                         </div>
 
                         {/* Custom Price Options */}
@@ -3567,6 +3578,12 @@ export default function RepairPricing() {
                     ...formData,
                     pricingStructure: newPricingStructure
                   });
+                  
+                  // Force a re-render to update the main pricing window display
+                  setTimeout(() => {
+                    // Trigger component update by touching the state
+                    setFormData(prev => ({ ...prev }));
+                  }, 100);
                   
                   setShowEditPriceOptionsDialog(false);
                   toast({
