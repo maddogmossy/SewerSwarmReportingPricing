@@ -107,7 +107,6 @@ export const sectionInspections = pgTable("section_inspections", {
   recommendations: text("recommendations"),
   adoptable: varchar("adoptable"),
   cost: varchar("cost"),
-  srmGrading: text("srm_grading"), // Store SRM grading JSON data
   createdAt: timestamp("created_at").defaultNow(),
 });
 
