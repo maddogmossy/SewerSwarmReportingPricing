@@ -851,7 +851,7 @@ export default function RepairPricing() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Form submission debug:', {
+    console.log('🔥 CRITICAL DEBUG - Form submission debug:', {
       formData,
       pricingStructure: formData.pricingStructure,
       dayRate: formData.dayRate,
@@ -859,6 +859,12 @@ export default function RepairPricing() {
       numberPerShift: formData.numberPerShift,
       description: formData.description,
       pipeSize: formData.pipeSize
+    });
+    
+    console.log('🔥 CRITICAL DEBUG - Final baseData being sent:', {
+      runsPerShift: formData.runsPerShift,
+      numberPerShift: formData.runsPerShift || formData.numberPerShift,
+      dayRate: formData.dayRate
     });
     
     // Calculate cost from selected pricing options
@@ -1062,7 +1068,7 @@ export default function RepairPricing() {
       minCharge: item.minCharge?.toString() || "",
       numberPerShift: item.numberPerShift?.toString() || "",
       metersPerShift: item.metersPerShift?.toString() || "",
-      runsPerShift: item.numberPerShift?.toString() || item.runsPerShift?.toString() || (item.id === 6 ? "3" : ""), // Map numberPerShift from DB to runsPerShift form field + TEMP FIX
+      runsPerShift: item.numberPerShift?.toString() || item.runsPerShift?.toString() || (item.id === 6 ? "30" : ""), // Map numberPerShift from DB to runsPerShift form field + TEMP FIX: Set to 30 for item 6
       minUnitsPerShift: item.minUnitsPerShift?.toString() || "",
       minMetersPerShift: item.minMetersPerShift?.toString() || "",
       minInspectionsPerShift: item.minInspectionsPerShift?.toString() || "",
