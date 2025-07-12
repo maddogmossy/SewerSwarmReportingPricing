@@ -3284,6 +3284,34 @@ export default function RepairPricing() {
               <Button
                 onClick={() => {
                   if (formData.description && formData.pipeSize) {
+                    // Build complete list of all enabled options (standard + user-added)
+                    const allEnabledOptions = [];
+                    
+                    // Add standard price options that are checked
+                    if (formData.pricingStructure?.dayRate) allEnabledOptions.push('Day rate');
+                    if (formData.pricingStructure?.hourlyRate) allEnabledOptions.push('Hourly rate');
+                    if (formData.pricingStructure?.setupRate) allEnabledOptions.push('Setup rate');
+                    if (formData.pricingStructure?.minCharge) allEnabledOptions.push('Min charge');
+                    if (formData.pricingStructure?.meterage) allEnabledOptions.push('Meterage');
+                    if (formData.pricingStructure?.numberPerShift) allEnabledOptions.push('Number per shift');
+                    if (formData.pricingStructure?.metersPerShift) allEnabledOptions.push('Meters per shift');
+                    if (formData.pricingStructure?.runsPerShift) allEnabledOptions.push('Runs per shift');
+                    if (formData.pricingStructure?.repeatFree) allEnabledOptions.push('Repeat free');
+                    
+                    // Add user-added options that are checked (they start with "userAdded_")
+                    Object.keys(formData.pricingStructure || {}).forEach(key => {
+                      if (key.startsWith('userAdded_') && formData.pricingStructure?.[key]) {
+                        // Find the option label from display order
+                        const priceOption = formData.optionDisplayOrder?.find(opt => opt.id === key);
+                        const quantityOption = formData.quantityDisplayOrder?.find(opt => opt.id === key);
+                        const minQuantityOption = formData.minQuantityDisplayOrder?.find(opt => opt.id === key);
+                        
+                        if (priceOption) allEnabledOptions.push(priceOption.label);
+                        else if (quantityOption) allEnabledOptions.push(quantityOption.label);
+                        else if (minQuantityOption) allEnabledOptions.push(minQuantityOption.label);
+                      }
+                    });
+
                     const pricingData = {
                       sector,
                       workCategoryId: parseInt(formData.workCategoryId || "1"), // Default to first category if not set
@@ -3292,7 +3320,10 @@ export default function RepairPricing() {
                       description: formData.description,
                       lengthOfRepair: formData.lengthOfRepair,
                       dayRate: formData.dayRate,
-                      pricingStructure: formData.pricingStructure,
+                      pricingStructure: {
+                        ...formData.pricingStructure,
+                        priceOptions: allEnabledOptions // Save all enabled options as standard options
+                      },
                       vehicleId: formData.vehicleId,
                       // Include all pricing option values
                       meterage: formData.meterage,
@@ -3307,9 +3338,11 @@ export default function RepairPricing() {
                       minMetersPerShift: formData.minMetersPerShift,
                       minInspectionsPerShift: formData.minInspectionsPerShift,
                       minSetupCount: formData.minSetupCount,
-                      // Include math operators and custom options
+                      // Include math operators and display orders for user-added options
                       mathOperators: mathOperators,
-                      customOptions: customOptions
+                      optionDisplayOrder: formData.optionDisplayOrder,
+                      quantityDisplayOrder: formData.quantityDisplayOrder,
+                      minQuantityDisplayOrder: formData.minQuantityDisplayOrder
                     };
 
                     if (editingItem) {
@@ -3362,11 +3395,38 @@ export default function RepairPricing() {
               <Button 
                 onClick={() => {
                   if (newOptionName.trim()) {
-                    console.log("Adding price/cost option:", newOptionName);
-                    setCustomOptions(prev => ({
-                      ...prev,
-                      priceOptions: [...prev.priceOptions, newOptionName]
-                    }));
+                    console.log("Adding price/cost option as new STANDARD option:", newOptionName);
+                    
+                    // Add to optionDisplayOrder as a standard option (not custom)
+                    setFormData(prev => {
+                      const newStandardOptionId = `userAdded_${Date.now()}`;
+                      const newDisplayItem = {
+                        id: newStandardOptionId,
+                        label: newOptionName.trim(),
+                        type: 'standard' // Make it a standard option, not custom
+                      };
+                      
+                      const currentOrder = prev.optionDisplayOrder || [
+                        { id: 'dayRate', label: getPriceOptionLabel('dayRate'), type: 'standard' },
+                        { id: 'hourlyRate', label: getPriceOptionLabel('hourlyRate'), type: 'standard' },
+                        { id: 'setupRate', label: getPriceOptionLabel('setupRate'), type: 'standard' },
+                        { id: 'minCharge', label: getPriceOptionLabel('minCharge'), type: 'standard' },
+                        { id: 'meterage', label: getPriceOptionLabel('meterage'), type: 'standard' }
+                      ];
+                      
+                      const updatedOrder = [...currentOrder, newDisplayItem];
+                      console.log("Added new standard option to display order:", updatedOrder);
+                      
+                      return {
+                        ...prev,
+                        optionDisplayOrder: updatedOrder,
+                        pricingStructure: {
+                          ...prev.pricingStructure,
+                          [newStandardOptionId]: false // Add as unchecked standard option
+                        }
+                      };
+                    });
+                    
                     setShowPriceCostDialog(false);
                     setNewOptionName('');
                   }
@@ -3407,24 +3467,15 @@ export default function RepairPricing() {
               <Button 
                 onClick={() => {
                   if (newOptionName.trim()) {
-                    console.log("Adding quantity option:", newOptionName);
+                    console.log("Adding quantity option as new STANDARD option:", newOptionName);
                     
-                    setCustomOptions(prev => {
-                      const newOptions = {
-                        ...prev,
-                        quantityOptions: [...prev.quantityOptions, newOptionName.trim()]
-                      };
-                      console.log("Updated customOptions:", newOptions);
-                      return newOptions;
-                    });
-
-                    // Add to quantityDisplayOrder to ensure it appears in the main window
+                    // Add to quantityDisplayOrder as a standard option (not custom)
                     setFormData(prev => {
-                      const newCustomOptionId = `custom_quantity_${customOptions?.quantityOptions?.length || 0}`;
+                      const newStandardOptionId = `userAdded_${Date.now()}`;
                       const newDisplayItem = {
-                        id: newCustomOptionId,
+                        id: newStandardOptionId,
                         label: newOptionName.trim(),
-                        type: 'custom'
+                        type: 'standard' // Make it a standard option, not custom
                       };
                       
                       const currentOrder = prev.quantityDisplayOrder || [
@@ -3435,11 +3486,15 @@ export default function RepairPricing() {
                       ];
                       
                       const updatedOrder = [...currentOrder, newDisplayItem];
-                      console.log("Updated quantityDisplayOrder:", updatedOrder);
+                      console.log("Added new standard quantity option to display order:", updatedOrder);
                       
                       return {
                         ...prev,
-                        quantityDisplayOrder: updatedOrder
+                        quantityDisplayOrder: updatedOrder,
+                        pricingStructure: {
+                          ...prev.pricingStructure,
+                          [newStandardOptionId]: false // Add as unchecked standard option
+                        }
                       };
                     });
                     
@@ -3483,21 +3538,15 @@ export default function RepairPricing() {
               <Button 
                 onClick={() => {
                   if (newOptionName.trim()) {
-                    setCustomOptions(prev => {
-                      const newOptions = {
-                        ...prev,
-                        minQuantityOptions: [...prev.minQuantityOptions, newOptionName.trim()]
-                      };
-                      return newOptions;
-                    });
-
-                    // Add to minQuantityDisplayOrder to ensure it appears in the main window
+                    console.log("Adding min quantity option as new STANDARD option:", newOptionName);
+                    
+                    // Add to minQuantityDisplayOrder as a standard option (not custom)
                     setFormData(prev => {
-                      const newCustomOptionId = `custom_min_quantity_${customOptions?.minQuantityOptions?.length || 0}`;
+                      const newStandardOptionId = `userAdded_${Date.now()}`;
                       const newDisplayItem = {
-                        id: newCustomOptionId,
+                        id: newStandardOptionId,
                         label: newOptionName.trim(),
-                        type: 'custom'
+                        type: 'standard' // Make it a standard option, not custom
                       };
                       
                       const currentOrder = prev.minQuantityDisplayOrder || [
@@ -3508,10 +3557,15 @@ export default function RepairPricing() {
                       ];
                       
                       const updatedOrder = [...currentOrder, newDisplayItem];
+                      console.log("Added new standard min quantity option to display order:", updatedOrder);
                       
                       return {
                         ...prev,
-                        minQuantityDisplayOrder: updatedOrder
+                        minQuantityDisplayOrder: updatedOrder,
+                        pricingStructure: {
+                          ...prev.pricingStructure,
+                          [newStandardOptionId]: false // Add as unchecked standard option
+                        }
                       };
                     });
                     
