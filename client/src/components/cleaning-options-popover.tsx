@@ -60,6 +60,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     return "0.00m";
   };
 
+  // Normalize category names for matching (handles variations like "Cleanse and Survey" vs "Cleanse/Survey")
+  const normalizeMethodName = (name: string): string => {
+    return name.toLowerCase()
+      .replace(/\s+and\s+/g, '/')  // "and" becomes "/"
+      .replace(/\s+/g, '')         // remove spaces
+      .replace(/[^\w/]/g, '');     // keep only word chars and /
+  };
+
   // Populate description template with pipe size and meterage
   const populateDescription = (template: string, method: string): string => {
     const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
@@ -107,21 +115,27 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
           );
         }
         
-        // Enhanced fallback: try matching method name with "Cleanse/Survey" work category
-        if (!pricing && method.name === 'Cleanse and Survey') {
-          pricing = pricingData.find((p: any) => 
-            p.workCategory === 'Cleanse/Survey' && 
-            p.pipeSize === sectionData.pipeSize
-          );
+        // Enhanced fallback: try matching with normalized names for variations like "Cleanse and Survey" vs "Cleanse/Survey"
+        if (!pricing) {
+          const normalizedMethodName = normalizeMethodName(method.name);
+          pricing = pricingData.find((p: any) => {
+            const normalizedWorkCategory = normalizeMethodName(p.workCategory || '');
+            return normalizedWorkCategory === normalizedMethodName && 
+                   p.pipeSize === sectionData.pipeSize;
+          });
         }
         
         // If still no exact pipe size match, try finding any pricing for this method regardless of pipe size
         if (!pricing) {
-          pricing = pricingData.find((p: any) => 
-            (p.repairMethodId === method.id || 
-             p.methodName === method.name || 
-             (method.name === 'Cleanse and Survey' && p.workCategory === 'Cleanse/Survey'))
-          );
+          const normalizedMethodName = normalizeMethodName(method.name);
+          pricing = pricingData.find((p: any) => {
+            const normalizedWorkCategory = normalizeMethodName(p.workCategory || '');
+            const normalizedPricingMethodName = normalizeMethodName(p.methodName || '');
+            
+            return (p.repairMethodId === method.id || 
+                    normalizedPricingMethodName === normalizedMethodName ||
+                    normalizedWorkCategory === normalizedMethodName);
+          });
           
           // If found a different pipe size, mark as needs configuration for specific size
           if (pricing && pricing.pipeSize !== sectionData.pipeSize) {
