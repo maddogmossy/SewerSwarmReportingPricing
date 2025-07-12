@@ -2435,6 +2435,21 @@ export default function RepairPricing() {
                           ].filter(Boolean).join(', ')}
                         </span>
                       )}
+                      {(formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge) && (
+                        <Button 
+                          type="button"
+                          size="sm" 
+                          className="text-xs px-2 py-1 h-6 bg-blue-500 hover:bg-blue-600 text-white"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowPriceCostDialog(true);
+                            // Set edit mode for existing price options
+                          }}
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
+                      )}
                       <Button 
                         type="button"
                         size="sm" 
@@ -2941,6 +2956,20 @@ export default function RepairPricing() {
                           ].filter(Boolean).join(', ')}
                         </span>
                       )}
+                      {(formData.pricingStructure?.minUnitsPerShift || formData.pricingStructure?.minMetersPerShift || formData.pricingStructure?.minInspectionsPerShift || formData.pricingStructure?.minSetupCount) && (
+                        <Button 
+                          type="button"
+                          size="sm" 
+                          className="text-xs px-2 py-1 h-6 bg-orange-500 hover:bg-orange-600 text-white"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowMinQuantityDialog(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
+                      )}
                       <Button 
                         type="button"
                         size="sm" 
@@ -3106,6 +3135,20 @@ export default function RepairPricing() {
                             formData.pricingStructure?.includeTotalLength && 'Total Length'
                           ].filter(Boolean).join(', ')}
                         </span>
+                      )}
+                      {(formData.pricingStructure?.includeDepth || formData.pricingStructure?.includeTotalLength) && (
+                        <Button 
+                          type="button"
+                          size="sm" 
+                          className="text-xs px-2 py-1 h-6 bg-purple-500 hover:bg-purple-600 text-white"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowAdditionalDialog(true);
+                          }}
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
                       )}
                       <Button 
                         type="button"
