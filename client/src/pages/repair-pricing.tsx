@@ -2666,7 +2666,7 @@ export default function RepairPricing() {
                   <div 
                     className="flex items-center justify-between p-4 cursor-pointer"
                     onClick={() => {
-                      const hasSelected = formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge;
+                      const hasSelected = formData.pricingStructure?.meterage || formData.pricingStructure?.hourlyRate || formData.pricingStructure?.dayRate || formData.pricingStructure?.setupRate || formData.pricingStructure?.minCharge || (customOptions?.priceOptions?.length > 0);
                       if (hasSelected) {
                         setCollapsedWindows(prev => ({
                           ...prev,
