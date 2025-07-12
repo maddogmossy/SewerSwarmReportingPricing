@@ -149,7 +149,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     // Navigate to work category creation with pre-filled data for Cleanse and Survey
     const sector = sectionData.sector || 'utilities';
     const params = new URLSearchParams({
-      categoryName: 'Cleanse and Survey',
+      categoryName: 'Cleanse/Survey',
       categoryDescription: 'Complete cleaning followed by verification survey to confirm completion',
       suggestedColor: 'Blue',
       pipeSize: sectionData.pipeSize || '150mm',
@@ -416,7 +416,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
             Set Up Cleanse and Survey Category
           </DialogTitle>
           <DialogDescription>
-            This requires setting up a "Cleanse and Survey" work category. You will be redirected to create this category and select the fields you want to include.
+            This requires setting up a "Cleanse/Survey" work category. You will be redirected to create this category and select the fields you want to include.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
