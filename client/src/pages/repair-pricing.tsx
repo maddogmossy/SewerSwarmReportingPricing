@@ -253,21 +253,21 @@ export default function RepairPricing() {
     pipeSize: "",
     depth: "",
     description: "",
-    option1Cost: "N/A",
-    option2Cost: "",
-    option3Cost: "",
-    option4Cost: "",
-    option1PerShift: "",
-    option2PerShift: "",
-    option3PerShift: "",
-    option4PerShift: "",
-    selectedOption: "",
     rule: "",
-    lengthOfRepair: "1000mm",
-    minInstallationPerDay: "",
+    lengthOfRepair: "",
     dayRate: "",
-    vehicleId: "", // Add vehicle selection
-    lockSingleLayer: true // Lock single layer by default
+    vehicleId: "",
+    pricingStructure: {
+      meterage: false,
+      numberPerShift: false,
+      metersPerShift: false,
+      dayRate: false,
+      hourlyRate: false,
+      runsPerShift: false,
+      setupRate: false,
+      minCharge: false,
+      repeatFree: false
+    }
   });
 
   const [applySectors, setApplySectors] = useState<string[]>([]);
@@ -406,20 +406,20 @@ export default function RepairPricing() {
           setFormData(prev => ({
             ...prev,
             workCategoryId: matchingCategory.id.toString(),
-            pipeSize: pipeSize ? `${pipeSize}mm` : prev.pipeSize,
-            depth: depthRange, // Auto-populate depth from dashboard
-            description: description,
-            lengthOfRepair: "1000mm",
-            minInstallationPerDay: "",
+            pipeSize: pipeSize || prev.pipeSize,
+            depth: depthRange,
+            description: description || generateDescriptionFromRecommendations(recommendations, defects),
+            lengthOfRepair: meterage || "15.56m", // Use actual length from dashboard
             dayRate: "800.00",
-            travelTimeAllowance: "2.0",
-            option1PerShift: "",
-            option2PerShift: "",
-            option3PerShift: "",
-            option4PerShift: "",
-            rule: rule
+            vehicleId: "",
+            rule: rule,
+            pricingStructure: {
+              ...prev.pricingStructure,
+              meterage: true, // Default to meterage pricing for repairs
+              dayRate: true   // Also enable day rate
+            }
           }));
-          setIsDescriptionEditable(false); // Ensure description is locked when auto-populated
+          setIsDescriptionEditable(false);
           setIsAddDialogOpen(true);
         }, 500);
       }
@@ -2009,24 +2009,32 @@ export default function RepairPricing() {
             </DialogHeader>
             
             <div className="space-y-6">
-              {/* Work Category Selection */}
-              <div>
-                <Label className="text-sm font-medium">Work Category *</Label>
-                <Select value={formData.workCategoryId} onValueChange={(value) => setFormData({...formData, workCategoryId: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select work category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {workCategories?.map((category: any) => (
-                      <SelectItem key={category.id} value={category.id.toString()}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Show auto-populated data if coming from dashboard */}
+              {(function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const autoFocus = urlParams.get('autoFocus');
+                const pipeSize = urlParams.get('pipeSize');
+                const totalLength = urlParams.get('totalLength');
+                const depth = urlParams.get('pipeDepth');
+                const description = urlParams.get('recommendations');
+                
+                if (autoFocus) {
+                  return (
+                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <Label className="text-sm font-medium text-blue-800 block mb-2">Auto-populated from Dashboard Section</Label>
+                      <div className="text-xs text-blue-700 space-y-1">
+                        {pipeSize && <div>• Pipe Size: {pipeSize}</div>}
+                        {totalLength && <div>• Total Length: {totalLength}</div>}
+                        {depth && <div>• Depth: {depth}</div>}
+                        {description && <div>• Based on: {description.substring(0, 100)}...</div>}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
 
-              {/* Pipe Size and Depth */}
+              {/* Standard Configuration Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium">Pipe Size</Label>
@@ -2048,7 +2056,18 @@ export default function RepairPricing() {
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium">Depth Range</Label>
+                  <Label className="text-sm font-medium">Total Length</Label>
+                  <Input
+                    value={formData.lengthOfRepair}
+                    onChange={(e) => setFormData({...formData, lengthOfRepair: e.target.value})}
+                    placeholder="e.g., 15.56m"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Depth</Label>
                   <Select value={formData.depth} onValueChange={(value) => setFormData({...formData, depth: value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select depth" />
@@ -2061,6 +2080,14 @@ export default function RepairPricing() {
                       <SelectItem value="4m+">4m+</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Day Rate (£)</Label>
+                  <Input
+                    value={formData.dayRate}
+                    onChange={(e) => setFormData({...formData, dayRate: e.target.value})}
+                    placeholder="0.00"
+                  />
                 </div>
               </div>
 
@@ -2075,177 +2102,169 @@ export default function RepairPricing() {
                 />
               </div>
 
-              {/* Pricing Options Section */}
+              {/* Pricing Structure Options with Tick Boxes */}
               <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
-                <Label className="text-sm font-medium text-slate-700 mb-3 block">Pricing Configuration Options</Label>
-                <p className="text-xs text-slate-500 mb-4">Select the pricing options you want to configure for this work:</p>
+                <Label className="text-sm font-medium text-slate-700 mb-3 block">Pricing Structure Options</Label>
+                <p className="text-xs text-slate-500 mb-4">Select the pricing options you need for this category:</p>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Option 1 */}
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="option1"
-                        checked={!!formData.option1Cost}
-                        onChange={(e) => {
-                          if (!e.target.checked) {
-                            setFormData({...formData, option1Cost: "", option1PerShift: ""});
-                          }
-                        }}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="option1" className="text-sm">Option 1 - Basic</Label>
-                    </div>
-                    {formData.option1Cost !== "" && (
-                      <div className="ml-6 space-y-2">
-                        <Input
-                          placeholder="Cost (£)"
-                          value={formData.option1Cost}
-                          onChange={(e) => setFormData({...formData, option1Cost: e.target.value})}
-                        />
-                        <Input
-                          placeholder="Per shift quantity"
-                          value={formData.option1PerShift}
-                          onChange={(e) => setFormData({...formData, option1PerShift: e.target.value})}
-                        />
-                      </div>
-                    )}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="meterage"
+                      checked={formData.pricingStructure?.meterage || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pricingStructure: {
+                          ...formData.pricingStructure,
+                          meterage: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="meterage" className="text-sm">Meterage (£ per meter)</Label>
                   </div>
-
-                  {/* Option 2 */}
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="option2"
-                        checked={!!formData.option2Cost}
-                        onChange={(e) => {
-                          if (!e.target.checked) {
-                            setFormData({...formData, option2Cost: "", option2PerShift: ""});
-                          }
-                        }}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="option2" className="text-sm">Option 2 - Standard</Label>
-                    </div>
-                    {formData.option2Cost !== "" && (
-                      <div className="ml-6 space-y-2">
-                        <Input
-                          placeholder="Cost (£)"
-                          value={formData.option2Cost}
-                          onChange={(e) => setFormData({...formData, option2Cost: e.target.value})}
-                        />
-                        <Input
-                          placeholder="Per shift quantity"
-                          value={formData.option2PerShift}
-                          onChange={(e) => setFormData({...formData, option2PerShift: e.target.value})}
-                        />
-                      </div>
-                    )}
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="numberPerShift"
+                      checked={formData.pricingStructure?.numberPerShift || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pricingStructure: {
+                          ...formData.pricingStructure,
+                          numberPerShift: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="numberPerShift" className="text-sm">Units per shift (installations/jobs)</Label>
                   </div>
-
-                  {/* Option 3 */}
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="option3"
-                        checked={!!formData.option3Cost}
-                        onChange={(e) => {
-                          if (!e.target.checked) {
-                            setFormData({...formData, option3Cost: "", option3PerShift: ""});
-                          }
-                        }}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="option3" className="text-sm">Option 3 - Premium</Label>
-                    </div>
-                    {formData.option3Cost !== "" && (
-                      <div className="ml-6 space-y-2">
-                        <Input
-                          placeholder="Cost (£)"
-                          value={formData.option3Cost}
-                          onChange={(e) => setFormData({...formData, option3Cost: e.target.value})}
-                        />
-                        <Input
-                          placeholder="Per shift quantity"
-                          value={formData.option3PerShift}
-                          onChange={(e) => setFormData({...formData, option3PerShift: e.target.value})}
-                        />
-                      </div>
-                    )}
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="metersPerShift"
+                      checked={formData.pricingStructure?.metersPerShift || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pricingStructure: {
+                          ...formData.pricingStructure,
+                          metersPerShift: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="metersPerShift" className="text-sm">Meters per shift (linear progress)</Label>
                   </div>
-
-                  {/* Option 4 */}
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="option4"
-                        checked={!!formData.option4Cost}
-                        onChange={(e) => {
-                          if (!e.target.checked) {
-                            setFormData({...formData, option4Cost: "", option4PerShift: ""});
-                          }
-                        }}
-                        className="rounded border-slate-300"
-                      />
-                      <Label htmlFor="option4" className="text-sm">Option 4 - Extended</Label>
-                    </div>
-                    {formData.option4Cost !== "" && (
-                      <div className="ml-6 space-y-2">
-                        <Input
-                          placeholder="Cost (£)"
-                          value={formData.option4Cost}
-                          onChange={(e) => setFormData({...formData, option4Cost: e.target.value})}
-                        />
-                        <Input
-                          placeholder="Per shift quantity"
-                          value={formData.option4PerShift}
-                          onChange={(e) => setFormData({...formData, option4PerShift: e.target.value})}
-                        />
-                      </div>
-                    )}
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="dayRate"
+                      checked={formData.pricingStructure?.dayRate || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pricingStructure: {
+                          ...formData.pricingStructure,
+                          dayRate: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="dayRate" className="text-sm">Day rate (£ per day)</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="hourlyRate"
+                      checked={formData.pricingStructure?.hourlyRate || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pricingStructure: {
+                          ...formData.pricingStructure,
+                          hourlyRate: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="hourlyRate" className="text-sm">Hourly rate (£ per hour)</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="runsPerShift"
+                      checked={formData.pricingStructure?.runsPerShift || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pricingStructure: {
+                          ...formData.pricingStructure,
+                          runsPerShift: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="runsPerShift" className="text-sm">Survey runs per shift (CCTV passes)</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="setupRate"
+                      checked={formData.pricingStructure?.setupRate || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pricingStructure: {
+                          ...formData.pricingStructure,
+                          setupRate: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="setupRate" className="text-sm">Set up rate (£ per setup)</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="minCharge"
+                      checked={formData.pricingStructure?.minCharge || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pricingStructure: {
+                          ...formData.pricingStructure,
+                          minCharge: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="minCharge" className="text-sm">Min charge (£ minimum)</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="repeatFree"
+                      checked={formData.pricingStructure?.repeatFree || false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pricingStructure: {
+                          ...formData.pricingStructure,
+                          repeatFree: e.target.checked
+                        }
+                      })}
+                      className="rounded border-slate-300"
+                    />
+                    <Label htmlFor="repeatFree" className="text-sm">Repeat Free (no charge for repeat visits)</Label>
                   </div>
                 </div>
-              </div>
-
-              {/* Additional Configuration */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-medium">Day Rate (£)</Label>
-                  <Input
-                    value={formData.dayRate}
-                    onChange={(e) => setFormData({...formData, dayRate: e.target.value})}
-                    placeholder="0.00"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Length of Repair (mm)</Label>
-                  <Input
-                    value={formData.lengthOfRepair}
-                    onChange={(e) => setFormData({...formData, lengthOfRepair: e.target.value})}
-                    placeholder="1000"
-                  />
-                </div>
-              </div>
-
-              {/* Vehicle Selection */}
-              <div>
-                <Label className="text-sm font-medium">Vehicle/Equipment</Label>
-                <Select value={formData.vehicleId} onValueChange={(value) => setFormData({...formData, vehicleId: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select vehicle/equipment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="van-pack">Van Pack 3.5t</SelectItem>
-                    <SelectItem value="city-flex">City Flex 7.5t</SelectItem>
-                    <SelectItem value="cctv-unit">CCTV Unit 12t</SelectItem>
-                    <SelectItem value="jet-vac">Jet Vac 26t</SelectItem>
-                    <SelectItem value="combination">Combination Unit 32t</SelectItem>
-                  </SelectContent>
-                </Select>
+                
+                <p className="text-xs text-slate-500 mt-3">
+                  You can select multiple options to create flexible pricing configurations.
+                </p>
               </div>
             </div>
 
@@ -2261,24 +2280,17 @@ export default function RepairPricing() {
               </Button>
               <Button
                 onClick={() => {
-                  if (formData.workCategoryId && formData.description) {
+                  if (formData.description && formData.pipeSize) {
                     const pricingData = {
                       sector,
-                      workCategoryId: parseInt(formData.workCategoryId),
+                      workCategoryId: parseInt(formData.workCategoryId || "1"), // Default to first category if not set
                       pipeSize: formData.pipeSize,
                       depth: formData.depth,
                       description: formData.description,
                       rule: formData.rule,
                       lengthOfRepair: formData.lengthOfRepair,
                       dayRate: formData.dayRate,
-                      option1Cost: formData.option1Cost,
-                      option2Cost: formData.option2Cost,
-                      option3Cost: formData.option3Cost,
-                      option4Cost: formData.option4Cost,
-                      option1PerShift: formData.option1PerShift,
-                      option2PerShift: formData.option2PerShift,
-                      option3PerShift: formData.option3PerShift,
-                      option4PerShift: formData.option4PerShift,
+                      pricingStructure: formData.pricingStructure,
                       vehicleId: formData.vehicleId
                     };
 
@@ -2290,7 +2302,7 @@ export default function RepairPricing() {
                   } else {
                     toast({
                       title: "Validation Error",
-                      description: "Please fill in required fields",
+                      description: "Please fill in pipe size and description",
                       variant: "destructive"
                     });
                   }
