@@ -200,7 +200,7 @@ export default function PR2Pricing() {
             className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add PR2 Configuration
+            Create Custom Category
           </Button>
         </div>
 
@@ -219,28 +219,18 @@ export default function PR2Pricing() {
                     className="cursor-pointer transition-all hover:shadow-md bg-white border-2 border-gray-200"
                     onClick={() => handleCategoryNavigation(category.id)}
                   >
-                    <CardContent className="p-4 text-center">
+                    <CardContent className="p-4 text-center relative">
                       <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                       <h3 className="font-medium text-sm mb-1 text-gray-800">{category.name}</h3>
                       <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
+                      {/* Orange cog to show not configured */}
+                      <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
                     </CardContent>
                   </Card>
                 ))}
               </div>
               
-              <div className="mt-6 pt-6 border-t">
-                <Button
-                  variant="outline"
-                  className="w-full h-auto p-4 border-2 border-dashed"
-                  onClick={() => handleAddConfiguration()}
-                >
-                  <div className="text-center">
-                    <Plus className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-                    <span className="font-medium">Create Custom Category</span>
-                    <p className="text-xs text-gray-500 mt-1">Define your own category with custom specifications</p>
-                  </div>
-                </Button>
-              </div>
+
             </CardContent>
           </Card>
         </div>
