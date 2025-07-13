@@ -188,8 +188,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
           autoSetup: 'true'
         });
         
-        // Navigate to PR1 pricing system for category configuration
-        setLocation('/pr1-pricing');
+        // Navigate to PR2 pricing system for category configuration
+        setLocation('/pr2-pricing');
       }
     } catch (error) {
       toast({
