@@ -107,7 +107,7 @@ export default function PR2PricingForm() {
         description: `PR2 configuration ${isEditing ? 'updated' : 'created'} successfully`,
       });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
-      setLocation(`/pr2-pricing?sector=${sector}`);
+      setLocation('/dashboard');
     },
     onError: (error: any) => {
       toast({

@@ -1586,7 +1586,7 @@ export default function Dashboard() {
       return (
         <span 
           className="text-green-600 font-medium cursor-help"
-          title={`Cost calculated using ${autoCost.method || 'PR1 Configuration'}\nStatus: ${autoCost.status || 'calculated'}`}
+          title={`Cost calculated using ${autoCost.method || 'PR2 Configuration'}\nStatus: ${autoCost.status || 'calculated'}`}
         >
           £{autoCost.cost.toFixed(2)}
         </span>
