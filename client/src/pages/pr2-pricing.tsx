@@ -256,7 +256,7 @@ export default function PR2Pricing() {
   if (categoriesLoading || pr2Loading) {
     return (
       <div className="container mx-auto p-6">
-        <div className="text-center">Loading PR2 pricing configuration...</div>
+        <div className="text-center">Loading pricing configuration...</div>
       </div>
     );
   }
@@ -266,7 +266,7 @@ export default function PR2Pricing() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold">PR2 Pricing Configuration</h1>
+          <h1 className="text-3xl font-bold">Pricing Configuration</h1>
           <p className="text-gray-600">
             Configure pricing for <span className={`font-medium ${currentSector.color}`}>{currentSector.name}</span> sector cleaning and repairs
           </p>
@@ -330,7 +330,7 @@ export default function PR2Pricing() {
         <div className="space-y-6">
           <Card className={`${currentSector.bgColor} border-2`}>
             <CardHeader>
-              <CardTitle>Categories - Standard Categories</CardTitle>
+              <CardTitle>Categories</CardTitle>
               <p className="text-sm text-gray-600">Choose from pre-configured standard categories similar to OPS and PR1 systems</p>
             </CardHeader>
             <CardContent>
@@ -399,7 +399,7 @@ export default function PR2Pricing() {
         {/* Existing Configurations - Full width list display */}
         {pr2Configurations.length > 0 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Existing PR2 Configurations</h3>
+            <h3 className="text-lg font-semibold">Existing Configurations</h3>
             <div className="space-y-3">
               {pr2Configurations.map((config: any) => (
                 <Card key={config.id} className="w-full hover:shadow-md transition-shadow">
