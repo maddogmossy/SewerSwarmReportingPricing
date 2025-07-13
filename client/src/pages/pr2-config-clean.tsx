@@ -123,7 +123,7 @@ export default function PR2ConfigClean() {
         const rangeOptions = Array.isArray(config.rangeOptions) ? config.rangeOptions : [];
         
         setFormData({
-          categoryName: config.categoryName || '',
+          categoryName: 'CCTV Price Configuration',
           description: config.description || '',
           pricingOptions: config.pricingOptions || [],
           quantityOptions: quantityOptions,
@@ -530,32 +530,20 @@ export default function PR2ConfigClean() {
           </p>
         </div>
 
-        {/* Basic Information */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="categoryName">Category Name</Label>
-              <Input
-                id="categoryName"
-                value={formData.categoryName}
-                onChange={(e) => setFormData(prev => ({ ...prev, categoryName: e.target.value }))}
-                placeholder="Enter category name"
-              />
-            </div>
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Input
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Enter description"
-              />
-            </div>
-          </CardContent>
-        </Card>
+        {/* Configuration Title */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">CCTV Price Configuration</h2>
+          <div>
+            <Label htmlFor="description">Description</Label>
+            <Input
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              placeholder="Enter description"
+              className="mt-1"
+            />
+          </div>
+        </div>
 
         {/* Three Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
