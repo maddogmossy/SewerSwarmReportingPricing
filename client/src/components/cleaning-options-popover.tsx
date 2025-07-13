@@ -74,7 +74,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
         <div className="p-4 border-b">
           <h4 className="font-semibold text-sm flex items-center gap-2">
             <Settings className="h-4 w-4 text-blue-600" />
-            Cleaning Options for {sectionData.pipeSize}
+            Cleanse/Survey
           </h4>
           <p className="text-xs text-slate-600 mt-1">
             Configure cleaning pricing in PR2 system
