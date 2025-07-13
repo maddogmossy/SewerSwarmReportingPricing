@@ -379,15 +379,25 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v3.4' to return to this stable checkpoint
 
-## CLEANSE/SURVEY FLOW - COMPLETE INDEPENDENCE FROM LEGACY SYSTEMS (July 13, 2025)
+## REV V3.5 CHECKPOINT - STACK ORDER EQUIPMENT SELECTION LOCKED (July 13, 2025)
 
-🔒 **DASHBOARD CLEANSE/SURVEY WORKFLOW DOCUMENTED:**
+🔒 **PRODUCTION READY - COMPLETE STACK ORDER SYSTEM:**
+- **Equipment Selection Interface**: Users can select CCTV/Van Pack and/or CCTV/Jet Vac with checkboxes
+- **Stack Order Functionality**: "Stack Order" button reveals up/down arrow controls for reordering equipment
+- **Dynamic Option Numbering**: Options automatically renumber (1, 2) based on user's preferred order
+- **Preferred Badge System**: Top option in stack automatically receives "Preferred" badge
+- **Ordered Parameter Passing**: Selected equipment routes to PR2 pricing in user's preferred sequence
+- **Clean UI Integration**: Equipment selection popup shows "Cleanse/Survey Equipment Selection" with professional styling
+
+🔒 **CLEANSE/SURVEY WORKFLOW COMPLETE:**
 - **Complete Independence**: Cleanse/Survey popup completely separate from old ops/PR1 systems
-- **Clean Routing**: Dashboard → CLEANSE/SURVEY box → Equipment Selection popup → PR2 Pricing → 4-Window Configuration
-- **Header Fixed**: Popup now shows "Cleanse/Survey" instead of "Cleaning Options for 150"
-- **Direct PR2 Integration**: Routes to `/pr2-pricing?sector=utilities` with clean sector filtering
+- **Clean Routing**: Dashboard → CLEANSE/SURVEY box → Equipment Selection popup → Stack Order → PR2 Pricing → 4-Window Configuration
+- **Header Fixed**: Popup shows "Cleanse/Survey Equipment Selection" with clear option numbering
+- **Direct PR2 Integration**: Routes to `/pr2-pricing?sector=utilities&equipment=selected` with ordered parameters
 - **Zero Legacy Contamination**: No connection to removed ops/PR1 "Price/Cost Options" structure
-- **Database Restoration**: Uploads 78 and 80 confirmed operational after temporary connection timeouts resolved
+- **Database Restoration**: Uploads 78 and 80 confirmed operational with 24 authentic sections
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v3.5' to return to this stable checkpoint
 
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 
