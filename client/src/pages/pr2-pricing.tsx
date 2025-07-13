@@ -444,7 +444,7 @@ export default function PR2Pricing() {
                             <span className="text-sm text-gray-700 break-words flex-1">{config.description}</span>
                           </div>
                           
-                          <div className="flex items-center gap-6 text-sm text-gray-500">
+                          <div className="flex items-center justify-center gap-8 text-sm text-gray-500">
                             <span>Pricing Options: {Array.isArray(config.pricingOptions) ? config.pricingOptions.length : Object.keys(config.pricingOptions || {}).length}</span>
                             <span>Quantity Options: {Array.isArray(config.quantityOptions) ? config.quantityOptions.length : Object.keys(config.quantityOptions || {}).length}</span>
                             <span>Math Operators: {config.mathOperators?.length || 0}</span>
@@ -452,9 +452,9 @@ export default function PR2Pricing() {
                         </div>
                       </div>
                       
-                      {/* Right section - Archive and action buttons */}
+                      {/* Right section - Action buttons with Archive badge */}
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="text-sm font-medium text-gray-600">Archive</span>
+                        <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">Archive</Badge>
                         <Button
                           size="sm"
                           variant="outline"
