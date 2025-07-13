@@ -9,7 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, Save, Calculator, Settings } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ChevronLeft, Save, Calculator, Settings, Plus, Edit2, Trash2 } from 'lucide-react';
 
 // New improved configuration page for PR2 system
 export default function PR2ConfigNew() {
@@ -105,6 +106,30 @@ export default function PR2ConfigNew() {
     mathOperators: ['N/A', 'N/A', 'N/A', 'N/A', 'N/A']
   });
 
+  // Dialog states for Add/Edit functionality
+  const [dialogs, setDialogs] = useState({
+    pricing: false,
+    quantity: false,
+    minQuantity: false,
+    additional: false
+  });
+
+  // Edit states
+  const [editStates, setEditStates] = useState({
+    pricing: { isEditing: false, editKey: '', newName: '' },
+    quantity: { isEditing: false, editKey: '', newName: '' },
+    minQuantity: { isEditing: false, editKey: '', newName: '' },
+    additional: { isEditing: false, editKey: '', newName: '' }
+  });
+
+  // New option states
+  const [newOptions, setNewOptions] = useState({
+    pricing: '',
+    quantity: '',
+    minQuantity: '',
+    additional: ''
+  });
+
   // Load existing configuration if editing
   const { data: existingConfig, isLoading: configLoading } = useQuery({
     queryKey: ['/api/pr2-pricing', editId],
@@ -177,6 +202,88 @@ export default function PR2ConfigNew() {
     }));
   };
 
+  // Helper functions for Add/Edit functionality
+  const openDialog = (section: string) => {
+    setDialogs(prev => ({ ...prev, [section]: true }));
+  };
+
+  const closeDialog = (section: string) => {
+    setDialogs(prev => ({ ...prev, [section]: false }));
+    setNewOptions(prev => ({ ...prev, [section]: '' }));
+    setEditStates(prev => ({ 
+      ...prev, 
+      [section]: { isEditing: false, editKey: '', newName: '' }
+    }));
+  };
+
+  const addNewOption = (section: string) => {
+    const optionName = newOptions[section as keyof typeof newOptions];
+    if (!optionName.trim()) return;
+
+    const camelCaseKey = optionName.toLowerCase().replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
+    const sectionKey = `${section}Options` as keyof typeof formData;
+    
+    setFormData(prev => ({
+      ...prev,
+      [sectionKey]: {
+        ...prev[sectionKey],
+        [camelCaseKey]: { enabled: false, value: '' }
+      }
+    }));
+
+    closeDialog(section);
+    toast({ title: `Added new ${section} option: ${optionName}` });
+  };
+
+  const startEdit = (section: string, key: string) => {
+    const currentName = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+    setEditStates(prev => ({
+      ...prev,
+      [section]: { isEditing: true, editKey: key, newName: currentName }
+    }));
+  };
+
+  const saveEdit = (section: string) => {
+    const editState = editStates[section as keyof typeof editStates];
+    const newName = editState.newName.trim();
+    if (!newName) return;
+
+    const newKey = newName.toLowerCase().replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
+    const sectionKey = `${section}Options` as keyof typeof formData;
+    const currentData = formData[sectionKey];
+    const oldValue = currentData[editState.editKey];
+
+    // Remove old key and add new key
+    const newSectionData = { ...currentData };
+    delete newSectionData[editState.editKey];
+    newSectionData[newKey] = oldValue;
+
+    setFormData(prev => ({
+      ...prev,
+      [sectionKey]: newSectionData
+    }));
+
+    setEditStates(prev => ({
+      ...prev,
+      [section]: { isEditing: false, editKey: '', newName: '' }
+    }));
+
+    toast({ title: `Updated ${section} option name` });
+  };
+
+  const deleteOption = (section: string, key: string) => {
+    const sectionKey = `${section}Options` as keyof typeof formData;
+    const newSectionData = { ...formData[sectionKey] };
+    delete newSectionData[key];
+
+    setFormData(prev => ({
+      ...prev,
+      [sectionKey]: newSectionData
+    }));
+
+    toast({ title: `Deleted ${section} option` });
+  };
+
   if (configLoading) {
     return (
       <div className="container mx-auto py-8">
@@ -244,8 +351,40 @@ export default function PR2ConfigNew() {
         
         {/* Blue - Pricing Options */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-blue-600">💰 Pricing Options</CardTitle>
+            <div className="flex gap-2">
+              <Dialog open={dialogs.pricing} onOpenChange={(open) => open ? openDialog('pricing') : closeDialog('pricing')}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-blue-600 border-blue-200">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Pricing Option</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Input
+                      placeholder="Enter option name (e.g., 'Call Out Fee')"
+                      value={newOptions.pricing}
+                      onChange={(e) => setNewOptions(prev => ({ ...prev, pricing: e.target.value }))}
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => closeDialog('pricing')}>Cancel</Button>
+                      <Button onClick={() => addNewOption('pricing')} className="bg-blue-600 hover:bg-blue-700">
+                        Add Option
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <Button size="sm" variant="outline" className="text-blue-600 border-blue-200">
+                <Edit2 className="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
             {Object.entries(formData.pricingOptions).map(([key, option]) => (
@@ -255,9 +394,51 @@ export default function PR2ConfigNew() {
                   checked={option.enabled}
                   onCheckedChange={(checked) => updateOption('pricingOptions', key, 'enabled', checked)}
                 />
-                <Label htmlFor={`pricing-${key}`} className="min-w-[120px]">
-                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                </Label>
+                <div className="flex items-center space-x-2 flex-1">
+                  {editStates.pricing.isEditing && editStates.pricing.editKey === key ? (
+                    <div className="flex items-center space-x-2 flex-1">
+                      <Input
+                        value={editStates.pricing.newName}
+                        onChange={(e) => setEditStates(prev => ({
+                          ...prev,
+                          pricing: { ...prev.pricing, newName: e.target.value }
+                        }))}
+                        className="flex-1"
+                      />
+                      <Button size="sm" onClick={() => saveEdit('pricing')} className="bg-green-600 hover:bg-green-700">
+                        Save
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setEditStates(prev => ({
+                        ...prev,
+                        pricing: { isEditing: false, editKey: '', newName: '' }
+                      }))}>
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Label htmlFor={`pricing-${key}`} className="min-w-[120px]">
+                        {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                      </Label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => startEdit('pricing', key)}
+                        className="p-1 h-6 w-6 text-gray-400 hover:text-blue-600"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteOption('pricing', key)}
+                        className="p-1 h-6 w-6 text-gray-400 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </>
+                  )}
+                </div>
                 {option.enabled && (
                   <Input
                     type="number"
@@ -274,8 +455,40 @@ export default function PR2ConfigNew() {
 
         {/* Green - Quantity Options */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-green-600">📊 Quantity Options</CardTitle>
+            <div className="flex gap-2">
+              <Dialog open={dialogs.quantity} onOpenChange={(open) => open ? openDialog('quantity') : closeDialog('quantity')}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-green-600 border-green-200">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Quantity Option</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Input
+                      placeholder="Enter option name (e.g., 'Items Per Hour')"
+                      value={newOptions.quantity}
+                      onChange={(e) => setNewOptions(prev => ({ ...prev, quantity: e.target.value }))}
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => closeDialog('quantity')}>Cancel</Button>
+                      <Button onClick={() => addNewOption('quantity')} className="bg-green-600 hover:bg-green-700">
+                        Add Option
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <Button size="sm" variant="outline" className="text-green-600 border-green-200">
+                <Edit2 className="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
             {Object.entries(formData.quantityOptions).map(([key, option]) => (
@@ -285,9 +498,51 @@ export default function PR2ConfigNew() {
                   checked={option.enabled}
                   onCheckedChange={(checked) => updateOption('quantityOptions', key, 'enabled', checked)}
                 />
-                <Label htmlFor={`quantity-${key}`} className="min-w-[120px]">
-                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                </Label>
+                <div className="flex items-center space-x-2 flex-1">
+                  {editStates.quantity.isEditing && editStates.quantity.editKey === key ? (
+                    <div className="flex items-center space-x-2 flex-1">
+                      <Input
+                        value={editStates.quantity.newName}
+                        onChange={(e) => setEditStates(prev => ({
+                          ...prev,
+                          quantity: { ...prev.quantity, newName: e.target.value }
+                        }))}
+                        className="flex-1"
+                      />
+                      <Button size="sm" onClick={() => saveEdit('quantity')} className="bg-green-600 hover:bg-green-700">
+                        Save
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setEditStates(prev => ({
+                        ...prev,
+                        quantity: { isEditing: false, editKey: '', newName: '' }
+                      }))}>
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Label htmlFor={`quantity-${key}`} className="min-w-[120px]">
+                        {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                      </Label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => startEdit('quantity', key)}
+                        className="p-1 h-6 w-6 text-gray-400 hover:text-green-600"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteOption('quantity', key)}
+                        className="p-1 h-6 w-6 text-gray-400 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </>
+                  )}
+                </div>
                 {option.enabled && (
                   <Input
                     type="number"
@@ -304,8 +559,40 @@ export default function PR2ConfigNew() {
 
         {/* Orange - Min Quantity Options */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-orange-600">⚡ Min Quantity Options</CardTitle>
+            <div className="flex gap-2">
+              <Dialog open={dialogs.minQuantity} onOpenChange={(open) => open ? openDialog('minQuantity') : closeDialog('minQuantity')}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-orange-600 border-orange-200">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Min Quantity Option</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Input
+                      placeholder="Enter option name (e.g., 'Min Jobs Per Day')"
+                      value={newOptions.minQuantity}
+                      onChange={(e) => setNewOptions(prev => ({ ...prev, minQuantity: e.target.value }))}
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => closeDialog('minQuantity')}>Cancel</Button>
+                      <Button onClick={() => addNewOption('minQuantity')} className="bg-orange-600 hover:bg-orange-700">
+                        Add Option
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <Button size="sm" variant="outline" className="text-orange-600 border-orange-200">
+                <Edit2 className="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
             {Object.entries(formData.minQuantityOptions).map(([key, option]) => (
@@ -315,9 +602,51 @@ export default function PR2ConfigNew() {
                   checked={option.enabled}
                   onCheckedChange={(checked) => updateOption('minQuantityOptions', key, 'enabled', checked)}
                 />
-                <Label htmlFor={`minQuantity-${key}`} className="min-w-[120px]">
-                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                </Label>
+                <div className="flex items-center space-x-2 flex-1">
+                  {editStates.minQuantity.isEditing && editStates.minQuantity.editKey === key ? (
+                    <div className="flex items-center space-x-2 flex-1">
+                      <Input
+                        value={editStates.minQuantity.newName}
+                        onChange={(e) => setEditStates(prev => ({
+                          ...prev,
+                          minQuantity: { ...prev.minQuantity, newName: e.target.value }
+                        }))}
+                        className="flex-1"
+                      />
+                      <Button size="sm" onClick={() => saveEdit('minQuantity')} className="bg-green-600 hover:bg-green-700">
+                        Save
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setEditStates(prev => ({
+                        ...prev,
+                        minQuantity: { isEditing: false, editKey: '', newName: '' }
+                      }))}>
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Label htmlFor={`minQuantity-${key}`} className="min-w-[120px]">
+                        {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                      </Label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => startEdit('minQuantity', key)}
+                        className="p-1 h-6 w-6 text-gray-400 hover:text-orange-600"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteOption('minQuantity', key)}
+                        className="p-1 h-6 w-6 text-gray-400 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </>
+                  )}
+                </div>
                 {option.enabled && (
                   <Input
                     type="number"
@@ -334,8 +663,40 @@ export default function PR2ConfigNew() {
 
         {/* Purple - Additional Options */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-purple-600">🔧 Additional Options</CardTitle>
+            <div className="flex gap-2">
+              <Dialog open={dialogs.additional} onOpenChange={(open) => open ? openDialog('additional') : closeDialog('additional')}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-purple-600 border-purple-200">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Additional Option</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Input
+                      placeholder="Enter option name (e.g., 'Include Photos')"
+                      value={newOptions.additional}
+                      onChange={(e) => setNewOptions(prev => ({ ...prev, additional: e.target.value }))}
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => closeDialog('additional')}>Cancel</Button>
+                      <Button onClick={() => addNewOption('additional')} className="bg-purple-600 hover:bg-purple-700">
+                        Add Option
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <Button size="sm" variant="outline" className="text-purple-600 border-purple-200">
+                <Edit2 className="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
             {Object.entries(formData.additionalOptions).map(([key, option]) => (
@@ -345,9 +706,51 @@ export default function PR2ConfigNew() {
                   checked={option.enabled}
                   onCheckedChange={(checked) => updateOption('additionalOptions', key, 'enabled', checked)}
                 />
-                <Label htmlFor={`additional-${key}`} className="min-w-[120px]">
-                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                </Label>
+                <div className="flex items-center space-x-2 flex-1">
+                  {editStates.additional.isEditing && editStates.additional.editKey === key ? (
+                    <div className="flex items-center space-x-2 flex-1">
+                      <Input
+                        value={editStates.additional.newName}
+                        onChange={(e) => setEditStates(prev => ({
+                          ...prev,
+                          additional: { ...prev.additional, newName: e.target.value }
+                        }))}
+                        className="flex-1"
+                      />
+                      <Button size="sm" onClick={() => saveEdit('additional')} className="bg-green-600 hover:bg-green-700">
+                        Save
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setEditStates(prev => ({
+                        ...prev,
+                        additional: { isEditing: false, editKey: '', newName: '' }
+                      }))}>
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Label htmlFor={`additional-${key}`} className="min-w-[120px]">
+                        {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                      </Label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => startEdit('additional', key)}
+                        className="p-1 h-6 w-6 text-gray-400 hover:text-purple-600"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteOption('additional', key)}
+                        className="p-1 h-6 w-6 text-gray-400 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </>
+                  )}
+                </div>
                 {option.enabled && (
                   <Input
                     placeholder="Enter value"
