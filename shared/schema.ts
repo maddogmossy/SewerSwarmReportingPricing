@@ -435,7 +435,6 @@ export const standardCategories = pgTable("standard_categories", {
   isDefault: boolean("is_default").default(false), // True for built-in categories
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // PR2 Pricing System - Completely separate from legacy ops system
