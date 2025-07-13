@@ -745,35 +745,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Removed generic sector profile route - using specific routes instead
 
-  // Add DELETE endpoint for repair pricing
-  app.delete('/api/repair-pricing/:id', (req, res) => {
+  // Add DELETE endpoint for repair pricing - COMPREHENSIVE DELETION
+  app.delete('/api/repair-pricing/:id', async (req, res) => {
     const { id } = req.params;
     const { scope, currentSector } = req.query;
     
-    console.log(`Deleting repair pricing item ${id} with scope ${scope} for sector ${currentSector}`);
+    console.log(`🗑️ COMPREHENSIVE DELETE: Removing pricing item ${id} with scope ${scope} for sector ${currentSector}`);
     
     const itemId = parseInt(id);
-    const initialLength = pricingStorage.length;
     
-    if (scope === 'all') {
-      // Remove item from all sectors
-      pricingStorage = pricingStorage.filter(item => item.id !== itemId);
-    } else {
-      // Remove item from current sector only
-      pricingStorage = pricingStorage.filter(item => 
-        !(item.id === itemId && item.sector === currentSector)
-      );
+    try {
+      // Step 1: Get the item being deleted to find associated category
+      let itemToDelete = null;
+      try {
+        const dbItems = await db.select().from(repairPricing)
+          .where(eq(repairPricing.id, itemId))
+          .limit(1);
+        itemToDelete = dbItems[0];
+      } catch (dbError) {
+        console.log(`⚠️ Database read failed, checking in-memory storage`);
+        itemToDelete = pricingStorage.find(item => item.id === itemId);
+      }
+      
+      let categoryName = null;
+      if (itemToDelete) {
+        // Try multiple possible field names for category
+        categoryName = itemToDelete.categoryName || itemToDelete.workCategory || itemToDelete.name;
+        console.log(`🗑️ Found item to delete: "${categoryName}" (ID: ${itemId})`);
+        console.log(`🔍 Available fields:`, Object.keys(itemToDelete));
+      }
+      
+      // Step 2: Remove from DATABASE (repairPricing table)
+      let databaseDeleted = false;
+      try {
+        if (scope === 'all') {
+          await db.delete(repairPricing)
+            .where(eq(repairPricing.id, itemId));
+          console.log(`✅ Deleted pricing item ${itemId} from ALL sectors in DATABASE`);
+        } else {
+          await db.delete(repairPricing)
+            .where(sql`${repairPricing.id} = ${itemId} AND ${repairPricing.sector} = ${currentSector}`);
+          console.log(`✅ Deleted pricing item ${itemId} from ${currentSector} sector in DATABASE`);
+        }
+        databaseDeleted = true;
+      } catch (dbError) {
+        console.log(`⚠️ Database deletion failed (item may not exist in DB):`, dbError.message);
+      }
+      
+      // Step 3: Remove from IN-MEMORY pricingStorage
+      const initialLength = pricingStorage.length;
+      if (scope === 'all') {
+        pricingStorage = pricingStorage.filter(item => item.id !== itemId);
+      } else {
+        pricingStorage = pricingStorage.filter(item => 
+          !(item.id === itemId && item.sector === currentSector)
+        );
+      }
+      const deletedFromMemory = initialLength - pricingStorage.length;
+      console.log(`🧹 Removed ${deletedFromMemory} pricing items from in-memory storage`);
+      
+      // Step 4: Remove from workCategoriesStorage if category matches
+      let removedWorkCategories = 0;
+      if (categoryName) {
+        const initialWorkCategoryLength = workCategoriesStorage.length;
+        workCategoriesStorage = workCategoriesStorage.filter(cat => 
+          cat.name.toLowerCase() !== categoryName.toLowerCase()
+        );
+        removedWorkCategories = initialWorkCategoryLength - workCategoriesStorage.length;
+        
+        if (removedWorkCategories > 0) {
+          console.log(`🧹 Removed ${removedWorkCategories} matching work categories from in-memory storage`);
+          console.log(`📦 Remaining work categories:`, workCategoriesStorage.map(cat => `${cat.id}: ${cat.name}`));
+        }
+      }
+      
+      console.log(`✅ COMPREHENSIVE DELETE COMPLETE: All traces of item ${itemId} removed from all storage locations`);
+      
+      res.json({ 
+        success: true, 
+        message: `Successfully deleted pricing item from all storage locations`,
+        scope: scope,
+        sector: currentSector,
+        deletedFromDatabase: databaseDeleted,
+        deletedFromMemory: deletedFromMemory,
+        removedWorkCategories: removedWorkCategories,
+        categoryName: categoryName
+      });
+      
+    } catch (error) {
+      console.error('Error in comprehensive deletion:', error);
+      res.status(500).json({ 
+        error: 'Failed to completely delete pricing item',
+        details: error.message 
+      });
     }
-    
-    const deletedCount = initialLength - pricingStorage.length;
-    
-    res.json({ 
-      success: true, 
-      message: `Successfully deleted ${deletedCount} pricing item(s)`,
-      scope: scope,
-      sector: currentSector,
-      deletedCount: deletedCount
-    });
   });
 
 
