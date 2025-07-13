@@ -586,7 +586,7 @@ export default function PR2ConfigNew() {
                     Reorder
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md" aria-describedby="reorder-pricing-description">
                   <DialogHeader>
                     <DialogTitle>Reorder Pricing Options</DialogTitle>
                   </DialogHeader>
@@ -701,11 +701,11 @@ export default function PR2ConfigNew() {
 
         {/* Delete Confirmation Dialog for Pricing */}
         <Dialog open={deleteDialogs.pricing.open} onOpenChange={() => closeDeleteDialog('pricing')}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md" aria-describedby="delete-pricing-description">
             <DialogHeader>
               <DialogTitle className="text-red-600">Delete Pricing Option</DialogTitle>
             </DialogHeader>
-            <p className="text-gray-600">
+            <p id="delete-pricing-description" className="text-gray-600">
               Are you sure you want to delete "{deleteDialogs.pricing.key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}"? 
               This action cannot be undone.
             </p>
@@ -908,11 +908,11 @@ export default function PR2ConfigNew() {
 
         {/* Delete Confirmation Dialog for Quantity */}
         <Dialog open={deleteDialogs.quantity.open} onOpenChange={() => closeDeleteDialog('quantity')}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md" aria-describedby="delete-quantity-description">
             <DialogHeader>
               <DialogTitle className="text-red-600">Delete Quantity Option</DialogTitle>
             </DialogHeader>
-            <p className="text-gray-600">
+            <p id="delete-quantity-description" className="text-gray-600">
               Are you sure you want to delete "{deleteDialogs.quantity.key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}"? 
               This action cannot be undone.
             </p>
@@ -1087,11 +1087,11 @@ export default function PR2ConfigNew() {
 
         {/* Delete Confirmation Dialog for Min Quantity */}
         <Dialog open={deleteDialogs.minQuantity.open} onOpenChange={() => closeDeleteDialog('minQuantity')}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md" aria-describedby="delete-minquantity-description">
             <DialogHeader>
               <DialogTitle className="text-red-600">Delete Min Quantity Option</DialogTitle>
             </DialogHeader>
-            <p className="text-gray-600">
+            <p id="delete-minquantity-description" className="text-gray-600">
               Are you sure you want to delete "{deleteDialogs.minQuantity.key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}"? 
               This action cannot be undone.
             </p>
@@ -1261,11 +1261,11 @@ export default function PR2ConfigNew() {
 
         {/* Delete Confirmation Dialog for Additional */}
         <Dialog open={deleteDialogs.additional.open} onOpenChange={() => closeDeleteDialog('additional')}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md" aria-describedby="delete-additional-description">
             <DialogHeader>
               <DialogTitle className="text-red-600">Delete Additional Option</DialogTitle>
             </DialogHeader>
-            <p className="text-gray-600">
+            <p id="delete-additional-description" className="text-gray-600">
               Are you sure you want to delete "{deleteDialogs.additional.key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}"? 
               This action cannot be undone.
             </p>
