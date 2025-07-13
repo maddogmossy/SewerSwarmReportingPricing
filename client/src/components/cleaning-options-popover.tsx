@@ -42,7 +42,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const cleansingEquipment: CleansingEquipment[] = [
     {
       id: 'cctv-van-pack',
-      name: 'CCTV/Van Pack',
+      name: 'Option 1: CCTV/Van Pack',
       description: 'Combined CCTV inspection with van pack equipment',
       icon: Monitor,
       isSelected: selectedEquipment.includes('cctv-van-pack'),
@@ -50,7 +50,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     },
     {
       id: 'cctv-jet-vac',
-      name: 'CCTV/Jet Vac', 
+      name: 'Option 2: CCTV/Jet Vac', 
       description: 'Combined CCTV inspection with jet vac services',
       icon: Video,
       isSelected: selectedEquipment.includes('cctv-jet-vac')
