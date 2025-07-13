@@ -223,34 +223,41 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Upload 80:** 24 sections with authentic downstream flow per OBJ_FlowDir=1 database values
 - **Real-time Processing:** OBJ_FlowDir field read during upload processing for authentic direction
 
-## REV V1 CHECKPOINT - STABLE PRODUCTION STATE (July 12, 2025)
+## REV V2 CHECKPOINT - PR2 SYSTEM (July 13, 2025)
 
-🔒 **LOCKED IN FEATURES - PRODUCTION READY:**
-- **Cleanse/Survey Pricing System Only:** Single unified storage system with only Cleanse/Survey pricing configuration
-- **Complete Color-Coded Pricing System:** All four option categories with proper color-coded display (Blue: Price/Cost, Green: Quantity, Orange: Min Quantity, Purple: Additional Items)
-- **Consistent Checkbox Layout:** All custom options display as checkboxes with color-coded backgrounds instead of old edit/delete buttons
-- **Clean Green Quantity Window:** Math operators removed from green window, no longer showing next to "runs per shift"
-- **Edit Dialog Functionality:** Orange and purple windows have edit buttons that appear when options are selected
-- **Dynamic Chaining UI:** Horizontal layout with proper spacing and seamless flow between all color categories
-- **Comprehensive Field Mapping:** Backend properly handles all pricing option types with correct data persistence
-- **Professional Visual Hierarchy:** Enhanced color-coded legend and organized pricing form structure
-- **🔒 MATH OPERATOR PERSISTENCE LOCKED:** Math operators (÷, ×, +, -) now save correctly to database mathOperators JSONB column and persist when reopening pricing items. Frontend properly loads saved operators and maintains symbol selections across edit sessions. Database schema includes math_operators and custom_options columns for complete state persistence.
-- **🔒 COMPLETE REORDERING SYNCHRONIZATION:** Full bidirectional edit dialog system with up/down arrow reordering, complete persistence between edit dialog and main blue Price/Cost Options window, saved order remembered across dialog opens/closes, dynamic option display respects reordered sequence, enhanced logging for order tracking, and optionDisplayOrder field in formData stores complete reordered sequence
-- **🔒 UNIFORM CUSTOM OPTIONS DISPLAY:** Custom options in all color-coded windows display as proper checkboxes with 4-column grid layouts and respective color themes
-- **🔒 COMPLETE CUSTOM OPTIONS FUNCTIONALITY:** Custom options can be added to all four color-coded windows (blue, green, orange, purple), properly checked/unchecked with full state management, appear in "Selected Pricing Options - Enter Values" section only when enabled, and disappear when unchecked with authentic filtering logic. Zero issues with custom option toggle behavior.
-- **🔒 UNIFIED STORAGE SYSTEM:** All old pricing systems removed, only single pricingStorage array with Cleanse/Survey configuration
-- **🔒 COMPLETE MATH OPERATOR FUNCTIONALITY:** Math operator dropdown selection working perfectly with grey boxes between pricing options, supports +, -, ×, ÷ symbols, proper indexing system (operator_0, operator_1, etc.), complete state persistence across save/edit cycles, and full backend integration with mathOperators field storage
-- **🔒 COMPLETE CATEGORY ISOLATION SYSTEM:** Strict prefix-based categorization preventing cross-window contamination with "price_", "quantity_", "minquantity_", "additional_" prefixes for each color window
-- **🔒 ORANGE MINIMUM QUANTITY VALIDATION SYSTEM:** Orange options separated from math calculation chain and implemented as pure minimum quantity validators. Dashboard uses orange values to change cost display from red (below minimum) to black (minimum met). Calculation chain only includes blue, green, and purple options
-- **🔒 ORANGE EDIT DIALOG INTEGRATION:** User-added orange options with "minquantity_" prefix properly appear in orange edit dialogs alongside standard options, with complete synchronization between saved display order and new custom options
+🔒 **PRODUCTION READY - COMPLETE LEGACY ELIMINATION:**
+- **PR2 Pricing System Only:** Complete separation from all legacy systems with independent database table, API endpoints, and file structure
+- **Zero Legacy Conflicts:** All old ops/PR1 system references completely removed from codebase
+- **Direct Dashboard Routing:** All cleaning/repair options route directly to PR2 pricing without category creation loops
+- **Streamlined Workflow:** Dashboard → cleaning recommendation → PR2 pricing configuration → save → return to dashboard
+- **Complete Authentication:** PR2 system with proper user authentication and sector filtering
+- **Independent Storage:** pr2_configurations table with JSONB fields for complex pricing structures
+- **Clean Component Structure:** Separate PR2 components with zero dependencies on legacy systems
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v1' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v2' to return to this stable checkpoint
 
-## PR2 PRICING SYSTEM (July 13, 2025)
+## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 
-🔒 **COMPLETE LEGACY SYSTEM ELIMINATION ACHIEVED (July 13, 2025)** - Successfully removed ALL legacy ops/PR1 system references from entire codebase. Backend cleaned of all old API endpoints (/api/repair-pricing, /api/work-categories, workCategoriesStorage, pricingStorage). Frontend updated with clean components (cleaning-options-popover.tsx, repair-options-popover.tsx) that route directly to PR2 pricing. App.tsx routing cleaned to remove RepairPricing references. Application now runs successfully with zero legacy conflicts.
+**🏗️ Core Architecture:**
+- **Database:** Independent `pr2_configurations` table with JSONB fields
+- **API Endpoints:** `/api/pr2-pricing` (GET/POST/PUT/DELETE) 
+- **Frontend Components:** `pr2-pricing.tsx`, `pr2-pricing-form.tsx`
+- **Routing:** Direct routing from dashboard cleaning options to PR2 system
+- **Authentication:** User-specific configurations with sector filtering
 
-🔒 **PR2 COMPLETE SYSTEM SEPARATION ACHIEVED** - Successfully created PR2 pricing system with complete isolation from legacy operations system. PR2 features its own database table (pr2_configurations), dedicated API endpoints (/api/pr2-pricing), separate cache storage, and independent file structure. Dashboard now fetches from PR2 configurations with proper authentication and sector filtering. All cleaning options in dashboard route directly to /pr2-pricing instead of legacy systems. Database schema includes proper JSONB fields for pricing/quantity options and math operators. Complete elimination of conflicts with old ops system - PR2 can safely operate while legacy components are deleted. Target calculation: Day Rate ÷ Runs per Shift = Cost per Section with database persistence.
+**🔧 Technical Implementation:**
+- **Complex Form Structure:** Nested pricing/quantity/math operator configuration
+- **Database Storage:** JSONB fields for flexible pricing option arrays
+- **Form Validation:** Updated backend to handle complex nested form structures
+- **Dashboard Integration:** PR2 configurations display in organized card layout
+- **Cost Calculation:** Target calculation preserved: Day Rate ÷ Runs per Shift = Cost per Section
+
+**🚀 User Workflow:**
+1. Dashboard cleaning recommendation click
+2. Direct routing to PR2 pricing page
+3. Add/Edit configuration with pricing options
+4. Save configuration to database
+5. Return to dashboard with active pricing
 
 ## PR1 PRICING SYSTEM (January 13, 2025)
 
@@ -311,10 +318,10 @@ This prevents data contamination and ensures authentic extraction integrity.
 - Removed old PR1 pricing system references from dashboard callbacks
 - Clean interface with auto-focus input fields and disabled buttons until text entered
 
-## Changelog
+## REV V2 Changelog
 
 ```
-- July 12, 2025. 🔒 **ORANGE MINIMUM QUANTITY VALIDATION SYSTEM LOCKED** - Successfully separated orange options from math calculation chain and implemented them as pure minimum quantity validators for dashboard cost validation. Orange options now appear in separate "Minimum Quantity Validators" section, excluded from math operator chains, and used solely for dashboard red/black cost display logic. When green values fall below orange minimums, costs display in RED; when minimums are met, costs display in BLACK. Calculation chain now only includes blue (price/cost), green (quantity), and purple (additional) options. Complete isolation of validation logic from calculation logic with zero cross-contamination. User confirmed perfect functionality - system permanently locked.
+- July 13, 2025. 🔒 **REV V2 COMPLETE - PR2 SYSTEM OPERATIONAL** - Successfully eliminated all legacy systems and created clean PR2 pricing system. Fixed critical dashboard API SQL syntax error and PR2 form validation issues. System now features: (1) Complete legacy elimination with zero conflicts, (2) Direct routing from dashboard to PR2 pricing, (3) Independent PR2 database and API structure, (4) Complex nested form configuration support, (5) Streamlined user workflow without category creation loops. Both dashboard section loading and PR2 configuration saving now working correctly.
 - July 12, 2025. 🔒 **ORANGE EDIT DIALOG INTEGRATION LOCKED** - Successfully fixed critical issue where user-added orange options weren't appearing in orange edit dialogs. Updated edit dialog initialization logic to include custom "minquantity_" prefixed options alongside standard orange options. Fixed both default order case and saved display order case to properly detect and include all custom orange options. Orange edit dialogs now show complete list of both standard and user-added options with proper label formatting and synchronization. User confirmed functionality working perfectly - system locked in.
 - July 12, 2025. 🔒 **COMPLETE CATEGORY ISOLATION SYSTEM LOCKED** - Eliminated extra blue options contamination by implementing strict prefix-based categorization system. Fixed logic that incorrectly treated any non-standard option as blue price option. Now each color window uses proper prefix filtering: "price_" for blue, "quantity_" for green, "minquantity_" for orange, "additional_" for purple. Complete cross-window contamination prevention with zero false categorization. All four color windows maintain complete independence with proper option isolation.
 - July 12, 2025. 🔒 **DELETION SYNCHRONIZATION SYSTEM LOCKED** - Successfully fixed critical cross-window contamination and deletion synchronization issues in pricing configuration system. Implemented comprehensive cleanup logic for all four color windows (Blue: price_, Green: quantity_, Orange: minquantity_, Purple: additional_) with window-specific prefixes ensuring complete isolation. When options are deleted from edit dialogs, they are now properly removed from both the edit array AND the pricingStructure object. Each window maintains complete separation with zero cross-contamination. Blue window deletion functionality confirmed working by user - system locked in.
@@ -469,7 +476,7 @@ Changelog:
 - **Flexible Pricing**: User-configurable equipment and cost structures
 - **Professional Output**: Excel exports with comprehensive analysis details
 
-## Historical Changelog:
+## Legacy System History (Archived):
 - June 27, 2025. Initial setup
 - June 27, 2025. Added test user access system for unlimited testing without payment
 - June 27, 2025. Fixed file upload issue: Updated apiRequest to properly handle FormData uploads
