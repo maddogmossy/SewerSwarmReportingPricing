@@ -35,9 +35,11 @@ export default function PR1Pricing() {
     minMeters: { enabled: false, value: '' },
     minSetup: { enabled: false, value: '' },
     
-    // Purple additional options
-    includeDepth: { enabled: false, value: '' },
-    includeTotalLength: { enabled: false, value: '' }
+    // Purple additional options with min/max ranges
+    includeDepth: { enabled: false, min: '', max: '' },
+    includeTotalLength: { enabled: false, min: '', max: '' },
+    pipeSize: { enabled: false, min: '', max: '' },
+    percentage: { enabled: false, min: '', max: '' }
   });
 
   // Math operators between sections
@@ -76,7 +78,7 @@ export default function PR1Pricing() {
     });
   };
 
-  const updateConfig = (key: string, field: 'enabled' | 'value', value: any) => {
+  const updateConfig = (key: string, field: 'enabled' | 'value' | 'min' | 'max', value: any) => {
     setPricingConfig(prev => ({
       ...prev,
       [key]: {
@@ -226,27 +228,43 @@ export default function PR1Pricing() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <div className="w-4 h-4 bg-purple-500 rounded"></div>
-              Additional Options
+              Range Options
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {[
-              { key: 'includeDepth', label: 'Include Depth Calculation' },
-              { key: 'includeTotalLength', label: 'Include Total Length' }
+              { key: 'pipeSize', label: 'Pipe Size (mm)' },
+              { key: 'percentage', label: 'Percentage (%)' },
+              { key: 'includeDepth', label: 'Depth Range (m)' },
+              { key: 'includeTotalLength', label: 'Length Range (m)' }
             ].map(option => (
-              <div key={option.key} className="flex items-center space-x-3">
-                <Checkbox
-                  checked={pricingConfig[option.key as keyof typeof pricingConfig].enabled}
-                  onCheckedChange={(checked) => updateConfig(option.key, 'enabled', checked)}
-                />
-                <Label className="flex-1">{option.label}</Label>
-                {pricingConfig[option.key as keyof typeof pricingConfig].enabled && (
-                  <Input
-                    placeholder="Value"
-                    className="w-24"
-                    value={pricingConfig[option.key as keyof typeof pricingConfig].value}
-                    onChange={(e) => updateConfig(option.key, 'value', e.target.value)}
+              <div key={option.key} className="space-y-2">
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    checked={pricingConfig[option.key as keyof typeof pricingConfig].enabled}
+                    onCheckedChange={(checked) => updateConfig(option.key, 'enabled', checked)}
                   />
+                  <Label className="flex-1">{option.label}</Label>
+                </div>
+                {pricingConfig[option.key as keyof typeof pricingConfig].enabled && (
+                  <div className="flex items-center space-x-2 ml-6">
+                    <Label className="text-sm text-gray-600 w-8">Min:</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      className="w-20"
+                      value={pricingConfig[option.key as keyof typeof pricingConfig].min}
+                      onChange={(e) => updateConfig(option.key, 'min', e.target.value)}
+                    />
+                    <Label className="text-sm text-gray-600 w-8">Max:</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      className="w-20"
+                      value={pricingConfig[option.key as keyof typeof pricingConfig].max}
+                      onChange={(e) => updateConfig(option.key, 'max', e.target.value)}
+                    />
+                  </div>
                 )}
               </div>
             ))}
