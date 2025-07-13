@@ -82,6 +82,8 @@ function Router() {
           <Route path="/pr2-cctv" component={PR2CCTV} />
           <Route path="/pr2-van-pack" component={PR2VanPack} />
           <Route path="/pr2-jet-vac" component={PR2JetVac} />
+          <Route path="/sector-pricing" component={PR2Pricing} />
+          <Route path="/sector-pricing/:sector" component={PR2Pricing} />
           <Route path="/standards-config" component={StandardsConfig} />
           <Route path="/depot-management" component={DepotManagement} />
           <Route path="/vehicle-travel-rates" component={VehicleTravelRates} />
