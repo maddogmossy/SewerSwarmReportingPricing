@@ -77,22 +77,27 @@ export default function PR2ConfigClean() {
 
   // Load existing configuration for editing
   const { data: existingConfig } = useQuery({
-    queryKey: ['/api/pr2-pricing', editId],
+    queryKey: ['/api/pr2-clean', editId],
     enabled: isEditing && !!editId,
   });
 
   useEffect(() => {
     if (isEditing && existingConfig) {
-      console.log('Loading existing config for clean edit:', existingConfig);
+      console.log('Loading existing clean config:', existingConfig);
+      // Load existing pricing options if they exist in new format
+      const existingPricingOptions = Array.isArray(existingConfig.pricingOptions) 
+        ? existingConfig.pricingOptions 
+        : [];
+      
       setFormData({
         categoryName: existingConfig.categoryName || '',
         description: existingConfig.description || '',
-        pricingOptions: [],  // Always start empty
-        quantityOptions: {},  // Always start empty
-        minQuantityOptions: {},  // Always start empty
-        additionalOptions: {},  // Always start empty
-        mathOperators: ['N/A'],
-        pricingStackOrder: [],
+        pricingOptions: existingPricingOptions,
+        quantityOptions: {},
+        minQuantityOptions: {},
+        additionalOptions: {},
+        mathOperators: existingConfig.mathOperators || ['N/A'],
+        pricingStackOrder: existingPricingOptions.map(opt => opt.id) || [],
         sector
       });
     }
@@ -103,17 +108,17 @@ export default function PR2ConfigClean() {
     mutationFn: (data: CleanFormData) => {
       console.log('🚀 Clean save operation:', data);
       if (isEditing) {
-        return apiRequest('PUT', `/api/pr2-pricing/${editId}`, data);
+        return apiRequest('PUT', `/api/pr2-clean/${editId}`, data);
       } else {
-        return apiRequest('POST', '/api/pr2-pricing', { ...data, sector });
+        return apiRequest('POST', '/api/pr2-clean', { ...data, sector });
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
       if (isEditing) {
-        queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing', editId] });
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
       }
-      toast({ title: `${formData.categoryName} configuration ${isEditing ? 'updated' : 'created'} successfully` });
+      toast({ title: `${formData.categoryName || 'Clean Configuration'} ${isEditing ? 'updated' : 'created'} successfully` });
       setLocation(`/pr2-pricing?sector=${sector}`);
     },
     onError: (error: any) => {
@@ -336,7 +341,7 @@ export default function PR2ConfigClean() {
                   </DialogContent>
                 </Dialog>
 
-                {formData.pricingOptions.length > 1 && (
+                {formData.pricingOptions.length >= 2 && (
                   <Dialog open={stackOrderDialogOpen} onOpenChange={setStackOrderDialogOpen}>
                     <DialogTrigger asChild>
                       <Button size="sm" variant="outline" className="border-blue-300 text-blue-600">

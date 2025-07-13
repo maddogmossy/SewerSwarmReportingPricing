@@ -1,5 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes-pr2-clean";
+import { registerCleanPR2Routes } from "./routes-pr2-clean";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
@@ -38,6 +39,9 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+  
+  // Register clean PR2 routes
+  await registerCleanPR2Routes(app);
 
   // Fuel price monitoring disabled temporarily to resolve connection issues
   // try {

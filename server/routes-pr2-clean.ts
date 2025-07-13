@@ -4,6 +4,7 @@ import { db } from "./db";
 import { pr2Configurations, standardCategories } from "../shared/schema";
 import { eq } from "drizzle-orm";
 
+// Legacy routes function - still needed for server startup
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Simple authentication for test users
@@ -17,9 +18,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // **CLEAN PR2 PRICING ENDPOINTS ONLY** - No legacy systems
+  // Standard categories endpoint
+  app.get('/api/standard-categories', async (req, res) => {
+    try {
+      const categories = await db
+        .select()
+        .from(standardCategories);
+      
+      console.log(`✅ Loading ${categories.length} standard categories from database`);
+      res.json(categories);
+    } catch (error) {
+      console.error('Error fetching standard categories:', error);
+      res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+  });
 
-  // PR2 Pricing Configuration endpoints
+  // Other legacy endpoints
   app.get('/api/pr2-pricing', async (req, res) => {
     try {
       const configurations = await db
@@ -55,212 +69,159 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/pr2-pricing', async (req, res) => {
+  const httpServer = createServer(app);
+  return httpServer;
+}
+
+// Clean PR2 Routes - Completely separate from legacy systems
+export async function registerCleanPR2Routes(app: Express): Promise<void> {
+  
+  // GET all clean PR2 configurations
+  app.get('/api/pr2-clean', async (req, res) => {
     try {
-      console.log('📝 PR2 POST request body:', req.body);
+      const configurations = await db
+        .select()
+        .from(pr2Configurations)
+        .where(eq(pr2Configurations.userId, "test-user"));
       
-      const { 
-        categoryId,
-        categoryName, 
-        description, 
-        pricingOptions, 
-        quantityOptions, 
-        minQuantityOptions, 
+      console.log(`✅ Loading ${configurations.length} clean PR2 configurations`);
+      res.json(configurations);
+    } catch (error) {
+      console.error('Error fetching clean PR2 configurations:', error);
+      res.status(500).json({ error: 'Failed to fetch configurations' });
+    }
+  });
+
+  // GET single clean PR2 configuration
+  app.get('/api/pr2-clean/:id', async (req, res) => {
+    try {
+      const configId = parseInt(req.params.id);
+      const [configuration] = await db
+        .select()
+        .from(pr2Configurations)
+        .where(eq(pr2Configurations.id, configId));
+      
+      if (!configuration) {
+        return res.status(404).json({ error: 'Configuration not found' });
+      }
+      
+      console.log(`✅ Loading clean PR2 configuration ${configId}`);
+      res.json(configuration);
+    } catch (error) {
+      console.error('Error fetching clean PR2 configuration:', error);
+      res.status(500).json({ error: 'Failed to fetch configuration' });
+    }
+  });
+
+  // POST create new clean PR2 configuration
+  app.post('/api/pr2-clean', async (req, res) => {
+    try {
+      console.log('📝 Clean PR2 POST request body:', req.body);
+      
+      const {
+        categoryName,
+        description,
+        pricingOptions,
+        quantityOptions,
+        minQuantityOptions,
         additionalOptions,
-        rangeOptions, 
-        rangeValues, 
-        mathOperators, 
-        stackOrder,
-        sector 
+        mathOperators,
+        pricingStackOrder,
+        sector
       } = req.body;
 
-      // Basic validation
-      if (!categoryName) {
-        return res.status(400).json({ error: 'Category name is required' });
-      }
-
-      const newConfig = {
-        userId: "test-user",
-        categoryId: categoryId || 'cleanse-survey',
-        categoryName: categoryName || 'Cleanse and Survey',
-        description: description || 'PR2 cleaning and survey configuration',
-        pricingOptions: pricingOptions || {},
-        quantityOptions: quantityOptions || {},
-        minQuantityOptions: minQuantityOptions || {},
-        additionalOptions: additionalOptions || {},
-        rangeOptions: rangeOptions || [],
-        rangeValues: rangeValues || {},
-        mathOperators: mathOperators || [],
-        stackOrder: stackOrder || {},
-        sector: sector || 'utilities',
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-
-      const [created] = await db
+      const [newConfig] = await db
         .insert(pr2Configurations)
-        .values(newConfig)
+        .values({
+          userId: "test-user",
+          categoryId: "clean-" + Date.now(),
+          categoryName: categoryName || 'New Clean Configuration',
+          description: description || 'Clean PR2 configuration',
+          pricingOptions: pricingOptions || [],
+          quantityOptions: quantityOptions || {},
+          minQuantityOptions: minQuantityOptions || {},
+          rangeOptions: [],
+          rangeValues: {},
+          mathOperators: mathOperators || ['N/A'],
+          sector: sector || 'utilities',
+          isActive: true
+        })
         .returning();
 
-      console.log('✅ Created PR2 configuration:', created);
-      res.json(created);
+      console.log('✅ Created clean PR2 configuration:', newConfig);
+      res.json(newConfig);
     } catch (error) {
-      console.error('Error creating PR2 configuration:', error);
+      console.error('Error creating clean PR2 configuration:', error);
       res.status(500).json({ error: 'Failed to create configuration' });
     }
   });
 
-  app.put('/api/pr2-pricing/:id', async (req, res) => {
+  // PUT update clean PR2 configuration
+  app.put('/api/pr2-clean/:id', async (req, res) => {
     try {
       const configId = parseInt(req.params.id);
-      console.log('📝 PR2 PUT request body:', req.body);
+      console.log('📝 Clean PR2 PUT request body:', req.body);
       
-      const { 
-        categoryName, 
-        description, 
-        pricingOptions, 
-        quantityOptions, 
-        minQuantityOptions, 
+      const {
+        categoryName,
+        description,
+        pricingOptions,
+        quantityOptions,
+        minQuantityOptions,
         additionalOptions,
-        rangeOptions, 
-        rangeValues, 
-        mathOperators, 
-        stackOrder,
-        sector 
+        mathOperators,
+        pricingStackOrder,
+        sector
       } = req.body;
 
-      const updateData = {
-        categoryName: categoryName || 'Cleanse and Survey',
-        description: description || 'PR2 cleaning and survey configuration',
-        pricingOptions: pricingOptions || {},
-        quantityOptions: quantityOptions || {},
-        minQuantityOptions: minQuantityOptions || {},
-        additionalOptions: additionalOptions || {},
-        rangeOptions: rangeOptions || [],
-        rangeValues: rangeValues || {},
-        mathOperators: mathOperators || [],
-        stackOrder: stackOrder || {},
-        sector: sector || 'utilities',
-        updatedAt: new Date()
-      };
-      
-      const [updated] = await db
+      const [updatedConfig] = await db
         .update(pr2Configurations)
-        .set(updateData)
+        .set({
+          categoryName: categoryName || 'Updated Clean Configuration',
+          description: description || 'Clean PR2 configuration',
+          pricingOptions: pricingOptions || [],
+          quantityOptions: quantityOptions || {},
+          minQuantityOptions: minQuantityOptions || {},
+          rangeOptions: [],
+          rangeValues: {},
+          mathOperators: mathOperators || ['N/A'],
+          sector: sector || 'utilities',
+          updatedAt: new Date()
+        })
         .where(eq(pr2Configurations.id, configId))
         .returning();
 
-      if (!updated) {
+      if (!updatedConfig) {
         return res.status(404).json({ error: 'Configuration not found' });
       }
 
-      console.log('✅ Updated PR2 configuration:', updated);
-      res.json(updated);
+      console.log('✅ Updated clean PR2 configuration:', updatedConfig);
+      res.json(updatedConfig);
     } catch (error) {
-      console.error('Error updating PR2 configuration:', error);
+      console.error('Error updating clean PR2 configuration:', error);
       res.status(500).json({ error: 'Failed to update configuration' });
     }
   });
 
-  app.delete('/api/pr2-pricing/:id', async (req, res) => {
+  // DELETE clean PR2 configuration
+  app.delete('/api/pr2-clean/:id', async (req, res) => {
     try {
       const configId = parseInt(req.params.id);
       
-      const [deleted] = await db
+      const [deletedConfig] = await db
         .delete(pr2Configurations)
         .where(eq(pr2Configurations.id, configId))
         .returning();
 
-      if (!deleted) {
+      if (!deletedConfig) {
         return res.status(404).json({ error: 'Configuration not found' });
       }
 
-      console.log(`✅ Deleted PR2 configuration ${configId}`);
-      res.json({ success: true, deleted });
+      console.log('✅ Deleted clean PR2 configuration:', deletedConfig.id);
+      res.json({ message: 'Configuration deleted successfully' });
     } catch (error) {
-      console.error('Error deleting PR2 configuration:', error);
+      console.error('Error deleting clean PR2 configuration:', error);
       res.status(500).json({ error: 'Failed to delete configuration' });
     }
   });
-
-  // Standard Categories API endpoints
-  app.get('/api/standard-categories', async (req, res) => {
-    try {
-      const categories = await db
-        .select()
-        .from(standardCategories)
-        .where(eq(standardCategories.isActive, true));
-      
-      console.log(`✅ Loading ${categories.length} standard categories from database`);
-      res.json(categories);
-    } catch (error) {
-      console.error('Error fetching standard categories:', error);
-      res.status(500).json({ error: 'Failed to fetch standard categories' });
-    }
-  });
-
-  app.post('/api/standard-categories', async (req, res) => {
-    try {
-      const { categoryName, description } = req.body;
-      console.log('📝 Creating new standard category:', { categoryName, description });
-      
-      // Generate categoryId from categoryName
-      const categoryId = categoryName.toLowerCase().replace(/[^a-z0-9]/g, '-');
-      
-      const [newCategory] = await db
-        .insert(standardCategories)
-        .values({
-          categoryId,
-          categoryName,
-          description,
-          iconName: 'Settings',
-          isDefault: false,
-          isActive: true
-        })
-        .returning();
-      
-      console.log('✅ Created standard category:', newCategory);
-      res.json(newCategory);
-    } catch (error) {
-      console.error('Error creating standard category:', error);
-      res.status(500).json({ error: 'Failed to create standard category' });
-    }
-  });
-
-  app.delete('/api/standard-categories/:id', async (req, res) => {
-    try {
-      const categoryId = parseInt(req.params.id);
-      
-      // Check if there are any PR2 configurations using this category
-      const dependentConfigs = await db
-        .select()
-        .from(pr2Configurations)
-        .where(eq(pr2Configurations.categoryId, req.params.id));
-      
-      if (dependentConfigs.length > 0) {
-        return res.status(400).json({ 
-          error: `Cannot delete category. ${dependentConfigs.length} PR2 configurations are using this category. Please delete those configurations first.` 
-        });
-      }
-      
-      const [deleted] = await db
-        .delete(standardCategories)
-        .where(eq(standardCategories.id, categoryId))
-        .returning();
-
-      if (!deleted) {
-        return res.status(404).json({ error: 'Category not found' });
-      }
-
-      console.log(`✅ Deleted standard category ${categoryId}`);
-      res.json({ success: true, deleted });
-    } catch (error) {
-      console.error('Error deleting standard category:', error);
-      res.status(500).json({ error: 'Failed to delete standard category' });
-    }
-  });
-
-  const server = createServer(app);
-  return server;
 }
