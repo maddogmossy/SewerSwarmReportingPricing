@@ -33,56 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Other legacy endpoints
-  app.get('/api/pr2-pricing', async (req, res) => {
-    try {
-      const sector = req.query.sector as string;
-      
-      let configurations;
-      if (sector) {
-        // Filter by both userId and sector
-        configurations = await db
-          .select()
-          .from(pr2Configurations)
-          .where(and(
-            eq(pr2Configurations.userId, "test-user"),
-            eq(pr2Configurations.sector, sector)
-          ));
-      } else {
-        // If no sector specified, return all configurations for user
-        configurations = await db
-          .select()
-          .from(pr2Configurations)
-          .where(eq(pr2Configurations.userId, "test-user"));
-      }
-      
-      console.log(`✅ Loading ${configurations.length} PR2 configurations from database${sector ? ` for sector: ${sector}` : ''}`);
-      res.json(configurations);
-    } catch (error) {
-      console.error('Error fetching PR2 configurations:', error);
-      res.status(500).json({ error: 'Failed to fetch configurations' });
-    }
-  });
 
-  app.get('/api/pr2-pricing/:id', async (req, res) => {
-    try {
-      const configId = parseInt(req.params.id);
-      const [configuration] = await db
-        .select()
-        .from(pr2Configurations)
-        .where(eq(pr2Configurations.id, configId));
-      
-      if (!configuration) {
-        return res.status(404).json({ error: 'Configuration not found' });
-      }
-      
-      console.log(`✅ Loading PR2 configuration ${configId}`);
-      res.json(configuration);
-    } catch (error) {
-      console.error('Error fetching PR2 configuration:', error);
-      res.status(500).json({ error: 'Failed to fetch configuration' });
-    }
-  });
 
   const httpServer = createServer(app);
   return httpServer;
