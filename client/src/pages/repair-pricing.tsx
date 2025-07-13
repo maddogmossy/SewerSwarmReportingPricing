@@ -1367,29 +1367,8 @@ export default function RepairPricing() {
                         <Button
                           size="sm"
                           onClick={() => {
-                            setFormData({
-                              workCategoryId: category.id.toString(),
-                              pipeSize: "",
-                              depth: "",
-                              description: "",
-                              lengthOfRepair: "",
-                              dayRate: "",
-                              vehicleId: "",
-                              pricingStructure: {
-                                meterage: false,
-                                numberPerShift: false,
-                                metersPerShift: false,
-                                dayRate: false,
-                                hourlyRate: false,
-                                runsPerShift: false,
-                                setupRate: false,
-                                minCharge: false,
-                                repeatFree: false
-                              }
-                            });
-                            setEditingItem(null);
-                            setApplySectors([sector]);
-                            setIsAddDialogOpen(true);
+                            // Navigate to PR1 pricing system
+                            setLocation('/pr1-pricing');
                           }}
                           className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
@@ -1469,29 +1448,8 @@ export default function RepairPricing() {
                         <Button
                           size="sm"
                           onClick={() => {
-                            setFormData({
-                              workCategoryId: category.id.toString(),
-                              pipeSize: "",
-                              depth: "",
-                              description: "",
-                              lengthOfRepair: "",
-                              dayRate: "",
-                              vehicleId: "",
-                              pricingStructure: {
-                                meterage: false,
-                                numberPerShift: false,
-                                metersPerShift: false,
-                                dayRate: false,
-                                hourlyRate: false,
-                                runsPerShift: false,
-                                setupRate: false,
-                                minCharge: false,
-                                repeatFree: false
-                              }
-                            });
-                            setEditingItem(null);
-                            setApplySectors([sector]);
-                            setIsAddDialogOpen(true);
+                            // Navigate to PR1 pricing system
+                            setLocation('/pr1-pricing');
                           }}
                           className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
