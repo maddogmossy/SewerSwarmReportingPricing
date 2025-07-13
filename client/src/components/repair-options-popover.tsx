@@ -187,8 +187,8 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
       params.set('editId', option.id.toString());
     }
     
-    // Navigate to the simple pricing page
-    setLocation(`/simple-pricing?${params.toString()}`);
+    // Navigate to the PR1 pricing page
+    setLocation(`/pr1-pricing?${params.toString()}`);
     setIsOpen(false);
   };
 

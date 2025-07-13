@@ -209,7 +209,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     setShowSetupDialog(false);
     setIsOpen(false);
     
-    // Navigate to simple pricing page with pre-filled data for Cleanse and Survey
+    // Navigate to PR1 pricing page with pre-filled data for Cleanse and Survey
     const params = new URLSearchParams({
       categoryName: 'Cleanse/Survey',
       categoryDescription: 'Complete cleaning followed by verification survey to confirm completion',
@@ -222,14 +222,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       itemNo: sectionData.itemNo?.toString() || '1'
     });
     
-    setLocation(`/simple-pricing?${params.toString()}`);
+    setLocation(`/pr1-pricing?${params.toString()}`);
   };
 
   const handleCustomSetupConfirm = () => {
     setShowCustomSetupDialog(false);
     setIsOpen(false);
     
-    // Navigate to simple pricing page with pre-filled data for Custom Cleaning
+    // Navigate to PR1 pricing page with pre-filled data for Custom Cleaning
     const params = new URLSearchParams({
       categoryName: 'Custom Cleaning',
       categoryDescription: 'User-defined cleaning method for specific requirements',
@@ -242,7 +242,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       itemNo: sectionData.itemNo?.toString() || '1'
     });
     
-    setLocation(`/simple-pricing?${params.toString()}`);
+    setLocation(`/pr1-pricing?${params.toString()}`);
   };
 
   const handleOptionClick = (option: CleaningOption) => {
@@ -283,8 +283,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       params.set('editId', option.id.toString());
     }
     
-    // Navigate to the simple pricing page
-    setLocation(`/simple-pricing?${params.toString()}`);
+    // Navigate to the PR1 pricing page
+    setLocation(`/pr1-pricing?${params.toString()}`);
     setIsOpen(false);
   };
 
