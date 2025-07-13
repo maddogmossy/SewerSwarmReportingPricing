@@ -530,7 +530,7 @@ export default function PR2ConfigClean() {
     
     // Add math operator
     if (formData.mathOperators && formData.mathOperators.length > 0 && formData.mathOperators[0] !== 'N/A') {
-      parts.push(`Math ${formData.mathOperators[0]}`);
+      parts.push(`${formData.mathOperators[0]}`);
     }
     
     // Add quantity options with values
@@ -566,7 +566,7 @@ export default function PR2ConfigClean() {
   React.useEffect(() => {
     const autoDesc = generateAutoDescription();
     setFormData(prev => ({ ...prev, description: autoDesc }));
-  }, [formData.pricingOptions, formData.quantityOptions, formData.minQuantityOptions, formData.rangeOptions]);
+  }, [formData.pricingOptions, formData.quantityOptions, formData.minQuantityOptions, formData.rangeOptions, formData.mathOperators]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
