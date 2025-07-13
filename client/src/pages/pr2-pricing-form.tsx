@@ -113,6 +113,11 @@ export default function PR2PricingForm() {
         return formStructure;
       };
 
+      // Set description in separate state as well
+      if (existingConfig.description) {
+        setDescription(existingConfig.description);
+      }
+      
       // Populate form data with existing configuration
       setFormData(prev => ({
         ...prev,

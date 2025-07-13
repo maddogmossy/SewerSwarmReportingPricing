@@ -669,6 +669,8 @@ export default function Dashboard() {
           const needsCleaning = requiresCleaning(section.defects || '');
 
           if (isServiceDefect || needsCleaning) {
+            const hasLinkedPR2 = repairPricingData && repairPricingData.length > 0;
+            
             return (
               <CleaningOptionsPopover 
                 sectionData={{
@@ -686,11 +688,12 @@ export default function Dashboard() {
                   // Category creation is now handled within the CleaningOptionsPopover
                   console.log('Cleaning pricing needed for:', method, pipeSize, sector);
                 }}
+                hasLinkedPR2={hasLinkedPR2}
               >
-                <div className="text-xs max-w-sm bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer">
-                  <div className="font-medium text-blue-800 mb-1">💧 SERVICE CLEANING</div>
-                  <div className="text-blue-700">{generateDynamicRecommendation(section)}</div>
-                  <div className="text-xs text-blue-600 mt-1 font-medium">→ Click for cleaning pricing options</div>
+                <div className={`text-xs max-w-sm ${hasLinkedPR2 ? 'bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400' : 'bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400'} p-3 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
+                  <div className={`font-medium ${hasLinkedPR2 ? 'text-green-800' : 'text-blue-800'} mb-1`}>💧 SERVICE CLEANING</div>
+                  <div className={`${hasLinkedPR2 ? 'text-green-700' : 'text-blue-700'}`}>{generateDynamicRecommendation(section)}</div>
+                  <div className={`text-xs ${hasLinkedPR2 ? 'text-green-600' : 'text-blue-600'} mt-1 font-medium`}>→ {hasLinkedPR2 ? 'PR2 configuration active' : 'Click for cleaning pricing options'}</div>
                 </div>
               </CleaningOptionsPopover>
             );

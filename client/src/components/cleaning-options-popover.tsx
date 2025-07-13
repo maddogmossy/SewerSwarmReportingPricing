@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Settings } from "lucide-react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface CleaningOption {
   id: number;
@@ -27,27 +29,38 @@ interface CleaningOptionsPopoverProps {
     totalLength?: string;
   };
   onPricingNeeded: (method: string, pipeSize: string, sector: string) => void;
+  hasLinkedPR2?: boolean;
 }
 
-export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded }: CleaningOptionsPopoverProps) {
+export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2 }: CleaningOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
+
+  // Check if PR2 configurations exist for this sector
+  const { data: pr2Configurations = [] } = useQuery({
+    queryKey: ['/api/pr2-pricing', sectionData.sector],
+    queryFn: () => apiRequest('GET', '/api/pr2-pricing', undefined, { sector: sectionData.sector }),
+    enabled: !!sectionData.sector,
+    staleTime: 0
+  });
+
+  const hasConfigurations = pr2Configurations.length > 0;
 
   // Simple cleaning options - all route to PR2
   const cleaningOptions: CleaningOption[] = [
     {
       id: 1,
-      name: 'Configure Pricing',
-      description: 'Set up cleaning pricing in PR2 system',
+      name: hasConfigurations ? 'Option 1: Cleanse and Survey' : 'Configure Pricing',
+      description: hasConfigurations ? 'Use configured pricing for cleaning' : 'Set up cleaning pricing in PR2 system',
       enabled: true,
-      configured: false,
-      configurationMessage: 'Configure cleaning pricing'
+      configured: hasConfigurations,
+      configurationMessage: hasConfigurations ? 'PR2 configuration active' : 'Configure cleaning pricing'
     }
   ];
 
   const handleOptionClick = (option: CleaningOption) => {
     setIsOpen(false);
-    setLocation('/pr2-pricing');
+    setLocation(`/pr2-pricing?sector=${sectionData.sector}`);
   };
 
   return (
