@@ -501,9 +501,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
                             option.name === 'Cleanse and Survey' ? 'text-purple-700' : 'text-orange-700'
                           }`}>
                             {option.name === 'Custom Cleaning' 
-                              ? 'Click to create custom cleaning category'
+                              ? 'Create new cleaning category'
                               : option.name === 'Cleanse and Survey'
-                              ? 'Click to create cleanse and survey category'
+                              ? 'Create new category'
                               : option.configurationMessage
                             }
                           </div>

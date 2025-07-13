@@ -683,7 +683,8 @@ export default function Dashboard() {
                   defectType: section.defectType // Pass defect type for proper classification
                 }}
                 onPricingNeeded={(method, pipeSize, sector) => {
-                  window.location.href = `/pr1-pricing`;
+                  // Category creation is now handled within the CleaningOptionsPopover
+                  console.log('Cleaning pricing needed for:', method, pipeSize, sector);
                 }}
               >
                 <div className="text-xs max-w-sm bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer">
@@ -709,7 +710,8 @@ export default function Dashboard() {
                   defectType: section.defectType // Pass defect type for proper classification
                 }}
                 onPricingNeeded={(method, pipeSize, sector) => {
-                  window.location.href = `/pr1-pricing`;
+                  // Repair category creation can be implemented here if needed
+                  console.log('Repair pricing needed for:', method, pipeSize, sector);
                 }}
               >
                 <div className="text-xs max-w-sm bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 hover:border-orange-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer">
