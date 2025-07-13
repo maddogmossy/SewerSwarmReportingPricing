@@ -146,7 +146,7 @@ export default function PR2Pricing() {
         <div className="space-y-1">
           <h1 className="text-3xl font-bold">PR2 Pricing Configuration</h1>
           <p className="text-gray-600">
-            Configure pricing for {currentSector.name} sector cleaning and repairs
+            Configure pricing for <span className={`font-medium ${currentSector.color}`}>{currentSector.name}</span> sector cleaning and repairs
           </p>
         </div>
         
@@ -163,7 +163,7 @@ export default function PR2Pricing() {
           {/* Sector Selection */}
           <div className="flex items-center gap-2">
             <currentSector.icon className={`h-5 w-5 ${currentSector.color}`} />
-            <span className="font-medium">{currentSector.name}</span>
+            <span className={`font-medium ${currentSector.color}`}>{currentSector.name}</span>
           </div>
         </div>
       </div>
