@@ -126,13 +126,14 @@ export default function PR2ConfigClean() {
         return apiRequest('POST', '/api/pr2-clean', { ...data, sector });
       }
     },
-    onSuccess: () => {
+    onSuccess: (savedConfig) => {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
       if (isEditing) {
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
       }
-      toast({ title: `${formData.categoryName || 'Clean Configuration'} ${isEditing ? 'updated' : 'created'} successfully` });
-      setLocation(`/pr2-pricing?sector=${sector}`);
+      toast({ title: `Configuration ${isEditing ? 'updated' : 'created'} successfully` });
+      // DON'T redirect - stay on form to continue adding options
+      console.log('✅ Configuration saved, staying on form to continue editing');
     },
     onError: (error: any) => {
       toast({ 
