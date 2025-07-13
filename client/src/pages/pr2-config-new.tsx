@@ -186,13 +186,47 @@ export default function PR2ConfigNew() {
   useEffect(() => {
     if (existingConfig && isEditing) {
       console.log('Loading existing config for edit:', existingConfig);
+      console.log('Existing config pricingOptions:', existingConfig.pricingOptions);
       
-      // Ensure mathOperators is properly formatted
+      // Ensure all required properties exist with proper structure
       const configToLoad = {
-        ...existingConfig,
-        mathOperators: existingConfig.mathOperators?.length > 0 ? existingConfig.mathOperators : ['N/A']
+        categoryName: existingConfig.categoryName || detectedCategory,
+        description: existingConfig.description || getDescription(detectedCategory),
+        pricingOptions: existingConfig.pricingOptions || {
+          dayRate: { enabled: false, value: '' },
+          hourlyRate: { enabled: false, value: '' },
+          setupRate: { enabled: false, value: '' },
+          meterageRate: { enabled: false, value: '' },
+          minCharge: { enabled: false, value: '' }
+        },
+        quantityOptions: existingConfig.quantityOptions || {
+          runsPerShift: { enabled: false, value: '' },
+          numberPerShift: { enabled: false, value: '' },
+          metersPerShift: { enabled: false, value: '' },
+          repeatFree: { enabled: false, value: '' }
+        },
+        minQuantityOptions: existingConfig.minQuantityOptions || {
+          minUnitsPerShift: { enabled: false, value: '' },
+          minMetersPerShift: { enabled: false, value: '' },
+          minInspectionsPerShift: { enabled: false, value: '' },
+          minSetupCount: { enabled: false, value: '' }
+        },
+        additionalOptions: existingConfig.additionalOptions || {
+          includeDepth: { enabled: false, value: '' },
+          includeTotalLength: { enabled: false, value: '' },
+          includeTimeStamp: { enabled: false, value: '' },
+          includeWeather: { enabled: false, value: '' }
+        },
+        mathOperators: existingConfig.mathOperators?.length > 0 ? existingConfig.mathOperators : ['N/A'],
+        stackOrder: existingConfig.stackOrder || {
+          pricing: [],
+          quantity: [],
+          minQuantity: [],
+          additional: []
+        }
       };
       
+      console.log('Config loaded with structure:', configToLoad);
       setFormData(configToLoad);
     } else {
       setFormData(prev => ({
