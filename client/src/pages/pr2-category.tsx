@@ -22,7 +22,7 @@ const SECTORS = [
 ];
 
 export default function PR2Category() {
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
   const [, params] = useRoute('/pr2-category');
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -102,7 +102,7 @@ export default function PR2Category() {
     onSuccess: () => {
       toast({ title: "Configuration saved successfully!" });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
-      navigate(`/pr2-pricing?sector=${sector}`);
+      setLocation(`/pr2-pricing?sector=${sector}`);
     },
     onError: (error: any) => {
       toast({
@@ -145,7 +145,7 @@ export default function PR2Category() {
         
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => navigate(`/pr2-pricing?sector=${sector}`)}
+            onClick={() => setLocation(`/pr2-pricing?sector=${sector}`)}
             variant="outline"
             className="flex items-center gap-2"
           >

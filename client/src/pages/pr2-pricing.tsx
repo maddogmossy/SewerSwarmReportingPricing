@@ -57,7 +57,7 @@ const STANDARD_CATEGORIES = [
 ];
 
 export default function PR2Pricing() {
-  const [location, navigate] = useLocation();
+  const [location, setLocation] = useLocation();
   const [sector, setSector] = useState('utilities');
   
   // Initialize sector from URL on page load only
@@ -122,6 +122,9 @@ export default function PR2Pricing() {
 
   // Handle navigation to category-specific pages
   const handleCategoryNavigation = (categoryId: string) => {
+    console.log('🔍 Navigation triggered for categoryId:', categoryId);
+    console.log('📍 Current sector:', sector);
+    
     const routeMap = {
       'cctv': `/pr2-cctv?sector=${sector}`,
       'van-pack': `/pr2-van-pack?sector=${sector}`,
@@ -139,16 +142,19 @@ export default function PR2Pricing() {
     
     const route = routeMap[categoryId as keyof typeof routeMap];
     if (route) {
-      navigate(route);
+      console.log('✅ Found predefined route:', route);
+      setLocation(route);
     } else {
       // For user-created categories, use a generic category page
-      navigate(`/pr2-category?sector=${sector}&categoryId=${categoryId}`);
+      const genericRoute = `/pr2-category?sector=${sector}&categoryId=${categoryId}`;
+      console.log('🔄 Using generic category route:', genericRoute);
+      setLocation(genericRoute);
     }
   };
 
   // Handle navigation to add custom configuration
   const handleAddConfiguration = () => {
-    navigate(`/pr2-pricing-form?sector=${sector}&category=Custom`);
+    setLocation(`/pr2-pricing-form?sector=${sector}&category=Custom`);
   };
 
   if (categoriesLoading || pr2Loading) {
@@ -173,7 +179,7 @@ export default function PR2Pricing() {
         <div className="flex items-center gap-4">
           {/* Dashboard Navigation */}
           <Button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => setLocation('/dashboard')}
             className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
           >
             <BarChart3 className="h-4 w-4" />
@@ -289,7 +295,7 @@ export default function PR2Pricing() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => navigate(`/pr2-pricing-form?sector=${sector}&edit=${config.id}`)}
+                          onClick={() => setLocation(`/pr2-pricing-form?sector=${sector}&edit=${config.id}`)}
                         >
                           Edit
                         </Button>
