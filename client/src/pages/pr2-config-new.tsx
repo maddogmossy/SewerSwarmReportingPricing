@@ -178,7 +178,10 @@ export default function PR2ConfigNew() {
   // Load existing configuration if editing
   const { data: existingConfig, isLoading: configLoading } = useQuery({
     queryKey: ['/api/pr2-pricing', editId],
-    queryFn: () => apiRequest('GET', `/api/pr2-pricing/${editId}`),
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/pr2-pricing/${editId}`);
+      return await response.json();
+    },
     enabled: isEditing,
   });
 
