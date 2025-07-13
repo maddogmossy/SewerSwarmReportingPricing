@@ -18,14 +18,23 @@ export default function PR2ConfigNew() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Extract parameters from URL
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  // Extract parameters from URL with enhanced debugging
+  const urlSearchParams = location.split('?')[1] || '';
+  const urlParams = new URLSearchParams(urlSearchParams);
   const sector = urlParams.get('sector') || 'utilities';
   const editId = urlParams.get('editId') || urlParams.get('edit'); // Support both parameter names
   const categoryParam = urlParams.get('category') || urlParams.get('categoryId');
   const isEditing = !!editId;
   
-  console.log('PR2 Config New - URL params:', { sector, editId, categoryParam, isEditing, fullLocation: location });
+  console.log('PR2 Config New - Enhanced URL debugging:', { 
+    fullLocation: location,
+    searchParams: urlSearchParams,
+    allParams: Object.fromEntries(urlParams.entries()),
+    sector, 
+    editId, 
+    categoryParam, 
+    isEditing 
+  });
 
   // Auto-detect category from URL path
   const detectCategoryFromPath = () => {

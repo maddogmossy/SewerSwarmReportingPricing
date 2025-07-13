@@ -228,15 +228,20 @@ export default function PR2Pricing() {
     if (existingConfig) {
       console.log('✅ Found existing configuration for', categoryId, '- routing to edit page');
       console.log('Configuration details:', existingConfig);
-      console.log('🔗 Navigating to edit URL:', `/pr2-config-new?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`);
-      setLocation(`/pr2-config-new?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`);
+      const editURL = `/pr2-config-new?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`;
+      console.log('🔗 Navigating to edit URL:', editURL);
+      // Use window.location instead of setLocation to preserve query parameters
+      window.location.href = editURL;
       return;
     }
     
     // For CCTV specifically, always go to the configuration page
     if (categoryId === 'cctv') {
       console.log('🎥 CCTV category - routing to configuration page');
-      setLocation(`/pr2-config-new?sector=${sector}&categoryId=${categoryId}`);
+      const createURL = `/pr2-config-new?sector=${sector}&categoryId=${categoryId}`;
+      console.log('🔗 Creating CCTV config at URL:', createURL);
+      // Use window.location instead of setLocation to preserve query parameters
+      window.location.href = createURL;
       return;
     }
     
