@@ -318,7 +318,7 @@ export default function PR2Pricing() {
               <p className="text-sm text-gray-600">Work Categories</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-orange-600">{currentSector.name}</p>
+              <p className={`text-2xl font-bold ${currentSector.color}`}>{currentSector.name}</p>
               <p className="text-sm text-gray-600">Current Sector</p>
             </div>
             <div>
