@@ -131,7 +131,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           {children}
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-48 max-w-xs p-0 compact-popup" align="start">
+      <PopoverContent className="max-w-sm p-0 compact-popup" align="start">
         <div className="p-3 border-b">
           <h4 className="font-semibold text-xs flex items-center gap-2">
             <Settings className="h-3 w-3 text-blue-600" />
