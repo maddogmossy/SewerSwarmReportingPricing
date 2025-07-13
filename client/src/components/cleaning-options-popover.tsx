@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Settings, AlertTriangle, CheckCircle, Calculator, Plus, Save, X, Droplets } from "lucide-react";
+import { Settings, AlertTriangle, CheckCircle, Calculator, Plus, Save, X, Droplets, Lock } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "@/hooks/use-toast";
 
@@ -17,6 +17,7 @@ interface CleaningOption {
   id: number;
   name: string;
   description: string;
+  enabled: boolean;
   cost?: number;
   rule?: string;
   minimumQuantity?: number;
@@ -83,31 +84,41 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     return result;
   };
   
-  // Simple static cleaning options instead of complex API fetching
+  // Three-option structure with conditional enablement
   const cleaningMethods = [
     {
       id: 1,
       name: 'Cleanse and Survey',
       description: 'Complete cleaning followed by verification survey to confirm completion',
-      category: 'cleaning'
+      category: 'cleaning',
+      enabled: true
     },
     {
       id: 2,
-      name: 'Custom Cleaning',
-      description: 'User-defined cleaning method with custom specifications',
-      category: 'cleaning'
+      name: 'Add New',
+      description: 'Add new cleaning category to existing options',
+      category: 'cleaning',
+      enabled: false // Disabled until Option 1 completed
+    },
+    {
+      id: 3,
+      name: 'Custom',
+      description: 'Create custom cleaning method with specific requirements',
+      category: 'cleaning',
+      enabled: false // Disabled until Option 1 completed
     }
   ];
 
-  // Simple static cleaning options without complex API pricing logic
+  // Static cleaning options with enabled/disabled states
   const cleaningOptions = cleaningMethods.map((method) => ({
     id: method.id,
     name: method.name,
     description: method.description,
+    enabled: method.enabled,
     configured: false, // All options require setup
     configurationMessage: method.name === 'Cleanse and Survey' 
       ? 'Create new category (v3)' 
-      : 'Create new cleaning category'
+      : method.enabled ? 'Available after Option 1 completion' : 'Disabled until Option 1 completed'
   }));
 
   // Mutation to save custom cleaning pricing
@@ -253,9 +264,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     setIsOpen(false);
   };
 
-  // Fixed order for cleaning options: Cleanse and Survey, Custom Cleaning
+  // Fixed order for three-option structure: Cleanse and Survey, Add New, Custom
   const orderedCleaningOptions = cleaningOptions.sort((a, b) => {
-    const order = ['Cleanse and Survey', 'Custom Cleaning'];
+    const order = ['Cleanse and Survey', 'Add New', 'Custom'];
     const aIndex = order.indexOf(a.name);
     const bIndex = order.indexOf(b.name);
     return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
@@ -367,29 +378,38 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
               {orderedCleaningOptions.map((option, index) => (
                 <div key={option.id}>
                   <button
-                    onClick={() => handleOptionClick(option)}
+                    onClick={() => option.enabled ? handleOptionClick(option) : null}
+                    disabled={!option.enabled}
                     className={`w-full p-3 rounded-lg border-2 transition-all duration-200 text-left ${
-                      option.configured
+                      !option.enabled
+                        ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed opacity-60'
+                        : option.configured
                         ? 'border-green-200 bg-green-50 hover:bg-green-100'
-                        : option.name === 'Custom Cleaning'
+                        : option.name === 'Custom'
                         ? 'border-blue-200 bg-blue-50 hover:bg-blue-100'
+                        : option.name === 'Add New'
+                        ? 'border-orange-200 bg-orange-50 hover:bg-orange-100'
                         : option.name === 'Cleanse and Survey'
                         ? 'border-purple-200 bg-purple-50 hover:bg-purple-100'
-                        : 'border-orange-200 bg-orange-50 hover:bg-orange-100'
+                        : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
                     }`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium text-sm">{index + 1}. {option.name}</span>
-                          {option.configured ? (
+                          {!option.enabled ? (
+                            <Lock className="h-4 w-4 text-gray-400" />
+                          ) : option.configured ? (
                             <CheckCircle className="h-4 w-4 text-green-600" />
-                          ) : option.name === 'Custom Cleaning' ? (
+                          ) : option.name === 'Custom' ? (
                             <Plus className="h-4 w-4 text-blue-600" />
+                          ) : option.name === 'Add New' ? (
+                            <Plus className="h-4 w-4 text-orange-600" />
                           ) : option.name === 'Cleanse and Survey' ? (
                             <Settings className="h-4 w-4 text-purple-600" />
                           ) : (
-                            <AlertTriangle className="h-4 w-4 text-orange-600" />
+                            <AlertTriangle className="h-4 w-4 text-gray-600" />
                           )}
                         </div>
                         
