@@ -172,7 +172,15 @@ export default function PR2ConfigNew() {
   // Update form when category changes or editing
   useEffect(() => {
     if (existingConfig && isEditing) {
-      setFormData(existingConfig);
+      console.log('Loading existing config for edit:', existingConfig);
+      
+      // Ensure mathOperators is properly formatted
+      const configToLoad = {
+        ...existingConfig,
+        mathOperators: existingConfig.mathOperators?.length > 0 ? existingConfig.mathOperators : ['N/A']
+      };
+      
+      setFormData(configToLoad);
     } else {
       setFormData(prev => ({
         ...prev,
@@ -206,6 +214,11 @@ export default function PR2ConfigNew() {
   });
 
   const handleSave = () => {
+    console.log('Save button clicked - Current formData:', formData);
+    console.log('Save mutation pending:', saveConfiguration.isPending);
+    console.log('Is editing mode:', isEditing);
+    console.log('Edit ID:', editId);
+    
     saveConfiguration.mutate(formData);
   };
 
@@ -228,10 +241,33 @@ export default function PR2ConfigNew() {
   };
 
   const updateMathOperator = (index: number, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      mathOperators: prev.mathOperators.map((op, i) => i === index ? value : op)
-    }));
+    setFormData(prev => {
+      const currentOperators = prev.mathOperators || ['N/A'];
+      const newOperators = [...currentOperators];
+      
+      // Ensure we have at least one operator
+      if (newOperators.length === 0) {
+        newOperators.push('N/A');
+      }
+      
+      // Update the specific index if it exists
+      if (index < newOperators.length) {
+        newOperators[index] = value;
+      } else {
+        // If index doesn't exist, extend array to that index
+        while (newOperators.length <= index) {
+          newOperators.push('N/A');
+        }
+        newOperators[index] = value;
+      }
+      
+      console.log('Math operator update:', { index, value, before: currentOperators, after: newOperators });
+      
+      return {
+        ...prev,
+        mathOperators: newOperators
+      };
+    });
   };
 
   // Get enabled options count for math operators
@@ -1201,7 +1237,7 @@ export default function PR2ConfigNew() {
         <Button 
           onClick={handleSave} 
           disabled={saveConfiguration.isPending}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
         >
           <Save className="w-4 h-4 mr-2" />
           {saveConfiguration.isPending ? 'Saving...' : 'Save Configuration'}
