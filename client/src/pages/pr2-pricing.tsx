@@ -167,7 +167,9 @@ export default function PR2Pricing() {
             size="sm"
             onClick={() => navigate(`/pr2-pricing?sector=${s.id}`)}
             className={`flex items-center gap-2 ${
-              sector === s.id ? `bg-${s.color.split('-')[1]}-600 text-white` : s.color
+              sector === s.id 
+                ? `bg-blue-600 hover:bg-blue-700 text-white` 
+                : `${s.color} hover:bg-gray-100`
             }`}
           >
             <s.icon className="h-4 w-4" />
