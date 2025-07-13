@@ -361,6 +361,24 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v3.3' to return to this stable checkpoint
 
+## REV V3.4 CHECKPOINT - SECTOR FILTERING ISOLATION COMPLETE (July 13, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE SECTOR ISOLATION ACHIEVED:**
+- **Critical Bug Fixed:** Sector filtering now properly isolates configurations by sector instead of showing same configuration across all sectors
+- **Backend API Enhanced:** Added sector filtering to `/api/pr2-clean` endpoint with proper Drizzle ORM `and()` operator for userId + sector filtering  
+- **Frontend Endpoint Corrected:** Updated frontend to call `/api/pr2-clean` instead of `/api/pr2-pricing` for proper sector-based filtering
+- **Complete Isolation Verified:** CCTV configuration (Day Rate £1850 ÷ Section Complete per shift 30) now appears only in utilities sector, returns empty array for all other sectors
+- **Database Query Optimization:** Implemented proper conditional filtering - returns all configurations when no sector specified, filtered results when sector parameter provided
+- **Zero Cross-Contamination:** Each sector now maintains completely independent configuration lists with no bleeding between sectors
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Server Enhancement:** `server/routes-pr2-clean.ts` with sector parameter extraction and conditional Drizzle ORM filtering using `and(eq(...), eq(...))`
+- **Frontend Fix:** `client/src/pages/pr2-pricing.tsx` updated API call from `/api/pr2-pricing` to `/api/pr2-clean` with sector parameter
+- **Query Logic:** Utilities sector returns 1 configuration, adoption sector returns 0 configurations, all other sectors return 0 configurations  
+- **Console Verification:** Server logs show `✅ Loading 1 clean PR2 configurations for sector: utilities` and `✅ Loading 0 clean PR2 configurations for sector: adoption`
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v3.4' to return to this stable checkpoint
+
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 
 **🏗️ Core Architecture:**
