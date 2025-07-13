@@ -218,16 +218,7 @@ export default function RepairPricing() {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
   
-  // Parse URL parameters for new category creation
-  const urlParams = new URLSearchParams(window.location.search);
-  const autoSetup = urlParams.get('autoSetup') === 'true';
-  const urlCategoryName = urlParams.get('categoryName') || '';
-  const urlPipeSize = urlParams.get('pipeSize') || '';
-  const urlSector = urlParams.get('sector') || '';
-  const urlItemNo = urlParams.get('itemNo') || '';
-  const urlDefects = urlParams.get('defects') || '';
-  const urlRecommendations = urlParams.get('recommendations') || '';
-  const urlPipeMaterial = urlParams.get('pipeMaterial') || '';
+  // Simplified: no URL parameter processing to prevent freezing
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -237,14 +228,14 @@ export default function RepairPricing() {
   const [pendingSectorChange, setPendingSectorChange] = useState<{sectorId: string, checked: boolean} | null>(null);
   const [isComplianceWarningOpen, setIsComplianceWarningOpen] = useState(false);
   const [pendingEditItem, setPendingEditItem] = useState<any>(null);
-  const [showAddCategory, setShowAddCategory] = useState(autoSetup);
+  const [showAddCategory, setShowAddCategory] = useState(false);
   const [newCategory, setNewCategory] = useState({
-    name: urlCategoryName,
-    description: urlRecommendations ? generateDescriptionFromRecommendations(urlRecommendations, urlDefects) : '',
+    name: '',
+    description: '',
     icon: 'Wrench',
     color: 'text-blue-600',
     pricingStructure: {
-      meterage: true, // Enable by default for cleaning categories
+      meterage: false,
       numberPerShift: false,
       metersPerShift: false,
       dayRate: false,
@@ -264,20 +255,7 @@ export default function RepairPricing() {
   const [showSimpleAddForm, setShowSimpleAddForm] = useState(false);
   const [simpleCategoryName, setSimpleCategoryName] = useState('');
   
-  // Auto-setup from URL parameters (from dashboard category creation)
-  useEffect(() => {
-    if (autoSetup && urlCategoryName) {
-      // Clear URL parameters after processing
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-      
-      // Show toast message about auto-setup
-      toast({
-        title: "Category Setup",
-        description: `Setting up "${urlCategoryName}" category with section data.`
-      });
-    }
-  }, []); // Empty dependency array to run only once
+  // Simplified: removed auto-setup to prevent freezing
 
   
   // Collapsible state for option windows
@@ -495,138 +473,16 @@ export default function RepairPricing() {
     enabled: !!(sector || currentSector?.id),
   });
 
-  // Auto-focus functionality for navigation from repair options
+  // Simplified: no complex URL parameter processing
+
+
+
+  // Simplified: show add form if no categories exist
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const autoFocus = urlParams.get('autoFocus');
-    const pipeSize = urlParams.get('pipeSize');
-    const pipeDepth = urlParams.get('pipeDepth');
-    const meterage = urlParams.get('meterage');
-    const itemNo = urlParams.get('itemNo');
-    const defects = urlParams.get('defects');
-    const recommendations = urlParams.get('recommendations');
-    const pipeMaterial = urlParams.get('pipeMaterial');
-    const editMode = urlParams.get('edit');
-    const editId = urlParams.get('editId');
-    
-    console.log('URL Parameters received:', {
-      autoFocus,
-      pipeSize,
-      pipeDepth,
-      meterage,
-      itemNo,
-      defects,
-      recommendations,
-      pipeMaterial,
-      editMode,
-      editId
-    });
-    
-    // Handle edit mode for configured pricing
-    if (editMode === 'true' && editId && pricingData) {
-      console.log('Edit mode detected, looking for pricing with ID:', editId);
-      const pricingToEdit = pricingData.find(pricing => pricing.id === parseInt(editId));
-      if (pricingToEdit) {
-        console.log('Found pricing to edit:', pricingToEdit);
-        // Set the editing item and populate form data
-        setEditingItem(pricingToEdit);
-        proceedWithEditDirectly(pricingToEdit);
-        setTimeout(() => {
-          setIsAddDialogOpen(true);
-        }, 1000);
-      }
+    if (workCategories && workCategories.length === 0) {
+      setShowSimpleAddForm(true);
     }
-    // Auto-open dialog immediately if autoFocus is present (for new pricing)
-    else if (autoFocus) {
-      console.log('Auto-focus detected, opening dialog in 1 second...');
-      setTimeout(() => {
-        setIsAddDialogOpen(true);
-      }, 1000);
-    }
-  }, [location]); // Remove pricingData dependency to prevent infinite loops
-
-
-
-  // Separate useEffect for auto-selection when data is loaded
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const autoFocus = urlParams.get('autoFocus');
-    const pipeSize = urlParams.get('pipeSize');
-    const pipeDepth = urlParams.get('pipeDepth');
-    const meterage = urlParams.get('meterage');
-    const itemNo = urlParams.get('itemNo');
-    const defects = urlParams.get('defects');
-    const recommendations = urlParams.get('recommendations');
-    const pipeMaterial = urlParams.get('pipeMaterial');
-    
-    console.log('Auto-selection check:', { 
-      autoFocus, 
-      hasWorkCategories: workCategories && workCategories.length > 0,
-      workCategories,
-      pricingDataLoaded: pricingData !== undefined 
-    });
-    
-    console.log('Full condition check:', {
-      autoFocus,
-      workCategoriesExists: !!workCategories,
-      workCategoriesLength: workCategories?.length,
-      pricingDataUndefined: pricingData !== undefined,
-      fullCondition: autoFocus && workCategories && workCategories.length > 0 && pricingData !== undefined
-    });
-    
-    // Skip auto-selection if we're in edit mode to prevent overwriting edit data
-    const editMode = urlParams.get('edit');
-    const editId = urlParams.get('editId');
-    
-    if (autoFocus && workCategories && Array.isArray(workCategories) && workCategories.length > 0 && !(editMode === 'true' && editId)) {
-      console.log('Auto-selection triggered for:', autoFocus);
-      
-      // Find matching work category
-      const matchingCategory = workCategories.find((cat: any) => 
-        cat.name.toLowerCase().includes('patch') && autoFocus.toLowerCase().includes('patch')
-      ) || workCategories.find((cat: any) => 
-        cat.name.toLowerCase().includes(autoFocus.toLowerCase())
-      );
-      
-      if (matchingCategory) {
-        console.log('Found matching category:', matchingCategory.name);
-        
-        // Calculate depth range from dashboard MH depths or use pipeDepth parameter
-        const depthRange = pipeDepth || ""; // Use depth from dashboard if available
-        const patchThickness = calculatePatchThickness(depthRange, pipeSize, defects);
-        
-        // Generate dynamic MSCC5 description using new function
-        const description = generateDynamicDescription({
-          pipeSize: pipeSize ? `${pipeSize}mm` : undefined,
-          meterage: meterage,
-          defects: defects || '',
-          recommendations: recommendations || '',
-          depth: depthRange
-        });
-        
-        // Set form data and open dialog
-        setTimeout(() => {
-          setFormData(prev => ({
-            ...prev,
-            workCategoryId: matchingCategory.id.toString(),
-            pipeSize: pipeSize || prev.pipeSize,
-            depth: depthRange,
-            description: description || generateDescriptionFromRecommendations(recommendations, defects),
-            lengthOfRepair: meterage || "", // Use actual length from dashboard
-            dayRate: "",
-            vehicleId: "",
-            pricingStructure: {
-              ...prev.pricingStructure,
-              meterage: true, // Default to meterage pricing for repairs
-              dayRate: true   // Also enable day rate
-            }
-          }));
-          setIsDescriptionEditable(false);
-          setIsAddDialogOpen(true);
-        }, 500);
-      }
-    }
-  }, [location]); // Remove dependencies to prevent infinite loops
+  }, [workCategories]);
 
   // Internal automatic cost selection function based on description analysis
   const selectCostFromDescription = (description: string, defectsData: string = "") => {

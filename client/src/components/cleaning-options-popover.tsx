@@ -188,8 +188,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
           autoSetup: 'true'
         });
         
-        // Navigate to repair pricing page with the new category
-        setLocation(`/repair-pricing?${params.toString()}`);
+        // Simply navigate to repair pricing page - let it handle the existing categories
+        setLocation('/repair-pricing');
       }
     } catch (error) {
       toast({
