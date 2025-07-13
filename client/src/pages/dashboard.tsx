@@ -1116,29 +1116,47 @@ export default function Dashboard() {
 
   // Function to calculate auto-populated cost for defective sections using PR1 configurations
   const calculateAutoCost = (section: any) => {
+    console.log('🔍 calculateAutoCost called for section:', section.itemNo);
+    console.log('📊 PR1 configurations:', pr1Configurations);
+    
     // If no PR1 configurations exist, return null to show warning triangles
     if (!pr1Configurations || pr1Configurations.length === 0) {
+      console.log('❌ No PR1 configurations found');
       return null;
     }
 
     // Find a valid PR1 configuration
     const pr1Config = pr1Configurations[0]; // Use the first available config
+    console.log('🎯 Using PR1 config:', pr1Config);
     
-    if (!pr1Config || !pr1Config.pricingValues) {
+    if (!pr1Config || (!pr1Config.pricingOptions && !pr1Config.quantityOptions)) {
+      console.log('❌ PR1 config has no pricing or quantity options:', pr1Config);
       return null;
     }
 
     try {
-      // Extract values from PR1 configuration
-      const { 
-        dayRate = 0,
-        hourlyRate = 0, 
-        setupRate = 0,
-        perMeterRate = 0,
-        runsPerShift = 1,
-        metersPerShift = 1,
-        sectionsPerDay = 1
-      } = pr1Config.pricingValues;
+      console.log('💰 PR1 full structure:', {
+        pricingOptions: pr1Config.pricingOptions,
+        quantityOptions: pr1Config.quantityOptions,
+        pricingValues: pr1Config.pricingValues
+      });
+      
+      // Extract values from PR1 configuration arrays
+      const getPricingValue = (options: any[], id: string) => {
+        const option = options?.find(opt => opt.id === id);
+        return option ? parseFloat(option.value) || 0 : 0;
+      };
+      
+      const dayRate = getPricingValue(pr1Config.pricingOptions, 'dayRate');
+      const hourlyRate = getPricingValue(pr1Config.pricingOptions, 'hourlyRate');
+      const setupRate = getPricingValue(pr1Config.pricingOptions, 'setupRate');
+      const perMeterRate = getPricingValue(pr1Config.pricingOptions, 'perMeterRate');
+      
+      const runsPerShift = getPricingValue(pr1Config.quantityOptions, 'runsPerShift');
+      const metersPerShift = getPricingValue(pr1Config.quantityOptions, 'metersPerShift');
+      const sectionsPerDay = getPricingValue(pr1Config.quantityOptions, 'sectionsPerDay');
+      
+      console.log('📝 Extracted values:', { dayRate, hourlyRate, setupRate, perMeterRate, runsPerShift, metersPerShift, sectionsPerDay });
 
       // Simple calculation logic - use day rate divided by runs per shift as base cost
       let baseCost = 0;
@@ -1159,12 +1177,15 @@ export default function Dashboard() {
 
       // Return calculated cost if we have a valid amount
       if (baseCost > 0) {
+        console.log('✅ PR1 calculation successful:', { baseCost, dayRate, runsPerShift });
         return {
           cost: baseCost,
           currency: '£',
           method: 'PR1 Configuration',
           status: 'calculated'
         };
+      } else {
+        console.log('❌ PR1 calculation failed - no valid cost calculated');
       }
     } catch (error) {
       console.error('Error calculating PR1 cost:', error);
