@@ -94,22 +94,33 @@ export default function PR2Pricing() {
   // Fetch standard categories from database
   const { data: standardCategoriesFromDB = [], isLoading: standardCategoriesLoading } = useQuery({
     queryKey: ['/api/standard-categories'],
-    queryFn: () => apiRequest('GET', '/api/standard-categories'),
+    // Use default queryFn instead of apiRequest to get proper JSON parsing
   });
+
+  // Debug: Log the API response
+  console.log('🔍 Standard categories API response:', standardCategoriesFromDB);
+  console.log('🔍 Is array?', Array.isArray(standardCategoriesFromDB));
+  console.log('🔍 Type:', typeof standardCategoriesFromDB);
 
   // Ensure pr2Configurations is always an array
   const pr2Configurations = Array.isArray(pr2ConfigurationsRaw) ? pr2ConfigurationsRaw : [];
   
+  // Ensure standardCategoriesFromDB is always an array and handle potential errors
+  const validStandardCategories = Array.isArray(standardCategoriesFromDB) ? standardCategoriesFromDB : [];
+  
   // Combine hardcoded standard categories with user-created standard categories
   const allStandardCategories = [
     ...STANDARD_CATEGORIES,
-    ...standardCategoriesFromDB.map(cat => ({
+    ...validStandardCategories.map(cat => ({
       id: cat.categoryId,
       name: cat.categoryName,
       description: cat.description,
       icon: Settings // Use Settings icon for user-created categories
     }))
   ];
+
+  console.log('🔍 Valid standard categories:', validStandardCategories);
+  console.log('🔍 All standard categories:', allStandardCategories);
 
   // Delete mutation
   const deletePR2Configuration = useMutation({
