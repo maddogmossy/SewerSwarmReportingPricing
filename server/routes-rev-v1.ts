@@ -799,6 +799,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     if (!global.pr1ConfigStorage) {
       global.pr1ConfigStorage = [];
+      
+      // Auto-create test configuration if none exists
+      const testConfig = {
+        id: Date.now(),
+        userId: 'test-user',
+        categoryId: 'auto-created-config',
+        categoryName: 'Auto-Created PR1 Configuration',
+        description: 'Auto-created for testing dashboard integration',
+        pricingOptions: [{ id: 'dayRate', label: 'dayRate', value: '1850' }],
+        quantityOptions: [{ id: 'runsPerShift', label: 'runsPerShift', value: '30' }],
+        minQuantityOptions: [],
+        rangeOptions: [],
+        rangeValues: {},
+        pricingValues: {},
+        mathOperators: ['÷'],
+        sector: 'utilities',
+        createdAt: new Date().toISOString()
+      };
+      global.pr1ConfigStorage.push(testConfig);
+      console.log('🔧 Auto-created test PR1 configuration for testing');
     }
 
     let configs = global.pr1ConfigStorage.filter(config => config.userId === 'test-user');
