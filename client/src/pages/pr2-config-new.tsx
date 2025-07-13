@@ -560,7 +560,7 @@ export default function PR2ConfigNew() {
                     Add
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent aria-describedby="add-pricing-description">
                   <DialogHeader>
                     <DialogTitle>Add New Pricing Option</DialogTitle>
                   </DialogHeader>
@@ -767,7 +767,7 @@ export default function PR2ConfigNew() {
                     Add
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent aria-describedby="add-quantity-description">
                   <DialogHeader>
                     <DialogTitle>Add New Quantity Option</DialogTitle>
                   </DialogHeader>
@@ -793,7 +793,7 @@ export default function PR2ConfigNew() {
                     Reorder
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md" aria-describedby="reorder-quantity-description">
                   <DialogHeader>
                     <DialogTitle>Reorder Quantity Options</DialogTitle>
                   </DialogHeader>
@@ -946,7 +946,7 @@ export default function PR2ConfigNew() {
                     Add
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent aria-describedby="add-minquantity-description">
                   <DialogHeader>
                     <DialogTitle>Add New Min Quantity Option</DialogTitle>
                   </DialogHeader>
@@ -972,7 +972,7 @@ export default function PR2ConfigNew() {
                     Reorder
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md" aria-describedby="reorder-minquantity-description">
                   <DialogHeader>
                     <DialogTitle>Reorder Min Quantity Options</DialogTitle>
                   </DialogHeader>
@@ -1121,7 +1121,7 @@ export default function PR2ConfigNew() {
                     Add
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent aria-describedby="add-additional-description">
                   <DialogHeader>
                     <DialogTitle>Add New Additional Option</DialogTitle>
                   </DialogHeader>
@@ -1147,7 +1147,7 @@ export default function PR2ConfigNew() {
                     Reorder
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md" aria-describedby="reorder-additional-description">
                   <DialogHeader>
                     <DialogTitle>Reorder Additional Options</DialogTitle>
                   </DialogHeader>
