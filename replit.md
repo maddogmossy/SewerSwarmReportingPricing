@@ -253,13 +253,15 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Form Validation:** Updated backend to handle complex nested form structures
 - **Dashboard Integration:** PR2 configurations display in organized card layout
 - **Cost Calculation:** Target calculation preserved: Day Rate ÷ Runs per Shift = Cost per Section
+- **Form Persistence:** Existing configurations load properly for editing with selected options and values retained
 
 **🚀 User Workflow:**
 1. Dashboard cleaning recommendation click
 2. Direct routing to PR2 pricing page
 3. Add/Edit configuration with pricing options
 4. Save configuration to database
-5. Return to dashboard with active pricing
+5. Return to PR2 pricing page to allow further editing
+6. Configurations persist selected options and values for editing
 
 ## PR1 PRICING SYSTEM (January 13, 2025)
 

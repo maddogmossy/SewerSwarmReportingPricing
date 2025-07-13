@@ -94,43 +94,58 @@ export default function PR2PricingForm() {
     queryKey: ['/api/pr2-pricing', sector],
     enabled: isEditing,
     select: (data: any[]) => data.find(config => config.id === parseInt(editId!))
-  });
+  })
 
+  // Populate form with existing configuration data when editing
   useEffect(() => {
-    if (existingConfig && isEditing) {
-      // Populate form with existing data
-      setFormData({
-        categoryName: existingConfig.categoryName || 'Cleanse and Survey',
-        description: existingConfig.description || 'PR2 cleaning configuration',
-        pricingOptions: existingConfig.pricingOptions?.reduce((acc: any, opt: any) => {
-          acc[opt.id] = { enabled: true, value: opt.value };
-          return acc;
-        }, {
-          dayRate: { enabled: false, value: '' },
-          hourlyRate: { enabled: false, value: '' },
-          setupRate: { enabled: false, value: '' },
-          meterageRate: { enabled: false, value: '' }
-        }) || formData.pricingOptions,
-        quantityOptions: existingConfig.quantityOptions?.reduce((acc: any, opt: any) => {
-          acc[opt.id] = { enabled: true, value: opt.value };
-          return acc;
-        }, {
-          runsPerShift: { enabled: false, value: '' },
-          metersPerShift: { enabled: false, value: '' },
-          sectionsPerDay: { enabled: false, value: '' }
-        }) || formData.quantityOptions,
-        minQuantityOptions: existingConfig.minQuantityOptions?.reduce((acc: any, opt: any) => {
-          acc[opt.id] = { enabled: true, value: opt.value };
-          return acc;
-        }, {
-          minRuns: { enabled: false, value: '' },
-          minMeters: { enabled: false, value: '' },
-          minSetup: { enabled: false, value: '' }
-        }) || formData.minQuantityOptions,
-        mathOperators: formData.mathOperators
-      });
+    if (isEditing && existingConfig) {
+      console.log('📝 Loading existing config for editing:', existingConfig);
+      
+      // Helper function to convert option arrays back to form structure
+      const convertOptionsToForm = (options: any[] = []) => {
+        const formStructure: any = {};
+        options.forEach(option => {
+          formStructure[option.id] = {
+            enabled: true,
+            value: option.value || ''
+          };
+        });
+        return formStructure;
+      };
+
+      // Populate form data with existing configuration
+      setFormData(prev => ({
+        ...prev,
+        categoryName: existingConfig.categoryName || prev.categoryName,
+        description: existingConfig.description || prev.description,
+        pricingOptions: {
+          ...prev.pricingOptions,
+          ...convertOptionsToForm(existingConfig.pricingOptions)
+        },
+        quantityOptions: {
+          ...prev.quantityOptions,
+          ...convertOptionsToForm(existingConfig.quantityOptions)
+        },
+        minQuantityOptions: {
+          ...prev.minQuantityOptions,
+          ...convertOptionsToForm(existingConfig.minQuantityOptions)
+        },
+        mathOperators: {
+          op1: existingConfig.mathOperators?.[0] || '÷',
+          op2: existingConfig.mathOperators?.[1] || '+',
+          op3: existingConfig.mathOperators?.[2] || '+'
+        }
+      }));
+      
+      // Handle custom category
+      if (existingConfig.categoryName && !STANDARD_CATEGORIES.includes(existingConfig.categoryName)) {
+        setIsCustomCategory(true);
+        setCustomCategoryName(existingConfig.categoryName);
+      }
     }
-  }, [existingConfig, isEditing]);
+  }, [isEditing, existingConfig]);
+
+
 
   // Save mutation
   const saveMutation = useMutation({
@@ -148,7 +163,8 @@ export default function PR2PricingForm() {
       });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing', sector] });
-      setLocation('/dashboard');
+      // Stay on the same page after saving to allow further editing
+      setLocation(`/pr2-pricing?sector=${sector}`);
     },
     onError: (error: any) => {
       toast({
