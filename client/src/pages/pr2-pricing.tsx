@@ -33,14 +33,16 @@ const SECTORS = [
 
 export default function PR2Pricing() {
   const [location, navigate] = useLocation();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   
-  // Extract sector from URL
-  const sector = new URLSearchParams(location.split('?')[1] || '').get('sector') || 'utilities';
+  // Simple extraction without complex parsing
+  const urlParams = new URLSearchParams(window.location.search);
+  const sector = urlParams.get('sector') || 'utilities';
   
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
+  
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Legacy work categories removed - PR2 only
   // Show PR2 configurations directly instead of requiring work categories

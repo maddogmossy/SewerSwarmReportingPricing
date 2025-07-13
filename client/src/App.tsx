@@ -20,6 +20,7 @@ import SimplePricing from "@/pages/simple-pricing";
 import PR2Pricing from "@/pages/pr2-pricing";
 import PR2PricingForm from "@/pages/pr2-pricing-form";
 import PR2PricingSimple from "@/pages/pr2-pricing-simple";
+import TestPR2Routing from "@/pages/test-pr2-routing";
 import StandardsConfig from "@/pages/standards-config";
 import DepotManagement from "@/pages/depot-management";
 import VehicleTravelRates from "@/pages/vehicle-travel-rates";
