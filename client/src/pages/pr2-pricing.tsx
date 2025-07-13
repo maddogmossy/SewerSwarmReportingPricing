@@ -437,17 +437,17 @@ export default function PR2Pricing() {
                         </div>
                         
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="text-lg font-semibold text-gray-900">{config.categoryName}</h4>
+                          <div className="flex items-center gap-3 mb-3">
+                            <h4 className="text-xl font-semibold text-gray-900">{config.categoryName}</h4>
                             <Badge variant="default" className="text-xs">Active</Badge>
                           </div>
                           
-                          <div className="mb-2">
-                            <p className="text-sm font-bold text-gray-800 mb-1">Description</p>
-                            <p className="text-sm text-gray-600 leading-relaxed break-words">{config.description}</p>
+                          <div className="mb-4">
+                            <p className="text-sm font-bold text-gray-800 mb-2">Description</p>
+                            <p className="text-base text-gray-700 leading-relaxed break-words">{config.description}</p>
                           </div>
                           
-                          <div className="flex items-center gap-6 text-sm text-gray-500">
+                          <div className="flex items-center gap-8 text-sm text-gray-500">
                             <span>Pricing Options: {Array.isArray(config.pricingOptions) ? config.pricingOptions.length : Object.keys(config.pricingOptions || {}).length}</span>
                             <span>Quantity Options: {Array.isArray(config.quantityOptions) ? config.quantityOptions.length : Object.keys(config.quantityOptions || {}).length}</span>
                             <span>Math Operators: {config.mathOperators?.length || 0}</span>
@@ -455,24 +455,27 @@ export default function PR2Pricing() {
                         </div>
                       </div>
                       
-                      {/* Right section - Action buttons */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setLocation(`/pr2-pricing-form?sector=${sector}&edit=${config.id}`)}
-                          className="text-xs"
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => deletePR2Configuration.mutate(config.id)}
-                          className="text-red-600 border-red-200 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      {/* Right section - Action buttons with Archive label */}
+                      <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                        <span className="text-sm font-medium text-gray-600">Archive</span>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setLocation(`/pr2-pricing-form?sector=${sector}&edit=${config.id}`)}
+                            className="text-xs px-3"
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => deletePR2Configuration.mutate(config.id)}
+                            className="text-red-600 border-red-200 hover:bg-red-50 px-2"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
