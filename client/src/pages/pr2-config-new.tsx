@@ -103,7 +103,15 @@ export default function PR2ConfigNew() {
     },
     
     // Math Operators between Blue and Green only
-    mathOperators: ['N/A', 'N/A', 'N/A']
+    mathOperators: ['N/A', 'N/A', 'N/A'],
+    
+    // Stack order preservation
+    stackOrder: {
+      pricing: [] as string[],
+      quantity: [] as string[],
+      minQuantity: [] as string[],
+      additional: [] as string[]
+    }
   });
 
   // Dialog states for Add/Edit functionality
@@ -307,7 +315,13 @@ export default function PR2ConfigNew() {
   // Reorder functionality
   const openReorderDialog = (section: string) => {
     const sectionKey = `${section}Options` as keyof typeof formData;
-    const currentOrder = Object.keys(formData[sectionKey]);
+    // Use saved stack order if available, otherwise fall back to current object keys
+    const savedOrder = formData.stackOrder[section as keyof typeof formData.stackOrder];
+    const currentKeys = Object.keys(formData[sectionKey]);
+    
+    // If we have a saved order, use it; otherwise use current keys
+    const currentOrder = savedOrder.length > 0 ? savedOrder : currentKeys;
+    
     setReorderStates(prev => ({ ...prev, [section]: currentOrder }));
     setReorderDialogs(prev => ({ ...prev, [section]: true }));
   };
@@ -338,7 +352,11 @@ export default function PR2ConfigNew() {
 
     setFormData(prev => ({
       ...prev,
-      [sectionKey]: reorderedData
+      [sectionKey]: reorderedData,
+      stackOrder: {
+        ...prev.stackOrder,
+        [section]: newOrder
+      }
     }));
 
     closeReorderDialog(section);
@@ -492,7 +510,10 @@ export default function PR2ConfigNew() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {Object.entries(formData.pricingOptions).map(([key, option]) => (
+            {(formData.stackOrder.pricing.length > 0 
+              ? formData.stackOrder.pricing.map(key => [key, formData.pricingOptions[key]]).filter(([,option]) => option)
+              : Object.entries(formData.pricingOptions)
+            ).map(([key, option]) => (
               <div key={key} className="flex items-center space-x-3">
                 <Checkbox
                   id={`pricing-${key}`}
@@ -676,7 +697,10 @@ export default function PR2ConfigNew() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {Object.entries(formData.quantityOptions).map(([key, option]) => (
+            {(formData.stackOrder.quantity.length > 0 
+              ? formData.stackOrder.quantity.map(key => [key, formData.quantityOptions[key]]).filter(([,option]) => option)
+              : Object.entries(formData.quantityOptions)
+            ).map(([key, option]) => (
               <div key={key} className="flex items-center space-x-3">
                 <Checkbox
                   id={`quantity-${key}`}
@@ -828,7 +852,10 @@ export default function PR2ConfigNew() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {Object.entries(formData.minQuantityOptions).map(([key, option]) => (
+            {(formData.stackOrder.minQuantity.length > 0 
+              ? formData.stackOrder.minQuantity.map(key => [key, formData.minQuantityOptions[key]]).filter(([,option]) => option)
+              : Object.entries(formData.minQuantityOptions)
+            ).map(([key, option]) => (
               <div key={key} className="flex items-center space-x-3">
                 <Checkbox
                   id={`minQuantity-${key}`}
@@ -976,7 +1003,10 @@ export default function PR2ConfigNew() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {Object.entries(formData.additionalOptions).map(([key, option]) => (
+            {(formData.stackOrder.additional.length > 0 
+              ? formData.stackOrder.additional.map(key => [key, formData.additionalOptions[key]]).filter(([,option]) => option)
+              : Object.entries(formData.additionalOptions)
+            ).map(([key, option]) => (
               <div key={key} className="flex items-center space-x-3">
                 <Checkbox
                   id={`additional-${key}`}
