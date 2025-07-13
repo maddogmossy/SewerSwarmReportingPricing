@@ -64,20 +64,30 @@ export default function PR2Pricing() {
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
     const newSector = urlParams.get('sector') || 'utilities';
-    setSector(newSector);
     
     // Debug: Log current sector
     console.log('Current location:', location);
-    console.log('Current sector:', newSector);
+    console.log('URL sector parameter:', newSector);
+    console.log('Current sector state:', sector);
+    
+    // Only update if sector has actually changed
+    if (newSector !== sector) {
+      console.log(`Updating sector from ${sector} to ${newSector}`);
+      setSector(newSector);
+    }
     
     // Force navigation to include sector parameter if missing
     if (!location.includes('?sector=')) {
       navigate(`/pr2-pricing?sector=utilities`);
     }
-  }, [location, navigate]);
+  }, [location, navigate, sector]);
   
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
+  
+  // Debug: Log current sector info
+  console.log('Current sector object:', currentSector);
+  console.log('Current sector bgColor:', currentSector.bgColor);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
