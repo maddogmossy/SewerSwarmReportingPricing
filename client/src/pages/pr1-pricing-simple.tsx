@@ -71,6 +71,7 @@ export default function PR1Pricing() {
   });
 
   const handleSave = () => {
+    console.log('Current pricing config state:', pricingConfig);
     // Transform pricingConfig to match backend expectations
     const pricingOptions = Object.entries(pricingConfig)
       .filter(([key, config]) => 
@@ -132,6 +133,7 @@ export default function PR1Pricing() {
   };
 
   const updateConfig = (key: string, field: 'enabled' | 'value' | 'min' | 'max', value: any) => {
+    console.log(`Updating ${key}.${field} to:`, value);
     setPricingConfig(prev => ({
       ...prev,
       [key]: {
