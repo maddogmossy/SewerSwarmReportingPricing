@@ -455,22 +455,42 @@ export default function PR2Pricing() {
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span>Pricing Options: {config.pricingOptions?.length || 0}</span>
-                        <span>Quantity Options: {config.quantityOptions?.length || 0}</span>
+                        <span>Pricing Options: {Array.isArray(config.pricingOptions) ? config.pricingOptions.length : Object.keys(config.pricingOptions || {}).length}</span>
+                        <span>Quantity Options: {Array.isArray(config.quantityOptions) ? config.quantityOptions.length : Object.keys(config.quantityOptions || {}).length}</span>
                         <span>Math Operators: {config.mathOperators?.length || 0}</span>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
                         <p className="text-sm font-medium">Configuration Details:</p>
-                        {config.pricingOptions?.map((option: any, index: number) => (
-                          <p key={index} className="text-xs text-gray-600">
-                            {option.label}: £{option.value}
-                          </p>
-                        ))}
-                        {config.quantityOptions?.map((option: any, index: number) => (
-                          <p key={index} className="text-xs text-gray-600">
-                            {option.label}: {option.value}
-                          </p>
-                        ))}
+                        {/* Handle pricingOptions as either array or object */}
+                        {Array.isArray(config.pricingOptions) 
+                          ? config.pricingOptions.map((option: any, index: number) => (
+                              <p key={index} className="text-xs text-gray-600">
+                                {option.label}: £{option.value}
+                              </p>
+                            ))
+                          : Object.entries(config.pricingOptions || {}).map(([key, option]: [string, any]) => (
+                              option.enabled && (
+                                <p key={key} className="text-xs text-gray-600">
+                                  {key}: £{option.value || 'Not set'}
+                                </p>
+                              )
+                            ))
+                        }
+                        {/* Handle quantityOptions as either array or object */}
+                        {Array.isArray(config.quantityOptions) 
+                          ? config.quantityOptions.map((option: any, index: number) => (
+                              <p key={index} className="text-xs text-gray-600">
+                                {option.label}: {option.value}
+                              </p>
+                            ))
+                          : Object.entries(config.quantityOptions || {}).map(([key, option]: [string, any]) => (
+                              option.enabled && (
+                                <p key={key} className="text-xs text-gray-600">
+                                  {key}: {option.value || 'Not set'}
+                                </p>
+                              )
+                            ))
+                        }
                       </div>
                     </div>
                   </CardContent>
