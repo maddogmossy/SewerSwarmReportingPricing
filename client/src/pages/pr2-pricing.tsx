@@ -185,9 +185,11 @@ export default function PR2Pricing() {
             size="sm"
             onClick={() => {
               console.log(`Navigating to sector: ${s.id}`);
-              // Update sector state directly and use navigate with replace
+              // Update sector state and URL simultaneously
               setSector(s.id);
-              navigate(`/pr2-pricing?sector=${s.id}`, { replace: true });
+              const newUrl = `/pr2-pricing?sector=${s.id}`;
+              window.history.pushState({}, '', newUrl);
+              console.log(`URL updated to: ${newUrl}`);
             }}
             className={`flex items-center gap-2 ${s.color} hover:bg-gray-100`}
           >
