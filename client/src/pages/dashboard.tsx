@@ -592,15 +592,16 @@ export default function Dashboard() {
       case 'defects':
         const defectsText = section.defects || 'No defects recorded';
         
-        // Check if observations contain multiple items that could be displayed as a list
-        const isMultipleObservations = defectsText.includes(',') || defectsText.includes(';') || defectsText.match(/\d+\.\d+m/g);
+        // Check if observations contain multiple distinct observations (split by periods followed by capital letters)
+        const hasMultipleObservations = defectsText.includes('. ') && defectsText !== 'No service or structural defect found';
         
-        if (isMultipleObservations && defectsText !== 'No service or structural defect found') {
-          // Split observations into list items
+        if (hasMultipleObservations) {
+          // Split observations by periods followed by capital letters or specific patterns
           const observations = defectsText
-            .split(/[,;]/)
+            .split(/\. (?=[A-Z])/) // Split on ". " followed by capital letter
             .map(obs => obs.trim())
-            .filter(obs => obs.length > 0);
+            .filter(obs => obs.length > 0)
+            .map(obs => obs.endsWith('.') ? obs : obs + '.'); // Ensure each ends with period
           
           return (
             <div className="text-sm p-2 w-full">
