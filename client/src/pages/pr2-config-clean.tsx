@@ -63,12 +63,32 @@ export default function PR2ConfigClean() {
   // Get URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const sector = urlParams.get('sector') || 'utilities';
+  const categoryId = urlParams.get('categoryId');
   const editId = urlParams.get('editId');
   const isEditing = !!editId;
+  
+  // Determine category name based on categoryId for standard categories
+  const getCategoryName = (categoryId: string) => {
+    const categoryMap: { [key: string]: string } = {
+      'cctv': 'CCTV Price Configuration',
+      'van-pack': 'Van Pack Configuration',
+      'jet-vac': 'Jet Vac Configuration',
+      'cctv-van-pack': 'CCTV Van Pack Configuration',
+      'cctv-jet-vac': 'CCTV Jet Vac Configuration',
+      'directional-water-cutter': 'Directional Water Cutter Configuration',
+      'ambient-lining': 'Ambient Lining Configuration',
+      'hot-cure-lining': 'Hot Cure Lining Configuration',
+      'uv-lining': 'UV Lining Configuration',
+      'ims-cutting': 'IMS Cutting Configuration',
+      'excavation': 'Excavation Configuration',
+      'tankering': 'Tankering Configuration'
+    };
+    return categoryMap[categoryId] || 'Price Configuration';
+  };
 
   // Clean form state
   const [formData, setFormData] = useState<CleanFormData>({
-    categoryName: '',
+    categoryName: categoryId ? getCategoryName(categoryId) : '',
     description: '',
     pricingOptions: [],
     quantityOptions: [],
@@ -123,7 +143,7 @@ export default function PR2ConfigClean() {
         const rangeOptions = Array.isArray(config.rangeOptions) ? config.rangeOptions : [];
         
         setFormData({
-          categoryName: 'CCTV Price Configuration',
+          categoryName: config.categoryName || 'CCTV Price Configuration',
           description: config.description || '',
           pricingOptions: config.pricingOptions || [],
           quantityOptions: quantityOptions,
@@ -147,7 +167,7 @@ export default function PR2ConfigClean() {
       if (isEditing) {
         return apiRequest('PUT', `/api/pr2-clean/${editId}`, data);
       } else {
-        return apiRequest('POST', '/api/pr2-clean', { ...data, sector });
+        return apiRequest('POST', '/api/pr2-clean', { ...data, sector, categoryId: categoryId || 'custom' });
       }
     },
     onSuccess: (savedConfig) => {

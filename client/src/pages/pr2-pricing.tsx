@@ -208,33 +208,8 @@ export default function PR2Pricing() {
       console.log('⚠️ No configurations found - proceeding to create new configuration');
     }
     
-    const existingConfig = pr2Configurations.find(config => {
-      console.log('🔎 Checking config:', { 
-        id: config.id, 
-        categoryId: config.categoryId, 
-        categoryName: config.categoryName,
-        matches: {
-          categoryIdMatch: config.categoryId === categoryId,
-          categoryNameMatch: config.categoryName?.toLowerCase() === categoryId.toLowerCase(),
-          cctvMatch: categoryId === 'cctv' && config.categoryName === 'CCTV'
-        }
-      });
-      
-      return config.categoryId === categoryId || 
-             config.categoryName?.toLowerCase() === categoryId.toLowerCase() ||
-             (categoryId === 'cctv' && config.categoryName === 'CCTV');
-    });
-    
-    if (existingConfig) {
-      console.log('✅ Found existing configuration for', categoryId, '- routing to edit page');
-      console.log('Configuration details:', existingConfig);
-      const editURL = `/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`;
-      console.log('🔗 Navigating to edit URL:', editURL);
-      // Force navigation by updating both wouter state and browser history
-      window.history.replaceState({}, '', editURL);
-      setLocation(editURL);
-      return;
-    }
+    // Standard categories should always create new configurations, not edit existing ones
+    // Only check for existing configs when navigating from "Existing PR2 Configurations" section
     
     // For CCTV specifically, always go to the configuration page
     if (categoryId === 'cctv') {
@@ -452,13 +427,12 @@ export default function PR2Pricing() {
                         </div>
                       </div>
                       
-                      {/* Right section - Action buttons with Archive badge */}
+                      {/* Right section - Action buttons */}
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">Archive</Badge>
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setLocation(`/pr2-pricing-form?sector=${sector}&edit=${config.id}`)}
+                          onClick={() => setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${config.categoryId}&editId=${config.id}`)}
                           className="text-xs px-3"
                         >
                           Edit
