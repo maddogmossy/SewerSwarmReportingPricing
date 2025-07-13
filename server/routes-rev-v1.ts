@@ -743,6 +743,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ]);
   });
 
+  // PR1 Pricing System Endpoints
+  app.post('/api/pr1-pricing', (req, res) => {
+    const {
+      categoryId,
+      categoryName,
+      description,
+      pricingOptions,
+      quantityOptions,
+      minQuantityOptions,
+      rangeOptions,
+      rangeValues,
+      pricingValues,
+      mathOperators,
+      sector
+    } = req.body;
+
+    console.log('📝 Creating PR1 pricing configuration:', { categoryName, sector });
+
+    const newPR1Config = {
+      id: Date.now(),
+      userId: 'test-user',
+      categoryId,
+      categoryName,
+      description,
+      pricingOptions: pricingOptions || [],
+      quantityOptions: quantityOptions || [],
+      minQuantityOptions: minQuantityOptions || [],
+      rangeOptions: rangeOptions || [],
+      rangeValues: rangeValues || {},
+      pricingValues: pricingValues || {},
+      mathOperators: mathOperators || [],
+      sector: sector || 'utilities',
+      createdAt: new Date().toISOString()
+    };
+
+    // Store in memory for now (can later integrate with database)
+    if (!global.pr1ConfigStorage) {
+      global.pr1ConfigStorage = [];
+    }
+    global.pr1ConfigStorage.push(newPR1Config);
+
+    console.log('✅ PR1 configuration saved successfully');
+    console.log('📊 PR1 configs in storage:', global.pr1ConfigStorage.length);
+
+    res.json({ 
+      success: true, 
+      config: newPR1Config,
+      message: 'PR1 pricing configuration saved successfully'
+    });
+  });
+
+  app.get('/api/pr1-pricing', (req, res) => {
+    const { sector } = req.query;
+    
+    if (!global.pr1ConfigStorage) {
+      global.pr1ConfigStorage = [];
+    }
+
+    let configs = global.pr1ConfigStorage.filter(config => config.userId === 'test-user');
+    
+    if (sector) {
+      configs = configs.filter(config => config.sector === sector);
+    }
+
+    console.log(`📋 Retrieved ${configs.length} PR1 configurations for sector: ${sector || 'all'}`);
+    res.json(configs);
+  });
+
   // Removed generic sector profile route - using specific routes instead
 
   // Add DELETE endpoint for repair pricing - COMPREHENSIVE DELETION

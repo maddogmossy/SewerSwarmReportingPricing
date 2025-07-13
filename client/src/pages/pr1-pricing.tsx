@@ -6,8 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Settings, Calculator, AlertTriangle } from 'lucide-react';
+import { Plus, Settings, Calculator, AlertTriangle, Save } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 // Preloaded category options
 const PRELOADED_CATEGORIES = [
@@ -62,6 +65,9 @@ interface PR1Category {
 
 export default function PR1Pricing() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
   const [showInitialDialog, setShowInitialDialog] = useState(true);
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const [showCustomDialog, setShowCustomDialog] = useState(false);
@@ -88,6 +94,28 @@ export default function PR1Pricing() {
   
   // Math operators between boxes
   const [mathOperators, setMathOperators] = useState<string[]>([]);
+
+  // Save mutation
+  const savePR1Configuration = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest('POST', '/api/pr1-pricing', data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "PR1 pricing configuration saved successfully!",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/pr1-pricing'] });
+      setLocation('/dashboard');
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save PR1 configuration",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleInitialOption = (option: 'category' | 'custom') => {
     setShowInitialDialog(false);
@@ -193,6 +221,27 @@ export default function PR1Pricing() {
   const calculateRecalculation = () => {
     // Logic for recalculation when minimum not reached
     console.log('Recalculating sections and unit costs...');
+  };
+
+  const handleSavePR1Configuration = () => {
+    if (!currentCategory) return;
+
+    const configurationData = {
+      categoryId: currentCategory.id,
+      categoryName: currentCategory.name,
+      description: currentCategory.description,
+      pricingOptions: selectedPricingOptions,
+      quantityOptions: selectedQuantityOptions,
+      minQuantityOptions: selectedMinQuantityOptions,
+      rangeOptions: selectedRangeOptions,
+      rangeValues: rangeValues,
+      pricingValues: pricingValues,
+      mathOperators: mathOperators,
+      sector: 'utilities' // Default to utilities for now
+    };
+
+    console.log('Saving PR1 Configuration:', configurationData);
+    savePR1Configuration.mutate(configurationData);
   };
 
   if (!showMainPricing) {
@@ -501,8 +550,13 @@ export default function PR1Pricing() {
 
             {/* Save Button */}
             <div className="flex justify-end">
-              <Button className="px-8">
-                Save PR1 Configuration
+              <Button 
+                onClick={handleSavePR1Configuration}
+                disabled={savePR1Configuration.isPending}
+                className="px-8 flex items-center gap-2"
+              >
+                <Save className="h-4 w-4" />
+                {savePR1Configuration.isPending ? 'Saving...' : 'Save PR1 Configuration'}
               </Button>
             </div>
           </div>
