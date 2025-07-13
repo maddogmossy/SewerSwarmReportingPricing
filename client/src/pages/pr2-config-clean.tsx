@@ -517,20 +517,49 @@ export default function PR2ConfigClean() {
     });
   };
 
-  // Auto-generate description based on enabled options
+  // Auto-generate description based on enabled options with values
   const generateAutoDescription = () => {
-    const enabledPricing = formData.pricingOptions.filter(opt => opt.enabled).map(opt => opt.label);
-    const enabledQuantity = formData.quantityOptions.filter(opt => opt.enabled).map(opt => opt.label);
-    const enabledMinQuantity = formData.minQuantityOptions.filter(opt => opt.enabled).map(opt => opt.label);
-    const enabledRanges = formData.rangeOptions.filter(opt => opt.enabled).map(opt => opt.label);
+    const parts = [];
     
-    const allOptions = [...enabledPricing, ...enabledQuantity, ...enabledMinQuantity, ...enabledRanges];
+    // Add pricing options with values
+    const enabledPricing = formData.pricingOptions.filter(opt => opt.enabled);
+    enabledPricing.forEach(opt => {
+      const value = opt.value ? `£${opt.value}` : '[value]';
+      parts.push(`${opt.label} = ${value}`);
+    });
     
-    if (allOptions.length === 0) {
+    // Add math operator
+    if (formData.mathOperators && formData.mathOperators.length > 0 && formData.mathOperators[0] !== 'N/A') {
+      parts.push(`Math ${formData.mathOperators[0]}`);
+    }
+    
+    // Add quantity options with values
+    const enabledQuantity = formData.quantityOptions.filter(opt => opt.enabled);
+    enabledQuantity.forEach(opt => {
+      const value = opt.value || '[value]';
+      parts.push(`${opt.label} = ${value}`);
+    });
+    
+    // Add min quantity options with values
+    const enabledMinQuantity = formData.minQuantityOptions.filter(opt => opt.enabled);
+    enabledMinQuantity.forEach(opt => {
+      const value = opt.value || '[value]';
+      parts.push(`${opt.label} = ${value}`);
+    });
+    
+    // Add range options with values
+    const enabledRanges = formData.rangeOptions.filter(opt => opt.enabled);
+    enabledRanges.forEach(opt => {
+      const rangeStart = opt.rangeStart || 'R1';
+      const rangeEnd = opt.rangeEnd || 'R2';
+      parts.push(`${opt.label} = ${rangeStart} to ${rangeEnd}`);
+    });
+    
+    if (parts.length === 0) {
       return 'CCTV price configuration';
     }
     
-    return `CCTV configuration with ${allOptions.join(', ')}`;
+    return parts.join('. ');
   };
 
   // Update description when options change
