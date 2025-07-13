@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { ArrowLeft, BarChart3 } from 'lucide-react';
+import { Link } from 'wouter';
 
 interface PricingOption {
   id: string;
@@ -85,6 +87,22 @@ export default function SimplePricing() {
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
+      {/* Navigation */}
+      <div className="mb-6 flex items-center gap-4">
+        <Link href="/dashboard">
+          <Button variant="outline" size="sm">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </Link>
+        <Link href="/dashboard">
+          <Button variant="outline" size="sm">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Dashboard
+          </Button>
+        </Link>
+      </div>
+      
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Simple Pricing Configuration</h1>
         <p className="text-slate-600">Clean, working pricing system</p>
