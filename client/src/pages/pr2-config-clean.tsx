@@ -145,26 +145,35 @@ export default function PR2ConfigClean() {
 
   // Load existing configurations across all sectors to check which sectors already have this config
   const { data: allSectorConfigs = [] } = useQuery({
-    queryKey: ['/api/pr2-clean', 'all-sectors'],
+    queryKey: ['/api/pr2-clean', 'all-sectors', categoryId, Date.now()], // Add timestamp to prevent caching
     queryFn: async () => {
       if (!isEditing || !categoryId) return [];
       
+      console.log('🔍 Searching for configs with categoryId:', categoryId);
       const allConfigs = [];
       for (const sect of SECTORS) {
         try {
-          const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector: sect.id });
+          // Add cache-busting parameter
+          const response = await fetch(`/api/pr2-clean?sector=${sect.id}&_t=${Date.now()}`);
           const configs = await response.json();
+          console.log(`🔍 ${sect.id} sector has ${configs.length} total configs:`, configs.map((c: any) => c.categoryId));
           const matchingConfig = configs.find((c: any) => c.categoryId === categoryId);
           if (matchingConfig) {
+            console.log(`✅ Found matching config in ${sect.id}:`, matchingConfig.id);
             allConfigs.push({ sector: sect.id, config: matchingConfig });
+          } else {
+            console.log(`❌ No matching config in ${sect.id}`);
           }
         } catch (error) {
-          console.log(`No config found for sector ${sect.id}`);
+          console.log(`❌ Error checking sector ${sect.id}:`, error);
         }
       }
+      console.log('🎯 Final allConfigs result:', allConfigs);
       return allConfigs;
     },
     enabled: isEditing && !!categoryId,
+    staleTime: 0, // Disable caching
+    cacheTime: 0, // Don't cache results
   });
 
   // Handle sector checkbox changes
