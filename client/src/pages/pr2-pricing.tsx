@@ -60,22 +60,14 @@ export default function PR2Pricing() {
   const [location, navigate] = useLocation();
   const [sector, setSector] = useState('utilities');
   
-  // Update sector when URL changes
+  // Initialize sector from URL on page load only
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.split('?')[1] || '');
-    const newSector = urlParams.get('sector') || 'utilities';
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialSector = urlParams.get('sector') || 'utilities';
     
-    // Debug: Log current sector
-    console.log('Current location:', location);
-    console.log('URL sector parameter:', newSector);
-    console.log('Current sector state:', sector);
-    
-    // Only update if sector has actually changed
-    if (newSector !== sector) {
-      console.log(`Updating sector from ${sector} to ${newSector}`);
-      setSector(newSector);
-    }
-  }, [location, sector]);
+    console.log('Initial page load - setting sector to:', initialSector);
+    setSector(initialSector);
+  }, []); // Empty dependency array - only run once on mount
   
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
