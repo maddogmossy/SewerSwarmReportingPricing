@@ -425,7 +425,7 @@ export default function PR2Pricing() {
         {pr2Configurations.length > 0 && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Existing PR2 Configurations</h3>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
               {pr2Configurations.map((config: any) => (
                 <Card key={config.id} className="hover:shadow-md transition-shadow">
                   <CardHeader className="pb-3">
@@ -436,7 +436,10 @@ export default function PR2Pricing() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <CardTitle className="text-lg mb-2">{config.categoryName}</CardTitle>
-                          <p className="text-sm text-gray-600 leading-relaxed">{config.description}</p>
+                          <div className="mt-3">
+                            <p className="text-sm font-bold text-gray-800 mb-1">Description</p>
+                            <p className="text-sm text-gray-600 leading-relaxed break-words">{config.description}</p>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 ml-4">
