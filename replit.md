@@ -379,6 +379,16 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v3.4' to return to this stable checkpoint
 
+## SERVICE CLEANING FLOW - COMPLETE INDEPENDENCE FROM LEGACY SYSTEMS (July 13, 2025)
+
+🔒 **DASHBOARD SERVICE CLEANING WORKFLOW DOCUMENTED:**
+- **Complete Independence**: SERVICE CLEANING popup completely separate from old ops/PR1 systems
+- **Clean Routing**: Dashboard → SERVICE CLEANING box → "Cleanse/Survey" popup → PR2 Pricing → 4-Window Configuration
+- **Header Fixed**: Popup now shows "Cleanse/Survey" instead of "Cleaning Options for 150"
+- **Direct PR2 Integration**: Routes to `/pr2-pricing?sector=utilities` with clean sector filtering
+- **Zero Legacy Contamination**: No connection to removed ops/PR1 "Price/Cost Options" structure
+- **Database Restoration**: Uploads 78 and 80 confirmed operational after temporary connection timeouts resolved
+
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 
 **🏗️ Core Architecture:**
