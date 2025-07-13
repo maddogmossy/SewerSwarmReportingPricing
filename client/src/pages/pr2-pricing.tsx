@@ -228,6 +228,23 @@ export default function PR2Pricing() {
                     </CardContent>
                   </Card>
                 ))}
+                
+                {/* User-created categories - show in Standard Categories grid */}
+                {pr2Configurations.filter(config => !STANDARD_CATEGORIES.some(std => std.name === config.categoryName)).map((config) => (
+                  <Card
+                    key={config.id}
+                    className="cursor-pointer transition-all hover:shadow-md bg-white border-2 border-green-200"
+                    onClick={() => handleCategoryNavigation(config.categoryName)}
+                  >
+                    <CardContent className="p-4 text-center relative">
+                      <Settings className="h-8 w-8 mx-auto mb-2 text-green-700" />
+                      <h3 className="font-medium text-sm mb-1 text-gray-800">{config.categoryName}</h3>
+                      <p className="text-xs text-gray-600 line-clamp-2">{config.description}</p>
+                      {/* Green cog to show user-created */}
+                      <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
               
 
@@ -235,12 +252,12 @@ export default function PR2Pricing() {
           </Card>
         </div>
 
-        {/* Existing Configurations */}
-        {pr2Configurations.length > 0 && (
+        {/* Existing Configurations - Hide user-created categories since they're in Standard Categories */}
+        {pr2Configurations.filter(config => STANDARD_CATEGORIES.some(std => std.name === config.categoryName)).length > 0 && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Existing PR2 Configurations</h3>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {pr2Configurations.map((config: any) => (
+              {pr2Configurations.filter(config => STANDARD_CATEGORIES.some(std => std.name === config.categoryName)).map((config: any) => (
                 <Card key={config.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
