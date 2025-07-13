@@ -27,11 +27,11 @@ interface CleanFormData {
   // Blue Window - Pricing Options
   pricingOptions: PricingOption[];
   
-  // Green Window - Quantity Options (EMPTY)  
-  quantityOptions: Record<string, never>;
+  // Green Window - Quantity Options
+  quantityOptions: PricingOption[];
   
-  // Orange Window - Min Quantity Options (EMPTY)
-  minQuantityOptions: Record<string, never>;
+  // Orange Window - Min Quantity Options
+  minQuantityOptions: PricingOption[];
   
   // Purple Window - Additional Options (EMPTY)
   additionalOptions: Record<string, never>;
@@ -41,6 +41,8 @@ interface CleanFormData {
   
   // Stack Order
   pricingStackOrder: string[];
+  quantityStackOrder: string[];
+  minQuantityStackOrder: string[];
   
   sector: string;
 }
@@ -60,11 +62,13 @@ export default function PR2ConfigClean() {
     categoryName: '',
     description: '',
     pricingOptions: [],
-    quantityOptions: {},
-    minQuantityOptions: {},
+    quantityOptions: [],
+    minQuantityOptions: [],
     additionalOptions: {},
     mathOperators: ['N/A'],
     pricingStackOrder: [],
+    quantityStackOrder: [],
+    minQuantityStackOrder: [],
     sector
   });
 
@@ -72,8 +76,16 @@ export default function PR2ConfigClean() {
   const [addPricingDialogOpen, setAddPricingDialogOpen] = useState(false);
   const [editPricingDialogOpen, setEditPricingDialogOpen] = useState(false);
   const [stackOrderDialogOpen, setStackOrderDialogOpen] = useState(false);
+  const [addQuantityDialogOpen, setAddQuantityDialogOpen] = useState(false);
+  const [editQuantityDialogOpen, setEditQuantityDialogOpen] = useState(false);
+  const [addMinQuantityDialogOpen, setAddMinQuantityDialogOpen] = useState(false);
+  const [editMinQuantityDialogOpen, setEditMinQuantityDialogOpen] = useState(false);
   const [newPricingLabel, setNewPricingLabel] = useState('');
+  const [newQuantityLabel, setNewQuantityLabel] = useState('');
+  const [newMinQuantityLabel, setNewMinQuantityLabel] = useState('');
   const [editingPricing, setEditingPricing] = useState<PricingOption | null>(null);
+  const [editingQuantity, setEditingQuantity] = useState<PricingOption | null>(null);
+  const [editingMinQuantity, setEditingMinQuantity] = useState<PricingOption | null>(null);
 
   // Load existing configuration for editing
   const { data: existingConfig } = useQuery({
@@ -88,17 +100,24 @@ export default function PR2ConfigClean() {
       // Get the actual config object (might be wrapped in array)
       const config = Array.isArray(existingConfig) ? existingConfig[0] : existingConfig;
       
-      if (config && config.pricingOptions) {
-        console.log('✅ Found existing pricing options:', config.pricingOptions);
+      if (config) {
+        console.log('✅ Found existing configuration:', config);
+        
+        // Handle array vs object format for quantityOptions and minQuantityOptions
+        const quantityOptions = Array.isArray(config.quantityOptions) ? config.quantityOptions : [];
+        const minQuantityOptions = Array.isArray(config.minQuantityOptions) ? config.minQuantityOptions : [];
+        
         setFormData({
           categoryName: config.categoryName || '',
           description: config.description || '',
           pricingOptions: config.pricingOptions || [],
-          quantityOptions: {},
-          minQuantityOptions: {},
+          quantityOptions: quantityOptions,
+          minQuantityOptions: minQuantityOptions,
           additionalOptions: {},
           mathOperators: config.mathOperators || ['N/A'],
           pricingStackOrder: (config.pricingOptions || []).map((opt: any) => opt.id),
+          quantityStackOrder: quantityOptions.map((opt: any) => opt.id),
+          minQuantityStackOrder: minQuantityOptions.map((opt: any) => opt.id),
           sector
         });
       }
@@ -142,14 +161,6 @@ export default function PR2ConfigClean() {
 
   const handleBack = () => {
     setLocation(`/pr2-pricing?sector=${sector}`);
-  };
-
-  const updateMathOperator = (index: number, value: string) => {
-    setFormData(prev => {
-      const newOperators = [...prev.mathOperators];
-      newOperators[index] = value;
-      return { ...prev, mathOperators: newOperators };
-    });
   };
 
   // Pricing option management
@@ -232,7 +243,83 @@ export default function PR2ConfigClean() {
     });
   };
 
-  // Get ordered pricing options for display
+  // Quantity option management
+  const addQuantityOption = () => {
+    if (!newQuantityLabel.trim()) return;
+    
+    const newOption: PricingOption = {
+      id: `quantity_${Date.now()}`,
+      label: newQuantityLabel.trim(),
+      enabled: false,
+      value: ''
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      quantityOptions: [...prev.quantityOptions, newOption],
+      quantityStackOrder: [...prev.quantityStackOrder, newOption.id]
+    }));
+    
+    setNewQuantityLabel('');
+    setAddQuantityDialogOpen(false);
+  };
+
+  const deleteQuantityOption = (optionId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      quantityOptions: prev.quantityOptions.filter(opt => opt.id !== optionId),
+      quantityStackOrder: prev.quantityStackOrder.filter(id => id !== optionId)
+    }));
+  };
+
+  const updateQuantityOption = (optionId: string, field: 'enabled' | 'value', value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      quantityOptions: prev.quantityOptions.map(opt =>
+        opt.id === optionId ? { ...opt, [field]: value } : opt
+      )
+    }));
+  };
+
+  // Min Quantity option management
+  const addMinQuantityOption = () => {
+    if (!newMinQuantityLabel.trim()) return;
+    
+    const newOption: PricingOption = {
+      id: `minquantity_${Date.now()}`,
+      label: newMinQuantityLabel.trim(),
+      enabled: false,
+      value: ''
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      minQuantityOptions: [...prev.minQuantityOptions, newOption],
+      minQuantityStackOrder: [...prev.minQuantityStackOrder, newOption.id]
+    }));
+    
+    setNewMinQuantityLabel('');
+    setAddMinQuantityDialogOpen(false);
+  };
+
+  const deleteMinQuantityOption = (optionId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      minQuantityOptions: prev.minQuantityOptions.filter(opt => opt.id !== optionId),
+      minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => id !== optionId)
+    }));
+  };
+
+  const updateMinQuantityOption = (optionId: string, field: 'enabled' | 'value', value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      minQuantityOptions: prev.minQuantityOptions.map(opt =>
+        opt.id === optionId ? { ...opt, [field]: value } : opt
+      )
+    }));
+  };
+
+  // Get ordered options for display
   const getOrderedPricingOptions = () => {
     if (formData.pricingStackOrder.length === 0) {
       return formData.pricingOptions;
@@ -248,6 +335,46 @@ export default function PR2ConfigClean() {
     );
     
     return [...ordered, ...missingOptions];
+  };
+
+  const getOrderedQuantityOptions = () => {
+    if (formData.quantityStackOrder.length === 0) {
+      return formData.quantityOptions;
+    }
+    
+    const ordered = formData.quantityStackOrder
+      .map(id => formData.quantityOptions.find(opt => opt.id === id))
+      .filter(Boolean) as PricingOption[];
+    
+    const missingOptions = formData.quantityOptions.filter(
+      opt => !formData.quantityStackOrder.includes(opt.id)
+    );
+    
+    return [...ordered, ...missingOptions];
+  };
+
+  const getOrderedMinQuantityOptions = () => {
+    if (formData.minQuantityStackOrder.length === 0) {
+      return formData.minQuantityOptions;
+    }
+    
+    const ordered = formData.minQuantityStackOrder
+      .map(id => formData.minQuantityOptions.find(opt => opt.id === id))
+      .filter(Boolean) as PricingOption[];
+    
+    const missingOptions = formData.minQuantityOptions.filter(
+      opt => !formData.minQuantityStackOrder.includes(opt.id)
+    );
+    
+    return [...ordered, ...missingOptions];
+  };
+
+  const updateMathOperator = (index: number, value: string) => {
+    setFormData(prev => {
+      const newOperators = [...prev.mathOperators];
+      newOperators[index] = value;
+      return { ...prev, mathOperators: newOperators };
+    });
   };
 
   return (
@@ -501,10 +628,91 @@ export default function PR2ConfigClean() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                <p>Empty - Ready for clean options</p>
-                <p className="text-sm">Tell me what to add here</p>
+              {/* Action Buttons */}
+              <div className="flex gap-2 mb-4">
+                <Dialog open={addQuantityDialogOpen} onOpenChange={setAddQuantityDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent aria-describedby="add-quantity-description">
+                    <DialogHeader>
+                      <DialogTitle>Add Quantity Option</DialogTitle>
+                    </DialogHeader>
+                    <div id="add-quantity-description" className="space-y-4">
+                      <div>
+                        <Label htmlFor="newQuantityLabel">Option Name</Label>
+                        <Input
+                          id="newQuantityLabel"
+                          value={newQuantityLabel}
+                          onChange={(e) => setNewQuantityLabel(e.target.value)}
+                          placeholder="Enter quantity option name"
+                          autoFocus
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setAddQuantityDialogOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={addQuantityOption}
+                          disabled={!newQuantityLabel.trim()}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          Add Option
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                {formData.quantityOptions.length >= 2 && (
+                  <Button size="sm" variant="outline" className="border-green-300 text-green-600">
+                    <ArrowUpDown className="w-4 h-4 mr-1" />
+                    Stack Order
+                  </Button>
+                )}
               </div>
+
+              {/* Quantity Options List */}
+              {formData.quantityOptions.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No quantity options added</p>
+                  <p className="text-sm">Click "Add" to create your first option</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {getOrderedQuantityOptions().map((option) => (
+                    <div key={option.id} className="bg-white p-3 rounded border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Checkbox
+                          checked={option.enabled}
+                          onCheckedChange={(checked) => updateQuantityOption(option.id, 'enabled', checked)}
+                        />
+                        <span className="flex-1 font-medium">{option.label}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deleteQuantityOption(option.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      {option.enabled && (
+                        <Input
+                          value={option.value}
+                          onChange={(e) => updateQuantityOption(option.id, 'value', e.target.value)}
+                          placeholder="Enter value"
+                          className="text-sm"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -521,10 +729,91 @@ export default function PR2ConfigClean() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                <p>Empty - Ready for clean options</p>
-                <p className="text-sm">Tell me what to add here</p>
+              {/* Action Buttons */}
+              <div className="flex gap-2 mb-4">
+                <Dialog open={addMinQuantityDialogOpen} onOpenChange={setAddMinQuantityDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent aria-describedby="add-min-quantity-description">
+                    <DialogHeader>
+                      <DialogTitle>Add Min Quantity Option</DialogTitle>
+                    </DialogHeader>
+                    <div id="add-min-quantity-description" className="space-y-4">
+                      <div>
+                        <Label htmlFor="newMinQuantityLabel">Option Name</Label>
+                        <Input
+                          id="newMinQuantityLabel"
+                          value={newMinQuantityLabel}
+                          onChange={(e) => setNewMinQuantityLabel(e.target.value)}
+                          placeholder="Enter min quantity option name"
+                          autoFocus
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setAddMinQuantityDialogOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={addMinQuantityOption}
+                          disabled={!newMinQuantityLabel.trim()}
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
+                        >
+                          Add Option
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                {formData.minQuantityOptions.length >= 2 && (
+                  <Button size="sm" variant="outline" className="border-orange-300 text-orange-600">
+                    <ArrowUpDown className="w-4 h-4 mr-1" />
+                    Stack Order
+                  </Button>
+                )}
               </div>
+
+              {/* Min Quantity Options List */}
+              {formData.minQuantityOptions.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No min quantity options added</p>
+                  <p className="text-sm">Click "Add" to create your first option</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {getOrderedMinQuantityOptions().map((option) => (
+                    <div key={option.id} className="bg-white p-3 rounded border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Checkbox
+                          checked={option.enabled}
+                          onCheckedChange={(checked) => updateMinQuantityOption(option.id, 'enabled', checked)}
+                        />
+                        <span className="flex-1 font-medium">{option.label}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deleteMinQuantityOption(option.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      {option.enabled && (
+                        <Input
+                          value={option.value}
+                          onChange={(e) => updateMinQuantityOption(option.id, 'value', e.target.value)}
+                          placeholder="Enter value"
+                          className="text-sm"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
