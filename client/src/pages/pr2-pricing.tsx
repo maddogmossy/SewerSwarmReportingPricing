@@ -427,24 +427,25 @@ export default function PR2Pricing() {
             <h3 className="text-lg font-semibold">Existing PR2 Configurations</h3>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {pr2Configurations.map((config: any) => (
-                <Card key={config.id}>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-blue-100">
+                <Card key={config.id} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-lg bg-blue-100 mt-1">
                           <Settings className="h-5 w-5 text-blue-600" />
                         </div>
-                        <div>
-                          <CardTitle className="text-lg">{config.categoryName}</CardTitle>
-                          <p className="text-sm text-gray-600">{config.description}</p>
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-lg mb-2">{config.categoryName}</CardTitle>
+                          <p className="text-sm text-gray-600 leading-relaxed">{config.description}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="default">Active</Badge>
+                      <div className="flex items-center gap-2 ml-4">
+                        <Badge variant="default" className="text-xs">Active</Badge>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => setLocation(`/pr2-pricing-form?sector=${sector}&edit=${config.id}`)}
+                          className="text-xs"
                         >
                           Edit
                         </Button>
@@ -459,46 +460,11 @@ export default function PR2Pricing() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span>Pricing Options: {Array.isArray(config.pricingOptions) ? config.pricingOptions.length : Object.keys(config.pricingOptions || {}).length}</span>
-                        <span>Quantity Options: {Array.isArray(config.quantityOptions) ? config.quantityOptions.length : Object.keys(config.quantityOptions || {}).length}</span>
-                        <span>Math Operators: {config.mathOperators?.length || 0}</span>
-                      </div>
-                      <div className="bg-gray-50 p-3 rounded-lg">
-                        <p className="text-sm font-medium">Configuration Details:</p>
-                        {/* Handle pricingOptions as either array or object */}
-                        {Array.isArray(config.pricingOptions) 
-                          ? config.pricingOptions.map((option: any, index: number) => (
-                              <p key={index} className="text-xs text-gray-600">
-                                {option.label}: £{option.value}
-                              </p>
-                            ))
-                          : Object.entries(config.pricingOptions || {}).map(([key, option]: [string, any]) => (
-                              option.enabled && (
-                                <p key={key} className="text-xs text-gray-600">
-                                  {key}: £{option.value || 'Not set'}
-                                </p>
-                              )
-                            ))
-                        }
-                        {/* Handle quantityOptions as either array or object */}
-                        {Array.isArray(config.quantityOptions) 
-                          ? config.quantityOptions.map((option: any, index: number) => (
-                              <p key={index} className="text-xs text-gray-600">
-                                {option.label}: {option.value}
-                              </p>
-                            ))
-                          : Object.entries(config.quantityOptions || {}).map(([key, option]: [string, any]) => (
-                              option.enabled && (
-                                <p key={key} className="text-xs text-gray-600">
-                                  {key}: {option.value || 'Not set'}
-                                </p>
-                              )
-                            ))
-                        }
-                      </div>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center gap-6 text-sm text-gray-500">
+                      <span>Pricing Options: {Array.isArray(config.pricingOptions) ? config.pricingOptions.length : Object.keys(config.pricingOptions || {}).length}</span>
+                      <span>Quantity Options: {Array.isArray(config.quantityOptions) ? config.quantityOptions.length : Object.keys(config.quantityOptions || {}).length}</span>
+                      <span>Math Operators: {config.mathOperators?.length || 0}</span>
                     </div>
                   </CardContent>
                 </Card>
