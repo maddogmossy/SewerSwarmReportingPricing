@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ChevronLeft, Save, Calculator, Settings, Plus, Edit2, Trash2 } from 'lucide-react';
+import { ChevronLeft, Save, Calculator, Settings, Plus, Edit2, Trash2, ArrowUp, ArrowDown, GripVertical } from 'lucide-react';
 
 // New improved configuration page for PR2 system
 export default function PR2ConfigNew() {
@@ -120,6 +120,22 @@ export default function PR2ConfigNew() {
     quantity: { isEditing: false, editKey: '', newName: '' },
     minQuantity: { isEditing: false, editKey: '', newName: '' },
     additional: { isEditing: false, editKey: '', newName: '' }
+  });
+
+  // Reorder dialog states
+  const [reorderDialogs, setReorderDialogs] = useState({
+    pricing: false,
+    quantity: false,
+    minQuantity: false,
+    additional: false
+  });
+
+  // Reorder states for drag and drop
+  const [reorderStates, setReorderStates] = useState({
+    pricing: [] as string[],
+    quantity: [] as string[],
+    minQuantity: [] as string[],
+    additional: [] as string[]
   });
 
   // New option states
@@ -284,6 +300,47 @@ export default function PR2ConfigNew() {
     toast({ title: `Deleted ${section} option` });
   };
 
+  // Reorder functionality
+  const openReorderDialog = (section: string) => {
+    const sectionKey = `${section}Options` as keyof typeof formData;
+    const currentOrder = Object.keys(formData[sectionKey]);
+    setReorderStates(prev => ({ ...prev, [section]: currentOrder }));
+    setReorderDialogs(prev => ({ ...prev, [section]: true }));
+  };
+
+  const closeReorderDialog = (section: string) => {
+    setReorderDialogs(prev => ({ ...prev, [section]: false }));
+  };
+
+  const moveOption = (section: string, fromIndex: number, toIndex: number) => {
+    setReorderStates(prev => {
+      const newOrder = [...prev[section as keyof typeof prev]];
+      const [movedItem] = newOrder.splice(fromIndex, 1);
+      newOrder.splice(toIndex, 0, movedItem);
+      return { ...prev, [section]: newOrder };
+    });
+  };
+
+  const saveReorder = (section: string) => {
+    const newOrder = reorderStates[section as keyof typeof reorderStates];
+    const sectionKey = `${section}Options` as keyof typeof formData;
+    const currentData = formData[sectionKey];
+    
+    // Rebuild the section object in the new order
+    const reorderedData = {};
+    newOrder.forEach(key => {
+      reorderedData[key] = currentData[key];
+    });
+
+    setFormData(prev => ({
+      ...prev,
+      [sectionKey]: reorderedData
+    }));
+
+    closeReorderDialog(section);
+    toast({ title: `Reordered ${section} options successfully` });
+  };
+
   if (configLoading) {
     return (
       <div className="container mx-auto py-8">
@@ -380,10 +437,54 @@ export default function PR2ConfigNew() {
                   </div>
                 </DialogContent>
               </Dialog>
-              <Button size="sm" variant="outline" className="text-blue-600 border-blue-200">
-                <Edit2 className="w-4 h-4 mr-1" />
-                Edit
-              </Button>
+              <Dialog open={reorderDialogs.pricing} onOpenChange={(open) => open ? openReorderDialog('pricing') : closeReorderDialog('pricing')}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-blue-600 border-blue-200">
+                    <GripVertical className="w-4 h-4 mr-1" />
+                    Reorder
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Reorder Pricing Options</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-2">
+                    {reorderStates.pricing.map((key, index) => (
+                      <div key={key} className="flex items-center justify-between p-3 border rounded-lg bg-blue-50">
+                        <span className="font-medium">
+                          {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                        </span>
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => moveOption('pricing', index, index - 1)}
+                            disabled={index === 0}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowUp className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => moveOption('pricing', index, index + 1)}
+                            disabled={index === reorderStates.pricing.length - 1}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowDown className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-end gap-2 mt-4">
+                    <Button variant="outline" onClick={() => closeReorderDialog('pricing')}>Cancel</Button>
+                    <Button onClick={() => saveReorder('pricing')} className="bg-blue-600 hover:bg-blue-700">
+                      Save Order
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -484,10 +585,54 @@ export default function PR2ConfigNew() {
                   </div>
                 </DialogContent>
               </Dialog>
-              <Button size="sm" variant="outline" className="text-green-600 border-green-200">
-                <Edit2 className="w-4 h-4 mr-1" />
-                Edit
-              </Button>
+              <Dialog open={reorderDialogs.quantity} onOpenChange={(open) => open ? openReorderDialog('quantity') : closeReorderDialog('quantity')}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-green-600 border-green-200">
+                    <GripVertical className="w-4 h-4 mr-1" />
+                    Reorder
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Reorder Quantity Options</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-2">
+                    {reorderStates.quantity.map((key, index) => (
+                      <div key={key} className="flex items-center justify-between p-3 border rounded-lg bg-green-50">
+                        <span className="font-medium">
+                          {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                        </span>
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => moveOption('quantity', index, index - 1)}
+                            disabled={index === 0}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowUp className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => moveOption('quantity', index, index + 1)}
+                            disabled={index === reorderStates.quantity.length - 1}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowDown className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-end gap-2 mt-4">
+                    <Button variant="outline" onClick={() => closeReorderDialog('quantity')}>Cancel</Button>
+                    <Button onClick={() => saveReorder('quantity')} className="bg-green-600 hover:bg-green-700">
+                      Save Order
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -588,10 +733,54 @@ export default function PR2ConfigNew() {
                   </div>
                 </DialogContent>
               </Dialog>
-              <Button size="sm" variant="outline" className="text-orange-600 border-orange-200">
-                <Edit2 className="w-4 h-4 mr-1" />
-                Edit
-              </Button>
+              <Dialog open={reorderDialogs.minQuantity} onOpenChange={(open) => open ? openReorderDialog('minQuantity') : closeReorderDialog('minQuantity')}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-orange-600 border-orange-200">
+                    <GripVertical className="w-4 h-4 mr-1" />
+                    Reorder
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Reorder Min Quantity Options</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-2">
+                    {reorderStates.minQuantity.map((key, index) => (
+                      <div key={key} className="flex items-center justify-between p-3 border rounded-lg bg-orange-50">
+                        <span className="font-medium">
+                          {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                        </span>
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => moveOption('minQuantity', index, index - 1)}
+                            disabled={index === 0}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowUp className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => moveOption('minQuantity', index, index + 1)}
+                            disabled={index === reorderStates.minQuantity.length - 1}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowDown className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-end gap-2 mt-4">
+                    <Button variant="outline" onClick={() => closeReorderDialog('minQuantity')}>Cancel</Button>
+                    <Button onClick={() => saveReorder('minQuantity')} className="bg-orange-600 hover:bg-orange-700">
+                      Save Order
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -692,10 +881,54 @@ export default function PR2ConfigNew() {
                   </div>
                 </DialogContent>
               </Dialog>
-              <Button size="sm" variant="outline" className="text-purple-600 border-purple-200">
-                <Edit2 className="w-4 h-4 mr-1" />
-                Edit
-              </Button>
+              <Dialog open={reorderDialogs.additional} onOpenChange={(open) => open ? openReorderDialog('additional') : closeReorderDialog('additional')}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-purple-600 border-purple-200">
+                    <GripVertical className="w-4 h-4 mr-1" />
+                    Reorder
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Reorder Additional Options</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-2">
+                    {reorderStates.additional.map((key, index) => (
+                      <div key={key} className="flex items-center justify-between p-3 border rounded-lg bg-purple-50">
+                        <span className="font-medium">
+                          {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                        </span>
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => moveOption('additional', index, index - 1)}
+                            disabled={index === 0}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowUp className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => moveOption('additional', index, index + 1)}
+                            disabled={index === reorderStates.additional.length - 1}
+                            className="h-8 w-8 p-0"
+                          >
+                            <ArrowDown className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-end gap-2 mt-4">
+                    <Button variant="outline" onClick={() => closeReorderDialog('additional')}>Cancel</Button>
+                    <Button onClick={() => saveReorder('additional')} className="bg-purple-600 hover:bg-purple-700">
+                      Save Order
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
