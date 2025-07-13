@@ -280,6 +280,12 @@ This prevents data contamination and ensures authentic extraction integrity.
 - Each option has dedicated dialogs with proper color coding (blue, green, purple)
 - Complete workflow separation matching user requirements
 
+🔒 **DASHBOARD NAVIGATION FIXED** - Updated cleaning options popover to properly trigger category creation:
+- Option 1 from dashboard now shows "Set Up Cleanse and Survey Category" dialog
+- Option 2 shows "Set Up Custom Cleaning Category" dialog
+- Both dialogs redirect to PR1 pricing page for category configuration
+- Direct navigation to category creation instead of multi-step dialogs
+
 ## Changelog
 
 ```
