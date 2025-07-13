@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Settings, Video, Truck, Waves, Monitor } from "lucide-react";
+import { Settings, Video, Truck, Waves, Monitor, ArrowUp, ArrowDown, List } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -37,25 +37,35 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
+  const [showStackOrder, setShowStackOrder] = useState(false);
+  const [equipmentOrder, setEquipmentOrder] = useState<string[]>(['cctv-van-pack', 'cctv-jet-vac']);
 
-  // Define cleansing equipment options specifically for "Cleanse and Survey" operations
-  const cleansingEquipment: CleansingEquipment[] = [
+  // Define base cleansing equipment options
+  const baseEquipment = [
     {
       id: 'cctv-van-pack',
-      name: 'Option 1: CCTV/Van Pack',
+      name: 'CCTV/Van Pack',
       description: 'Combined CCTV inspection with van pack equipment',
-      icon: Monitor,
-      isSelected: selectedEquipment.includes('cctv-van-pack'),
-      isPrimary: true
+      icon: Monitor
     },
     {
       id: 'cctv-jet-vac',
-      name: 'Option 2: CCTV/Jet Vac', 
+      name: 'CCTV/Jet Vac', 
       description: 'Combined CCTV inspection with jet vac services',
-      icon: Video,
-      isSelected: selectedEquipment.includes('cctv-jet-vac')
+      icon: Video
     }
   ];
+
+  // Create ordered equipment list with option numbers based on current order
+  const cleansingEquipment: CleansingEquipment[] = equipmentOrder.map((equipmentId, index) => {
+    const baseItem = baseEquipment.find(item => item.id === equipmentId)!;
+    return {
+      ...baseItem,
+      name: `Option ${index + 1}: ${baseItem.name}`,
+      isSelected: selectedEquipment.includes(equipmentId),
+      isPrimary: index === 0 // First in order is primary
+    };
+  });
 
   const handleEquipmentToggle = (equipmentId: string) => {
     setSelectedEquipment(prev => 
@@ -65,10 +75,27 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     );
   };
 
+  const moveEquipmentUp = (index: number) => {
+    if (index > 0) {
+      const newOrder = [...equipmentOrder];
+      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+      setEquipmentOrder(newOrder);
+    }
+  };
+
+  const moveEquipmentDown = (index: number) => {
+    if (index < equipmentOrder.length - 1) {
+      const newOrder = [...equipmentOrder];
+      [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+      setEquipmentOrder(newOrder);
+    }
+  };
+
   const handleConfigureSelected = () => {
     setIsOpen(false);
-    // Route to PR2 pricing with selected equipment as URL params
-    const equipmentParams = selectedEquipment.join(',');
+    // Route to PR2 pricing with selected equipment as URL params in preferred order
+    const orderedSelectedEquipment = equipmentOrder.filter(id => selectedEquipment.includes(id));
+    const equipmentParams = orderedSelectedEquipment.join(',');
     setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentParams}`);
   };
 
@@ -90,7 +117,20 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           </p>
         </div>
         <div className="p-4 space-y-3">
-          {cleansingEquipment.map((equipment) => {
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-slate-700">Equipment Options</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowStackOrder(!showStackOrder)}
+              className="text-xs"
+            >
+              <List className="h-3 w-3 mr-1" />
+              Stack Order
+            </Button>
+          </div>
+          
+          {cleansingEquipment.map((equipment, index) => {
             const IconComponent = equipment.icon;
             return (
               <div
@@ -114,14 +154,37 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                         {equipment.name}
                       </label>
                       {equipment.isPrimary && (
-                        <Badge variant="secondary" className="text-xs">
-                          Primary Option
+                        <Badge variant="default" className="text-xs bg-blue-100 text-blue-800">
+                          Preferred
                         </Badge>
                       )}
                     </div>
                     <p className="text-xs text-slate-600 mt-1">{equipment.description}</p>
                   </div>
                 </div>
+                
+                {showStackOrder && (
+                  <div className="flex flex-col gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => moveEquipmentUp(index)}
+                      disabled={index === 0}
+                      className="h-6 w-6 p-0"
+                    >
+                      <ArrowUp className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => moveEquipmentDown(index)}
+                      disabled={index === cleansingEquipment.length - 1}
+                      className="h-6 w-6 p-0"
+                    >
+                      <ArrowDown className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
               </div>
             );
           })}
