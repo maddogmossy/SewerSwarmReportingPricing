@@ -53,16 +53,19 @@ export default function PR2PricingForm() {
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const sector = urlParams.get('sector') || 'utilities';
   const editId = urlParams.get('edit');
+  const categoryParam = urlParams.get('category');
   const isEditing = !!editId;
 
-  // Additional state for custom category input
-  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  // Additional state for custom category input  
+  const [isCustomCategory, setIsCustomCategory] = useState(categoryParam === 'Custom');
   const [customCategoryName, setCustomCategoryName] = useState('');
 
   // Form state with the same structure as PR1
   const [formData, setFormData] = useState({
-    categoryName: 'CCTV',
-    description: 'PR2 cleaning and survey configuration',
+    categoryName: categoryParam || 'CCTV',
+    description: categoryParam && categoryParam !== 'Custom' 
+      ? (CATEGORY_DESCRIPTIONS[categoryParam as keyof typeof CATEGORY_DESCRIPTIONS] || 'PR2 configuration')
+      : 'PR2 cleaning and survey configuration',
     pricingOptions: {
       dayRate: { enabled: false, value: '' },
       hourlyRate: { enabled: false, value: '' },
