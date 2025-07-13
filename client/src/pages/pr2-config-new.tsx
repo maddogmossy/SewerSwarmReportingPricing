@@ -411,7 +411,13 @@ export default function PR2ConfigNew() {
     const key = deleteDialogs[section as keyof typeof deleteDialogs].key;
     const sectionKey = `${section}Options` as keyof typeof formData;
     const newSectionData = { ...formData[sectionKey] };
+    
+    console.log(`🗑️ Delete operation - Section: ${section}, Key: ${key}, SectionKey: ${sectionKey}`);
+    console.log(`📦 Before delete:`, newSectionData);
+    
     delete newSectionData[key];
+    
+    console.log(`📦 After delete:`, newSectionData);
 
     setFormData(prev => ({
       ...prev,
@@ -419,6 +425,7 @@ export default function PR2ConfigNew() {
     }));
 
     closeDeleteDialog(section);
+    toast({ title: `Deleted ${key} from ${section} options` });
   };
 
   // Reorder functionality
