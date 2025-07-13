@@ -165,10 +165,9 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
       return;
     }
     
-    // For both configured and unconfigured options, navigate to the pricing page
+    // For both configured and unconfigured options, navigate to the simple pricing page
     const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
     const meterage = extractMeterage(sectionData.defects || '');
-    const sector = sectionData.sector || 'utilities';
     
     // Create URL with auto-focus parameters for the specific repair method
     const params = new URLSearchParams({
@@ -188,8 +187,8 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
       params.set('editId', option.id.toString());
     }
     
-    // Navigate to the sector-specific pricing page
-    setLocation(`/repair-pricing/${sector}?${params.toString()}`);
+    // Navigate to the simple pricing page
+    setLocation(`/simple-pricing?${params.toString()}`);
     setIsOpen(false);
   };
 
