@@ -175,7 +175,6 @@ export default function PR2ConfigClean() {
     
     setNewPricingLabel('');
     setAddPricingDialogOpen(false);
-    toast({ title: `Added pricing option: ${newOption.label}` });
   };
 
   const editPricingOption = (option: PricingOption) => {
@@ -199,7 +198,6 @@ export default function PR2ConfigClean() {
     setEditingPricing(null);
     setNewPricingLabel('');
     setEditPricingDialogOpen(false);
-    toast({ title: `Updated pricing option: ${newPricingLabel.trim()}` });
   };
 
   const deletePricingOption = (optionId: string) => {
@@ -211,8 +209,6 @@ export default function PR2ConfigClean() {
       pricingOptions: prev.pricingOptions.filter(opt => opt.id !== optionId),
       pricingStackOrder: prev.pricingStackOrder.filter(id => id !== optionId)
     }));
-    
-    toast({ title: `Deleted pricing option: ${option.label}` });
   };
 
   const updatePricingOption = (optionId: string, field: 'enabled' | 'value', value: any) => {
