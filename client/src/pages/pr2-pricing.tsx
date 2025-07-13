@@ -78,7 +78,7 @@ export default function PR2Pricing() {
     
     // Force navigation to include sector parameter if missing
     if (!location.includes('?sector=')) {
-      navigate(`/pr2-pricing?sector=utilities`);
+      window.location.href = `/pr2-pricing?sector=utilities`;
     }
   }, [location, navigate, sector]);
   
@@ -190,7 +190,8 @@ export default function PR2Pricing() {
             size="sm"
             onClick={() => {
               console.log(`Navigating to sector: ${s.id}`);
-              navigate(`/pr2-pricing?sector=${s.id}`);
+              // Use window.location to force URL change with query parameters
+              window.location.href = `/pr2-pricing?sector=${s.id}`;
             }}
             className={`flex items-center gap-2 ${s.color} hover:bg-gray-100`}
           >
