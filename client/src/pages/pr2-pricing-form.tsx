@@ -161,15 +161,17 @@ export default function PR2PricingForm() {
         return apiRequest('POST', '/api/pr2-pricing', data);
       }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('✅ PR2 configuration saved successfully:', data);
       toast({
         title: "Success",
         description: `PR2 configuration ${isEditing ? 'updated' : 'created'} successfully`,
       });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing', sector] });
-      // Navigate back to dashboard after saving
-      setLocation('/dashboard');
+      
+      // Navigate back to PR2 pricing page instead of dashboard to show the saved configuration
+      setLocation(`/pr2-pricing?sector=${sector}`);
     },
     onError: (error: any) => {
       toast({
@@ -204,6 +206,8 @@ export default function PR2PricingForm() {
   };
 
   const handleSave = () => {
+    console.log('💾 Save button clicked - current form data:', formData);
+    
     // Validation
     const allSections = [
       ...Object.entries(formData.pricingOptions),
