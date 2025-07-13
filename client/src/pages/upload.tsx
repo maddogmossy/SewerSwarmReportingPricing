@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import FileUpload from "@/components/ui/file-upload";
 import { FolderSelector } from "@/components/folder-selector";
 import { FileUpload as FileUploadType } from "@shared/schema";
-import { Download, FileText, Clock, CheckCircle, AlertCircle, AlertTriangle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House, Settings, Folder, FolderOpen, ChevronRight, ChevronDown } from "lucide-react";
+import { Download, FileText, Clock, CheckCircle, AlertCircle, AlertTriangle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House, Settings, Folder, FolderOpen, ChevronRight, ChevronDown, BarChart3 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 const sectors = [
