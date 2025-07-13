@@ -603,20 +603,11 @@ export default function Dashboard() {
             .filter(obs => obs.length > 0)
             .map(obs => obs.endsWith('.') ? obs : obs + '.'); // Ensure each ends with period
           
-          // Filter out "Line deviates" observations unless section involves lining or patching
-          const hasLiningOrPatching = section.recommendations && 
-            (section.recommendations.toLowerCase().includes('patch lining') || 
-             section.recommendations.toLowerCase().includes('patch') ||
-             section.recommendations.toLowerCase().includes('relining'));
-          
-
-          
-          if (!hasLiningOrPatching) {
-            observations = observations.filter(obs => 
-              !obs.toLowerCase().includes('line deviates') &&
-              !obs.toLowerCase().includes('line deviation')
-            );
-          }
+          // Filter out ALL "Line deviates" observations from display
+          observations = observations.filter(obs => 
+            !obs.toLowerCase().includes('line deviates') &&
+            !obs.toLowerCase().includes('line deviation')
+          );
           
           // If no observations remain after filtering, show clean message
           if (observations.length === 0) {
@@ -648,20 +639,13 @@ export default function Dashboard() {
                                defectsText.toLowerCase().includes('line deviation');
         
         if (isLineDeviation) {
-          const hasLiningOrPatching = section.recommendations && 
-            (section.recommendations.toLowerCase().includes('patch lining') || 
-             section.recommendations.toLowerCase().includes('patch') ||
-             section.recommendations.toLowerCase().includes('relining'));
-          
-          if (!hasLiningOrPatching) {
-            return (
-              <div className="text-sm p-2 w-full">
-                <div className="break-words text-left leading-relaxed">
-                  No service or structural defect found
-                </div>
+          return (
+            <div className="text-sm p-2 w-full">
+              <div className="break-words text-left leading-relaxed">
+                No service or structural defect found
               </div>
-            );
-          }
+            </div>
+          );
         }
         
         // Single observation or clean section - display normally
