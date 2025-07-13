@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useRoute } from 'wouter';
+import { useLocation } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,7 +23,6 @@ const SECTORS = [
 
 export default function PR2Category() {
   const [, setLocation] = useLocation();
-  const [, params] = useRoute('/pr2-category');
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -31,6 +30,9 @@ export default function PR2Category() {
   const urlParams = new URLSearchParams(window.location.search);
   const sector = urlParams.get('sector') || 'utilities';
   const categoryId = urlParams.get('categoryId') || '';
+  
+  // Add debugging
+  console.log('PR2Category loaded - sector:', sector, 'categoryId:', categoryId);
   
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
