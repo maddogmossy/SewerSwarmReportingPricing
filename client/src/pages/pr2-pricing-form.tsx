@@ -51,7 +51,7 @@ export default function PR2PricingForm() {
 
   // Load existing configuration for editing
   const { data: existingConfig } = useQuery({
-    queryKey: ['/api/pr2-pricing', editId],
+    queryKey: ['/api/pr2-pricing', sector],
     enabled: isEditing,
     select: (data: any[]) => data.find(config => config.id === parseInt(editId!))
   });
@@ -107,6 +107,7 @@ export default function PR2PricingForm() {
         description: `PR2 configuration ${isEditing ? 'updated' : 'created'} successfully`,
       });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing', sector] });
       setLocation('/dashboard');
     },
     onError: (error: any) => {

@@ -48,11 +48,14 @@ export default function PR2Pricing() {
   });
 
   // Fetch PR2 configurations for current sector
-  const { data: pr2Configurations = [], isLoading: pr2Loading } = useQuery({
-    queryKey: ['/api/pr2-pricing'],
-    queryParams: { sector },
+  const { data: pr2ConfigurationsRaw = [], isLoading: pr2Loading } = useQuery({
+    queryKey: ['/api/pr2-pricing', sector],
+    queryFn: () => apiRequest('GET', '/api/pr2-pricing', undefined, { sector }),
     enabled: !!sector,
   });
+
+  // Ensure pr2Configurations is always an array
+  const pr2Configurations = Array.isArray(pr2ConfigurationsRaw) ? pr2ConfigurationsRaw : [];
 
   // Delete mutation
   const deletePR2Configuration = useMutation({
