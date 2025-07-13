@@ -584,16 +584,6 @@ export default function PR2ConfigClean() {
         {/* Configuration Title */}
         <div className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">CCTV Price Configuration</h2>
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Enter description"
-              className="mt-1"
-            />
-          </div>
         </div>
 
         {/* Three Column Layout */}
@@ -1218,6 +1208,18 @@ export default function PR2ConfigClean() {
               )}
             </CardContent>
           </Card>
+        </div>
+
+        {/* Description Field */}
+        <div className="mb-6">
+          <Label htmlFor="description">Description</Label>
+          <Input
+            id="description"
+            value={formData.description}
+            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            placeholder="Enter description"
+            className="mt-1"
+          />
         </div>
 
         {/* Action Buttons */}
