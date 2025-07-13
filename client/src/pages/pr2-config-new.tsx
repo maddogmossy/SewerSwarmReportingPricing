@@ -250,7 +250,11 @@ export default function PR2ConfigNew() {
       }
     },
     onSuccess: () => {
+      // Invalidate both the list and the specific configuration
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
+      if (isEditing) {
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing', editId] });
+      }
       toast({ title: `${formData.categoryName} configuration ${isEditing ? 'updated' : 'created'} successfully` });
       setLocation(`/pr2-pricing?sector=${sector}`);
     },
