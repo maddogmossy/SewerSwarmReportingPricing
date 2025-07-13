@@ -2510,9 +2510,9 @@ export default function RepairPricing() {
                   if (formData.pricingStructure?.minInspectionsPerShift) orangeOptions.push({key: 'minInspectionsPerShift', label: 'Min inspections/shift', type: 'orange'});
                   if (formData.pricingStructure?.minSetupCount) orangeOptions.push({key: 'minSetupCount', label: 'Min setup count', type: 'orange'});
                   
-                  // Also check for user-added orange options with "minquantity_" prefix
+                  // Also check for user-added orange options with "minquantity_" prefix (SHOW ALL, not just enabled)
                   Object.keys(formData.pricingStructure || {}).forEach(key => {
-                    if (key.startsWith('minquantity_') && formData.pricingStructure[key] === true) {
+                    if (key.startsWith('minquantity_') && !key.endsWith('_label')) {
                       // Use stored label if available, otherwise reconstruct from field name  
                       const storedLabel = formData.pricingStructure[`${key}_label`];
                       const label = storedLabel || key.replace('minquantity_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -3178,9 +3178,9 @@ export default function RepairPricing() {
                           });
                         })()}
 
-                        {/* Show orange/minquantity-specific added options (only if enabled) */}
+                        {/* Show orange/minquantity-specific added options (ALL options, enabled and disabled) */}
                         {formData.pricingStructure && Object.keys(formData.pricingStructure).filter(key => 
-                          key.startsWith('minquantity_') && formData.pricingStructure[key] === true
+                          key.startsWith('minquantity_') && !key.endsWith('_label')
                         ).map((optionKey) => {
                           const isChecked = !!formData.pricingStructure[optionKey];
                           // Use stored label if available, otherwise reconstruct from field name
