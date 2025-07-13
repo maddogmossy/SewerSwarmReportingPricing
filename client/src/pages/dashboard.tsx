@@ -750,7 +750,7 @@ export default function Dashboard() {
                 hasLinkedPR2={hasLinkedPR2}
               >
                 <div className={`text-sm w-full ${hasLinkedPR2 ? 'bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400' : 'bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400'} p-2 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
-                  <div className="font-medium text-black mb-1">💧 CLEANSE/SURVEY</div>
+                  <div className="font-bold text-black mb-1">💧 CLEANSE/SURVEY</div>
                   <div className="text-black">{generateDynamicRecommendation(section)}</div>
                   <div className="text-sm text-black mt-1 font-medium">→ {hasLinkedPR2 ? 'PR2 configuration active' : 'Click for cleaning pricing options'}</div>
                 </div>
