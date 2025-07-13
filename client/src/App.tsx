@@ -17,7 +17,7 @@ import CleansingPricing from "@/pages/cleansing-pricing";
 import JettingPricing from "@/pages/jetting-pricing";
 import RepairPricing from "@/pages/repair-pricing";
 import SimplePricing from "@/pages/simple-pricing";
-import PR1Pricing from "@/pages/pr1-pricing";
+import PR1Pricing from "@/pages/pr1-pricing-simple";
 import StandardsConfig from "@/pages/standards-config";
 import DepotManagement from "@/pages/depot-management";
 import VehicleTravelRates from "@/pages/vehicle-travel-rates";

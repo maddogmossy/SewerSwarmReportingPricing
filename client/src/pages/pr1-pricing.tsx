@@ -68,11 +68,11 @@ export default function PR1Pricing() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const [showInitialDialog, setShowInitialDialog] = useState(true);
+  const [showInitialDialog, setShowInitialDialog] = useState(false);
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [showAddNewDialog, setShowAddNewDialog] = useState(false);
-  const [showMainPricing, setShowMainPricing] = useState(false);
+  const [showMainPricing, setShowMainPricing] = useState(true);
   
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [customDescription, setCustomDescription] = useState('');
