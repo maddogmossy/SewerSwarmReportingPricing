@@ -59,8 +59,7 @@ export default function PR1Pricing() {
         title: "Configuration Saved",
         description: "PR1 pricing configuration saved successfully!"
       });
-      // Stay on page so user can verify the save worked
-      // setLocation('/dashboard');
+      setLocation('/dashboard');
     },
     onError: () => {
       toast({
