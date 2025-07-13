@@ -1614,7 +1614,7 @@ export default function Dashboard() {
               Upload Report
             </Button>
           </Link>
-          <Link to="/simple-pricing">
+          <Link to="/pr2-pricing">
             <Button variant="outline" size="sm">
               <Settings className="h-4 w-4 mr-2 text-orange-600" />
               Pricing
