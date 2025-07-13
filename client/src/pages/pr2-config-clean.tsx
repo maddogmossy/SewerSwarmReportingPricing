@@ -8,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { ChevronLeft, Save, Calculator, Coins, Package, Gauge, Zap, Plus, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3 } from 'lucide-react';
+import { ChevronLeft, Save, Calculator, Coins, Package, Gauge, Zap, Plus, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 
@@ -55,6 +56,16 @@ interface CleanFormData {
   
   sector: string;
 }
+
+// Sector definitions
+const SECTORS = [
+  { id: 'utilities', name: 'Utilities', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'insurance', name: 'Insurance', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'construction', name: 'Construction', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'domestic', name: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+];
 
 export default function PR2ConfigClean() {
   const [, setLocation] = useLocation();
@@ -120,12 +131,66 @@ export default function PR2ConfigClean() {
   const [editingQuantity, setEditingQuantity] = useState<PricingOption | null>(null);
   const [editingMinQuantity, setEditingMinQuantity] = useState<PricingOption | null>(null);
   const [editingRange, setEditingRange] = useState<RangeOption | null>(null);
+  
+  // Sector selection state
+  const [selectedSectors, setSelectedSectors] = useState<string[]>([sector]);
+  const [showRemoveWarning, setShowRemoveWarning] = useState(false);
+  const [sectorToRemove, setSectorToRemove] = useState<string>('');
 
   // Load existing configuration for editing
   const { data: existingConfig } = useQuery({
     queryKey: ['/api/pr2-clean', editId],
     enabled: isEditing && !!editId,
   });
+
+  // Load existing configurations across all sectors to check which sectors already have this config
+  const { data: allSectorConfigs = [] } = useQuery({
+    queryKey: ['/api/pr2-clean', 'all-sectors'],
+    queryFn: async () => {
+      if (!isEditing || !categoryId) return [];
+      
+      const allConfigs = [];
+      for (const sect of SECTORS) {
+        try {
+          const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector: sect.id });
+          const configs = await response.json();
+          const matchingConfig = configs.find((c: any) => c.categoryId === categoryId);
+          if (matchingConfig) {
+            allConfigs.push({ sector: sect.id, config: matchingConfig });
+          }
+        } catch (error) {
+          console.log(`No config found for sector ${sect.id}`);
+        }
+      }
+      return allConfigs;
+    },
+    enabled: isEditing && !!categoryId,
+  });
+
+  // Handle sector checkbox changes
+  const handleSectorChange = (sectorId: string, checked: boolean) => {
+    if (checked) {
+      // Add sector to selected list
+      setSelectedSectors(prev => [...new Set([...prev, sectorId])]);
+    } else {
+      // Show warning if removing an existing sector with data
+      const hasExistingConfig = allSectorConfigs.some((c: any) => c.sector === sectorId);
+      if (hasExistingConfig && isEditing) {
+        setSectorToRemove(sectorId);
+        setShowRemoveWarning(true);
+      } else {
+        // Remove sector from selected list
+        setSelectedSectors(prev => prev.filter(s => s !== sectorId));
+      }
+    }
+  };
+
+  // Confirm sector removal
+  const confirmSectorRemoval = () => {
+    setSelectedSectors(prev => prev.filter(s => s !== sectorToRemove));
+    setShowRemoveWarning(false);
+    setSectorToRemove('');
+  };
 
   useEffect(() => {
     if (isEditing && existingConfig) {
@@ -160,33 +225,74 @@ export default function PR2ConfigClean() {
     }
   }, [existingConfig, isEditing, sector]);
 
-  // Save configuration with clean logic
+  // Update selectedSectors when allSectorConfigs loads
+  useEffect(() => {
+    if (isEditing && allSectorConfigs.length > 0) {
+      const sectorsWithConfigs = allSectorConfigs.map((c: any) => c.sector);
+      setSelectedSectors(sectorsWithConfigs);
+    }
+  }, [allSectorConfigs, isEditing]);
+
+  // Save configuration with multi-sector support
   const saveConfiguration = useMutation({
-    mutationFn: (data: CleanFormData) => {
-      console.log('🚀 Clean save operation:', data);
-      if (isEditing) {
-        return apiRequest('PUT', `/api/pr2-clean/${editId}`, data);
-      } else {
-        return apiRequest('POST', '/api/pr2-clean', { ...data, sector, categoryId: categoryId || 'custom' });
-      }
-    },
-    onSuccess: (savedConfig) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
-      if (isEditing) {
-        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
+    mutationFn: async (data: CleanFormData) => {
+      console.log('🚀 Multi-sector save operation:', { data, selectedSectors });
+      
+      const results = [];
+      
+      // Save/update configuration for each selected sector
+      for (const sectorId of selectedSectors) {
+        const sectorData = { ...data, sector: sectorId };
+        
+        if (isEditing) {
+          // For editing, check if this sector already has a config
+          const existingSectorConfig = allSectorConfigs.find((c: any) => c.sector === sectorId);
+          if (existingSectorConfig) {
+            // Update existing config
+            const result = await apiRequest('PUT', `/api/pr2-clean/${existingSectorConfig.config.id}`, sectorData);
+            results.push(result);
+          } else {
+            // Create new config for this sector
+            const result = await apiRequest('POST', '/api/pr2-clean', { 
+              ...sectorData, 
+              categoryId: categoryId || 'custom' 
+            });
+            results.push(result);
+          }
+        } else {
+          // For new configurations, create for each selected sector
+          const result = await apiRequest('POST', '/api/pr2-clean', { 
+            ...sectorData, 
+            categoryId: categoryId || 'custom' 
+          });
+          results.push(result);
+        }
       }
       
-      console.log('✅ Configuration saved, returning to PR2 Pricing Configuration');
-      // Always return to PR2 Pricing Configuration page after save
+      // Remove configurations from unselected sectors if editing
+      if (isEditing) {
+        const sectorsToRemove = allSectorConfigs
+          .map((c: any) => c.sector)
+          .filter((s: string) => !selectedSectors.includes(s));
+        
+        for (const sectorToRemove of sectorsToRemove) {
+          const configToRemove = allSectorConfigs.find((c: any) => c.sector === sectorToRemove);
+          if (configToRemove) {
+            await apiRequest('DELETE', `/api/pr2-clean/${configToRemove.config.id}`);
+          }
+        }
+      }
+      
+      return results;
+    },
+    onSuccess: (savedConfigs) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
+      console.log('✅ Multi-sector configurations saved successfully');
       setLocation(`/pr2-pricing?sector=${sector}`);
     },
     onError: (error: any) => {
-      toast({ 
-        title: "Error saving configuration", 
-        description: error.message || 'Please try again',
-        variant: "destructive" 
-      });
+      console.error('❌ Error saving configurations:', error);
     }
   });
 
@@ -612,6 +718,50 @@ export default function PR2ConfigClean() {
             Dashboard
           </Button>
         </div>
+
+        {/* Sector Selection Checkboxes */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-gray-900 flex items-center gap-2">
+              <Building className="w-5 h-5" />
+              Apply Configuration to Sectors
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {SECTORS.map((sect) => {
+                const Icon = sect.icon;
+                const isSelected = selectedSectors.includes(sect.id);
+                const hasExistingConfig = allSectorConfigs.some((c: any) => c.sector === sect.id);
+                
+                return (
+                  <div key={sect.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`sector-${sect.id}`}
+                      checked={isSelected}
+                      onCheckedChange={(checked) => handleSectorChange(sect.id, checked as boolean)}
+                      className="border-gray-300"
+                    />
+                    <Label 
+                      htmlFor={`sector-${sect.id}`} 
+                      className={`flex items-center gap-2 cursor-pointer ${sect.color} font-medium`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {sect.name}
+                      {hasExistingConfig && (
+                        <span className="text-xs text-gray-500">(existing)</span>
+                      )}
+                    </Label>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-4 text-sm text-gray-600">
+              <p>✓ Checked sectors will receive this pricing configuration</p>
+              <p>✗ Unchecking existing configurations will remove them with confirmation</p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Configuration Title */}
         <div className="mb-6">
@@ -1274,6 +1424,30 @@ export default function PR2ConfigClean() {
             {saveConfiguration.isPending ? 'Saving...' : 'Save Configuration'}
           </Button>
         </div>
+
+        {/* Red Warning Dialog for Sector Removal */}
+        <AlertDialog open={showRemoveWarning} onOpenChange={setShowRemoveWarning}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-red-600">Remove Configuration from Sector</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete the configuration from the {SECTORS.find(s => s.id === sectorToRemove)?.name} sector. 
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setShowRemoveWarning(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={confirmSectorRemoval}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Remove Configuration
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
