@@ -140,6 +140,9 @@ export default function PR2Pricing() {
     const route = routeMap[categoryId as keyof typeof routeMap];
     if (route) {
       navigate(route);
+    } else {
+      // For user-created categories, use a generic category page
+      navigate(`/pr2-category?sector=${sector}&categoryId=${categoryId}`);
     }
   };
 
