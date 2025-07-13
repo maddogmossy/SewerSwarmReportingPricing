@@ -131,9 +131,15 @@ export default function PR2ConfigClean() {
       if (isEditing) {
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
       }
+      
+      // If this was a new configuration, switch to edit mode with the new ID
+      if (!isEditing && savedConfig?.id) {
+        console.log('✅ New config created, switching to edit mode with ID:', savedConfig.id);
+        setLocation(`/pr2-config-clean?sector=${sector}&editId=${savedConfig.id}`);
+      }
+      
       toast({ title: `Configuration ${isEditing ? 'updated' : 'created'} successfully` });
-      // DON'T redirect - stay on form to continue adding options
-      console.log('✅ Configuration saved, staying on form to continue editing');
+      console.log('✅ Configuration saved, form ready for more options');
     },
     onError: (error: any) => {
       toast({ 
