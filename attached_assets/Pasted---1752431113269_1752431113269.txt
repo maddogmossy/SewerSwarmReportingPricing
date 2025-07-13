@@ -1,0 +1,261 @@
+
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+_app-88238c50b24ccf60.js:38 [LaunchDarkly] LaunchDarkly client initialized
+SewerSwarmSimulator:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+327Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'battery'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+framework-5de1dd47b1714f7e.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-5de1dd47b1714f7e.js:1Understand this warning
+5SewerSwarmSimulator:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was receivedUnderstand this error
+SewerSwarmSimulator:1 Access to fetch at 'https://sp.replit.com/v1/t' from origin 'https://replit.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.Understand this error
+sp.replit.com/v1/t:1  Failed to load resource: net::ERR_FAILEDUnderstand this error
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 78ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 39ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 60ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 38ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+stallwart.build.js:1 stallwart: failed ping 1
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 41ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 106ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 40ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 199ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 38ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+2_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+2_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 75ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+2_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 35ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 252ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 167ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 34ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 22ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:25 WebSocket connection to 'wss://replit.com/graphql_subscriptions' failed: 
+(anonymous) @ _app-88238c50b24ccf60.js:25Understand this error
+graphql:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTEDUnderstand this error
+events.launchdarkly.com/events/diagnostic/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTEDUnderstand this error
+api.sorryapp.com/v1/pages/27c7b5fc:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTEDUnderstand this error
+api.sorryapp.com/v1/pages/27c7b5fc:1  Failed to load resource: net::ERR_INTERNET_DISCONNECTEDUnderstand this error
+events.launchdarkly.com/events/diagnostic/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_NETWORK_CHANGEDUnderstand this error
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 198ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 197ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 38ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 273ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 242ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+2_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 39ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 38ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 42ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+2_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 67ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 28ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 267ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 38ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 35ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 152ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 102ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 188ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 39ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 144ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 60ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+2_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 38ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 269ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 127ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 43ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 35ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 34ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 38ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 281ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 36ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+2_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 261ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 37ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 48ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+_app-88238c50b24ccf60.js:38 task queue exceeded allotted deadline by 41ms
+(anonymous) @ _app-88238c50b24ccf60.js:38Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'battery'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Unrecognized feature: 'unsized-media'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fpr2-config-new%3Fsector%3Dutilities%26category%3DCCTV&id=%3Arlso%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+Console.js:61 Current sector object: Object
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Initial page load - setting sector to: utilities
+Console.js:61 Current sector object: Object
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Current sector object: Object
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Current sector object: Object
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 🔍 Navigation triggered for categoryId: cctv
+Console.js:61 📍 Current sector: utilities
+Console.js:61 🎥 CCTV category - routing to configuration page
+Console.js:61 PR2 Config New - URL params: Object
+Console.js:61 PR2 Config New - URL params: Object
+Console.js:61 PR2 Config New - URL params: Object
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+Console.js:61 PR2 Config New - URL params: Object
+Console.js:61 Save button clicked - Current formData: Object
+Console.js:61 Save mutation pending: false
+Console.js:61 Is editing mode: false
+Console.js:61 Edit ID: null
+Console.js:61 PR2 Config New - URL params: Object
+Console.js:61 Current sector object: Object
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Initial page load - setting sector to: utilities
+Console.js:61 Current sector object: Object
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Current sector object: Object
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 🔍 Navigation triggered for categoryId: cctv
+Console.js:61 📍 Current sector: utilities
+Console.js:61 🎥 CCTV category - routing to configuration page
+Console.js:61 PR2 Config New - URL params: Object
+Console.js:61 PR2 Config New - URL params: Object
+Console.js:61 PR2 Config New - URL params: Object

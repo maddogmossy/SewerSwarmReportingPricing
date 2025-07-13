@@ -186,15 +186,30 @@ export default function PR2Pricing() {
     console.log('📍 Current sector:', sector);
     
     // Check if there's an existing configuration for this category
-    const existingConfig = pr2Configurations.find(config => 
-      config.categoryId === categoryId || 
-      config.categoryName?.toLowerCase() === categoryId.toLowerCase() ||
-      (categoryId === 'cctv' && config.categoryName === 'CCTV')
-    );
+    console.log('🔍 All PR2 configurations:', pr2Configurations);
+    console.log('🔍 Looking for categoryId:', categoryId);
+    
+    const existingConfig = pr2Configurations.find(config => {
+      console.log('🔎 Checking config:', { 
+        id: config.id, 
+        categoryId: config.categoryId, 
+        categoryName: config.categoryName,
+        matches: {
+          categoryIdMatch: config.categoryId === categoryId,
+          categoryNameMatch: config.categoryName?.toLowerCase() === categoryId.toLowerCase(),
+          cctvMatch: categoryId === 'cctv' && config.categoryName === 'CCTV'
+        }
+      });
+      
+      return config.categoryId === categoryId || 
+             config.categoryName?.toLowerCase() === categoryId.toLowerCase() ||
+             (categoryId === 'cctv' && config.categoryName === 'CCTV');
+    });
     
     if (existingConfig) {
       console.log('✅ Found existing configuration for', categoryId, '- routing to edit page');
       console.log('Configuration details:', existingConfig);
+      console.log('🔗 Navigating to edit URL:', `/pr2-config-new?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`);
       setLocation(`/pr2-config-new?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`);
       return;
     }
