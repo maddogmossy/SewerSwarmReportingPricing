@@ -43,6 +43,7 @@ export default function PR2Pricing() {
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
 
   // Legacy work categories removed - PR2 only
+  // Show PR2 configurations directly instead of requiring work categories
   const workCategories = [];
   const categoriesLoading = false;
 
@@ -138,93 +139,81 @@ export default function PR2Pricing() {
           </Button>
         </div>
 
-        {workCategories.length === 0 ? (
+        {pr2Configurations.length === 0 ? (
           <Card>
             <CardContent className="text-center py-8">
               <div className="space-y-2">
-                <p className="text-gray-500">No work categories found.</p>
+                <p className="text-gray-500">No PR2 configurations found.</p>
                 <p className="text-sm text-gray-400">
-                  Work categories are managed in the legacy system for now.
+                  Click "Add PR2 Configuration" to create your first pricing configuration.
                 </p>
               </div>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4">
-            {workCategories.map((category: any) => {
-              const categoryConfigurations = pr2Configurations.filter(
-                (config: any) => config.categoryId === category.id?.toString() || config.categoryName === category.name
-              );
-
-              return (
-                <Card key={category.id}>
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">PR2 Configurations</h3>
+            <div className="grid gap-4">
+              {pr2Configurations.map((config: any) => (
+                <Card key={config.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg bg-${category.color?.split('-')[1] || 'blue'}-100`}>
-                          <Settings className={`h-5 w-5 ${category.color || 'text-blue-600'}`} />
+                        <div className="p-2 rounded-lg bg-blue-100">
+                          <Settings className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
-                          <CardTitle className="text-lg">{category.name}</CardTitle>
-                          <p className="text-sm text-gray-600">{category.description}</p>
+                          <CardTitle className="text-lg">{config.categoryName}</CardTitle>
+                          <p className="text-sm text-gray-600">{config.description}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant={categoryConfigurations.length > 0 ? "default" : "secondary"}>
-                          {categoryConfigurations.length} PR2 Configurations
+                        <Badge variant="default">
+                          Active
                         </Badge>
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={handleAddConfiguration}
-                          className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                          onClick={() => navigate(`/pr2-pricing-form?sector=${sector}&edit=${config.id}`)}
                         >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Add Pricing
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deletePR2Configuration.mutate(config.id)}
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
                   </CardHeader>
-
-                  {categoryConfigurations.length > 0 && (
-                    <CardContent>
-                      <div className="space-y-2">
-                        {categoryConfigurations.map((config: any) => (
-                          <div key={config.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="space-y-1">
-                              <p className="font-medium">{config.categoryName}</p>
-                              <p className="text-sm text-gray-600">{config.description}</p>
-                              <div className="flex items-center gap-4 text-xs text-gray-500">
-                                <span>Pricing Options: {config.pricingOptions?.length || 0}</span>
-                                <span>Quantity Options: {config.quantityOptions?.length || 0}</span>
-                                <span>Math Operators: {config.mathOperators?.length || 0}</span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => navigate(`/pr2-pricing-form?sector=${sector}&edit=${config.id}`)}
-                              >
-                                Edit
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => deletePR2Configuration.mutate(config.id)}
-                                className="text-red-600 border-red-200 hover:bg-red-50"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <span>Pricing Options: {config.pricingOptions?.length || 0}</span>
+                        <span>Quantity Options: {config.quantityOptions?.length || 0}</span>
+                        <span>Math Operators: {config.mathOperators?.length || 0}</span>
+                      </div>
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <p className="text-sm font-medium">Configuration Details:</p>
+                        {config.pricingOptions?.map((option: any, index: number) => (
+                          <p key={index} className="text-xs text-gray-600">
+                            {option.label}: £{option.value}
+                          </p>
+                        ))}
+                        {config.quantityOptions?.map((option: any, index: number) => (
+                          <p key={index} className="text-xs text-gray-600">
+                            {option.label}: {option.value}
+                          </p>
                         ))}
                       </div>
-                    </CardContent>
-                  )}
+                    </div>
+                  </CardContent>
                 </Card>
-              );
-            })}
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -241,7 +230,7 @@ export default function PR2Pricing() {
               <p className="text-sm text-gray-600">Total Configurations</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-green-600">{workCategories.length}</p>
+              <p className="text-2xl font-bold text-green-600">0</p>
               <p className="text-sm text-gray-600">Work Categories</p>
             </div>
             <div>

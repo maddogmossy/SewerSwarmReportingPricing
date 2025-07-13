@@ -273,6 +273,14 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(fileUploads.createdAt));
   }
 
+  async getSectionsByUpload(uploadId: number): Promise<SectionInspection[]> {
+    return await db
+      .select()
+      .from(sectionInspections)
+      .where(eq(sectionInspections.fileUploadId, uploadId))
+      .orderBy(sectionInspections.itemNumber);
+  }
+
   async getFileUploadById(id: number): Promise<FileUpload | undefined> {
     const [fileUpload] = await db
       .select()
