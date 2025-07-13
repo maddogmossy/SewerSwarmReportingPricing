@@ -1059,9 +1059,10 @@ export default function Dashboard() {
     ? sectors.find(s => s.id === currentUpload.sector) || sectors[0]
     : sectors[0];
 
-  // Fetch repair pricing data for current sector
+  // Fetch PR2 configurations from dedicated PR2 database table (completely separate from legacy)
   const { data: repairPricingData = [] } = useQuery({
-    queryKey: [`/api/repair-pricing/${currentSector.id}`],
+    queryKey: ['/api/pr2-pricing'],
+    queryParams: { sector: currentSector.id },
     enabled: !!currentSector?.id
   });
 
@@ -1107,12 +1108,8 @@ export default function Dashboard() {
     return { hasApproved: false };
   };
 
-  // Fetch PR2 configurations from dedicated PR2 database table (completely separate from legacy)
-  const { data: pr2Configurations = [], isLoading: pr2Loading } = useQuery<any[]>({
-    queryKey: ['/api/pr2-pricing'],
-    queryParams: { sector: 'utilities' },
-    staleTime: 5 * 60 * 1000,
-  });
+  // Use PR2 configurations for cost calculations
+  const pr2Configurations = repairPricingData;
 
   // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {

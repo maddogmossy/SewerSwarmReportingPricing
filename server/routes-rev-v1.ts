@@ -743,93 +743,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ]);
   });
 
-  // PR1 Pricing System Endpoints
-  app.post('/api/pr1-pricing', (req, res) => {
-    const {
-      categoryId,
-      categoryName,
-      description,
-      pricingOptions,
-      quantityOptions,
-      minQuantityOptions,
-      rangeOptions,
-      rangeValues,
-      pricingValues,
-      mathOperators,
-      sector
-    } = req.body;
-
-    console.log('📝 Creating PR1 pricing configuration:', { categoryName, sector });
-
-    const newPR1Config = {
-      id: Date.now(),
-      userId: 'test-user',
-      categoryId,
-      categoryName,
-      description,
-      pricingOptions: pricingOptions || [],
-      quantityOptions: quantityOptions || [],
-      minQuantityOptions: minQuantityOptions || [],
-      rangeOptions: rangeOptions || [],
-      rangeValues: rangeValues || {},
-      pricingValues: pricingValues || {},
-      mathOperators: mathOperators || [],
-      sector: sector || 'utilities',
-      createdAt: new Date().toISOString()
-    };
-
-    // Store in memory for now (can later integrate with database)
-    if (!global.pr1ConfigStorage) {
-      global.pr1ConfigStorage = [];
-    }
-    global.pr1ConfigStorage.push(newPR1Config);
-
-    console.log('✅ PR1 configuration saved successfully');
-    console.log('📊 PR1 configs in storage:', global.pr1ConfigStorage.length);
-
-    res.json({ 
-      success: true, 
-      config: newPR1Config,
-      message: 'PR1 pricing configuration saved successfully'
-    });
-  });
-
-  app.get('/api/pr1-pricing', (req, res) => {
-    const { sector } = req.query;
-    
-    if (!global.pr1ConfigStorage) {
-      global.pr1ConfigStorage = [];
-      
-      // Auto-create test configuration if none exists
-      const testConfig = {
-        id: Date.now(),
-        userId: 'test-user',
-        categoryId: 'auto-created-config',
-        categoryName: 'Auto-Created PR1 Configuration',
-        description: 'Auto-created for testing dashboard integration',
-        pricingOptions: [{ id: 'dayRate', label: 'dayRate', value: '1850' }],
-        quantityOptions: [{ id: 'runsPerShift', label: 'runsPerShift', value: '30' }],
-        minQuantityOptions: [],
-        rangeOptions: [],
-        rangeValues: {},
-        pricingValues: {},
-        mathOperators: ['÷'],
-        sector: 'utilities',
-        createdAt: new Date().toISOString()
-      };
-      global.pr1ConfigStorage.push(testConfig);
-      console.log('🔧 Auto-created test PR1 configuration for testing');
-    }
-
-    let configs = global.pr1ConfigStorage.filter(config => config.userId === 'test-user');
-    
-    if (sector) {
-      configs = configs.filter(config => config.sector === sector);
-    }
-
-    console.log(`📋 Retrieved ${configs.length} PR1 configurations for sector: ${sector || 'all'}`);
-    res.json(configs);
-  });
+  // PR1 endpoints removed - using PR2 system exclusively
 
   // PR2 Pricing System - Completely separate from legacy ops
   app.get('/api/pr2-pricing', async (req, res) => {
@@ -884,6 +798,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error saving PR2 configuration:', error);
       res.status(500).json({ error: 'Failed to save PR2 configuration' });
+    }
+  });
+
+  app.delete('/api/pr2-pricing/:id', async (req, res) => {
+    try {
+      const configId = parseInt(req.params.id);
+      console.log('🗑️ PR2 DELETE request for ID:', configId);
+      
+      const deletedConfig = await db.delete(pr2Configurations)
+        .where(eq(pr2Configurations.id, configId))
+        .returning();
+        
+      if (deletedConfig.length === 0) {
+        return res.status(404).json({ error: 'PR2 configuration not found' });
+      }
+        
+      console.log('✅ PR2 configuration deleted:', deletedConfig[0]);
+      
+      res.json({ 
+        success: true, 
+        message: 'PR2 configuration deleted successfully' 
+      });
+    } catch (error) {
+      console.error('Error deleting PR2 configuration:', error);
+      res.status(500).json({ error: 'Failed to delete PR2 configuration' });
     }
   });
 

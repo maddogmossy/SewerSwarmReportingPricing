@@ -49,9 +49,9 @@ export default function RepairPricing() {
     }
   });
 
-  // Handle navigation to PR1 pricing system
+  // Handle navigation to PR2 pricing system  
   const handleAddPricing = () => {
-    navigate('/pr1-pricing');
+    navigate(`/pr2-pricing?sector=${sector}`);
   };
 
   if (categoriesLoading || pricingLoading) {
