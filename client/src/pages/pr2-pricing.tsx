@@ -30,30 +30,30 @@ import {
   Pickaxe
 } from 'lucide-react';
 
-// Sector definitions copied from repair-pricing.tsx
+// Sector definitions matching upload window colors from image
 const SECTORS = [
-  { id: 'utilities', name: 'Utilities', icon: Building, color: 'text-blue-600' },
-  { id: 'adoption', name: 'Adoption', icon: Building2, color: 'text-green-600' },
-  { id: 'highways', name: 'Highways', icon: Car, color: 'text-orange-600' },
-  { id: 'insurance', name: 'Insurance', icon: ShieldCheck, color: 'text-red-600' },
-  { id: 'construction', name: 'Construction', icon: HardHat, color: 'text-purple-600' },
-  { id: 'domestic', name: 'Domestic', icon: Users, color: 'text-brown-600' }
+  { id: 'utilities', name: 'Utilities', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'insurance', name: 'Insurance', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'construction', name: 'Construction', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'domestic', name: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
-// Standard category options moved from PR2 form
+// Standard category options with no colors, just symbols
 const STANDARD_CATEGORIES = [
-  { id: 'cctv', name: 'CCTV', description: 'Closed-circuit television inspection services', icon: Video, color: 'bg-blue-50 border-blue-200 text-blue-800' },
-  { id: 'van-pack', name: 'Van Pack', description: 'Mobile van-based equipment package', icon: Truck, color: 'bg-green-50 border-green-200 text-green-800' },
-  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves, color: 'bg-cyan-50 border-cyan-200 text-cyan-800' },
-  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection with van pack equipment', icon: Monitor, color: 'bg-purple-50 border-purple-200 text-purple-800' },
-  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video, color: 'bg-indigo-50 border-indigo-200 text-indigo-800' },
-  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precision directional cutting services', icon: Waves, color: 'bg-teal-50 border-teal-200 text-teal-800' },
-  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient temperature pipe lining installation', icon: PaintBucket, color: 'bg-gray-50 border-gray-200 text-gray-800' },
-  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure pipe lining installation', icon: Flame, color: 'bg-red-50 border-red-200 text-red-800' },
-  { id: 'uv-lining', name: 'UV Lining', description: 'Ultraviolet cured pipe lining installation', icon: Sun, color: 'bg-yellow-50 border-yellow-200 text-yellow-800' },
-  { id: 'ims-cutting', name: 'IMS Cutting', description: 'Integrated Management System cutting services', icon: Scissors, color: 'bg-orange-50 border-orange-200 text-orange-800' },
-  { id: 'excavation', name: 'Excavation', description: 'Traditional excavation and repair services', icon: Pickaxe, color: 'bg-amber-50 border-amber-200 text-amber-800' },
-  { id: 'tankering', name: 'Tankering', description: 'Waste removal and tankering services', icon: Truck, color: 'bg-slate-50 border-slate-200 text-slate-800' }
+  { id: 'cctv', name: 'CCTV', description: 'Closed-circuit television inspection services', icon: Video },
+  { id: 'van-pack', name: 'Van Pack', description: 'Mobile van-based equipment package', icon: Truck },
+  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
+  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection with van pack equipment', icon: Monitor },
+  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
+  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precision directional cutting services', icon: Waves },
+  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient temperature pipe lining installation', icon: PaintBucket },
+  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure pipe lining installation', icon: Flame },
+  { id: 'uv-lining', name: 'UV Lining', description: 'Ultraviolet cured pipe lining installation', icon: Sun },
+  { id: 'ims-cutting', name: 'IMS Cutting', description: 'Integrated Management System cutting services', icon: Scissors },
+  { id: 'excavation', name: 'Excavation', description: 'Traditional excavation and repair services', icon: Pickaxe },
+  { id: 'tankering', name: 'Tankering', description: 'Waste removal and tankering services', icon: Truck }
 ];
 
 export default function PR2Pricing() {
@@ -172,11 +172,7 @@ export default function PR2Pricing() {
             variant={sector === s.id ? "default" : "outline"}
             size="sm"
             onClick={() => navigate(`/pr2-pricing?sector=${s.id}`)}
-            className={`flex items-center gap-2 ${
-              sector === s.id 
-                ? `bg-blue-600 hover:bg-blue-700 text-white` 
-                : `${s.color} hover:bg-gray-100`
-            }`}
+            className={`flex items-center gap-2 ${s.color} hover:bg-gray-100`}
           >
             <s.icon className="h-4 w-4" />
             {s.name}
@@ -199,7 +195,7 @@ export default function PR2Pricing() {
 
         {/* Standard Categories Section - Always Visible */}
         <div className="space-y-6">
-          <Card>
+          <Card className={`${currentSector.bgColor} border-2`}>
             <CardHeader>
               <CardTitle>Standard Categories</CardTitle>
               <p className="text-sm text-gray-600">Choose from pre-configured standard categories similar to OPS and PR1 systems</p>
@@ -209,13 +205,13 @@ export default function PR2Pricing() {
                 {STANDARD_CATEGORIES.map((category) => (
                   <Card
                     key={category.id}
-                    className={`cursor-pointer transition-all hover:shadow-md ${category.color} border-2`}
+                    className="cursor-pointer transition-all hover:shadow-md bg-white border-2 border-gray-200"
                     onClick={() => handleCategoryNavigation(category.id)}
                   >
                     <CardContent className="p-4 text-center">
-                      <category.icon className="h-8 w-8 mx-auto mb-2" />
-                      <h3 className="font-medium text-sm mb-1">{category.name}</h3>
-                      <p className="text-xs opacity-75 line-clamp-2">{category.description}</p>
+                      <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
+                      <h3 className="font-medium text-sm mb-1 text-gray-800">{category.name}</h3>
+                      <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                     </CardContent>
                   </Card>
                 ))}
