@@ -265,6 +265,26 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v2.5' to return to this stable checkpoint
 
+## REV V2.6 CHECKPOINT - HORIZONTAL LAYOUT & STACK ORDER PROTECTION (July 13, 2025)
+
+🔒 **PRODUCTION READY - PERFECTED CONFIGURATION LAYOUT:**
+- **Horizontal 3-Column Grid:** Blue Pricing (left) → Gray Math Operations (middle) → Green Quantity (right)
+- **Stack Order Protection System:** Explicit stackOrder tracking prevents user configuration loss during code changes
+- **Math Operations Always Visible:** No longer conditional - permanent middle column with 3 vertical math operators
+- **Enhanced Order Preservation:** Each section maintains separate stackOrder arrays to preserve user-defined sequences
+- **Fallback Safety:** Uses saved order when available, falls back to object keys if no saved order exists
+- **Complete Layout Restructure:** Blue/Green in horizontal grid, Orange/Purple in separate grid below
+- **Responsive Design:** 3-column on large screens, stacked on mobile devices
+
+🔒 **STACK ORDER SYSTEM TECHNICAL IMPLEMENTATION:**
+- **stackOrder Field:** Added to formData with pricing/quantity/minQuantity/additional arrays
+- **Order Persistence:** saveReorder() now stores exact user sequence in stackOrder field
+- **Display Logic:** All sections respect stackOrder when rendering, with object.keys() fallback
+- **Protection Guarantee:** User reordering survives all future code changes and layout modifications
+- **Zero Configuration Loss:** Prevents accidental reset of carefully arranged option sequences
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v2.6' to return to this stable checkpoint
+
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 
 **🏗️ Core Architecture:**
