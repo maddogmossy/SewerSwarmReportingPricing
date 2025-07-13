@@ -2,18 +2,19 @@ import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Settings, Video, Truck, Waves, Monitor } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
-interface CleaningOption {
-  id: number;
+interface CleansingEquipment {
+  id: string;
   name: string;
   description: string;
-  enabled: boolean;
-  configured: boolean;
-  configurationMessage?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  isSelected: boolean;
+  isPrimary?: boolean; // For first/preferred option
 }
 
 interface CleaningOptionsPopoverProps {
