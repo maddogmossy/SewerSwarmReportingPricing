@@ -134,7 +134,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         .insert(pr2Configurations)
         .values({
           userId: "test-user",
-          categoryId: "clean-" + Date.now(),
+          categoryId: req.body.categoryId || "clean-" + Date.now(),
           categoryName: categoryName || 'New Clean Configuration',
           description: description || 'Clean PR2 configuration',
           pricingOptions: pricingOptions || [],
