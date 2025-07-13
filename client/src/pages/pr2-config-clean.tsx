@@ -117,18 +117,14 @@ export default function PR2ConfigClean() {
     },
     onSuccess: (savedConfig) => {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
       if (isEditing) {
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
       }
       
-      // If this was a new configuration, switch to edit mode with the new ID
-      if (!isEditing && savedConfig?.id) {
-        console.log('✅ New config created, switching to edit mode with ID:', savedConfig.id);
-        setLocation(`/pr2-config-clean?sector=${sector}&editId=${savedConfig.id}`);
-      }
-      
-      toast({ title: `Configuration ${isEditing ? 'updated' : 'created'} successfully` });
-      console.log('✅ Configuration saved, form ready for more options');
+      console.log('✅ Configuration saved, returning to PR2 Pricing Configuration');
+      // Always return to PR2 Pricing Configuration page after save
+      setLocation(`/pr2-pricing?sector=${sector}`);
     },
     onError: (error: any) => {
       toast({ 
