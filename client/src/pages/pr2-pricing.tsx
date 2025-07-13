@@ -437,14 +437,11 @@ export default function PR2Pricing() {
                         </div>
                         
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-2">
+                          <div className="flex items-center gap-4 mb-1">
                             <h4 className="text-lg font-semibold text-gray-900">{config.categoryName}</h4>
                             <Badge variant="default" className="text-xs">Active</Badge>
-                          </div>
-                          
-                          <div className="mb-2">
-                            <span className="text-sm font-bold text-gray-800 mr-2">Description:</span>
-                            <span className="text-sm text-gray-700 break-words">{config.description}</span>
+                            <span className="text-sm font-bold text-gray-800">Description:</span>
+                            <span className="text-sm text-gray-700 break-words flex-1">{config.description}</span>
                           </div>
                           
                           <div className="flex items-center gap-6 text-sm text-gray-500">
@@ -455,27 +452,25 @@ export default function PR2Pricing() {
                         </div>
                       </div>
                       
-                      {/* Right section - Action buttons with Archive label */}
-                      <div className="flex items-center gap-4 flex-shrink-0">
+                      {/* Right section - Archive and action buttons */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         <span className="text-sm font-medium text-gray-600">Archive</span>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setLocation(`/pr2-pricing-form?sector=${sector}&edit=${config.id}`)}
-                            className="text-xs px-3"
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => deletePR2Configuration.mutate(config.id)}
-                            className="text-red-600 border-red-200 hover:bg-red-50 px-2"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setLocation(`/pr2-pricing-form?sector=${sector}&edit=${config.id}`)}
+                          className="text-xs px-3"
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deletePR2Configuration.mutate(config.id)}
+                          className="text-red-600 border-red-200 hover:bg-red-50 px-2"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
