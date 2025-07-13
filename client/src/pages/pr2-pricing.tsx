@@ -421,29 +421,42 @@ export default function PR2Pricing() {
           </Card>
         </div>
 
-        {/* Existing Configurations - Only show actual PR2 configurations (not standard categories) */}
+        {/* Existing Configurations - Full width list display */}
         {pr2Configurations.length > 0 && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Existing PR2 Configurations</h3>
-            <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+            <div className="space-y-3">
               {pr2Configurations.map((config: any) => (
-                <Card key={config.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-blue-100 mt-1">
+                <Card key={config.id} className="w-full hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between gap-4">
+                      {/* Left section - Icon and details */}
+                      <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <div className="p-2 rounded-lg bg-blue-100 flex-shrink-0">
                           <Settings className="h-5 w-5 text-blue-600" />
                         </div>
+                        
                         <div className="flex-1 min-w-0">
-                          <CardTitle className="text-lg mb-2">{config.categoryName}</CardTitle>
-                          <div className="mt-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="text-lg font-semibold text-gray-900">{config.categoryName}</h4>
+                            <Badge variant="default" className="text-xs">Active</Badge>
+                          </div>
+                          
+                          <div className="mb-2">
                             <p className="text-sm font-bold text-gray-800 mb-1">Description</p>
                             <p className="text-sm text-gray-600 leading-relaxed break-words">{config.description}</p>
                           </div>
+                          
+                          <div className="flex items-center gap-6 text-sm text-gray-500">
+                            <span>Pricing Options: {Array.isArray(config.pricingOptions) ? config.pricingOptions.length : Object.keys(config.pricingOptions || {}).length}</span>
+                            <span>Quantity Options: {Array.isArray(config.quantityOptions) ? config.quantityOptions.length : Object.keys(config.quantityOptions || {}).length}</span>
+                            <span>Math Operators: {config.mathOperators?.length || 0}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 ml-4">
-                        <Badge variant="default" className="text-xs">Active</Badge>
+                      
+                      {/* Right section - Action buttons */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         <Button
                           size="sm"
                           variant="outline"
@@ -461,13 +474,6 @@ export default function PR2Pricing() {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-4">
-                    <div className="flex items-center gap-6 text-sm text-gray-500">
-                      <span>Pricing Options: {Array.isArray(config.pricingOptions) ? config.pricingOptions.length : Object.keys(config.pricingOptions || {}).length}</span>
-                      <span>Quantity Options: {Array.isArray(config.quantityOptions) ? config.quantityOptions.length : Object.keys(config.quantityOptions || {}).length}</span>
-                      <span>Math Operators: {config.mathOperators?.length || 0}</span>
                     </div>
                   </CardContent>
                 </Card>
