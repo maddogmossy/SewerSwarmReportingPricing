@@ -42,10 +42,9 @@ export default function PR2Pricing() {
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
 
-  // Fetch work categories
-  const { data: workCategories = [], isLoading: categoriesLoading } = useQuery({
-    queryKey: ['/api/work-categories'],
-  });
+  // Legacy work categories removed - PR2 only
+  const workCategories = [];
+  const categoriesLoading = false;
 
   // Fetch PR2 configurations for current sector
   const { data: pr2ConfigurationsRaw = [], isLoading: pr2Loading } = useQuery({
