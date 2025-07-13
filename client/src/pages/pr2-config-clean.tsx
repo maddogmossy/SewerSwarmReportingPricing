@@ -8,16 +8,24 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { ChevronLeft, Save, Calculator, Coins, Package, Gauge, Zap } from 'lucide-react';
+import { ChevronLeft, Save, Calculator, Coins, Package, Gauge, Zap, Plus, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
+
+interface PricingOption {
+  id: string;
+  label: string;
+  enabled: boolean;
+  value: string;
+}
 
 interface CleanFormData {
   categoryName: string;
   description: string;
   
-  // Blue Window - Pricing Options (EMPTY)
-  pricingOptions: Record<string, never>;
+  // Blue Window - Pricing Options
+  pricingOptions: PricingOption[];
   
   // Green Window - Quantity Options (EMPTY)  
   quantityOptions: Record<string, never>;
@@ -30,6 +38,9 @@ interface CleanFormData {
   
   // Math Operations
   mathOperators: string[];
+  
+  // Stack Order
+  pricingStackOrder: string[];
   
   sector: string;
 }
@@ -48,13 +59,21 @@ export default function PR2ConfigClean() {
   const [formData, setFormData] = useState<CleanFormData>({
     categoryName: '',
     description: '',
-    pricingOptions: {},
+    pricingOptions: [],
     quantityOptions: {},
     minQuantityOptions: {},
     additionalOptions: {},
     mathOperators: ['N/A'],
+    pricingStackOrder: [],
     sector
   });
+
+  // Dialog states
+  const [addPricingDialogOpen, setAddPricingDialogOpen] = useState(false);
+  const [editPricingDialogOpen, setEditPricingDialogOpen] = useState(false);
+  const [stackOrderDialogOpen, setStackOrderDialogOpen] = useState(false);
+  const [newPricingLabel, setNewPricingLabel] = useState('');
+  const [editingPricing, setEditingPricing] = useState<PricingOption | null>(null);
 
   // Load existing configuration for editing
   const { data: existingConfig } = useQuery({
@@ -68,11 +87,12 @@ export default function PR2ConfigClean() {
       setFormData({
         categoryName: existingConfig.categoryName || '',
         description: existingConfig.description || '',
-        pricingOptions: {},  // Always start empty
+        pricingOptions: [],  // Always start empty
         quantityOptions: {},  // Always start empty
         minQuantityOptions: {},  // Always start empty
         additionalOptions: {},  // Always start empty
         mathOperators: ['N/A'],
+        pricingStackOrder: [],
         sector
       });
     }
@@ -120,6 +140,108 @@ export default function PR2ConfigClean() {
       newOperators[index] = value;
       return { ...prev, mathOperators: newOperators };
     });
+  };
+
+  // Pricing option management
+  const addPricingOption = () => {
+    if (!newPricingLabel.trim()) return;
+    
+    const newOption: PricingOption = {
+      id: `pricing_${Date.now()}`,
+      label: newPricingLabel.trim(),
+      enabled: false,
+      value: ''
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      pricingOptions: [...prev.pricingOptions, newOption],
+      pricingStackOrder: [...prev.pricingStackOrder, newOption.id]
+    }));
+    
+    setNewPricingLabel('');
+    setAddPricingDialogOpen(false);
+    toast({ title: `Added pricing option: ${newOption.label}` });
+  };
+
+  const editPricingOption = (option: PricingOption) => {
+    setEditingPricing(option);
+    setNewPricingLabel(option.label);
+    setEditPricingDialogOpen(true);
+  };
+
+  const savePricingEdit = () => {
+    if (!editingPricing || !newPricingLabel.trim()) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      pricingOptions: prev.pricingOptions.map(opt => 
+        opt.id === editingPricing.id 
+          ? { ...opt, label: newPricingLabel.trim() }
+          : opt
+      )
+    }));
+    
+    setEditingPricing(null);
+    setNewPricingLabel('');
+    setEditPricingDialogOpen(false);
+    toast({ title: `Updated pricing option: ${newPricingLabel.trim()}` });
+  };
+
+  const deletePricingOption = (optionId: string) => {
+    const option = formData.pricingOptions.find(opt => opt.id === optionId);
+    if (!option) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      pricingOptions: prev.pricingOptions.filter(opt => opt.id !== optionId),
+      pricingStackOrder: prev.pricingStackOrder.filter(id => id !== optionId)
+    }));
+    
+    toast({ title: `Deleted pricing option: ${option.label}` });
+  };
+
+  const updatePricingOption = (optionId: string, field: 'enabled' | 'value', value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      pricingOptions: prev.pricingOptions.map(opt =>
+        opt.id === optionId ? { ...opt, [field]: value } : opt
+      )
+    }));
+  };
+
+  const moveOptionInStack = (optionId: string, direction: 'up' | 'down') => {
+    setFormData(prev => {
+      const currentOrder = [...prev.pricingStackOrder];
+      const currentIndex = currentOrder.indexOf(optionId);
+      
+      if (currentIndex === -1) return prev;
+      if (direction === 'up' && currentIndex === 0) return prev;
+      if (direction === 'down' && currentIndex === currentOrder.length - 1) return prev;
+      
+      const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+      [currentOrder[currentIndex], currentOrder[newIndex]] = [currentOrder[newIndex], currentOrder[currentIndex]];
+      
+      return { ...prev, pricingStackOrder: currentOrder };
+    });
+  };
+
+  // Get ordered pricing options for display
+  const getOrderedPricingOptions = () => {
+    if (formData.pricingStackOrder.length === 0) {
+      return formData.pricingOptions;
+    }
+    
+    const ordered = formData.pricingStackOrder
+      .map(id => formData.pricingOptions.find(opt => opt.id === id))
+      .filter(Boolean) as PricingOption[];
+    
+    // Add any new options not in stack order yet
+    const missingOptions = formData.pricingOptions.filter(
+      opt => !formData.pricingStackOrder.includes(opt.id)
+    );
+    
+    return [...ordered, ...missingOptions];
   };
 
   return (
@@ -174,12 +296,166 @@ export default function PR2ConfigClean() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                <p>Empty - Ready for clean options</p>
-                <p className="text-sm">Tell me what to add here</p>
+              {/* Action Buttons */}
+              <div className="flex gap-2 mb-4">
+                <Dialog open={addPricingDialogOpen} onOpenChange={setAddPricingDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent aria-describedby="add-pricing-description">
+                    <DialogHeader>
+                      <DialogTitle>Add Pricing Option</DialogTitle>
+                    </DialogHeader>
+                    <div id="add-pricing-description" className="space-y-4">
+                      <div>
+                        <Label htmlFor="newPricingLabel">Option Name</Label>
+                        <Input
+                          id="newPricingLabel"
+                          value={newPricingLabel}
+                          onChange={(e) => setNewPricingLabel(e.target.value)}
+                          placeholder="Enter pricing option name"
+                          autoFocus
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setAddPricingDialogOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={addPricingOption}
+                          disabled={!newPricingLabel.trim()}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          Add Option
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                {formData.pricingOptions.length > 1 && (
+                  <Dialog open={stackOrderDialogOpen} onOpenChange={setStackOrderDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline" className="border-blue-300 text-blue-600">
+                        <ArrowUpDown className="w-4 h-4 mr-1" />
+                        Stack Order
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent aria-describedby="stack-order-description">
+                      <DialogHeader>
+                        <DialogTitle>Reorder Pricing Options</DialogTitle>
+                      </DialogHeader>
+                      <div id="stack-order-description" className="space-y-2">
+                        {getOrderedPricingOptions().map((option, index) => (
+                          <div key={option.id} className="flex items-center gap-2 p-2 bg-blue-50 rounded">
+                            <span className="flex-1">{option.label}</span>
+                            <div className="flex gap-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => moveOptionInStack(option.id, 'up')}
+                                disabled={index === 0}
+                              >
+                                <ArrowUp className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => moveOptionInStack(option.id, 'down')}
+                                disabled={index === getOrderedPricingOptions().length - 1}
+                              >
+                                <ArrowDown className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
+
+              {/* Pricing Options List */}
+              {formData.pricingOptions.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No pricing options added</p>
+                  <p className="text-sm">Click "Add" to create your first option</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {getOrderedPricingOptions().map((option) => (
+                    <div key={option.id} className="bg-white p-3 rounded border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Checkbox
+                          checked={option.enabled}
+                          onCheckedChange={(checked) => updatePricingOption(option.id, 'enabled', checked)}
+                        />
+                        <span className="flex-1 font-medium">{option.label}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => editPricingOption(option)}
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deletePricingOption(option.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      {option.enabled && (
+                        <Input
+                          value={option.value}
+                          onChange={(e) => updatePricingOption(option.id, 'value', e.target.value)}
+                          placeholder="Enter value"
+                          className="text-sm"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
+
+          {/* Edit Pricing Dialog */}
+          <Dialog open={editPricingDialogOpen} onOpenChange={setEditPricingDialogOpen}>
+            <DialogContent aria-describedby="edit-pricing-description">
+              <DialogHeader>
+                <DialogTitle>Edit Pricing Option</DialogTitle>
+              </DialogHeader>
+              <div id="edit-pricing-description" className="space-y-4">
+                <div>
+                  <Label htmlFor="editPricingLabel">Option Name</Label>
+                  <Input
+                    id="editPricingLabel"
+                    value={newPricingLabel}
+                    onChange={(e) => setNewPricingLabel(e.target.value)}
+                    placeholder="Enter pricing option name"
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setEditPricingDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={savePricingEdit}
+                    disabled={!newPricingLabel.trim()}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Math Operations - Middle Column */}
           <Card className="bg-gray-50">
