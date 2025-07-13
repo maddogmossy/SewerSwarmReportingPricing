@@ -399,32 +399,33 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v3.5' to return to this stable checkpoint
 
-## REV V3.7 CHECKPOINT - LINE DEVIATION FILTERING LOCKED (July 13, 2025)
+## REV V3.8 CHECKPOINT - COMPLETE LINE DEVIATION FILTERING LOCKED (July 13, 2025)
 
-🔒 **PRODUCTION READY - ENHANCED OBSERVATIONS WITH BUSINESS RULE FILTERING:**
+🔒 **PRODUCTION READY - CLEAN OBSERVATIONS DISPLAY WITH COMPLETE LINE DEVIATION REMOVAL:**
 - **Dynamic List View**: Observations column displays as properly formatted list with bullet points
 - **Intelligent Parsing**: Splits observations by complete sentences (periods + capital letters) instead of commas
-- **Line Deviation Filtering**: Line deviation observations only show when section involves "patch lining", "patch", or "relining" operations
-- **Business Rule Logic**: Filters out irrelevant line deviations for cleaning, inspection, and full-liner operations to reduce clutter
-- **Smart Clean Display**: Shows "No service or structural defect found" when all observations are filtered out
-- **Complete Observation Integrity**: Each observation stays intact as one list item with all meterage references
+- **Complete Line Deviation Filtering**: ALL line deviation observations hidden from display regardless of recommendation type
+- **Clean Service Focus**: Displays only service and structural defects relevant to cleaning and repair operations
+- **Smart Clean Display**: Shows "No service or structural defect found" when all observations are filtered out or only line deviations exist
+- **Complete Observation Integrity**: Each remaining observation stays intact as one list item with all meterage references
 - **Full Column Width Utilization**: Uses `w-full` class to dynamically expand/shrink with available column space
 - **Professional Formatting**: Blue bullet points (•) with proper spacing and text wrapping for enhanced readability
 
-🔒 **LINE DEVIATION FILTERING EXAMPLES:**
-- **Patch Lining Sections**: Line deviations shown (relevant for alignment during patching)
-- **Cleaning Sections**: Line deviations hidden (not relevant for cleaning operations)
-- **Full Liner Sections**: Line deviations hidden (full liner covers alignment issues)
-- **Clean Sections**: Line deviations hidden (no repair work needed)
+🔒 **FILTERING BEHAVIOR:**
+- **All Sections**: Line deviations completely hidden (reduces clutter for service-focused workflows)
+- **Multiple Observations**: Line deviation entries filtered from bulleted lists
+- **Single Line Deviations**: Replaced with "No service or structural defect found" message
+- **Service Defects**: Deposits, water levels, and structural defects remain visible
+- **Clean Display**: Only shows observations relevant to cleaning and repair operations
 
 🔒 **TECHNICAL IMPLEMENTATION:**
 - **Split Pattern**: Uses `/\. (?=[A-Z])/` regex to split on periods followed by capital letters
-- **Filtering Logic**: Checks recommendations for "patch lining", "patch", or "relining" keywords
-- **Dual Filtering**: Handles both single observations and multiple observation lists
+- **Universal Filtering**: Removes all observations containing "line deviates" or "line deviation"
+- **Dual Path Handling**: Filters both single observations and multiple observation arrays
 - **Responsive Design**: Full column width with proper text wrapping and break-words handling
 - **List Styling**: `space-y-1`, `flex items-start`, and `break-words` for optimal readability
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v3.7' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v3.8' to return to this stable checkpoint
 
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 
