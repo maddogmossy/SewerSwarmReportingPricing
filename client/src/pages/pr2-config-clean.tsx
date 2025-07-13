@@ -517,6 +517,28 @@ export default function PR2ConfigClean() {
     });
   };
 
+  // Auto-generate description based on enabled options
+  const generateAutoDescription = () => {
+    const enabledPricing = formData.pricingOptions.filter(opt => opt.enabled).map(opt => opt.label);
+    const enabledQuantity = formData.quantityOptions.filter(opt => opt.enabled).map(opt => opt.label);
+    const enabledMinQuantity = formData.minQuantityOptions.filter(opt => opt.enabled).map(opt => opt.label);
+    const enabledRanges = formData.rangeOptions.filter(opt => opt.enabled).map(opt => opt.label);
+    
+    const allOptions = [...enabledPricing, ...enabledQuantity, ...enabledMinQuantity, ...enabledRanges];
+    
+    if (allOptions.length === 0) {
+      return 'CCTV price configuration';
+    }
+    
+    return `CCTV configuration with ${allOptions.join(', ')}`;
+  };
+
+  // Update description when options change
+  React.useEffect(() => {
+    const autoDesc = generateAutoDescription();
+    setFormData(prev => ({ ...prev, description: autoDesc }));
+  }, [formData.pricingOptions, formData.quantityOptions, formData.minQuantityOptions, formData.rangeOptions]);
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
