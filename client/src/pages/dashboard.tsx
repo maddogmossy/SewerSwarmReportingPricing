@@ -1543,81 +1543,34 @@ export default function Dashboard() {
     });
   };
 
-  // Calculate actual costs based on user pricing configuration
+  // Calculate actual costs based on PR1 pricing configuration
   const calculateSectionCost = (section: any) => {
     // Check if section has defects requiring repair
     const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
     const noRepairsNeeded = section.recommendations === "None required" || section.recommendations === "" || !section.recommendations;
-    
-
     
     // If no defects or no repairs needed, cost is £0.00
     if (!hasDefects || noRepairsNeeded) {
       return "£0.00";
     }
 
-    // Section has defects and requires repairs - check pricing availability
-
-    // For sector reports, require sector-ONLY pricing (not mixed sectors)
-    // Determine the current report sector - this would come from the actual report data
-    const reportSector = 'utilities'; // This should be dynamically determined from the report
+    // Section has defects and requires repairs - use PR1 calculations
+    const pr1Cost = calculateAutoCost(section);
     
-    const sectorPricing = userPricing.filter((pricing: any) => 
-      pricing.sectors && 
-      pricing.sectors.includes(reportSector) &&
-      pricing.sectors.length === 1 && 
-      pricing.sectors[0] === reportSector
+    if (pr1Cost && pr1Cost.cost) {
+      return `£${pr1Cost.cost.toFixed(2)}`;
+    }
+
+    // If no PR1 configuration, show warning triangle
+    return (
+      <div className="text-amber-600 font-medium text-sm flex items-center gap-1">
+        <span>⚠️</span>
+        <div>
+          <div>Configure PR1</div>
+          <div>pricing first</div>
+        </div>
+      </div>
     );
-
-    if (!sectorPricing.length || !equipmentTypes.length) {
-      return (
-        <div className="text-amber-600 font-medium text-sm">
-          <div>Configure {reportSector}</div>
-          <div>sector pricing first</div>
-        </div>
-      );
-    }
-
-    // Check if there are any completed sector pricing configurations
-    const validSectorPricing = sectorPricing.filter((pricing: any) => 
-      pricing.costPerDay && 
-      parseFloat(pricing.costPerDay) > 0 &&
-      pricing.sectionsPerDay &&
-      parseFloat(pricing.sectionsPerDay) > 0
-    );
-
-    if (!validSectorPricing.length) {
-      return (
-        <div className="text-amber-600 font-medium text-sm">
-          <div>Configure {reportSector}</div>
-          <div>sector pricing first</div>
-        </div>
-      );
-    }
-
-    // Find appropriate sector equipment pricing based on section length
-    const sectionLength = parseFloat(section.totalLength) || 0;
-    const appropriatePricing = validSectorPricing.find((pricing: any) => {
-      const minRange = parseFloat(pricing.meterageRangeMin) || 0;
-      const maxRange = parseFloat(pricing.meterageRangeMax) || 100;
-      return sectionLength >= minRange && sectionLength <= maxRange;
-    });
-
-    if (!appropriatePricing) {
-      return (
-        <div className="text-amber-600 font-medium text-sm">
-          <div>Configure {reportSector}</div>
-          <div>sector pricing first</div>
-        </div>
-      );
-    }
-
-    // Calculate based on daily rate and sections per day
-    const dailyRate = parseFloat(appropriatePricing.costPerDay) || 0;
-    const sectionsPerDay = parseFloat(appropriatePricing.sectionsPerDay) || 1;
-    const costPerSection = dailyRate / sectionsPerDay;
-    
-    return `£${costPerSection.toFixed(2)}`;
   };
 
   // Cost calculation function for enhanced table
