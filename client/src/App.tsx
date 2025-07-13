@@ -15,7 +15,6 @@ import SectorPricing from "@/pages/sector-pricing";
 import SurveyPricing from "@/pages/survey-pricing";
 import CleansingPricing from "@/pages/cleansing-pricing";
 import JettingPricing from "@/pages/jetting-pricing";
-import RepairPricing from "@/pages/repair-pricing";
 import SimplePricing from "@/pages/simple-pricing";
 
 import PR2Pricing from "@/pages/pr2-pricing";
@@ -67,13 +66,9 @@ function Router() {
           <Route path="/pdf-reader" component={PDFReader} />
           <Route path="/pricing" component={Pricing} />
           <Route path="/sector-pricing" component={SectorPricing} />
-          <Route path="/sector-pricing/:sector" component={RepairPricing} />
-
           <Route path="/pricing/surveys" component={SurveyPricing} />
           <Route path="/pricing/cleansing" component={CleansingPricing} />
           <Route path="/pricing/jetting" component={JettingPricing} />
-          <Route path="/repair-pricing/:sector" component={RepairPricing} />
-          <Route path="/repair-pricing" component={RepairPricing} />
           <Route path="/simple-pricing" component={SimplePricing} />
 
           <Route path="/pr2-pricing" component={PR2Pricing} />
