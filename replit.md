@@ -286,30 +286,37 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v2.7' to return to this stable checkpoint
 
-## REV V2.8 CHECKPOINT - COMPLETE THREE-WINDOW SYSTEM (July 13, 2025)
+## REV V2.9 CHECKPOINT - COMPLETE EDIT FUNCTIONALITY (July 13, 2025)
 
-🔒 **PRODUCTION READY - ALL THREE COLORED WINDOWS OPERATIONAL:**
-- **Blue Window (Pricing):** Add/delete/edit functionality with array-based storage 
-- **Green Window (Quantity):** Complete Add/delete functionality with checkbox enable/disable and value inputs
-- **Orange Window (Min Quantity):** Complete Add/delete functionality with checkbox enable/disable and value inputs
-- **Silent Operations:** All three windows operate without toast notifications for clean user experience
+🔒 **PRODUCTION READY - FULL EDIT CAPABILITY ACROSS ALL WINDOWS:**
+- **Blue Window (Pricing):** Complete Add/delete/edit functionality with array-based storage 
+- **Green Window (Quantity):** Complete Add/delete/edit functionality with green-styled edit dialogs
+- **Orange Window (Min Quantity):** Complete Add/delete/edit functionality with orange-styled edit dialogs
+- **Edit Dialog System:** All three windows have identical edit functionality with color-coded dialogs
+- **Silent Operations:** All operations proceed without toast notifications for clean user experience
 - **Stack Order Support:** All three windows maintain proper order tracking (pricingStackOrder, quantityStackOrder, minQuantityStackOrder)
-- **Edit Mode Perfect:** System loads all three window configurations correctly from database
 
-🔒 **BACKEND ARRAY SUPPORT IMPLEMENTED:**
-- **Clean Routes Updated:** `/api/pr2-clean` routes handle arrays for quantityOptions and minQuantityOptions
-- **Database Storage:** All three option types stored as JSON arrays with proper structure
-- **Form Persistence:** Add options → Save → Return to main page → All windows reload with saved options
-- **Data Validation:** Proper handling of array vs object format conversion during config loading
+🔒 **COMPLETE EDIT DIALOG IMPLEMENTATION:**
+- **Edit Functions Added:** editQuantityOption() and editMinQuantityOption() with proper state management
+- **Save Functions Added:** saveQuantityEdit() and saveMinQuantityEdit() with label updating logic
+- **Color-Coded Styling:** Green dialogs for quantity options, orange dialogs for min quantity options
+- **Form State Management:** Proper loading of existing labels into edit forms with setNewQuantityLabel() and setNewMinQuantityLabel()
+- **Dialog Synchronization:** Edit dialogs open with current labels and save changes back to main form
 
-🔒 **USER-TESTED FUNCTIONALITY:**
-- **CCTV Configuration (ID 29):** Successfully tested with multiple options in all three windows
-- **Blue Window:** 2 pricing options (test 1, test 3) - delete functionality confirmed working
-- **Green Window:** 2 quantity options (test 1, test 2) - add functionality confirmed working  
-- **Orange Window:** 2 min quantity options (test 1, test 2) - add functionality confirmed working
-- **Save Workflow:** Silent save → return to main page → configuration persists correctly
+🔒 **USER-TESTED FUNCTIONALITY CONFIRMED:**
+- **CCTV Configuration (ID 29):** Successfully tested edit functionality in all three windows
+- **Blue Window:** Edit functionality working (existing from V2.8)
+- **Green Window:** "test 1" successfully renamed to "Section Complete per shift" - edit confirmed working
+- **Orange Window:** "test 1" successfully renamed to "Min Number Per Shift" - edit confirmed working
+- **Save Workflow:** Edit → Save → Return to main page → All changes persist correctly in database
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v2.8' to return to this stable checkpoint
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Edit Dialog Components:** Added editQuantityDialogOpen and editMinQuantityDialogOpen state management
+- **Edit Button Integration:** Pencil icons in all three windows trigger appropriate edit dialogs
+- **Backend Persistence:** All edits save correctly through PUT /api/pr2-clean routes
+- **Data Integrity:** Array-based structure maintained with proper ID-based option updates
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v2.9' to return to this stable checkpoint
 
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 
