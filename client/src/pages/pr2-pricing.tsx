@@ -75,12 +75,7 @@ export default function PR2Pricing() {
       console.log(`Updating sector from ${sector} to ${newSector}`);
       setSector(newSector);
     }
-    
-    // Force navigation to include sector parameter if missing
-    if (!location.includes('?sector=')) {
-      window.location.href = `/pr2-pricing?sector=utilities`;
-    }
-  }, [location, navigate, sector]);
+  }, [location, sector]);
   
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
@@ -190,8 +185,9 @@ export default function PR2Pricing() {
             size="sm"
             onClick={() => {
               console.log(`Navigating to sector: ${s.id}`);
-              // Use window.location to force URL change with query parameters
-              window.location.href = `/pr2-pricing?sector=${s.id}`;
+              // Update sector state directly and use navigate with replace
+              setSector(s.id);
+              navigate(`/pr2-pricing?sector=${s.id}`, { replace: true });
             }}
             className={`flex items-center gap-2 ${s.color} hover:bg-gray-100`}
           >
