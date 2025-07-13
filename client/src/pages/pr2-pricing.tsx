@@ -67,7 +67,10 @@ export default function PR2Pricing() {
   console.log('Current location:', location);
   console.log('Current sector:', sector);
   
-  // Remove the useEffect for now to avoid errors
+  // Force navigation to include sector parameter if missing
+  if (!location.includes('?sector=')) {
+    navigate(`/pr2-pricing?sector=utilities`);
+  }
   
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
@@ -169,7 +172,7 @@ export default function PR2Pricing() {
         {SECTORS.map((s) => (
           <Button
             key={s.id}
-            variant={sector === s.id ? "default" : "outline"}
+            variant="outline"
             size="sm"
             onClick={() => navigate(`/pr2-pricing?sector=${s.id}`)}
             className={`flex items-center gap-2 ${s.color} hover:bg-gray-100`}
