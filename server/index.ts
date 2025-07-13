@@ -1,5 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes-rev-v1";
+import { registerRoutes } from "./routes-pr2-clean";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();

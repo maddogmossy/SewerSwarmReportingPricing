@@ -1,0 +1,87 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+Testing sector standards import...
+getSectorStandards function: function
+Test utilities standards: SUCCESS
+Standards count: 6
+6:31:28 PM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+6:31:35 PM [express] GET /api/auth/user 304 in 3ms :: {"id":"test-user","email":"test@example.com","…
+6:31:36 PM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+6:31:36 PM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+6:31:36 PM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+6:31:36 PM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+6:31:36 PM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+✅ Loading 5 PR2 configurations from database
+6:31:54 PM [express] GET /api/pr2-pricing 304 in 267ms :: [{"id":10,"userId":"test-user","categoryId…
+✅ Loading 1 standard categories from database
+6:31:54 PM [express] GET /api/standard-categories 304 in 260ms :: [{"id":1,"categoryId":"test-catego…
+📝 PR2 POST request body: {
+  categoryName: 'CCTV',
+  description: 'Closed-circuit television inspection services',
+  pricingOptions: {
+    dayRate: { enabled: false, value: '' },
+    hourlyRate: { enabled: false, value: '' },
+    setupRate: { enabled: false, value: '' },
+    meterageRate: { enabled: false, value: '' }
+  },
+  quantityOptions: {
+    runsPerShift: { enabled: false, value: '' },
+    numberPerShift: { enabled: false, value: '' },
+    metersPerShift: { enabled: false, value: '' },
+    repeatFree: { enabled: false, value: '' }
+  },
+  minQuantityOptions: {
+    minUnitsPerShift: { enabled: false, value: '' },
+    minMetersPerShift: { enabled: false, value: '' },
+    minInspectionsPerShift: { enabled: false, value: '' },
+    minSetupCount: { enabled: false, value: '' }
+  },
+  additionalOptions: {
+    includeDepth: { enabled: false, value: '' },
+    includeTotalLength: { enabled: false, value: '' },
+    includeTimeStamp: { enabled: false, value: '' },
+    includeWeather: { enabled: false, value: '' }
+  },
+  mathOperators: [ 'N/A' ],
+  stackOrder: { pricing: [], quantity: [], minQuantity: [], additional: [] },
+  sector: 'utilities'
+}
+✅ Created PR2 configuration: {
+  id: 21,
+  userId: 'test-user',
+  categoryId: 'cleanse-survey',
+  categoryName: 'CCTV',
+  description: 'Closed-circuit television inspection services',
+  pricingOptions: {
+    dayRate: { value: '', enabled: false },
+    setupRate: { value: '', enabled: false },
+    hourlyRate: { value: '', enabled: false },
+    meterageRate: { value: '', enabled: false }
+  },
+  quantityOptions: {
+    repeatFree: { value: '', enabled: false },
+    runsPerShift: { value: '', enabled: false },
+    metersPerShift: { value: '', enabled: false },
+    numberPerShift: { value: '', enabled: false }
+  },
+  minQuantityOptions: {
+    minSetupCount: { value: '', enabled: false },
+    minUnitsPerShift: { value: '', enabled: false },
+    minMetersPerShift: { value: '', enabled: false },
+    minInspectionsPerShift: { value: '', enabled: false }
+  },
+  rangeOptions: [],
+  rangeValues: {},
+  mathOperators: [ 'N/A' ],
+  sector: 'utilities',
+  isActive: true,
+  createdAt: 2025-07-13T18:32:06.740Z,
+  updatedAt: 2025-07-13T18:32:06.740Z
+}
+6:32:06 PM [express] POST /api/pr2-pricing 200 in 51ms :: {"id":21,"userId":"test-user","categoryId"…
+✅ Loading 6 PR2 configurations from database
+6:32:06 PM [express] GET /api/pr2-pricing 200 in 33ms :: [{"id":10,"userId":"test-user","categoryId"…
