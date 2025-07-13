@@ -71,11 +71,64 @@ export default function PR1Pricing() {
   });
 
   const handleSave = () => {
-    saveMutation.mutate({
-      pricingConfig,
-      mathOperators,
-      timestamp: new Date().toISOString()
-    });
+    // Transform pricingConfig to match backend expectations
+    const pricingOptions = Object.entries(pricingConfig)
+      .filter(([key, config]) => 
+        ['dayRate', 'hourlyRate', 'setupRate', 'meterageRate'].includes(key) && config.enabled
+      )
+      .map(([key, config]) => ({ 
+        id: key, 
+        label: key,
+        value: config.value 
+      }));
+
+    const quantityOptions = Object.entries(pricingConfig)
+      .filter(([key, config]) => 
+        ['runsPerShift', 'metersPerShift', 'sectionsPerDay'].includes(key) && config.enabled
+      )
+      .map(([key, config]) => ({ 
+        id: key, 
+        label: key,
+        value: config.value 
+      }));
+
+    const minQuantityOptions = Object.entries(pricingConfig)
+      .filter(([key, config]) => 
+        ['minRuns', 'minMeters', 'minSetup'].includes(key) && config.enabled
+      )
+      .map(([key, config]) => ({ 
+        id: key, 
+        label: key,
+        value: config.value 
+      }));
+
+    const rangeOptions = Object.entries(pricingConfig)
+      .filter(([key, config]) => 
+        ['pipeSize', 'percentage', 'includeDepth', 'includeTotalLength'].includes(key) && config.enabled
+      )
+      .map(([key, config]) => ({ 
+        id: key, 
+        label: key,
+        min: config.min,
+        max: config.max 
+      }));
+
+    const configurationData = {
+      categoryId: 'pr1-config-' + Date.now(),
+      categoryName: 'PR1 Configuration',
+      description: 'PR1 pricing configuration with dynamic calculations',
+      pricingOptions,
+      quantityOptions,
+      minQuantityOptions,
+      rangeOptions,
+      rangeValues: {},
+      pricingValues: {},
+      mathOperators: Object.values(mathOperators),
+      sector: 'utilities'
+    };
+
+    console.log('Saving PR1 Configuration:', configurationData);
+    saveMutation.mutate(configurationData);
   };
 
   const updateConfig = (key: string, field: 'enabled' | 'value' | 'min' | 'max', value: any) => {
