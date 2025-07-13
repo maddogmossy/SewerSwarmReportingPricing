@@ -399,6 +399,30 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v3.5' to return to this stable checkpoint
 
+## REV V3.6 CHECKPOINT - DYNAMIC OBSERVATIONS LIST VIEW LOCKED (July 13, 2025)
+
+🔒 **PRODUCTION READY - ENHANCED OBSERVATIONS DISPLAY:**
+- **Dynamic List View**: Observations column now displays as properly formatted list with bullet points
+- **Intelligent Parsing**: Splits observations by complete sentences (periods + capital letters) instead of commas
+- **Complete Observation Integrity**: Each observation stays intact as one list item (e.g., "Settled deposits, fine, 5% cross-sectional area loss at 13.27m, 16.63m, 17.73m")
+- **Full Column Width Utilization**: Uses `w-full` class to dynamically expand/shrink with available column space
+- **Professional Formatting**: Blue bullet points (•) with proper spacing and text wrapping for enhanced readability
+- **Smart Detection**: Automatically detects single vs multiple observations and applies appropriate formatting
+
+🔒 **OBSERVATIONS DISPLAY EXAMPLES:**
+- **Multiple Observations**: Displays as bulleted list with each complete observation on separate line
+- **Single Observations**: Displays normally without unnecessary list formatting
+- **Clean Sections**: "No service or structural defect found" displays without list formatting
+- **Dynamic Width**: Expands when other columns are hidden, shrinks when more columns are visible
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Split Pattern**: Uses `/\. (?=[A-Z])/` regex to split on periods followed by capital letters
+- **Preservation Logic**: Maintains complete observation descriptions with all meterage references
+- **Responsive Design**: Full column width with proper text wrapping and break-words handling
+- **List Styling**: `space-y-1`, `flex items-start`, and `break-words` for optimal readability
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v3.6' to return to this stable checkpoint
+
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 
 **🏗️ Core Architecture:**
