@@ -605,9 +605,11 @@ export default function Dashboard() {
           
           // Filter out "Line deviates" observations unless section involves lining or patching
           const hasLiningOrPatching = section.recommendations && 
-            (section.recommendations.toLowerCase().includes('lining') || 
+            (section.recommendations.toLowerCase().includes('patch lining') || 
              section.recommendations.toLowerCase().includes('patch') ||
              section.recommendations.toLowerCase().includes('relining'));
+          
+
           
           if (!hasLiningOrPatching) {
             observations = observations.filter(obs => 
@@ -647,7 +649,7 @@ export default function Dashboard() {
         
         if (isLineDeviation) {
           const hasLiningOrPatching = section.recommendations && 
-            (section.recommendations.toLowerCase().includes('lining') || 
+            (section.recommendations.toLowerCase().includes('patch lining') || 
              section.recommendations.toLowerCase().includes('patch') ||
              section.recommendations.toLowerCase().includes('relining'));
           
