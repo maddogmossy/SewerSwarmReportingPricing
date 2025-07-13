@@ -425,6 +425,25 @@ export const teamBillingRecords = pgTable("team_billing_records", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// PR2 Pricing System - Completely separate from legacy ops system
+export const pr2Configurations = pgTable("pr2_configurations", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  categoryId: varchar("category_id").notNull(),
+  categoryName: varchar("category_name").notNull(),
+  description: text("description"),
+  pricingOptions: jsonb("pricing_options").default('[]'), // Array of {id, label, value}
+  quantityOptions: jsonb("quantity_options").default('[]'), // Array of {id, label, value}
+  minQuantityOptions: jsonb("min_quantity_options").default('[]'),
+  rangeOptions: jsonb("range_options").default('[]'),
+  rangeValues: jsonb("range_values").default('{}'),
+  mathOperators: jsonb("math_operators").default('[]'), // Array of operator strings
+  sector: varchar("sector").notNull().default('utilities'),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type FileUpload = typeof fileUploads.$inferSelect;
@@ -468,6 +487,8 @@ export type TeamInvitation = typeof teamInvitations.$inferSelect;
 export type InsertTeamInvitation = typeof teamInvitations.$inferInsert;
 export type TeamBillingRecord = typeof teamBillingRecords.$inferSelect;
 export type InsertTeamBillingRecord = typeof teamBillingRecords.$inferInsert;
+export type Pr2Configuration = typeof pr2Configurations.$inferSelect;
+export type InsertPr2Configuration = typeof pr2Configurations.$inferInsert;
 
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,

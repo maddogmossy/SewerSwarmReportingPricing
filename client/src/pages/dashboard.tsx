@@ -1107,54 +1107,54 @@ export default function Dashboard() {
     return { hasApproved: false };
   };
 
-  // Fetch PR1 configurations from dedicated PR1 database table
-  const { data: pr1Configurations = [], isLoading: pr1Loading } = useQuery<any[]>({
-    queryKey: ['/api/pr1-pricing'],
+  // Fetch PR2 configurations from dedicated PR2 database table (completely separate from legacy)
+  const { data: pr2Configurations = [], isLoading: pr2Loading } = useQuery<any[]>({
+    queryKey: ['/api/pr2-pricing'],
     queryParams: { sector: 'utilities' },
     staleTime: 5 * 60 * 1000,
   });
 
-  // Function to calculate auto-populated cost for defective sections using PR1 configurations
+  // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {
     console.log('🔍 calculateAutoCost called for section:', section.itemNo);
-    console.log('📊 PR1 configurations:', pr1Configurations);
+    console.log('📊 PR2 configurations:', pr2Configurations);
     
-    // If no PR1 configurations exist, return null to show warning triangles
-    if (!pr1Configurations || pr1Configurations.length === 0) {
-      console.log('❌ No PR1 configurations found');
+    // If no PR2 configurations exist, return null to show warning triangles
+    if (!pr2Configurations || pr2Configurations.length === 0) {
+      console.log('❌ No PR2 configurations found');
       return null;
     }
 
-    // Find a valid PR1 configuration
-    const pr1Config = pr1Configurations[0]; // Use the first available config
-    console.log('🎯 Using PR1 config:', pr1Config);
+    // Find a valid PR2 configuration
+    const pr2Config = pr2Configurations[0]; // Use the first available config
+    console.log('🎯 Using PR2 config:', pr2Config);
     
-    if (!pr1Config || (!pr1Config.pricingOptions && !pr1Config.quantityOptions)) {
-      console.log('❌ PR1 config has no pricing or quantity options:', pr1Config);
+    if (!pr2Config || (!pr2Config.pricingOptions && !pr2Config.quantityOptions)) {
+      console.log('❌ PR2 config has no pricing or quantity options:', pr2Config);
       return null;
     }
 
     try {
-      console.log('💰 PR1 full structure:', {
-        pricingOptions: pr1Config.pricingOptions,
-        quantityOptions: pr1Config.quantityOptions,
-        pricingValues: pr1Config.pricingValues
+      console.log('💰 PR2 full structure:', {
+        pricingOptions: pr2Config.pricingOptions,
+        quantityOptions: pr2Config.quantityOptions,
+        pricingValues: pr2Config.pricingValues
       });
       
-      // Extract values from PR1 configuration arrays
+      // Extract values from PR2 configuration arrays
       const getPricingValue = (options: any[], id: string) => {
         const option = options?.find(opt => opt.id === id);
         return option ? parseFloat(option.value) || 0 : 0;
       };
       
-      const dayRate = getPricingValue(pr1Config.pricingOptions, 'dayRate');
-      const hourlyRate = getPricingValue(pr1Config.pricingOptions, 'hourlyRate');
-      const setupRate = getPricingValue(pr1Config.pricingOptions, 'setupRate');
-      const perMeterRate = getPricingValue(pr1Config.pricingOptions, 'perMeterRate');
+      const dayRate = getPricingValue(pr2Config.pricingOptions, 'dayRate');
+      const hourlyRate = getPricingValue(pr2Config.pricingOptions, 'hourlyRate');
+      const setupRate = getPricingValue(pr2Config.pricingOptions, 'setupRate');
+      const perMeterRate = getPricingValue(pr2Config.pricingOptions, 'perMeterRate');
       
-      const runsPerShift = getPricingValue(pr1Config.quantityOptions, 'runsPerShift');
-      const metersPerShift = getPricingValue(pr1Config.quantityOptions, 'metersPerShift');
-      const sectionsPerDay = getPricingValue(pr1Config.quantityOptions, 'sectionsPerDay');
+      const runsPerShift = getPricingValue(pr2Config.quantityOptions, 'runsPerShift');
+      const metersPerShift = getPricingValue(pr2Config.quantityOptions, 'metersPerShift');
+      const sectionsPerDay = getPricingValue(pr2Config.quantityOptions, 'sectionsPerDay');
       
       console.log('📝 Extracted values:', { dayRate, hourlyRate, setupRate, perMeterRate, runsPerShift, metersPerShift, sectionsPerDay });
 
@@ -1177,15 +1177,15 @@ export default function Dashboard() {
 
       // Return calculated cost if we have a valid amount
       if (baseCost > 0) {
-        console.log('✅ PR1 calculation successful:', { baseCost, dayRate, runsPerShift });
+        console.log('✅ PR2 calculation successful:', { baseCost, dayRate, runsPerShift });
         return {
           cost: baseCost,
           currency: '£',
-          method: 'PR1 Configuration',
+          method: 'PR2 Configuration',
           status: 'calculated'
         };
       } else {
-        console.log('❌ PR1 calculation failed - no valid cost calculated');
+        console.log('❌ PR2 calculation failed - no valid cost calculated');
       }
     } catch (error) {
       console.error('Error calculating PR1 cost:', error);
@@ -1554,19 +1554,19 @@ export default function Dashboard() {
       return "£0.00";
     }
 
-    // Section has defects and requires repairs - use PR1 calculations
-    const pr1Cost = calculateAutoCost(section);
+    // Section has defects and requires repairs - use PR2 calculations
+    const pr2Cost = calculateAutoCost(section);
     
-    if (pr1Cost && pr1Cost.cost) {
-      return `£${pr1Cost.cost.toFixed(2)}`;
+    if (pr2Cost && pr2Cost.cost) {
+      return `£${pr2Cost.cost.toFixed(2)}`;
     }
 
-    // If no PR1 configuration, show warning triangle
+    // If no PR2 configuration, show warning triangle
     return (
       <div className="text-amber-600 font-medium text-sm flex items-center gap-1">
         <span>⚠️</span>
         <div>
-          <div>Configure PR1</div>
+          <div>Configure PR2</div>
           <div>pricing first</div>
         </div>
       </div>

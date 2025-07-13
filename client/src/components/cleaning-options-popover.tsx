@@ -236,34 +236,34 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
   const handleOptionClick = (option: CleaningOption) => {
     console.log('Option clicked:', option.name);
     
-    // Option 1: Route directly to PR1 pricing system
+    // Option 1: Route directly to PR2 pricing system
     if (option.name === 'Cleanse and Survey') {
-      console.log('Routing to PR1 pricing system');
+      console.log('Routing to PR2 pricing system');
       setIsOpen(false);
-      setLocation('/pr1-pricing');
+      setLocation('/pr2-pricing');
       return;
     }
     
-    // Option 2: Route to PR1 pricing system for custom options
+    // Option 2: Route to PR2 pricing system for custom options
     if (option.name === 'Custom') {
-      console.log('Routing to PR1 pricing system for custom');
+      console.log('Routing to PR2 pricing system for custom');
       setIsOpen(false);
-      setLocation('/pr1-pricing');
+      setLocation('/pr2-pricing');
       return;
     }
     
-    // Option 3: Route to PR1 pricing system for add new
+    // Option 3: Route to PR2 pricing system for add new
     if (option.name === 'Add New') {
-      console.log('Routing to PR1 pricing system for add new');
+      console.log('Routing to PR2 pricing system for add new');
       setIsOpen(false);
-      setLocation('/pr1-pricing');
+      setLocation('/pr2-pricing');
       return;
     }
     
-    // All other options also route to PR1 pricing
-    console.log('Routing to PR1 pricing system');
+    // All other options also route to PR2 pricing
+    console.log('Routing to PR2 pricing system');
     setIsOpen(false);
-    setLocation('/pr1-pricing');
+    setLocation('/pr2-pricing');
   };
 
   // Fixed order for three-option structure: Cleanse and Survey, Add New, Custom

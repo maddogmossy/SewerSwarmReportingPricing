@@ -5,7 +5,7 @@ import { storage } from "./storage";
 import { readWincanDatabase, storeWincanSections } from "./wincan-db-reader";
 import { getSectorStandards, getAllSectorStandards } from "./sector-standards";
 import { db } from "./db";
-import { repairPricing } from "../shared/schema";
+import { repairPricing, pr2Configurations } from "../shared/schema";
 import { eq, sql } from "drizzle-orm";
 
 // Debug: Test import at module level
@@ -829,6 +829,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     console.log(`📋 Retrieved ${configs.length} PR1 configurations for sector: ${sector || 'all'}`);
     res.json(configs);
+  });
+
+  // PR2 Pricing System - Completely separate from legacy ops
+  app.get('/api/pr2-pricing', async (req, res) => {
+    try {
+      const { sector = 'utilities' } = req.query;
+      
+      console.log('🔍 PR2 GET request for sector:', sector);
+      
+      // Query PR2 configurations from database  
+      const configurations = await db.select()
+        .from(pr2Configurations)
+        .where(eq(pr2Configurations.sector, sector as string));
+        
+      console.log('📊 Found PR2 configurations:', configurations.length);
+      
+      res.json(configurations);
+    } catch (error) {
+      console.error('Error fetching PR2 configurations:', error);
+      res.status(500).json({ error: 'Failed to fetch PR2 configurations' });
+    }
+  });
+
+  app.post('/api/pr2-pricing', async (req, res) => {
+    try {
+      const configData = req.body;
+      console.log('💾 PR2 POST request:', configData);
+      
+      // Insert new PR2 configuration into database
+      const newConfig = await db.insert(pr2Configurations)
+        .values({
+          userId: 'test-user', // Use test user for now
+          categoryId: configData.categoryId || 'cleanse-survey',
+          categoryName: configData.categoryName || 'Cleanse and Survey',
+          description: configData.description,
+          pricingOptions: configData.pricingOptions || [],
+          quantityOptions: configData.quantityOptions || [],
+          minQuantityOptions: configData.minQuantityOptions || [],
+          rangeOptions: configData.rangeOptions || [],
+          rangeValues: configData.rangeValues || {},
+          mathOperators: configData.mathOperators || [],
+          sector: configData.sector || 'utilities'
+        })
+        .returning();
+        
+      console.log('✅ PR2 configuration saved to database:', newConfig[0]);
+      
+      res.json({ 
+        success: true, 
+        configuration: newConfig[0],
+        message: 'PR2 configuration saved successfully'
+      });
+    } catch (error) {
+      console.error('Error saving PR2 configuration:', error);
+      res.status(500).json({ error: 'Failed to save PR2 configuration' });
+    }
   });
 
   // Removed generic sector profile route - using specific routes instead
