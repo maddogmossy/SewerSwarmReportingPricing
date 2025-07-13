@@ -102,8 +102,8 @@ export default function PR2ConfigNew() {
       includeWeather: { enabled: false, value: '' }
     },
     
-    // Math Operators (Grey)
-    mathOperators: ['N/A', 'N/A', 'N/A', 'N/A', 'N/A']
+    // Math Operators between Blue and Green only
+    mathOperators: ['N/A', 'N/A', 'N/A']
   });
 
   // Dialog states for Add/Edit functionality
@@ -217,6 +217,10 @@ export default function PR2ConfigNew() {
       mathOperators: prev.mathOperators.map((op, i) => i === index ? value : op)
     }));
   };
+
+  // Get enabled options count for math operators
+  const getEnabledPricingCount = () => Object.values(formData.pricingOptions).filter(opt => opt.enabled).length;
+  const getEnabledQuantityCount = () => Object.values(formData.quantityOptions).filter(opt => opt.enabled).length;
 
   // Helper functions for Add/Edit functionality
   const openDialog = (section: string) => {
@@ -403,8 +407,8 @@ export default function PR2ConfigNew() {
         </CardContent>
       </Card>
 
-      {/* Pricing Options Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      {/* Pricing and Quantity Options with Math */}
+      <div className="space-y-6 mb-6">
         
         {/* Blue - Pricing Options */}
         <Card>
@@ -554,6 +558,42 @@ export default function PR2ConfigNew() {
           </CardContent>
         </Card>
 
+        {/* Math Operations Section - Between Blue and Green */}
+        {(getEnabledPricingCount() > 0 || getEnabledQuantityCount() > 0) && (
+          <Card className="bg-gray-50">
+            <CardHeader>
+              <CardTitle className="text-gray-600 flex items-center gap-2">
+                <Calculator className="w-5 h-5" />
+                Math Operations
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4 flex-wrap">
+                {formData.mathOperators.map((operator, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">Math {index + 1}</span>
+                    <Select value={operator} onValueChange={(value) => updateMathOperator(index, value)}>
+                      <SelectTrigger className="w-20 bg-gray-100 border-gray-300">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="N/A">N/A</SelectItem>
+                        <SelectItem value="+">+</SelectItem>
+                        <SelectItem value="-">-</SelectItem>
+                        <SelectItem value="×">×</SelectItem>
+                        <SelectItem value="÷">÷</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-gray-500 mt-3">
+                Configure mathematical operations between pricing and quantity options
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Green - Quantity Options */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -701,7 +741,11 @@ export default function PR2ConfigNew() {
             ))}
           </CardContent>
         </Card>
+      </div>
 
+      {/* Min Quantity and Additional Options Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        
         {/* Orange - Min Quantity Options */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -997,34 +1041,6 @@ export default function PR2ConfigNew() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Math Operators */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-gray-600">⚙️ Math Operators</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-5 gap-3">
-            {formData.mathOperators.map((operator, index) => (
-              <div key={index}>
-                <Label>Math {index + 1}</Label>
-                <Select value={operator} onValueChange={(value) => updateMathOperator(index, value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="N/A">N/A</SelectItem>
-                    <SelectItem value="+">+ (Add)</SelectItem>
-                    <SelectItem value="-">- (Subtract)</SelectItem>
-                    <SelectItem value="×">× (Multiply)</SelectItem>
-                    <SelectItem value="÷">÷ (Divide)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Action Buttons */}
       <div className="flex justify-between">
