@@ -590,10 +590,37 @@ export default function Dashboard() {
       case 'lengthSurveyed':
         return section.lengthSurveyed;
       case 'defects':
+        const defectsText = section.defects || 'No defects recorded';
+        
+        // Check if observations contain multiple items that could be displayed as a list
+        const isMultipleObservations = defectsText.includes(',') || defectsText.includes(';') || defectsText.match(/\d+\.\d+m/g);
+        
+        if (isMultipleObservations && defectsText !== 'No service or structural defect found') {
+          // Split observations into list items
+          const observations = defectsText
+            .split(/[,;]/)
+            .map(obs => obs.trim())
+            .filter(obs => obs.length > 0);
+          
+          return (
+            <div className="text-sm p-2 w-full">
+              <ul className="space-y-1 text-left leading-relaxed">
+                {observations.map((observation, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="text-blue-500 mr-2 flex-shrink-0">•</span>
+                    <span className="break-words">{observation}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        }
+        
+        // Single observation or clean section - display normally
         return (
-          <div className="text-sm p-2 max-w-sm">
+          <div className="text-sm p-2 w-full">
             <div className="break-words text-left leading-relaxed">
-              {section.defects || 'No defects recorded'}
+              {defectsText}
             </div>
           </div>
         );
