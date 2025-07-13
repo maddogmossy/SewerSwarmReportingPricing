@@ -91,8 +91,25 @@ export default function PR2Pricing() {
     enabled: !!sector,
   });
 
+  // Fetch standard categories from database
+  const { data: standardCategoriesFromDB = [], isLoading: standardCategoriesLoading } = useQuery({
+    queryKey: ['/api/standard-categories'],
+    queryFn: () => apiRequest('GET', '/api/standard-categories'),
+  });
+
   // Ensure pr2Configurations is always an array
   const pr2Configurations = Array.isArray(pr2ConfigurationsRaw) ? pr2ConfigurationsRaw : [];
+  
+  // Combine hardcoded standard categories with user-created standard categories
+  const allStandardCategories = [
+    ...STANDARD_CATEGORIES,
+    ...standardCategoriesFromDB.map(cat => ({
+      id: cat.categoryId,
+      name: cat.categoryName,
+      description: cat.description,
+      icon: Settings // Use Settings icon for user-created categories
+    }))
+  ];
 
   // Delete mutation
   const deletePR2Configuration = useMutation({
@@ -213,38 +230,32 @@ export default function PR2Pricing() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {STANDARD_CATEGORIES.map((category) => (
-                  <Card
-                    key={category.id}
-                    className="cursor-pointer transition-all hover:shadow-md bg-white border-2 border-gray-200"
-                    onClick={() => handleCategoryNavigation(category.id)}
-                  >
-                    <CardContent className="p-4 text-center relative">
-                      <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
-                      <h3 className="font-medium text-sm mb-1 text-gray-800">{category.name}</h3>
-                      <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
-                      {/* Orange cog to show not configured */}
-                      <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
-                    </CardContent>
-                  </Card>
-                ))}
-                
-                {/* User-created categories - show in Standard Categories grid */}
-                {pr2Configurations.filter(config => !STANDARD_CATEGORIES.some(std => std.name === config.categoryName)).map((config) => (
-                  <Card
-                    key={config.id}
-                    className="cursor-pointer transition-all hover:shadow-md bg-white border-2 border-green-200"
-                    onClick={() => handleCategoryNavigation(config.categoryName)}
-                  >
-                    <CardContent className="p-4 text-center relative">
-                      <Settings className="h-8 w-8 mx-auto mb-2 text-green-700" />
-                      <h3 className="font-medium text-sm mb-1 text-gray-800">{config.categoryName}</h3>
-                      <p className="text-xs text-gray-600 line-clamp-2">{config.description}</p>
-                      {/* Green cog to show user-created */}
-                      <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
-                    </CardContent>
-                  </Card>
-                ))}
+                {allStandardCategories.map((category) => {
+                  // Check if this is a user-created category
+                  const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
+                  
+                  return (
+                    <Card
+                      key={category.id}
+                      className={`cursor-pointer transition-all hover:shadow-md bg-white border-2 ${
+                        isUserCreated ? 'border-green-200' : 'border-gray-200'
+                      }`}
+                      onClick={() => handleCategoryNavigation(category.id)}
+                    >
+                      <CardContent className="p-4 text-center relative">
+                        <category.icon className={`h-8 w-8 mx-auto mb-2 ${
+                          isUserCreated ? 'text-green-700' : 'text-gray-700'
+                        }`} />
+                        <h3 className="font-medium text-sm mb-1 text-gray-800">{category.name}</h3>
+                        <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
+                        {/* Orange cog for default categories, green cog for user-created */}
+                        <Settings className={`h-4 w-4 absolute top-2 right-2 ${
+                          isUserCreated ? 'text-green-500' : 'text-orange-500'
+                        }`} />
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
               
 
@@ -252,12 +263,12 @@ export default function PR2Pricing() {
           </Card>
         </div>
 
-        {/* Existing Configurations - Hide user-created categories since they're in Standard Categories */}
-        {pr2Configurations.filter(config => STANDARD_CATEGORIES.some(std => std.name === config.categoryName)).length > 0 && (
+        {/* Existing Configurations - Only show actual PR2 configurations (not standard categories) */}
+        {pr2Configurations.length > 0 && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Existing PR2 Configurations</h3>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {pr2Configurations.filter(config => STANDARD_CATEGORIES.some(std => std.name === config.categoryName)).map((config: any) => (
+              {pr2Configurations.map((config: any) => (
                 <Card key={config.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">

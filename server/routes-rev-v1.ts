@@ -5,7 +5,7 @@ import { storage } from "./storage";
 import { readWincanDatabase, storeWincanSections } from "./wincan-db-reader";
 import { getSectorStandards, getAllSectorStandards } from "./sector-standards";
 import { db } from "./db";
-import { pr2Configurations } from "../shared/schema";
+import { pr2Configurations, standardCategories } from "../shared/schema";
 import { eq, sql } from "drizzle-orm";
 
 // Debug: Test import at module level
@@ -456,6 +456,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error deleting PR2 configuration:', error);
       res.status(500).json({ error: 'Failed to delete configuration' });
+    }
+  });
+
+  // Standard Categories API endpoints
+  app.get('/api/standard-categories', async (req, res) => {
+    try {
+      const categories = await db
+        .select()
+        .from(standardCategories)
+        .where(eq(standardCategories.isActive, true));
+      
+      console.log(`✅ Loading ${categories.length} standard categories from database`);
+      res.json(categories);
+    } catch (error) {
+      console.error('Error fetching standard categories:', error);
+      res.status(500).json({ error: 'Failed to fetch standard categories' });
+    }
+  });
+
+  app.post('/api/standard-categories', async (req, res) => {
+    try {
+      const { categoryName, description } = req.body;
+      console.log('📝 Creating new standard category:', { categoryName, description });
+      
+      // Generate categoryId from categoryName
+      const categoryId = categoryName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      
+      const newCategory = await db
+        .insert(standardCategories)
+        .values({
+          categoryId,
+          categoryName,
+          description,
+          iconName: 'Settings',
+          isDefault: false,
+          isActive: true
+        })
+        .returning();
+      
+      console.log('✅ Created standard category:', newCategory[0]);
+      res.json(newCategory[0]);
+    } catch (error) {
+      console.error('Error creating standard category:', error);
+      res.status(500).json({ error: 'Failed to create standard category' });
     }
   });
 

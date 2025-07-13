@@ -425,6 +425,19 @@ export const teamBillingRecords = pgTable("team_billing_records", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Standard Categories table - Global categories available to all users
+export const standardCategories = pgTable("standard_categories", {
+  id: serial("id").primaryKey(),
+  categoryId: varchar("category_id").unique().notNull(), // Unique identifier like 'cctv', 'van-pack'
+  categoryName: varchar("category_name").notNull(),
+  description: text("description"),
+  iconName: varchar("icon_name").default("Settings"), // Icon name for display
+  isDefault: boolean("is_default").default(false), // True for built-in categories
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // PR2 Pricing System - Completely separate from legacy ops system
 export const pr2Configurations = pgTable("pr2_configurations", {
   id: serial("id").primaryKey(),

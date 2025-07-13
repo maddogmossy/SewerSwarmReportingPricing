@@ -195,37 +195,23 @@ export default function PR2PricingForm() {
       return;
     }
 
-    // Save to all sectors
-    const allSectors = ['utilities', 'adoption', 'highways', 'insurance', 'construction', 'domestic'];
-    
     try {
-      // Create promises for all sectors
-      const savePromises = allSectors.map(sectorName => {
-        const configData = {
-          categoryId: formData.categoryName.toLowerCase().replace(/\s+/g, '-'),
-          categoryName: formData.categoryName,
-          description: formData.description,
-          pricingOptions: [],
-          quantityOptions: [],
-          minQuantityOptions: [],
-          rangeOptions: [],
-          rangeValues: {},
-          mathOperators: [],
-          sector: sectorName
-        };
+      // Save as standard category (available to all sectors)
+      const categoryData = {
+        categoryName: formData.categoryName,
+        description: formData.description
+      };
 
-        return apiRequest('POST', '/api/pr2-pricing', configData);
-      });
-
-      // Wait for all saves to complete
-      await Promise.all(savePromises);
+      await apiRequest('POST', '/api/standard-categories', categoryData);
 
       toast({
         title: "Success",
-        description: `Category "${formData.categoryName}" created successfully in all sectors`,
+        description: `Standard category "${formData.categoryName}" created successfully for all sectors`,
       });
       
-      // Invalidate cache for all sectors
+      // Invalidate cache for standard categories and all PR2 pricing pages
+      queryClient.invalidateQueries({ queryKey: ['/api/standard-categories'] });
+      const allSectors = ['utilities', 'adoption', 'highways', 'insurance', 'construction', 'domestic'];
       allSectors.forEach(sectorName => {
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing', sectorName] });
       });
