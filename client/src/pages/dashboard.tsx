@@ -1107,10 +1107,70 @@ export default function Dashboard() {
     return { hasApproved: false };
   };
 
+  // Fetch PR1 configurations for cost calculations
+  const { data: pr1Configurations = [], isLoading: pr1Loading } = useQuery<any[]>({
+    queryKey: ['/api/pr1-pricing'],
+    queryParams: { sector: 'utilities' },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
   // Function to calculate auto-populated cost for defective sections using PR1 configurations
   const calculateAutoCost = (section: any) => {
-    // Disable old pricing system - always return null to show warning triangles
-    // until PR1 pricing is configured
+    // If no PR1 configurations exist, return null to show warning triangles
+    if (!pr1Configurations || pr1Configurations.length === 0) {
+      return null;
+    }
+
+    // Find a valid PR1 configuration
+    const pr1Config = pr1Configurations[0]; // Use the first available config
+    
+    if (!pr1Config || !pr1Config.pricingValues) {
+      return null;
+    }
+
+    try {
+      // Extract values from PR1 configuration
+      const { 
+        dayRate = 0,
+        hourlyRate = 0, 
+        setupRate = 0,
+        perMeterRate = 0,
+        runsPerShift = 1,
+        metersPerShift = 1,
+        sectionsPerDay = 1
+      } = pr1Config.pricingValues;
+
+      // Simple calculation logic - use day rate divided by runs per shift as base cost
+      let baseCost = 0;
+      
+      if (dayRate && dayRate > 0 && runsPerShift && runsPerShift > 0) {
+        baseCost = parseFloat(dayRate) / parseFloat(runsPerShift);
+      } else if (hourlyRate && hourlyRate > 0) {
+        // Assume 8 hour day if using hourly rate
+        baseCost = parseFloat(hourlyRate) * 8 / parseFloat(runsPerShift || 1);
+      } else if (perMeterRate && perMeterRate > 0 && section.totalLength) {
+        baseCost = parseFloat(perMeterRate) * parseFloat(section.totalLength || 0);
+      }
+
+      // Add setup costs if configured
+      if (setupRate && setupRate > 0) {
+        baseCost += parseFloat(setupRate);
+      }
+
+      // Return calculated cost if we have a valid amount
+      if (baseCost > 0) {
+        return {
+          cost: baseCost,
+          currency: '£',
+          method: 'PR1 Configuration',
+          status: 'calculated'
+        };
+      }
+    } catch (error) {
+      console.error('Error calculating PR1 cost:', error);
+    }
+
+    // Return null if calculation fails
     return null;
   };
 
@@ -1548,24 +1608,14 @@ export default function Dashboard() {
       return "£0.00";
     }
     
-    // For defective sections, use the BLUE ÷ GREEN = COST logic
+    // For defective sections, use PR1 configuration calculations
     const autoCost = calculateAutoCost(section);
-    if (autoCost) {
-      // RED pricing when minimum threshold not met, BLACK when met
-      if (autoCost.status === 'insufficient_runs' || autoCost.isRed) {
-        return (
-          <span 
-            className="text-red-600 font-medium cursor-help" 
-            title={`${autoCost.formula}\n${autoCost.message}`}
-          >
-            £{autoCost.cost.toFixed(2)}
-          </span>
-        );
-      }
+    if (autoCost && autoCost.cost > 0) {
+      // Display calculated cost from PR1 configuration
       return (
         <span 
-          className="text-black font-medium cursor-help"
-          title={`${autoCost.formula}\n${autoCost.message}`}
+          className="text-green-600 font-medium cursor-help"
+          title={`Cost calculated using ${autoCost.method || 'PR1 Configuration'}\nStatus: ${autoCost.status || 'calculated'}`}
         >
           £{autoCost.cost.toFixed(2)}
         </span>
