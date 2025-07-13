@@ -1071,7 +1071,7 @@ export default function PR2ConfigNew() {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-between">
+      <div className="flex justify-between mt-8 pt-4 border-t">
         <Button variant="outline" onClick={handleBack}>
           <ChevronLeft className="w-4 h-4 mr-2" />
           Cancel
