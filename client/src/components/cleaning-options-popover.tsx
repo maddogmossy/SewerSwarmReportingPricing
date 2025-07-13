@@ -246,14 +246,18 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
   };
 
   const handleOptionClick = (option: CleaningOption) => {
+    console.log('Option clicked:', option.name);
+    
     // Option 1: Navigate directly to category creation dialog
     if (option.name === 'Cleanse and Survey') {
+      console.log('Showing Cleanse and Survey setup dialog');
       setShowSetupDialog(true);
       return;
     }
     
     // Option 2: Navigate to custom cleaning setup
     if (option.name === 'Custom Cleaning') {
+      console.log('Showing Custom Cleaning setup dialog');
       setShowCustomSetupDialog(true);
       return;
     }
@@ -469,9 +473,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
                             option.name === 'Cleanse and Survey' ? 'text-purple-700' : 'text-orange-700'
                           }`}>
                             {option.name === 'Custom Cleaning' 
-                              ? 'Click to add custom cleaning method'
+                              ? 'Click to create custom cleaning category'
                               : option.name === 'Cleanse and Survey'
-                              ? 'Click to set up cleanse and survey category'
+                              ? 'Click to create cleanse and survey category'
                               : option.configurationMessage
                             }
                           </div>
