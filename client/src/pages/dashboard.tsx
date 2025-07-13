@@ -1107,13 +1107,12 @@ export default function Dashboard() {
     return { hasApproved: false };
   };
 
-  // Use hardcoded PR1 configuration for immediate testing
-  const pr1Configurations = [{
-    id: 'test-config',
-    pricingOptions: [{ id: 'dayRate', value: '1850' }],
-    quantityOptions: [{ id: 'runsPerShift', value: '30' }],
-    sector: 'utilities'
-  }];
+  // Fetch PR1 configurations from dedicated PR1 database table
+  const { data: pr1Configurations = [], isLoading: pr1Loading } = useQuery<any[]>({
+    queryKey: ['/api/pr1-pricing'],
+    queryParams: { sector: 'utilities' },
+    staleTime: 5 * 60 * 1000,
+  });
 
   // Function to calculate auto-populated cost for defective sections using PR1 configurations
   const calculateAutoCost = (section: any) => {
