@@ -128,10 +128,10 @@ export default function PR2Pricing() {
         ))}
       </div>
 
-      {/* Standard Categories */}
+      {/* Work Categories */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Standard Categories</h2>
+          <h2 className="text-xl font-semibold">Work Categories</h2>
           <Button
             onClick={handleAddConfiguration}
             className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
@@ -141,74 +141,72 @@ export default function PR2Pricing() {
           </Button>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Select Standard Category</CardTitle>
-            <p className="text-sm text-gray-600">Choose from pre-configured standard categories or create a custom one</p>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {[
-                'CCTV',
-                'Van Pack', 
-                'Jet Vac',
-                'CCTV/Van Pack',
-                'CCTV/Jet Vac',
-                'Directional Water Cutter',
-                'Ambient Lining',
-                'Hot Cure Lining',
-                'UV Lining',
-                'IMS Cutting',
-                'Excavation',
-                'Tankering'
-              ].map((category) => (
-                <Button
-                  key={category}
-                  variant="outline"
-                  className="h-auto p-4 text-left flex flex-col items-start gap-1"
-                  onClick={() => navigate(`/pr2-pricing-form?sector=${sector}&category=${encodeURIComponent(category)}`)}
-                >
-                  <span className="font-medium text-sm">{category}</span>
-                  <span className="text-xs text-gray-500 line-clamp-2">
-                    {category === 'CCTV' && 'Inspection services'}
-                    {category === 'Van Pack' && 'Mobile equipment'}
-                    {category === 'Jet Vac' && 'Water jetting & vacuum'}
-                    {category === 'CCTV/Van Pack' && 'Combined inspection'}
-                    {category === 'CCTV/Jet Vac' && 'Inspection & jetting'}
-                    {category === 'Directional Water Cutter' && 'Precision cutting'}
-                    {category === 'Ambient Lining' && 'Pipe lining'}
-                    {category === 'Hot Cure Lining' && 'Hot cure lining'}
-                    {category === 'UV Lining' && 'UV cured lining'}
-                    {category === 'IMS Cutting' && 'IMS cutting services'}
-                    {category === 'Excavation' && 'Traditional excavation'}
-                    {category === 'Tankering' && 'Waste removal'}
-                  </span>
-                </Button>
-              ))}
-            </div>
-            
-            <div className="mt-6 pt-6 border-t">
-              <Button
-                variant="outline"
-                className="w-full border-dashed border-2 p-6"
-                onClick={() => navigate(`/pr2-pricing-form?sector=${sector}&category=Custom`)}
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                Create Custom Category
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Active Configurations */}
-      {pr2Configurations.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Active Configurations</h2>
+        {pr2Configurations.length === 0 ? (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Select Standard Category</CardTitle>
+                <p className="text-sm text-gray-600">Choose from pre-configured standard categories or create a custom one</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {[
+                    'CCTV',
+                    'Van Pack', 
+                    'Jet Vac',
+                    'CCTV/Van Pack',
+                    'CCTV/Jet Vac',
+                    'Directional Water Cutter',
+                    'Ambient Lining',
+                    'Hot Cure Lining',
+                    'UV Lining',
+                    'IMS Cutting',
+                    'Excavation',
+                    'Tankering'
+                  ].map((category) => (
+                    <Button
+                      key={category}
+                      variant="outline"
+                      className="h-auto p-4 text-left flex flex-col items-start gap-1"
+                      onClick={() => navigate(`/pr2-pricing-form?sector=${sector}&category=${encodeURIComponent(category)}`)}
+                    >
+                      <span className="font-medium text-sm">{category}</span>
+                      <span className="text-xs text-gray-500 line-clamp-2">
+                        {category === 'CCTV' && 'Inspection services'}
+                        {category === 'Van Pack' && 'Mobile equipment'}
+                        {category === 'Jet Vac' && 'Water jetting & vacuum'}
+                        {category === 'CCTV/Van Pack' && 'Combined inspection'}
+                        {category === 'CCTV/Jet Vac' && 'Inspection & jetting'}
+                        {category === 'Directional Water Cutter' && 'Precision cutting'}
+                        {category === 'Ambient Lining' && 'Pipe lining'}
+                        {category === 'Hot Cure Lining' && 'Hot cure lining'}
+                        {category === 'UV Lining' && 'UV cured lining'}
+                        {category === 'IMS Cutting' && 'IMS cutting services'}
+                        {category === 'Excavation' && 'Traditional excavation'}
+                        {category === 'Tankering' && 'Waste removal'}
+                      </span>
+                    </Button>
+                  ))}
+                </div>
+                
+                <div className="mt-6 pt-6 border-t">
+                  <Button
+                    variant="outline"
+                    className="w-full border-dashed border-2 p-6"
+                    onClick={() => navigate(`/pr2-pricing-form?sector=${sector}&category=Custom`)}
+                  >
+                    <Plus className="h-5 w-5 mr-2" />
+                    Create Custom Category
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-          <div className="grid gap-4">
-            {pr2Configurations.map((config: any) => (
+        ) : (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">PR2 Configurations</h3>
+            <div className="grid gap-4">
+              {pr2Configurations.map((config: any) => (
                 <Card key={config.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -266,10 +264,11 @@ export default function PR2Pricing() {
                     </div>
                   </CardContent>
                 </Card>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Summary */}
       <Card>
