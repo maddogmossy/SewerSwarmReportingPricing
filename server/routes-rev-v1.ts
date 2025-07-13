@@ -503,6 +503,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/standard-categories/:categoryId', async (req, res) => {
+    try {
+      const categoryId = req.params.categoryId;
+      console.log('🗑️ Deleting standard category:', categoryId);
+      
+      // Check if category has any PR2 configurations
+      const existingConfigs = await db
+        .select()
+        .from(pr2Configurations)
+        .where(eq(pr2Configurations.categoryId, categoryId));
+      
+      if (existingConfigs.length > 0) {
+        return res.status(400).json({ 
+          error: 'Cannot delete category with existing pricing configurations. Please delete the pricing configurations first.' 
+        });
+      }
+      
+      // Delete the category by setting isActive to false
+      const deletedCategory = await db
+        .update(standardCategories)
+        .set({ isActive: false })
+        .where(eq(standardCategories.categoryId, categoryId))
+        .returning();
+      
+      if (deletedCategory.length === 0) {
+        return res.status(404).json({ error: 'Category not found' });
+      }
+      
+      console.log('✅ Deleted standard category:', deletedCategory[0]);
+      res.json({ success: true, message: 'Category deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting standard category:', error);
+      res.status(500).json({ error: 'Failed to delete standard category' });
+    }
+  });
+
   // Sector standards endpoints
   app.get('/api/standards/:sector', (req, res) => {
     try {

@@ -117,7 +117,7 @@ export default function PR2Pricing() {
     }))
   ];
 
-  // Delete mutation
+  // Delete mutation for PR2 configurations
   const deletePR2Configuration = useMutation({
     mutationFn: (id: number) => apiRequest('DELETE', `/api/pr2-pricing/${id}`),
     onSuccess: () => {
@@ -125,6 +125,50 @@ export default function PR2Pricing() {
       toast({ title: "PR2 configuration deleted successfully" });
     }
   });
+
+  // Delete mutation for standard categories
+  const deleteStandardCategory = useMutation({
+    mutationFn: (categoryId: string) => apiRequest('DELETE', `/api/standard-categories/${categoryId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/standard-categories'] });
+      toast({ title: "Standard category deleted successfully" });
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Cannot delete category", 
+        description: error.message || "Category has existing pricing configurations",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Handle category deletion with validation
+  const handleCategoryDelete = async (categoryId: string, categoryName: string) => {
+    // First check if category has any pricing configurations
+    const hasConfigurations = pr2Configurations.some(config => 
+      config.categoryId === categoryId || config.categoryName === categoryName
+    );
+    
+    if (hasConfigurations) {
+      toast({
+        title: "Cannot delete category",
+        description: "This category has existing pricing configurations. Please delete them first.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Confirm deletion
+    const confirmed = confirm(`Are you sure you want to delete the "${categoryName}" category? This action cannot be undone.`);
+    if (!confirmed) return;
+    
+    try {
+      await deleteStandardCategory.mutateAsync(categoryId);
+    } catch (error) {
+      // Error handled in mutation onError
+      console.error('Failed to delete category:', error);
+    }
+  };
 
   // Handle navigation to category-specific pages
   const handleCategoryNavigation = (categoryId: string) => {
@@ -263,10 +307,26 @@ export default function PR2Pricing() {
                         }`} />
                         <h3 className="font-medium text-sm mb-1 text-gray-800">{category.name}</h3>
                         <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
+                        
                         {/* Orange cog for default categories, green cog for user-created */}
                         <Settings className={`h-4 w-4 absolute top-2 right-2 ${
                           isUserCreated ? 'text-green-500' : 'text-orange-500'
                         }`} />
+                        
+                        {/* Delete button - only for user-created categories */}
+                        {isUserCreated && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="absolute bottom-2 right-2 h-6 w-6 p-0 hover:bg-red-100 hover:text-red-600"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent card click navigation
+                              handleCategoryDelete(category.id, category.name);
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        )}
                       </CardContent>
                     </Card>
                   );
