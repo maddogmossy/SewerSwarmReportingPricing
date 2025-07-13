@@ -1,0 +1,74 @@
+RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: false
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 URL Parameters received: Object
+Console.js:61 Auto-selection check: Object
+Console.js:61 Full condition check: Object
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: false
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 Auto-selection check: Object
+Console.js:61 Full condition check: Object
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: false
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 Auto-selection check: Object
+Console.js:61 Full condition check: Object
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: false
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: false
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: false
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: false
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: false
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 handleEdit called, going directly to edit mode
+Console.js:61 proceedWithEditDirectly called, setting up edit mode
+Console.js:61 Item to edit: Object
+Console.js:61 Preserved pricing structure: Object
+Console.js:61 MANUALLY FIXED pricing structure for item 6: Object
+Console.js:61 🔥 EXTRACTING custom options from DATABASE pricingStructure: Array(2)
+Console.js:61 🔥 FILTERED custom price options: Array(0)
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: true
+Console.js:61 Orange options found: Array(1)
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: true
+Console.js:61 Orange options found: Array(1)
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 Using default min quantity order
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: true
+Console.js:61 Orange options found: Array(1)
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: true
+Console.js:61 Orange options found: Array(1)
+Console.js:61 Quantity display order: Array(4)
+Console.js:61 🔥 DEBUGGING ORANGE DELETION - editableMinQuantityOptions: Array(5)
+Console.js:61 🔥 DEBUGGING ORANGE DELETION - formData.pricingStructure BEFORE: Object
+Console.js:61 🔥 APPLYING OPTIONS FROM editableMinQuantityOptions:
+Console.js:61 🔥 Processing option: Object
+Console.js:61 🔥 Set standard option: minUnitsPerShift = false
+Console.js:61 🔥 Processing option: Object
+Console.js:61 🔥 Set standard option: minMetersPerShift = false
+Console.js:61 🔥 Processing option: Object
+Console.js:61 🔥 Set standard option: minInspectionsPerShift = false
+Console.js:61 🔥 Processing option: Object
+Console.js:61 🔥 Set standard option: minSetupCount = false
+Console.js:61 🔥 Processing option: Object
+Console.js:61 🔥 Set custom option: minquantity_min_runs_per_shif = false
+Console.js:61 🔥 FINAL newPricingStructure AFTER APPLYING OPTIONS: Object
+Console.js:61 Updated custom min quantity options in order: Array(1)
+Console.js:61 Final minQuantityOptions array: Array(1)
+Console.js:61 RepairPricing rendering, sector: utilities currentSector: Object
+Console.js:61 isAddDialogOpen: true
+Console.js:61 Quantity display order: Array(4)

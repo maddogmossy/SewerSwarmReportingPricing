@@ -3067,11 +3067,13 @@ export default function RepairPricing() {
                             
                             // Add custom min quantity options to the editable list (ALL custom options, not just enabled ones)
                             const customMinQuantityOptions = [];
+                            console.log("🔥 EDIT DIALOG INIT - Looking for custom minquantity options in:", formData.pricingStructure);
                             Object.keys(formData.pricingStructure || {}).forEach(key => {
                               if (key.startsWith('minquantity_') && !key.endsWith('_label')) {
                                 // Use stored label if available, otherwise reconstruct from field name
                                 const storedLabel = formData.pricingStructure[`${key}_label`];
                                 const label = storedLabel || key.replace('minquantity_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                console.log("🔥 EDIT DIALOG INIT - Found custom option:", key, "with label:", label, "enabled:", !!formData.pricingStructure[key]);
                                 customMinQuantityOptions.push({
                                   id: key,
                                   label: label,
@@ -3079,6 +3081,7 @@ export default function RepairPricing() {
                                 });
                               }
                             });
+                            console.log("🔥 EDIT DIALOG INIT - Final customMinQuantityOptions:", customMinQuantityOptions);
                             
                             setEditableMinQuantityOptions([...standardOptions, ...customMinQuantityOptions]);
                           }
