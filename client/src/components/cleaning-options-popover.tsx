@@ -87,7 +87,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
   const { data: cleaningMethods = [] } = useQuery({
     queryKey: ['/api/repair-methods'],
     enabled: isOpen,
-    select: (allMethods) => allMethods.filter((method: any) => method.category === 'cleaning')
+    select: (allMethods) => {
+      const filtered = allMethods.filter((method: any) => method.category === 'cleaning');
+      console.log('🔍 Cleaning methods fetched:', filtered);
+      return filtered;
+    }
   });
 
   // Check pricing for each cleaning method
@@ -504,7 +508,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
                             {option.name === 'Custom Cleaning' 
                               ? 'Create new cleaning category'
                               : option.name === 'Cleanse and Survey'
-                              ? 'Create new category'
+                              ? 'Create new category' + ' (v2)' // Force cache clear
                               : option.configurationMessage
                             }
                           </div>
