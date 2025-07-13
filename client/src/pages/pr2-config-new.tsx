@@ -21,9 +21,11 @@ export default function PR2ConfigNew() {
   // Extract parameters from URL
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const sector = urlParams.get('sector') || 'utilities';
-  const editId = urlParams.get('edit');
-  const categoryParam = urlParams.get('category');
+  const editId = urlParams.get('editId') || urlParams.get('edit'); // Support both parameter names
+  const categoryParam = urlParams.get('category') || urlParams.get('categoryId');
   const isEditing = !!editId;
+  
+  console.log('PR2 Config New - URL params:', { sector, editId, categoryParam, isEditing, fullLocation: location });
 
   // Auto-detect category from URL path
   const detectCategoryFromPath = () => {

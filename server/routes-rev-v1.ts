@@ -422,16 +422,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/pr2-pricing/:id', async (req, res) => {
     try {
       const configId = parseInt(req.params.id);
-      const { dayRate, runsPerShift, sector } = req.body;
+      console.log('📝 PR2 PUT request body:', req.body);
+      console.log('📝 Updating configuration ID:', configId);
+      
+      // Extract from the complex form structure sent by PR2 form
+      const { 
+        categoryId,
+        categoryName, 
+        description, 
+        pricingOptions, 
+        quantityOptions, 
+        minQuantityOptions, 
+        additionalOptions,
+        rangeOptions, 
+        rangeValues, 
+        mathOperators, 
+        sector 
+      } = req.body;
+
+      const updateData = {
+        categoryId: categoryId || 'cleanse-survey',
+        categoryName: categoryName || 'Cleanse and Survey',
+        description: description || 'PR2 cleaning and survey configuration',
+        pricingOptions: pricingOptions || {},
+        quantityOptions: quantityOptions || {},
+        minQuantityOptions: minQuantityOptions || {},
+        additionalOptions: additionalOptions || {},
+        rangeOptions: rangeOptions || [],
+        rangeValues: rangeValues || {},
+        mathOperators: mathOperators || [],
+        sector: sector || 'utilities',
+        updatedAt: new Date()
+      };
       
       const [updated] = await db
         .update(pr2Configurations)
-        .set({
-          dayRate: parseInt(dayRate),
-          runsPerShift: parseInt(runsPerShift),
-          sector: sector || 'utilities',
-          updatedAt: new Date()
-        })
+        .set(updateData)
         .where(eq(pr2Configurations.id, configId))
         .returning();
 

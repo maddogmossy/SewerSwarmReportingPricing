@@ -194,6 +194,7 @@ export default function PR2Pricing() {
     
     if (existingConfig) {
       console.log('✅ Found existing configuration for', categoryId, '- routing to edit page');
+      console.log('Configuration details:', existingConfig);
       setLocation(`/pr2-config-new?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`);
       return;
     }
