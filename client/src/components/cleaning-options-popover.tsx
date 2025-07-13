@@ -156,10 +156,26 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     localStorage.setItem('selected-equipment', JSON.stringify(selectedEquipment));
     
     setIsOpen(false);
-    // Route to PR2 pricing with selected equipment as URL params in preferred order
+    
+    // Route directly to the specific equipment configuration page based on primary selection
     const orderedSelectedEquipment = equipmentOrder.filter(id => selectedEquipment.includes(id));
-    const equipmentParams = orderedSelectedEquipment.join(',');
-    setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentParams}&category=cleanse-survey`);
+    const primaryEquipment = orderedSelectedEquipment[0]; // First selected in order
+    
+    // Map equipment IDs to their specific configuration routes
+    const equipmentRoutes: { [key: string]: string } = {
+      'cctv-van-pack': '/pr2-config-clean?categoryId=cctv-van-pack',
+      'cctv-jet-vac': '/pr2-config-clean?categoryId=cctv-jet-vac'
+    };
+    
+    // Get the route for the primary equipment, fallback to general pricing if not found
+    const targetRoute = equipmentRoutes[primaryEquipment];
+    if (targetRoute) {
+      setLocation(`${targetRoute}&sector=${sectionData.sector}`);
+    } else {
+      // Fallback to main pricing page if specific route not found
+      const equipmentParams = orderedSelectedEquipment.join(',');
+      setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentParams}&category=cleanse-survey`);
+    }
   };
 
   return (
