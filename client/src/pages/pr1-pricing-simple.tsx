@@ -72,6 +72,27 @@ export default function PR1Pricing() {
 
   const handleSave = () => {
     console.log('Current pricing config state:', pricingConfig);
+    
+    // Validation: Check if any enabled options have empty values
+    const enabledButEmpty = Object.entries(pricingConfig).filter(([key, config]) => {
+      if (config.enabled && 'value' in config) {
+        return !config.value || config.value.trim() === '';
+      }
+      if (config.enabled && 'min' in config && 'max' in config) {
+        return !config.min || !config.max || config.min.trim() === '' || config.max.trim() === '';
+      }
+      return false;
+    });
+
+    if (enabledButEmpty.length > 0) {
+      toast({
+        title: "Missing Values",
+        description: "Please enter values for all enabled options before saving.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Transform pricingConfig to match backend expectations
     const pricingOptions = Object.entries(pricingConfig)
       .filter(([key, config]) => 
@@ -203,7 +224,7 @@ export default function PR1Pricing() {
                 {pricingConfig[option.key as keyof typeof pricingConfig].enabled && (
                   <Input
                     type="number"
-                    placeholder="0.00"
+                    placeholder="Enter value"
                     className="w-24"
                     value={pricingConfig[option.key as keyof typeof pricingConfig].value}
                     onChange={(e) => updateConfig(option.key, 'value', e.target.value)}
@@ -237,7 +258,7 @@ export default function PR1Pricing() {
                 {pricingConfig[option.key as keyof typeof pricingConfig].enabled && (
                   <Input
                     type="number"
-                    placeholder="0"
+                    placeholder="Enter value"
                     className="w-24"
                     value={pricingConfig[option.key as keyof typeof pricingConfig].value}
                     onChange={(e) => updateConfig(option.key, 'value', e.target.value)}
@@ -271,7 +292,7 @@ export default function PR1Pricing() {
                 {pricingConfig[option.key as keyof typeof pricingConfig].enabled && (
                   <Input
                     type="number"
-                    placeholder="0"
+                    placeholder="Enter value"
                     className="w-24"
                     value={pricingConfig[option.key as keyof typeof pricingConfig].value}
                     onChange={(e) => updateConfig(option.key, 'value', e.target.value)}
