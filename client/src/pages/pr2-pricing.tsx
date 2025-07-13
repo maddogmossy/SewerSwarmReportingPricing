@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -58,19 +58,23 @@ const STANDARD_CATEGORIES = [
 
 export default function PR2Pricing() {
   const [location, navigate] = useLocation();
+  const [sector, setSector] = useState('utilities');
   
-  // Extract sector from URL parameters
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
-  const sector = urlParams.get('sector') || 'utilities';
-  
-  // Debug: Log current sector
-  console.log('Current location:', location);
-  console.log('Current sector:', sector);
-  
-  // Force navigation to include sector parameter if missing
-  if (!location.includes('?sector=')) {
-    navigate(`/pr2-pricing?sector=utilities`);
-  }
+  // Update sector when URL changes
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.split('?')[1] || '');
+    const newSector = urlParams.get('sector') || 'utilities';
+    setSector(newSector);
+    
+    // Debug: Log current sector
+    console.log('Current location:', location);
+    console.log('Current sector:', newSector);
+    
+    // Force navigation to include sector parameter if missing
+    if (!location.includes('?sector=')) {
+      navigate(`/pr2-pricing?sector=utilities`);
+    }
+  }, [location, navigate]);
   
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
