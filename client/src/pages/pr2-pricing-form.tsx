@@ -60,33 +60,10 @@ export default function PR2PricingForm() {
   const [isCustomCategory, setIsCustomCategory] = useState(categoryParam === 'Custom');
   const [customCategoryName, setCustomCategoryName] = useState('');
 
-  // Form state with the same structure as PR1
+  // Simplified form state for new category creation
   const [formData, setFormData] = useState({
-    categoryName: categoryParam || 'CCTV',
-    description: categoryParam && categoryParam !== 'Custom' 
-      ? (CATEGORY_DESCRIPTIONS[categoryParam as keyof typeof CATEGORY_DESCRIPTIONS] || 'PR2 configuration')
-      : 'PR2 cleaning and survey configuration',
-    pricingOptions: {
-      dayRate: { enabled: false, value: '' },
-      hourlyRate: { enabled: false, value: '' },
-      setupRate: { enabled: false, value: '' },
-      meterageRate: { enabled: false, value: '' }
-    },
-    quantityOptions: {
-      runsPerShift: { enabled: false, value: '' },
-      metersPerShift: { enabled: false, value: '' },
-      sectionsPerDay: { enabled: false, value: '' }
-    },
-    minQuantityOptions: {
-      minRuns: { enabled: false, value: '' },
-      minMeters: { enabled: false, value: '' },
-      minSetup: { enabled: false, value: '' }
-    },
-    mathOperators: {
-      op1: '÷',
-      op2: '+',
-      op3: '+'
-    }
+    categoryName: '',
+    description: ''
   });
 
   // Load existing configuration for editing
@@ -205,56 +182,65 @@ export default function PR2PricingForm() {
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     console.log('💾 Save button clicked - current form data:', formData);
     
-    // Validation
-    const allSections = [
-      ...Object.entries(formData.pricingOptions),
-      ...Object.entries(formData.quantityOptions),
-      ...Object.entries(formData.minQuantityOptions)
-    ];
-
-    const enabledButEmpty = allSections.filter(([key, config]: any) => 
-      config.enabled && (!config.value || config.value.trim() === '')
-    );
-
-    if (enabledButEmpty.length > 0) {
+    // Simple validation - just check if category name is provided
+    if (!formData.categoryName || formData.categoryName.trim() === '') {
       toast({
-        title: "Missing Values",
-        description: "Please enter values for all enabled options before saving.",
+        title: "Missing Category Name",
+        description: "Please enter a category name before saving.",
         variant: "destructive"
       });
       return;
     }
 
-    // Transform data for API
-    const pricingOptions = Object.entries(formData.pricingOptions)
-      .filter(([, config]: any) => config.enabled)
-      .map(([key, config]: any) => ({ id: key, label: key, value: config.value }));
+    // Save to all sectors
+    const allSectors = ['utilities', 'adoption', 'highways', 'insurance', 'construction', 'domestic'];
+    
+    try {
+      // Create promises for all sectors
+      const savePromises = allSectors.map(sectorName => {
+        const configData = {
+          categoryId: formData.categoryName.toLowerCase().replace(/\s+/g, '-'),
+          categoryName: formData.categoryName,
+          description: formData.description,
+          pricingOptions: [],
+          quantityOptions: [],
+          minQuantityOptions: [],
+          rangeOptions: [],
+          rangeValues: {},
+          mathOperators: [],
+          sector: sectorName
+        };
 
-    const quantityOptions = Object.entries(formData.quantityOptions)
-      .filter(([, config]: any) => config.enabled)
-      .map(([key, config]: any) => ({ id: key, label: key, value: config.value }));
+        return apiRequest('POST', '/api/pr2-pricing', configData);
+      });
 
-    const minQuantityOptions = Object.entries(formData.minQuantityOptions)
-      .filter(([, config]: any) => config.enabled)
-      .map(([key, config]: any) => ({ id: key, label: key, value: config.value }));
+      // Wait for all saves to complete
+      await Promise.all(savePromises);
 
-    const configData = {
-      categoryId: 'cleanse-survey',
-      categoryName: formData.categoryName,
-      description: formData.description,
-      pricingOptions,
-      quantityOptions,
-      minQuantityOptions,
-      rangeOptions: [],
-      rangeValues: {},
-      mathOperators: Object.values(formData.mathOperators),
-      sector
-    };
-
-    saveMutation.mutate(configData);
+      toast({
+        title: "Success",
+        description: `Category "${formData.categoryName}" created successfully in all sectors`,
+      });
+      
+      // Invalidate cache for all sectors
+      allSectors.forEach(sectorName => {
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing', sectorName] });
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
+      
+      // Navigate back to PR2 pricing page
+      setLocation(`/pr2-pricing?sector=${sector}`);
+      
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create category in all sectors",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -263,9 +249,9 @@ export default function PR2PricingForm() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">
-            {isEditing ? 'Edit' : 'Add'} PR2 Pricing Configuration
+            PR2 New Category Configuration
           </h1>
-          <p className="text-gray-600">Configure pricing structure for {sector} sector</p>
+          <p className="text-gray-600">Create new category for all sectors</p>
         </div>
         
         <div className="flex gap-4">
@@ -297,48 +283,11 @@ export default function PR2PricingForm() {
         <CardContent className="space-y-4">
           <div>
             <Label>Category Name</Label>
-            <Select
-              value={isCustomCategory ? 'Custom' : formData.categoryName}
-              onValueChange={(value) => {
-                if (value === 'Custom') {
-                  setIsCustomCategory(true);
-                  setFormData(prev => ({ ...prev, categoryName: customCategoryName }));
-                } else {
-                  setIsCustomCategory(false);
-                  setFormData(prev => ({ 
-                    ...prev, 
-                    categoryName: value,
-                    description: CATEGORY_DESCRIPTIONS[value as keyof typeof CATEGORY_DESCRIPTIONS] || 'PR2 cleaning and survey configuration'
-                  }));
-                }
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {STANDARD_CATEGORIES.map(category => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            {/* Custom category input when "Custom" is selected */}
-            {isCustomCategory && (
-              <div className="mt-2">
-                <Label>Custom Category Name</Label>
-                <Input
-                  value={customCategoryName}
-                  onChange={(e) => {
-                    setCustomCategoryName(e.target.value);
-                    setFormData(prev => ({ ...prev, categoryName: e.target.value }));
-                  }}
-                  placeholder="Enter custom category name"
-                />
-              </div>
-            )}
+            <Input
+              value={formData.categoryName}
+              onChange={(e) => setFormData(prev => ({ ...prev, categoryName: e.target.value }))}
+              placeholder="Enter category name..."
+            />
           </div>
           <div>
             <Label>Description</Label>
@@ -351,172 +300,7 @@ export default function PR2PricingForm() {
         </CardContent>
       </Card>
 
-      {/* Pricing Configuration Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Blue - Price/Cost Options */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-blue-500 rounded"></div>
-              Price/Cost Options
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {[
-              { key: 'dayRate', label: 'Day Rate (£)' },
-              { key: 'hourlyRate', label: 'Hourly Rate (£)' },
-              { key: 'setupRate', label: 'Setup Rate (£)' },
-              { key: 'meterageRate', label: 'Per Meter Rate (£)' }
-            ].map(option => (
-              <div key={option.key} className="flex items-center space-x-3">
-                <Checkbox
-                  checked={formData.pricingOptions[option.key as keyof typeof formData.pricingOptions].enabled}
-                  onCheckedChange={(checked) => updateConfig('pricingOptions', option.key, 'enabled', checked)}
-                />
-                <Label className="flex-1">{option.label}</Label>
-                {formData.pricingOptions[option.key as keyof typeof formData.pricingOptions].enabled && (
-                  <Input
-                    type="number"
-                    placeholder="Enter value"
-                    className="w-24"
-                    value={formData.pricingOptions[option.key as keyof typeof formData.pricingOptions].value}
-                    onChange={(e) => updateConfig('pricingOptions', option.key, 'value', e.target.value)}
-                  />
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
 
-        {/* Green - Quantity Options */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500 rounded"></div>
-              Quantity Options
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {[
-              { key: 'runsPerShift', label: 'Runs per Shift' },
-              { key: 'metersPerShift', label: 'Meters per Shift' },
-              { key: 'sectionsPerDay', label: 'Sections per Day' }
-            ].map(option => (
-              <div key={option.key} className="flex items-center space-x-3">
-                <Checkbox
-                  checked={formData.quantityOptions[option.key as keyof typeof formData.quantityOptions].enabled}
-                  onCheckedChange={(checked) => updateConfig('quantityOptions', option.key, 'enabled', checked)}
-                />
-                <Label className="flex-1">{option.label}</Label>
-                {formData.quantityOptions[option.key as keyof typeof formData.quantityOptions].enabled && (
-                  <Input
-                    type="number"
-                    placeholder="Enter value"
-                    className="w-24"
-                    value={formData.quantityOptions[option.key as keyof typeof formData.quantityOptions].value}
-                    onChange={(e) => updateConfig('quantityOptions', option.key, 'value', e.target.value)}
-                  />
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Orange - Min Quantity Options */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-orange-500 rounded"></div>
-              Min Quantity Options
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {[
-              { key: 'minRuns', label: 'Min Runs' },
-              { key: 'minMeters', label: 'Min Meters' },
-              { key: 'minSetup', label: 'Min Setup' }
-            ].map(option => (
-              <div key={option.key} className="flex items-center space-x-3">
-                <Checkbox
-                  checked={formData.minQuantityOptions[option.key as keyof typeof formData.minQuantityOptions].enabled}
-                  onCheckedChange={(checked) => updateConfig('minQuantityOptions', option.key, 'enabled', checked)}
-                />
-                <Label className="flex-1">{option.label}</Label>
-                {formData.minQuantityOptions[option.key as keyof typeof formData.minQuantityOptions].enabled && (
-                  <Input
-                    type="number"
-                    placeholder="Enter value"
-                    className="w-24"
-                    value={formData.minQuantityOptions[option.key as keyof typeof formData.minQuantityOptions].value}
-                    onChange={(e) => updateConfig('minQuantityOptions', option.key, 'value', e.target.value)}
-                  />
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Math Operators */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Math Operators</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { key: 'op1', label: 'Operator 1' },
-              { key: 'op2', label: 'Operator 2' },
-              { key: 'op3', label: 'Operator 3' }
-            ].map(op => (
-              <div key={op.key}>
-                <Label>{op.label}</Label>
-                <Select
-                  value={formData.mathOperators[op.key as keyof typeof formData.mathOperators]}
-                  onValueChange={(value) => updateMathOperator(op.key, value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="+">+ (Add)</SelectItem>
-                    <SelectItem value="-">- (Subtract)</SelectItem>
-                    <SelectItem value="×">× (Multiply)</SelectItem>
-                    <SelectItem value="÷">÷ (Divide)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Calculation Preview */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5" />
-            Calculation Preview
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="p-4 bg-gray-100 rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">Formula:</p>
-            <div className="font-mono text-lg">
-              {Object.entries(formData.pricingOptions)
-                .filter(([, config]: any) => config.enabled)
-                .map(([key, config]: any) => `${config.value || key}`)
-                .join(` ${formData.mathOperators.op1} `)}
-              {Object.entries(formData.quantityOptions).some(([, config]: any) => config.enabled) && 
-                ` ${formData.mathOperators.op2} ${Object.entries(formData.quantityOptions)
-                  .filter(([, config]: any) => config.enabled)
-                  .map(([key, config]: any) => `${config.value || key}`)
-                  .join(` ${formData.mathOperators.op3} `)}`
-              }
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
