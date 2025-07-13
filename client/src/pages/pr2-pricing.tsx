@@ -18,7 +18,16 @@ import {
   ShieldCheck, 
   HardHat, 
   Zap,
-  Trash2
+  Trash2,
+  Video,
+  Truck,
+  Waves,
+  Monitor,
+  PaintBucket,
+  Flame,
+  Sun,
+  Scissors,
+  Pickaxe
 } from 'lucide-react';
 
 // Sector definitions copied from repair-pricing.tsx
@@ -29,6 +38,22 @@ const SECTORS = [
   { id: 'insurance', name: 'Insurance', icon: ShieldCheck, color: 'text-red-600' },
   { id: 'construction', name: 'Construction', icon: HardHat, color: 'text-purple-600' },
   { id: 'domestic', name: 'Domestic', icon: Users, color: 'text-brown-600' }
+];
+
+// Standard category options moved from PR2 form
+const STANDARD_CATEGORIES = [
+  { id: 'cctv', name: 'CCTV', description: 'Closed-circuit television inspection services', icon: Video, color: 'bg-blue-50 border-blue-200 text-blue-800' },
+  { id: 'van-pack', name: 'Van Pack', description: 'Mobile van-based equipment package', icon: Truck, color: 'bg-green-50 border-green-200 text-green-800' },
+  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves, color: 'bg-cyan-50 border-cyan-200 text-cyan-800' },
+  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection with van pack equipment', icon: Monitor, color: 'bg-purple-50 border-purple-200 text-purple-800' },
+  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video, color: 'bg-indigo-50 border-indigo-200 text-indigo-800' },
+  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precision directional cutting services', icon: Waves, color: 'bg-teal-50 border-teal-200 text-teal-800' },
+  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient temperature pipe lining installation', icon: PaintBucket, color: 'bg-gray-50 border-gray-200 text-gray-800' },
+  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure pipe lining installation', icon: Flame, color: 'bg-red-50 border-red-200 text-red-800' },
+  { id: 'uv-lining', name: 'UV Lining', description: 'Ultraviolet cured pipe lining installation', icon: Sun, color: 'bg-yellow-50 border-yellow-200 text-yellow-800' },
+  { id: 'ims-cutting', name: 'IMS Cutting', description: 'Integrated Management System cutting services', icon: Scissors, color: 'bg-orange-50 border-orange-200 text-orange-800' },
+  { id: 'excavation', name: 'Excavation', description: 'Traditional excavation and repair services', icon: Pickaxe, color: 'bg-amber-50 border-amber-200 text-amber-800' },
+  { id: 'tankering', name: 'Tankering', description: 'Waste removal and tankering services', icon: Truck, color: 'bg-slate-50 border-slate-200 text-slate-800' }
 ];
 
 export default function PR2Pricing() {
@@ -68,9 +93,14 @@ export default function PR2Pricing() {
     }
   });
 
-  // Handle navigation to add new PR2 configuration
-  const handleAddConfiguration = () => {
-    navigate(`/pr2-pricing-form?sector=${sector}`);
+  // Handle navigation to add new PR2 configuration with category
+  const handleAddConfiguration = (categoryId?: string) => {
+    if (categoryId) {
+      const category = STANDARD_CATEGORIES.find(c => c.id === categoryId);
+      navigate(`/pr2-pricing-form?sector=${sector}&category=${category?.name || categoryId}`);
+    } else {
+      navigate(`/pr2-pricing-form?sector=${sector}&category=Custom`);
+    }
   };
 
   if (categoriesLoading || pr2Loading) {
@@ -141,71 +171,52 @@ export default function PR2Pricing() {
           </Button>
         </div>
 
-        {pr2Configurations.length === 0 ? (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Select Standard Category</CardTitle>
-                <p className="text-sm text-gray-600">Choose from pre-configured standard categories or create a custom one</p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {[
-                    'CCTV',
-                    'Van Pack', 
-                    'Jet Vac',
-                    'CCTV/Van Pack',
-                    'CCTV/Jet Vac',
-                    'Directional Water Cutter',
-                    'Ambient Lining',
-                    'Hot Cure Lining',
-                    'UV Lining',
-                    'IMS Cutting',
-                    'Excavation',
-                    'Tankering'
-                  ].map((category) => (
-                    <Button
-                      key={category}
-                      variant="outline"
-                      className="h-auto p-4 text-left flex flex-col items-start gap-1"
-                      onClick={() => navigate(`/pr2-pricing-form?sector=${sector}&category=${encodeURIComponent(category)}`)}
-                    >
-                      <span className="font-medium text-sm">{category}</span>
-                      <span className="text-xs text-gray-500 line-clamp-2">
-                        {category === 'CCTV' && 'Inspection services'}
-                        {category === 'Van Pack' && 'Mobile equipment'}
-                        {category === 'Jet Vac' && 'Water jetting & vacuum'}
-                        {category === 'CCTV/Van Pack' && 'Combined inspection'}
-                        {category === 'CCTV/Jet Vac' && 'Inspection & jetting'}
-                        {category === 'Directional Water Cutter' && 'Precision cutting'}
-                        {category === 'Ambient Lining' && 'Pipe lining'}
-                        {category === 'Hot Cure Lining' && 'Hot cure lining'}
-                        {category === 'UV Lining' && 'UV cured lining'}
-                        {category === 'IMS Cutting' && 'IMS cutting services'}
-                        {category === 'Excavation' && 'Traditional excavation'}
-                        {category === 'Tankering' && 'Waste removal'}
-                      </span>
-                    </Button>
-                  ))}
-                </div>
-                
-                <div className="mt-6 pt-6 border-t">
-                  <Button
-                    variant="outline"
-                    className="w-full border-dashed border-2 p-6"
-                    onClick={() => navigate(`/pr2-pricing-form?sector=${sector}&category=Custom`)}
+        {/* Standard Categories Section - Always Visible */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Standard Categories</CardTitle>
+              <p className="text-sm text-gray-600">Choose from pre-configured standard categories similar to OPS and PR1 systems</p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {STANDARD_CATEGORIES.map((category) => (
+                  <Card
+                    key={category.id}
+                    className={`cursor-pointer transition-all hover:shadow-md ${category.color} border-2`}
+                    onClick={() => handleAddConfiguration(category.id)}
                   >
-                    <Plus className="h-5 w-5 mr-2" />
-                    Create Custom Category
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        ) : (
+                    <CardContent className="p-4 text-center">
+                      <category.icon className="h-8 w-8 mx-auto mb-2" />
+                      <h3 className="font-medium text-sm mb-1">{category.name}</h3>
+                      <p className="text-xs opacity-75 line-clamp-2">{category.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              <div className="mt-6 pt-6 border-t">
+                <Button
+                  variant="outline"
+                  className="w-full h-auto p-4 border-2 border-dashed"
+                  onClick={() => handleAddConfiguration()}
+                >
+                  <div className="text-center">
+                    <Plus className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                    <span className="font-medium">Create Custom Category</span>
+                    <p className="text-xs text-gray-500 mt-1">Define your own category with custom specifications</p>
+                  </div>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Existing Configurations */}
+        {pr2Configurations.length > 0 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">PR2 Configurations</h3>
-            <div className="grid gap-4">
+            <h3 className="text-lg font-semibold">Existing PR2 Configurations</h3>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {pr2Configurations.map((config: any) => (
                 <Card key={config.id}>
                   <CardHeader>
@@ -220,9 +231,7 @@ export default function PR2Pricing() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant="default">
-                          Active
-                        </Badge>
+                        <Badge variant="default">Active</Badge>
                         <Button
                           size="sm"
                           variant="outline"
