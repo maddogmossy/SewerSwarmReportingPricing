@@ -83,33 +83,22 @@ export default function PR2ConfigClean() {
 
   useEffect(() => {
     if (isEditing && existingConfig) {
-      console.log('Loading existing clean config:', existingConfig);
+      console.log('📋 Loading config in edit mode:', existingConfig);
       
-      // Only load if the config uses the new clean format (array pricing options)
-      if (Array.isArray(existingConfig.pricingOptions)) {
+      // Get the actual config object (might be wrapped in array)
+      const config = Array.isArray(existingConfig) ? existingConfig[0] : existingConfig;
+      
+      if (config && config.pricingOptions) {
+        console.log('✅ Found existing pricing options:', config.pricingOptions);
         setFormData({
-          categoryName: existingConfig.categoryName || '',
-          description: existingConfig.description || '',
-          pricingOptions: existingConfig.pricingOptions,
+          categoryName: config.categoryName || '',
+          description: config.description || '',
+          pricingOptions: config.pricingOptions || [],
           quantityOptions: {},
           minQuantityOptions: {},
           additionalOptions: {},
-          mathOperators: existingConfig.mathOperators || ['N/A'],
-          pricingStackOrder: existingConfig.pricingOptions.map(opt => opt.id) || [],
-          sector
-        });
-      } else {
-        // Old format - start fresh with empty form
-        console.log('🧹 Old data format detected - starting fresh with clean form');
-        setFormData({
-          categoryName: existingConfig.categoryName || '',
-          description: existingConfig.description || '',
-          pricingOptions: [],
-          quantityOptions: {},
-          minQuantityOptions: {},
-          additionalOptions: {},
-          mathOperators: ['N/A'],
-          pricingStackOrder: [],
+          mathOperators: config.mathOperators || ['N/A'],
+          pricingStackOrder: (config.pricingOptions || []).map((opt: any) => opt.id),
           sector
         });
       }
