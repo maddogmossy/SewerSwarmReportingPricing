@@ -78,7 +78,7 @@ function Router() {
 
           <Route path="/pr2-pricing" component={PR2Pricing} />
           <Route path="/pr2-pricing-form" component={PR2PricingForm} />
-          <Route path="/pr2-category" component={PR2Category} />
+          <Route path="/pr2-category/:categoryId?" component={PR2Category} />
           <Route path="/pr2-cctv" component={PR2CCTV} />
           <Route path="/pr2-van-pack" component={PR2VanPack} />
           <Route path="/pr2-jet-vac" component={PR2JetVac} />
