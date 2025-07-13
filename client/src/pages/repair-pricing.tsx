@@ -217,6 +217,17 @@ export default function RepairPricing() {
   const { sector } = useParams<{ sector: string }>();
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
+  
+  // Parse URL parameters for new category creation
+  const urlParams = new URLSearchParams(window.location.search);
+  const autoSetup = urlParams.get('autoSetup') === 'true';
+  const urlCategoryName = urlParams.get('categoryName') || '';
+  const urlPipeSize = urlParams.get('pipeSize') || '';
+  const urlSector = urlParams.get('sector') || '';
+  const urlItemNo = urlParams.get('itemNo') || '';
+  const urlDefects = urlParams.get('defects') || '';
+  const urlRecommendations = urlParams.get('recommendations') || '';
+  const urlPipeMaterial = urlParams.get('pipeMaterial') || '';
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -226,14 +237,14 @@ export default function RepairPricing() {
   const [pendingSectorChange, setPendingSectorChange] = useState<{sectorId: string, checked: boolean} | null>(null);
   const [isComplianceWarningOpen, setIsComplianceWarningOpen] = useState(false);
   const [pendingEditItem, setPendingEditItem] = useState<any>(null);
-  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [showAddCategory, setShowAddCategory] = useState(autoSetup);
   const [newCategory, setNewCategory] = useState({
-    name: '',
-    description: '',
+    name: urlCategoryName,
+    description: urlRecommendations ? generateDescriptionFromRecommendations(urlRecommendations, urlDefects) : '',
     icon: 'Wrench',
     color: 'text-blue-600',
     pricingStructure: {
-      meterage: false,
+      meterage: true, // Enable by default for cleaning categories
       numberPerShift: false,
       metersPerShift: false,
       dayRate: false,
@@ -252,6 +263,21 @@ export default function RepairPricing() {
   });
   const [showSimpleAddForm, setShowSimpleAddForm] = useState(false);
   const [simpleCategoryName, setSimpleCategoryName] = useState('');
+  
+  // Auto-setup from URL parameters (from dashboard category creation)
+  useEffect(() => {
+    if (autoSetup && urlCategoryName) {
+      // Clear URL parameters after processing
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+      
+      // Show toast message about auto-setup
+      toast({
+        title: "Category Setup",
+        description: `Setting up "${urlCategoryName}" category with section data.`
+      });
+    }
+  }, [autoSetup, urlCategoryName, toast]);
 
   
   // Collapsible state for option windows

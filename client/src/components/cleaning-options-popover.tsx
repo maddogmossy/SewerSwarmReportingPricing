@@ -161,13 +161,35 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       });
       
       if (response.ok) {
+        const newCategory = await response.json();
+        
         setShowSetupDialog(false);
         setCategoryName('');
         setIsOpen(false);
+        
         toast({
           title: "Category Created",
           description: `"${categoryName}" category has been created successfully.`
         });
+        
+        // Navigate to pricing page with category details and section data
+        const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
+        const sector = sectionData.sector || 'utilities';
+        
+        const params = new URLSearchParams({
+          categoryId: newCategory.id.toString(),
+          categoryName: categoryName,
+          pipeSize: `${pipeSize}mm`,
+          sector: sector,
+          itemNo: sectionData.itemNo?.toString() || '1',
+          defects: sectionData.defects || '',
+          recommendations: sectionData.recommendations || '',
+          pipeMaterial: sectionData.pipeMaterial || '',
+          autoSetup: 'true'
+        });
+        
+        // Navigate to repair pricing page with the new category
+        setLocation(`/repair-pricing?${params.toString()}`);
       }
     } catch (error) {
       toast({
