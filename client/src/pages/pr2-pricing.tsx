@@ -59,9 +59,15 @@ const STANDARD_CATEGORIES = [
 export default function PR2Pricing() {
   const [location, navigate] = useLocation();
   
-  // Simple extraction without complex parsing
-  const urlParams = new URLSearchParams(window.location.search);
+  // Extract sector from URL parameters
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const sector = urlParams.get('sector') || 'utilities';
+  
+  // Debug: Log current sector
+  console.log('Current location:', location);
+  console.log('Current sector:', sector);
+  
+  // Remove the useEffect for now to avoid errors
   
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
