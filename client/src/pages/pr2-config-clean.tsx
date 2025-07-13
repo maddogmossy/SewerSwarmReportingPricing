@@ -225,13 +225,23 @@ export default function PR2ConfigClean() {
     }
   }, [existingConfig, isEditing, sector]);
 
-  // Update selectedSectors when allSectorConfigs loads
+  // Update selectedSectors when allSectorConfigs loads - only set sectors that actually have configs
   useEffect(() => {
     if (isEditing && allSectorConfigs.length > 0) {
       const sectorsWithConfigs = allSectorConfigs.map((c: any) => c.sector);
-      setSelectedSectors(sectorsWithConfigs);
+      console.log('🎯 Sectors with actual configs:', sectorsWithConfigs);
+      console.log('🎯 All sector configs data:', allSectorConfigs);
+      
+      // Only set sectors that have actual configurations
+      const uniqueSectors = [...new Set(sectorsWithConfigs)];
+      console.log('🎯 Setting selected sectors to:', uniqueSectors);
+      setSelectedSectors(uniqueSectors);
+    } else if (isEditing && allSectorConfigs.length === 0) {
+      // If no configs found across sectors, just use the current sector
+      console.log('🎯 No configs found across sectors, defaulting to current sector:', sector);
+      setSelectedSectors([sector]);
     }
-  }, [allSectorConfigs, isEditing]);
+  }, [allSectorConfigs, isEditing, sector]);
 
   // Save configuration with safe multi-sector support
   const saveConfiguration = useMutation({
