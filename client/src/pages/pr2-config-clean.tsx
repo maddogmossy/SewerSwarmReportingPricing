@@ -20,6 +20,14 @@ interface PricingOption {
   value: string;
 }
 
+interface RangeOption {
+  id: string;
+  label: string;
+  enabled: boolean;
+  rangeStart: string;
+  rangeEnd: string;
+}
+
 interface CleanFormData {
   categoryName: string;
   description: string;
@@ -33,8 +41,8 @@ interface CleanFormData {
   // Orange Window - Min Quantity Options
   minQuantityOptions: PricingOption[];
   
-  // Purple Window - Additional Options (EMPTY)
-  additionalOptions: Record<string, never>;
+  // Purple Window - Range Options
+  rangeOptions: RangeOption[];
   
   // Math Operations
   mathOperators: string[];
@@ -43,6 +51,7 @@ interface CleanFormData {
   pricingStackOrder: string[];
   quantityStackOrder: string[];
   minQuantityStackOrder: string[];
+  rangeStackOrder: string[];
   
   sector: string;
 }
@@ -64,11 +73,12 @@ export default function PR2ConfigClean() {
     pricingOptions: [],
     quantityOptions: [],
     minQuantityOptions: [],
-    additionalOptions: {},
+    rangeOptions: [],
     mathOperators: ['N/A'],
     pricingStackOrder: [],
     quantityStackOrder: [],
     minQuantityStackOrder: [],
+    rangeStackOrder: [],
     sector
   });
 
@@ -80,12 +90,16 @@ export default function PR2ConfigClean() {
   const [editQuantityDialogOpen, setEditQuantityDialogOpen] = useState(false);
   const [addMinQuantityDialogOpen, setAddMinQuantityDialogOpen] = useState(false);
   const [editMinQuantityDialogOpen, setEditMinQuantityDialogOpen] = useState(false);
+  const [addRangeDialogOpen, setAddRangeDialogOpen] = useState(false);
+  const [editRangeDialogOpen, setEditRangeDialogOpen] = useState(false);
   const [newPricingLabel, setNewPricingLabel] = useState('');
   const [newQuantityLabel, setNewQuantityLabel] = useState('');
   const [newMinQuantityLabel, setNewMinQuantityLabel] = useState('');
+  const [newRangeLabel, setNewRangeLabel] = useState('');
   const [editingPricing, setEditingPricing] = useState<PricingOption | null>(null);
   const [editingQuantity, setEditingQuantity] = useState<PricingOption | null>(null);
   const [editingMinQuantity, setEditingMinQuantity] = useState<PricingOption | null>(null);
+  const [editingRange, setEditingRange] = useState<RangeOption | null>(null);
 
   // Load existing configuration for editing
   const { data: existingConfig } = useQuery({
@@ -106,6 +120,7 @@ export default function PR2ConfigClean() {
         // Handle array vs object format for quantityOptions and minQuantityOptions
         const quantityOptions = Array.isArray(config.quantityOptions) ? config.quantityOptions : [];
         const minQuantityOptions = Array.isArray(config.minQuantityOptions) ? config.minQuantityOptions : [];
+        const rangeOptions = Array.isArray(config.rangeOptions) ? config.rangeOptions : [];
         
         setFormData({
           categoryName: config.categoryName || '',
@@ -113,11 +128,12 @@ export default function PR2ConfigClean() {
           pricingOptions: config.pricingOptions || [],
           quantityOptions: quantityOptions,
           minQuantityOptions: minQuantityOptions,
-          additionalOptions: {},
+          rangeOptions: rangeOptions,
           mathOperators: config.mathOperators || ['N/A'],
           pricingStackOrder: (config.pricingOptions || []).map((opt: any) => opt.id),
           quantityStackOrder: quantityOptions.map((opt: any) => opt.id),
           minQuantityStackOrder: minQuantityOptions.map((opt: any) => opt.id),
+          rangeStackOrder: rangeOptions.map((opt: any) => opt.id),
           sector
         });
       }
@@ -365,6 +381,68 @@ export default function PR2ConfigClean() {
     setEditMinQuantityDialogOpen(false);
   };
 
+  // Range option management
+  const addRangeOption = () => {
+    if (!newRangeLabel.trim()) return;
+    
+    const newOption: RangeOption = {
+      id: `range_${Date.now()}`,
+      label: newRangeLabel.trim(),
+      enabled: false,
+      rangeStart: '',
+      rangeEnd: ''
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      rangeOptions: [...prev.rangeOptions, newOption],
+      rangeStackOrder: [...prev.rangeStackOrder, newOption.id]
+    }));
+    
+    setNewRangeLabel('');
+    setAddRangeDialogOpen(false);
+  };
+
+  const deleteRangeOption = (optionId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      rangeOptions: prev.rangeOptions.filter(opt => opt.id !== optionId),
+      rangeStackOrder: prev.rangeStackOrder.filter(id => id !== optionId)
+    }));
+  };
+
+  const updateRangeOption = (optionId: string, field: 'enabled' | 'rangeStart' | 'rangeEnd', value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      rangeOptions: prev.rangeOptions.map(opt =>
+        opt.id === optionId ? { ...opt, [field]: value } : opt
+      )
+    }));
+  };
+
+  const editRangeOption = (option: RangeOption) => {
+    setEditingRange(option);
+    setNewRangeLabel(option.label);
+    setEditRangeDialogOpen(true);
+  };
+
+  const saveRangeEdit = () => {
+    if (!editingRange || !newRangeLabel.trim()) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      rangeOptions: prev.rangeOptions.map(opt => 
+        opt.id === editingRange.id 
+          ? { ...opt, label: newRangeLabel.trim() }
+          : opt
+      )
+    }));
+    
+    setEditingRange(null);
+    setNewRangeLabel('');
+    setEditRangeDialogOpen(false);
+  };
+
   // Get ordered options for display
   const getOrderedPricingOptions = () => {
     if (formData.pricingStackOrder.length === 0) {
@@ -410,6 +488,22 @@ export default function PR2ConfigClean() {
     
     const missingOptions = formData.minQuantityOptions.filter(
       opt => !formData.minQuantityStackOrder.includes(opt.id)
+    );
+    
+    return [...ordered, ...missingOptions];
+  };
+
+  const getOrderedRangeOptions = () => {
+    if (formData.rangeStackOrder.length === 0) {
+      return formData.rangeOptions;
+    }
+    
+    const ordered = formData.rangeStackOrder
+      .map(id => formData.rangeOptions.find(opt => opt.id === id))
+      .filter(Boolean) as RangeOption[];
+    
+    const missingOptions = formData.rangeOptions.filter(
+      opt => !formData.rangeStackOrder.includes(opt.id)
     );
     
     return [...ordered, ...missingOptions];
@@ -700,6 +794,38 @@ export default function PR2ConfigClean() {
             </DialogContent>
           </Dialog>
 
+          {/* Edit Range Dialog */}
+          <Dialog open={editRangeDialogOpen} onOpenChange={setEditRangeDialogOpen}>
+            <DialogContent aria-describedby="edit-range-description">
+              <DialogHeader>
+                <DialogTitle>Edit Range Option</DialogTitle>
+              </DialogHeader>
+              <div id="edit-range-description" className="space-y-4">
+                <div>
+                  <Label htmlFor="editRangeLabel">Option Name</Label>
+                  <Input
+                    id="editRangeLabel"
+                    value={newRangeLabel}
+                    onChange={(e) => setNewRangeLabel(e.target.value)}
+                    placeholder="Enter range option name"
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setEditRangeDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={saveRangeEdit}
+                    disabled={!newRangeLabel.trim()}
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           {/* Math Operations - Middle Column */}
           <Card className="bg-gray-50">
             <CardHeader>
@@ -941,19 +1067,116 @@ export default function PR2ConfigClean() {
             </CardContent>
           </Card>
 
-          {/* Purple Window - Additional Options */}
+          {/* Purple Window - Ranges */}
           <Card className="bg-purple-50">
             <CardHeader>
               <CardTitle className="text-purple-600 flex items-center gap-2">
                 <Zap className="w-5 h-5" />
-                Additional Options
+                Ranges
               </CardTitle>
+              <div className="flex gap-2">
+                <Dialog open={addRangeDialogOpen} onOpenChange={setAddRangeDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
+                      <Plus className="w-3 h-3 mr-1" />
+                      Add
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent aria-describedby="add-range-description">
+                    <DialogHeader>
+                      <DialogTitle>Add Range Option</DialogTitle>
+                    </DialogHeader>
+                    <div id="add-range-description" className="space-y-4">
+                      <div>
+                        <Label htmlFor="newRangeLabel">Option Name</Label>
+                        <Input
+                          id="newRangeLabel"
+                          value={newRangeLabel}
+                          onChange={(e) => setNewRangeLabel(e.target.value)}
+                          placeholder="Enter range option name"
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setAddRangeDialogOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={addRangeOption}
+                          disabled={!newRangeLabel.trim()}
+                          className="bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          Add Option
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                
+                {getOrderedRangeOptions().length >= 2 && (
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white"
+                  >
+                    Stack Order
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                <p>Empty - Ready for clean options</p>
-                <p className="text-sm">Tell me what to add here</p>
-              </div>
+              {getOrderedRangeOptions().length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No range options added</p>
+                  <p className="text-sm">Click "Add" to create your first option</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {getOrderedRangeOptions().map((option) => (
+                    <div key={option.id} className="bg-white p-3 rounded border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Checkbox
+                          checked={option.enabled}
+                          onCheckedChange={(checked) => updateRangeOption(option.id, 'enabled', checked)}
+                        />
+                        <span className="flex-1 font-medium">{option.label}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => editRangeOption(option)}
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deleteRangeOption(option.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      {option.enabled && (
+                        <div className="flex gap-2 items-center">
+                          <span className="text-sm font-medium">R1:</span>
+                          <Input
+                            value={option.rangeStart}
+                            onChange={(e) => updateRangeOption(option.id, 'rangeStart', e.target.value)}
+                            placeholder="Start"
+                            className="text-sm flex-1"
+                          />
+                          <span className="text-sm font-medium">to R2:</span>
+                          <Input
+                            value={option.rangeEnd}
+                            onChange={(e) => updateRangeOption(option.id, 'rangeEnd', e.target.value)}
+                            placeholder="End"
+                            className="text-sm flex-1"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

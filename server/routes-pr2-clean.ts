@@ -124,9 +124,13 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         pricingOptions,
         quantityOptions,
         minQuantityOptions,
+        rangeOptions,
         additionalOptions,
         mathOperators,
         pricingStackOrder,
+        quantityStackOrder,
+        minQuantityStackOrder,
+        rangeStackOrder,
         sector
       } = req.body;
 
@@ -140,7 +144,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           pricingOptions: pricingOptions || [],
           quantityOptions: quantityOptions || [],
           minQuantityOptions: minQuantityOptions || [],
-          rangeOptions: [],
+          rangeOptions: rangeOptions || [],
           rangeValues: {},
           mathOperators: mathOperators || ['N/A'],
           sector: sector || 'utilities',
@@ -168,9 +172,13 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         pricingOptions,
         quantityOptions,
         minQuantityOptions,
+        rangeOptions,
         additionalOptions,
         mathOperators,
         pricingStackOrder,
+        quantityStackOrder,
+        minQuantityStackOrder,
+        rangeStackOrder,
         sector
       } = req.body;
 
@@ -182,7 +190,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           pricingOptions: pricingOptions || [],
           quantityOptions: quantityOptions || [],
           minQuantityOptions: minQuantityOptions || [],
-          rangeOptions: [],
+          rangeOptions: rangeOptions || [],
           rangeValues: {},
           mathOperators: mathOperators || ['N/A'],
           sector: sector || 'utilities',
