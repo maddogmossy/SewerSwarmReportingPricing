@@ -369,10 +369,6 @@ export default function PR2ConfigNew() {
     }));
 
     closeDeleteDialog(section);
-    toast({ 
-      title: `Deleted ${section} option`,
-      description: `Removed "${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}" from ${section} options`
-    });
   };
 
   // Reorder functionality
