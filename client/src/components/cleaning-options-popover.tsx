@@ -320,8 +320,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       params.set('editId', option.id.toString());
     }
     
-    // Navigate to the PR1 pricing page
-    setLocation(`/pr1-pricing?${params.toString()}`);
+    // This section handles configured cleaning options (if any exist)
+    // For now, just close the popover since we focus on simple category creation
+    console.log('Configured option clicked, but current workflow focuses on category creation');
     setIsOpen(false);
   };
 
