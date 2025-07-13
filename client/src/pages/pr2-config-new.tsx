@@ -426,7 +426,7 @@ export default function PR2ConfigNew() {
       </Card>
 
       {/* Pricing and Quantity Options with Math */}
-      <div className="space-y-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         
         {/* Blue - Pricing Options */}
         <Card>
@@ -579,41 +579,39 @@ export default function PR2ConfigNew() {
           </CardContent>
         </Card>
 
-        {/* Math Operations Section - Between Blue and Green */}
-        {(getEnabledPricingCount() > 0 || getEnabledQuantityCount() > 0) && (
-          <Card className="bg-gray-50">
-            <CardHeader>
-              <CardTitle className="text-gray-600 flex items-center gap-2">
-                <Calculator className="w-5 h-5" />
-                Math Operations
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4 flex-wrap">
-                {formData.mathOperators.map((operator, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">Math {index + 1}</span>
-                    <Select value={operator} onValueChange={(value) => updateMathOperator(index, value)}>
-                      <SelectTrigger className="w-20 bg-gray-100 border-gray-300">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="N/A">N/A</SelectItem>
-                        <SelectItem value="+">+</SelectItem>
-                        <SelectItem value="-">-</SelectItem>
-                        <SelectItem value="×">×</SelectItem>
-                        <SelectItem value="÷">÷</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm text-gray-500 mt-3">
-                Configure mathematical operations between pricing and quantity options
-              </p>
-            </CardContent>
-          </Card>
-        )}
+        {/* Math Operations Section - Middle Column */}
+        <Card className="bg-gray-50">
+          <CardHeader>
+            <CardTitle className="text-gray-600 flex items-center gap-2">
+              <Calculator className="w-5 h-5" />
+              Math Operations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {formData.mathOperators.map((operator, index) => (
+                <div key={index} className="flex flex-col gap-2">
+                  <Label className="text-sm text-gray-500">Math {index + 1}</Label>
+                  <Select value={operator} onValueChange={(value) => updateMathOperator(index, value)}>
+                    <SelectTrigger className="bg-gray-100 border-gray-300">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="N/A">N/A</SelectItem>
+                      <SelectItem value="+">+ (Add)</SelectItem>
+                      <SelectItem value="-">- (Subtract)</SelectItem>
+                      <SelectItem value="×">× (Multiply)</SelectItem>
+                      <SelectItem value="÷">÷ (Divide)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-500 mt-3">
+              Configure mathematical operations between pricing and quantity options
+            </p>
+          </CardContent>
+        </Card>
 
         {/* Green - Quantity Options */}
         <Card>
