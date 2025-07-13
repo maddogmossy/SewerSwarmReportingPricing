@@ -130,10 +130,17 @@ export default function PR2Pricing() {
   const deletePR2Configuration = useMutation({
     mutationFn: (id: number) => apiRequest('DELETE', `/api/pr2-pricing/${id}`),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
       // Silent operation - no toast notification
     }
   });
+
+  // Handle PR2 configuration delete with confirmation
+  const handlePR2ConfigDelete = (configId: number, configName: string) => {
+    setCategoryToDelete({ id: configId.toString(), name: configName });
+    setDeleteDialogOpen(true);
+  };
 
   // Delete mutation for standard categories
   const deleteStandardCategory = useMutation({
@@ -172,17 +179,23 @@ export default function PR2Pricing() {
     setDeleteDialogOpen(true);
   };
 
-  // Execute deletion after confirmation
+  // Execute deletion after confirmation (handles both PR2 configs and standard categories)
   const confirmDelete = async () => {
     if (!categoryToDelete) return;
     
     try {
-      await deleteStandardCategory.mutateAsync(categoryToDelete.id);
+      // Check if it's a PR2 configuration (numeric ID) or standard category (string ID)
+      if (/^\d+$/.test(categoryToDelete.id)) {
+        // Numeric ID = PR2 configuration
+        await deletePR2Configuration.mutateAsync(parseInt(categoryToDelete.id));
+      } else {
+        // String ID = Standard category
+        await deleteStandardCategory.mutateAsync(categoryToDelete.id);
+      }
       setDeleteDialogOpen(false);
       setCategoryToDelete(null);
     } catch (error) {
-      // Error handled in mutation onError
-      console.error('Failed to delete category:', error);
+      console.error('Failed to delete:', error);
     }
   };
 
@@ -441,7 +454,7 @@ export default function PR2Pricing() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => deletePR2Configuration.mutate(config.id)}
+                          onClick={() => handlePR2ConfigDelete(config.id, config.categoryName)}
                           className="text-red-600 border-red-200 hover:bg-red-50 px-2"
                         >
                           <Trash2 className="h-4 w-4" />
