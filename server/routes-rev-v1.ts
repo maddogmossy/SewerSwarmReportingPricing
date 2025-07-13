@@ -1286,6 +1286,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Simple Pricing API endpoints
+  app.get('/api/simple-pricing', async (req, res) => {
+    try {
+      console.log('Fetching simple pricing data');
+      const pricing = await db.select().from(repairPricing);
+      res.json(pricing);
+    } catch (error) {
+      console.error('Error fetching simple pricing:', error);
+      res.status(500).json({ error: 'Failed to fetch pricing data' });
+    }
+  });
+
+  app.post('/api/simple-pricing', async (req, res) => {
+    try {
+      console.log('Creating simple pricing category:', req.body);
+      
+      const { categoryName, priceOptions, quantityOptions, minQuantityOptions, rangeOptions } = req.body;
+      
+      const newPricing = await db.insert(repairPricing).values({
+        categoryName,
+        pricingStructure: {
+          priceOptions: priceOptions || [],
+          quantityOptions: quantityOptions || [],
+          minQuantityOptions: minQuantityOptions || [],
+          rangeOptions: rangeOptions || []
+        },
+        mathOperators: {},
+        sector: 'utilities',
+        userId: 'test-user'
+      }).returning();
+      
+      res.json(newPricing[0]);
+    } catch (error) {
+      console.error('Error creating simple pricing:', error);
+      res.status(500).json({ error: 'Failed to create pricing category' });
+    }
+  });
+
+  app.put('/api/simple-pricing/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      console.log('Updating simple pricing category:', id, req.body);
+      
+      const { categoryName, priceOptions, quantityOptions, minQuantityOptions, rangeOptions } = req.body;
+      
+      const updatedPricing = await db.update(repairPricing)
+        .set({
+          categoryName,
+          pricingStructure: {
+            priceOptions: priceOptions || [],
+            quantityOptions: quantityOptions || [],
+            minQuantityOptions: minQuantityOptions || [],
+            rangeOptions: rangeOptions || []
+          },
+          mathOperators: {},
+          updatedAt: new Date()
+        })
+        .where(eq(repairPricing.id, id))
+        .returning();
+      
+      res.json(updatedPricing[0]);
+    } catch (error) {
+      console.error('Error updating simple pricing:', error);
+      res.status(500).json({ error: 'Failed to update pricing category' });
+    }
+  });
+
+  app.delete('/api/simple-pricing/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      console.log('Deleting simple pricing category:', id);
+      
+      const deleted = await db.delete(repairPricing)
+        .where(eq(repairPricing.id, id))
+        .returning();
+      
+      res.json({ success: true, deleted: deleted[0] });
+    } catch (error) {
+      console.error('Error deleting simple pricing:', error);
+      res.status(500).json({ error: 'Failed to delete pricing category' });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }
