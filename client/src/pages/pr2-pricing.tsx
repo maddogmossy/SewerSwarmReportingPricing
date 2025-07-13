@@ -89,10 +89,10 @@ export default function PR2Pricing() {
 
   // Fetch PR2 configurations for current sector
   const { data: pr2ConfigurationsRaw = [], isLoading: pr2Loading } = useQuery({
-    queryKey: ['/api/pr2-pricing', sector],
+    queryKey: ['/api/pr2-clean', sector],
     queryFn: async () => {
       console.log('🔍 Making API request for sector:', sector);
-      const response = await apiRequest('GET', '/api/pr2-pricing', undefined, { sector });
+      const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector });
       const data = await response.json();
       console.log('📥 Raw API response:', data);
       return data;

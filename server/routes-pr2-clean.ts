@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { db } from "./db";
 import { pr2Configurations, standardCategories } from "../shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 // Legacy routes function - still needed for server startup
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -36,12 +36,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Other legacy endpoints
   app.get('/api/pr2-pricing', async (req, res) => {
     try {
-      const configurations = await db
-        .select()
-        .from(pr2Configurations)
-        .where(eq(pr2Configurations.userId, "test-user"));
+      const sector = req.query.sector as string;
       
-      console.log(`✅ Loading ${configurations.length} PR2 configurations from database`);
+      let configurations;
+      if (sector) {
+        // Filter by both userId and sector
+        configurations = await db
+          .select()
+          .from(pr2Configurations)
+          .where(and(
+            eq(pr2Configurations.userId, "test-user"),
+            eq(pr2Configurations.sector, sector)
+          ));
+      } else {
+        // If no sector specified, return all configurations for user
+        configurations = await db
+          .select()
+          .from(pr2Configurations)
+          .where(eq(pr2Configurations.userId, "test-user"));
+      }
+      
+      console.log(`✅ Loading ${configurations.length} PR2 configurations from database${sector ? ` for sector: ${sector}` : ''}`);
       res.json(configurations);
     } catch (error) {
       console.error('Error fetching PR2 configurations:', error);
@@ -79,12 +94,27 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
   // GET all clean PR2 configurations
   app.get('/api/pr2-clean', async (req, res) => {
     try {
-      const configurations = await db
-        .select()
-        .from(pr2Configurations)
-        .where(eq(pr2Configurations.userId, "test-user"));
+      const sector = req.query.sector as string;
       
-      console.log(`✅ Loading ${configurations.length} clean PR2 configurations`);
+      let configurations;
+      if (sector) {
+        // Filter by both userId and sector
+        configurations = await db
+          .select()
+          .from(pr2Configurations)
+          .where(and(
+            eq(pr2Configurations.userId, "test-user"),
+            eq(pr2Configurations.sector, sector)
+          ));
+      } else {
+        // If no sector specified, return all configurations for user
+        configurations = await db
+          .select()
+          .from(pr2Configurations)
+          .where(eq(pr2Configurations.userId, "test-user"));
+      }
+      
+      console.log(`✅ Loading ${configurations.length} clean PR2 configurations${sector ? ` for sector: ${sector}` : ''}`);
       res.json(configurations);
     } catch (error) {
       console.error('Error fetching clean PR2 configurations:', error);
