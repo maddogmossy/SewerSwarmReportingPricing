@@ -18,17 +18,19 @@ export default function PR2ConfigNew() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Extract parameters from URL with enhanced debugging
-  const urlSearchParams = location.split('?')[1] || '';
-  const urlParams = new URLSearchParams(urlSearchParams);
+  // Extract parameters from browser URL directly (not wouter location)
+  const browserURL = window.location.href;
+  const urlObj = new URL(browserURL);
+  const urlParams = urlObj.searchParams;
   const sector = urlParams.get('sector') || 'utilities';
   const editId = urlParams.get('editId') || urlParams.get('edit'); // Support both parameter names
   const categoryParam = urlParams.get('category') || urlParams.get('categoryId');
   const isEditing = !!editId;
   
-  console.log('PR2 Config New - Enhanced URL debugging:', { 
-    fullLocation: location,
-    searchParams: urlSearchParams,
+  console.log('PR2 Config New - Browser URL debugging:', { 
+    browserURL,
+    wouter_location: location,
+    searchParams: urlObj.search,
     allParams: Object.fromEntries(urlParams.entries()),
     sector, 
     editId, 
