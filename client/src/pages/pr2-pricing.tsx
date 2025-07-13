@@ -185,9 +185,25 @@ export default function PR2Pricing() {
     console.log('🔍 Navigation triggered for categoryId:', categoryId);
     console.log('📍 Current sector:', sector);
     
+    // Wait for configurations to load before navigation
+    if (pr2Loading) {
+      console.log('⏳ PR2 configurations still loading, waiting...');
+      return;
+    }
+    
     // Check if there's an existing configuration for this category
     console.log('🔍 All PR2 configurations:', pr2Configurations);
+    console.log('🔍 PR2 configurations count:', pr2Configurations.length);
+    console.log('🔍 PR2 loading state:', pr2Loading);
     console.log('🔍 Looking for categoryId:', categoryId);
+    
+    // Force refresh if configurations are empty but loading is complete
+    if (!pr2Loading && pr2Configurations.length === 0) {
+      console.log('🔄 Configurations empty but not loading - refreshing...');
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
+      setTimeout(() => handleCategoryNavigation(categoryId), 1000);
+      return;
+    }
     
     const existingConfig = pr2Configurations.find(config => {
       console.log('🔎 Checking config:', { 
