@@ -228,7 +228,7 @@ export default function PR2Pricing() {
     if (existingConfig) {
       console.log('✅ Found existing configuration for', categoryId, '- routing to edit page');
       console.log('Configuration details:', existingConfig);
-      const editURL = `/pr2-config-new?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`;
+      const editURL = `/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`;
       console.log('🔗 Navigating to edit URL:', editURL);
       // Force navigation by updating both wouter state and browser history
       window.history.replaceState({}, '', editURL);
@@ -239,7 +239,7 @@ export default function PR2Pricing() {
     // For CCTV specifically, always go to the configuration page
     if (categoryId === 'cctv') {
       console.log('🎥 CCTV category - routing to configuration page');
-      const createURL = `/pr2-config-new?sector=${sector}&categoryId=${categoryId}`;
+      const createURL = `/pr2-config-clean?sector=${sector}&categoryId=${categoryId}`;
       console.log('🔗 Creating CCTV config at URL:', createURL);
       // Force navigation by updating both wouter state and browser history
       window.history.replaceState({}, '', createURL);
