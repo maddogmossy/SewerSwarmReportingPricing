@@ -178,7 +178,10 @@ export default function PR2Pricing() {
             key={s.id}
             variant="outline"
             size="sm"
-            onClick={() => navigate(`/pr2-pricing?sector=${s.id}`)}
+            onClick={() => {
+              console.log(`Navigating to sector: ${s.id}`);
+              navigate(`/pr2-pricing?sector=${s.id}`);
+            }}
             className={`flex items-center gap-2 ${s.color} hover:bg-gray-100`}
           >
             <s.icon className="h-4 w-4" />
