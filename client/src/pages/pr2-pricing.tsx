@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { 
   BarChart3, 
   Plus, 
@@ -59,6 +60,8 @@ const STANDARD_CATEGORIES = [
 export default function PR2Pricing() {
   const [location, setLocation] = useLocation();
   const [sector, setSector] = useState('utilities');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<{id: string, name: string} | null>(null);
   
   // Initialize sector from URL on page load only
   useEffect(() => {
@@ -158,12 +161,19 @@ export default function PR2Pricing() {
       return;
     }
     
-    // Confirm deletion
-    const confirmed = confirm(`Are you sure you want to delete the "${categoryName}" category? This action cannot be undone.`);
-    if (!confirmed) return;
+    // Show confirmation dialog
+    setCategoryToDelete({ id: categoryId, name: categoryName });
+    setDeleteDialogOpen(true);
+  };
+
+  // Execute deletion after confirmation
+  const confirmDelete = async () => {
+    if (!categoryToDelete) return;
     
     try {
-      await deleteStandardCategory.mutateAsync(categoryId);
+      await deleteStandardCategory.mutateAsync(categoryToDelete.id);
+      setDeleteDialogOpen(false);
+      setCategoryToDelete(null);
     } catch (error) {
       // Error handled in mutation onError
       console.error('Failed to delete category:', error);
@@ -431,6 +441,36 @@ export default function PR2Pricing() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Category</DialogTitle>
+          </DialogHeader>
+          <p className="py-4">
+            Are you sure you want to delete the "{categoryToDelete?.name}" category? This action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteDialogOpen(false);
+                setCategoryToDelete(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={deleteStandardCategory.isPending}
+            >
+              {deleteStandardCategory.isPending ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
