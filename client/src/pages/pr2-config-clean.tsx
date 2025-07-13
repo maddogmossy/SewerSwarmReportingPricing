@@ -233,45 +233,63 @@ export default function PR2ConfigClean() {
     }
   }, [allSectorConfigs, isEditing]);
 
-  // Save configuration with simplified multi-sector support
+  // Save configuration with safe multi-sector support
   const saveConfiguration = useMutation({
     mutationFn: async (data: CleanFormData) => {
-      console.log('🚀 Simplified multi-sector save:', { selectedSectors });
+      console.log('🚀 Safe multi-sector save:', { selectedSectors, allSectorConfigs });
       
       const results = [];
+      const currentSectors = allSectorConfigs.map((c: any) => c.sector);
+      const sectorsToAdd = selectedSectors.filter(s => !currentSectors.includes(s));
+      const sectorsToRemove = currentSectors.filter(s => !selectedSectors.includes(s));
       
-      // If editing, delete ALL existing configurations for this categoryId across all sectors
-      if (isEditing && categoryId) {
-        console.log('🗑️ Cleaning up all existing configurations for categoryId:', categoryId);
-        for (const sect of SECTORS) {
+      console.log('📊 Sector analysis:', { currentSectors, selectedSectors, sectorsToAdd, sectorsToRemove });
+      
+      // Remove configurations from unselected sectors
+      for (const sectorToRemove of sectorsToRemove) {
+        const configToRemove = allSectorConfigs.find((c: any) => c.sector === sectorToRemove);
+        if (configToRemove) {
+          console.log(`🗑️ Removing config from ${sectorToRemove}:`, configToRemove.config.id);
           try {
-            const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector: sect.id });
-            const configs = await response.json();
-            const matchingConfig = configs.find((c: any) => c.categoryId === categoryId);
-            if (matchingConfig) {
-              console.log(`🗑️ Removing config from ${sect.id}:`, matchingConfig.id);
-              await apiRequest('DELETE', `/api/pr2-clean/${matchingConfig.id}`);
-            }
+            await apiRequest('DELETE', `/api/pr2-clean/${configToRemove.config.id}`);
+            console.log(`✅ Removed config from ${sectorToRemove}`);
           } catch (error) {
-            console.log(`⚠️ No config to remove from ${sect.id}`);
+            console.log(`⚠️ Failed to remove config from ${sectorToRemove}:`, error);
           }
         }
       }
       
-      // Create new configurations for all selected sectors
+      // Update configurations for existing selected sectors
       for (const sectorId of selectedSectors) {
+        const existingConfig = allSectorConfigs.find((c: any) => c.sector === sectorId);
         const sectorData = { ...data, sector: sectorId };
-        console.log(`➕ Creating config for ${sectorId}`);
         
-        try {
-          const result = await apiRequest('POST', '/api/pr2-clean', { 
-            ...sectorData, 
-            categoryId: categoryId || 'custom' 
-          });
-          results.push(result);
-          console.log(`✅ Created config for ${sectorId}`);
-        } catch (error) {
-          console.error(`❌ Failed to create config for ${sectorId}:`, error);
+        if (existingConfig) {
+          console.log(`📝 Updating config for ${sectorId}:`, existingConfig.config.id);
+          try {
+            const result = await apiRequest('PUT', `/api/pr2-clean/${existingConfig.config.id}`, sectorData);
+            results.push(result);
+            console.log(`✅ Updated config for ${sectorId}`);
+          } catch (error) {
+            console.log(`⚠️ Update failed, creating new config for ${sectorId}`);
+            const result = await apiRequest('POST', '/api/pr2-clean', { 
+              ...sectorData, 
+              categoryId: categoryId || 'custom' 
+            });
+            results.push(result);
+          }
+        } else {
+          console.log(`➕ Creating new config for ${sectorId}`);
+          try {
+            const result = await apiRequest('POST', '/api/pr2-clean', { 
+              ...sectorData, 
+              categoryId: categoryId || 'custom' 
+            });
+            results.push(result);
+            console.log(`✅ Created config for ${sectorId}`);
+          } catch (error) {
+            console.error(`❌ Failed to create config for ${sectorId}:`, error);
+          }
         }
       }
       
