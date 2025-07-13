@@ -61,6 +61,44 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     }
   }, []);
 
+  // Track dynamic popup width based on hidden columns
+  const [popupWidth, setPopupWidth] = useState('w-80');
+
+  // Calculate dynamic popup width based on hidden columns (matching dashboard column system)
+  const updatePopupWidth = () => {
+    try {
+      const savedHiddenColumns = localStorage.getItem('dashboard-hidden-columns');
+      if (savedHiddenColumns) {
+        const hiddenColumns = JSON.parse(savedHiddenColumns);
+        // If 8+ columns hidden ("Hide All" case), use expanded width to match w-96 columns
+        if (hiddenColumns.length >= 8) {
+          setPopupWidth('w-96'); // Expanded width matching expanded recommendation columns
+        } else {
+          setPopupWidth('w-80'); // Default width matching normal recommendation columns
+        }
+      } else {
+        setPopupWidth('w-80');
+      }
+    } catch {
+      setPopupWidth('w-80'); // Fallback to default
+    }
+  };
+
+  // Update popup width when component mounts and when localStorage changes
+  useEffect(() => {
+    updatePopupWidth();
+    
+    // Listen for localStorage changes to update width dynamically
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'dashboard-hidden-columns') {
+        updatePopupWidth();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   // Define base cleansing equipment options
   const baseEquipment = [
     {
@@ -131,7 +169,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           {children}
         </div>
       </PopoverTrigger>
-      <PopoverContent className="max-w-sm p-0 compact-popup" align="start">
+      <PopoverContent className={`${popupWidth} p-0 compact-popup`} align="start">
         <div className="p-3 border-b">
           <h4 className="font-semibold text-xs flex items-center gap-2">
             <Settings className="h-3 w-3 text-blue-600" />
