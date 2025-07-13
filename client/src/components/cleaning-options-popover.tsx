@@ -83,109 +83,32 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     return result;
   };
   
-  // Fetch available cleaning methods with cache busting
-  const { data: cleaningMethods = [] } = useQuery({
-    queryKey: ['/api/repair-methods', Date.now()], // Add timestamp to force fresh data
-    enabled: isOpen,
-    select: (allMethods) => {
-      const filtered = allMethods.filter((method: any) => method.category === 'cleaning');
-      console.log('🔍 Cleaning methods fetched:', filtered);
-      return filtered;
+  // Simple static cleaning options instead of complex API fetching
+  const cleaningMethods = [
+    {
+      id: 1,
+      name: 'Cleanse and Survey',
+      description: 'Complete cleaning followed by verification survey to confirm completion',
+      category: 'cleaning'
+    },
+    {
+      id: 2,
+      name: 'Custom Cleaning',
+      description: 'User-defined cleaning method with custom specifications',
+      category: 'cleaning'
     }
-  });
+  ];
 
-  // Check pricing for each cleaning method
-  const { data: cleaningOptions = [] } = useQuery({
-    queryKey: [`/api/repair-pricing/${sectionData.sector}`],
-    enabled: isOpen && cleaningMethods.length > 0,
-    select: (pricingData) => {
-      return cleaningMethods.map((method: any) => {
-        // Normalize pipe sizes for comparison (handle "150" vs "150mm" variations)
-        const normalizePipeSize = (size: string) => {
-          if (!size) return '';
-          return size.replace(/mm$/i, '').trim();
-        };
-        
-        const normalizedSectionPipeSize = normalizePipeSize(sectionData.pipeSize);
-        
-        // Try multiple matching strategies for cleaning methods
-        let pricing = pricingData.find((p: any) => 
-          p.repairMethodId === method.id && 
-          normalizePipeSize(p.pipeSize) === normalizedSectionPipeSize
-        );
-        
-        // If no exact match, try matching by method name
-        if (!pricing) {
-          pricing = pricingData.find((p: any) => 
-            p.methodName === method.name && 
-            normalizePipeSize(p.pipeSize) === normalizedSectionPipeSize
-          );
-        }
-        
-        // Try matching by work category name (for new categories created from pricing page)
-        if (!pricing) {
-          pricing = pricingData.find((p: any) => 
-            p.workCategory === method.name && 
-            normalizePipeSize(p.pipeSize) === normalizedSectionPipeSize
-          );
-        }
-        
-        // Enhanced fallback: try matching with normalized names for variations like "Cleanse and Survey" vs "Cleanse/Survey"
-        if (!pricing) {
-          const normalizedMethodName = normalizeMethodName(method.name);
-          
-          pricing = pricingData.find((p: any) => {
-            const normalizedWorkCategory = normalizeMethodName(p.workCategory || '');
-            const normalizedPricingPipeSize = normalizePipeSize(p.pipeSize);
-            
-            const nameMatch = normalizedWorkCategory === normalizedMethodName;
-            const sizeMatch = normalizedPricingPipeSize === normalizedSectionPipeSize;
-            
-            return nameMatch && sizeMatch;
-          });
-        }
-        
-        // If still no exact pipe size match, try finding any pricing for this method regardless of pipe size
-        if (!pricing) {
-          const normalizedMethodName = normalizeMethodName(method.name);
-          pricing = pricingData.find((p: any) => {
-            const normalizedWorkCategory = normalizeMethodName(p.workCategory || '');
-            const normalizedPricingMethodName = normalizeMethodName(p.methodName || '');
-            
-            return (p.repairMethodId === method.id || 
-                    normalizedPricingMethodName === normalizedMethodName ||
-                    normalizedWorkCategory === normalizedMethodName);
-          });
-          
-          // If found a different pipe size, mark as needs configuration for specific size
-          if (pricing && pricing.pipeSize !== sectionData.pipeSize) {
-            pricing = {
-              ...pricing,
-              needsPipeSizeConfig: true,
-              originalPipeSize: pricing.pipeSize
-            };
-          }
-        }
-        
-        const option = {
-          id: pricing ? pricing.id : method.id,
-          name: method.name,
-          description: pricing?.description ? 
-            populateDescription(pricing.description, method.name) : 
-            method.description,
-          cost: pricing?.cost,
-          rule: pricing?.rule,
-          minimumQuantity: pricing?.minimumQuantity || 1,
-          configured: !!pricing && !pricing.needsPipeSizeConfig,
-          configurationMessage: pricing?.needsPipeSizeConfig ? 
-            `Configure pricing for ${sectionData.pipeSize} (currently set for ${pricing.originalPipeSize})` :
-            pricing ? undefined : `Add pricing for ${sectionData.pipeSize} ${method.name.toLowerCase()}`
-        };
-        
-        return option;
-      });
-    }
-  });
+  // Simple static cleaning options without complex API pricing logic
+  const cleaningOptions = cleaningMethods.map((method) => ({
+    id: method.id,
+    name: method.name,
+    description: method.description,
+    configured: false, // All options require setup
+    configurationMessage: method.name === 'Cleanse and Survey' 
+      ? 'Create new category (v3)' 
+      : 'Create new cleaning category'
+  }));
 
   // Mutation to save custom cleaning pricing
   const saveCustomPricingMutation = useMutation({
