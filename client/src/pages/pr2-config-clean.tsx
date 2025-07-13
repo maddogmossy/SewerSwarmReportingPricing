@@ -84,22 +84,35 @@ export default function PR2ConfigClean() {
   useEffect(() => {
     if (isEditing && existingConfig) {
       console.log('Loading existing clean config:', existingConfig);
-      // Load existing pricing options if they exist in new format
-      const existingPricingOptions = Array.isArray(existingConfig.pricingOptions) 
-        ? existingConfig.pricingOptions 
-        : [];
       
-      setFormData({
-        categoryName: existingConfig.categoryName || '',
-        description: existingConfig.description || '',
-        pricingOptions: existingPricingOptions,
-        quantityOptions: {},
-        minQuantityOptions: {},
-        additionalOptions: {},
-        mathOperators: existingConfig.mathOperators || ['N/A'],
-        pricingStackOrder: existingPricingOptions.map(opt => opt.id) || [],
-        sector
-      });
+      // Only load if the config uses the new clean format (array pricing options)
+      if (Array.isArray(existingConfig.pricingOptions)) {
+        setFormData({
+          categoryName: existingConfig.categoryName || '',
+          description: existingConfig.description || '',
+          pricingOptions: existingConfig.pricingOptions,
+          quantityOptions: {},
+          minQuantityOptions: {},
+          additionalOptions: {},
+          mathOperators: existingConfig.mathOperators || ['N/A'],
+          pricingStackOrder: existingConfig.pricingOptions.map(opt => opt.id) || [],
+          sector
+        });
+      } else {
+        // Old format - start fresh with empty form
+        console.log('🧹 Old data format detected - starting fresh with clean form');
+        setFormData({
+          categoryName: existingConfig.categoryName || '',
+          description: existingConfig.description || '',
+          pricingOptions: [],
+          quantityOptions: {},
+          minQuantityOptions: {},
+          additionalOptions: {},
+          mathOperators: ['N/A'],
+          pricingStackOrder: [],
+          sector
+        });
+      }
     }
   }, [existingConfig, isEditing, sector]);
 

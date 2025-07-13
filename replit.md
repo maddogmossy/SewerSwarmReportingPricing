@@ -265,6 +265,27 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v2.5' to return to this stable checkpoint
 
+## REV V2.7 CHECKPOINT - CLEAN SYSTEM ARCHITECTURE (July 13, 2025)
+
+🔒 **PRODUCTION READY - COMPLETELY CLEAN PR2 SYSTEM:**
+- **Dedicated Clean Backend:** New `/api/pr2-clean` endpoints completely separate from legacy systems
+- **Old Data Eliminated:** Deleted all 9 legacy configurations with old object format
+- **Array-Based Structure:** Clean pricing options use `[{id, label, enabled, value}]` array format instead of object format  
+- **Save Functionality Fixed:** Uses dedicated clean routes without legacy contamination
+- **Stack Order Button Working:** Appears when 2+ options exist with proper >= 2 condition
+- **Fresh Database State:** Only clean configurations remain in database
+- **Legacy System Isolated:** Old `/api/pr2-pricing` routes preserved for navigation but clean system independent
+- **Complete Separation:** No cross-contamination between old and new systems
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Backend:** `server/routes-pr2-clean.ts` with dedicated POST/PUT/GET/DELETE for `/api/pr2-clean`
+- **Frontend:** `client/src/pages/pr2-config-clean.tsx` uses clean API endpoints exclusively
+- **Data Format:** Clean array structure `pricingOptions: [{id, label, enabled, value}]`
+- **Stack Order:** `pricingStackOrder: string[]` array maintains user-defined option sequence
+- **Form Logic:** Detects old object format and starts fresh, preserves new array format when editing
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v2.7' to return to this stable checkpoint
+
 ## REV V2.6 CHECKPOINT - HORIZONTAL LAYOUT & STACK ORDER PROTECTION (July 13, 2025)
 
 🔒 **PRODUCTION READY - PERFECTED CONFIGURATION LAYOUT:**
