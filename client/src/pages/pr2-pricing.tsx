@@ -230,8 +230,9 @@ export default function PR2Pricing() {
       console.log('Configuration details:', existingConfig);
       const editURL = `/pr2-config-new?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`;
       console.log('🔗 Navigating to edit URL:', editURL);
-      // Use window.location instead of setLocation to preserve query parameters
-      window.location.href = editURL;
+      // Force navigation by updating both wouter state and browser history
+      window.history.replaceState({}, '', editURL);
+      setLocation(editURL);
       return;
     }
     
@@ -240,8 +241,9 @@ export default function PR2Pricing() {
       console.log('🎥 CCTV category - routing to configuration page');
       const createURL = `/pr2-config-new?sector=${sector}&categoryId=${categoryId}`;
       console.log('🔗 Creating CCTV config at URL:', createURL);
-      // Use window.location instead of setLocation to preserve query parameters
-      window.location.href = createURL;
+      // Force navigation by updating both wouter state and browser history
+      window.history.replaceState({}, '', createURL);
+      setLocation(createURL);
       return;
     }
     
