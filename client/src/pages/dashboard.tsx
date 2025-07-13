@@ -1063,7 +1063,11 @@ export default function Dashboard() {
   const { data: repairPricingData = [] } = useQuery({
     queryKey: ['/api/pr2-pricing', currentSector.id],
     queryFn: () => apiRequest('GET', '/api/pr2-pricing', undefined, { sector: currentSector.id }),
-    enabled: !!currentSector?.id
+    enabled: !!currentSector?.id,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   // Check if a section has approved repair pricing configuration 

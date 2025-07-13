@@ -163,8 +163,8 @@ export default function PR2PricingForm() {
       });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing', sector] });
-      // Stay on the same page after saving to allow further editing
-      setLocation(`/pr2-pricing?sector=${sector}`);
+      // Navigate back to dashboard after saving
+      setLocation('/dashboard');
     },
     onError: (error: any) => {
       toast({
