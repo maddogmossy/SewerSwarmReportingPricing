@@ -330,7 +330,7 @@ export default function PR2Pricing() {
         <div className="space-y-6">
           <Card className={`${currentSector.bgColor} border-2`}>
             <CardHeader>
-              <CardTitle>Standard Categories</CardTitle>
+              <CardTitle>Categories - Standard Categories</CardTitle>
               <p className="text-sm text-gray-600">Choose from pre-configured standard categories similar to OPS and PR1 systems</p>
             </CardHeader>
             <CardContent>
