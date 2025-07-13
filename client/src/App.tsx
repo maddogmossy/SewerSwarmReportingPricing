@@ -72,8 +72,7 @@ function Router() {
           <Route path="/pricing/jetting" component={JettingPricing} />
           <Route path="/simple-pricing" component={SimplePricing} />
 
-          <Route path="/pr2-pricing" component={PR2PricingSimple} />
-          <Route path="/pr2-pricing-full" component={PR2Pricing} />
+          <Route path="/pr2-pricing" component={PR2Pricing} />
           <Route path="/pr2-pricing-form" component={PR2PricingForm} />
           <Route path="/standards-config" component={StandardsConfig} />
           <Route path="/depot-management" component={DepotManagement} />

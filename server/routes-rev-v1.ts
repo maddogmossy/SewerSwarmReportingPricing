@@ -325,6 +325,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json([]);
   });
 
+  // Dashboard API endpoints for sections and defects
+  app.get('/api/uploads/:id/sections', async (req, res) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      const sections = await storage.getSectionsByUpload(uploadId);
+      res.json(sections);
+    } catch (error) {
+      console.error('Error fetching sections:', error);
+      res.status(500).json({ error: 'Failed to fetch sections' });
+    }
+  });
+
+  app.get('/api/uploads/:id/defects', async (req, res) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      // For now, return empty array as defects are included in sections
+      res.json([]);
+    } catch (error) {
+      console.error('Error fetching defects:', error);
+      res.status(500).json({ error: 'Failed to fetch defects' });
+    }
+  });
+
   // **ONLY PR2 PRICING ENDPOINTS** - All legacy endpoints removed
 
   // PR2 Pricing Configuration endpoints
