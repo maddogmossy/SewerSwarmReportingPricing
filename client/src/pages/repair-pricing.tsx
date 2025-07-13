@@ -231,9 +231,7 @@ export default function RepairPricing() {
               <div className="text-sm text-gray-600">Pricing Rules</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-purple-600">
-                {pricingData.length > 0 ? `£${Math.round(pricingData.reduce((sum: number, p: any) => sum + parseFloat(p.cost || '0'), 0) / pricingData.length)}` : '£0'}
-              </div>
+              <div className="text-2xl font-bold text-purple-600">£0</div>
               <div className="text-sm text-gray-600">Average Cost</div>
             </div>
           </div>
