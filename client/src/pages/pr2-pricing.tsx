@@ -128,7 +128,7 @@ export default function PR2Pricing() {
 
   // Delete mutation for PR2 configurations
   const deletePR2Configuration = useMutation({
-    mutationFn: (id: number) => apiRequest('DELETE', `/api/pr2-pricing/${id}`),
+    mutationFn: (id: number) => apiRequest('DELETE', `/api/pr2-clean/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
