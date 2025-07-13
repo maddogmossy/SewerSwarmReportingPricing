@@ -41,7 +41,7 @@ import {
   type InsertProjectFolderType,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, or, isNull } from "drizzle-orm";
+import { eq, desc, and, or, isNull, asc } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -278,7 +278,7 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(sectionInspections)
       .where(eq(sectionInspections.fileUploadId, uploadId))
-      .orderBy(sectionInspections.itemNumber);
+      .orderBy(asc(sectionInspections.itemNo));
   }
 
   async getFileUploadById(id: number): Promise<FileUpload | undefined> {

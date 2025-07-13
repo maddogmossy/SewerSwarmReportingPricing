@@ -368,17 +368,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/pr2-pricing', async (req, res) => {
     try {
-      const { dayRate, runsPerShift, sector } = req.body;
+      console.log('📝 PR2 POST request body:', req.body);
       
-      if (!dayRate || !runsPerShift) {
-        return res.status(400).json({ error: 'Day rate and runs per shift are required' });
+      // Extract from the complex form structure sent by PR2 form
+      const { 
+        categoryId,
+        categoryName, 
+        description, 
+        pricingOptions, 
+        quantityOptions, 
+        minQuantityOptions, 
+        rangeOptions, 
+        rangeValues, 
+        mathOperators, 
+        sector 
+      } = req.body;
+
+      // Basic validation
+      if (!categoryName) {
+        return res.status(400).json({ error: 'Category name is required' });
       }
 
       const newConfig = {
         userId: "test-user",
-        dayRate: parseInt(dayRate),
-        runsPerShift: parseInt(runsPerShift),
+        categoryId: categoryId || 'cleanse-survey',
+        categoryName: categoryName || 'Cleanse and Survey',
+        description: description || 'PR2 cleaning and survey configuration',
+        pricingOptions: pricingOptions || [],
+        quantityOptions: quantityOptions || [],
+        minQuantityOptions: minQuantityOptions || [],
+        rangeOptions: rangeOptions || [],
+        rangeValues: rangeValues || {},
+        mathOperators: mathOperators || [],
         sector: sector || 'utilities',
+        isActive: true,
         createdAt: new Date(),
         updatedAt: new Date()
       };
