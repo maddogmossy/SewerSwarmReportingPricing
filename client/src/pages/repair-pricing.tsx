@@ -277,7 +277,7 @@ export default function RepairPricing() {
         description: `Setting up "${urlCategoryName}" category with section data.`
       });
     }
-  }, [autoSetup, urlCategoryName, toast]);
+  }, []); // Empty dependency array to run only once
 
   
   // Collapsible state for option windows
@@ -626,7 +626,7 @@ export default function RepairPricing() {
         }, 500);
       }
     }
-  }, [location, workCategories]); // Remove pricingData dependency to prevent infinite loops
+  }, [location]); // Remove dependencies to prevent infinite loops
 
   // Internal automatic cost selection function based on description analysis
   const selectCostFromDescription = (description: string, defectsData: string = "") => {
@@ -663,9 +663,9 @@ export default function RepairPricing() {
     return "450";
   };
 
-  // Auto-update selected option when description changes
+  // Auto-update selected option when description changes (optimized to prevent loops)
   useEffect(() => {
-    if (formData.description) {
+    if (formData.description && !formData.selectedOption) {
       const urlParams = new URLSearchParams(window.location.search);
       const defects = urlParams.get('defects');
       
@@ -684,7 +684,7 @@ export default function RepairPricing() {
       
       setFormData(prev => ({ ...prev, selectedOption: optionText }));
     }
-  }, [formData.description]);
+  }, [formData.description, formData.selectedOption]);
 
   // Update description when Length of Repair changes
   useEffect(() => {
