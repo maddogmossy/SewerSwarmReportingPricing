@@ -103,7 +103,7 @@ export default function PR2ConfigNew() {
     },
     
     // Math Operators between Blue and Green only
-    mathOperators: ['N/A', 'N/A', 'N/A'],
+    mathOperators: ['N/A'],
     
     // Stack order preservation
     stackOrder: {
@@ -640,23 +640,21 @@ export default function PR2ConfigNew() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {formData.mathOperators.map((operator, index) => (
-                <div key={index} className="flex flex-col gap-2">
-                  <Label className="text-sm text-gray-500">Math {index + 1}</Label>
-                  <Select value={operator} onValueChange={(value) => updateMathOperator(index, value)}>
-                    <SelectTrigger className="bg-gray-100 border-gray-300">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="N/A">N/A</SelectItem>
-                      <SelectItem value="+">+ (Add)</SelectItem>
-                      <SelectItem value="-">- (Subtract)</SelectItem>
-                      <SelectItem value="×">× (Multiply)</SelectItem>
-                      <SelectItem value="÷">÷ (Divide)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              ))}
+              <div className="flex flex-col gap-2">
+                <Label className="text-sm text-gray-500">Math Operation</Label>
+                <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
+                  <SelectTrigger className="bg-gray-100 border-gray-300">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="N/A">N/A</SelectItem>
+                    <SelectItem value="+">+ (Add)</SelectItem>
+                    <SelectItem value="-">- (Subtract)</SelectItem>
+                    <SelectItem value="×">× (Multiply)</SelectItem>
+                    <SelectItem value="÷">÷ (Divide)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <p className="text-sm text-gray-500 mt-3">
               Configure mathematical operations between pricing and quantity options

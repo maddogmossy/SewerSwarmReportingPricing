@@ -185,8 +185,27 @@ export default function PR2Pricing() {
     console.log('🔍 Navigation triggered for categoryId:', categoryId);
     console.log('📍 Current sector:', sector);
     
+    // Check if there's an existing configuration for this category
+    const existingConfig = pr2Configurations.find(config => 
+      config.categoryId === categoryId || 
+      config.categoryName?.toLowerCase() === categoryId.toLowerCase() ||
+      (categoryId === 'cctv' && config.categoryName === 'CCTV')
+    );
+    
+    if (existingConfig) {
+      console.log('✅ Found existing configuration for', categoryId, '- routing to edit page');
+      setLocation(`/pr2-config-new?sector=${sector}&categoryId=${categoryId}&editId=${existingConfig.id}`);
+      return;
+    }
+    
+    // For CCTV specifically, always go to the configuration page
+    if (categoryId === 'cctv') {
+      console.log('🎥 CCTV category - routing to configuration page');
+      setLocation(`/pr2-config-new?sector=${sector}&categoryId=${categoryId}`);
+      return;
+    }
+    
     const routeMap = {
-      'cctv': `/pr2-cctv?sector=${sector}`,
       'van-pack': `/pr2-van-pack?sector=${sector}`,
       'jet-vac': `/pr2-jet-vac?sector=${sector}`,
       'cctv-van-pack': `/pr2-cctv-van-pack?sector=${sector}`,
@@ -318,10 +337,22 @@ export default function PR2Pricing() {
                         <h3 className="font-medium text-sm mb-1 text-gray-800">{category.name}</h3>
                         <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                         
-                        {/* Orange cog for default categories, green cog for user-created */}
-                        <Settings className={`h-4 w-4 absolute top-2 right-2 ${
-                          isUserCreated ? 'text-green-500' : 'text-orange-500'
-                        }`} />
+                        {/* Show status icon based on configuration */}
+                        {(() => {
+                          const hasConfiguration = pr2Configurations.some(config => 
+                            config.categoryId === category.id || 
+                            config.categoryName?.toLowerCase() === category.id.toLowerCase() ||
+                            (category.id === 'cctv' && config.categoryName === 'CCTV')
+                          );
+                          
+                          if (hasConfiguration) {
+                            return <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />;
+                          } else if (isUserCreated) {
+                            return <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />;
+                          } else {
+                            return <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />;
+                          }
+                        })()}
                         
                         {/* Delete button - only for user-created categories */}
                         {isUserCreated && (
