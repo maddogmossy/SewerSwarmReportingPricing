@@ -90,7 +90,13 @@ export default function PR2Pricing() {
   // Fetch PR2 configurations for current sector
   const { data: pr2ConfigurationsRaw = [], isLoading: pr2Loading } = useQuery({
     queryKey: ['/api/pr2-pricing', sector],
-    queryFn: () => apiRequest('GET', '/api/pr2-pricing', undefined, { sector }),
+    queryFn: async () => {
+      console.log('🔍 Making API request for sector:', sector);
+      const response = await apiRequest('GET', '/api/pr2-pricing', undefined, { sector });
+      const data = await response.json();
+      console.log('📥 Raw API response:', data);
+      return data;
+    },
     enabled: !!sector,
   });
 
@@ -197,12 +203,9 @@ export default function PR2Pricing() {
     console.log('🔍 PR2 loading state:', pr2Loading);
     console.log('🔍 Looking for categoryId:', categoryId);
     
-    // Force refresh if configurations are empty but loading is complete
+    // If configurations are empty, proceed to create new configuration
     if (!pr2Loading && pr2Configurations.length === 0) {
-      console.log('🔄 Configurations empty but not loading - refreshing...');
-      queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
-      setTimeout(() => handleCategoryNavigation(categoryId), 1000);
-      return;
+      console.log('⚠️ No configurations found - proceeding to create new configuration');
     }
     
     const existingConfig = pr2Configurations.find(config => {
