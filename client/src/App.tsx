@@ -19,6 +19,9 @@ import SimplePricing from "@/pages/simple-pricing";
 
 import PR2Pricing from "@/pages/pr2-pricing";
 import PR2PricingForm from "@/pages/pr2-pricing-form";
+import PR2CCTV from "@/pages/pr2-cctv";
+import PR2VanPack from "@/pages/pr2-van-pack";
+import PR2JetVac from "@/pages/pr2-jet-vac";
 import PR2PricingSimple from "@/pages/pr2-pricing-simple";
 import TestPR2Routing from "@/pages/test-pr2-routing";
 import StandardsConfig from "@/pages/standards-config";
@@ -74,6 +77,9 @@ function Router() {
 
           <Route path="/pr2-pricing" component={PR2Pricing} />
           <Route path="/pr2-pricing-form" component={PR2PricingForm} />
+          <Route path="/pr2-cctv" component={PR2CCTV} />
+          <Route path="/pr2-van-pack" component={PR2VanPack} />
+          <Route path="/pr2-jet-vac" component={PR2JetVac} />
           <Route path="/standards-config" component={StandardsConfig} />
           <Route path="/depot-management" component={DepotManagement} />
           <Route path="/vehicle-travel-rates" component={VehicleTravelRates} />

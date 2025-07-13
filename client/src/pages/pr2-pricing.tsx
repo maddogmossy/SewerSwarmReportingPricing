@@ -93,14 +93,32 @@ export default function PR2Pricing() {
     }
   });
 
-  // Handle navigation to add new PR2 configuration with category
-  const handleAddConfiguration = (categoryId?: string) => {
-    if (categoryId) {
-      const category = STANDARD_CATEGORIES.find(c => c.id === categoryId);
-      navigate(`/pr2-pricing-form?sector=${sector}&category=${category?.name || categoryId}`);
-    } else {
-      navigate(`/pr2-pricing-form?sector=${sector}&category=Custom`);
+  // Handle navigation to category-specific pages
+  const handleCategoryNavigation = (categoryId: string) => {
+    const routeMap = {
+      'cctv': `/pr2-cctv?sector=${sector}`,
+      'van-pack': `/pr2-van-pack?sector=${sector}`,
+      'jet-vac': `/pr2-jet-vac?sector=${sector}`,
+      'cctv-van-pack': `/pr2-cctv-van-pack?sector=${sector}`,
+      'cctv-jet-vac': `/pr2-cctv-jet-vac?sector=${sector}`,
+      'directional-water-cutter': `/pr2-directional-water-cutter?sector=${sector}`,
+      'ambient-lining': `/pr2-ambient-lining?sector=${sector}`,
+      'hot-cure-lining': `/pr2-hot-cure-lining?sector=${sector}`,
+      'uv-lining': `/pr2-uv-lining?sector=${sector}`,
+      'ims-cutting': `/pr2-ims-cutting?sector=${sector}`,
+      'excavation': `/pr2-excavation?sector=${sector}`,
+      'tankering': `/pr2-tankering?sector=${sector}`
+    };
+    
+    const route = routeMap[categoryId as keyof typeof routeMap];
+    if (route) {
+      navigate(route);
     }
+  };
+
+  // Handle navigation to add custom configuration
+  const handleAddConfiguration = () => {
+    navigate(`/pr2-pricing-form?sector=${sector}&category=Custom`);
   };
 
   if (categoriesLoading || pr2Loading) {
@@ -184,7 +202,7 @@ export default function PR2Pricing() {
                   <Card
                     key={category.id}
                     className={`cursor-pointer transition-all hover:shadow-md ${category.color} border-2`}
-                    onClick={() => handleAddConfiguration(category.id)}
+                    onClick={() => handleCategoryNavigation(category.id)}
                   >
                     <CardContent className="p-4 text-center">
                       <category.icon className="h-8 w-8 mx-auto mb-2" />
