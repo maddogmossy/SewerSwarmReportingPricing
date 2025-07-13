@@ -286,37 +286,40 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v2.7' to return to this stable checkpoint
 
-## REV V2.9 CHECKPOINT - COMPLETE EDIT FUNCTIONALITY (July 13, 2025)
+## REV V3.0 CHECKPOINT - COMPLETE FOUR-WINDOW SYSTEM (July 13, 2025)
 
-🔒 **PRODUCTION READY - FULL EDIT CAPABILITY ACROSS ALL WINDOWS:**
+🔒 **PRODUCTION READY - COMPLETE FOUR-WINDOW CONFIGURATION SYSTEM:**
 - **Blue Window (Pricing):** Complete Add/delete/edit functionality with array-based storage 
 - **Green Window (Quantity):** Complete Add/delete/edit functionality with green-styled edit dialogs
 - **Orange Window (Min Quantity):** Complete Add/delete/edit functionality with orange-styled edit dialogs
-- **Edit Dialog System:** All three windows have identical edit functionality with color-coded dialogs
+- **Purple Window (Ranges):** Complete Add/delete/edit functionality with R1 to R2 range inputs and purple-styled edit dialogs
+- **Edit Dialog System:** All four windows have identical edit functionality with color-coded dialogs
 - **Silent Operations:** All operations proceed without toast notifications for clean user experience
-- **Stack Order Support:** All three windows maintain proper order tracking (pricingStackOrder, quantityStackOrder, minQuantityStackOrder)
+- **Stack Order Support:** All four windows maintain proper order tracking (pricingStackOrder, quantityStackOrder, minQuantityStackOrder, rangeStackOrder)
 
-🔒 **COMPLETE EDIT DIALOG IMPLEMENTATION:**
-- **Edit Functions Added:** editQuantityOption() and editMinQuantityOption() with proper state management
-- **Save Functions Added:** saveQuantityEdit() and saveMinQuantityEdit() with label updating logic
-- **Color-Coded Styling:** Green dialogs for quantity options, orange dialogs for min quantity options
-- **Form State Management:** Proper loading of existing labels into edit forms with setNewQuantityLabel() and setNewMinQuantityLabel()
-- **Dialog Synchronization:** Edit dialogs open with current labels and save changes back to main form
+🔒 **PURPLE RANGES WINDOW IMPLEMENTATION:**
+- **Range Option Structure:** RangeOption interface with id, label, enabled, rangeStart, rangeEnd fields
+- **R1 to R2 Range Inputs:** When enabled, each option shows "R1:" and "to R2:" input fields for start and end values
+- **Complete CRUD Operations:** Add, edit, delete, and reorder functionality identical to other windows
+- **Purple-Styled Dialogs:** Add and edit dialogs with purple color scheme matching window theme
+- **Backend Integration:** Full rangeOptions support in POST/PUT endpoints with proper persistence
 
 🔒 **USER-TESTED FUNCTIONALITY CONFIRMED:**
-- **CCTV Configuration (ID 29):** Successfully tested edit functionality in all three windows
-- **Blue Window:** Edit functionality working (existing from V2.8)
-- **Green Window:** "test 1" successfully renamed to "Section Complete per shift" - edit confirmed working
-- **Orange Window:** "test 1" successfully renamed to "Min Number Per Shift" - edit confirmed working
-- **Save Workflow:** Edit → Save → Return to main page → All changes persist correctly in database
+- **CCTV Configuration (ID 29):** Successfully tested functionality in all four windows
+- **Blue Window:** Pricing options with Day Rate (£1850) 
+- **Green Window:** Quantity options with "Section Complete per shift" (30)
+- **Orange Window:** Min quantity options with "Min Number Per Shift"
+- **Purple Window:** Range options with "Pipe Size", "%", and "Pipe Length" - all saving correctly
+- **Save Workflow:** All four windows save and persist correctly through backend API
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Edit Dialog Components:** Added editQuantityDialogOpen and editMinQuantityDialogOpen state management
-- **Edit Button Integration:** Pencil icons in all three windows trigger appropriate edit dialogs
-- **Backend Persistence:** All edits save correctly through PUT /api/pr2-clean routes
-- **Data Integrity:** Array-based structure maintained with proper ID-based option updates
+- **Four-Window Array Structure:** pricingOptions, quantityOptions, minQuantityOptions, rangeOptions all use consistent array format
+- **Complete State Management:** Dialog states, edit functions, and order tracking for all four windows
+- **Backend Support:** Updated server/routes-pr2-clean.ts with full rangeOptions handling in POST/PUT/GET operations
+- **Form Data Interface:** CleanFormData interface includes all four option arrays and stack order arrays
+- **Range-Specific Functions:** addRangeOption, editRangeOption, deleteRangeOption, updateRangeOption with purple styling
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v2.9' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v3.0' to return to this stable checkpoint
 
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 
