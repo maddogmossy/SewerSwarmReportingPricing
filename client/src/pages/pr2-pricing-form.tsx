@@ -11,6 +11,39 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChevronLeft, Save, Calculator } from 'lucide-react';
 
+// Standard category options for PR2 pricing
+const STANDARD_CATEGORIES = [
+  'CCTV',
+  'Van Pack', 
+  'Jet Vac',
+  'CCTV/Van Pack',
+  'CCTV/Jet Vac',
+  'Directional Water Cutter',
+  'Ambient Lining',
+  'Hot Cure Lining',
+  'UV Lining',
+  'IMS Cutting',
+  'Excavation',
+  'Tankering',
+  'Custom' // Allow custom entry
+];
+
+// Default descriptions for each category
+const CATEGORY_DESCRIPTIONS = {
+  'CCTV': 'Closed-circuit television inspection services',
+  'Van Pack': 'Mobile van-based equipment package',
+  'Jet Vac': 'High-pressure water jetting and vacuum services',
+  'CCTV/Van Pack': 'Combined CCTV inspection with van pack equipment',
+  'CCTV/Jet Vac': 'Combined CCTV inspection with jet vac services',
+  'Directional Water Cutter': 'Precision directional cutting services',
+  'Ambient Lining': 'Ambient temperature pipe lining installation',
+  'Hot Cure Lining': 'Hot cure pipe lining installation',
+  'UV Lining': 'Ultraviolet cured pipe lining installation',
+  'IMS Cutting': 'Integrated Management System cutting services',
+  'Excavation': 'Traditional excavation and repair services',
+  'Tankering': 'Waste removal and tankering services'
+};
+
 export default function PR2PricingForm() {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
@@ -22,9 +55,13 @@ export default function PR2PricingForm() {
   const editId = urlParams.get('edit');
   const isEditing = !!editId;
 
+  // Additional state for custom category input
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategoryName, setCustomCategoryName] = useState('');
+
   // Form state with the same structure as PR1
   const [formData, setFormData] = useState({
-    categoryName: 'Cleanse and Survey',
+    categoryName: 'CCTV',
     description: 'PR2 cleaning and survey configuration',
     pricingOptions: {
       dayRate: { enabled: false, value: '' },
@@ -232,11 +269,48 @@ export default function PR2PricingForm() {
         <CardContent className="space-y-4">
           <div>
             <Label>Category Name</Label>
-            <Input
-              value={formData.categoryName}
-              onChange={(e) => setFormData(prev => ({ ...prev, categoryName: e.target.value }))}
-              placeholder="Enter category name"
-            />
+            <Select
+              value={isCustomCategory ? 'Custom' : formData.categoryName}
+              onValueChange={(value) => {
+                if (value === 'Custom') {
+                  setIsCustomCategory(true);
+                  setFormData(prev => ({ ...prev, categoryName: customCategoryName }));
+                } else {
+                  setIsCustomCategory(false);
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    categoryName: value,
+                    description: CATEGORY_DESCRIPTIONS[value as keyof typeof CATEGORY_DESCRIPTIONS] || 'PR2 cleaning and survey configuration'
+                  }));
+                }
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {STANDARD_CATEGORIES.map(category => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            {/* Custom category input when "Custom" is selected */}
+            {isCustomCategory && (
+              <div className="mt-2">
+                <Label>Custom Category Name</Label>
+                <Input
+                  value={customCategoryName}
+                  onChange={(e) => {
+                    setCustomCategoryName(e.target.value);
+                    setFormData(prev => ({ ...prev, categoryName: e.target.value }));
+                  }}
+                  placeholder="Enter custom category name"
+                />
+              </div>
+            )}
           </div>
           <div>
             <Label>Description</Label>
