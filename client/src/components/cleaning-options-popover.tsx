@@ -188,8 +188,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
           autoSetup: 'true'
         });
         
-        // Simply navigate to repair pricing page - let it handle the existing categories
-        setLocation('/repair-pricing');
+        // Navigate to PR1 pricing system for category configuration
+        setLocation('/pr1-pricing');
       }
     } catch (error) {
       toast({
