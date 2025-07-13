@@ -281,6 +281,29 @@ export default function PR2ConfigClean() {
     }));
   };
 
+  const editQuantityOption = (option: PricingOption) => {
+    setEditingQuantity(option);
+    setNewQuantityLabel(option.label);
+    setEditQuantityDialogOpen(true);
+  };
+
+  const saveQuantityEdit = () => {
+    if (!editingQuantity || !newQuantityLabel.trim()) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      quantityOptions: prev.quantityOptions.map(opt => 
+        opt.id === editingQuantity.id 
+          ? { ...opt, label: newQuantityLabel.trim() }
+          : opt
+      )
+    }));
+    
+    setEditingQuantity(null);
+    setNewQuantityLabel('');
+    setEditQuantityDialogOpen(false);
+  };
+
   // Min Quantity option management
   const addMinQuantityOption = () => {
     if (!newMinQuantityLabel.trim()) return;
@@ -317,6 +340,29 @@ export default function PR2ConfigClean() {
         opt.id === optionId ? { ...opt, [field]: value } : opt
       )
     }));
+  };
+
+  const editMinQuantityOption = (option: PricingOption) => {
+    setEditingMinQuantity(option);
+    setNewMinQuantityLabel(option.label);
+    setEditMinQuantityDialogOpen(true);
+  };
+
+  const saveMinQuantityEdit = () => {
+    if (!editingMinQuantity || !newMinQuantityLabel.trim()) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      minQuantityOptions: prev.minQuantityOptions.map(opt => 
+        opt.id === editingMinQuantity.id 
+          ? { ...opt, label: newMinQuantityLabel.trim() }
+          : opt
+      )
+    }));
+    
+    setEditingMinQuantity(null);
+    setNewMinQuantityLabel('');
+    setEditMinQuantityDialogOpen(false);
   };
 
   // Get ordered options for display
@@ -590,6 +636,70 @@ export default function PR2ConfigClean() {
             </DialogContent>
           </Dialog>
 
+          {/* Edit Quantity Dialog */}
+          <Dialog open={editQuantityDialogOpen} onOpenChange={setEditQuantityDialogOpen}>
+            <DialogContent aria-describedby="edit-quantity-description">
+              <DialogHeader>
+                <DialogTitle>Edit Quantity Option</DialogTitle>
+              </DialogHeader>
+              <div id="edit-quantity-description" className="space-y-4">
+                <div>
+                  <Label htmlFor="editQuantityLabel">Option Name</Label>
+                  <Input
+                    id="editQuantityLabel"
+                    value={newQuantityLabel}
+                    onChange={(e) => setNewQuantityLabel(e.target.value)}
+                    placeholder="Enter quantity option name"
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setEditQuantityDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={saveQuantityEdit}
+                    disabled={!newQuantityLabel.trim()}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Edit Min Quantity Dialog */}
+          <Dialog open={editMinQuantityDialogOpen} onOpenChange={setEditMinQuantityDialogOpen}>
+            <DialogContent aria-describedby="edit-min-quantity-description">
+              <DialogHeader>
+                <DialogTitle>Edit Min Quantity Option</DialogTitle>
+              </DialogHeader>
+              <div id="edit-min-quantity-description" className="space-y-4">
+                <div>
+                  <Label htmlFor="editMinQuantityLabel">Option Name</Label>
+                  <Input
+                    id="editMinQuantityLabel"
+                    value={newMinQuantityLabel}
+                    onChange={(e) => setNewMinQuantityLabel(e.target.value)}
+                    placeholder="Enter min quantity option name"
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setEditMinQuantityDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={saveMinQuantityEdit}
+                    disabled={!newMinQuantityLabel.trim()}
+                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           {/* Math Operations - Middle Column */}
           <Card className="bg-gray-50">
             <CardHeader>
@@ -695,6 +805,13 @@ export default function PR2ConfigClean() {
                         <Button
                           size="sm"
                           variant="ghost"
+                          onClick={() => editQuantityOption(option)}
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
                           onClick={() => deleteQuantityOption(option.id)}
                           className="text-red-600 hover:text-red-700"
                         >
@@ -793,6 +910,13 @@ export default function PR2ConfigClean() {
                           onCheckedChange={(checked) => updateMinQuantityOption(option.id, 'enabled', checked)}
                         />
                         <span className="flex-1 font-medium">{option.label}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => editMinQuantityOption(option)}
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </Button>
                         <Button
                           size="sm"
                           variant="ghost"
