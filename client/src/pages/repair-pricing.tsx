@@ -3083,7 +3083,9 @@ export default function RepairPricing() {
                             });
                             console.log("🔥 EDIT DIALOG INIT - Final customMinQuantityOptions:", customMinQuantityOptions);
                             
-                            setEditableMinQuantityOptions([...standardOptions, ...customMinQuantityOptions]);
+                            const finalOptions = [...standardOptions, ...customMinQuantityOptions];
+                            console.log("🔥 EDIT DIALOG INIT - Final combined options:", finalOptions);
+                            setEditableMinQuantityOptions(finalOptions);
                           }
                           setShowEditMinQuantityOptionsDialog(true);
                         }}
