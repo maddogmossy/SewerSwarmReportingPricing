@@ -1061,8 +1061,8 @@ export default function Dashboard() {
 
   // Fetch PR2 configurations from dedicated PR2 database table (completely separate from legacy)
   const { data: repairPricingData = [] } = useQuery({
-    queryKey: ['/api/pr2-pricing'],
-    queryParams: { sector: currentSector.id },
+    queryKey: ['/api/pr2-pricing', currentSector.id],
+    queryFn: () => apiRequest('GET', '/api/pr2-pricing', undefined, { sector: currentSector.id }),
     enabled: !!currentSector?.id
   });
 
@@ -1115,6 +1115,8 @@ export default function Dashboard() {
   const calculateAutoCost = (section: any) => {
     console.log('🔍 calculateAutoCost called for section:', section.itemNo);
     console.log('📊 PR2 configurations:', pr2Configurations);
+    console.log('🔍 PR2 configurations count:', pr2Configurations.length);
+    console.log('🔍 Current sector:', currentSector.id);
     
     // If no PR2 configurations exist, return null to show warning triangles
     if (!pr2Configurations || pr2Configurations.length === 0) {
