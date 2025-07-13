@@ -218,12 +218,12 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           <Button 
             onClick={handleConfigureSelected}
             disabled={selectedEquipment.length === 0}
-            className="w-full h-8 text-xs"
+            className="w-full h-7 text-xs px-2 py-1"
           >
-            Configure Pricing for Selected Equipment
+            Configure Pricing
             {selectedEquipment.length > 0 && (
-              <Badge variant="secondary" className="ml-2 text-xs">
-                {selectedEquipment.length} selected
+              <Badge variant="secondary" className="ml-1 text-xs px-1">
+                {selectedEquipment.length}
               </Badge>
             )}
           </Button>
