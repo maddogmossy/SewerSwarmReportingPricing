@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +38,28 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const [, setLocation] = useLocation();
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
   const [showStackOrder, setShowStackOrder] = useState(false);
-  const [equipmentOrder, setEquipmentOrder] = useState<string[]>(['cctv-van-pack', 'cctv-jet-vac']);
+  
+  // Load saved order and selection from localStorage, fallback to defaults
+  const [equipmentOrder, setEquipmentOrder] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('equipment-order');
+      return saved ? JSON.parse(saved) : ['cctv-van-pack', 'cctv-jet-vac'];
+    } catch {
+      return ['cctv-van-pack', 'cctv-jet-vac'];
+    }
+  });
+
+  // Load saved selection when component mounts
+  useEffect(() => {
+    try {
+      const savedSelection = localStorage.getItem('selected-equipment');
+      if (savedSelection) {
+        setSelectedEquipment(JSON.parse(savedSelection));
+      }
+    } catch {
+      // Ignore errors and use default empty selection
+    }
+  }, []);
 
   // Define base cleansing equipment options
   const baseEquipment = [
@@ -92,11 +113,15 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   };
 
   const handleConfigureSelected = () => {
+    // Save the current equipment order to localStorage before navigating
+    localStorage.setItem('equipment-order', JSON.stringify(equipmentOrder));
+    localStorage.setItem('selected-equipment', JSON.stringify(selectedEquipment));
+    
     setIsOpen(false);
     // Route to PR2 pricing with selected equipment as URL params in preferred order
     const orderedSelectedEquipment = equipmentOrder.filter(id => selectedEquipment.includes(id));
     const equipmentParams = orderedSelectedEquipment.join(',');
-    setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentParams}`);
+    setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentParams}&category=cleanse-survey`);
   };
 
   return (
@@ -106,24 +131,24 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           {children}
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-96 p-0" align="start">
-        <div className="p-4 border-b">
-          <h4 className="font-semibold text-sm flex items-center gap-2">
-            <Settings className="h-4 w-4 text-blue-600" />
+      <PopoverContent className="w-72 p-0" align="start">
+        <div className="p-3 border-b">
+          <h4 className="font-semibold text-xs flex items-center gap-2">
+            <Settings className="h-3 w-3 text-blue-600" />
             Cleanse/Survey Equipment Selection
           </h4>
           <p className="text-xs text-slate-600 mt-1">
             Select your preferred equipment combinations for cleansing and survey operations
           </p>
         </div>
-        <div className="p-4 space-y-3">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-slate-700">Equipment Options</span>
+        <div className="p-3 space-y-2">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-slate-700">Equipment Options</span>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowStackOrder(!showStackOrder)}
-              className="text-xs"
+              className="text-xs h-6"
             >
               <List className="h-3 w-3 mr-1" />
               Stack Order
@@ -135,7 +160,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
             return (
               <div
                 key={equipment.id}
-                className="flex items-start gap-3 p-3 rounded-lg border hover:bg-slate-50 transition-colors"
+                className="flex items-start gap-2 p-2 rounded-lg border hover:bg-slate-50 transition-colors"
               >
                 <Checkbox
                   id={equipment.id}
@@ -143,13 +168,13 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                   onCheckedChange={() => handleEquipmentToggle(equipment.id)}
                   className="mt-1"
                 />
-                <div className="flex items-start gap-3 flex-1">
-                  <IconComponent className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div className="flex items-start gap-2 flex-1">
+                  <IconComponent className="h-4 w-4 text-blue-600 mt-0.5" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <label 
                         htmlFor={equipment.id}
-                        className="font-medium text-sm cursor-pointer"
+                        className="font-medium text-xs cursor-pointer"
                       >
                         {equipment.name}
                       </label>
@@ -159,7 +184,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-slate-600 mt-1">{equipment.description}</p>
+                    <p className="text-xs text-slate-600 mt-0.5">{equipment.description}</p>
                   </div>
                 </div>
                 
@@ -189,15 +214,15 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
             );
           })}
         </div>
-        <div className="p-4 border-t bg-slate-50">
+        <div className="p-3 border-t bg-slate-50">
           <Button 
             onClick={handleConfigureSelected}
             disabled={selectedEquipment.length === 0}
-            className="w-full"
+            className="w-full h-8 text-xs"
           >
             Configure Pricing for Selected Equipment
             {selectedEquipment.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="ml-2 text-xs">
                 {selectedEquipment.length} selected
               </Badge>
             )}
