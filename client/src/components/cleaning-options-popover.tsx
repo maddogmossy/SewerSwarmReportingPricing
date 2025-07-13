@@ -236,54 +236,34 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
   const handleOptionClick = (option: CleaningOption) => {
     console.log('Option clicked:', option.name);
     
-    // Option 1: Show simple category creation dialog
+    // Option 1: Route directly to PR1 pricing system
     if (option.name === 'Cleanse and Survey') {
-      console.log('Showing category creation dialog');
-      setShowSetupDialog(true);
+      console.log('Routing to PR1 pricing system');
+      setIsOpen(false);
+      setLocation('/pr1-pricing');
       return;
     }
     
-    // Option 2: Show custom category creation dialog
-    if (option.name === 'Custom Cleaning') {
-      console.log('Showing custom category creation dialog');
-      setShowCustomSetupDialog(true);
+    // Option 2: Route to PR1 pricing system for custom options
+    if (option.name === 'Custom') {
+      console.log('Routing to PR1 pricing system for custom');
+      setIsOpen(false);
+      setLocation('/pr1-pricing');
       return;
     }
     
-    // For other options, use the original navigation logic
-    const pipeSize = sectionData.pipeSize?.replace('mm', '') || '150';
-    const meterage = extractMeterage(sectionData.defects || '');
-    const sector = sectionData.sector || 'utilities';
-    
-    // Create URL with auto-focus parameters for the specific cleaning method
-    const params = new URLSearchParams({
-      pipeSize,
-      pipeDepth: sectionData.pipeDepth || '',
-      meterage: meterage.toString(),
-      autoFocus: option.name.toLowerCase().replace(' ', '-'),
-      itemNo: sectionData.itemNo?.toString() || '1',
-      defects: sectionData.defects || '',
-      recommendations: sectionData.recommendations || '',
-      pipeMaterial: sectionData.pipeMaterial || '',
-      category: 'cleaning'
-    });
-    
-    // Add auto-setup parameters for unconfigured options
-    if (!option.configured) {
-      params.set('autoSetup', 'true');
-      params.set('newCategory', 'true');
+    // Option 3: Route to PR1 pricing system for add new
+    if (option.name === 'Add New') {
+      console.log('Routing to PR1 pricing system for add new');
+      setIsOpen(false);
+      setLocation('/pr1-pricing');
+      return;
     }
     
-    // Add edit mode parameter for configured options
-    if (option.configured) {
-      params.set('edit', 'true');
-      params.set('editId', option.id.toString());
-    }
-    
-    // This section handles configured cleaning options (if any exist)
-    // For now, just close the popover since we focus on simple category creation
-    console.log('Configured option clicked, but current workflow focuses on category creation');
+    // All other options also route to PR1 pricing
+    console.log('Routing to PR1 pricing system');
     setIsOpen(false);
+    setLocation('/pr1-pricing');
   };
 
   // Fixed order for three-option structure: Cleanse and Survey, Add New, Custom
