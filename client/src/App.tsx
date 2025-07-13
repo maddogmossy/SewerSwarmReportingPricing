@@ -81,18 +81,18 @@ function Router() {
           <Route path="/pr2-pricing-form" component={PR2PricingForm} />
           <Route path="/pr2-config-clean" component={PR2ConfigClean} />
           <Route path="/pr2-category/:categoryId?" component={PR2Category} />
-          <Route path="/pr2-cctv" component={PR2CCTV} />
-          <Route path="/pr2-van-pack" component={PR2VanPack} />
-          <Route path="/pr2-jet-vac" component={PR2JetVac} />
-          <Route path="/pr2-cctv-jet-vac" component={PR2CCTV} />
-          <Route path="/pr2-cctv-van-pack" component={PR2CCTV} />
-          <Route path="/pr2-directional-water-cutter" component={PR2CCTV} />
-          <Route path="/pr2-ambient-lining" component={PR2CCTV} />
-          <Route path="/pr2-hot-cure-lining" component={PR2CCTV} />
-          <Route path="/pr2-uv-lining" component={PR2CCTV} />
-          <Route path="/pr2-ims-cutting" component={PR2CCTV} />
-          <Route path="/pr2-excavation" component={PR2CCTV} />
-          <Route path="/pr2-tankering" component={PR2CCTV} />
+          <Route path="/pr2-cctv" component={PR2ConfigClean} />
+          <Route path="/pr2-van-pack" component={PR2ConfigClean} />
+          <Route path="/pr2-jet-vac" component={PR2ConfigClean} />
+          <Route path="/pr2-cctv-jet-vac" component={PR2ConfigClean} />
+          <Route path="/pr2-cctv-van-pack" component={PR2ConfigClean} />
+          <Route path="/pr2-directional-water-cutter" component={PR2ConfigClean} />
+          <Route path="/pr2-ambient-lining" component={PR2ConfigClean} />
+          <Route path="/pr2-hot-cure-lining" component={PR2ConfigClean} />
+          <Route path="/pr2-uv-lining" component={PR2ConfigClean} />
+          <Route path="/pr2-ims-cutting" component={PR2ConfigClean} />
+          <Route path="/pr2-excavation" component={PR2ConfigClean} />
+          <Route path="/pr2-tankering" component={PR2ConfigClean} />
           <Route path="/sector-pricing" component={PR2Pricing} />
           <Route path="/sector-pricing/:sector" component={PR2Pricing} />
           <Route path="/standards-config" component={StandardsConfig} />
