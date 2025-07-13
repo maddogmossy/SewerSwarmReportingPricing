@@ -131,7 +131,7 @@ export default function PR2Pricing() {
     mutationFn: (id: number) => apiRequest('DELETE', `/api/pr2-pricing/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
-      toast({ title: "PR2 configuration deleted successfully" });
+      // Silent operation - no toast notification
     }
   });
 
