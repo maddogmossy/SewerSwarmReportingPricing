@@ -122,6 +122,14 @@ export default function PR2ConfigNew() {
     additional: false
   });
 
+  // Delete confirmation dialogs
+  const [deleteDialogs, setDeleteDialogs] = useState({
+    pricing: { open: false, key: '' },
+    quantity: { open: false, key: '' },
+    minQuantity: { open: false, key: '' },
+    additional: { open: false, key: '' }
+  });
+
   // Edit states
   const [editStates, setEditStates] = useState({
     pricing: { isEditing: false, editKey: '', newName: '' },
@@ -299,7 +307,22 @@ export default function PR2ConfigNew() {
     toast({ title: `Updated ${section} option name` });
   };
 
-  const deleteOption = (section: string, key: string) => {
+  const openDeleteDialog = (section: string, key: string) => {
+    setDeleteDialogs(prev => ({
+      ...prev,
+      [section]: { open: true, key }
+    }));
+  };
+
+  const closeDeleteDialog = (section: string) => {
+    setDeleteDialogs(prev => ({
+      ...prev,
+      [section]: { open: false, key: '' }
+    }));
+  };
+
+  const confirmDelete = (section: string) => {
+    const key = deleteDialogs[section as keyof typeof deleteDialogs].key;
     const sectionKey = `${section}Options` as keyof typeof formData;
     const newSectionData = { ...formData[sectionKey] };
     delete newSectionData[key];
@@ -309,7 +332,11 @@ export default function PR2ConfigNew() {
       [sectionKey]: newSectionData
     }));
 
-    toast({ title: `Deleted ${section} option` });
+    closeDeleteDialog(section);
+    toast({ 
+      title: `Deleted ${section} option`,
+      description: `Removed "${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}" from ${section} options`
+    });
   };
 
   // Reorder functionality
@@ -557,7 +584,7 @@ export default function PR2ConfigNew() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => deleteOption('pricing', key)}
+                        onClick={() => openDeleteDialog('pricing', key)}
                         className="p-1 h-6 w-6 text-gray-400 hover:text-red-600"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -578,6 +605,30 @@ export default function PR2ConfigNew() {
             ))}
           </CardContent>
         </Card>
+
+        {/* Delete Confirmation Dialog for Pricing */}
+        <Dialog open={deleteDialogs.pricing.open} onOpenChange={() => closeDeleteDialog('pricing')}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-red-600">Delete Pricing Option</DialogTitle>
+            </DialogHeader>
+            <p className="text-gray-600">
+              Are you sure you want to delete "{deleteDialogs.pricing.key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}"? 
+              This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => closeDeleteDialog('pricing')}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => confirmDelete('pricing')} 
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Math Operations Section - Middle Column */}
         <Card className="bg-gray-50">
@@ -742,7 +793,7 @@ export default function PR2ConfigNew() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => deleteOption('quantity', key)}
+                        onClick={() => openDeleteDialog('quantity', key)}
                         className="p-1 h-6 w-6 text-gray-400 hover:text-red-600"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -763,6 +814,30 @@ export default function PR2ConfigNew() {
             ))}
           </CardContent>
         </Card>
+
+        {/* Delete Confirmation Dialog for Quantity */}
+        <Dialog open={deleteDialogs.quantity.open} onOpenChange={() => closeDeleteDialog('quantity')}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-red-600">Delete Quantity Option</DialogTitle>
+            </DialogHeader>
+            <p className="text-gray-600">
+              Are you sure you want to delete "{deleteDialogs.quantity.key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}"? 
+              This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => closeDeleteDialog('quantity')}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => confirmDelete('quantity')} 
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Min Quantity and Additional Options Grid */}
@@ -897,7 +972,7 @@ export default function PR2ConfigNew() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => deleteOption('minQuantity', key)}
+                        onClick={() => openDeleteDialog('minQuantity', key)}
                         className="p-1 h-6 w-6 text-gray-400 hover:text-red-600"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -918,6 +993,30 @@ export default function PR2ConfigNew() {
             ))}
           </CardContent>
         </Card>
+
+        {/* Delete Confirmation Dialog for Min Quantity */}
+        <Dialog open={deleteDialogs.minQuantity.open} onOpenChange={() => closeDeleteDialog('minQuantity')}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-red-600">Delete Min Quantity Option</DialogTitle>
+            </DialogHeader>
+            <p className="text-gray-600">
+              Are you sure you want to delete "{deleteDialogs.minQuantity.key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}"? 
+              This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => closeDeleteDialog('minQuantity')}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => confirmDelete('minQuantity')} 
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Purple - Additional Options */}
         <Card>
@@ -1048,7 +1147,7 @@ export default function PR2ConfigNew() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => deleteOption('additional', key)}
+                        onClick={() => openDeleteDialog('additional', key)}
                         className="p-1 h-6 w-6 text-gray-400 hover:text-red-600"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -1068,6 +1167,30 @@ export default function PR2ConfigNew() {
             ))}
           </CardContent>
         </Card>
+
+        {/* Delete Confirmation Dialog for Additional */}
+        <Dialog open={deleteDialogs.additional.open} onOpenChange={() => closeDeleteDialog('additional')}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-red-600">Delete Additional Option</DialogTitle>
+            </DialogHeader>
+            <p className="text-gray-600">
+              Are you sure you want to delete "{deleteDialogs.additional.key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}"? 
+              This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => closeDeleteDialog('additional')}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => confirmDelete('additional')} 
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Action Buttons */}
