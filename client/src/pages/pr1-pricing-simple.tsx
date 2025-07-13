@@ -59,7 +59,8 @@ export default function PR1Pricing() {
         title: "Configuration Saved",
         description: "PR1 pricing configuration saved successfully!"
       });
-      setLocation('/dashboard');
+      // Stay on page so user can verify the save worked
+      // setLocation('/dashboard');
     },
     onError: () => {
       toast({
@@ -170,6 +171,10 @@ export default function PR1Pricing() {
             <Save className="h-4 w-4" />
             {saveMutation.isPending ? 'Saving...' : 'Save Configuration'}
           </Button>
+          
+          {saveMutation.isSuccess && (
+            <div className="text-green-600 text-sm">✓ Saved successfully</div>
+          )}
         </div>
       </div>
 
