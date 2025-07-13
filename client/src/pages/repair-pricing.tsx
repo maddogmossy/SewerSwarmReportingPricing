@@ -3840,7 +3840,9 @@ export default function RepairPricing() {
             </DialogHeader>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               <div className="grid grid-cols-1 gap-3">
-                {editableMinQuantityOptions.map((option, index) => (
+                {editableMinQuantityOptions.map((option, index) => {
+                  console.log("🔥 ORANGE DIALOG RENDERING ITEM:", index, option);
+                  return (
                   <div key={option.id} className="flex items-center justify-between p-3 border rounded-lg bg-orange-50">
                     <div className="flex items-center space-x-3 flex-1">
                       <div className="flex flex-col space-y-1">
@@ -3888,7 +3890,8 @@ export default function RepairPricing() {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
             <DialogFooter>
