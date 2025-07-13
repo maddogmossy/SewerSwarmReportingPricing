@@ -71,6 +71,7 @@ export default function PR1Pricing() {
   const [showInitialDialog, setShowInitialDialog] = useState(true);
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const [showCustomDialog, setShowCustomDialog] = useState(false);
+  const [showAddNewDialog, setShowAddNewDialog] = useState(false);
   const [showMainPricing, setShowMainPricing] = useState(false);
   
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -117,12 +118,14 @@ export default function PR1Pricing() {
     },
   });
 
-  const handleInitialOption = (option: 'category' | 'custom') => {
+  const handleInitialOption = (option: 'category' | 'custom' | 'addNew') => {
     setShowInitialDialog(false);
     if (option === 'category') {
       setShowCategoryDialog(true);
-    } else {
+    } else if (option === 'custom') {
       setShowCustomDialog(true);
+    } else if (option === 'addNew') {
+      setShowAddNewDialog(true);
     }
   };
 
@@ -272,8 +275,9 @@ export default function PR1Pricing() {
                   variant="outline"
                 >
                   <div>
-                    <div className="font-semibold">Option 1 - Add Category</div>
-                    <div className="text-sm text-gray-600">Select from preloaded options</div>
+                    <div className="font-semibold">1. Cleanse and Survey 💧</div>
+                    <div className="text-sm text-gray-600">Complete cleaning followed by verification survey to confirm completion</div>
+                    <div className="text-xs text-blue-600 mt-1">Click to set up cleanse and survey category</div>
                   </div>
                 </Button>
                 <Button
@@ -283,21 +287,40 @@ export default function PR1Pricing() {
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   <div>
-                    <div className="font-semibold">Option 2 - Custom</div>
-                    <div className="text-sm text-gray-600">Create custom recommendation</div>
+                    <div className="font-semibold">2. Custom Cleaning +</div>
+                    <div className="text-sm text-gray-600">User defined cleaning method with custom specifications</div>
+                    <div className="text-xs text-green-600 mt-1">Click to add custom cleaning method</div>
+                  </div>
+                </Button>
+                <Button
+                  onClick={() => handleInitialOption('addNew')}
+                  className="w-full justify-start h-16 text-left"
+                  variant="outline"
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  <div>
+                    <div className="font-semibold">3. Add New</div>
+                    <div className="text-sm text-gray-600">Add to existing category that has been created</div>
+                    <div className="text-xs text-purple-600 mt-1">Cleaning options for debris, deposits, and blockage causing defects in pipe section at system pricing</div>
                   </div>
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
 
-          {/* Category Selection Dialog */}
+          {/* Category Selection Dialog - Option 1: Cleanse and Survey */}
           <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>Select Category</DialogTitle>
+                <DialogTitle>Cleanse and Survey Category Setup</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
+                <div className="p-4 bg-blue-50 rounded-lg">
+                  <h3 className="font-semibold text-blue-800 mb-2">1. Cleanse and Survey 💧</h3>
+                  <p className="text-sm text-blue-700 mb-3">Complete cleaning followed by verification survey to confirm completion</p>
+                  <p className="text-xs text-blue-600">Click to set up cleanse and survey category</p>
+                </div>
+                
                 <Label>Choose from preloaded options:</Label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger>
@@ -323,19 +346,25 @@ export default function PR1Pricing() {
             </DialogContent>
           </Dialog>
 
-          {/* Custom Dialog */}
+          {/* Custom Dialog - Option 2: Custom Cleaning */}
           <Dialog open={showCustomDialog} onOpenChange={setShowCustomDialog}>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>Custom Recommendation</DialogTitle>
+                <DialogTitle>Custom Cleaning Method</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
+                <div className="p-4 bg-green-50 rounded-lg">
+                  <h3 className="font-semibold text-green-800 mb-2">2. Custom Cleaning +</h3>
+                  <p className="text-sm text-green-700 mb-3">User defined cleaning method with custom specifications</p>
+                  <p className="text-xs text-green-600">Click to add custom cleaning method</p>
+                </div>
+                
                 <div>
                   <Label>Description</Label>
                   <Input
                     value={customDescription}
                     onChange={(e) => setCustomDescription(e.target.value)}
-                    placeholder="Enter recommendation description..."
+                    placeholder="Enter custom cleaning method description..."
                   />
                 </div>
                 <div>
@@ -352,7 +381,52 @@ export default function PR1Pricing() {
                     Cancel
                   </Button>
                   <Button onClick={handleCustomSubmit} disabled={!customDescription || !customPrice}>
-                    Create
+                    Create Custom Method
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Add New Dialog - Option 3: Add to Existing Category */}
+          <Dialog open={showAddNewDialog} onOpenChange={setShowAddNewDialog}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Add to Existing Category</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="p-4 bg-purple-50 rounded-lg">
+                  <h3 className="font-semibold text-purple-800 mb-2">3. Add New</h3>
+                  <p className="text-sm text-purple-700 mb-3">Add to existing category that has been created</p>
+                  <p className="text-xs text-purple-600">Cleaning options for debris, deposits, and blockage causing defects in pipe section at system pricing cleaning method with custom pricing.</p>
+                </div>
+                
+                <div>
+                  <Label>Select Existing Category</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose existing category..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cleanse-survey">Cleanse and Survey</SelectItem>
+                      <SelectItem value="custom-cleaning">Custom Cleaning</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label>Additional Pricing Option</Label>
+                  <Input
+                    placeholder="Enter additional pricing option..."
+                  />
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button onClick={() => setShowAddNewDialog(false)} variant="outline">
+                    Cancel
+                  </Button>
+                  <Button>
+                    Add to Category
                   </Button>
                 </div>
               </div>
