@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Settings, AlertTriangle, CheckCircle, Calculator, Plus, Save, X, Droplets } from "lucide-react";
 import { useLocation } from "wouter";
+import { toast } from "@/hooks/use-toast";
 
 interface CleaningOption {
   id: number;
@@ -44,6 +45,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [showSetupDialog, setShowSetupDialog] = useState(false);
   const [showCustomSetupDialog, setShowCustomSetupDialog] = useState(false);
+  const [categoryName, setCategoryName] = useState('');
   const [customDescription, setCustomDescription] = useState("");
   const [customPrice, setCustomPrice] = useState("");
 
@@ -205,59 +207,85 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
     }
   });
 
-  const handleSetupConfirm = () => {
-    setShowSetupDialog(false);
-    setIsOpen(false);
+  const handleCategoryCreate = async () => {
+    if (!categoryName.trim()) return;
     
-    // Navigate to PR1 pricing page with pre-filled data for Cleanse and Survey
-    const params = new URLSearchParams({
-      categoryName: 'Cleanse/Survey',
-      categoryDescription: 'Complete cleaning followed by verification survey to confirm completion',
-      suggestedColor: 'Blue',
-      pipeSize: sectionData.pipeSize || '150mm',
-      autoSetup: 'true',
-      newCategory: 'true',
-      recommendations: sectionData.recommendations || '',
-      defects: sectionData.defects || '',
-      itemNo: sectionData.itemNo?.toString() || '1'
-    });
-    
-    setLocation(`/pr1-pricing?${params.toString()}`);
+    try {
+      // Create the category
+      const response = await fetch('/api/work-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: categoryName,
+          color: 'blue',
+          description: 'Cleanse and Survey category'
+        })
+      });
+      
+      if (response.ok) {
+        setShowSetupDialog(false);
+        setCategoryName('');
+        setIsOpen(false);
+        toast({
+          title: "Category Created",
+          description: `"${categoryName}" category has been created successfully.`
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create category.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleCustomSetupConfirm = () => {
-    setShowCustomSetupDialog(false);
-    setIsOpen(false);
+  const handleCustomCategoryCreate = async () => {
+    if (!categoryName.trim()) return;
     
-    // Navigate to PR1 pricing page with pre-filled data for Custom Cleaning
-    const params = new URLSearchParams({
-      categoryName: 'Custom Cleaning',
-      categoryDescription: 'User-defined cleaning method for specific requirements',
-      suggestedColor: 'Purple',
-      pipeSize: sectionData.pipeSize || '150mm',
-      autoSetup: 'true',
-      newCategory: 'true',
-      recommendations: sectionData.recommendations || '',
-      defects: sectionData.defects || '',
-      itemNo: sectionData.itemNo?.toString() || '1'
-    });
-    
-    setLocation(`/pr1-pricing?${params.toString()}`);
+    try {
+      // Create the custom category
+      const response = await fetch('/api/work-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: categoryName,
+          color: 'green', 
+          description: 'Custom cleaning category'
+        })
+      });
+      
+      if (response.ok) {
+        setShowCustomSetupDialog(false);
+        setCategoryName('');
+        setIsOpen(false);
+        toast({
+          title: "Category Created",
+          description: `"${categoryName}" category has been created successfully.`
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create category.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleOptionClick = (option: CleaningOption) => {
     console.log('Option clicked:', option.name);
     
-    // Option 1: Navigate directly to category creation dialog
+    // Option 1: Show simple category creation dialog
     if (option.name === 'Cleanse and Survey') {
-      console.log('Showing Cleanse and Survey setup dialog');
+      console.log('Showing category creation dialog');
       setShowSetupDialog(true);
       return;
     }
     
-    // Option 2: Navigate to custom cleaning setup
+    // Option 2: Show custom category creation dialog
     if (option.name === 'Custom Cleaning') {
-      console.log('Showing Custom Cleaning setup dialog');
+      console.log('Showing custom category creation dialog');
       setShowCustomSetupDialog(true);
       return;
     }
@@ -503,59 +531,85 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded 
       </PopoverContent>
     </Popover>
 
-    {/* Setup Dialog for Cleanse and Survey */}
+    {/* Category Creation Dialog */}
     <Dialog open={showSetupDialog} onOpenChange={setShowSetupDialog}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5 text-purple-600" />
-            Set Up Cleanse and Survey Category
+            <Plus className="h-5 w-5 text-blue-600" />
+            Create New Category
           </DialogTitle>
           <DialogDescription>
-            This requires setting up a "Cleanse/Survey" work category. You will be redirected to create this category and select the fields you want to include.
+            Enter a name for your new cleaning category.
           </DialogDescription>
         </DialogHeader>
+        <div className="py-4">
+          <Input
+            placeholder="Category name..."
+            value={categoryName}
+            onChange={(e) => setCategoryName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleCategoryCreate()}
+            autoFocus
+          />
+        </div>
         <DialogFooter>
           <Button 
             variant="outline" 
-            onClick={() => setShowSetupDialog(false)}
+            onClick={() => {
+              setShowSetupDialog(false);
+              setCategoryName('');
+            }}
           >
             Cancel
           </Button>
           <Button 
-            onClick={handleSetupConfirm}
-            className="bg-purple-600 hover:bg-purple-700"
+            onClick={handleCategoryCreate}
+            disabled={!categoryName.trim()}
+            className="bg-blue-600 hover:bg-blue-700"
           >
-            Set Up Category
+            Create Category
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
 
-    {/* Setup Dialog for Custom Cleaning */}
+    {/* Custom Category Creation Dialog */}
     <Dialog open={showCustomSetupDialog} onOpenChange={setShowCustomSetupDialog}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5 text-blue-600" />
-            Set Up Custom Cleaning Category
+            <Plus className="h-5 w-5 text-green-600" />
+            Create Custom Category
           </DialogTitle>
           <DialogDescription>
-            This requires setting up a "Custom Cleaning" work category. You will be redirected to create this category and configure your custom cleaning method.
+            Enter a name for your custom cleaning category.
           </DialogDescription>
         </DialogHeader>
+        <div className="py-4">
+          <Input
+            placeholder="Custom category name..."
+            value={categoryName}
+            onChange={(e) => setCategoryName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleCustomCategoryCreate()}
+            autoFocus
+          />
+        </div>
         <DialogFooter>
           <Button 
             variant="outline" 
-            onClick={() => setShowCustomSetupDialog(false)}
+            onClick={() => {
+              setShowCustomSetupDialog(false);
+              setCategoryName('');
+            }}
           >
             Cancel
           </Button>
           <Button 
-            onClick={handleCustomSetupConfirm}
-            className="bg-blue-600 hover:bg-blue-700"
+            onClick={handleCustomCategoryCreate}
+            disabled={!categoryName.trim()}
+            className="bg-green-600 hover:bg-green-700"
           >
-            Set Up Category
+            Create Category
           </Button>
         </DialogFooter>
       </DialogContent>
