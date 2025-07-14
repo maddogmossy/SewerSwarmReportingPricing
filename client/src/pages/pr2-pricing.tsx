@@ -406,12 +406,17 @@ export default function PR2Pricing() {
                         
                         {/* Show status icon and Edit button based on configuration */}
                         {(() => {
+                          console.log(`🔍 Checking configuration for category "${category.id}"`);
+                          console.log(`📊 Available PR2 configurations:`, pr2Configurations.map(c => `ID: ${c.id}, CategoryId: ${c.categoryId}, CategoryName: ${c.categoryName}`));
+                          
                           const hasConfiguration = pr2Configurations.some(config => 
                             config.categoryId === category.id || 
                             config.categoryName?.toLowerCase() === category.id.toLowerCase() ||
                             (category.id === 'cctv' && config.categoryName === 'CCTV') ||
                             (category.id === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration')
                           );
+                          
+                          console.log(`🎯 Has configuration for "${category.id}":`, hasConfiguration);
                           
                           if (hasConfiguration) {
                             const existingConfig = pr2Configurations.find(config => 
