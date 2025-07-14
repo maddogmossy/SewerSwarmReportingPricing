@@ -125,8 +125,16 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   // Check which equipment has existing configurations
   // Ensure pr2Configs is an array before calling .find()
   const safepr2Configs = Array.isArray(pr2Configs) ? pr2Configs : [];
-  const cctvJetVacConfig = safepr2Configs.find((config: any) => config.categoryId === 'cctv-jet-vac');
-  const cctvVanPackConfig = safepr2Configs.find((config: any) => config.categoryId === 'cctv-van-pack');
+  
+  // Find the most recent configuration for each equipment type (in case of multiple)
+  const cctvJetVacConfigs = safepr2Configs.filter((config: any) => config.categoryId === 'cctv-jet-vac');
+  const cctvVanPackConfigs = safepr2Configs.filter((config: any) => config.categoryId === 'cctv-van-pack');
+  
+  // Use the most recent configuration (highest ID) for each equipment type
+  const cctvJetVacConfig = cctvJetVacConfigs.length > 0 ? 
+    cctvJetVacConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null;
+  const cctvVanPackConfig = cctvVanPackConfigs.length > 0 ? 
+    cctvVanPackConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null;
   
   // Debug equipment configuration detection
   console.log('🔧 CleaningPopover - PR2 Configs:', safepr2Configs);

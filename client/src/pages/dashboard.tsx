@@ -1284,8 +1284,10 @@ export default function Dashboard() {
       return null;
     }
 
-    // Find a valid PR2 configuration
-    const pr2Config = pr2Configurations[0]; // Use the first available config
+    // Find the most recent PR2 configuration (highest ID)
+    const pr2Config = pr2Configurations.reduce((latest: any, current: any) => 
+      current.id > latest.id ? current : latest
+    );
     console.log('🎯 Using PR2 config:', pr2Config);
     
     if (!pr2Config || (!pr2Config.pricingOptions && !pr2Config.quantityOptions)) {

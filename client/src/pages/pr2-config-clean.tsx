@@ -272,7 +272,7 @@ export default function PR2ConfigClean() {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
       console.log('✅ Configuration saved successfully');
-      setLocation(`/pr2-pricing?sector=${sector}`);
+      setLocation(`/dashboard`);
     },
     onError: (error: any) => {
       console.error('❌ Error saving configuration:', error);
@@ -309,7 +309,7 @@ export default function PR2ConfigClean() {
           title: "Success",
           description: "Configuration saved as new copy successfully",
         });
-        setLocation(`/pr2-pricing?sector=${sector}`);
+        setLocation(`/dashboard`);
       } catch (error: any) {
         console.error('❌ Error creating new configuration:', error);
         toast({
