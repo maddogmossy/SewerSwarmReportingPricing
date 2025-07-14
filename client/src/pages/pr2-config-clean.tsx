@@ -1550,11 +1550,13 @@ export default function PR2ConfigClean() {
                               id: config.id, 
                               categoryName: config.categoryName,
                               description: config.description,
-                              pricingOptions: config.pricingOptions?.filter((o: any) => o.enabled).map((o: any) => `${o.label}: ${o.value}`)
+                              pricingOptions: config.pricingOptions?.filter((o: any) => o.enabled).map((o: any) => `${o.label}: ${o.value}`),
+                              quantityOptions: config.quantityOptions?.filter((o: any) => o.enabled).map((o: any) => `${o.label}: ${o.value}`)
                             });
                             console.log('🔧 Current URL params:', { categoryId, sector, editId });
                             const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${config.id}`;
                             console.log('🔧 Navigating to:', newUrl);
+                            console.log('🔧 Expected config ID after navigation:', config.id);
                             
                             // Always force page refresh to ensure proper configuration loading
                             console.log('🔧 Forcing page refresh to load config:', config.id);
