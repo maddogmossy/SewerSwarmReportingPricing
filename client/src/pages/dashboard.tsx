@@ -1571,25 +1571,16 @@ export default function Dashboard() {
       hasMinRequirement: !!minRunsRequired
     });
     
-    if (minRunsRequired) {
-      const minRuns = parseFloat(minRunsRequired.value || '0');
-      console.log('🔍 Min quantity comparison:', {
-        itemNo: section.itemNo,
-        runsPerShift,
-        minRuns,
-        comparison: runsPerShift < minRuns ? 'BELOW_MIN (RED)' : runsPerShift > minRuns * 1.5 ? 'OVER_THRESHOLD (PURPLE)' : 'MEETS_OR_EXCEEDS (GREEN)'
-      });
-      
-      if (runsPerShift < minRuns) {
-        return 'red'; // Below minimum
-      } else if (runsPerShift > minRuns * 1.5) {
-        return 'purple'; // Over minimum threshold  
-      } else {
-        return 'green'; // Meets or exceeds minimum
-      }
-    }
+    // Section status should be green if it meets blue/green window requirements
+    // Orange minimum affects cost display color, not section status
+    console.log('🔍 Section meets basic requirements (blue/green windows):', {
+      itemNo: section.itemNo,
+      pipeSize: section.pipeSize,
+      totalLength: section.totalLength,
+      statusColor: 'green (meets configuration requirements)'
+    });
     
-    return 'green'; // Meets all requirements, no minimum set
+    return 'green'; // Section meets blue/green window requirements
   };
 
 
@@ -1987,6 +1978,35 @@ export default function Dashboard() {
     );
   };
 
+  // Check if collective count meets orange minimum requirements
+  const checkOrangeMinimumMet = (): boolean => {
+    if (!pr2Configurations || pr2Configurations.length === 0) return true;
+    
+    // Get smart counting result for all sections
+    const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations);
+    
+    // Check highest orange minimum requirement across all configurations
+    let highestMinRequired = 0;
+    pr2Configurations.forEach(config => {
+      const minQuantityOptions = config.minQuantityOptions || [];
+      const minRunsOption = minQuantityOptions.find((opt: any) => 
+        opt.label?.toLowerCase().includes('runs') && opt.enabled
+      );
+      if (minRunsOption) {
+        const minValue = parseFloat(minRunsOption.value || '0');
+        highestMinRequired = Math.max(highestMinRequired, minValue);
+      }
+    });
+    
+    console.log('🔢 Orange minimum check:', {
+      totalSectionsCount: sectionCount,
+      highestMinRequired: highestMinRequired,
+      meetMinimum: sectionCount >= highestMinRequired
+    });
+    
+    return sectionCount >= highestMinRequired;
+  };
+
   // Cost calculation function for enhanced table
   const calculateCost = (section: any): string | JSX.Element => {
     // Check if section actually has defects based on severity grade
@@ -1996,14 +2016,18 @@ export default function Dashboard() {
       return "£0.00";
     }
     
-    // For defective sections, use PR1 configuration calculations
+    // For defective sections, use PR2 configuration calculations
     const autoCost = calculateAutoCost(section);
     if (autoCost && autoCost.cost > 0) {
-      // Display calculated cost from PR1 configuration
+      // Check if orange minimum is met to determine cost color
+      const orangeMinimumMet = checkOrangeMinimumMet();
+      const costColor = orangeMinimumMet ? "text-green-600" : "text-red-600";
+      
+      // Display calculated cost with appropriate color
       return (
         <span 
-          className="text-green-600 font-medium cursor-help"
-          title={`Cost calculated using ${autoCost.method || 'PR2 Configuration'}\nStatus: ${autoCost.status || 'calculated'}`}
+          className={`${costColor} font-medium cursor-help`}
+          title={`Cost calculated using ${autoCost.method || 'PR2 Configuration'}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
         >
           £{autoCost.cost.toFixed(2)}
         </span>
