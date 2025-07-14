@@ -75,7 +75,7 @@ export default function PR2ConfigClean() {
   const urlParams = new URLSearchParams(window.location.search);
   const sector = urlParams.get('sector') || 'utilities';
   const categoryId = urlParams.get('categoryId');
-  const editId = urlParams.get('editId');
+  const editId = urlParams.get('edit') || urlParams.get('editId');
   const isEditing = !!editId;
   
   // Determine category name based on categoryId for standard categories

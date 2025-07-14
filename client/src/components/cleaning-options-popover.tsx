@@ -194,10 +194,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     const targetRoute = equipmentRoutes[primaryEquipment];
     if (targetRoute && existingConfig) {
       // Navigate to edit existing configuration
-      setLocation(`${targetRoute}&sector=${sectionData.sector}&edit=${existingConfig.id}`);
+      const editUrl = `${targetRoute}&sector=${sectionData.sector}&edit=${existingConfig.id}`;
+      console.log('🔗 Navigating to edit URL:', editUrl);
+      setLocation(editUrl);
     } else if (targetRoute) {
       // Navigate to create new configuration
-      setLocation(`${targetRoute}&sector=${sectionData.sector}`);
+      const createUrl = `${targetRoute}&sector=${sectionData.sector}`;
+      console.log('🔗 Navigating to create URL:', createUrl);
+      setLocation(createUrl);
     } else {
       // Fallback to main pricing page if specific route not found
       const equipmentParams = orderedSelectedEquipment.join(',');
