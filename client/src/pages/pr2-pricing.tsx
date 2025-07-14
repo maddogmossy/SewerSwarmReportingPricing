@@ -66,7 +66,7 @@ export default function PR2Pricing() {
   
   // Initialize sector from URL on page load only
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.split('?')[1] || '');
     const initialSector = urlParams.get('sector') || 'utilities';
     
     console.log('Initial page load - setting sector to:', initialSector);

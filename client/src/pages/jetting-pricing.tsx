@@ -54,7 +54,7 @@ export default function JettingPricing() {
   
   // Parse URL parameters for auto-population
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.split('?')[1] || '');
     const pipeSize = urlParams.get('pipeSize');
     const meterage = urlParams.get('meterage');
     const autoOpen = urlParams.get('autoOpen');

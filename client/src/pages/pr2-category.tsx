@@ -22,12 +22,12 @@ const SECTORS = [
 ];
 
 export default function PR2Category() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
   // Get URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const sector = urlParams.get('sector') || 'utilities';
   const categoryId = urlParams.get('categoryId') || '';
   

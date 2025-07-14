@@ -68,11 +68,11 @@ const SECTORS = [
 ];
 
 export default function PR2ConfigClean() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
   
-  // Get URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
+  // Get URL parameters safely
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const sector = urlParams.get('sector') || 'utilities';
   const categoryId = urlParams.get('categoryId');
   const editId = urlParams.get('edit') || urlParams.get('editId');
