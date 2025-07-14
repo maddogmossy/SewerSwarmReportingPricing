@@ -1253,8 +1253,8 @@ export default function PR2ConfigClean() {
                       </div>
                       {option.enabled && (
                         <Input
-                          key={`${option.id}-${option.value}`}
-                          value={option.value}
+                          key={`${option.id}-${option.value}-${Date.now()}`}
+                          defaultValue={option.value}
                           onChange={(e) => {
                             console.log(`🔄 Quantity input changed for ${option.id}: ${e.target.value}`);
                             updateQuantityOption(option.id, 'value', e.target.value);
@@ -1472,16 +1472,16 @@ export default function PR2ConfigClean() {
                         <div className="flex gap-2 items-center">
                           <span className="text-sm font-medium">R1:</span>
                           <Input
-                            key={`${option.id}-start-${option.rangeStart}`}
-                            value={option.rangeStart}
+                            key={`${option.id}-start-${option.rangeStart}-${Date.now()}`}
+                            defaultValue={option.rangeStart}
                             onChange={(e) => updateRangeOption(option.id, 'rangeStart', e.target.value)}
                             placeholder="Start"
                             className="text-sm flex-1"
                           />
                           <span className="text-sm font-medium">to R2:</span>
                           <Input
-                            key={`${option.id}-end-${option.rangeEnd}`}
-                            value={option.rangeEnd}
+                            key={`${option.id}-end-${option.rangeEnd}-${Date.now()}`}
+                            defaultValue={option.rangeEnd}
                             onChange={(e) => updateRangeOption(option.id, 'rangeEnd', e.target.value)}
                             placeholder="End"
                             className="text-sm flex-1"

@@ -1,0 +1,35 @@
+Current sector object: [object Object]
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Initial page load - setting sector to: utilities
+Console.js:61 🔍 Making API request for sector: utilities
+Console.js:61 Current sector object: [object Object]
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Current sector object: [object Object]
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 📥 Raw API response: [object Object],[object Object]
+Console.js:61 📊 Response length: 2
+Console.js:61 📊 Response items: ID: 36, Sector: undefined,ID: 40, Sector: undefined
+Console.js:61 Current sector object: [object Object]
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 🔍 Navigation triggered for categoryId: cctv-jet-vac
+Console.js:61 📍 Current sector: utilities
+Console.js:61 🔍 Existing config found: [object Object]
+Console.js:61 🔧 Navigating to edit existing config: /pr2-config-clean?sector=utilities&categoryId=cctv-jet-vac&edit=36
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 36, configToUse: undefined
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 36, configToUse: [object Object]
+Console.js:61 🔍 Processing config: [object Object]
+Console.js:61 🔧 Loading configuration data: [object Object]
+Console.js:61 🔧 Setting form data for config 36: [object Object]
+Console.js:61 🔍 Detected existing config in sectors: ["utilities"]
+Console.js:61 🔍 Setting sectorsWithConfig to: utilities
+Console.js:61 🔍 Setting selectedSectors to: utilities
+3Console.js:61 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 30
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 40, configToUse: undefined
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 40, configToUse: Object
+Console.js:61 🔍 Processing config: Object
+Console.js:61 🔧 Loading configuration data: Object
+Console.js:61 🔧 Setting form data for config 40: Object
+Console.js:61 🔍 Detected existing config in sectors: ["utilities"]
+Console.js:61 🔍 Setting sectorsWithConfig to: Array(1)
+Console.js:61 🔍 Setting selectedSectors to: Array(1)
+2Console.js:61 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 25
