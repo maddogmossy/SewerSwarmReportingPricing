@@ -219,13 +219,17 @@ export default function PR2ConfigClean() {
   // Load sectors that have this configuration when editing starts
   useEffect(() => {
     if (isEditing && existingConfig) {
-      // For editing, we know the current sector has the config
+      // For editing, read the sectors array from the configuration
       const config = Array.isArray(existingConfig) ? existingConfig[0] : existingConfig;
       if (config) {
-        const currentConfigSector = config.sector;
-        console.log(`🔍 Detected existing config in sector: ${currentConfigSector}`);
-        setSectorsWithConfig([currentConfigSector]);
-        setSelectedSectors([currentConfigSector]);
+        // Use the sectors array if available, otherwise fall back to single sector
+        const configSectors = config.sectors && Array.isArray(config.sectors) 
+          ? config.sectors.filter(s => s !== null) // Remove null entries
+          : [config.sector || sector];
+        
+        console.log(`🔍 Detected existing config in sectors: ${JSON.stringify(configSectors)}`);
+        setSectorsWithConfig(configSectors);
+        setSelectedSectors(configSectors);
       }
     } else {
       // Start with the current sector for new configurations
