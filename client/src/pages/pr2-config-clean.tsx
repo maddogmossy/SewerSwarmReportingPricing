@@ -989,6 +989,7 @@ export default function PR2ConfigClean() {
                       </div>
                       {option.enabled && (
                         <Input
+                          key={`${option.id}-${option.value}`}
                           value={option.value}
                           onChange={(e) => updatePricingOption(option.id, 'value', e.target.value)}
                           placeholder="Enter value"
@@ -1250,6 +1251,7 @@ export default function PR2ConfigClean() {
                       </div>
                       {option.enabled && (
                         <Input
+                          key={`${option.id}-${option.value}`}
                           value={option.value}
                           onChange={(e) => updateQuantityOption(option.id, 'value', e.target.value)}
                           placeholder="Enter value"
@@ -1358,6 +1360,7 @@ export default function PR2ConfigClean() {
                       </div>
                       {option.enabled && (
                         <Input
+                          key={`${option.id}-${option.value}`}
                           value={option.value}
                           onChange={(e) => updateMinQuantityOption(option.id, 'value', e.target.value)}
                           placeholder="Enter value"
@@ -1463,6 +1466,7 @@ export default function PR2ConfigClean() {
                         <div className="flex gap-2 items-center">
                           <span className="text-sm font-medium">R1:</span>
                           <Input
+                            key={`${option.id}-start-${option.rangeStart}`}
                             value={option.rangeStart}
                             onChange={(e) => updateRangeOption(option.id, 'rangeStart', e.target.value)}
                             placeholder="Start"
@@ -1470,6 +1474,7 @@ export default function PR2ConfigClean() {
                           />
                           <span className="text-sm font-medium">to R2:</span>
                           <Input
+                            key={`${option.id}-end-${option.rangeEnd}`}
                             value={option.rangeEnd}
                             onChange={(e) => updateRangeOption(option.id, 'rangeEnd', e.target.value)}
                             placeholder="End"
