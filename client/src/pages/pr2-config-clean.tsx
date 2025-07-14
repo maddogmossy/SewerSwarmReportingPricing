@@ -215,60 +215,26 @@ export default function PR2ConfigClean() {
   // Save configuration with safe multi-sector support
   const saveConfiguration = useMutation({
     mutationFn: async (data: CleanFormData) => {
-      console.log('🚀 Safe multi-sector save:', { selectedSectors, allSectorConfigs });
-      
       const results = [];
-      const currentSectors = allSectorConfigs.map((c: any) => c.sector);
-      const sectorsToAdd = selectedSectors.filter(s => !currentSectors.includes(s));
-      const sectorsToRemove = currentSectors.filter(s => !selectedSectors.includes(s));
       
-      console.log('📊 Sector analysis:', { currentSectors, selectedSectors, sectorsToAdd, sectorsToRemove });
-      
-      // Remove configurations from unselected sectors
-      for (const sectorToRemove of sectorsToRemove) {
-        const configToRemove = allSectorConfigs.find((c: any) => c.sector === sectorToRemove);
-        if (configToRemove) {
-          console.log(`🗑️ Removing config from ${sectorToRemove}:`, configToRemove.config.id);
-          try {
-            await apiRequest('DELETE', `/api/pr2-clean/${configToRemove.config.id}`);
-            console.log(`✅ Removed config from ${sectorToRemove}`);
-          } catch (error) {
-            console.log(`⚠️ Failed to remove config from ${sectorToRemove}:`, error);
-          }
+      // Update configuration for the current sector
+      if (isEditing && editId) {
+        try {
+          const result = await apiRequest('PUT', `/api/pr2-clean/${editId}`, data);
+          results.push(result);
+        } catch (error) {
+          console.error('Failed to update configuration:', error);
         }
-      }
-      
-      // Update configurations for existing selected sectors
-      for (const sectorId of selectedSectors) {
-        const existingConfig = allSectorConfigs.find((c: any) => c.sector === sectorId);
-        const sectorData = { ...data, sector: sectorId };
-        
-        if (existingConfig) {
-          console.log(`📝 Updating config for ${sectorId}:`, existingConfig.config.id);
-          try {
-            const result = await apiRequest('PUT', `/api/pr2-clean/${existingConfig.config.id}`, sectorData);
-            results.push(result);
-            console.log(`✅ Updated config for ${sectorId}`);
-          } catch (error) {
-            console.log(`⚠️ Update failed, creating new config for ${sectorId}`);
-            const result = await apiRequest('POST', '/api/pr2-clean', { 
-              ...sectorData, 
-              categoryId: categoryId || 'custom' 
-            });
-            results.push(result);
-          }
-        } else {
-          console.log(`➕ Creating new config for ${sectorId}`);
-          try {
-            const result = await apiRequest('POST', '/api/pr2-clean', { 
-              ...sectorData, 
-              categoryId: categoryId || 'custom' 
-            });
-            results.push(result);
-            console.log(`✅ Created config for ${sectorId}`);
-          } catch (error) {
-            console.error(`❌ Failed to create config for ${sectorId}:`, error);
-          }
+      } else {
+        // Create new configuration
+        try {
+          const result = await apiRequest('POST', '/api/pr2-clean', { 
+            ...data, 
+            categoryId: categoryId || 'custom' 
+          });
+          results.push(result);
+        } catch (error) {
+          console.error('Failed to create configuration:', error);
         }
       }
       
@@ -721,7 +687,7 @@ export default function PR2ConfigClean() {
               {SECTORS.map((sect) => {
                 const Icon = sect.icon;
                 const isSelected = selectedSectors.includes(sect.id);
-                const hasExistingConfig = allSectorConfigs.some((c: any) => c.sector === sect.id);
+                const hasExistingConfig = sectorsWithConfig.includes(sect.id);
                 
                 return (
                   <div key={sect.id} className="flex items-center space-x-2">

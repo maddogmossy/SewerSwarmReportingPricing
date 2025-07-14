@@ -15,6 +15,7 @@ interface CleansingEquipment {
   icon: React.ComponentType<{ className?: string }>;
   isSelected: boolean;
   isPrimary?: boolean; // For first/preferred option
+  hasConfig?: boolean; // Whether configuration already exists
 }
 
 interface CleaningOptionsPopoverProps {
@@ -38,6 +39,15 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const [, setLocation] = useLocation();
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
   const [showStackOrder, setShowStackOrder] = useState(false);
+  
+  // Check if CCTV/Jet Vac configuration exists
+  const { data: pr2Configs = [] } = useQuery({
+    queryKey: ['/api/pr2-clean', sectionData.sector],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector: sectionData.sector });
+      return response.json();
+    }
+  });
   
   // Load saved order and selection from localStorage, fallback to defaults
   const [equipmentOrder, setEquipmentOrder] = useState<string[]>(() => {
@@ -115,14 +125,20 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     }
   ];
 
+  // Check which equipment has existing configurations
+  const cctvJetVacConfig = pr2Configs.find((config: any) => config.categoryId === 'cctv-jet-vac');
+  const cctvVanPackConfig = pr2Configs.find((config: any) => config.categoryId === 'cctv-van-pack');
+
   // Create ordered equipment list with option numbers based on current order
   const cleansingEquipment: CleansingEquipment[] = equipmentOrder.map((equipmentId, index) => {
     const baseItem = baseEquipment.find(item => item.id === equipmentId)!;
+    const hasConfig = equipmentId === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig;
     return {
       ...baseItem,
       name: `Option ${index + 1}: ${baseItem.name}`,
       isSelected: selectedEquipment.includes(equipmentId),
-      isPrimary: index === 0 // First in order is primary
+      isPrimary: index === 0, // First in order is primary
+      hasConfig: hasConfig // Track if configuration exists
     };
   });
 
@@ -161,15 +177,22 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     const orderedSelectedEquipment = equipmentOrder.filter(id => selectedEquipment.includes(id));
     const primaryEquipment = orderedSelectedEquipment[0]; // First selected in order
     
+    // Check if the primary equipment has an existing configuration
+    const existingConfig = primaryEquipment === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
+    
     // Map equipment IDs to their specific configuration routes
     const equipmentRoutes: { [key: string]: string } = {
       'cctv-van-pack': '/pr2-config-clean?categoryId=cctv-van-pack',
       'cctv-jet-vac': '/pr2-config-clean?categoryId=cctv-jet-vac'
     };
     
-    // Get the route for the primary equipment, fallback to general pricing if not found
+    // Get the route for the primary equipment
     const targetRoute = equipmentRoutes[primaryEquipment];
-    if (targetRoute) {
+    if (targetRoute && existingConfig) {
+      // Navigate to edit existing configuration
+      setLocation(`${targetRoute}&sector=${sectionData.sector}&edit=${existingConfig.id}`);
+    } else if (targetRoute) {
+      // Navigate to create new configuration
       setLocation(`${targetRoute}&sector=${sectionData.sector}`);
     } else {
       // Fallback to main pricing page if specific route not found
@@ -214,7 +237,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
             return (
               <div
                 key={equipment.id}
-                className="flex items-start gap-2 p-2 rounded-lg border hover:bg-slate-50 transition-colors"
+                className={`flex items-start gap-2 p-2 rounded-lg border transition-colors ${
+                  equipment.hasConfig 
+                    ? 'bg-green-50 border-green-200 hover:bg-green-100' 
+                    : 'hover:bg-slate-50'
+                }`}
               >
                 <Checkbox
                   id={equipment.id}
@@ -223,7 +250,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                   className="mt-1"
                 />
                 <div className="flex items-start gap-2 flex-1">
-                  <IconComponent className="h-4 w-4 text-blue-600 mt-0.5" />
+                  <IconComponent className={`h-4 w-4 mt-0.5 ${
+                    equipment.hasConfig ? 'text-green-600' : 'text-blue-600'
+                  }`} />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <label 
@@ -235,6 +264,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       {equipment.isPrimary && (
                         <Badge variant="default" className="text-xs bg-blue-100 text-blue-800">
                           Preferred
+                        </Badge>
+                      )}
+                      {equipment.hasConfig && (
+                        <Badge variant="default" className="text-xs bg-green-100 text-green-800">
+                          Configured
                         </Badge>
                       )}
                     </div>
@@ -274,7 +308,12 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
             disabled={selectedEquipment.length === 0}
             className="w-full h-7 text-xs px-2 py-1"
           >
-            Configure Pricing
+            {(() => {
+              const orderedSelected = equipmentOrder.filter(id => selectedEquipment.includes(id));
+              const primaryEquipment = orderedSelected[0];
+              const hasExistingConfig = primaryEquipment === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig;
+              return hasExistingConfig ? 'Edit Configuration' : 'Configure Pricing';
+            })()}
             {selectedEquipment.length > 0 && (
               <Badge variant="secondary" className="ml-1 text-xs px-1">
                 {selectedEquipment.length}
