@@ -240,70 +240,43 @@ export default function PR2ConfigClean() {
     }
   }, [isEditing, categoryId, sector]);
 
-  // Save configuration with proper multi-sector support
+  // Save configuration - simple sector management
   const saveConfiguration = useMutation({
     mutationFn: async (data: CleanFormData) => {
-      const results = [];
-      
-      // Handle multi-sector configuration
-      for (const targetSector of selectedSectors) {
-        const sectorData = { ...data, sector: targetSector };
-        
-        if (isEditing && editId && targetSector === sector) {
-          // Update existing configuration for current sector
-          try {
-            const result = await apiRequest('PUT', `/api/pr2-clean/${editId}`, sectorData);
-            results.push(result);
-          } catch (error) {
-            console.error('Failed to update configuration:', error);
-          }
-        } else {
-          // Create new configuration for other sectors
-          try {
-            const result = await apiRequest('POST', '/api/pr2-clean', { 
-              ...sectorData, 
-              categoryId: categoryId || 'custom' 
-            });
-            results.push(result);
-          } catch (error) {
-            console.error('Failed to create configuration:', error);
-          }
-        }
-      }
-
-      // Handle sector removals - delete configurations from unchecked sectors
-      if (isEditing) {
-        const removedSectors = sectorsWithConfig.filter(s => !selectedSectors.includes(s));
-        for (const removedSector of removedSectors) {
-          if (removedSector !== sector) {
-            try {
-              // Find and delete configuration for this sector
-              const configs = await apiRequest('GET', `/api/pr2-clean?sector=${removedSector}`);
-              const configToDelete = Array.isArray(configs) ? 
-                configs.find(c => c.categoryId === categoryId) : 
-                (configs.categoryId === categoryId ? configs : null);
-              
-              if (configToDelete) {
-                await apiRequest('DELETE', `/api/pr2-clean/${configToDelete.id}`);
-                console.log(`✅ Deleted configuration from ${removedSector} sector`);
-              }
-            } catch (error) {
-              console.error(`Failed to delete configuration from ${removedSector}:`, error);
-            }
-          }
-        }
+      // If no sectors selected, delete the configuration
+      if (selectedSectors.length === 0 && isEditing && editId) {
+        await apiRequest('DELETE', `/api/pr2-clean/${editId}`);
+        console.log('✅ Deleted configuration (no sectors selected)');
+        return [];
       }
       
-      return results;
+      // Use the first selected sector as the primary sector
+      const primarySector = selectedSectors[0] || sector;
+      const sectorData = { ...data, sector: primarySector };
+      
+      if (isEditing && editId) {
+        // Update existing configuration with new sector
+        const result = await apiRequest('PUT', `/api/pr2-clean/${editId}`, sectorData);
+        console.log(`✅ Updated configuration sector to: ${primarySector}`);
+        return [result];
+      } else {
+        // Create new configuration
+        const result = await apiRequest('POST', '/api/pr2-clean', { 
+          ...sectorData, 
+          categoryId: categoryId || 'custom' 
+        });
+        console.log(`✅ Created new configuration for: ${primarySector}`);
+        return [result];
+      }
     },
     onSuccess: (savedConfigs) => {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
-      console.log('✅ Multi-sector configurations saved successfully');
+      console.log('✅ Configuration saved successfully');
       setLocation(`/pr2-pricing?sector=${sector}`);
     },
     onError: (error: any) => {
-      console.error('❌ Error saving configurations:', error);
+      console.error('❌ Error saving configuration:', error);
     }
   });
 
