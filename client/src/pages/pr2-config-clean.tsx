@@ -284,6 +284,45 @@ export default function PR2ConfigClean() {
     saveConfiguration.mutate(formData);
   };
 
+  const handleSaveAsNew = () => {
+    console.log('💾 Save as new button clicked:', formData);
+    // Create new configuration by removing the editId and treating it as a new config
+    const newConfigData = {
+      ...formData,
+      categoryName: `${formData.categoryName} (Copy)` // Add (Copy) to distinguish from original
+    };
+    
+    // Force create new configuration by calling API directly without editId
+    const createNewConfig = async () => {
+      try {
+        const result = await apiRequest('POST', '/api/pr2-clean', { 
+          ...newConfigData, 
+          categoryId: categoryId || 'custom',
+          sectors: selectedSectors.length > 0 ? selectedSectors : [sector]
+        });
+        console.log('✅ Created new configuration copy:', result);
+        
+        // Invalidate cache and navigate back
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
+        toast({
+          title: "Success",
+          description: "Configuration saved as new copy successfully",
+        });
+        setLocation(`/pr2-pricing?sector=${sector}`);
+      } catch (error: any) {
+        console.error('❌ Error creating new configuration:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create new configuration",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    createNewConfig();
+  };
+
   const handleBack = () => {
     setLocation(`/pr2-pricing?sector=${sector}`);
   };
@@ -1398,14 +1437,28 @@ export default function PR2ConfigClean() {
             Cancel
           </Button>
           
-          <Button 
-            onClick={handleSave} 
-            disabled={saveConfiguration.isPending}
-            className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {saveConfiguration.isPending ? 'Saving...' : 'Save Configuration'}
-          </Button>
+          <div className="flex gap-2">
+            {isEditing && (
+              <Button 
+                onClick={handleSaveAsNew} 
+                disabled={saveConfiguration.isPending}
+                variant="outline"
+                className="border-blue-300 text-blue-600 hover:bg-blue-50"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Save As New
+              </Button>
+            )}
+            
+            <Button 
+              onClick={handleSave} 
+              disabled={saveConfiguration.isPending}
+              className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {saveConfiguration.isPending ? 'Saving...' : (isEditing ? 'Update Configuration' : 'Save Configuration')}
+            </Button>
+          </div>
         </div>
 
         {/* Red Warning Dialog for Sector Removal */}
