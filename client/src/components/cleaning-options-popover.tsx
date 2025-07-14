@@ -155,11 +155,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   });
 
   const handleEquipmentToggle = (equipmentId: string) => {
-    setSelectedEquipment(prev => 
-      prev.includes(equipmentId) 
+    setSelectedEquipment(prev => {
+      const newSelection = prev.includes(equipmentId) 
         ? prev.filter(id => id !== equipmentId)
-        : [...prev, equipmentId]
-    );
+        : [...prev, equipmentId];
+      // Save to localStorage immediately to preserve selection changes
+      localStorage.setItem('selected-equipment', JSON.stringify(newSelection));
+      return newSelection;
+    });
   };
 
   const moveEquipmentUp = (index: number) => {
@@ -167,6 +170,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       const newOrder = [...equipmentOrder];
       [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
       setEquipmentOrder(newOrder);
+      // Save to localStorage immediately to preserve stack order changes
+      localStorage.setItem('equipment-order', JSON.stringify(newOrder));
     }
   };
 
@@ -175,6 +180,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       const newOrder = [...equipmentOrder];
       [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
       setEquipmentOrder(newOrder);
+      // Save to localStorage immediately to preserve stack order changes
+      localStorage.setItem('equipment-order', JSON.stringify(newOrder));
     }
   };
 
