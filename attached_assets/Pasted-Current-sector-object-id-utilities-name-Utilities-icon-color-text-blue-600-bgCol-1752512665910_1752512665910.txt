@@ -1,0 +1,48 @@
+Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Initial page load - setting sector to: utilities
+Console.js:61 🔍 Making API request for sector: utilities
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 📥 Raw API response: (2) [{…}, {…}]
+Console.js:61 📊 Response length: 2
+Console.js:61 📊 Response items: (2) ['ID: 36, Sector: undefined', 'ID: 40, Sector: undefined']
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 🔍 Navigation triggered for categoryId: cctv-jet-vac
+Console.js:61 📍 Current sector: utilities
+Console.js:61 🔍 Existing config found: {id: 36, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 30. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 30', …}
+Console.js:61 🔧 Navigating to edit existing config: /pr2-config-clean?sector=utilities&categoryId=cctv-jet-vac&edit=36
+Console.js:61 🔄 DOM manipulation useEffect triggered for Config 36
+Console.js:61 🔄 Quantity options: []
+Console.js:61 🔄 Range options: []
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 36, configToUse: undefined
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 36, configToUse: {id: 36, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 30. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 30', …}
+Console.js:61 🔍 Processing config: {id: 36, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 30. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 30', …}
+Console.js:61 🔧 Loading configuration data: {id: 36, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 30. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 30', …}
+Console.js:61 🔧 Setting form data for config 36: {quantityValue: '30', rangeLength: '30'}
+Console.js:61 🔍 Detected existing config in sectors: ["utilities"]
+Console.js:61 🔍 Setting sectorsWithConfig to: ['utilities']
+Console.js:61 🔍 Setting selectedSectors to: ['utilities']
+Console.js:61 🔄 DOM manipulation useEffect triggered for Config 36
+Console.js:61 🔄 Quantity options: []
+Console.js:61 🔄 Range options: []
+Console.js:61 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 30
+Console.js:61 🔄 DOM manipulation useEffect triggered for Config 36
+Console.js:61 🔄 Quantity options: [{…}]
+Console.js:61 🔄 Range options: (3) [{…}, {…}, {…}]
+Console.js:61 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 30
+Console.js:61 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 30
+Console.js:61 🔄 Looking for input with data-option-id="quantity_1752444400001", found: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1304:​22" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm" data-option-id=​"quantity_1752444400001" placeholder=​"Enter value" value=​"30">​flex
+Console.js:61 🔄 Current input value: "30", expected: "30"
+Console.js:61 🔄 Looking for range inputs for range_1752444400003, found start: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1524:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400003-start" placeholder=​"Start" value=​"100">​flex end: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1533:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400003-end" placeholder=​"End" value=​"150">​flex
+Console.js:61 🔄 Current start value: "100", expected: "100"
+Console.js:61 🔄 Current end value: "150", expected: "150"
+Console.js:61 🔄 Looking for range inputs for range_1752444400004, found start: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1524:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400004-start" placeholder=​"Start" value=​"05">​flex end: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1533:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400004-end" placeholder=​"End" value=​"15">​flex
+Console.js:61 🔄 Current start value: "05", expected: "05"
+Console.js:61 🔄 Current end value: "15", expected: "15"
+Console.js:61 🔄 Looking for range inputs for range_1752444400005, found start: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1524:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400005-start" placeholder=​"Start" value=​"0">​flex end: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1533:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400005-end" placeholder=​"End" value=​"30">​flex
+Console.js:61 🔄 Current start value: "0", expected: "0"
+Console.js:61 🔄 Current end value: "30", expected: "30"

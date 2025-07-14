@@ -28,7 +28,8 @@ import {
   Flame,
   Sun,
   Scissors,
-  Pickaxe
+  Pickaxe,
+  Edit
 } from 'lucide-react';
 
 // Sector definitions matching upload window colors from image
@@ -403,16 +404,40 @@ export default function PR2Pricing() {
                         <h3 className="font-medium text-sm mb-1 text-gray-800">{category.name}</h3>
                         <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                         
-                        {/* Show status icon based on configuration */}
+                        {/* Show status icon and Edit button based on configuration */}
                         {(() => {
                           const hasConfiguration = pr2Configurations.some(config => 
                             config.categoryId === category.id || 
                             config.categoryName?.toLowerCase() === category.id.toLowerCase() ||
-                            (category.id === 'cctv' && config.categoryName === 'CCTV')
+                            (category.id === 'cctv' && config.categoryName === 'CCTV') ||
+                            (category.id === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration')
                           );
                           
                           if (hasConfiguration) {
-                            return <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />;
+                            const existingConfig = pr2Configurations.find(config => 
+                              config.categoryId === category.id || 
+                              config.categoryName?.toLowerCase() === category.id.toLowerCase() ||
+                              (category.id === 'cctv' && config.categoryName === 'CCTV') ||
+                              (category.id === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration')
+                            );
+                            
+                            return (
+                              <div className="absolute top-2 right-2 flex items-center gap-1">
+                                <Settings className="h-4 w-4 text-green-500" />
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0 hover:bg-blue-100 hover:text-blue-600"
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent card click navigation
+                                    console.log(`🔧 Edit button clicked for Config ${existingConfig?.id}`);
+                                    handleCategoryNavigation(category.id);
+                                  }}
+                                >
+                                  <Edit className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            );
                           } else if (isUserCreated) {
                             return <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />;
                           } else {
