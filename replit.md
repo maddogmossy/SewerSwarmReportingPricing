@@ -574,6 +574,37 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v4.9' to return to this stable checkpoint
 
+## REV V5.0 CHECKPOINT - STREAMLINED CATEGORY NAVIGATION LOCKED (July 14, 2025)
+
+🔒 **PRODUCTION READY - DIRECT CATEGORY NAVIGATION SYSTEM:**
+- **Hidden Existing Configurations Section:** Removed cluttered "Existing Configurations" list from PR2 pricing page for cleaner interface
+- **Direct Category Navigation:** Category cards now function as primary navigation method, routing directly to configuration pages when clicked
+- **Smart Configuration Detection:** System intelligently detects existing configurations and routes accordingly:
+  - **Existing Config Found:** Routes to edit mode (`/pr2-config-clean?sector=utilities&categoryId=cctv-jet-vac&edit=36`)
+  - **No Config Found:** Routes to create new mode (`/pr2-config-clean?sector=utilities&categoryId=cctv-jet-vac`)
+- **Consistent Dashboard Behavior:** Category cards now behave identically to dashboard cleaning options for unified user experience
+- **Simplified Interface:** Clean, organized layout with category cards as the primary interaction method
+
+🔒 **ENHANCED CATEGORY MAPPING:**
+- **Comprehensive Category Support:** All standard categories properly mapped for direct navigation
+- **Dynamic Route Generation:** Smart URL construction based on sector and category context
+- **Configuration State Management:** Proper handling of existing vs new configuration states
+- **Visual Status Indicators:** Green settings icons for configured categories, orange for unconfigured
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Enhanced Navigation Logic:** `handleCategoryNavigation()` function with smart configuration detection
+- **Removed Redundant UI:** Eliminated "Existing Configurations" section for streamlined interface
+- **Improved User Flow:** Direct category → configuration page navigation without intermediate steps
+- **Consistent Routing:** Unified routing patterns across dashboard and pricing pages
+
+🔒 **USER-CONFIRMED WORKING FEATURES:**
+- **CCTV/Jet Vac Navigation:** Clicking category card routes directly to configuration page
+- **Edit Mode Detection:** Existing configurations open in edit mode with pre-populated values
+- **Create Mode Navigation:** New categories route to blank configuration forms
+- **Clean Interface:** Simplified pricing page with category cards as primary navigation
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v5.0' to return to this stable checkpoint
+
 ## REV V3.9.2 CHECKPOINT - COMPLETE DASHBOARD INTEGRATION LOCKED (July 14, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE DASHBOARD CONFIGURATION DETECTION & EDITING:**
