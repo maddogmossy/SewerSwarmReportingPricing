@@ -36,11 +36,10 @@ interface CleaningOptionsPopoverProps {
 
 export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2 }: CleaningOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const [selectedEquipment, setSelectedEquipment] = useState<string>('');
 
   // Detect which configuration is currently being edited from URL
-  const [location] = useLocation();
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const currentEditId = urlParams.get('edit') || urlParams.get('editId');
   console.log('🔍 CleaningPopover - Current Edit ID from URL:', currentEditId);
