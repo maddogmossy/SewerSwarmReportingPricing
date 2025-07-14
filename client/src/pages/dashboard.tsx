@@ -798,8 +798,8 @@ export default function Dashboard() {
                   statusMessage = '🔄 Over minimum threshold';
                   break;
                 default:
-                  backgroundClass = 'bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400';
-                  statusMessage = 'PR2 configuration active';
+                  backgroundClass = 'bg-red-50 hover:bg-red-100 border-2 border-red-200 hover:border-red-400';
+                  statusMessage = '🚫 Outside PR2 configuration ranges';
               }
             }
             
@@ -1503,7 +1503,9 @@ export default function Dashboard() {
     
     // Check if section meets basic requirements
     const meetsRequirements = checkSectionMeetsPR2Requirements(section, pr2Config);
-    if (!meetsRequirements) return 'default';
+    if (!meetsRequirements) {
+      return 'default'; // Will show red with "Outside PR2 configuration ranges" message
+    }
     
     // Check minimum quantity requirements  
     const minQuantityOptions = pr2Config.minQuantityOptions || [];
