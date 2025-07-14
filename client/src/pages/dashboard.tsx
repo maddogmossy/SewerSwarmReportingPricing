@@ -1540,15 +1540,15 @@ export default function Dashboard() {
         itemNo: section.itemNo,
         runsPerShift,
         minRuns,
-        comparison: runsPerShift <= minRuns ? 'EQUAL_OR_BELOW (RED)' : runsPerShift > minRuns * 1.5 ? 'OVER_THRESHOLD (PURPLE)' : 'ABOVE_MIN (GREEN)'
+        comparison: runsPerShift < minRuns ? 'BELOW_MIN (RED)' : runsPerShift > minRuns * 1.5 ? 'OVER_THRESHOLD (PURPLE)' : 'MEETS_OR_EXCEEDS (GREEN)'
       });
       
-      if (runsPerShift <= minRuns) {
-        return 'red'; // At or below minimum - needs to EXCEED minimum
+      if (runsPerShift < minRuns) {
+        return 'red'; // Below minimum
       } else if (runsPerShift > minRuns * 1.5) {
         return 'purple'; // Over minimum threshold  
       } else {
-        return 'green'; // Above minimum
+        return 'green'; // Meets or exceeds minimum
       }
     }
     
