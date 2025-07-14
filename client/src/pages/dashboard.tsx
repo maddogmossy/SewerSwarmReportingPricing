@@ -1980,7 +1980,14 @@ export default function Dashboard() {
 
   // Check if collective count meets orange minimum requirements
   const checkOrangeMinimumMet = (): boolean => {
-    if (!pr2Configurations || pr2Configurations.length === 0) return true;
+    console.log('🔍 Starting orange minimum check...');
+    console.log('🔍 PR2 configurations:', pr2Configurations);
+    console.log('🔍 Raw section data:', rawSectionData);
+    
+    if (!pr2Configurations || pr2Configurations.length === 0) {
+      console.log('❌ No PR2 configurations found, defaulting to true');
+      return true;
+    }
     
     // Get smart counting result for all sections
     const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations);
@@ -1988,20 +1995,26 @@ export default function Dashboard() {
     // Check highest orange minimum requirement across all configurations
     let highestMinRequired = 0;
     pr2Configurations.forEach(config => {
+      console.log('🔍 Checking config:', config.id, 'minQuantityOptions:', config.minQuantityOptions);
       const minQuantityOptions = config.minQuantityOptions || [];
       const minRunsOption = minQuantityOptions.find((opt: any) => 
         opt.label?.toLowerCase().includes('runs') && opt.enabled
       );
+      console.log('🔍 Found min runs option:', minRunsOption);
       if (minRunsOption) {
         const minValue = parseFloat(minRunsOption.value || '0');
         highestMinRequired = Math.max(highestMinRequired, minValue);
+        console.log('🔍 Updated highest min required to:', highestMinRequired);
       }
     });
     
-    console.log('🔢 Orange minimum check:', {
+    console.log('🔢 FINAL Orange minimum check:', {
       totalSectionsCount: sectionCount,
       highestMinRequired: highestMinRequired,
-      meetMinimum: sectionCount >= highestMinRequired
+      rawSectionDataLength: rawSectionData?.length || 0,
+      pr2ConfigurationsLength: pr2Configurations?.length || 0,
+      meetMinimum: sectionCount >= highestMinRequired,
+      shouldBeRed: sectionCount < highestMinRequired
     });
     
     return sectionCount >= highestMinRequired;
