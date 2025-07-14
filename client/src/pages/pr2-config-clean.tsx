@@ -148,16 +148,25 @@ export default function PR2ConfigClean() {
 
   // Handle sector checkbox changes
   const handleSectorChange = (sectorId: string, checked: boolean) => {
+    console.log(`🔄 Sector change: ${sectorId}, checked: ${checked}`);
+    console.log(`📋 Current sectorsWithConfig:`, sectorsWithConfig);
+    console.log(`📋 Current selectedSectors:`, selectedSectors);
+    console.log(`🔍 Is editing:`, isEditing);
+    
     if (checked) {
       // Add sector to selected list
       setSelectedSectors(prev => [...new Set([...prev, sectorId])]);
     } else {
       // Show warning if removing an existing sector with data
       const hasExistingConfig = sectorsWithConfig.includes(sectorId);
+      console.log(`⚠️ Has existing config for ${sectorId}:`, hasExistingConfig);
+      
       if (hasExistingConfig && isEditing) {
+        console.log(`🚨 Showing removal warning for ${sectorId}`);
         setSectorToRemove(sectorId);
         setShowRemoveWarning(true);
       } else {
+        console.log(`✅ Directly removing ${sectorId} from selected sectors`);
         // Remove sector from selected list
         setSelectedSectors(prev => prev.filter(s => s !== sectorId));
       }
