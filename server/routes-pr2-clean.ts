@@ -96,7 +96,13 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         console.log(`📊 Configuration details:`, configurations.map(c => `ID: ${c.id}, Sectors: ${JSON.stringify(c.sectors)}`));
       }
       
-      res.json(configurations);
+      // Map sectors array to legacy sector field for frontend compatibility
+      const mappedConfigurations = configurations.map(config => ({
+        ...config,
+        sector: config.sectors && config.sectors.length > 0 ? config.sectors[0] : 'utilities' // Use first sector as legacy field
+      }));
+      
+      res.json(mappedConfigurations);
     } catch (error) {
       console.error('Error fetching clean PR2 configurations:', error);
       res.status(500).json({ error: 'Failed to fetch configurations' });
@@ -143,7 +149,14 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       }
       
       console.log(`✅ Loading clean PR2 configuration ${configId} with sectors:`, configuration.sectors);
-      res.json(configuration);
+      
+      // Map sectors array to legacy sector field for frontend compatibility
+      const mappedConfiguration = {
+        ...configuration,
+        sector: configuration.sectors && configuration.sectors.length > 0 ? configuration.sectors[0] : 'utilities'
+      };
+      
+      res.json(mappedConfiguration);
     } catch (error) {
       console.error('Error fetching clean PR2 configuration:', error);
       res.status(500).json({ error: 'Failed to fetch configuration' });
