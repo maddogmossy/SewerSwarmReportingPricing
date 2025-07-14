@@ -633,6 +633,12 @@ export default function Dashboard() {
             return !isOnlyLineDeviation;
           });
           
+          // Debug Item 10 after filtering
+          if (section.itemNo === 10) {
+            console.log(`🔍 Item 10 AFTER Filtering: ${observations.length} observations remaining`);
+            console.log('  Remaining observations:', observations);
+          }
+          
           // If no observations remain after filtering, show clean message
           if (observations.length === 0) {
             return (
