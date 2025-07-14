@@ -36,12 +36,8 @@ interface CleaningOptionsPopoverProps {
 
 export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2 }: CleaningOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const [selectedEquipment, setSelectedEquipment] = useState<string>('');
-
-  // Detect which configuration is currently being edited from URL
-  const currentEditId = null; // Simplified: disable edit detection temporarily
-  console.log('🔍 CleaningPopover - Current Edit ID from URL:', currentEditId);
   
   // Check if CCTV/Jet Vac configuration exists using standard React Query pattern
   const { data: pr2Configs = [] } = useQuery({
@@ -139,17 +135,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const cctvJetVacConfigs = safepr2Configs.filter((config: any) => config.categoryId === 'cctv-jet-vac');
   const cctvVanPackConfigs = safepr2Configs.filter((config: any) => config.categoryId === 'cctv-van-pack');
   
-  // Use the most recent configuration (highest ID) - simplified approach
+  // Use the most recent configuration (highest ID)
   const cctvJetVacConfig = cctvJetVacConfigs.length > 0 ? 
     cctvJetVacConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null;
   const cctvVanPackConfig = cctvVanPackConfigs.length > 0 ? 
     cctvVanPackConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null;
-  
-  // Debug equipment configuration detection
-  console.log('🔧 CleaningPopover - PR2 Configs:', safepr2Configs);
-  console.log('🔧 CleaningPopover - Current Edit ID:', currentEditId);
-  console.log('🔧 CleaningPopover - CCTV Jet Vac Config Found:', cctvJetVacConfig);
-  console.log('🔧 CleaningPopover - CCTV Van Pack Config Found:', cctvVanPackConfig);
 
   // Create ordered equipment list with option numbers based on current order
   const cleansingEquipment: CleansingEquipment[] = equipmentOrder.map((equipmentId, index) => {
@@ -157,15 +147,12 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     const configExists = equipmentId === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig;
     const currentConfig = equipmentId === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
     
-    // Simplified: show green if any configuration exists (revert to original logic)
-    console.log(`🔍 Equipment ${equipmentId}: configExists=${configExists}`);
-    
     return {
       ...baseItem,
       name: `Option ${index + 1}: ${baseItem.name}`,
       isSelected: selectedEquipment === equipmentId,
       isPrimary: selectedEquipment === equipmentId, // Selected item is primary
-      hasConfig: configExists // Simple: green if config exists
+      hasConfig: configExists // Green if config exists
     };
   });
 
@@ -305,7 +292,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                           className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
                         >
                           <Plus className="h-3 w-3 mr-1" />
-                          {(equipment.id === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig) ? 'Edit' : 'Add'}
+                          Add
                         </Button>
                       </div>
                     </div>
