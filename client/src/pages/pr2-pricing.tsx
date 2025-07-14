@@ -132,6 +132,7 @@ export default function PR2Pricing() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', sector] });
       // Silent operation - no toast notification
     }
   });
