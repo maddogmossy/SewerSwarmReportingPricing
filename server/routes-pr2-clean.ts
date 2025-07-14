@@ -130,16 +130,19 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
   app.get('/api/pr2-clean/:id', async (req, res) => {
     try {
       const configId = parseInt(req.params.id);
+      console.log(`🔍 GET request for configuration ID: ${configId}`);
+      
       const [configuration] = await db
         .select()
         .from(pr2Configurations)
         .where(eq(pr2Configurations.id, configId));
       
       if (!configuration) {
+        console.log(`❌ Configuration ${configId} not found`);
         return res.status(404).json({ error: 'Configuration not found' });
       }
       
-      console.log(`✅ Loading clean PR2 configuration ${configId}`);
+      console.log(`✅ Loading clean PR2 configuration ${configId} with sectors:`, configuration.sectors);
       res.json(configuration);
     } catch (error) {
       console.error('Error fetching clean PR2 configuration:', error);

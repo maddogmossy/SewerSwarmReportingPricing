@@ -1,0 +1,129 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+Testing sector standards import...
+getSectorStandards function: function
+Test utilities standards: SUCCESS
+Standards count: 6
+3:30:59 PM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+3:31:05 PM [express] GET /api/auth/user 200 in 3ms :: {"id":"test-user","email":"test@example.com","…
+3:31:05 PM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+3:31:05 PM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+3:31:06 PM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+3:31:06 PM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+3:31:06 PM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+🔍 API request received for sector: utilities, categoryId: undefined
+🔍 Filtering by userId: "test-user" AND sector: "utilities"
+3:31:28 PM [express] GET /api/standard-categories 200 in 7ms
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:31:28 PM [express] GET /api/pr2-clean 304 in 263ms :: [{"id":40,"userId":"test-user","categoryId":…
+🔍 API request received for sector: adoption, categoryId: undefined
+🔍 Filtering by userId: "test-user" AND sector: "adoption"
+✅ Query returned 1 configurations
+📊 Configuration details: [ 'ID: 36, Sectors: ["utilities","adoption"]' ]
+3:31:30 PM [express] GET /api/pr2-clean 304 in 33ms :: [{"id":36,"userId":"test-user","categoryId":"…
+🔍 API request received for sector: undefined, categoryId: undefined
+🔍 Filtering by userId: "test-user" only (no sector filter)
+🔍 API request received for sector: undefined, categoryId: cctv-jet-vac
+🔍 Filtering by userId: "test-user" AND categoryId: "cctv-jet-vac"
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:31:46 PM [express] GET /api/pr2-clean 200 in 33ms :: [{"id":40,"userId":"test-user","categoryId":"…
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:31:46 PM [express] GET /api/pr2-clean 304 in 232ms :: [{"id":40,"userId":"test-user","categoryId":…
+3:32:08 PM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+🔍 API request received for sector: undefined, categoryId: undefined
+🔍 Filtering by userId: "test-user" only (no sector filter)
+🔍 API request received for sector: undefined, categoryId: cctv-jet-vac
+🔍 Filtering by userId: "test-user" AND categoryId: "cctv-jet-vac"
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:32:08 PM [express] GET /api/pr2-clean 200 in 35ms :: [{"id":40,"userId":"test-user","categoryId":"…
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:32:08 PM [express] GET /api/pr2-clean 304 in 31ms :: [{"id":40,"userId":"test-user","categoryId":"…
+3:32:24 PM [express] GET /api/utilities/profile 200 in 5ms
+🔍 API request received for sector: utilities, categoryId: undefined
+🔍 Filtering by userId: "test-user" AND sector: "utilities"
+3:32:24 PM [express] GET /api/user-pricing 200 in 1ms :: []
+3:32:24 PM [express] GET /api/pricing/check/utilities 200 in 5ms
+3:32:24 PM [express] GET /api/folders 200 in 52ms :: [{"id":18,"userId":"test-user","folderName":"40…
+3:32:24 PM [express] GET /api/uploads 200 in 49ms :: [{"id":80,"userId":"test-user","folderId":18,"f…
+3:32:24 PM [express] GET /api/equipment-types/2 200 in 1ms :: []
+3:32:24 PM [express] GET /api/uploads/80/defects 200 in 0ms :: []
+3:32:24 PM [express] GET /api/uploads/80/sections 200 in 85ms :: [{"id":14122,"fileUploadId":80,"ite…
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:32:24 PM [express] GET /api/pr2-clean 200 in 468ms :: [{"id":40,"userId":"test-user","categoryId":…
+🔍 API request received for sector: undefined, categoryId: undefined
+🔍 Filtering by userId: "test-user" only (no sector filter)
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:32:25 PM [express] GET /api/pr2-clean 200 in 31ms :: [{"id":40,"userId":"test-user","categoryId":"…
+3:32:25 PM [express] GET /api/utilities/profile 200 in 4ms
+🔍 API request received for sector: utilities, categoryId: undefined
+🔍 Filtering by userId: "test-user" AND sector: "utilities"
+3:32:26 PM [express] GET /api/standard-categories 200 in 3ms
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:32:26 PM [express] GET /api/pr2-clean 304 in 31ms :: [{"id":40,"userId":"test-user","categoryId":"…
+3:32:32 PM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+🔍 API request received for sector: utilities, categoryId: undefined
+🔍 Filtering by userId: "test-user" AND sector: "utilities"
+3:32:32 PM [express] GET /api/standard-categories 200 in 5ms
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:32:32 PM [express] GET /api/pr2-clean 304 in 32ms :: [{"id":40,"userId":"test-user","categoryId":"…
+🔍 API request received for sector: adoption, categoryId: undefined
+🔍 Filtering by userId: "test-user" AND sector: "adoption"
+✅ Query returned 1 configurations
+📊 Configuration details: [ 'ID: 36, Sectors: ["utilities","adoption"]' ]
+3:32:34 PM [express] GET /api/pr2-clean 304 in 31ms :: [{"id":36,"userId":"test-user","categoryId":"…
+🔍 API request received for sector: undefined, categoryId: undefined
+🔍 Filtering by userId: "test-user" only (no sector filter)
+🔍 API request received for sector: undefined, categoryId: cctv-jet-vac
+🔍 Filtering by userId: "test-user" AND categoryId: "cctv-jet-vac"
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:32:36 PM [express] GET /api/pr2-clean 200 in 31ms :: [{"id":40,"userId":"test-user","categoryId":"…
+✅ Query returned 2 configurations
+📊 Configuration details: [
+  'ID: 40, Sectors: ["utilities"]',
+  'ID: 36, Sectors: ["utilities","adoption"]'
+]
+3:32:36 PM [express] GET /api/pr2-clean 304 in 33ms :: [{"id":40,"userId":"test-user","categoryId":"…
