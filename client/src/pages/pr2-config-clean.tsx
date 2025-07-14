@@ -1225,7 +1225,9 @@ export default function PR2ConfigClean() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {getOrderedQuantityOptions().map((option) => (
+                  {getOrderedQuantityOptions().map((option) => {
+                    console.log(`🎯 Rendering quantity option ${option.id}: ${option.label} = ${option.value}`);
+                    return (
                     <div key={option.id} className="bg-white p-3 rounded border">
                       <div className="flex items-center gap-2 mb-2">
                         <Checkbox
@@ -1253,13 +1255,17 @@ export default function PR2ConfigClean() {
                         <Input
                           key={`${option.id}-${option.value}`}
                           value={option.value}
-                          onChange={(e) => updateQuantityOption(option.id, 'value', e.target.value)}
+                          onChange={(e) => {
+                            console.log(`🔄 Quantity input changed for ${option.id}: ${e.target.value}`);
+                            updateQuantityOption(option.id, 'value', e.target.value);
+                          }}
                           placeholder="Enter value"
                           className="text-sm"
                         />
                       )}
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
