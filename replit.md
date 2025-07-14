@@ -507,24 +507,31 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v4.5' to return to this stable checkpoint
 
-## REV V4.6 CHECKPOINT - ORANGE MINIMUM COST COLOR SYSTEM FIXED (July 14, 2025)
+## REV V4.7 CHECKPOINT - SINGLE EQUIPMENT SELECTION SYSTEM LOCKED (July 14, 2025)
 
-🔒 **PRODUCTION READY - ORANGE MINIMUM COST COLOR LOGIC WORKING:**
-- **Critical Bug Fixed:** Cost display now properly checks orange minimum requirements before showing green
-- **Cost Color Logic:** RED when collective count < orange minimum (17 < 30), GREEN when collective count ≥ orange minimum
-- **Smart Counting Confirmed:** System correctly counts 17 sections meeting configuration requirements vs 30 required
-- **Debug Output Verified:** Console shows "shouldBeRed: true" confirming orange minimum not met
-- **Enhanced Tooltips:** Cost tooltips display orange minimum status ("Below orange minimum" vs "Orange minimum met")
-- **Proper Logic Separation:** Section status (green when meets blue/green windows) independent from cost color (red/green based on orange minimum)
+🔒 **PRODUCTION READY - SINGLE EQUIPMENT SELECTION IMPLEMENTED:**
+- **Radio Button Selection:** Converted from multiple checkboxes to single radio button selection for equipment types
+- **Simplified Interface:** "Select one equipment type for cleansing and survey operations" description
+- **Stack Order Removed:** Eliminated Stack Order functionality since single selection doesn't need priority ordering
+- **Clean UI:** Removed Stack Order button, arrow controls, and badge count system
+- **Enhanced Button Logic:** Main button shows "Edit Configuration" or "Configure Pricing" based on selected equipment
+- **Preserved Configuration Access:** Individual "Add/Edit" buttons on each equipment option for direct configuration access
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Main Cost Rendering:** Fixed case 'cost' in dashboard table to call `checkOrangeMinimumMet()` before displaying cost
-- **Color Logic:** `const costColor = orangeMinimumMet ? "text-green-700" : "text-red-600"`
-- **Orange Minimum Check:** Counts sections meeting either configuration (ID 36 or ID 40) collectively toward 30 minimum
-- **Console Verification:** "🔢 FINAL Orange minimum check: totalSectionsCount: 17, highestMinRequired: 30, meetMinimum: false"
-- **Enhanced Debug:** Complete logging tracks configuration details, section counts, and minimum threshold validation
+- **RadioGroup Component:** Replaced checkbox system with shadcn RadioGroup for single selection
+- **State Management:** Updated from `string[]` array to single `string` for selected equipment
+- **Backward Compatibility:** Handles both old array and new string formats in localStorage
+- **Badge Updates:** "Selected" badge instead of "Preferred" for the chosen equipment
+- **Clean Function Removal:** Removed moveEquipmentUp, moveEquipmentDown, and Stack Order controls
+- **Simplified Navigation:** Direct routing to specific equipment configuration based on single selection
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v4.6' to return to this stable checkpoint
+🔒 **USER WORKFLOW:**
+1. **Single Selection:** Users select one equipment type using radio buttons
+2. **Configuration Access:** Click main "Configure Pricing" button or individual "Add/Edit" buttons
+3. **Direct Routing:** System routes to specific equipment configuration page based on selection
+4. **Clean Interface:** No stack ordering or multiple selection complexity
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v4.7' to return to this stable checkpoint
 
 ## REV V3.9.2 CHECKPOINT - COMPLETE DASHBOARD INTEGRATION LOCKED (July 14, 2025)
 
