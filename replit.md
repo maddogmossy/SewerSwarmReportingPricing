@@ -427,29 +427,28 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v3.9' to return to this stable checkpoint
 
-## REV V4.2 CHECKPOINT - ADD BUTTONS FOR NEW CONFIGURATIONS (July 14, 2025)
+## REV V4.3 CHECKPOINT - SMART ADD/EDIT BUTTONS LOCKED (July 14, 2025)
 
-🔒 **PRODUCTION READY - ENHANCED VISUAL FEEDBACK & ADD BUTTONS:**
-- **Visual Range Highlighting**: Red boxes now clearly show specific failure reasons with distinct messages
-- **Range Violation Messages**: "🚫 Outside PR2 configuration ranges" for size/length/percentage failures  
-- **Minimum Quantity Messages**: "⚠️ Below minimum quantities" for sections meeting ranges but not exceeding minimums
-- **Add Configuration Buttons**: Both Option 1 (CCTV/Jet Vac) and Option 2 (CCTV/Van Pack) now include blue "Add" buttons
-- **Direct Navigation**: Add buttons route directly to `/pr2-config-clean?categoryId={equipment.id}&sector={sector}` for new configuration creation
-- **Enhanced User Experience**: Users can instantly create new configurations for specific equipment without navigating through multiple pages
+🔒 **PRODUCTION READY - INTELLIGENT CONFIGURATION ROUTING:**
+- **Smart Button Logic**: Option 1 shows "Edit" (routes to existing CCTV/Jet Vac config), Option 2 shows "Add" (creates new CCTV/Van Pack config)
+- **Existing Configuration Access**: "Edit" button routes to existing configuration in edit mode for adding/modifying pricing options
+- **New Configuration Creation**: "Add" button creates fresh configurations for equipment without existing setups
+- **Enhanced Visual Feedback**: Red boxes show specific failure reasons ("🚫 Outside PR2 configuration ranges" vs "⚠️ Below minimum quantities")
+- **Direct Four-Window Access**: Both buttons route to the complete four-window configuration system (blue/green/orange/purple)
 
-🔒 **VISUAL SYSTEM ENHANCEMENTS:**
-- **Item 3**: RED highlighting for length 30.24m exceeding 30m limit with clear "Outside ranges" message
-- **Items 21-23**: RED highlighting for 225mm pipe size exceeding 150mm limit with specific range violation message
+🔒 **INTELLIGENT ROUTING SYSTEM:**
+- **Option 1 (CCTV/Jet Vac)**: Routes to `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&edit=36` for existing config modification
+- **Option 2 (CCTV/Van Pack)**: Routes to `/pr2-config-clean?categoryId=cctv-van-pack&sector=utilities` for new config creation
+- **Configuration Detection**: System checks existing configs and adjusts button text and routing accordingly
+- **User-Confirmed Working**: Verified routing takes users to correct configuration pages with proper edit/create modes
+
+🔒 **VISUAL STATUS SYSTEM:**
+- **Item 3**: RED highlighting for length 30.24m exceeding 30m limit with "Outside ranges" message
+- **Items 21-23**: RED highlighting for 225mm pipe size exceeding 150mm limit with range violation message
 - **Item 14**: RED highlighting for minimum quantity issue (30 = 30 minimum, needs to exceed) with distinct message
-- **Clear User Feedback**: Each red box provides specific actionable information about what needs to be adjusted
+- **Dynamic Button Text**: Smart "Edit"/"Add" labels based on configuration existence
 
-🔒 **TECHNICAL IMPLEMENTATION:**
-- **Enhanced Status Messages**: Modified calculateSectionStatusColor() to provide specific failure reasons
-- **Add Button Integration**: Added Plus icon buttons with proper routing to configuration creation pages
-- **Import Enhancement**: Added Plus icon to Lucide React imports for consistent UI elements
-- **Configuration Detection**: System properly detects existing vs new configurations for appropriate routing
-
-⚡ **ROLLBACK COMMAND:** Use 'rev v4.2' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v4.3' to return to this stable checkpoint
 
 ## REV V3.9.2 CHECKPOINT - COMPLETE DASHBOARD INTEGRATION LOCKED (July 14, 2025)
 
