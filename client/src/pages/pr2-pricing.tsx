@@ -102,6 +102,8 @@ export default function PR2Pricing() {
     enabled: !!sector,
     staleTime: 0, // Always fetch fresh data
     cacheTime: 0, // Don't cache results
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   // Fetch standard categories from database

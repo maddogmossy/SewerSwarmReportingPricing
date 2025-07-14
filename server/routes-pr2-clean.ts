@@ -47,9 +47,12 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
     try {
       const sector = req.query.sector as string;
       
+      console.log(`🔍 API request received for sector: ${sector}`);
+      
       let configurations;
       if (sector) {
         // Filter by both userId and sector
+        console.log(`🔍 Filtering by userId: "test-user" AND sector: "${sector}"`);
         configurations = await db
           .select()
           .from(pr2Configurations)
@@ -59,13 +62,18 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           ));
       } else {
         // If no sector specified, return all configurations for user
+        console.log(`🔍 Filtering by userId: "test-user" only (no sector filter)`);
         configurations = await db
           .select()
           .from(pr2Configurations)
           .where(eq(pr2Configurations.userId, "test-user"));
       }
       
-      console.log(`✅ Loading ${configurations.length} clean PR2 configurations${sector ? ` for sector: ${sector}` : ''}`);
+      console.log(`✅ Query returned ${configurations.length} configurations`);
+      if (configurations.length > 0) {
+        console.log(`📊 Configuration details:`, configurations.map(c => `ID: ${c.id}, Sector: ${c.sector}`));
+      }
+      
       res.json(configurations);
     } catch (error) {
       console.error('Error fetching clean PR2 configurations:', error);
