@@ -1,0 +1,327 @@
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'battery'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-b257afd8a9a4fc10.js:1
+framework-b257afd8a9a4fc10.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-b257afd8a9a4fc10.js:1
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'battery'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'layout-animations'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'legacy-image-formats'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'navigation-override'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'oversized-images'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'publickey-credentials'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'speaker-selection'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'unoptimized-images'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Unrecognized feature: 'unsized-media'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar38l%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(0)
+Console.js:61 🔧 PR2 Configurations assigned: Array(0)
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(0)
+Console.js:61 🔧 PR2 Configurations assigned: Array(0)
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(0)
+Console.js:61 🔧 PR2 Configurations assigned: Array(0)
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(0)
+Console.js:61 🔧 PR2 Configurations assigned: Array(0)
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 🔄 Switching from report null to 80
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(0)
+Console.js:61 🔧 PR2 Configurations assigned: Array(0)
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(1)
+Console.js:61 🔧 PR2 Configurations assigned: Array(1)
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(1)
+Console.js:61 🔧 PR2 Configurations assigned: Array(1)
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(1)
+Console.js:61 🔧 PR2 Configurations assigned: Array(1)
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(1)
+Console.js:61 🔧 PR2 Configurations assigned: Array(1)
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(1)
+Console.js:61 🔧 PR2 Configurations assigned: Array(1)
+Console.js:61 WRc CHECK - Section 3: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 🔍 Item 10 Raw Data: Object
+Console.js:61 Dashboard Debug: Object
+Console.js:61 🔧 RepairPricingData from query: Array(1)
+Console.js:61 🔧 PR2 Configurations assigned: Array(1)
+Console.js:61 WRc CHECK - Section 3: Object
+Console.js:61 AUDIT TRAIL: Object
+Console.js:61 DEBUG - Data Processing: Object
+Console.js:61 === ITEM 3 REQUIREMENTS CHECK ===
+Console.js:61 Pipe size: 150
+Console.js:61 Total length: 30.24
+Console.js:61 Defects: Settled deposits, fine, 5% cross-sectional area loss at 13.27m, 16.63m, 17.73m. Settled deposits, coarse, 5% cross-sectional area loss at 21.6m. Water level, 15% of the vertical dimension at 24.75m. Water level, 25% of the vertical dimension at 28.67m. Line deviates left at 29.82m
+Console.js:61 Water level percentage: 5
+Console.js:61 Max allowed percentage (from config): 15
+Console.js:61 Fails percentage check? false
+Console.js:61 ❌ Section fails length check: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🔍 calculateAutoCost called for section: 3
+Console.js:61 📊 PR2 configurations: Array(1)
+Console.js:61 🔍 PR2 configurations count: 1
+Console.js:61 🔍 Current sector: utilities
+Console.js:61 🎯 Using PR2 config: Object
+Console.js:61 💰 PR2 full structure: Object
+Console.js:61 📝 Extracted values: Object
+Console.js:61 ✅ PR2 calculation successful: Object
+Console.js:61 ❌ Section fails length check: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🔍 calculateAutoCost called for section: 6
+Console.js:61 📊 PR2 configurations: Array(1)
+Console.js:61 🔍 PR2 configurations count: 1
+Console.js:61 🔍 Current sector: utilities
+Console.js:61 🎯 Using PR2 config: Object
+Console.js:61 💰 PR2 full structure: Object
+Console.js:61 📝 Extracted values: Object
+Console.js:61 ✅ PR2 calculation successful: Object
+Console.js:61 ✅ Section meets PR2 requirements: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Min quantity comparison: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🔍 calculateAutoCost called for section: 7
+Console.js:61 📊 PR2 configurations: Array(1)
+Console.js:61 🔍 PR2 configurations count: 1
+Console.js:61 🔍 Current sector: utilities
+Console.js:61 🎯 Using PR2 config: Object
+Console.js:61 💰 PR2 full structure: Object
+Console.js:61 📝 Extracted values: Object
+Console.js:61 ✅ PR2 calculation successful: Object
+Console.js:61 ❌ Section fails length check: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🔍 calculateAutoCost called for section: 8
+Console.js:61 📊 PR2 configurations: Array(1)
+Console.js:61 🔍 PR2 configurations count: 1
+Console.js:61 🔍 Current sector: utilities
+Console.js:61 🎯 Using PR2 config: Object
+Console.js:61 💰 PR2 full structure: Object
+Console.js:61 📝 Extracted values: Object
+Console.js:61 ✅ PR2 calculation successful: Object
+Console.js:61 🔍 Item 10 Filtering observation: "Line deviates left at 0.15m."
+Console.js:61   Lower: "line deviates left at 0.15m."
+Console.js:61   Has line deviates: true
+Console.js:61   Has deposits: false
+Console.js:61   Is ONLY line deviation: true
+Console.js:61   Will KEEP: false
+Console.js:61 🔍 Item 10 Filtering observation: "Settled deposits, coarse, 5% cross-sectional area loss at 20.32m."
+Console.js:61   Lower: "settled deposits, coarse, 5% cross-sectional area loss at 20.32m."
+Console.js:61   Has line deviates: false
+Console.js:61   Has deposits: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 10 AFTER Filtering: 1 observations remaining
+Console.js:61   Remaining observations: Array(1)
+Console.js:61 ❌ Section fails length check: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🔍 calculateAutoCost called for section: 10
+Console.js:61 📊 PR2 configurations: Array(1)
+Console.js:61 🔍 PR2 configurations count: 1
+Console.js:61 🔍 Current sector: utilities
+Console.js:61 🎯 Using PR2 config: Object
+Console.js:61 💰 PR2 full structure: Object
+Console.js:61 📝 Extracted values: Object
+Console.js:61 ✅ PR2 calculation successful: Object
+Console.js:61 ❌ Section fails DEFECT percentage check: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🔍 calculateAutoCost called for section: 13
+Console.js:61 📊 PR2 configurations: Array(1)
+Console.js:61 🔍 PR2 configurations count: 1
+Console.js:61 🔍 Current sector: utilities
+Console.js:61 🎯 Using PR2 config: Object
+Console.js:61 💰 PR2 full structure: Object
+Console.js:61 📝 Extracted values: Object
+Console.js:61 ✅ PR2 calculation successful: Object
+Console.js:61 ✅ Section passes WATER LEVEL check: Object
+Console.js:61 ✅ Section meets PR2 requirements: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Min quantity comparison: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🔍 calculateAutoCost called for section: 14
+Console.js:61 📊 PR2 configurations: Array(1)
+Console.js:61 🔍 PR2 configurations count: 1
+Console.js:61 🔍 Current sector: utilities
+Console.js:61 🎯 Using PR2 config: Object
+Console.js:61 💰 PR2 full structure: Object
+Console.js:61 📝 Extracted values: Object
+Console.js:61 ✅ PR2 calculation successful: Object
+Console.js:61 ❌ Section fails pipe size check: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🔍 calculateAutoCost called for section: 21
+Console.js:61 📊 PR2 configurations: Array(1)
+Console.js:61 🔍 PR2 configurations count: 1
+Console.js:61 🔍 Current sector: utilities
+Console.js:61 🎯 Using PR2 config: Object
+Console.js:61 💰 PR2 full structure: Object
+Console.js:61 📝 Extracted values: Object
+Console.js:61 ✅ PR2 calculation successful: Object
+Console.js:61 ❌ Section fails pipe size check: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🔍 calculateAutoCost called for section: 22
+Console.js:61 📊 PR2 configurations: Array(1)
+Console.js:61 🔍 PR2 configurations count: 1
+Console.js:61 🔍 Current sector: utilities
+Console.js:61 🎯 Using PR2 config: Object
+Console.js:61 💰 PR2 full structure: Object
+Console.js:61 📝 Extracted values: Object
+Console.js:61 ✅ PR2 calculation successful: Object
+Console.js:61 ❌ Section fails pipe size check: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🔍 calculateAutoCost called for section: 23
+Console.js:61 📊 PR2 configurations: Array(1)
+Console.js:61 🔍 PR2 configurations count: 1
+Console.js:61 🔍 Current sector: utilities
+Console.js:61 🎯 Using PR2 config: Object
+Console.js:61 💰 PR2 full structure: Object
+Console.js:61 📝 Extracted values: Object
+Console.js:61 ✅ PR2 calculation successful: Object
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(0)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: undefined
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(1)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: Object
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(1)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: Object
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(1)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: Object
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(1)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: Object
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(1)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: Object
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(1)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: Object
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(1)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: Object
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(1)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: Object
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(1)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: Object
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
+Console.js:61 🔧 CleaningPopover - PR2 Configs: Array(1)
+Console.js:61 🔧 CleaningPopover - CCTV Jet Vac Config Found: Object
+Console.js:61 🔧 CleaningPopover - CCTV Van Pack Config Found: undefined
