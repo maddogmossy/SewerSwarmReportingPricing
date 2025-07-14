@@ -284,10 +284,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                         size="sm"
                         onClick={() => {
                           setIsOpen(false);
-                          // Check if configuration exists for this equipment
+                          // Always navigate to the configuration page for this equipment
+                          // If config exists, it will open in edit mode; if not, it will create new
                           const existingConfig = equipment.id === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
                           if (existingConfig) {
-                            // Navigate to edit existing configuration
+                            // Navigate to edit existing configuration (allows adding new pricing options within existing config)
                             setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&edit=${existingConfig.id}`);
                           } else {
                             // Navigate to create new configuration
