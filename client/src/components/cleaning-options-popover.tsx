@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Settings, Video, Truck, Waves, Monitor, ArrowUp, ArrowDown, List, Plus } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Settings, Video, Truck, Waves, Monitor, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -37,8 +37,8 @@ interface CleaningOptionsPopoverProps {
 export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2 }: CleaningOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
-  const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
-  const [showStackOrder, setShowStackOrder] = useState(false);
+  const [selectedEquipment, setSelectedEquipment] = useState<string>('');
+
   
   // Check if CCTV/Jet Vac configuration exists using standard React Query pattern
   const { data: pr2Configs = [] } = useQuery({
@@ -61,7 +61,13 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     try {
       const savedSelection = localStorage.getItem('selected-equipment');
       if (savedSelection) {
-        setSelectedEquipment(JSON.parse(savedSelection));
+        const parsed = JSON.parse(savedSelection);
+        // Handle both old array format and new string format
+        if (Array.isArray(parsed)) {
+          setSelectedEquipment(parsed[0] || '');
+        } else {
+          setSelectedEquipment(parsed || '');
+        }
       }
     } catch {
       // Ignore errors and use default empty selection
@@ -148,56 +154,28 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     return {
       ...baseItem,
       name: `Option ${index + 1}: ${baseItem.name}`,
-      isSelected: selectedEquipment.includes(equipmentId),
-      isPrimary: index === 0, // First in order is primary
+      isSelected: selectedEquipment === equipmentId,
+      isPrimary: selectedEquipment === equipmentId, // Selected item is primary
       hasConfig: hasConfig // Track if configuration exists
     };
   });
 
-  const handleEquipmentToggle = (equipmentId: string) => {
-    setSelectedEquipment(prev => {
-      const newSelection = prev.includes(equipmentId) 
-        ? prev.filter(id => id !== equipmentId)
-        : [...prev, equipmentId];
-      // Save to localStorage immediately to preserve selection changes
-      localStorage.setItem('selected-equipment', JSON.stringify(newSelection));
-      return newSelection;
-    });
+  const handleEquipmentChange = (equipmentId: string) => {
+    setSelectedEquipment(equipmentId);
+    // Save to localStorage immediately to preserve selection changes
+    localStorage.setItem('selected-equipment', JSON.stringify(equipmentId));
   };
 
-  const moveEquipmentUp = (index: number) => {
-    if (index > 0) {
-      const newOrder = [...equipmentOrder];
-      [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-      setEquipmentOrder(newOrder);
-      // Save to localStorage immediately to preserve stack order changes
-      localStorage.setItem('equipment-order', JSON.stringify(newOrder));
-    }
-  };
 
-  const moveEquipmentDown = (index: number) => {
-    if (index < equipmentOrder.length - 1) {
-      const newOrder = [...equipmentOrder];
-      [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
-      setEquipmentOrder(newOrder);
-      // Save to localStorage immediately to preserve stack order changes
-      localStorage.setItem('equipment-order', JSON.stringify(newOrder));
-    }
-  };
 
   const handleConfigureSelected = () => {
-    // Save the current equipment order to localStorage before navigating
-    localStorage.setItem('equipment-order', JSON.stringify(equipmentOrder));
+    // Save the current selection to localStorage before navigating
     localStorage.setItem('selected-equipment', JSON.stringify(selectedEquipment));
     
     setIsOpen(false);
     
-    // Route directly to the specific equipment configuration page based on primary selection
-    const orderedSelectedEquipment = equipmentOrder.filter(id => selectedEquipment.includes(id));
-    const primaryEquipment = orderedSelectedEquipment[0]; // First selected in order
-    
-    // Check if the primary equipment has an existing configuration
-    const existingConfig = primaryEquipment === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
+    // Check if the selected equipment has an existing configuration
+    const existingConfig = selectedEquipment === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
     
     // Map equipment IDs to their specific configuration routes
     const equipmentRoutes: { [key: string]: string } = {
@@ -205,8 +183,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       'cctv-jet-vac': '/pr2-config-clean?categoryId=cctv-jet-vac'
     };
     
-    // Get the route for the primary equipment
-    const targetRoute = equipmentRoutes[primaryEquipment];
+    // Get the route for the selected equipment
+    const targetRoute = equipmentRoutes[selectedEquipment];
     if (targetRoute && existingConfig) {
       // Navigate to edit existing configuration
       setLocation(`${targetRoute}&sector=${sectionData.sector}&edit=${existingConfig.id}`);
@@ -215,8 +193,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       setLocation(`${targetRoute}&sector=${sectionData.sector}`);
     } else {
       // Fallback to main pricing page if specific route not found
-      const equipmentParams = orderedSelectedEquipment.join(',');
-      setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentParams}&category=cleanse-survey`);
+      setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${selectedEquipment}&category=cleanse-survey`);
     }
   };
 
@@ -234,140 +211,97 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
             Cleanse/Survey Equipment Selection
           </h4>
           <p className="text-xs text-slate-600 mt-1">
-            Select multiple equipment types and use Stack Order to set your preferred priority
+            Select one equipment type for cleansing and survey operations
           </p>
         </div>
         <div className="p-3 space-y-2">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-slate-700">Equipment Options</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowStackOrder(!showStackOrder)}
-              className="text-xs h-6"
-            >
-              <List className="h-3 w-3 mr-1" />
-              Stack Order
-            </Button>
           </div>
           
-          {cleansingEquipment.map((equipment, index) => {
-            const IconComponent = equipment.icon;
-            return (
-              <div
-                key={equipment.id}
-                className={`flex items-start gap-2 p-2 rounded-lg border transition-colors ${
-                  equipment.hasConfig 
-                    ? 'bg-green-50 border-green-200 hover:bg-green-100' 
-                    : 'hover:bg-slate-50'
-                }`}
-              >
-                <Checkbox
-                  id={equipment.id}
-                  checked={equipment.isSelected}
-                  onCheckedChange={() => handleEquipmentToggle(equipment.id)}
-                  className="mt-1"
-                />
-                <div className="flex items-start gap-2 flex-1">
-                  <IconComponent className={`h-4 w-4 mt-0.5 ${
-                    equipment.hasConfig ? 'text-green-600' : 'text-blue-600'
-                  }`} />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <label 
-                        htmlFor={equipment.id}
-                        className="font-medium text-xs cursor-pointer"
-                      >
-                        {equipment.name}
-                      </label>
-                      {equipment.isPrimary && (
-                        <Badge variant="default" className="text-xs bg-blue-100 text-blue-800">
-                          Preferred
-                        </Badge>
-                      )}
-                      {equipment.hasConfig && (
-                        <Badge variant="default" className="text-xs bg-green-100 text-green-800">
-                          Configured
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-xs text-slate-600 mt-0.5">{equipment.description}</p>
-                    {/* Add/Edit Configuration Button */}
-                    <div className="mt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setIsOpen(false);
-                          // Always navigate to the configuration page for this equipment
-                          // If config exists, it will open in edit mode; if not, it will create new
-                          const existingConfig = equipment.id === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
-                          if (existingConfig) {
-                            // Navigate to edit existing configuration (allows adding new pricing options within existing config)
-                            setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&edit=${existingConfig.id}`);
-                          } else {
-                            // Navigate to create new configuration
-                            setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}`);
-                          }
-                        }}
-                        className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        {equipment.hasConfig ? 'Edit' : 'Add'}
-                      </Button>
+          <RadioGroup value={selectedEquipment} onValueChange={handleEquipmentChange}>
+            {cleansingEquipment.map((equipment, index) => {
+              const IconComponent = equipment.icon;
+              return (
+                <div
+                  key={equipment.id}
+                  className={`flex items-start gap-2 p-2 rounded-lg border transition-colors ${
+                    equipment.hasConfig 
+                      ? 'bg-green-50 border-green-200 hover:bg-green-100' 
+                      : 'hover:bg-slate-50'
+                  }`}
+                >
+                  <RadioGroupItem
+                    value={equipment.id}
+                    id={equipment.id}
+                    className="mt-1"
+                  />
+                  <div className="flex items-start gap-2 flex-1">
+                    <IconComponent className={`h-4 w-4 mt-0.5 ${
+                      equipment.hasConfig ? 'text-green-600' : 'text-blue-600'
+                    }`} />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <label 
+                          htmlFor={equipment.id}
+                          className="font-medium text-xs cursor-pointer"
+                        >
+                          {equipment.name}
+                        </label>
+                        {equipment.isPrimary && (
+                          <Badge variant="default" className="text-xs bg-blue-100 text-blue-800">
+                            Selected
+                          </Badge>
+                        )}
+                        {equipment.hasConfig && (
+                          <Badge variant="default" className="text-xs bg-green-100 text-green-800">
+                            Configured
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-600 mt-0.5">{equipment.description}</p>
+                      {/* Add/Edit Configuration Button */}
+                      <div className="mt-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setIsOpen(false);
+                            // Always navigate to the configuration page for this equipment
+                            // If config exists, it will open in edit mode; if not, it will create new
+                            const existingConfig = equipment.id === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
+                            if (existingConfig) {
+                              // Navigate to edit existing configuration (allows adding new pricing options within existing config)
+                              setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&edit=${existingConfig.id}`);
+                            } else {
+                              // Navigate to create new configuration
+                              setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}`);
+                            }
+                          }}
+                          className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          {equipment.hasConfig ? 'Edit' : 'Add'}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
-                
-                {showStackOrder && (
-                  <div className="flex flex-col gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => moveEquipmentUp(index)}
-                      disabled={index === 0}
-                      className="h-6 w-6 p-0"
-                    >
-                      <ArrowUp className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => moveEquipmentDown(index)}
-                      disabled={index === cleansingEquipment.length - 1}
-                      className="h-6 w-6 p-0"
-                    >
-                      <ArrowDown className="h-3 w-3" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </RadioGroup>
         </div>
         <div className="p-3 border-t bg-slate-50">
           <Button 
             onClick={handleConfigureSelected}
-            disabled={selectedEquipment.length === 0}
+            disabled={!selectedEquipment}
             className="w-full h-7 text-xs px-2 py-1"
           >
             {(() => {
-              const orderedSelected = equipmentOrder.filter(id => selectedEquipment.includes(id));
-              const primaryEquipment = orderedSelected[0];
+              const primaryEquipment = selectedEquipment;
               const hasExistingConfig = primaryEquipment === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig;
-              const isMultipleSelected = selectedEquipment.length > 1;
-              
-              if (isMultipleSelected) {
-                return hasExistingConfig ? 'Edit Primary Configuration' : 'Configure Primary Equipment';
-              } else {
-                return hasExistingConfig ? 'Edit Configuration' : 'Configure Pricing';
-              }
+              return hasExistingConfig ? 'Edit Configuration' : 'Configure Pricing';
             })()}
-            {selectedEquipment.length > 0 && (
-              <Badge variant="secondary" className="ml-1 text-xs px-1">
-                {selectedEquipment.length}
-              </Badge>
-            )}
           </Button>
         </div>
       </PopoverContent>
