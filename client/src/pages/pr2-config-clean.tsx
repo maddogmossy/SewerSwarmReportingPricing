@@ -1479,11 +1479,70 @@ export default function PR2ConfigClean() {
               <CardContent>
                 <div className="space-y-3">
                   {allConfigs.map((config: any) => (
-                    <div key={config.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                    <div key={config.id} className={`flex items-center justify-between p-3 rounded-lg ${
+                      config.id === parseInt(editId || '0') 
+                        ? 'bg-green-50 border-2 border-green-300' 
+                        : 'bg-slate-50'
+                    }`}>
                       <div className="flex-1">
                         <div className="font-medium text-slate-900">{config.categoryName}</div>
-                        <div className="text-sm text-slate-600">{config.description}</div>
-                        <div className="text-xs text-slate-500 mt-1">
+                        
+                        {/* Color-coded configuration display */}
+                        <div className="mt-2 space-y-2">
+                          {/* Main configuration window - Blue, Math, Green */}
+                          <div className="bg-white p-3 rounded-lg border border-gray-200">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {/* Blue pricing options */}
+                              {config.pricingOptions?.filter((opt: any) => opt.enabled).map((opt: any, idx: number) => (
+                                <div key={opt.id} className="flex items-center gap-1">
+                                  <div className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                                    {opt.label}: £{opt.value}
+                                  </div>
+                                  {idx < config.pricingOptions.filter((o: any) => o.enabled).length - 1 && config.mathOperators?.[idx] && (
+                                    <div className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">
+                                      {config.mathOperators[idx]}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                              
+                              {/* Green quantity options */}
+                              {config.quantityOptions?.filter((opt: any) => opt.enabled).map((opt: any) => (
+                                <div key={opt.id} className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">
+                                  {opt.label}: {opt.value}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Orange minimum quantity window */}
+                          {config.minQuantityOptions?.some((opt: any) => opt.enabled) && (
+                            <div className="bg-white p-2 rounded-lg border border-gray-200">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {config.minQuantityOptions.filter((opt: any) => opt.enabled).map((opt: any) => (
+                                  <div key={opt.id} className="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-medium">
+                                    {opt.label}: {opt.value}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Purple ranges window */}
+                          {config.rangeOptions?.some((opt: any) => opt.enabled) && (
+                            <div className="bg-white p-2 rounded-lg border border-gray-200">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {config.rangeOptions.filter((opt: any) => opt.enabled).map((opt: any) => (
+                                  <div key={opt.id} className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium">
+                                    {opt.label}: {opt.rangeStart} to {opt.rangeEnd}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="text-xs text-slate-500 mt-2">
                           Created: {new Date(config.createdAt).toLocaleDateString()}
                         </div>
                       </div>
@@ -1498,8 +1557,8 @@ export default function PR2ConfigClean() {
                           Edit
                         </Button>
                         {config.id === parseInt(editId || '0') && (
-                          <div className="px-3 py-1 bg-green-100 border-2 border-green-500 rounded-md">
-                            <span className="text-sm text-green-700 font-bold">Currently Editing</span>
+                          <div className="px-4 py-2 bg-green-200 border-2 border-green-400 rounded-lg shadow-sm">
+                            <span className="text-sm text-green-800 font-bold">Currently Editing</span>
                           </div>
                         )}
                       </div>
