@@ -450,6 +450,30 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v4.3' to return to this stable checkpoint
 
+## REV V4.4 CHECKPOINT - CONFIGURATION CONSISTENCY SYSTEM LOCKED (July 14, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE CONFIGURATION CONSISTENCY ACHIEVED:**
+- **Fixed Critical Bug**: Dashboard now uses same configuration (highest ID) for both cost calculation AND status color determination
+- **Status Logic Updated**: Meeting minimum requirements (>=) shows GREEN instead of requiring exceeding minimum (>)
+- **Configuration Detection**: System properly identifies when configurations meet minimum requirements vs exceed them
+- **Cost Calculation**: Uses most recent configuration (ID 40) for accurate cost calculations
+- **Status Color**: Uses same most recent configuration for consistent status display
+- **Enhanced Debugging**: Added detailed logging for configuration values used in cost calculations
+
+🔒 **RANGE VALIDATION SYSTEM:**
+- **Length Range Issue**: Section 3 (30.24m) exceeds current range (0-30m) showing correct red "Outside PR2 configuration ranges"
+- **Pipe Size Range**: 100-150mm range properly validates section specifications
+- **Percentage Range**: 05-15% range validates defect percentages correctly
+- **Sector-Specific Water Levels**: Utilities sector allows up to 50% water levels per MSCC5/WRc standards
+
+🔒 **IDENTIFIED CONFIGURATION SAVE ISSUE:**
+- **Problem**: "Save as New" function not saving modified values (both configs show same 30 runs per shift)
+- **Expected**: Configuration ID 40 should have 25 runs per shift (£1850 ÷ 25 = £74.00)
+- **Current**: Both configurations show 30 runs per shift (£1850 ÷ 30 = £61.67)
+- **Impact**: Cost calculation unchanged because values weren't actually saved during "Save as New" operation
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v4.4' to return to this stable checkpoint
+
 ## REV V3.9.2 CHECKPOINT - COMPLETE DASHBOARD INTEGRATION LOCKED (July 14, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE DASHBOARD CONFIGURATION DETECTION & EDITING:**
