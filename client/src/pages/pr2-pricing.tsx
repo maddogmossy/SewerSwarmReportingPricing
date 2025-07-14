@@ -310,6 +310,14 @@ export default function PR2Pricing() {
     );
   }
 
+  // Debug: Log the current state for troubleshooting
+  console.log('🎨 Rendering pricing page with:', {
+    pr2ConfigurationsCount: pr2Configurations.length,
+    pr2Loading,
+    sector,
+    configIds: pr2Configurations.map(c => c.id)
+  });
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
@@ -389,6 +397,14 @@ export default function PR2Pricing() {
                   // Check if this is a user-created category
                   const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
                   
+                  // Check for existing configuration (simplified logic)
+                  const existingConfiguration = pr2Configurations.find(config => 
+                    config.categoryId === category.id ||
+                    (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac')
+                  );
+                  
+                  console.log(`🔍 Category "${category.id}" - Found config:`, !!existingConfiguration, existingConfiguration?.id);
+                  
                   return (
                     <Card
                       key={category.id}
@@ -406,26 +422,7 @@ export default function PR2Pricing() {
                         
                         {/* Show status icon and Edit button based on configuration */}
                         {(() => {
-                          console.log(`🔍 Checking configuration for category "${category.id}"`);
-                          console.log(`📊 Available PR2 configurations:`, pr2Configurations.map(c => `ID: ${c.id}, CategoryId: ${c.categoryId}, CategoryName: ${c.categoryName}`));
-                          
-                          const hasConfiguration = pr2Configurations.some(config => 
-                            config.categoryId === category.id || 
-                            config.categoryName?.toLowerCase() === category.id.toLowerCase() ||
-                            (category.id === 'cctv' && config.categoryName === 'CCTV') ||
-                            (category.id === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration')
-                          );
-                          
-                          console.log(`🎯 Has configuration for "${category.id}":`, hasConfiguration);
-                          
-                          if (hasConfiguration) {
-                            const existingConfig = pr2Configurations.find(config => 
-                              config.categoryId === category.id || 
-                              config.categoryName?.toLowerCase() === category.id.toLowerCase() ||
-                              (category.id === 'cctv' && config.categoryName === 'CCTV') ||
-                              (category.id === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration')
-                            );
-                            
+                          if (existingConfiguration) {
                             return (
                               <div className="absolute top-2 right-2 flex items-center gap-1">
                                 <Settings className="h-4 w-4 text-green-500" />
@@ -435,7 +432,7 @@ export default function PR2Pricing() {
                                   className="h-6 w-6 p-0 hover:bg-blue-100 hover:text-blue-600"
                                   onClick={(e) => {
                                     e.stopPropagation(); // Prevent card click navigation
-                                    console.log(`🔧 Edit button clicked for Config ${existingConfig?.id}`);
+                                    console.log(`🔧 Edit button clicked for Config ${existingConfiguration.id}`);
                                     handleCategoryNavigation(category.id);
                                   }}
                                 >
