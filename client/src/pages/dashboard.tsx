@@ -785,7 +785,7 @@ export default function Dashboard() {
                 hasLinkedPR2={hasLinkedPR2}
               >
                 <div className={`text-sm w-full ${backgroundClass} p-2 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
-                  <div className="font-bold text-black mb-1">💧 CLEANSE/SURVEY</div>
+                  <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 && repairPricingData.length > 0 ? repairPricingData[0].categoryName : 'CLEANSE/SURVEY'}</div>
                   <div className="text-black">{generateDynamicRecommendation(section)}</div>
                   <div className="text-sm text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
