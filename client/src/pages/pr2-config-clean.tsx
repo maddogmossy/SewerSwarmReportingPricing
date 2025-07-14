@@ -658,7 +658,7 @@ export default function PR2ConfigClean() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {isEditing ? 'Edit' : 'Create'} Configuration
+              {isEditing ? 'Edit' : 'Create'} {formData.categoryName || 'Configuration'}
             </h1>
             <p className="text-gray-600 mt-1">
               Sector: <span className="font-medium text-blue-600">{sector}</span>
@@ -722,7 +722,7 @@ export default function PR2ConfigClean() {
 
         {/* Configuration Title */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">CCTV Price Configuration</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
         </div>
 
         {/* Three Column Layout */}
