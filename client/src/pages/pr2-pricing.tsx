@@ -256,54 +256,44 @@ export default function PR2Pricing() {
     }
     
     // Check if there's an existing configuration for this category
-    console.log('🔍 All PR2 configurations:', pr2Configurations);
-    console.log('🔍 PR2 configurations count:', pr2Configurations.length);
-    console.log('🔍 PR2 loading state:', pr2Loading);
-    console.log('🔍 Looking for categoryId:', categoryId);
+    const existingConfig = pr2Configurations.find(config => 
+      config.categoryId === categoryId || 
+      config.categoryName?.toLowerCase() === categoryId.toLowerCase() ||
+      (categoryId === 'cctv' && config.categoryName === 'CCTV') ||
+      (categoryId === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration')
+    );
     
-    // If configurations are empty, proceed to create new configuration
-    if (!pr2Loading && pr2Configurations.length === 0) {
-      console.log('⚠️ No configurations found - proceeding to create new configuration');
-    }
+    console.log('🔍 Existing config found:', existingConfig);
     
-    // Standard categories should always create new configurations, not edit existing ones
-    // Only check for existing configs when navigating from "Existing PR2 Configurations" section
+    // Define the category mapping for clean configuration URLs
+    const categoryMapping = {
+      'cctv': 'cctv',
+      'van-pack': 'van-pack', 
+      'jet-vac': 'jet-vac',
+      'cctv-van-pack': 'cctv-van-pack',
+      'cctv-jet-vac': 'cctv-jet-vac',
+      'directional-water-cutter': 'directional-water-cutter',
+      'ambient-lining': 'ambient-lining',
+      'hot-cure-lining': 'hot-cure-lining',
+      'uv-lining': 'uv-lining',
+      'ims-cutting': 'ims-cutting',
+      'excavation': 'excavation',
+      'tankering': 'tankering'
+    };
     
-    // For CCTV specifically, always go to the configuration page
-    if (categoryId === 'cctv') {
-      console.log('🎥 CCTV category - routing to configuration page');
-      const createURL = `/pr2-config-clean?sector=${sector}&categoryId=${categoryId}`;
-      console.log('🔗 Creating CCTV config at URL:', createURL);
-      // Force navigation by updating both wouter state and browser history
-      window.history.replaceState({}, '', createURL);
-      setLocation(createURL);
+    // If configuration exists, navigate to edit mode
+    if (existingConfig) {
+      const editURL = `/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}`;
+      console.log('🔧 Navigating to edit existing config:', editURL);
+      setLocation(editURL);
       return;
     }
     
-    const routeMap = {
-      'van-pack': `/pr2-van-pack?sector=${sector}`,
-      'jet-vac': `/pr2-jet-vac?sector=${sector}`,
-      'cctv-van-pack': `/pr2-cctv-van-pack?sector=${sector}`,
-      'cctv-jet-vac': `/pr2-cctv-jet-vac?sector=${sector}`,
-      'directional-water-cutter': `/pr2-directional-water-cutter?sector=${sector}`,
-      'ambient-lining': `/pr2-ambient-lining?sector=${sector}`,
-      'hot-cure-lining': `/pr2-hot-cure-lining?sector=${sector}`,
-      'uv-lining': `/pr2-uv-lining?sector=${sector}`,
-      'ims-cutting': `/pr2-ims-cutting?sector=${sector}`,
-      'excavation': `/pr2-excavation?sector=${sector}`,
-      'tankering': `/pr2-tankering?sector=${sector}`
-    };
-    
-    const route = routeMap[categoryId as keyof typeof routeMap];
-    if (route) {
-      console.log('✅ Found predefined route:', route);
-      setLocation(route);
-    } else {
-      // For user-created categories, use a generic category page
-      const genericRoute = `/pr2-category?sector=${sector}&categoryId=${categoryId}`;
-      console.log('🔄 Using generic category route:', genericRoute);
-      setLocation(genericRoute);
-    }
+    // If no existing configuration, create new one
+    const mappedCategoryId = categoryMapping[categoryId as keyof typeof categoryMapping] || categoryId;
+    const createURL = `/pr2-config-clean?sector=${sector}&categoryId=${mappedCategoryId}`;
+    console.log('🆕 Creating new config at URL:', createURL);
+    setLocation(createURL);
   };
 
   // Handle navigation to add custom configuration
@@ -455,63 +445,7 @@ export default function PR2Pricing() {
           </Card>
         </div>
 
-        {/* Existing Configurations - Full width list display */}
-        {pr2Configurations.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Existing Configurations</h3>
-            <div className="space-y-3">
-              {pr2Configurations.map((config: any) => (
-                <Card key={config.id} className="w-full hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between gap-6">
-                      {/* Left section - Icon and details */}
-                      <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="p-2 rounded-lg bg-blue-100 flex-shrink-0">
-                          <Settings className="h-5 w-5 text-blue-600" />
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-4 mb-1">
-                            <h4 className="text-lg font-semibold text-gray-900">{config.categoryName}</h4>
-                            <Badge variant="default" className="text-xs">Active</Badge>
-                            <span className="text-sm font-bold text-gray-800">Description:</span>
-                            <span className="text-sm text-gray-700 break-words flex-1">{config.description}</span>
-                          </div>
-                          
-                          <div className="flex items-center justify-center gap-8 text-sm text-gray-500">
-                            <span>Pricing Options: {Array.isArray(config.pricingOptions) ? config.pricingOptions.length : Object.keys(config.pricingOptions || {}).length}</span>
-                            <span>Quantity Options: {Array.isArray(config.quantityOptions) ? config.quantityOptions.length : Object.keys(config.quantityOptions || {}).length}</span>
-                            <span>Math Operators: {config.mathOperators?.length || 0}</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Right section - Action buttons */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${config.categoryId}&editId=${config.id}`)}
-                          className="text-xs px-3"
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handlePR2ConfigDelete(config.id, config.categoryName, config.categoryId)}
-                          className="text-red-600 border-red-200 hover:bg-red-50 px-2"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
+
       </div>
 
       {/* Summary */}
