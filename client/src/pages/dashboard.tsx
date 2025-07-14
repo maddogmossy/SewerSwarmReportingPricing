@@ -592,6 +592,15 @@ export default function Dashboard() {
       case 'defects':
         const defectsText = section.defects || 'No defects recorded';
         
+        // Debug Item 10 specifically
+        if (section.itemNo === 10) {
+          console.log('🔍 Item 10 Debug:', {
+            original: defectsText,
+            hasMultiplePeriods: defectsText.includes('. '),
+            splitResult: defectsText.split(/\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|SC|LR|LL)/)
+          });
+        }
+        
         // Check if observations contain multiple distinct observations 
         const hasMultipleObservations = defectsText.includes('. ') && defectsText !== 'No service or structural defect found';
         
