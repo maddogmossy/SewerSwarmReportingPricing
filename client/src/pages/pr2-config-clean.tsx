@@ -258,7 +258,26 @@ export default function PR2ConfigClean() {
           rangeLength: newFormData.rangeOptions?.find(r => r.label === 'Length')?.rangeEnd
         });
 
-        setFormData(newFormData);
+        // Force a complete state reset and re-render
+        setFormData({
+          categoryName: '',
+          description: '',
+          pricingOptions: [],
+          quantityOptions: [],
+          minQuantityOptions: [],
+          rangeOptions: [],
+          mathOperators: ['N/A'],
+          pricingStackOrder: [],
+          quantityStackOrder: [],
+          minQuantityStackOrder: [],
+          rangeStackOrder: [],
+          sector: ''
+        });
+
+        // Use setTimeout to ensure state reset happens first
+        setTimeout(() => {
+          setFormData(newFormData);
+        }, 10);
         
         // Set sectors information
         const configSectors = config.sectors && Array.isArray(config.sectors) 
