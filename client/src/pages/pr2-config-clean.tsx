@@ -344,7 +344,7 @@ export default function PR2ConfigClean() {
   };
 
   const handleBack = () => {
-    setLocation(`/pr2-pricing?sector=${sector}`);
+    setLocation('/dashboard');
   };
 
   // Pricing option management
