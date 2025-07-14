@@ -1332,6 +1332,12 @@ export default function Dashboard() {
       const minSize = parseInt(pipeSizeRange.rangeStart || '0');
       const maxSize = parseInt(pipeSizeRange.rangeEnd || '999');
       if (sectionPipeSize < minSize || sectionPipeSize > maxSize) {
+        console.log('❌ Section fails pipe size check:', {
+          itemNo: section.itemNo,
+          pipeSize: sectionPipeSize,
+          minSize,
+          maxSize
+        });
         return false;
       }
     }
@@ -1344,7 +1350,40 @@ export default function Dashboard() {
       const minLength = parseFloat(lengthRange.rangeStart || '0');
       const maxLength = parseFloat(lengthRange.rangeEnd || '999');
       if (sectionLength < minLength || sectionLength > maxLength) {
+        console.log('❌ Section fails length check:', {
+          itemNo: section.itemNo,
+          length: sectionLength,
+          minLength,
+          maxLength
+        });
         return false;
+      }
+    }
+    
+    // Check percentage range - extract defect percentages from observations
+    const percentageRange = pr2Config.rangeOptions.find((range: any) => 
+      range.label?.toLowerCase().includes('percent') && range.enabled
+    );
+    if (percentageRange && section.defects) {
+      // Extract percentage values from defect text (e.g., "30% silt", "10% deposits")
+      const percentageMatches = section.defects.match(/(\d+)%/g);
+      if (percentageMatches && percentageMatches.length > 0) {
+        const percentages = percentageMatches.map((match: string) => parseInt(match.replace('%', '')));
+        const maxPercentage = Math.max(...percentages);
+        
+        const minPercent = parseInt(percentageRange.rangeStart || '0');
+        const maxPercent = parseInt(percentageRange.rangeEnd || '100');
+        
+        if (maxPercentage < minPercent || maxPercentage > maxPercent) {
+          console.log('❌ Section fails percentage check:', {
+            itemNo: section.itemNo,
+            maxPercentage,
+            minPercent,
+            maxPercent,
+            defects: section.defects
+          });
+          return false;
+        }
       }
     }
     
@@ -1353,7 +1392,8 @@ export default function Dashboard() {
       pipeSize: sectionPipeSize,
       length: sectionLength,
       pipeSizeRange: pipeSizeRange ? `${pipeSizeRange.rangeStart}-${pipeSizeRange.rangeEnd}` : 'none',
-      lengthRange: lengthRange ? `${lengthRange.rangeStart}-${lengthRange.rangeEnd}` : 'none'
+      lengthRange: lengthRange ? `${lengthRange.rangeStart}-${lengthRange.rangeEnd}` : 'none',
+      percentageRange: percentageRange ? `${percentageRange.rangeStart}-${percentageRange.rangeEnd}` : 'none'
     });
     
     return true;
