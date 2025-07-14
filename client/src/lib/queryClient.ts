@@ -26,10 +26,25 @@ export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
+  params?: Record<string, string | undefined>,
 ): Promise<Response> {
   const isFormData = data instanceof FormData;
   
-  const res = await fetch(url, {
+  // Build URL with query parameters
+  let fullUrl = url;
+  if (params) {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        searchParams.append(key, value);
+      }
+    });
+    if (searchParams.toString()) {
+      fullUrl += `?${searchParams.toString()}`;
+    }
+  }
+  
+  const res = await fetch(fullUrl, {
     method,
     headers: isFormData ? {} : data ? { "Content-Type": "application/json" } : {},
     body: isFormData ? data : data ? JSON.stringify(data) : undefined,
