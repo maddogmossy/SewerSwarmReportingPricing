@@ -115,14 +115,22 @@ export default function PR2ConfigClean() {
 
   // Force form inputs to update when formData changes
   useEffect(() => {
+    console.log(`🔄 DOM manipulation useEffect triggered for Config ${editId}`);
+    console.log(`🔄 Quantity options:`, formData.quantityOptions);
+    console.log(`🔄 Range options:`, formData.rangeOptions);
+    
     const timer = setTimeout(() => {
       // Force update all quantity inputs
       formData.quantityOptions.forEach(option => {
         if (option.enabled) {
           const inputElement = document.querySelector(`input[data-option-id="${option.id}"]`) as HTMLInputElement;
-          if (inputElement && inputElement.value !== option.value) {
-            inputElement.value = option.value;
-            console.log(`🔄 Force updated input ${option.id} to: ${option.value}`);
+          console.log(`🔄 Looking for input with data-option-id="${option.id}", found:`, inputElement);
+          if (inputElement) {
+            console.log(`🔄 Current input value: "${inputElement.value}", expected: "${option.value}"`);
+            if (inputElement.value !== option.value) {
+              inputElement.value = option.value;
+              console.log(`🔄 Force updated input ${option.id} to: ${option.value}`);
+            }
           }
         }
       });
@@ -132,20 +140,27 @@ export default function PR2ConfigClean() {
         if (option.enabled) {
           const startInput = document.querySelector(`input[data-range-id="${option.id}-start"]`) as HTMLInputElement;
           const endInput = document.querySelector(`input[data-range-id="${option.id}-end"]`) as HTMLInputElement;
-          if (startInput && startInput.value !== option.rangeStart) {
-            startInput.value = option.rangeStart;
-            console.log(`🔄 Force updated range start ${option.id} to: ${option.rangeStart}`);
+          console.log(`🔄 Looking for range inputs for ${option.id}, found start:`, startInput, 'end:', endInput);
+          if (startInput) {
+            console.log(`🔄 Current start value: "${startInput.value}", expected: "${option.rangeStart}"`);
+            if (startInput.value !== option.rangeStart) {
+              startInput.value = option.rangeStart;
+              console.log(`🔄 Force updated range start ${option.id} to: ${option.rangeStart}`);
+            }
           }
-          if (endInput && endInput.value !== option.rangeEnd) {
-            endInput.value = option.rangeEnd;
-            console.log(`🔄 Force updated range end ${option.id} to: ${option.rangeEnd}`);
+          if (endInput) {
+            console.log(`🔄 Current end value: "${endInput.value}", expected: "${option.rangeEnd}"`);
+            if (endInput.value !== option.rangeEnd) {
+              endInput.value = option.rangeEnd;
+              console.log(`🔄 Force updated range end ${option.id} to: ${option.rangeEnd}`);
+            }
           }
         }
       });
-    }, 100); // Small delay to ensure DOM is updated
+    }, 200); // Increased delay to ensure DOM is fully updated
 
     return () => clearTimeout(timer);
-  }, [formData.quantityOptions, formData.rangeOptions]);
+  }, [formData.quantityOptions, formData.rangeOptions, editId]);
 
   // Dialog states
   const [addPricingDialogOpen, setAddPricingDialogOpen] = useState(false);
