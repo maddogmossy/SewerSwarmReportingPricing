@@ -277,19 +277,27 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       )}
                     </div>
                     <p className="text-xs text-slate-600 mt-0.5">{equipment.description}</p>
-                    {/* Add New Configuration Button */}
+                    {/* Add/Edit Configuration Button */}
                     <div className="mt-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => {
                           setIsOpen(false);
-                          setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}`);
+                          // Check if configuration exists for this equipment
+                          const existingConfig = equipment.id === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
+                          if (existingConfig) {
+                            // Navigate to edit existing configuration
+                            setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&edit=${existingConfig.id}`);
+                          } else {
+                            // Navigate to create new configuration
+                            setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}`);
+                          }
                         }}
                         className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
                       >
                         <Plus className="h-3 w-3 mr-1" />
-                        Add
+                        {equipment.hasConfig ? 'Edit' : 'Add'}
                       </Button>
                     </div>
                   </div>
