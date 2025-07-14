@@ -266,16 +266,26 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                           variant="outline"
                           size="sm"
                           onClick={() => {
+                            console.log(`🔧 ${equipment.hasConfig ? 'Edit' : 'Add'} button clicked for ${equipment.name}`);
+                            console.log(`🔧 Equipment ID: ${equipment.id}`);
+                            console.log(`🔧 Has config: ${equipment.hasConfig}`);
+                            
                             setIsOpen(false);
                             // Always navigate to the configuration page for this equipment
                             // If config exists, it will open in edit mode; if not, it will create new
                             const existingConfig = equipment.id === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
+                            console.log(`🔧 Existing config found:`, existingConfig);
+                            
                             if (existingConfig) {
                               // Navigate to edit existing configuration (allows adding new pricing options within existing config)
-                              setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&edit=${existingConfig.id}`);
+                              const editUrl = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}&edit=${existingConfig.id}`;
+                              console.log(`🔧 Navigating to edit URL: ${editUrl}`);
+                              setLocation(editUrl);
                             } else {
                               // Navigate to create new configuration
-                              setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}`);
+                              const createUrl = `/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}`;
+                              console.log(`🔧 Navigating to create URL: ${createUrl}`);
+                              setLocation(createUrl);
                             }
                           }}
                           className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
