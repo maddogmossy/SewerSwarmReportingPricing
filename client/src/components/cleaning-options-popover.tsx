@@ -127,6 +127,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const safepr2Configs = Array.isArray(pr2Configs) ? pr2Configs : [];
   const cctvJetVacConfig = safepr2Configs.find((config: any) => config.categoryId === 'cctv-jet-vac');
   const cctvVanPackConfig = safepr2Configs.find((config: any) => config.categoryId === 'cctv-van-pack');
+  
+  // Debug equipment configuration detection
+  console.log('🔧 CleaningPopover - PR2 Configs:', safepr2Configs);
+  console.log('🔧 CleaningPopover - CCTV Jet Vac Config Found:', cctvJetVacConfig);
+  console.log('🔧 CleaningPopover - CCTV Van Pack Config Found:', cctvVanPackConfig);
 
   // Create ordered equipment list with option numbers based on current order
   const cleansingEquipment: CleansingEquipment[] = equipmentOrder.map((equipmentId, index) => {
