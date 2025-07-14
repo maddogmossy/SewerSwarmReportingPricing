@@ -774,7 +774,10 @@ export default function Dashboard() {
             let backgroundClass = 'bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400';
             
             if (hasLinkedPR2 && repairPricingData.length > 0) {
-              const pr2Config = repairPricingData[0]; // Get first available config
+              // Find the most recent PR2 configuration (highest ID) - same logic as calculateAutoCost
+              const pr2Config = repairPricingData.reduce((latest: any, current: any) => 
+                current.id > latest.id ? current : latest
+              );
               statusColor = calculateSectionStatusColor(section, pr2Config);
               
               console.log('🎯 Section status color calculation:', {
