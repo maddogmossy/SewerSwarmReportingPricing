@@ -146,6 +146,10 @@ export default function PR2ConfigClean() {
   // Load all configurations for this category to show in "Saved Configurations"
   const { data: allConfigs } = useQuery({
     queryKey: ['/api/pr2-clean', 'category', categoryId],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/pr2-clean?categoryId=${categoryId}`);
+      return response.json();
+    },
     enabled: !!categoryId,
   });
 

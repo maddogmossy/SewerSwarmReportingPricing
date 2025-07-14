@@ -46,11 +46,33 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
   app.get('/api/pr2-clean', async (req, res) => {
     try {
       const sector = req.query.sector as string;
+      const categoryId = req.query.categoryId as string;
       
-      console.log(`🔍 API request received for sector: ${sector}`);
+      console.log(`🔍 API request received for sector: ${sector}, categoryId: ${categoryId}`);
       
       let configurations;
-      if (sector) {
+      if (sector && categoryId) {
+        // Filter by userId, sector, and categoryId
+        console.log(`🔍 Filtering by userId: "test-user", sector: "${sector}", AND categoryId: "${categoryId}"`);
+        configurations = await db
+          .select()
+          .from(pr2Configurations)
+          .where(and(
+            eq(pr2Configurations.userId, "test-user"),
+            eq(pr2Configurations.categoryId, categoryId),
+            sql`${pr2Configurations.sectors} && ARRAY[${sql.raw(`'${sector}'`)}]::text[]`
+          ));
+      } else if (categoryId) {
+        // Filter by userId and categoryId only
+        console.log(`🔍 Filtering by userId: "test-user" AND categoryId: "${categoryId}"`);
+        configurations = await db
+          .select()
+          .from(pr2Configurations)
+          .where(and(
+            eq(pr2Configurations.userId, "test-user"),
+            eq(pr2Configurations.categoryId, categoryId)
+          ));
+      } else if (sector) {
         // Filter by both userId and sector using array contains operator
         console.log(`🔍 Filtering by userId: "test-user" AND sector: "${sector}"`);
         configurations = await db
