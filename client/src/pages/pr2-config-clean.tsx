@@ -143,6 +143,12 @@ export default function PR2ConfigClean() {
     enabled: isEditing && !!editId,
   });
 
+  // Load all configurations for this category to show in "Saved Configurations"
+  const { data: allConfigs } = useQuery({
+    queryKey: ['/api/pr2-clean', 'category', categoryId],
+    enabled: !!categoryId,
+  });
+
   // State to track which sectors have this configuration (loaded once when editing starts)
   const [sectorsWithConfig, setSectorsWithConfig] = useState<string[]>([]);
 
@@ -1413,6 +1419,46 @@ export default function PR2ConfigClean() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Saved Configurations Section */}
+        {allConfigs && allConfigs.length > 0 && (
+          <div className="mb-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Saved Configurations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {allConfigs.map((config: any) => (
+                    <div key={config.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                      <div className="flex-1">
+                        <div className="font-medium text-slate-900">{config.categoryName}</div>
+                        <div className="text-sm text-slate-600">{config.description}</div>
+                        <div className="text-xs text-slate-500 mt-1">
+                          Created: {new Date(config.createdAt).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${config.id}`)}
+                          className="text-xs"
+                        >
+                          <Edit2 className="w-3 h-3 mr-1" />
+                          Edit
+                        </Button>
+                        {config.id === parseInt(editId || '0') && (
+                          <span className="text-xs text-green-600 font-medium">Currently Editing</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Description Field */}
         <div className="mb-6">

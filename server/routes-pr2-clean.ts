@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { db } from "./db";
 import { pr2Configurations, standardCategories } from "../shared/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, desc } from "drizzle-orm";
 
 // Legacy routes function - still needed for server startup
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -77,6 +77,29 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       res.json(configurations);
     } catch (error) {
       console.error('Error fetching clean PR2 configurations:', error);
+      res.status(500).json({ error: 'Failed to fetch configurations' });
+    }
+  });
+
+  // GET configurations by category
+  app.get('/api/pr2-clean/category/:categoryId', async (req, res) => {
+    try {
+      const categoryId = req.params.categoryId;
+      console.log(`🔍 API request for category: ${categoryId}`);
+      
+      const configurations = await db
+        .select()
+        .from(pr2Configurations)
+        .where(and(
+          eq(pr2Configurations.userId, "test-user"),
+          eq(pr2Configurations.categoryId, categoryId)
+        ))
+        .orderBy(desc(pr2Configurations.id)); // Most recent first
+      
+      console.log(`✅ Found ${configurations.length} configurations for category ${categoryId}`);
+      res.json(configurations);
+    } catch (error) {
+      console.error('Error fetching configurations by category:', error);
       res.status(500).json({ error: 'Failed to fetch configurations' });
     }
   });
