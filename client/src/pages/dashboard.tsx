@@ -1398,26 +1398,51 @@ export default function Dashboard() {
       }
     }
     
-    // Check percentage range - extract defect percentages from observations
+    // Check percentage range - SEPARATE water levels from defect percentages
     const percentageRange = pr2Config.rangeOptions.find((range: any) => 
       range.label?.toLowerCase().includes('percent') && range.enabled
     );
     if (percentageRange && section.defects) {
-      // Extract percentage values from defect text (e.g., "30% silt", "10% deposits")
-      const percentageMatches = section.defects.match(/(\d+)%/g);
-      if (percentageMatches && percentageMatches.length > 0) {
-        const percentages = percentageMatches.map((match: string) => parseInt(match.replace('%', '')));
-        const maxPercentage = Math.max(...percentages);
+      // Extract DEFECT percentages only (exclude water levels)
+      const defectMatches = section.defects.match(/(\d+)%(?!\s*of the vertical dimension)/g);
+      // Extract WATER LEVEL percentages separately  
+      const waterLevelMatches = section.defects.match(/(\d+)%\s*of the vertical dimension/g);
+      
+      // Check defect percentages against PR2 range
+      if (defectMatches && defectMatches.length > 0) {
+        const defectPercentages = defectMatches.map((match: string) => parseInt(match.replace('%', '')));
+        const maxDefectPercentage = Math.max(...defectPercentages);
         
         const minPercent = parseInt(percentageRange.rangeStart || '0');
         const maxPercent = parseInt(percentageRange.rangeEnd || '100');
         
-        if (maxPercentage < minPercent || maxPercentage > maxPercent) {
-          console.log('❌ Section fails percentage check:', {
+        if (maxDefectPercentage < minPercent || maxDefectPercentage > maxPercent) {
+          console.log('❌ Section fails DEFECT percentage check:', {
             itemNo: section.itemNo,
-            maxPercentage,
+            maxDefectPercentage,
             minPercent,
             maxPercent,
+            defects: section.defects
+          });
+          return false;
+        }
+      }
+      
+      // Check water level percentages against SEPARATE rules
+      if (waterLevelMatches && waterLevelMatches.length > 0) {
+        const waterLevelPercentages = waterLevelMatches.map((match: string) => 
+          parseInt(match.match(/(\d+)%/)[1])
+        );
+        const maxWaterLevel = Math.max(...waterLevelPercentages);
+        
+        // Water level rules: Allow up to 30% (different from defect percentages)
+        const maxAllowedWaterLevel = 30;
+        
+        if (maxWaterLevel > maxAllowedWaterLevel) {
+          console.log('❌ Section fails WATER LEVEL check:', {
+            itemNo: section.itemNo,
+            maxWaterLevel,
+            maxAllowedWaterLevel,
             defects: section.defects
           });
           return false;
