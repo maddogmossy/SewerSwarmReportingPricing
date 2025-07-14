@@ -27,38 +27,7 @@ import { db } from "./db";
 import { sectionInspections } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
-// Multi-defect section splitting system
-// Detects mixed service and structural defects and creates separate records
-function splitMultiDefectSections(observations: string[]): { serviceDefects: string[], structuralDefects: string[] } {
-  const serviceDefects: string[] = [];
-  const structuralDefects: string[] = [];
-  
-  // Define defect classifications
-  const serviceDefectCodes = ['DES', 'DER', 'WL', 'RI', 'OB', 'S/A', 'DEF', 'DEC'];
-  const structuralDefectCodes = ['D', 'FC', 'FL', 'CR', 'JDL', 'JDM', 'OJM', 'OJL', 'JDS', 'OJS'];
-  
-  for (const obs of observations) {
-    // Extract defect code from observation
-    const codeMatch = obs.match(/^([A-Z]+)\s/);
-    if (codeMatch) {
-      const code = codeMatch[1];
-      
-      if (serviceDefectCodes.includes(code)) {
-        serviceDefects.push(obs);
-      } else if (structuralDefectCodes.includes(code)) {
-        structuralDefects.push(obs);
-      } else {
-        // Default to service for unknown codes
-        serviceDefects.push(obs);
-      }
-    } else {
-      // If no code match, default to service
-      serviceDefects.push(obs);
-    }
-  }
-  
-  return { serviceDefects, structuralDefects };
-}
+// Multi-defect splitting disabled - using single section logic only
 
 // Format observation text with detailed defect descriptions and percentages
 // JN codes only display if structural defect within one meter of junction
@@ -633,63 +602,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       }
       
       // Multi-defect section splitting: Check if both service and structural defects exist
-      const { serviceDefects, structuralDefects } = splitMultiDefectSections(observations);
-      console.log(`🔧 Multi-defect analysis: ${serviceDefects.length} service, ${structuralDefects.length} structural`);
-      
-      // If both types exist, create separate records
-      if (serviceDefects.length > 0 && structuralDefects.length > 0) {
-        console.log(`🔄 MULTI-DEFECT SECTION DETECTED: Creating separate records for item ${authenticSections.length + 1}`);
-        
-        const baseItemNo = authenticSections.length + 1;
-        
-        // Create service defect record (original item number)
-        const serviceDefectText = serviceDefects.length > 0 ? formatObservationText(serviceDefects) : 'No service or structural defect found';
-        const serviceClassification = classifyWincanObservations(serviceDefectText, 'utilities');
-        
-        authenticSections.push({
-          itemNo: baseItemNo,
-          projectNo: 'GR7188',
-          startMH,
-          finishMH,
-          pipeSize,
-          pipeMaterial,
-          totalLength,
-          lengthSurveyed: totalLength,
-          defects: serviceDefectText,
-          recommendations: serviceClassification.recommendations,
-          severityGrade: serviceClassification.severityGrade,
-          adoptable: serviceClassification.adoptable,
-          inspectionDate,
-          inspectionTime
-        });
-        
-        // Create structural defect record (item number with 'a' suffix)
-        const structuralDefectText = structuralDefects.length > 0 ? formatObservationText(structuralDefects) : 'No service or structural defect found';
-        const structuralClassification = classifyWincanObservations(structuralDefectText, 'utilities');
-        
-        authenticSections.push({
-          itemNo: baseItemNo,
-          letterSuffix: 'a',
-          projectNo: 'GR7188',
-          startMH,
-          finishMH,
-          pipeSize,
-          pipeMaterial,
-          totalLength,
-          lengthSurveyed: totalLength,
-          defects: structuralDefectText,
-          recommendations: structuralClassification.recommendations,
-          severityGrade: structuralClassification.severityGrade,
-          adoptable: structuralClassification.adoptable,
-          inspectionDate,
-          inspectionTime
-        });
-        
-        console.log(`✅ Created 2 separate records for multi-defect section`);
-        continue; // Skip the normal single-section processing
-      }
-      
-      // Normal single-defect processing
+      // Single-section processing (multi-defect splitting disabled)
       const formattedText = observations.length > 0 ? formatObservationText(observations) : '';
       let defectText = formattedText || 'No service or structural defect found';
       
