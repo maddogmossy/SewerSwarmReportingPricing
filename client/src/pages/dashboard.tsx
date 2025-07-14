@@ -819,29 +819,47 @@ export default function Dashboard() {
         // REMOVED: Auto-populated costs replaced with warning symbols to maintain data integrity
         // No synthetic pricing calculations - show warning symbols for unconfigured pricing
         
-        // Show warning triangle when no pricing is configured for defective sections
+        // Calculate costs for defective sections using PR2 configurations
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
           // Check if this section requires cleaning vs structural repair
           const needsCleaning = requiresCleaning(section.defects || '');
           
-          if (needsCleaning) {
+          // Try to calculate cost using PR2 configuration
+          const costCalculation = calculateAutoCost(section);
+          
+          if (costCalculation && costCalculation.cost > 0) {
+            // Show calculated cost with calculation method tooltip
             return (
               <div 
                 className="flex items-center justify-center p-1 rounded" 
-                title="Pricing not configured - Use recommendation box to set up cleaning costs"
+                title={`${costCalculation.method}: ${costCalculation.currency}${costCalculation.cost.toFixed(2)}`}
               >
-                <TriangleAlert className="h-4 w-4 text-blue-500" />
+                <span className="text-sm font-semibold text-green-700">
+                  {costCalculation.currency}{costCalculation.cost.toFixed(2)}
+                </span>
               </div>
             );
           } else {
-            return (
-              <div 
-                className="flex items-center justify-center p-1 rounded" 
-                title="Pricing not configured - Use recommendation box to set up repair costs"
-              >
-                <TriangleAlert className="h-4 w-4 text-orange-500" />
-              </div>
-            );
+            // Show warning triangle when no pricing is configured
+            if (needsCleaning) {
+              return (
+                <div 
+                  className="flex items-center justify-center p-1 rounded" 
+                  title="Pricing not configured - Use recommendation box to set up cleaning costs"
+                >
+                  <TriangleAlert className="h-4 w-4 text-blue-500" />
+                </div>
+              );
+            } else {
+              return (
+                <div 
+                  className="flex items-center justify-center p-1 rounded" 
+                  title="Pricing not configured - Use recommendation box to set up repair costs"
+                >
+                  <TriangleAlert className="h-4 w-4 text-orange-500" />
+                </div>
+              );
+            }
           }
         }
         
