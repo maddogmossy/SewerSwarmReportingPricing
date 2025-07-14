@@ -1471,14 +1471,14 @@ export default function PR2ConfigClean() {
               <CardContent>
                 <div className="space-y-3">
                   {console.log('🔍 AllConfigs data:', allConfigs.map((c: any) => ({ id: c.id, name: c.categoryName, quantityValue: c.quantityOptions?.[0]?.value })))}
-                  {allConfigs.map((config: any) => (
+                  {allConfigs.map((config: any, index: number) => (
                     <div key={config.id} className={`flex items-center justify-between p-3 rounded-lg ${
                       config.id === parseInt(editId || '0') 
                         ? 'bg-green-50 border-2 border-green-300' 
                         : 'bg-slate-50'
                     }`}>
                       <div className="flex-1">
-                        <div className="font-medium text-slate-900">{config.categoryName}</div>
+                        <div className="font-medium text-slate-900">{config.categoryName} (ID: {config.id})</div>
                         
                         {/* Color-coded configuration display */}
                         <div className="mt-2">
