@@ -1460,17 +1460,7 @@ export default function PR2ConfigClean() {
           </div>
         )}
 
-        {/* Description Field */}
-        <div className="mb-6">
-          <Label htmlFor="description">Description</Label>
-          <Input
-            id="description"
-            value={formData.description}
-            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            placeholder="Enter description"
-            className="mt-1"
-          />
-        </div>
+
 
         {/* Action Buttons */}
         <div className="flex justify-between items-center">
