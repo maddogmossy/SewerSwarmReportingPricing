@@ -43,10 +43,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   // Check if CCTV/Jet Vac configuration exists
   const { data: pr2Configs = [] } = useQuery({
     queryKey: ['/api/pr2-clean', sectionData.sector],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector: sectionData.sector });
-      return response.json();
-    }
+    queryFn: () => apiRequest('GET', '/api/pr2-clean', undefined, { sector: sectionData.sector })
   });
   
   // Load saved order and selection from localStorage, fallback to defaults
