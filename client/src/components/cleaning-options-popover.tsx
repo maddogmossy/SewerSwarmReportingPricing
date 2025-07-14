@@ -314,7 +314,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                           className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
                         >
                           <Plus className="h-3 w-3 mr-1" />
-                          {(equipmentId === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig) ? 'Edit' : 'Add'}
+                          {(equipment.id === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig) ? 'Edit' : 'Add'}
                         </Button>
                       </div>
                     </div>
