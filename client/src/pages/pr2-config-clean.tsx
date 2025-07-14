@@ -143,32 +143,8 @@ export default function PR2ConfigClean() {
     enabled: isEditing && !!editId,
   });
 
-  // Load existing configurations across all sectors to check which sectors already have this config
-  const { data: allSectorConfigs = [] } = useQuery({
-    queryKey: ['/api/pr2-clean', 'all-sectors', categoryId, Date.now()], // Add timestamp to prevent caching
-    queryFn: async () => {
-      if (!isEditing || !categoryId) return [];
-      
-      const allConfigs = [];
-      for (const sect of SECTORS) {
-        try {
-          // Add cache-busting parameter to prevent stale cached responses
-          const response = await fetch(`/api/pr2-clean?sector=${sect.id}&_t=${Date.now()}`);
-          const configs = await response.json();
-          const matchingConfig = configs.find((c: any) => c.categoryId === categoryId);
-          if (matchingConfig) {
-            allConfigs.push({ sector: sect.id, config: matchingConfig });
-          }
-        } catch (error) {
-          // Silently continue if sector has no configurations
-        }
-      }
-      return allConfigs;
-    },
-    enabled: isEditing && !!categoryId,
-    staleTime: 0, // Disable caching
-    cacheTime: 0, // Don't cache results
-  });
+  // State to track which sectors have this configuration (loaded once when editing starts)
+  const [sectorsWithConfig, setSectorsWithConfig] = useState<string[]>([]);
 
   // Handle sector checkbox changes
   const handleSectorChange = (sectorId: string, checked: boolean) => {
@@ -177,7 +153,7 @@ export default function PR2ConfigClean() {
       setSelectedSectors(prev => [...new Set([...prev, sectorId])]);
     } else {
       // Show warning if removing an existing sector with data
-      const hasExistingConfig = allSectorConfigs.some((c: any) => c.sector === sectorId);
+      const hasExistingConfig = sectorsWithConfig.includes(sectorId);
       if (hasExistingConfig && isEditing) {
         setSectorToRemove(sectorId);
         setShowRemoveWarning(true);
@@ -228,17 +204,13 @@ export default function PR2ConfigClean() {
     }
   }, [existingConfig, isEditing, sector]);
 
-  // Update selectedSectors when allSectorConfigs loads - only set sectors that actually have configs
+  // Set initial selected sectors when editing starts
   useEffect(() => {
-    if (isEditing && allSectorConfigs.length > 0) {
-      const sectorsWithConfigs = allSectorConfigs.map((c: any) => c.sector);
-      const uniqueSectors = [...new Set(sectorsWithConfigs)];
-      setSelectedSectors(uniqueSectors);
-    } else if (isEditing && allSectorConfigs.length === 0) {
-      // If no configs found across sectors, just use the current sector
+    if (isEditing && existingConfig) {
+      // For now, just set the current sector to avoid loops
       setSelectedSectors([sector]);
     }
-  }, [allSectorConfigs, isEditing, sector]);
+  }, [isEditing, existingConfig, sector]);
 
   // Save configuration with safe multi-sector support
   const saveConfiguration = useMutation({
