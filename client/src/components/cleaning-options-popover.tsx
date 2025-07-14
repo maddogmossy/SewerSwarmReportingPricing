@@ -234,7 +234,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
             Cleanse/Survey Equipment Selection
           </h4>
           <p className="text-xs text-slate-600 mt-1">
-            Select your preferred equipment combinations for cleansing and survey operations
+            Select multiple equipment types and use Stack Order to set your preferred priority
           </p>
         </div>
         <div className="p-3 space-y-2">
@@ -355,7 +355,13 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
               const orderedSelected = equipmentOrder.filter(id => selectedEquipment.includes(id));
               const primaryEquipment = orderedSelected[0];
               const hasExistingConfig = primaryEquipment === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig;
-              return hasExistingConfig ? 'Edit Configuration' : 'Configure Pricing';
+              const isMultipleSelected = selectedEquipment.length > 1;
+              
+              if (isMultipleSelected) {
+                return hasExistingConfig ? 'Edit Primary Configuration' : 'Configure Primary Equipment';
+              } else {
+                return hasExistingConfig ? 'Edit Configuration' : 'Configure Pricing';
+              }
             })()}
             {selectedEquipment.length > 0 && (
               <Badge variant="secondary" className="ml-1 text-xs px-1">
