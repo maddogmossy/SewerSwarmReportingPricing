@@ -1498,7 +1498,9 @@ export default function PR2ConfigClean() {
                           Edit
                         </Button>
                         {config.id === parseInt(editId || '0') && (
-                          <span className="text-xs text-green-600 font-medium">Currently Editing</span>
+                          <div className="px-3 py-1 bg-green-100 border-2 border-green-500 rounded-md">
+                            <span className="text-sm text-green-700 font-bold">Currently Editing</span>
+                          </div>
                         )}
                       </div>
                     </div>
