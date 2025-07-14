@@ -1553,6 +1553,13 @@ export default function Dashboard() {
     const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations || []);
     const runsPerShift = getPricingValueByLabel(pr2Config.quantityOptions, 'runs per shift');
     
+    console.log('🔢 Smart counting result:', {
+      sectionItemNo: section.itemNo,
+      totalSectionsCount: sectionCount,
+      configUsed: pr2Config.id,
+      runsPerShift: runsPerShift
+    });
+    
     const minRunsRequired = minQuantityOptions.find((opt: any) => 
       opt.label?.toLowerCase().includes('runs') && opt.enabled
     );

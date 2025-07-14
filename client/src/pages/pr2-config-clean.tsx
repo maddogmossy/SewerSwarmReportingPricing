@@ -295,10 +295,11 @@ export default function PR2ConfigClean() {
     
     // Debug: Show specific quantity values being saved
     const runsPerShiftOption = formData.quantityOptions.find(opt => opt.label?.toLowerCase().includes('runs per shift'));
-    console.log('🔍 Quantity options being saved:', {
+    console.log('🔍 Save as New - Current form data:', {
       allQuantityOptions: formData.quantityOptions,
       runsPerShiftOption: runsPerShiftOption,
-      runsPerShiftValue: runsPerShiftOption?.value
+      runsPerShiftValue: runsPerShiftOption?.value,
+      fullFormData: formData
     });
     
     // Create new configuration by removing the editId and treating it as a new config

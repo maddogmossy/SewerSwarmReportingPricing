@@ -472,7 +472,33 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Current**: Both configurations show 30 runs per shift (£1850 ÷ 30 = £61.67)
 - **Impact**: Cost calculation unchanged because values weren't actually saved during "Save as New" operation
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v4.4' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v4.5' to return to this stable checkpoint
+
+## REV V4.5 CHECKPOINT - SMART COUNTING & COST CALCULATION SYSTEM LOCKED (July 14, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE SMART COUNTING & COST CALCULATION SYSTEM:**
+- **Fixed Critical "Save as New" Bug:** Configuration ID 40 now correctly shows "No of Runs Per Shift": "25" instead of "30" 
+- **Cost Calculation Fixed:** System now shows £74.00 (£1850 ÷ 25) instead of £61.67 for sections meeting ID 40 requirements
+- **Length Range Updated:** Configuration ID 40 range increased from 0-30m to 0-35m to accommodate section 3 (30.24m)
+- **Smart Counting System Implemented:** Sections meeting either configuration (ID 36: 30 runs OR ID 40: 25 runs) count collectively toward orange minimum requirement
+- **Configuration-Specific Cost Calculation:** Each section uses the specific configuration it meets instead of always using highest ID
+- **Enhanced Debugging:** Added comprehensive logging to track which configuration each section matches and cost calculations
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Smart Matching Logic:** `countSectionsTowardMinimum()` function checks each section against all configurations and counts matches collectively
+- **Configuration Mapping:** `configMatch` object tracks which specific configuration each section uses for cost calculation
+- **Dynamic Cost Calculation:** `calculateAutoCost()` now finds first matching configuration for each section instead of always using highest ID
+- **Range Validation:** Sections are validated against configuration-specific ranges (pipe size, length, percentages)
+- **Minimum Quantity Logic:** Orange minimum requirements use collective count from all matching configurations
+
+🔒 **USER-CONFIRMED RESULTS:**
+- **Configuration ID 36:** 30 runs per shift, £61.67 per section, 0-30m length range
+- **Configuration ID 40:** 25 runs per shift, £74.00 per section, 0-35m length range  
+- **Section 3:** Now meets ID 40 requirements (30.24m within 0-35m range), shows £74.00 cost
+- **Smart Counting:** Sections meeting either configuration count toward orange minimum of 30 total sections
+- **Cost Display:** System shows specific costs based on configuration each section actually meets
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v4.5' to return to this stable checkpoint
 
 ## REV V3.9.2 CHECKPOINT - COMPLETE DASHBOARD INTEGRATION LOCKED (July 14, 2025)
 
