@@ -29,6 +29,39 @@ import { eq } from "drizzle-orm";
 
 // Multi-defect splitting disabled - using single section logic only
 
+// Enhanced observation with remark system
+function enhanceObservationWithRemark(observation: string): string {
+  // Define remark mappings for common observation codes
+  const remarkMappings: Record<string, string> = {
+    'SA': 'Due to camera under water',
+    'CUW': 'Camera under water',
+    'LV': 'Due to loss of vision',
+    'BL': 'Due to blockage',
+    'OF': 'Due to overflow conditions',
+    'IC': 'Inspection continues',
+    'ICF': 'Inspection continues forward'
+  };
+  
+  // Check if observation contains a code that needs a remark
+  for (const [code, remark] of Object.entries(remarkMappings)) {
+    // Match code with meterage pattern like "SA 27.9m"
+    const codePattern = new RegExp(`\\b${code}\\s+(\\d+\\.?\\d*m?)\\b`, 'i');
+    const match = observation.match(codePattern);
+    
+    if (match) {
+      const meterage = match[1];
+      // Check if remark is already present
+      if (!observation.includes(remark)) {
+        // Replace the code with enhanced version including remark
+        const enhancedCode = `${code} ${meterage} (${remark})`;
+        return observation.replace(match[0], enhancedCode);
+      }
+    }
+  }
+  
+  return observation;
+}
+
 // Format observation text with detailed defect descriptions and percentages
 // JN codes only display if structural defect within one meter of junction
 function formatObservationText(observations: string[]): string {
@@ -223,8 +256,12 @@ function formatObservationText(observations: string[]): string {
     }
   }
   
-  // Add non-grouped observations (IC, ICF nodes, etc.)
-  finalObservations.push(...nonGroupedObservations);
+  // Add non-grouped observations (IC, ICF nodes, etc.) with remark enhancement
+  const enhancedNonGroupedObservations = nonGroupedObservations.map(obs => {
+    return enhanceObservationWithRemark(obs);
+  });
+  
+  finalObservations.push(...enhancedNonGroupedObservations);
   
   const result = finalObservations.join('. ').trim();
   console.log(`🔧 Final formatted result with detailed descriptions: "${result.substring(0, 100)}..."`);
