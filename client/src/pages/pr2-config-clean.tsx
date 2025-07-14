@@ -78,8 +78,6 @@ export default function PR2ConfigClean() {
   const editId = urlParams.get('edit') || urlParams.get('editId');
   const isEditing = !!editId;
   
-  console.log(`🔍 URL parameters parsed: sector=${sector}, categoryId=${categoryId}, editId=${editId}, isEditing=${isEditing}`);
-  
   // Determine category name based on categoryId for standard categories
   const getCategoryName = (categoryId: string) => {
     const categoryMap: { [key: string]: string } = {
@@ -143,13 +141,6 @@ export default function PR2ConfigClean() {
   const { data: existingConfig } = useQuery({
     queryKey: ['/api/pr2-clean', editId],
     enabled: isEditing && !!editId,
-    queryFn: async () => {
-      console.log(`🔍 Making API request for configuration ID: ${editId}`);
-      const response = await apiRequest('GET', `/api/pr2-clean/${editId}`);
-      const config = await response.json();
-      console.log(`✅ Received configuration ${editId}:`, config);
-      return config;
-    }
   });
 
   // Load configurations by category and sector to find the right one for editing
