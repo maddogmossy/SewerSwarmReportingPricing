@@ -1525,6 +1525,23 @@ export default function Dashboard() {
   // Debug individual defects data
   if (individualDefects?.length > 0) {
   }
+  
+  // Debug Item 10 data at top level
+  useEffect(() => {
+    if (rawSectionData && rawSectionData.length > 0) {
+      const item10 = rawSectionData.find(s => s.itemNo === 10);
+      if (item10) {
+        console.log('🔍 Item 10 Raw Data:', {
+          itemNo: item10.itemNo,
+          defects: item10.defects,
+          id: item10.id,
+          dataExists: !!item10.defects
+        });
+      } else {
+        console.log('🔍 Item 10 NOT FOUND in rawSectionData');
+      }
+    }
+  }, [rawSectionData]);
 
   // Check sequential validation when sections data changes
   useEffect(() => {
