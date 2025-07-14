@@ -265,8 +265,10 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => {
-                            console.log(`🔧 ${equipment.hasConfig ? 'Edit' : 'Add'} button clicked for ${equipment.name}`);
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log(`🚨 BUTTON CLICKED! ${equipment.hasConfig ? 'Edit' : 'Add'} button clicked for ${equipment.name}`);
                             console.log(`🔧 Equipment ID: ${equipment.id}`);
                             console.log(`🔧 Has config: ${equipment.hasConfig}`);
                             
