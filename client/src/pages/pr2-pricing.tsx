@@ -89,15 +89,19 @@ export default function PR2Pricing() {
 
   // Fetch PR2 configurations for current sector
   const { data: pr2ConfigurationsRaw = [], isLoading: pr2Loading } = useQuery({
-    queryKey: ['/api/pr2-clean', sector],
+    queryKey: ['pr2-configs', sector], // Changed to avoid cache conflicts
     queryFn: async () => {
       console.log('🔍 Making API request for sector:', sector);
       const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector });
       const data = await response.json();
       console.log('📥 Raw API response:', data);
+      console.log('📊 Response length:', data.length);
+      console.log('📊 Response items:', data.map(item => `ID: ${item.id}, Sector: ${item.sector}`));
       return data;
     },
     enabled: !!sector,
+    staleTime: 0, // Always fetch fresh data
+    cacheTime: 0, // Don't cache results
   });
 
   // Fetch standard categories from database
@@ -130,9 +134,8 @@ export default function PR2Pricing() {
   const deletePR2Configuration = useMutation({
     mutationFn: (id: number) => apiRequest('DELETE', `/api/pr2-clean/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      queryClient.invalidateQueries({ queryKey: ['pr2-configs'] });
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', sector] });
       // Silent operation - no toast notification
     }
   });
