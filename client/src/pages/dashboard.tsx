@@ -1227,20 +1227,20 @@ export default function Dashboard() {
         pricingValues: pr2Config.pricingValues
       });
       
-      // Extract values from PR2 configuration arrays
-      const getPricingValue = (options: any[], id: string) => {
-        const option = options?.find(opt => opt.id === id);
+      // Extract values from PR2 configuration arrays by matching labels
+      const getPricingValueByLabel = (options: any[], label: string) => {
+        const option = options?.find(opt => opt.label && opt.label.toLowerCase().includes(label.toLowerCase()));
         return option ? parseFloat(option.value) || 0 : 0;
       };
       
-      const dayRate = getPricingValue(pr2Config.pricingOptions, 'dayRate');
-      const hourlyRate = getPricingValue(pr2Config.pricingOptions, 'hourlyRate');
-      const setupRate = getPricingValue(pr2Config.pricingOptions, 'setupRate');
-      const perMeterRate = getPricingValue(pr2Config.pricingOptions, 'perMeterRate');
+      const dayRate = getPricingValueByLabel(pr2Config.pricingOptions, 'day rate');
+      const hourlyRate = getPricingValueByLabel(pr2Config.pricingOptions, 'hourly rate');
+      const setupRate = getPricingValueByLabel(pr2Config.pricingOptions, 'setup rate');
+      const perMeterRate = getPricingValueByLabel(pr2Config.pricingOptions, 'meter rate');
       
-      const runsPerShift = getPricingValue(pr2Config.quantityOptions, 'runsPerShift');
-      const metersPerShift = getPricingValue(pr2Config.quantityOptions, 'metersPerShift');
-      const sectionsPerDay = getPricingValue(pr2Config.quantityOptions, 'sectionsPerDay');
+      const runsPerShift = getPricingValueByLabel(pr2Config.quantityOptions, 'runs per shift');
+      const metersPerShift = getPricingValueByLabel(pr2Config.quantityOptions, 'meters per shift');
+      const sectionsPerDay = getPricingValueByLabel(pr2Config.quantityOptions, 'sections per day');
       
       console.log('📝 Extracted values:', { dayRate, hourlyRate, setupRate, perMeterRate, runsPerShift, metersPerShift, sectionsPerDay });
 
