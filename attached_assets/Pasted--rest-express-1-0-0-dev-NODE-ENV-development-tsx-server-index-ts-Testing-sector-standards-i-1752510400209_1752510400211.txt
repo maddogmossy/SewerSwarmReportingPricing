@@ -1,0 +1,34 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+Testing sector standards import...
+getSectorStandards function: function
+Test utilities standards: SUCCESS
+Standards count: 6
+4:24:05 PM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+4:24:10 PM [express] GET /api/auth/user 304 in 2ms :: {"id":"test-user","email":"test@example.com","…
+4:24:10 PM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+4:24:10 PM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+4:24:11 PM [express] GET /api/auth/user 304 in 2ms :: {"id":"test-user","email":"test@example.com","…
+4:24:11 PM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+4:24:11 PM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+🔍 API request received for sector: utilities, categoryId: undefined
+🔍 Filtering by userId: "test-user" AND sector: "utilities"
+4:26:17 PM [express] GET /api/standard-categories 200 in 17ms
+✅ Query returned 2 configurations
+📊 Configuration details: [ 'ID: 36, Sectors: ["utilities"]', 'ID: 40, Sectors: ["utilities"]' ]
+4:26:18 PM [express] GET /api/pr2-clean 304 in 763ms :: [{"id":36,"userId":"test-user","categoryId":…
+🔍 API request received for sector: undefined, categoryId: undefined
+🔍 Filtering by userId: "test-user" only (no sector filter)
+🔍 API request received for sector: undefined, categoryId: cctv-jet-vac
+🔍 Filtering by userId: "test-user" AND categoryId: "cctv-jet-vac"
+✅ Query returned 2 configurations
+📊 Configuration details: [ 'ID: 36, Sectors: ["utilities"]', 'ID: 40, Sectors: ["utilities"]' ]
+4:26:20 PM [express] GET /api/pr2-clean 200 in 34ms :: [{"id":36,"userId":"test-user","categoryId":"…
+✅ Query returned 2 configurations
+📊 Configuration details: [ 'ID: 36, Sectors: ["utilities"]', 'ID: 40, Sectors: ["utilities"]' ]
+4:26:22 PM [express] GET /api/pr2-clean 304 in 2274ms :: [{"id":36,"userId":"test-user","categoryId"…

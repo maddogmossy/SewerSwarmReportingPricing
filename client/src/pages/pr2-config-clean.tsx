@@ -140,6 +140,10 @@ export default function PR2ConfigClean() {
   // Load existing configuration for editing
   const { data: existingConfig } = useQuery({
     queryKey: ['/api/pr2-clean', editId],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/pr2-clean/${editId}`);
+      return response.json();
+    },
     enabled: isEditing && !!editId,
   });
 
@@ -1557,7 +1561,17 @@ export default function PR2ConfigClean() {
                             console.log('🔧 Current URL params:', { categoryId, sector, editId });
                             const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${config.id}`;
                             console.log('🔧 Navigating to:', newUrl);
-                            setLocation(newUrl);
+                            
+                            // Force page refresh for URL parameter changes
+                            if (config.id === parseInt(editId || '0')) {
+                              console.log('🔧 Same config - forcing page refresh');
+                              window.location.href = newUrl;
+                            } else {
+                              console.log('🔧 Different config - using setLocation');
+                              // Force URL change by updating browser history
+                              window.history.pushState(null, '', newUrl);
+                              setLocation(newUrl);
+                            }
                           }}
                           className={`text-xs ${
                             config.id === parseInt(editId || '0') 
