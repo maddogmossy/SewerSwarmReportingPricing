@@ -904,13 +904,17 @@ export default function Dashboard() {
           const costCalculation = calculateAutoCost(section);
           
           if (costCalculation && costCalculation.cost > 0) {
+            // Check if orange minimum is met to determine cost color
+            const orangeMinimumMet = checkOrangeMinimumMet();
+            const costColor = orangeMinimumMet ? "text-green-700" : "text-red-600";
+            
             // Show calculated cost with calculation method tooltip
             return (
               <div 
                 className="flex items-center justify-center p-1 rounded" 
-                title={`${costCalculation.method}: ${costCalculation.currency}${costCalculation.cost.toFixed(2)}`}
+                title={`${costCalculation.method}: ${costCalculation.currency}${costCalculation.cost.toFixed(2)}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
               >
-                <span className="text-sm font-semibold text-green-700">
+                <span className={`text-sm font-semibold ${costColor}`}>
                   {costCalculation.currency}{costCalculation.cost.toFixed(2)}
                 </span>
               </div>
@@ -2022,8 +2026,12 @@ export default function Dashboard() {
 
   // Cost calculation function for enhanced table
   const calculateCost = (section: any): string | JSX.Element => {
+    console.log('💰 calculateCost called for section:', section.itemNo, 'severityGrade:', section.severityGrade);
+    
     // Check if section actually has defects based on severity grade
     const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
+    
+    console.log('💰 Section', section.itemNo, 'hasDefects:', hasDefects);
     
     if (!hasDefects) {
       return "£0.00";
@@ -2031,10 +2039,19 @@ export default function Dashboard() {
     
     // For defective sections, use PR2 configuration calculations
     const autoCost = calculateAutoCost(section);
+    console.log('💰 autoCost result for section', section.itemNo, ':', autoCost);
+    
     if (autoCost && autoCost.cost > 0) {
+      console.log('🚨 CALLING checkOrangeMinimumMet for section', section.itemNo);
       // Check if orange minimum is met to determine cost color
       const orangeMinimumMet = checkOrangeMinimumMet();
       const costColor = orangeMinimumMet ? "text-green-600" : "text-red-600";
+      
+      console.log('🚨 Orange minimum result for section', section.itemNo, ':', {
+        orangeMinimumMet,
+        costColor,
+        cost: autoCost.cost
+      });
       
       // Display calculated cost with appropriate color
       return (
