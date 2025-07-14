@@ -1552,7 +1552,13 @@ export default function PR2ConfigClean() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${config.id}`)}
+                          onClick={() => {
+                            console.log('🔧 Edit button clicked for config:', config.id);
+                            console.log('🔧 Current URL params:', { categoryId, sector, editId });
+                            const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${config.id}`;
+                            console.log('🔧 Navigating to:', newUrl);
+                            setLocation(newUrl);
+                          }}
                           className={`text-xs ${
                             config.id === parseInt(editId || '0') 
                               ? 'bg-green-100 border-green-500 text-green-700 hover:bg-green-200' 
