@@ -61,7 +61,7 @@ export default function PR2Pricing() {
   const [location, setLocation] = useLocation();
   const [sector, setSector] = useState('utilities');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState<{id: string, name: string} | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<{id: string, name: string, affectedSectors?: string[]} | null>(null);
   
   // Initialize sector from URL on page load only
   useEffect(() => {
@@ -136,9 +136,39 @@ export default function PR2Pricing() {
     }
   });
 
-  // Handle PR2 configuration delete with confirmation
-  const handlePR2ConfigDelete = (configId: number, configName: string) => {
-    setCategoryToDelete({ id: configId.toString(), name: configName });
+  // Check which sectors have this configuration
+  const checkConfigurationSectors = async (categoryId: string): Promise<string[]> => {
+    const sectorsWithConfig = [];
+    
+    for (const sect of SECTORS) {
+      try {
+        const configs = await apiRequest('GET', `/api/pr2-clean?sector=${sect.id}`);
+        const hasConfig = Array.isArray(configs) ? 
+          configs.some(c => c.categoryId === categoryId) : 
+          (configs?.categoryId === categoryId);
+        
+        if (hasConfig) {
+          sectorsWithConfig.push(sect.name); // Use sector name for display
+        }
+      } catch (error) {
+        console.error(`Error checking sector ${sect.id}:`, error);
+      }
+    }
+    
+    return sectorsWithConfig;
+  };
+
+  // Handle PR2 configuration delete with dynamic sector warning
+  const handlePR2ConfigDelete = async (configId: number, configName: string, categoryId: string) => {
+    // Find which sectors have this configuration
+    const affectedSectors = await checkConfigurationSectors(categoryId);
+    
+    // Store the affected sectors info for the dialog
+    setCategoryToDelete({ 
+      id: configId.toString(), 
+      name: configName,
+      affectedSectors: affectedSectors 
+    });
     setDeleteDialogOpen(true);
   };
 
@@ -454,7 +484,7 @@ export default function PR2Pricing() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handlePR2ConfigDelete(config.id, config.categoryName)}
+                          onClick={() => handlePR2ConfigDelete(config.id, config.categoryName, config.categoryId)}
                           className="text-red-600 border-red-200 hover:bg-red-50 px-2"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -502,9 +532,19 @@ export default function PR2Pricing() {
           <DialogHeader>
             <DialogTitle>Delete Category</DialogTitle>
           </DialogHeader>
-          <p className="py-4">
-            Are you sure you want to delete the "{categoryToDelete?.name}" category? This action cannot be undone.
-          </p>
+          <div className="py-4">
+            <p className="mb-2">
+              Are you sure you want to delete the "{categoryToDelete?.name}" configuration?
+            </p>
+            {categoryToDelete?.affectedSectors && categoryToDelete.affectedSectors.length > 0 && (
+              <p className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                This will delete the configuration from all sectors: <strong>{categoryToDelete.affectedSectors.join(', ')}</strong>
+              </p>
+            )}
+            <p className="mt-2 text-sm text-gray-600">
+              This action cannot be undone.
+            </p>
+          </div>
           <DialogFooter>
             <Button
               variant="outline"
