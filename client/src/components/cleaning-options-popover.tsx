@@ -40,10 +40,10 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
   const [showStackOrder, setShowStackOrder] = useState(false);
   
-  // Check if CCTV/Jet Vac configuration exists
+  // Check if CCTV/Jet Vac configuration exists using standard React Query pattern
   const { data: pr2Configs = [] } = useQuery({
     queryKey: ['/api/pr2-clean', sectionData.sector],
-    queryFn: () => apiRequest('GET', '/api/pr2-clean', undefined, { sector: sectionData.sector })
+    enabled: !!sectionData.sector
   });
   
   // Load saved order and selection from localStorage, fallback to defaults
