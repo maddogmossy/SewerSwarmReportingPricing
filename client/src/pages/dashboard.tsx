@@ -1529,12 +1529,19 @@ export default function Dashboard() {
     
     if (minRunsRequired) {
       const minRuns = parseFloat(minRunsRequired.value || '0');
-      if (runsPerShift < minRuns) {
-        return 'red'; // Below minimum
+      console.log('🔍 Min quantity comparison:', {
+        itemNo: section.itemNo,
+        runsPerShift,
+        minRuns,
+        comparison: runsPerShift <= minRuns ? 'EQUAL_OR_BELOW (RED)' : runsPerShift > minRuns * 1.5 ? 'OVER_THRESHOLD (PURPLE)' : 'ABOVE_MIN (GREEN)'
+      });
+      
+      if (runsPerShift <= minRuns) {
+        return 'red'; // At or below minimum - needs to EXCEED minimum
       } else if (runsPerShift > minRuns * 1.5) {
         return 'purple'; // Over minimum threshold  
       } else {
-        return 'green'; // Exactly meets minimum or just above
+        return 'green'; // Above minimum
       }
     }
     
