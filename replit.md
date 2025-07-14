@@ -461,6 +461,39 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v3.9.2' to return to this stable checkpoint
 
+## REV V3.9.3 CHECKPOINT - COMPLETE TITLE CONSISTENCY LOCKED (July 14, 2025)
+
+🔒 **PRODUCTION READY - PERFECT DASHBOARD TO EDIT WORKFLOW WITH CONSISTENT TITLES:**
+- **Title Consistency Fixed:** Page titles now correctly display "Edit CCTV Jet Vac Configuration" matching configuration list names
+- **Dynamic Title System:** Both main header and section title use `formData.categoryName` instead of generic "CCTV Price Configuration"
+- **Complete Visual Cohesion:** Edit page titles perfectly match the saved configuration names in all contexts
+- **User-Verified Workflow:** Complete end-to-end testing confirms seamless navigation and consistent naming
+- **Professional Appearance:** Clean, consistent branding throughout the configuration editing workflow
+
+🔒 **COMPLETE FEATURE SET VERIFIED:**
+1. **Dashboard Detection:** CCTV/Jet Vac displays with green "Configured" badge ✓
+2. **Smart Navigation:** Button shows "Edit Configuration" for existing configs ✓
+3. **Correct Routing:** Direct navigation to edit mode with proper parameters ✓
+4. **Form Pre-Population:** All values loaded (£1850, 30 runs, ranges 100-150) ✓
+5. **Title Consistency:** "Edit CCTV Jet Vac Configuration" matches saved name ✓
+6. **Silent Operation:** Clean workflow without debug logs or notifications ✓
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Dynamic Headers:** `{isEditing ? 'Edit' : 'Create'} {formData.categoryName || 'Configuration'}`
+- **Section Titles:** `{formData.categoryName || 'Price Configuration'}` for consistent branding
+- **Configuration Loading:** Complete form state population from existing database records
+- **Parameter Handling:** Robust support for both `edit` and `editId` URL parameters
+- **Database Integration:** Full CRUD operations with proper data persistence
+
+🔒 **USER-CONFIRMED WORKING FEATURES:**
+- **Dashboard Integration:** Green indicators for configured equipment
+- **Navigation System:** Direct routing to edit existing configurations
+- **Form System:** Four-window configuration with complete pre-population
+- **Title System:** Consistent naming throughout edit workflow
+- **Save/Update:** Full configuration editing and persistence capability
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v3.9.3' to return to this stable checkpoint
+
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 
 **🏗️ Core Architecture:**
