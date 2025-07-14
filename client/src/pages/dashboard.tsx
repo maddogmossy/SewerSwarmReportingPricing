@@ -592,11 +592,19 @@ export default function Dashboard() {
       case 'defects':
         const defectsText = section.defects || 'No defects recorded';
         
-        // Debug Item 10 specifically  
-        if (section.itemNo === 10) {
-          console.log('=== ITEM 10 COMPLETE TRACE ===');
-          console.log('Database stored:', JSON.stringify(defectsText));
-          console.log('What dashboard should show: "Settled deposits, coarse, 5% cross-sectional area loss at 20.32m"');
+        // Debug Item 3 requirements check
+        if (section.itemNo === 3) {
+          console.log('=== ITEM 3 REQUIREMENTS CHECK ===');
+          console.log('Pipe size:', section.pipeSize);
+          console.log('Total length:', section.totalLength);
+          console.log('Defects:', defectsText);
+          
+          // Extract percentage from water level
+          const waterLevelMatch = defectsText.match(/(\d+)%.*vertical dimension/);
+          const percentage = waterLevelMatch ? parseInt(waterLevelMatch[1]) : 0;
+          console.log('Water level percentage:', percentage);
+          console.log('Max allowed percentage (from config):', 15);
+          console.log('Fails percentage check?', percentage > 15);
         }
         
         // Check if observations contain multiple distinct observations 
