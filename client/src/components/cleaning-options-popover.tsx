@@ -39,6 +39,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const [, setLocation] = useLocation();
   const [selectedEquipment, setSelectedEquipment] = useState<string>('');
 
+  // Detect which configuration is currently being edited from URL
+  const [location] = useLocation();
+  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  const currentEditId = urlParams.get('edit') || urlParams.get('editId');
+  console.log('🔍 CleaningPopover - Current Edit ID from URL:', currentEditId);
   
   // Check if CCTV/Jet Vac configuration exists using standard React Query pattern
   const { data: pr2Configs = [] } = useQuery({
@@ -136,14 +141,20 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const cctvJetVacConfigs = safepr2Configs.filter((config: any) => config.categoryId === 'cctv-jet-vac');
   const cctvVanPackConfigs = safepr2Configs.filter((config: any) => config.categoryId === 'cctv-van-pack');
   
-  // Use the most recent configuration (highest ID) for each equipment type
-  const cctvJetVacConfig = cctvJetVacConfigs.length > 0 ? 
-    cctvJetVacConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null;
-  const cctvVanPackConfig = cctvVanPackConfigs.length > 0 ? 
-    cctvVanPackConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null;
+  // If currently editing a configuration, use that one; otherwise use the most recent (highest ID)
+  const cctvJetVacConfig = currentEditId ? 
+    cctvJetVacConfigs.find((config: any) => config.id === parseInt(currentEditId)) || 
+    (cctvJetVacConfigs.length > 0 ? cctvJetVacConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null)
+    : (cctvJetVacConfigs.length > 0 ? cctvJetVacConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null);
+    
+  const cctvVanPackConfig = currentEditId ? 
+    cctvVanPackConfigs.find((config: any) => config.id === parseInt(currentEditId)) || 
+    (cctvVanPackConfigs.length > 0 ? cctvVanPackConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null)
+    : (cctvVanPackConfigs.length > 0 ? cctvVanPackConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null);
   
   // Debug equipment configuration detection
   console.log('🔧 CleaningPopover - PR2 Configs:', safepr2Configs);
+  console.log('🔧 CleaningPopover - Current Edit ID:', currentEditId);
   console.log('🔧 CleaningPopover - CCTV Jet Vac Config Found:', cctvJetVacConfig);
   console.log('🔧 CleaningPopover - CCTV Van Pack Config Found:', cctvVanPackConfig);
 
