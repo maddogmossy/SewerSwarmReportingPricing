@@ -228,9 +228,13 @@ export default function PR2ConfigClean() {
 
   // Load sectors that have this configuration when editing starts
   useEffect(() => {
+    console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, existingConfig:`, existingConfig);
+    
     if (isEditing && existingConfig) {
       // For editing, read the sectors array from the configuration
       const config = Array.isArray(existingConfig) ? existingConfig[0] : existingConfig;
+      console.log(`🔍 Processing config:`, config);
+      
       if (config) {
         // Use the sectors array if available, otherwise fall back to single sector
         const configSectors = config.sectors && Array.isArray(config.sectors) 
@@ -238,11 +242,15 @@ export default function PR2ConfigClean() {
           : [config.sector || sector];
         
         console.log(`🔍 Detected existing config in sectors: ${JSON.stringify(configSectors)}`);
+        console.log(`🔍 Setting sectorsWithConfig to:`, configSectors);
+        console.log(`🔍 Setting selectedSectors to:`, configSectors);
+        
         setSectorsWithConfig(configSectors);
         setSelectedSectors(configSectors);
       }
     } else {
       // Start with the current sector for new configurations
+      console.log(`🔍 Starting new config with sector: ${sector}`);
       setSelectedSectors([sector]);
       setSectorsWithConfig([]);
     }
