@@ -494,9 +494,16 @@ This prevents data contamination and ensures authentic extraction integrity.
 🔒 **USER-CONFIRMED RESULTS:**
 - **Configuration ID 36:** 30 runs per shift, £61.67 per section, 0-30m length range
 - **Configuration ID 40:** 25 runs per shift, £74.00 per section, 0-35m length range  
-- **Section 3:** Now meets ID 40 requirements (30.24m within 0-35m range), shows £74.00 cost
+- **Section 3:** Now shows GREEN status (meets blue/green window requirements), £74.00 cost
 - **Smart Counting:** Sections meeting either configuration count toward orange minimum of 30 total sections
-- **Cost Display:** System shows specific costs based on configuration each section actually meets
+- **Cost Color Logic:** GREEN section status + RED/GREEN cost display based on orange minimum threshold
+- **Separated Logic:** Section status (blue/green windows) independent from cost color (orange minimum)
+
+🔒 **CRITICAL LOGIC SEPARATION ACHIEVED:**
+- **Section Status Color:** GREEN when section meets blue/green window requirements (pipe size, length, percentages)
+- **Cost Display Color:** RED when collective count < orange minimum, GREEN when collective count ≥ orange minimum
+- **Console Verification:** "✅ PR2 calculation successful: {"baseCost":74,"dayRate":1850,"runsPerShift":25}"
+- **User-Confirmed Working:** Section 3 shows green status with cost reflecting orange minimum requirements
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v4.5' to return to this stable checkpoint
 
