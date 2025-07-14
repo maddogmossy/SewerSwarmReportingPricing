@@ -1496,11 +1496,11 @@ export default function PR2ConfigClean() {
                                 {/* Blue pricing options */}
                                 {config.pricingOptions?.filter((opt: any) => opt.enabled).map((opt: any, idx: number) => (
                                   <div key={opt.id} className="flex items-center gap-1">
-                                    <div className="px-1 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium whitespace-nowrap">
+                                    <div className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium whitespace-nowrap">
                                       £{opt.value}
                                     </div>
                                     {idx < config.pricingOptions.filter((o: any) => o.enabled).length - 1 && config.mathOperators?.[idx] && (
-                                      <div className="px-1 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-medium">
+                                      <div className="px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-medium">
                                         {config.mathOperators[idx]}
                                       </div>
                                     )}
@@ -1509,7 +1509,7 @@ export default function PR2ConfigClean() {
                                 
                                 {/* Green quantity options */}
                                 {config.quantityOptions?.filter((opt: any) => opt.enabled).map((opt: any) => (
-                                  <div key={opt.id} className="px-1 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium whitespace-nowrap">
+                                  <div key={opt.id} className="px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium whitespace-nowrap">
                                     {opt.value}
                                   </div>
                                 ))}
