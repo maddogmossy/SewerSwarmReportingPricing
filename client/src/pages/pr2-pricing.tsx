@@ -140,12 +140,20 @@ export default function PR2Pricing() {
   const checkConfigurationSectors = async (categoryId: string): Promise<string[]> => {
     const sectorsWithConfig = [];
     
+    console.log('🔍 Checking configuration across all sectors for categoryId:', categoryId);
+    
     for (const sect of SECTORS) {
       try {
-        const configs = await apiRequest('GET', `/api/pr2-clean?sector=${sect.id}`);
+        const response = await apiRequest('GET', `/api/pr2-clean?sector=${sect.id}`);
+        const configs = await response.json();
+        
+        console.log(`📋 Sector ${sect.name} configs:`, configs);
+        
         const hasConfig = Array.isArray(configs) ? 
           configs.some(c => c.categoryId === categoryId) : 
           (configs?.categoryId === categoryId);
+        
+        console.log(`✅ Sector ${sect.name} has config:`, hasConfig);
         
         if (hasConfig) {
           sectorsWithConfig.push(sect.name); // Use sector name for display
@@ -155,6 +163,7 @@ export default function PR2Pricing() {
       }
     }
     
+    console.log('🎯 Final affected sectors:', sectorsWithConfig);
     return sectorsWithConfig;
   };
 
