@@ -592,13 +592,11 @@ export default function Dashboard() {
       case 'defects':
         const defectsText = section.defects || 'No defects recorded';
         
-        // Debug Item 10 specifically
+        // Debug Item 10 specifically  
         if (section.itemNo === 10) {
-          const splitResult = defectsText.split(/\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|SC|LR|LL)/);
-          console.log('🔍 Item 10 DETAILED Debug:');
-          console.log('  Original:', defectsText);
-          console.log('  Split result:', splitResult);
-          console.log('  Will use multiple path?', defectsText.includes('. ') && defectsText !== 'No service or structural defect found');
+          console.log('=== ITEM 10 COMPLETE TRACE ===');
+          console.log('Database stored:', JSON.stringify(defectsText));
+          console.log('What dashboard should show: "Settled deposits, coarse, 5% cross-sectional area loss at 20.32m"');
         }
         
         // Check if observations contain multiple distinct observations 
