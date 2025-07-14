@@ -310,13 +310,7 @@ export default function PR2Pricing() {
     );
   }
 
-  // Debug: Log the current state for troubleshooting
-  console.log('🎨 Rendering pricing page with:', {
-    pr2ConfigurationsCount: pr2Configurations.length,
-    pr2Loading,
-    sector,
-    configIds: pr2Configurations.map(c => c.id)
-  });
+
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -403,7 +397,7 @@ export default function PR2Pricing() {
                     (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac')
                   );
                   
-                  console.log(`🔍 Category "${category.id}" - Found config:`, !!existingConfiguration, existingConfiguration?.id);
+
                   
                   return (
                     <Card
