@@ -123,8 +123,10 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   ];
 
   // Check which equipment has existing configurations
-  const cctvJetVacConfig = pr2Configs.find((config: any) => config.categoryId === 'cctv-jet-vac');
-  const cctvVanPackConfig = pr2Configs.find((config: any) => config.categoryId === 'cctv-van-pack');
+  // Ensure pr2Configs is an array before calling .find()
+  const safepr2Configs = Array.isArray(pr2Configs) ? pr2Configs : [];
+  const cctvJetVacConfig = safepr2Configs.find((config: any) => config.categoryId === 'cctv-jet-vac');
+  const cctvVanPackConfig = safepr2Configs.find((config: any) => config.categoryId === 'cctv-van-pack');
 
   // Create ordered equipment list with option numbers based on current order
   const cleansingEquipment: CleansingEquipment[] = equipmentOrder.map((equipmentId, index) => {
