@@ -533,6 +533,22 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v4.7' to return to this stable checkpoint
 
+## REV V4.8 CHECKPOINT - CANCEL BUTTON NAVIGATION FIXED (July 14, 2025)
+
+🔒 **PRODUCTION READY - CANCEL BUTTON RETURNS TO DASHBOARD:**
+- **Navigation Fixed:** Cancel button on CCTV Jet Vac Configuration page now returns directly to dashboard instead of PR2 pricing page
+- **User-Requested Enhancement:** Modified `handleBack` function from `/pr2-pricing?sector=${sector}` to `/dashboard` routing
+- **Consistent Navigation:** All Cancel operations now return users to main dashboard view for better workflow continuity
+- **UI Improvement:** ChevronLeft icon Cancel button provides intuitive navigation back to primary dashboard interface
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Function Modified:** Updated `handleBack()` in `client/src/pages/pr2-config-clean.tsx`
+- **Route Change:** From `setLocation('/pr2-pricing?sector=${sector}')` to `setLocation('/dashboard')`
+- **User Workflow:** Configuration page → Cancel button → Dashboard (instead of PR2 pricing list)
+- **Backward Compatibility:** Maintains all existing save/edit functionality while improving cancel navigation
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v4.8' to return to this stable checkpoint
+
 ## REV V3.9.2 CHECKPOINT - COMPLETE DASHBOARD INTEGRATION LOCKED (July 14, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE DASHBOARD CONFIGURATION DETECTION & EDITING:**
