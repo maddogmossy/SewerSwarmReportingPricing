@@ -126,8 +126,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   ];
 
   // Check which equipment has existing configurations
+  console.log('🔍 PR2 Configs:', pr2Configs);
   const cctvJetVacConfig = pr2Configs.find((config: any) => config.categoryId === 'cctv-jet-vac');
   const cctvVanPackConfig = pr2Configs.find((config: any) => config.categoryId === 'cctv-van-pack');
+  console.log('🔍 CCTV Jet Vac Config:', cctvJetVacConfig);
+  console.log('🔍 CCTV Van Pack Config:', cctvVanPackConfig);
 
   // Create ordered equipment list with option numbers based on current order
   const cleansingEquipment: CleansingEquipment[] = equipmentOrder.map((equipmentId, index) => {
@@ -179,6 +182,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     
     // Check if the primary equipment has an existing configuration
     const existingConfig = primaryEquipment === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
+    console.log('🚀 Navigation Debug:', { primaryEquipment, existingConfig, cctvJetVacConfig, cctvVanPackConfig });
     
     // Map equipment IDs to their specific configuration routes
     const equipmentRoutes: { [key: string]: string } = {
