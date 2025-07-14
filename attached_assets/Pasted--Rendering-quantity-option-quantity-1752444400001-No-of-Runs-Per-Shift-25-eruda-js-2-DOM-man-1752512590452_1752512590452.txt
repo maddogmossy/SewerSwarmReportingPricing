@@ -1,0 +1,190 @@
+🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 25
+eruda.js:2 🔄 DOM manipulation useEffect triggered for Config 40
+eruda.js:2 🔄 Quantity options: [{…}]
+eruda.js:2 🔄 Range options: (3) [{…}, {…}, {…}]
+eruda.js:2 🔍 useEffect triggered - isEditing: true, editId: 40, configToUse: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+eruda.js:2 🔍 Processing config: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+eruda.js:2 🔧 Loading configuration data: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+eruda.js:2 🔧 Setting form data for config 40: {quantityValue: '25', rangeLength: '35'}
+eruda.js:2 🔍 Detected existing config in sectors: ["utilities"]
+eruda.js:2 🔍 Setting sectorsWithConfig to: ['utilities']
+eruda.js:2 🔍 Setting selectedSectors to: ['utilities']
+eruda.js:2 🔄 DOM manipulation useEffect triggered for Config 40
+eruda.js:2 🔄 Quantity options: []
+eruda.js:2 🔄 Range options: []
+eruda.js:2 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 25
+eruda.js:2 🔄 DOM manipulation useEffect triggered for Config 40
+eruda.js:2 🔄 Quantity options: [{…}]
+eruda.js:2 🔄 Range options: (3) [{…}, {…}, {…}]
+eruda.js:2 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 25
+eruda.js:2 🔄 Looking for input with data-option-id="quantity_1752444400001", found: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1304:​22" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm" data-option-id=​"quantity_1752444400001" placeholder=​"Enter value" value=​"25">​flex
+eruda.js:2 🔄 Current input value: "25", expected: "25"
+eruda.js:2 🔄 Looking for range inputs for range_1752444400003, found start: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1524:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400003-start" placeholder=​"Start" value=​"100">​flex end: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1533:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400003-end" placeholder=​"End" value=​"150">​flex
+eruda.js:2 🔄 Current start value: "100", expected: "100"
+eruda.js:2 🔄 Current end value: "150", expected: "150"
+eruda.js:2 🔄 Looking for range inputs for range_1752444400004, found start: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1524:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400004-start" placeholder=​"Start" value=​"05">​flex end: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1533:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400004-end" placeholder=​"End" value=​"15">​flex
+eruda.js:2 🔄 Current start value: "05", expected: "05"
+eruda.js:2 🔄 Current end value: "15", expected: "15"
+eruda.js:2 🔄 Looking for range inputs for range_1752444400005, found start: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1524:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400005-start" placeholder=​"Start" value=​"0">​flex end: <input data-replit-metadata=​"client/​src/​pages/​pr2-config-clean.tsx:​1533:​26" data-component-name=​"Input" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm text-sm flex-1" data-range-id=​"range_1752444400005-end" placeholder=​"End" value=​"35">​flex
+eruda.js:2 🔄 Current start value: "0", expected: "0"
+eruda.js:2 🔄 Current end value: "35", expected: "35"
+eruda.js:2 [vite] server connection lost. Polling for restart...
+framework-b257afd8a9a4fc10.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this error
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'battery'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+framework-b257afd8a9a4fc10.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-b257afd8a9a4fc10.js:1
+(anonymous) @ framework-b257afd8a9a4fc10.js:1
+uD @ framework-b257afd8a9a4fc10.js:1
+uI @ framework-b257afd8a9a4fc10.js:1
+uM @ framework-b257afd8a9a4fc10.js:1
+uS @ framework-b257afd8a9a4fc10.js:1
+C @ framework-b257afd8a9a4fc10.js:1
+z @ framework-b257afd8a9a4fc10.js:1Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar7pe%3A:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar7pe%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar7pe%3A:32 Unrecognized feature: 'battery'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar7pe%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar7pe%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar7pe%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar7pe%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar7pe%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar7pe%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar7pe%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
