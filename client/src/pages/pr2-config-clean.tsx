@@ -219,13 +219,16 @@ export default function PR2ConfigClean() {
     setSectorToRemove('');
   };
 
+  // Single useEffect to handle all configuration loading
   useEffect(() => {
     // Use sectorConfigs for navigation without editId, existingConfig for direct editId access
     const configToUse = editId ? existingConfig : sectorConfigs;
+    console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, editId: ${editId}, configToUse:`, configToUse);
     
     if (isEditing && configToUse) {
       // Get the actual config object (might be wrapped in array)
       const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
+      console.log(`🔍 Processing config:`, config);
       
       if (config) {
         console.log(`🔧 Loading configuration data:`, config);
@@ -251,23 +254,8 @@ export default function PR2ConfigClean() {
         };
 
         setFormData(newFormData);
-      }
-    }
-  }, [existingConfig, sectorConfigs, isEditing, sector, editId]);
-
-  // Load sectors that have this configuration when editing starts
-  useEffect(() => {
-    // Use sectorConfigs for navigation without editId, existingConfig for direct editId access
-    const configToUse = editId ? existingConfig : sectorConfigs;
-    console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, editId: ${editId}, configToUse:`, configToUse);
-    
-    if (isEditing && configToUse) {
-      // For editing, read the sectors array from the configuration
-      const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
-      console.log(`🔍 Processing config:`, config);
-      
-      if (config) {
-        // Use the sectors array if available, otherwise fall back to single sector
+        
+        // Set sectors information
         const configSectors = config.sectors && Array.isArray(config.sectors) 
           ? config.sectors.filter(s => s !== null) // Remove null entries
           : [config.sector || sector];
@@ -279,7 +267,7 @@ export default function PR2ConfigClean() {
         setSectorsWithConfig(configSectors);
         setSelectedSectors(configSectors);
       }
-    } else {
+    } else if (!isEditing) {
       // Start with the current sector for new configurations
       console.log(`🔍 Starting new config with sector: ${sector}`);
       setSelectedSectors([sector]);

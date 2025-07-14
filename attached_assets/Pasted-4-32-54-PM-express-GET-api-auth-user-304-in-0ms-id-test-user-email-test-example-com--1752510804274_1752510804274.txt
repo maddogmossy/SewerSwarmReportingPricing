@@ -1,0 +1,27 @@
+4:32:54 PM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+🔍 GET request for configuration ID: 40
+🔍 API request received for sector: undefined, categoryId: cctv-jet-vac
+🔍 Filtering by userId: "test-user" AND categoryId: "cctv-jet-vac"
+✅ Loading clean PR2 configuration 40 with sectors: [ 'utilities' ]
+4:32:55 PM [express] GET /api/pr2-clean/40 304 in 33ms :: {"id":40,"userId":"test-user","categoryId"…
+✅ Query returned 2 configurations
+📊 Configuration details: [ 'ID: 36, Sectors: ["utilities"]', 'ID: 40, Sectors: ["utilities"]' ]
+4:32:55 PM [express] GET /api/pr2-clean 304 in 34ms :: [{"id":36,"userId":"test-user","categoryId":"…
+4:33:00 PM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+🔍 GET request for configuration ID: 40
+🔍 API request received for sector: undefined, categoryId: cctv-jet-vac
+🔍 Filtering by userId: "test-user" AND categoryId: "cctv-jet-vac"
+✅ Loading clean PR2 configuration 40 with sectors: [ 'utilities' ]
+4:33:00 PM [express] GET /api/pr2-clean/40 304 in 33ms :: {"id":40,"userId":"test-user","categoryId"…
+✅ Query returned 2 configurations
+📊 Configuration details: [ 'ID: 36, Sectors: ["utilities"]', 'ID: 40, Sectors: ["utilities"]' ]
+4:33:00 PM [express] GET /api/pr2-clean 304 in 32ms :: [{"id":36,"userId":"test-user","categoryId":"…
+4:33:05 PM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+🔍 GET request for configuration ID: 36
+🔍 API request received for sector: undefined, categoryId: cctv-jet-vac
+🔍 Filtering by userId: "test-user" AND categoryId: "cctv-jet-vac"
+✅ Loading clean PR2 configuration 36 with sectors: [ 'utilities' ]
+4:33:05 PM [express] GET /api/pr2-clean/36 304 in 33ms :: {"id":36,"userId":"test-user","categoryId"…
+✅ Query returned 2 configurations
+📊 Configuration details: [ 'ID: 36, Sectors: ["utilities"]', 'ID: 40, Sectors: ["utilities"]' ]
+4:33:05 PM [express] GET /api/pr2-clean 304 in 33ms :: [{"id":36,"userId":"test-user","categoryId":"…
