@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Settings, Video, Truck, Waves, Monitor, ArrowUp, ArrowDown, List } from "lucide-react";
+import { Settings, Video, Truck, Waves, Monitor, ArrowUp, ArrowDown, List, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -277,6 +277,21 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       )}
                     </div>
                     <p className="text-xs text-slate-600 mt-0.5">{equipment.description}</p>
+                    {/* Add New Configuration Button */}
+                    <div className="mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setIsOpen(false);
+                          setLocation(`/pr2-config-clean?categoryId=${equipment.id}&sector=${sectionData.sector}`);
+                        }}
+                        className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 
