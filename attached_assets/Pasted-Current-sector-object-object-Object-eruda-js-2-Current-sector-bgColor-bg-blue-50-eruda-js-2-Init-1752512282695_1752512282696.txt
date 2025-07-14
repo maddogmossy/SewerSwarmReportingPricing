@@ -1,0 +1,103 @@
+Current sector object: [object Object]
+eruda.js:2 Current sector bgColor: bg-blue-50
+eruda.js:2 Initial page load - setting sector to: utilities
+eruda.js:2 🔍 Making API request for sector: utilities
+eruda.js:2 Current sector object: [object Object]
+eruda.js:2 Current sector bgColor: bg-blue-50
+eruda.js:2 Current sector object: [object Object]
+eruda.js:2 Current sector bgColor: bg-blue-50
+eruda.js:2 📥 Raw API response: [object Object],[object Object]
+eruda.js:2 📊 Response length: 2
+eruda.js:2 📊 Response items: ID: 36, Sector: undefined,ID: 40, Sector: undefined
+eruda.js:2 Current sector object: [object Object]
+eruda.js:2 Current sector bgColor: bg-blue-50
+eruda.js:2 🔍 Navigation triggered for categoryId: cctv-jet-vac
+eruda.js:2 📍 Current sector: utilities
+eruda.js:2 🔍 Existing config found: [object Object]
+eruda.js:2 🔧 Navigating to edit existing config: /pr2-config-clean?sector=utilities&categoryId=cctv-jet-vac&edit=36
+eruda.js:2 🔍 useEffect triggered - isEditing: true, editId: 36, configToUse: undefined
+eruda.js:2 🔍 useEffect triggered - isEditing: true, editId: 36, configToUse: [object Object]
+eruda.js:2 🔍 Processing config: [object Object]
+eruda.js:2 🔧 Loading configuration data: [object Object]
+eruda.js:2 🔧 Setting form data for config 36: [object Object]
+eruda.js:2 🔍 Detected existing config in sectors: ["utilities"]
+eruda.js:2 🔍 Setting sectorsWithConfig to: utilities
+eruda.js:2 🔍 Setting selectedSectors to: utilities
+3eruda.js:2 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 30
+eruda.js:2 🔍 useEffect triggered - isEditing: true, editId: 40, configToUse: undefined
+eruda.js:2 🔍 useEffect triggered - isEditing: true, editId: 40, configToUse: Object
+eruda.js:2 🔍 Processing config: Object
+eruda.js:2 🔧 Loading configuration data: Object
+eruda.js:2 🔧 Setting form data for config 40: Object
+eruda.js:2 🔍 Detected existing config in sectors: ["utilities"]
+eruda.js:2 🔍 Setting sectorsWithConfig to: Array(1)
+eruda.js:2 🔍 Setting selectedSectors to: Array(1)
+2eruda.js:2 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 25
+eruda.js:2 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 25
+eruda.js:2 🔍 useEffect triggered - isEditing: true, editId: 40, configToUse: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+eruda.js:2 🔍 Processing config: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+eruda.js:2 🔧 Loading configuration data: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+eruda.js:2 🔧 Setting form data for config 40: {quantityValue: '25', rangeLength: '35'}
+eruda.js:2 🔍 Detected existing config in sectors: ["utilities"]
+eruda.js:2 🔍 Setting sectorsWithConfig to: ['utilities']
+eruda.js:2 🔍 Setting selectedSectors to: ['utilities']
+2eruda.js:2 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 25
+eruda.js:2 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 25
+eruda.js:2 🔍 useEffect triggered - isEditing: true, editId: 40, configToUse: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+eruda.js:2 🔍 Processing config: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+eruda.js:2 🔧 Loading configuration data: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+eruda.js:2 🔧 Setting form data for config 40: {quantityValue: '25', rangeLength: '35'}
+eruda.js:2 🔍 Detected existing config in sectors: ["utilities"]
+eruda.js:2 🔍 Setting sectorsWithConfig to: ['utilities']
+eruda.js:2 🔍 Setting selectedSectors to: ['utilities']
+2eruda.js:2 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 25
+eruda.js:2 [vite] server connection lost. Polling for restart...
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+VM276 eruda.js:2 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+VM276 eruda.js:2 Current sector bgColor: bg-blue-50
+VM276 eruda.js:2 Initial page load - setting sector to: utilities
+VM276 eruda.js:2 🔍 Making API request for sector: utilities
+VM276 eruda.js:2 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+VM276 eruda.js:2 Current sector bgColor: bg-blue-50
+VM276 eruda.js:2 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+VM276 eruda.js:2 Current sector bgColor: bg-blue-50
+VM276 eruda.js:2 📥 Raw API response: (2) [{…}, {…}]
+VM276 eruda.js:2 📊 Response length: 2
+VM276 eruda.js:2 📊 Response items: (2) ['ID: 36, Sector: undefined', 'ID: 40, Sector: undefined']
+VM276 eruda.js:2 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+VM276 eruda.js:2 Current sector bgColor: bg-blue-50
+VM276 eruda.js:2 🔍 Navigation triggered for categoryId: cctv-jet-vac
+VM276 eruda.js:2 📍 Current sector: utilities
+VM276 eruda.js:2 🔍 Existing config found: {id: 36, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 30. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 30', …}
+VM276 eruda.js:2 🔧 Navigating to edit existing config: /pr2-config-clean?sector=utilities&categoryId=cctv-jet-vac&edit=36
+VM276 eruda.js:2 🔍 useEffect triggered - isEditing: true, editId: 36, configToUse: undefined
+VM276 eruda.js:2 🔍 useEffect triggered - isEditing: true, editId: 36, configToUse: {id: 36, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 30. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 30', …}
+VM276 eruda.js:2 🔍 Processing config: {id: 36, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 30. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 30', …}
+VM276 eruda.js:2 🔧 Loading configuration data: {id: 36, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 30. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 30', …}
+VM276 eruda.js:2 🔧 Setting form data for config 36: {quantityValue: '30', rangeLength: '30'}
+VM276 eruda.js:2 🔍 Detected existing config in sectors: ["utilities"]
+VM276 eruda.js:2 🔍 Setting sectorsWithConfig to: ['utilities']
+VM276 eruda.js:2 🔍 Setting selectedSectors to: ['utilities']
+2VM276 eruda.js:2 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 30
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 40, configToUse: undefined
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 40, configToUse: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+Console.js:61 🔍 Processing config: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+Console.js:61 🔧 Loading configuration data: {id: 40, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. ÷. No of Runs Per Shift = 25. Mi…o 150. Percentages % = 05 to 15. Length = 0 to 35', …}
+Console.js:61 🔧 Setting form data for config 40: {quantityValue: '25', rangeLength: '35'}
+Console.js:61 🔍 Detected existing config in sectors: ["utilities"]
+Console.js:61 🔍 Setting sectorsWithConfig to: ['utilities']
+Console.js:61 🔍 Setting selectedSectors to: ['utilities']
+2Console.js:61 🎯 Rendering quantity option quantity_1752444400001: No of Runs Per Shift = 25

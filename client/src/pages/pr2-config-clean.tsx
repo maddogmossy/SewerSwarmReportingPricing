@@ -113,6 +113,40 @@ export default function PR2ConfigClean() {
     sector
   });
 
+  // Force form inputs to update when formData changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Force update all quantity inputs
+      formData.quantityOptions.forEach(option => {
+        if (option.enabled) {
+          const inputElement = document.querySelector(`input[data-option-id="${option.id}"]`) as HTMLInputElement;
+          if (inputElement && inputElement.value !== option.value) {
+            inputElement.value = option.value;
+            console.log(`🔄 Force updated input ${option.id} to: ${option.value}`);
+          }
+        }
+      });
+
+      // Force update all range inputs
+      formData.rangeOptions.forEach(option => {
+        if (option.enabled) {
+          const startInput = document.querySelector(`input[data-range-id="${option.id}-start"]`) as HTMLInputElement;
+          const endInput = document.querySelector(`input[data-range-id="${option.id}-end"]`) as HTMLInputElement;
+          if (startInput && startInput.value !== option.rangeStart) {
+            startInput.value = option.rangeStart;
+            console.log(`🔄 Force updated range start ${option.id} to: ${option.rangeStart}`);
+          }
+          if (endInput && endInput.value !== option.rangeEnd) {
+            endInput.value = option.rangeEnd;
+            console.log(`🔄 Force updated range end ${option.id} to: ${option.rangeEnd}`);
+          }
+        }
+      });
+    }, 100); // Small delay to ensure DOM is updated
+
+    return () => clearTimeout(timer);
+  }, [formData.quantityOptions, formData.rangeOptions]);
+
   // Dialog states
   const [addPricingDialogOpen, setAddPricingDialogOpen] = useState(false);
   const [editPricingDialogOpen, setEditPricingDialogOpen] = useState(false);
@@ -1254,6 +1288,7 @@ export default function PR2ConfigClean() {
                       {option.enabled && (
                         <Input
                           key={`${option.id}-${option.value}-${Date.now()}`}
+                          data-option-id={option.id}
                           defaultValue={option.value}
                           onChange={(e) => {
                             console.log(`🔄 Quantity input changed for ${option.id}: ${e.target.value}`);
@@ -1473,6 +1508,7 @@ export default function PR2ConfigClean() {
                           <span className="text-sm font-medium">R1:</span>
                           <Input
                             key={`${option.id}-start-${option.rangeStart}-${Date.now()}`}
+                            data-range-id={`${option.id}-start`}
                             defaultValue={option.rangeStart}
                             onChange={(e) => updateRangeOption(option.id, 'rangeStart', e.target.value)}
                             placeholder="Start"
@@ -1481,6 +1517,7 @@ export default function PR2ConfigClean() {
                           <span className="text-sm font-medium">to R2:</span>
                           <Input
                             key={`${option.id}-end-${option.rangeEnd}-${Date.now()}`}
+                            data-range-id={`${option.id}-end`}
                             defaultValue={option.rangeEnd}
                             onChange={(e) => updateRangeOption(option.id, 'rangeEnd', e.target.value)}
                             placeholder="End"
