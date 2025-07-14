@@ -1555,13 +1555,21 @@ export default function PR2ConfigClean() {
                               quantityOptions: config.quantityOptions?.filter((o: any) => o.enabled).map((o: any) => `${o.label}: ${o.value}`)
                             });
                             console.log('🔧 Current URL params:', { categoryId, sector, editId });
-                            const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${config.id}`;
-                            console.log('🔧 Navigating to:', newUrl);
-                            console.log('🔧 Expected config ID after navigation:', config.id);
+                            console.log('🔧 Current editId type:', typeof editId, 'config.id type:', typeof config.id);
+                            console.log('🔧 Are they the same?', editId == config.id, parseInt(editId || '0') === config.id);
                             
-                            // Always force page refresh to ensure proper configuration loading
-                            console.log('🔧 Forcing page refresh to load config:', config.id);
-                            window.location.href = newUrl;
+                            // Only navigate if this is a different configuration
+                            if (parseInt(editId || '0') !== config.id) {
+                              const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${config.id}`;
+                              console.log('🔧 Navigating to different config:', newUrl);
+                              console.log('🔧 Expected config ID after navigation:', config.id);
+                              
+                              // Always force page refresh to ensure proper configuration loading
+                              console.log('🔧 Forcing page refresh to load config:', config.id);
+                              window.location.href = newUrl;
+                            } else {
+                              console.log('🔧 Already viewing this configuration, no navigation needed');
+                            }
                           }}
                           className={`text-xs ${
                             config.id === parseInt(editId || '0') 
