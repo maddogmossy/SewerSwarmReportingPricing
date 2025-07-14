@@ -1428,24 +1428,59 @@ export default function Dashboard() {
         }
       }
       
-      // Check water level percentages against SEPARATE rules
+      // Check water level percentages against SECTOR-SPECIFIC rules
       if (waterLevelMatches && waterLevelMatches.length > 0) {
         const waterLevelPercentages = waterLevelMatches.map((match: string) => 
           parseInt(match.match(/(\d+)%/)[1])
         );
         const maxWaterLevel = Math.max(...waterLevelPercentages);
         
-        // Water level rules: Allow up to 30% (different from defect percentages)
-        const maxAllowedWaterLevel = 30;
+        // Sector-specific water level rules based on standards
+        const getSectorWaterLevelLimit = (sectorId: string) => {
+          switch (sectorId) {
+            case 'utilities':
+              // MSCC5/WRc standards: Water levels up to 50% typically acceptable for utilities
+              return 50;
+            case 'adoption':
+              // Sewers for Adoption: Stricter requirements - max 25%
+              return 25;
+            case 'highways':
+              // Highways standards: More lenient - up to 60%
+              return 60;
+            case 'insurance':
+              // Insurance assessments: Conservative - max 30%
+              return 30;
+            case 'construction':
+              // Construction phase: Very strict - max 20%
+              return 20;
+            case 'domestic':
+              // Domestic surveys: Moderate - max 40%
+              return 40;
+            default:
+              return 30;
+          }
+        };
+        
+        const maxAllowedWaterLevel = getSectorWaterLevelLimit(currentSector.id);
         
         if (maxWaterLevel > maxAllowedWaterLevel) {
           console.log('❌ Section fails WATER LEVEL check:', {
             itemNo: section.itemNo,
             maxWaterLevel,
             maxAllowedWaterLevel,
+            sector: currentSector.id,
+            standardsApplied: currentSector.id === 'utilities' ? 'MSCC5/WRc' : `${currentSector.name} standards`,
             defects: section.defects
           });
           return false;
+        } else {
+          console.log('✅ Section passes WATER LEVEL check:', {
+            itemNo: section.itemNo,
+            maxWaterLevel,
+            maxAllowedWaterLevel,
+            sector: currentSector.id,
+            standardsApplied: currentSector.id === 'utilities' ? 'MSCC5/WRc' : `${currentSector.name} standards`
+          });
         }
       }
     }
