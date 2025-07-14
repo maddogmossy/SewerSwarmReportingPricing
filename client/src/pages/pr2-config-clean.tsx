@@ -246,22 +246,21 @@ export default function PR2ConfigClean() {
         return [];
       }
       
-      // Use the first selected sector as the primary sector
-      const primarySector = selectedSectors[0] || sector;
-      const sectorData = { ...data, sector: primarySector };
+      // Use the full sectors array for multi-sector support
+      const sectorsData = { ...data, sectors: selectedSectors.length > 0 ? selectedSectors : [sector] };
       
       if (isEditing && editId) {
-        // Update existing configuration with new sector
-        const result = await apiRequest('PUT', `/api/pr2-clean/${editId}`, sectorData);
-        console.log(`✅ Updated configuration sector from ${sectorsWithConfig[0]} to: ${primarySector}`);
+        // Update existing configuration with new sectors
+        const result = await apiRequest('PUT', `/api/pr2-clean/${editId}`, sectorsData);
+        console.log(`✅ Updated configuration sectors from ${JSON.stringify(sectorsWithConfig)} to: ${JSON.stringify(selectedSectors)}`);
         return [result];
       } else {
         // Create new configuration
         const result = await apiRequest('POST', '/api/pr2-clean', { 
-          ...sectorData, 
+          ...sectorsData, 
           categoryId: categoryId || 'custom' 
         });
-        console.log(`✅ Created new configuration for: ${primarySector}`);
+        console.log(`✅ Created new configuration for sectors: ${JSON.stringify(selectedSectors)}`);
         return [result];
       }
     },

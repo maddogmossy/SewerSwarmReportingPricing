@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { db } from "./db";
 import { pr2Configurations, standardCategories } from "../shared/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 // Legacy routes function - still needed for server startup
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -51,14 +51,14 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       
       let configurations;
       if (sector) {
-        // Filter by both userId and sector
+        // Filter by both userId and sector using array contains operator
         console.log(`🔍 Filtering by userId: "test-user" AND sector: "${sector}"`);
         configurations = await db
           .select()
           .from(pr2Configurations)
           .where(and(
             eq(pr2Configurations.userId, "test-user"),
-            eq(pr2Configurations.sector, sector)
+            sql`${pr2Configurations.sectors} && ARRAY[${sql.raw(`'${sector}'`)}]::text[]`
           ));
       } else {
         // If no sector specified, return all configurations for user
@@ -71,7 +71,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       
       console.log(`✅ Query returned ${configurations.length} configurations`);
       if (configurations.length > 0) {
-        console.log(`📊 Configuration details:`, configurations.map(c => `ID: ${c.id}, Sector: ${c.sector}`));
+        console.log(`📊 Configuration details:`, configurations.map(c => `ID: ${c.id}, Sectors: ${JSON.stringify(c.sectors)}`));
       }
       
       res.json(configurations);
@@ -120,7 +120,8 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         quantityStackOrder,
         minQuantityStackOrder,
         rangeStackOrder,
-        sector
+        sector,
+        sectors
       } = req.body;
 
       const [newConfig] = await db
@@ -136,7 +137,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           rangeOptions: rangeOptions || [],
           rangeValues: {},
           mathOperators: mathOperators || ['N/A'],
-          sector: sector || 'utilities',
+          sectors: sectors || [sector || 'utilities'],
           isActive: true
         })
         .returning();
@@ -168,7 +169,8 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         quantityStackOrder,
         minQuantityStackOrder,
         rangeStackOrder,
-        sector
+        sector,
+        sectors
       } = req.body;
 
       const [updatedConfig] = await db
@@ -182,7 +184,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           rangeOptions: rangeOptions || [],
           rangeValues: {},
           mathOperators: mathOperators || ['N/A'],
-          sector: sector || 'utilities',
+          sectors: sectors || [sector || 'utilities'],
           updatedAt: new Date()
         })
         .where(eq(pr2Configurations.id, configId))
