@@ -507,6 +507,25 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v4.5' to return to this stable checkpoint
 
+## REV V4.6 CHECKPOINT - ORANGE MINIMUM COST COLOR SYSTEM FIXED (July 14, 2025)
+
+🔒 **PRODUCTION READY - ORANGE MINIMUM COST COLOR LOGIC WORKING:**
+- **Critical Bug Fixed:** Cost display now properly checks orange minimum requirements before showing green
+- **Cost Color Logic:** RED when collective count < orange minimum (17 < 30), GREEN when collective count ≥ orange minimum
+- **Smart Counting Confirmed:** System correctly counts 17 sections meeting configuration requirements vs 30 required
+- **Debug Output Verified:** Console shows "shouldBeRed: true" confirming orange minimum not met
+- **Enhanced Tooltips:** Cost tooltips display orange minimum status ("Below orange minimum" vs "Orange minimum met")
+- **Proper Logic Separation:** Section status (green when meets blue/green windows) independent from cost color (red/green based on orange minimum)
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Main Cost Rendering:** Fixed case 'cost' in dashboard table to call `checkOrangeMinimumMet()` before displaying cost
+- **Color Logic:** `const costColor = orangeMinimumMet ? "text-green-700" : "text-red-600"`
+- **Orange Minimum Check:** Counts sections meeting either configuration (ID 36 or ID 40) collectively toward 30 minimum
+- **Console Verification:** "🔢 FINAL Orange minimum check: totalSectionsCount: 17, highestMinRequired: 30, meetMinimum: false"
+- **Enhanced Debug:** Complete logging tracks configuration details, section counts, and minimum threshold validation
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v4.6' to return to this stable checkpoint
+
 ## REV V3.9.2 CHECKPOINT - COMPLETE DASHBOARD INTEGRATION LOCKED (July 14, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE DASHBOARD CONFIGURATION DETECTION & EDITING:**
