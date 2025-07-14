@@ -1194,6 +1194,10 @@ export default function Dashboard() {
 
   // Use PR2 configurations for cost calculations
   const pr2Configurations = repairPricingData;
+  
+  // Debug PR2 data loading
+  console.log('🔧 RepairPricingData from query:', repairPricingData);
+  console.log('🔧 PR2 Configurations assigned:', pr2Configurations);
 
   // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {
