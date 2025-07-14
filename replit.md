@@ -427,6 +427,25 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v3.9' to return to this stable checkpoint
 
+## REV V4.1 CHECKPOINT - COST CALCULATION & EQUIPMENT DETECTION FIXED (July 14, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE PR2 INTEGRATION WORKING:**
+- **Cost Calculation Fixed**: Changed value extraction from hardcoded IDs to dynamic label matching
+- **Dashboard Cost Display**: Now shows £61.67 per section (£1850 ÷ 30 runs) for defective sections
+- **Equipment Detection Fixed**: CleaningOptionsPopover now uses standard React Query pattern instead of broken apiRequest
+- **Configuration Linking**: CCTV/Jet Vac properly detected with config object in CleaningOptionsPopover
+- **Debug Logging Confirmed**: Console shows "🔧 CleaningPopover - CCTV Jet Vac Config Found: {config object}"
+- **Value Extraction Working**: "dayRate":1850,"runsPerShift":30 extracted correctly from PR2 configuration
+- **Calculation Success**: "✅ PR2 calculation successful: baseCost:61.666666666666664"
+
+🔒 **TECHNICAL FIXES IMPLEMENTED:**
+- **Label-Based Extraction**: getPricingValueByLabel() matches "Day Rate" label → dayRate value (1850)
+- **Query Pattern Fix**: CleaningOptionsPopover changed from apiRequest() to standard React Query with enabled: !!sectionData.sector
+- **Cross-Component Integration**: Both dashboard and equipment popup now receive same PR2 data successfully
+- **Cost Calculation Formula**: Day Rate ÷ Runs Per Shift = Cost Per Section working correctly
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v4.1' to return to this stable checkpoint
+
 ## REV V3.9.2 CHECKPOINT - COMPLETE DASHBOARD INTEGRATION LOCKED (July 14, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE DASHBOARD CONFIGURATION DETECTION & EDITING:**

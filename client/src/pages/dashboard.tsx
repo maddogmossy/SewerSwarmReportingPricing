@@ -730,6 +730,41 @@ export default function Dashboard() {
           if (isServiceDefect || needsCleaning) {
             const hasLinkedPR2 = repairPricingData && repairPricingData.length > 0;
             
+            // Calculate section status color based on PR2 requirements
+            let statusColor = 'default';
+            let statusMessage = 'Click for cleaning pricing options';
+            let backgroundClass = 'bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400';
+            
+            if (hasLinkedPR2 && repairPricingData.length > 0) {
+              const pr2Config = repairPricingData[0]; // Get first available config
+              statusColor = calculateSectionStatusColor(section, pr2Config);
+              
+              console.log('🎯 Section status color calculation:', {
+                itemNo: section.itemNo,
+                statusColor,
+                pipeSize: section.pipeSize,
+                totalLength: section.totalLength
+              });
+              
+              switch (statusColor) {
+                case 'green':
+                  backgroundClass = 'bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400';
+                  statusMessage = '✅ Meets all PR2 requirements';
+                  break;
+                case 'red':
+                  backgroundClass = 'bg-red-50 hover:bg-red-100 border-2 border-red-200 hover:border-red-400';
+                  statusMessage = '⚠️ Below minimum quantities';
+                  break;
+                case 'purple':
+                  backgroundClass = 'bg-purple-50 hover:bg-purple-100 border-2 border-purple-200 hover:border-purple-400';
+                  statusMessage = '🔄 Over minimum threshold';
+                  break;
+                default:
+                  backgroundClass = 'bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400';
+                  statusMessage = 'PR2 configuration active';
+              }
+            }
+            
             return (
               <CleaningOptionsPopover 
                 sectionData={{
@@ -749,10 +784,10 @@ export default function Dashboard() {
                 }}
                 hasLinkedPR2={hasLinkedPR2}
               >
-                <div className={`text-sm w-full ${hasLinkedPR2 ? 'bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400' : 'bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400'} p-2 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
+                <div className={`text-sm w-full ${backgroundClass} p-2 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
                   <div className="font-bold text-black mb-1">💧 CLEANSE/SURVEY</div>
                   <div className="text-black">{generateDynamicRecommendation(section)}</div>
-                  <div className="text-sm text-black mt-1 font-medium">→ {hasLinkedPR2 ? 'PR2 configuration active' : 'Click for cleaning pricing options'}</div>
+                  <div className="text-sm text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
               </CleaningOptionsPopover>
             );
@@ -1279,6 +1314,84 @@ export default function Dashboard() {
 
     // Return null if calculation fails
     return null;
+  };
+
+  // Check if section meets PR2 configuration requirements for auto-pricing
+  const checkSectionMeetsPR2Requirements = (section: any, pr2Config: any) => {
+    if (!pr2Config || !pr2Config.rangeOptions) return false;
+    
+    // Extract section specifications
+    const sectionPipeSize = parseInt(section.pipeSize?.replace(/[^\d]/g, '') || '0');
+    const sectionLength = parseFloat(section.totalLength || '0');
+    
+    // Check pipe size range
+    const pipeSizeRange = pr2Config.rangeOptions.find((range: any) => 
+      range.label?.toLowerCase().includes('pipe size') && range.enabled
+    );
+    if (pipeSizeRange) {
+      const minSize = parseInt(pipeSizeRange.rangeStart || '0');
+      const maxSize = parseInt(pipeSizeRange.rangeEnd || '999');
+      if (sectionPipeSize < minSize || sectionPipeSize > maxSize) {
+        return false;
+      }
+    }
+    
+    // Check length range
+    const lengthRange = pr2Config.rangeOptions.find((range: any) => 
+      range.label?.toLowerCase().includes('length') && range.enabled
+    );
+    if (lengthRange) {
+      const minLength = parseFloat(lengthRange.rangeStart || '0');
+      const maxLength = parseFloat(lengthRange.rangeEnd || '999');
+      if (sectionLength < minLength || sectionLength > maxLength) {
+        return false;
+      }
+    }
+    
+    console.log('✅ Section meets PR2 requirements:', {
+      itemNo: section.itemNo,
+      pipeSize: sectionPipeSize,
+      length: sectionLength,
+      pipeSizeRange: pipeSizeRange ? `${pipeSizeRange.rangeStart}-${pipeSizeRange.rangeEnd}` : 'none',
+      lengthRange: lengthRange ? `${lengthRange.rangeStart}-${lengthRange.rangeEnd}` : 'none'
+    });
+    
+    return true;
+  };
+
+  // Calculate status color for sections based on PR2 requirements and minimum quantities
+  const calculateSectionStatusColor = (section: any, pr2Config: any) => {
+    if (!pr2Config) return 'default';
+    
+    // Check if section meets basic requirements
+    const meetsRequirements = checkSectionMeetsPR2Requirements(section, pr2Config);
+    if (!meetsRequirements) return 'default';
+    
+    // Check minimum quantity requirements  
+    const minQuantityOptions = pr2Config.minQuantityOptions || [];
+    
+    // Extract values using same logic as calculateAutoCost
+    const getPricingValueByLabel = (options: any[], label: string) => {
+      const option = options?.find(opt => opt.label && opt.label.toLowerCase().includes(label.toLowerCase()));
+      return option ? parseFloat(option.value) || 0 : 0;
+    };
+    
+    const runsPerShift = getPricingValueByLabel(pr2Config.quantityOptions, 'runs per shift');
+    
+    const minRunsRequired = minQuantityOptions.find((opt: any) => 
+      opt.label?.toLowerCase().includes('runs') && opt.enabled
+    );
+    
+    if (minRunsRequired) {
+      const minRuns = parseFloat(minRunsRequired.value || '0');
+      if (runsPerShift < minRuns) {
+        return 'red'; // Below minimum
+      } else if (runsPerShift > minRuns * 1.5) {
+        return 'purple'; // Over minimum threshold
+      }
+    }
+    
+    return 'green'; // Meets all requirements
   };
 
 
