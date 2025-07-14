@@ -549,7 +549,7 @@ export default function PR2Pricing() {
           </DialogHeader>
           <div className="py-4">
             <p className="mb-2">
-              Are you sure you want to delete the "{categoryToDelete?.name}" configuration?
+              Are you sure you want to delete the "{categoryToDelete?.name}"?
             </p>
             {categoryToDelete?.affectedSectors && categoryToDelete.affectedSectors.length > 0 && (
               <p className="text-sm text-red-600 bg-red-50 p-2 rounded">
