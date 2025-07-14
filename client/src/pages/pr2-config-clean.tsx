@@ -186,7 +186,7 @@ export default function PR2ConfigClean() {
         const minQuantityOptions = Array.isArray(config.minQuantityOptions) ? config.minQuantityOptions : [];
         const rangeOptions = Array.isArray(config.rangeOptions) ? config.rangeOptions : [];
         
-        setFormData({
+        const newFormData = {
           categoryName: config.categoryName || 'CCTV Price Configuration',
           description: config.description || '',
           pricingOptions: config.pricingOptions || [],
@@ -199,7 +199,9 @@ export default function PR2ConfigClean() {
           minQuantityStackOrder: minQuantityOptions.map((opt: any) => opt.id),
           rangeStackOrder: rangeOptions.map((opt: any) => opt.id),
           sector
-        });
+        };
+        console.log('🔄 Setting form data:', newFormData);
+        setFormData(newFormData);
       }
     }
   }, [existingConfig, isEditing, sector]);
