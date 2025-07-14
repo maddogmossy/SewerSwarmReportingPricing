@@ -1724,14 +1724,25 @@ export default function Dashboard() {
     } : null
   });
 
-  // Sort the filtered data by item number, then by meterage to ensure correct ordering
+  // Sort the filtered data by item number, then by letter suffix to ensure correct ordering
   const sectionData = [...filteredData].sort((a, b) => {
     // First sort by item number
     if (a.itemNo !== b.itemNo) {
       return a.itemNo - b.itemNo;
     }
     
-    // Then sort by meterage for same item numbers using the same logic as getItemNumberWithSuffix
+    // Then sort by letter suffix for same item numbers (13, 13a, 13b, etc.)
+    const aSuffix = a.letterSuffix || '';
+    const bSuffix = b.letterSuffix || '';
+    
+    // No suffix comes before suffix (13 before 13a)
+    if (aSuffix === '' && bSuffix !== '') return -1;
+    if (aSuffix !== '' && bSuffix === '') return 1;
+    
+    // Both have suffixes - sort alphabetically
+    return aSuffix.localeCompare(bSuffix);
+    
+    // Legacy meterage sorting logic (kept for fallback)
     const getMeterageFromDefects = (defects: string): number => {
       if (!defects) return 0;
       // Find the first meterage value in the defects text
