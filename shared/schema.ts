@@ -89,6 +89,7 @@ export const sectionInspections = pgTable("section_inspections", {
   id: serial("id").primaryKey(),
   fileUploadId: integer("file_upload_id").notNull().references(() => fileUploads.id),
   itemNo: integer("item_no").notNull(),
+  letterSuffix: varchar("letter_suffix"), // 'a', 'b', 'c' for multi-defect sections
   inspectionNo: integer("inspection_no").default(1),
   projectNo: varchar("project_no"), // Project number extracted from PDF
   date: varchar("date"),

@@ -501,50 +501,18 @@ export default function Dashboard() {
 
 
 
-  // Helper function to get item number with letter suffix for duplicates
-  // CRITICAL: This function must ONLY use authentic database records to determine suffixes
-  // NEVER hardcode specific item numbers or create synthetic "2a" data
-  // Protection against fake data contamination permanently locked - January 3, 2025
+  // Helper function to get item number with letter suffix from database
+  // Uses authentic database letter suffix field from multi-defect splitting system
   const getItemNumberWithSuffix = (section: any, allSections: any[]) => {
     const currentItemNo = section.itemNo;
-    const sectionsWithSameItem = allSections.filter(s => s.itemNo === currentItemNo);
     
-
-    
-
-    
-    // If only one section with this item number, show it as original number
-    if (sectionsWithSameItem.length === 1) {
-      return currentItemNo.toString();
+    // If section has a database letter suffix (from multi-defect splitting), use it
+    if (section.letterSuffix) {
+      return `${currentItemNo}${section.letterSuffix}`;
     }
     
-    // Multiple sections with same item number - assign letters based on meterage order
-    const sortedSections = [...sectionsWithSameItem].sort((a, b) => {
-      // Extract meterage from defects field (e.g., "DEG 7.08m" -> 7.08, "CL 10.78m" -> 10.78)
-      const getMeterageFromDefects = (defects: string): number => {
-        if (!defects) return 0;
-        // Find the first meterage value in the defects text
-        const meterageMatch = defects.match(/(\d+\.?\d*)\s*m/);
-        const result = meterageMatch ? parseFloat(meterageMatch[1]) : 0;
-        return result;
-      };
-      
-      const meterageA = getMeterageFromDefects(a.defects || "");
-      const meterageB = getMeterageFromDefects(b.defects || "");
-
-
-
-      return meterageA - meterageB; // Sort by ascending meterage
-    });
-    
-    const index = sortedSections.findIndex(s => s.id === section.id);
-    
-    if (index === 0) {
-      return currentItemNo.toString(); // First occurrence gets original number
-    } else {
-      const letter = String.fromCharCode(97 + index - 1); // a, b, c, etc.
-      return `${currentItemNo}${letter}`;
-    }
+    // Otherwise, just return the item number
+    return currentItemNo.toString();
   };
 
   // Function to render cell content based on column key

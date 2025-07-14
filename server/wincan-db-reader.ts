@@ -27,6 +27,39 @@ import { db } from "./db";
 import { sectionInspections } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
+// Multi-defect section splitting system
+// Detects mixed service and structural defects and creates separate records
+function splitMultiDefectSections(observations: string[]): { serviceDefects: string[], structuralDefects: string[] } {
+  const serviceDefects: string[] = [];
+  const structuralDefects: string[] = [];
+  
+  // Define defect classifications
+  const serviceDefectCodes = ['DES', 'DER', 'WL', 'RI', 'OB', 'S/A', 'DEF', 'DEC'];
+  const structuralDefectCodes = ['D', 'FC', 'FL', 'CR', 'JDL', 'JDM', 'OJM', 'OJL', 'JDS', 'OJS'];
+  
+  for (const obs of observations) {
+    // Extract defect code from observation
+    const codeMatch = obs.match(/^([A-Z]+)\s/);
+    if (codeMatch) {
+      const code = codeMatch[1];
+      
+      if (serviceDefectCodes.includes(code)) {
+        serviceDefects.push(obs);
+      } else if (structuralDefectCodes.includes(code)) {
+        structuralDefects.push(obs);
+      } else {
+        // Default to service for unknown codes
+        serviceDefects.push(obs);
+      }
+    } else {
+      // If no code match, default to service
+      serviceDefects.push(obs);
+    }
+  }
+  
+  return { serviceDefects, structuralDefects };
+}
+
 // Format observation text with detailed defect descriptions and percentages
 // JN codes only display if structural defect within one meter of junction
 function formatObservationText(observations: string[]): string {
@@ -385,6 +418,7 @@ export interface WincanSectionData {
   adoptable: string;
   inspectionDate: string;
   inspectionTime: string;
+  letterSuffix?: string; // For 13a, 13b, etc.
 }
 
 export async function readWincanDatabase(filePath: string): Promise<WincanSectionData[]> {
@@ -577,17 +611,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       const observations = observationMap.get(record.OBJ_PK) || [];
       console.log(`🔍 Section ${record.OBJ_Key || 'Unknown'} (PK: ${record.OBJ_PK}): Found ${observations.length} observations`);
       
-      const formattedText = observations.length > 0 ? formatObservationText(observations) : '';
-      let defectText = formattedText || 'No service or structural defect found';
-      
-      // If after formatting we only have 5% WL observations, treat as no defects
-      if (defectText.trim() === '' || defectText.match(/^WL \(Water level, 5% of the vertical dimension\),?\s*$/)) {
-        defectText = 'No service or structural defect found';
-      }
-      
-      console.log(`📝 Formatted defect text: "${defectText.substring(0, 80)}..."`);
-      console.log(`📊 About to add section with itemNo: ${authenticSections.length + 1}`);
-      
       // ZERO TOLERANCE POLICY: Check if timestamp is authentic or synthetic
       let inspectionDate = 'No data';
       let inspectionTime = 'No data';
@@ -608,6 +631,75 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       } else {
         console.log(`⚠️ No timestamp in database - using 'No data'`);
       }
+      
+      // Multi-defect section splitting: Check if both service and structural defects exist
+      const { serviceDefects, structuralDefects } = splitMultiDefectSections(observations);
+      console.log(`🔧 Multi-defect analysis: ${serviceDefects.length} service, ${structuralDefects.length} structural`);
+      
+      // If both types exist, create separate records
+      if (serviceDefects.length > 0 && structuralDefects.length > 0) {
+        console.log(`🔄 MULTI-DEFECT SECTION DETECTED: Creating separate records for item ${authenticSections.length + 1}`);
+        
+        const baseItemNo = authenticSections.length + 1;
+        
+        // Create service defect record (original item number)
+        const serviceDefectText = serviceDefects.length > 0 ? formatObservationText(serviceDefects) : 'No service or structural defect found';
+        const serviceClassification = classifyWincanObservations(serviceDefectText, 'utilities');
+        
+        authenticSections.push({
+          itemNo: baseItemNo,
+          projectNo: 'GR7188',
+          startMH,
+          finishMH,
+          pipeSize,
+          pipeMaterial,
+          totalLength,
+          lengthSurveyed: totalLength,
+          defects: serviceDefectText,
+          recommendations: serviceClassification.recommendations,
+          severityGrade: serviceClassification.severityGrade,
+          adoptable: serviceClassification.adoptable,
+          inspectionDate,
+          inspectionTime
+        });
+        
+        // Create structural defect record (item number with 'a' suffix)
+        const structuralDefectText = structuralDefects.length > 0 ? formatObservationText(structuralDefects) : 'No service or structural defect found';
+        const structuralClassification = classifyWincanObservations(structuralDefectText, 'utilities');
+        
+        authenticSections.push({
+          itemNo: baseItemNo,
+          letterSuffix: 'a',
+          projectNo: 'GR7188',
+          startMH,
+          finishMH,
+          pipeSize,
+          pipeMaterial,
+          totalLength,
+          lengthSurveyed: totalLength,
+          defects: structuralDefectText,
+          recommendations: structuralClassification.recommendations,
+          severityGrade: structuralClassification.severityGrade,
+          adoptable: structuralClassification.adoptable,
+          inspectionDate,
+          inspectionTime
+        });
+        
+        console.log(`✅ Created 2 separate records for multi-defect section`);
+        continue; // Skip the normal single-section processing
+      }
+      
+      // Normal single-defect processing
+      const formattedText = observations.length > 0 ? formatObservationText(observations) : '';
+      let defectText = formattedText || 'No service or structural defect found';
+      
+      // If after formatting we only have 5% WL observations, treat as no defects
+      if (defectText.trim() === '' || defectText.match(/^WL \(Water level, 5% of the vertical dimension\),?\s*$/)) {
+        defectText = 'No service or structural defect found';
+      }
+      
+      console.log(`📝 Formatted defect text: "${defectText.substring(0, 80)}..."`);
+      console.log(`📊 About to add section with itemNo: ${authenticSections.length + 1}`);
       
       // Apply MSCC5 classification for defect analysis
       let severityGrade = 0;
@@ -729,12 +821,15 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
   }
   
   // Track processed sections to prevent duplicates within this batch
-  const processedSections = new Set<number>();
+  const processedSections = new Set<string>();
   
   for (const section of sections) {
-    // Skip if we've already processed this item number in this batch
-    if (processedSections.has(section.itemNo)) {
-      console.log(`⚠️ Skipping duplicate section ${section.itemNo} within batch`);
+    // Create unique key combining item number and letter suffix
+    const uniqueKey = `${section.itemNo}${section.letterSuffix || ''}`;
+    
+    // Skip if we've already processed this unique combination
+    if (processedSections.has(uniqueKey)) {
+      console.log(`⚠️ Skipping duplicate section ${uniqueKey} within batch`);
       continue;
     }
     
@@ -742,6 +837,7 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
       const insertData = {
         fileUploadId: uploadId,
         itemNo: section.itemNo,
+        letterSuffix: section.letterSuffix || null,
         projectNo: section.projectNo,
         date: section.inspectionDate,
         time: section.inspectionTime,
@@ -763,8 +859,8 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
       await db.insert(sectionInspections)
         .values(insertData);
       
-      processedSections.add(section.itemNo);
-      console.log(`✅ Stored/updated authentic section ${section.itemNo}`);
+      processedSections.add(uniqueKey);
+      console.log(`✅ Stored/updated authentic section ${uniqueKey}`);
     } catch (error) {
       console.error(`❌ Error storing section ${section.itemNo}:`, error);
     }
