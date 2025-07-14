@@ -218,44 +218,31 @@ export default function PR2ConfigClean() {
 
   // Load sectors that have this configuration when editing starts
   useEffect(() => {
-    if (isEditing && categoryId) {
-      // Check all sectors for this configuration
-      const checkSectors = async () => {
-        const sectorsWithConfigs = [];
-        
-        for (const sect of SECTORS) {
-          try {
-            const configs = await apiRequest('GET', `/api/pr2-clean?sector=${sect.id}`);
-            const hasConfig = Array.isArray(configs) ? 
-              configs.some(c => c.categoryId === categoryId) : 
-              (configs.categoryId === categoryId);
-            
-            if (hasConfig) {
-              sectorsWithConfigs.push(sect.id);
-            }
-          } catch (error) {
-            console.error(`Error checking sector ${sect.id}:`, error);
-          }
-        }
-        
-        setSectorsWithConfig(sectorsWithConfigs);
-        setSelectedSectors(sectorsWithConfigs.length > 0 ? sectorsWithConfigs : [sector]);
-      };
-      
-      checkSectors();
+    if (isEditing && existingConfig) {
+      // For editing, we know the current sector has the config
+      const config = Array.isArray(existingConfig) ? existingConfig[0] : existingConfig;
+      if (config) {
+        const currentConfigSector = config.sector;
+        console.log(`🔍 Detected existing config in sector: ${currentConfigSector}`);
+        setSectorsWithConfig([currentConfigSector]);
+        setSelectedSectors([currentConfigSector]);
+      }
     } else {
       // Start with the current sector for new configurations
       setSelectedSectors([sector]);
+      setSectorsWithConfig([]);
     }
-  }, [isEditing, categoryId, sector]);
+  }, [isEditing, existingConfig, sector]);
 
-  // Save configuration - simple sector management
+  // Save configuration with proper sector management
   const saveConfiguration = useMutation({
     mutationFn: async (data: CleanFormData) => {
-      // If no sectors selected, delete the configuration
+      console.log(`💾 Saving with selectedSectors:`, selectedSectors);
+      console.log(`💾 sectorsWithConfig:`, sectorsWithConfig);
+      
+      // If no sectors selected and this was an existing config, show warning instead of deleting
       if (selectedSectors.length === 0 && isEditing && editId) {
-        await apiRequest('DELETE', `/api/pr2-clean/${editId}`);
-        console.log('✅ Deleted configuration (no sectors selected)');
+        alert('Configuration must be assigned to at least one sector. Please select at least one sector.');
         return [];
       }
       
@@ -266,7 +253,7 @@ export default function PR2ConfigClean() {
       if (isEditing && editId) {
         // Update existing configuration with new sector
         const result = await apiRequest('PUT', `/api/pr2-clean/${editId}`, sectorData);
-        console.log(`✅ Updated configuration sector to: ${primarySector}`);
+        console.log(`✅ Updated configuration sector from ${sectorsWithConfig[0]} to: ${primarySector}`);
         return [result];
       } else {
         // Create new configuration
