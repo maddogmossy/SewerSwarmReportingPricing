@@ -1470,6 +1470,7 @@ export default function PR2ConfigClean() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
+                  {console.log('🔍 AllConfigs data:', allConfigs.map((c: any) => ({ id: c.id, name: c.categoryName, quantityValue: c.quantityOptions?.[0]?.value })))}
                   {allConfigs.map((config: any) => (
                     <div key={config.id} className={`flex items-center justify-between p-3 rounded-lg ${
                       config.id === parseInt(editId || '0') 
