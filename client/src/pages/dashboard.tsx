@@ -595,9 +595,12 @@ export default function Dashboard() {
         // Debug Item 10 specifically
         if (section.itemNo === 10) {
           console.log('🔍 Item 10 Debug:', {
+            itemNo: section.itemNo,
             original: defectsText,
             hasMultiplePeriods: defectsText.includes('. '),
-            splitResult: defectsText.split(/\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|SC|LR|LL)/)
+            isNotCleanMessage: defectsText !== 'No service or structural defect found',
+            splitResult: defectsText.split(/\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|SC|LR|LL)/),
+            willGoToMultiplePath: defectsText.includes('. ') && defectsText !== 'No service or structural defect found'
           });
         }
         
@@ -619,6 +622,19 @@ export default function Dashboard() {
             const isOnlyLineDeviation = (obsLower.includes('line deviates') || obsLower.includes('line deviation')) &&
               !obsLower.includes('deposits') && !obsLower.includes('crack') && !obsLower.includes('water') &&
               !obsLower.includes('deformation') && !obsLower.includes('defect') && !obsLower.includes('junction');
+            
+            // Debug Item 10 filtering
+            if (section.itemNo === 10) {
+              console.log('🔍 Item 10 Filtering:', {
+                observation: obs,
+                obsLower,
+                hasLineDeviates: obsLower.includes('line deviates'),
+                hasDeposits: obsLower.includes('deposits'),
+                isOnlyLineDeviation,
+                willKeep: !isOnlyLineDeviation
+              });
+            }
+            
             return !isOnlyLineDeviation;
           });
           

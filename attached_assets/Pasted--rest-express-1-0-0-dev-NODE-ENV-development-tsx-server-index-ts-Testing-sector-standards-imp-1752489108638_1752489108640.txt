@@ -1,0 +1,36 @@
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+Testing sector standards import...
+getSectorStandards function: function
+Test utilities standards: SUCCESS
+Standards count: 6
+10:26:55 AM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+10:27:01 AM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+10:27:01 AM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+10:27:01 AM [express] GET /api/auth/user 304 in 2ms :: {"id":"test-user","email":"test@example.com","…
+10:27:02 AM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+10:27:02 AM [express] GET /api/auth/user 304 in 0ms :: {"id":"test-user","email":"test@example.com","…
+10:27:02 AM [express] GET /api/auth/user 304 in 1ms :: {"id":"test-user","email":"test@example.com","…
+🔍 API request received for sector: utilities
+🔍 Filtering by userId: "test-user" AND sector: "utilities"
+10:31:23 AM [express] GET /api/user-pricing 200 in 1ms :: []
+10:31:23 AM [express] GET /api/utilities/profile 200 in 22ms
+10:31:23 AM [express] GET /api/pricing/check/utilities 200 in 14ms
+10:31:23 AM [express] GET /api/equipment-types/2 200 in 1ms :: []
+10:31:24 AM [express] GET /api/folders 200 in 614ms :: [{"id":18,"userId":"test-user","folderName":"4…
+✅ Query returned 1 configurations
+📊 Configuration details: [ 'ID: 36, Sectors: ["utilities"]' ]
+10:31:24 AM [express] GET /api/pr2-clean 200 in 630ms :: [{"id":36,"userId":"test-user","categoryId":…
+10:31:24 AM [express] GET /api/uploads 200 in 1314ms :: [{"id":80,"userId":"test-user","folderId":18,…
+10:31:24 AM [express] GET /api/uploads/80/defects 200 in 1ms :: []
+10:31:25 AM [express] GET /api/uploads/80/sections 200 in 82ms :: [{"id":14022,"fileUploadId":80,"ite…
+🔍 API request received for sector: undefined
+🔍 Filtering by userId: "test-user" only (no sector filter)
+10:31:25 AM [express] GET /api/utilities/profile 200 in 4ms
+✅ Query returned 1 configurations
+📊 Configuration details: [ 'ID: 36, Sectors: ["utilities"]' ]
+10:31:25 AM [express] GET /api/pr2-clean 200 in 34ms :: [{"id":36,"userId":"test-user","categoryId":"…
