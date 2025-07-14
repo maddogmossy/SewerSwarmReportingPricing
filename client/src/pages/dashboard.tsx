@@ -1510,6 +1510,26 @@ export default function Dashboard() {
     return true;
   };
 
+  // Smart counting system: count sections that meet any configuration toward orange minimum
+  const countSectionsTowardMinimum = (rawSectionData: any[], pr2Configurations: any[]) => {
+    let sectionCount = 0;
+    const configMatch: { [key: number]: any } = {}; // Track which config each section uses
+    
+    rawSectionData.forEach(section => {
+      // Check each configuration to see if section meets requirements
+      for (const config of pr2Configurations) {
+        const meetsRequirements = checkSectionMeetsPR2Requirements(section, config);
+        if (meetsRequirements) {
+          sectionCount++;
+          configMatch[section.itemNo] = config; // Store which config this section uses
+          break; // Stop checking other configs once we find a match
+        }
+      }
+    });
+    
+    return { sectionCount, configMatch };
+  };
+
   // Calculate status color for sections based on PR2 requirements and minimum quantities
   const calculateSectionStatusColor = (section: any, pr2Config: any) => {
     if (!pr2Config) return 'default';
@@ -1520,7 +1540,7 @@ export default function Dashboard() {
       return 'default'; // Will show red with "Outside PR2 configuration ranges" message
     }
     
-    // Check minimum quantity requirements  
+    // Check minimum quantity requirements using smart counting system
     const minQuantityOptions = pr2Config.minQuantityOptions || [];
     
     // Extract values using same logic as calculateAutoCost
@@ -1529,6 +1549,8 @@ export default function Dashboard() {
       return option ? parseFloat(option.value) || 0 : 0;
     };
     
+    // Use smart counting system to get total sections that meet any configuration
+    const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations || []);
     const runsPerShift = getPricingValueByLabel(pr2Config.quantityOptions, 'runs per shift');
     
     const minRunsRequired = minQuantityOptions.find((opt: any) => 
