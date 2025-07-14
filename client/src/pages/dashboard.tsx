@@ -575,16 +575,20 @@ export default function Dashboard() {
           console.log('Fails percentage check?', percentage > 15);
         }
         
-        // Check if observations contain multiple distinct observations 
-        const hasMultipleObservations = defectsText.includes('. ') && defectsText !== 'No service or structural defect found';
+        // Check if observations contain multiple distinct observations (either line breaks or periods)
+        const hasMultipleObservations = (defectsText.includes('. ') || defectsText.includes('\n')) && defectsText !== 'No service or structural defect found';
         
         if (hasMultipleObservations) {
-          // Split observations by periods followed by capital letters or common defect patterns
+          // Split observations by line breaks first, then by periods
           let observations = defectsText
-            .split(/\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|SC|LR|LL)/) // Split on period + space + capital/defect codes
+            .split(/\n|(?:\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|SC|LR|LL))/) // Split on line breaks OR period + space + capital/defect codes
             .map(obs => obs.trim())
             .filter(obs => obs.length > 0)
-            .map(obs => obs.endsWith('.') ? obs : obs + '.'); // Ensure each ends with period
+            .map(obs => {
+              // Remove existing bullet points since we'll add them in the UI
+              const cleanObs = obs.replace(/^•\s*/, '').trim();
+              return cleanObs.endsWith('.') ? cleanObs : cleanObs + '.';
+            });
           
           // Filter out ONLY "Line deviates" observations, preserve others
           observations = observations.filter(obs => {
