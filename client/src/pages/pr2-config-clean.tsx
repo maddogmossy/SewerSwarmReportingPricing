@@ -1470,7 +1470,6 @@ export default function PR2ConfigClean() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {console.log('🔍 AllConfigs data:', allConfigs.map((c: any) => ({ id: c.id, name: c.categoryName, quantityValue: c.quantityOptions?.[0]?.value })))}
                   {allConfigs.map((config: any, index: number) => (
                     <div key={config.id} className={`flex items-center justify-between p-3 rounded-lg ${
                       config.id === parseInt(editId || '0') 
@@ -1546,29 +1545,10 @@ export default function PR2ConfigClean() {
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            console.log('🔧 Edit button clicked for config:', config.id);
-                            console.log('🔧 Config details:', { 
-                              id: config.id, 
-                              categoryName: config.categoryName,
-                              description: config.description,
-                              pricingOptions: config.pricingOptions?.filter((o: any) => o.enabled).map((o: any) => `${o.label}: ${o.value}`),
-                              quantityOptions: config.quantityOptions?.filter((o: any) => o.enabled).map((o: any) => `${o.label}: ${o.value}`)
-                            });
-                            console.log('🔧 Current URL params:', { categoryId, sector, editId });
-                            console.log('🔧 Current editId type:', typeof editId, 'config.id type:', typeof config.id);
-                            console.log('🔧 Are they the same?', editId == config.id, parseInt(editId || '0') === config.id);
-                            
                             // Only navigate if this is a different configuration
                             if (parseInt(editId || '0') !== config.id) {
                               const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${config.id}`;
-                              console.log('🔧 Navigating to different config:', newUrl);
-                              console.log('🔧 Expected config ID after navigation:', config.id);
-                              
-                              // Always force page refresh to ensure proper configuration loading
-                              console.log('🔧 Forcing page refresh to load config:', config.id);
                               window.location.href = newUrl;
-                            } else {
-                              console.log('🔧 Already viewing this configuration, no navigation needed');
                             }
                           }}
                           className={`text-xs ${
