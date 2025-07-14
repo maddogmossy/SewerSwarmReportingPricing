@@ -1491,16 +1491,16 @@ export default function PR2ConfigClean() {
                         <div className="mt-2">
                           <div className="flex gap-2">
                             {/* Main configuration window - Blue, Math, Green */}
-                            <div className="bg-white p-3 rounded-lg border border-gray-200 flex-1">
-                              <div className="flex items-center gap-2 flex-wrap">
+                            <div className="bg-white p-2 rounded-lg border border-gray-200 flex-1">
+                              <div className="flex items-center gap-1 flex-wrap">
                                 {/* Blue pricing options */}
                                 {config.pricingOptions?.filter((opt: any) => opt.enabled).map((opt: any, idx: number) => (
                                   <div key={opt.id} className="flex items-center gap-1">
-                                    <div className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                                    <div className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">
                                       {opt.label}: £{opt.value}
                                     </div>
                                     {idx < config.pricingOptions.filter((o: any) => o.enabled).length - 1 && config.mathOperators?.[idx] && (
-                                      <div className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">
+                                      <div className="px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-medium">
                                         {config.mathOperators[idx]}
                                       </div>
                                     )}
@@ -1509,7 +1509,7 @@ export default function PR2ConfigClean() {
                                 
                                 {/* Green quantity options */}
                                 {config.quantityOptions?.filter((opt: any) => opt.enabled).map((opt: any) => (
-                                  <div key={opt.id} className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">
+                                  <div key={opt.id} className="px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">
                                     {opt.label}: {opt.value}
                                   </div>
                                 ))}
@@ -1553,16 +1553,15 @@ export default function PR2ConfigClean() {
                           size="sm"
                           variant="outline"
                           onClick={() => setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${config.id}`)}
-                          className="text-xs"
+                          className={`text-xs ${
+                            config.id === parseInt(editId || '0') 
+                              ? 'bg-green-100 border-green-500 text-green-700 hover:bg-green-200' 
+                              : ''
+                          }`}
                         >
                           <Edit2 className="w-3 h-3 mr-1" />
-                          Edit
+                          {config.id === parseInt(editId || '0') ? 'Click to Edit' : 'Edit'}
                         </Button>
-                        {config.id === parseInt(editId || '0') && (
-                          <div className="px-4 py-2 bg-green-200 border-2 border-green-400 rounded-lg shadow-sm">
-                            <span className="text-sm text-green-800 font-bold">Currently Editing</span>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
