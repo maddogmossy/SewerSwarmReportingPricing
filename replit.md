@@ -427,25 +427,31 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v3.9' to return to this stable checkpoint
 
-## REV V3.9 CHECKPOINT - DELETE CONFIRMATION SYSTEM LOCKED (July 13, 2025)
+## REV V3.9.1 CHECKPOINT - SECTOR CACHING BUG FIXED (July 14, 2025)
 
-🔒 **PRODUCTION READY - COMPLETE DELETE CONFIRMATION SYSTEM RESTORED:**
-- **Red Warning Dialog Fixed:** Delete confirmation dialog now properly appears when clicking delete button on PR2 configurations
-- **Correct API Endpoint:** Fixed delete function to use `/api/pr2-clean/${id}` instead of legacy `/api/pr2-pricing/${id}` endpoint
-- **Silent Operation Maintained:** All delete operations work without toast notifications as requested
-- **Unified Confirmation Handler:** Single `confirmDelete` function handles both PR2 configurations and standard categories
-- **Proper State Management:** `handlePR2ConfigDelete` function properly triggers confirmation dialog with category name display
-- **Complete Workflow:** Click delete → red warning appears → confirm → configuration removed → UI updates immediately
-- **Zero Issues:** Delete system working perfectly with proper endpoint routing and cache invalidation
+🔒 **PRODUCTION READY - CRITICAL SECTOR SELECTION CACHING ISSUE RESOLVED:**
+- **Frontend Caching Bug Fixed:** Resolved critical React Query caching issue causing incorrect sector selection in edit mode
+- **Root Cause:** React Query was returning stale cached responses from previous API calls instead of making fresh requests to each sector
+- **Technical Solution:** Disabled caching for sector configuration queries with cache-busting parameters and direct fetch calls
+- **Correct Behavior Restored:** Edit mode now correctly shows only sectors that actually contain the configuration (utilities only for CCTV Jet Vac)
+- **Cache Prevention:** Added `staleTime: 0`, `cacheTime: 0`, and timestamp-based cache-busting to prevent stale data
+- **Silent Operation:** Maintained silent operation without toast notifications as required
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Frontend Handler:** `handlePR2ConfigDelete(configId, configName)` triggers confirmation dialog
-- **Unified Confirmation:** `confirmDelete()` function detects numeric vs string IDs to route to correct deletion method
-- **Correct Endpoint:** `deletePR2Configuration` mutation uses `/api/pr2-clean/${id}` matching backend routes
-- **Backend Route:** `DELETE /api/pr2-clean/:id` properly removes configuration and returns success message
-- **Cache Invalidation:** Query cache properly refreshed to update UI immediately after deletion
+- **Cache-Busting Query:** Added `Date.now()` timestamp to query keys and API requests to prevent cached responses
+- **Direct Fetch:** Used direct `fetch()` calls instead of cached `apiRequest()` function for sector checking
+- **Clean Debug Logs:** Removed verbose debugging while maintaining essential functionality
+- **Verified Fix:** Debug logs confirm correct behavior - only utilities sector returns configuration, all others return empty arrays
+- **User Confirmed:** System now correctly shows single sector checkbox selection instead of all sectors being auto-selected
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v3.9' to return to this stable checkpoint
+🔒 **PREVIOUS STABLE FEATURES MAINTAINED:**
+- **Red Warning Dialog:** Delete confirmation system working perfectly
+- **Silent Operations:** All operations proceed without toast notifications
+- **Complete Line Deviation Filtering:** Observations display system operational
+- **Four-Window Configuration:** Blue/green/orange/purple windows with full CRUD functionality
+- **Stack Order System:** Equipment selection with preference ordering locked in
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v3.9.1' to return to this stable checkpoint
 
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 

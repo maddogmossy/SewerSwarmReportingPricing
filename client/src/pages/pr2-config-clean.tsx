@@ -149,26 +149,20 @@ export default function PR2ConfigClean() {
     queryFn: async () => {
       if (!isEditing || !categoryId) return [];
       
-      console.log('🔍 Searching for configs with categoryId:', categoryId);
       const allConfigs = [];
       for (const sect of SECTORS) {
         try {
-          // Add cache-busting parameter
+          // Add cache-busting parameter to prevent stale cached responses
           const response = await fetch(`/api/pr2-clean?sector=${sect.id}&_t=${Date.now()}`);
           const configs = await response.json();
-          console.log(`🔍 ${sect.id} sector has ${configs.length} total configs:`, configs.map((c: any) => c.categoryId));
           const matchingConfig = configs.find((c: any) => c.categoryId === categoryId);
           if (matchingConfig) {
-            console.log(`✅ Found matching config in ${sect.id}:`, matchingConfig.id);
             allConfigs.push({ sector: sect.id, config: matchingConfig });
-          } else {
-            console.log(`❌ No matching config in ${sect.id}`);
           }
         } catch (error) {
-          console.log(`❌ Error checking sector ${sect.id}:`, error);
+          // Silently continue if sector has no configurations
         }
       }
-      console.log('🎯 Final allConfigs result:', allConfigs);
       return allConfigs;
     },
     enabled: isEditing && !!categoryId,
@@ -238,16 +232,10 @@ export default function PR2ConfigClean() {
   useEffect(() => {
     if (isEditing && allSectorConfigs.length > 0) {
       const sectorsWithConfigs = allSectorConfigs.map((c: any) => c.sector);
-      console.log('🎯 Sectors with actual configs:', sectorsWithConfigs);
-      console.log('🎯 All sector configs data:', allSectorConfigs);
-      
-      // Only set sectors that have actual configurations
       const uniqueSectors = [...new Set(sectorsWithConfigs)];
-      console.log('🎯 Setting selected sectors to:', uniqueSectors);
       setSelectedSectors(uniqueSectors);
     } else if (isEditing && allSectorConfigs.length === 0) {
       // If no configs found across sectors, just use the current sector
-      console.log('🎯 No configs found across sectors, defaulting to current sector:', sector);
       setSelectedSectors([sector]);
     }
   }, [allSectorConfigs, isEditing, sector]);
