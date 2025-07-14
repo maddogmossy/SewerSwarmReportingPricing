@@ -161,13 +161,20 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   // Create ordered equipment list with option numbers based on current order
   const cleansingEquipment: CleansingEquipment[] = equipmentOrder.map((equipmentId, index) => {
     const baseItem = baseEquipment.find(item => item.id === equipmentId)!;
-    const hasConfig = equipmentId === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig;
+    const configExists = equipmentId === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig;
+    const currentConfig = equipmentId === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
+    
+    // Only show green highlighting if we're currently editing this specific configuration
+    const isCurrentlyEditing = currentEditId && currentConfig && currentConfig.id === parseInt(currentEditId);
+    
+    console.log(`🔍 Equipment ${equipmentId}: configExists=${configExists}, isCurrentlyEditing=${isCurrentlyEditing}, currentEditId=${currentEditId}, configId=${currentConfig?.id}`);
+    
     return {
       ...baseItem,
       name: `Option ${index + 1}: ${baseItem.name}`,
       isSelected: selectedEquipment === equipmentId,
       isPrimary: selectedEquipment === equipmentId, // Selected item is primary
-      hasConfig: hasConfig // Track if configuration exists
+      hasConfig: isCurrentlyEditing // Only green if currently editing this specific config
     };
   });
 
@@ -287,7 +294,10 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                             // Always navigate to the configuration page for this equipment
                             // If config exists, it will open in edit mode; if not, it will create new
                             const existingConfig = equipment.id === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
+                            const currentConfig = equipment.id === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
+                            
                             console.log(`🔧 Existing config found:`, existingConfig);
+                            console.log(`🔧 Current config found:`, currentConfig);
                             
                             if (existingConfig) {
                               // Navigate to edit existing configuration (allows adding new pricing options within existing config)
@@ -304,7 +314,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                           className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
                         >
                           <Plus className="h-3 w-3 mr-1" />
-                          {equipment.hasConfig ? 'Edit' : 'Add'}
+                          {configExists ? 'Edit' : 'Add'}
                         </Button>
                       </div>
                     </div>
