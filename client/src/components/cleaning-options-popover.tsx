@@ -40,8 +40,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const [selectedEquipment, setSelectedEquipment] = useState<string>('');
 
   // Detect which configuration is currently being edited from URL
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
-  const currentEditId = urlParams.get('edit') || urlParams.get('editId');
+  const currentEditId = null; // Simplified: disable edit detection temporarily
   console.log('🔍 CleaningPopover - Current Edit ID from URL:', currentEditId);
   
   // Check if CCTV/Jet Vac configuration exists using standard React Query pattern
@@ -140,16 +139,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const cctvJetVacConfigs = safepr2Configs.filter((config: any) => config.categoryId === 'cctv-jet-vac');
   const cctvVanPackConfigs = safepr2Configs.filter((config: any) => config.categoryId === 'cctv-van-pack');
   
-  // If currently editing a configuration, use that one; otherwise use the most recent (highest ID)
-  const cctvJetVacConfig = currentEditId ? 
-    cctvJetVacConfigs.find((config: any) => config.id === parseInt(currentEditId)) || 
-    (cctvJetVacConfigs.length > 0 ? cctvJetVacConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null)
-    : (cctvJetVacConfigs.length > 0 ? cctvJetVacConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null);
-    
-  const cctvVanPackConfig = currentEditId ? 
-    cctvVanPackConfigs.find((config: any) => config.id === parseInt(currentEditId)) || 
-    (cctvVanPackConfigs.length > 0 ? cctvVanPackConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null)
-    : (cctvVanPackConfigs.length > 0 ? cctvVanPackConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null);
+  // Use the most recent configuration (highest ID) - simplified approach
+  const cctvJetVacConfig = cctvJetVacConfigs.length > 0 ? 
+    cctvJetVacConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null;
+  const cctvVanPackConfig = cctvVanPackConfigs.length > 0 ? 
+    cctvVanPackConfigs.reduce((latest: any, current: any) => current.id > latest.id ? current : latest) : null;
   
   // Debug equipment configuration detection
   console.log('🔧 CleaningPopover - PR2 Configs:', safepr2Configs);
@@ -163,17 +157,15 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     const configExists = equipmentId === 'cctv-jet-vac' ? !!cctvJetVacConfig : !!cctvVanPackConfig;
     const currentConfig = equipmentId === 'cctv-jet-vac' ? cctvJetVacConfig : cctvVanPackConfig;
     
-    // Only show green highlighting if we're currently editing this specific configuration
-    const isCurrentlyEditing = currentEditId && currentConfig && currentConfig.id === parseInt(currentEditId);
-    
-    console.log(`🔍 Equipment ${equipmentId}: configExists=${configExists}, isCurrentlyEditing=${isCurrentlyEditing}, currentEditId=${currentEditId}, configId=${currentConfig?.id}`);
+    // Simplified: show green if any configuration exists (revert to original logic)
+    console.log(`🔍 Equipment ${equipmentId}: configExists=${configExists}`);
     
     return {
       ...baseItem,
       name: `Option ${index + 1}: ${baseItem.name}`,
       isSelected: selectedEquipment === equipmentId,
       isPrimary: selectedEquipment === equipmentId, // Selected item is primary
-      hasConfig: isCurrentlyEditing // Only green if currently editing this specific config
+      hasConfig: configExists // Simple: green if config exists
     };
   });
 
