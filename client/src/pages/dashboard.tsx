@@ -1293,6 +1293,14 @@ export default function Dashboard() {
     );
     console.log('🎯 Using PR2 config:', pr2Config);
     
+    // Debug: Show specific values being used for calculation
+    console.log('💰 Configuration details for cost calculation:', {
+      configId: pr2Config.id,
+      dayRate: pr2Config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'))?.value,
+      runsPerShift: pr2Config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value,
+      calculation: `${pr2Config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'))?.value || 0} ÷ ${pr2Config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value || 0} = ${(parseFloat(pr2Config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'))?.value || '0') / parseFloat(pr2Config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value || '1')).toFixed(2)}`
+    });
+    
     if (!pr2Config || (!pr2Config.pricingOptions && !pr2Config.quantityOptions)) {
       console.log('❌ PR2 config has no pricing or quantity options:', pr2Config);
       return null;
