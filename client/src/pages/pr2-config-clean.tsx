@@ -143,6 +143,30 @@ export default function PR2ConfigClean() {
     enabled: isEditing && !!editId,
   });
 
+  // Load configurations by category and sector to find the right one for editing
+  const { data: sectorConfigs } = useQuery({
+    queryKey: ['/api/pr2-clean', 'sector-category', sector, categoryId],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/pr2-clean?categoryId=${categoryId}`);
+      const configs = await response.json();
+      console.log(`🔍 Found ${configs.length} configs for categoryId ${categoryId}:`, configs);
+      
+      // Prefer configuration that includes the current sector
+      const sectorConfig = configs.find(config => 
+        config.sectors && Array.isArray(config.sectors) && config.sectors.includes(sector)
+      );
+      
+      if (sectorConfig) {
+        console.log(`✅ Found configuration that includes sector ${sector}:`, sectorConfig);
+        return sectorConfig;
+      } else {
+        console.log(`⚠️ No configuration found for sector ${sector}, using first available:`, configs[0]);
+        return configs[0];
+      }
+    },
+    enabled: isEditing && !!categoryId && !editId,
+  });
+
   // Load all configurations for this category to show in "Saved Configurations"
   const { data: allConfigs } = useQuery({
     queryKey: ['/api/pr2-clean', 'category', categoryId],
@@ -192,14 +216,15 @@ export default function PR2ConfigClean() {
   };
 
   useEffect(() => {
-    if (isEditing && existingConfig) {
-
-      
+    // Use sectorConfigs for navigation without editId, existingConfig for direct editId access
+    const configToUse = editId ? existingConfig : sectorConfigs;
+    
+    if (isEditing && configToUse) {
       // Get the actual config object (might be wrapped in array)
-      const config = Array.isArray(existingConfig) ? existingConfig[0] : existingConfig;
+      const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
       
       if (config) {
-
+        console.log(`🔧 Loading configuration data:`, config);
         
         // Handle array vs object format for quantityOptions and minQuantityOptions
         const quantityOptions = Array.isArray(config.quantityOptions) ? config.quantityOptions : [];
@@ -224,15 +249,17 @@ export default function PR2ConfigClean() {
         setFormData(newFormData);
       }
     }
-  }, [existingConfig, isEditing, sector]);
+  }, [existingConfig, sectorConfigs, isEditing, sector, editId]);
 
   // Load sectors that have this configuration when editing starts
   useEffect(() => {
-    console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, existingConfig:`, existingConfig);
+    // Use sectorConfigs for navigation without editId, existingConfig for direct editId access
+    const configToUse = editId ? existingConfig : sectorConfigs;
+    console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, editId: ${editId}, configToUse:`, configToUse);
     
-    if (isEditing && existingConfig) {
+    if (isEditing && configToUse) {
       // For editing, read the sectors array from the configuration
-      const config = Array.isArray(existingConfig) ? existingConfig[0] : existingConfig;
+      const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
       console.log(`🔍 Processing config:`, config);
       
       if (config) {
@@ -254,7 +281,7 @@ export default function PR2ConfigClean() {
       setSelectedSectors([sector]);
       setSectorsWithConfig([]);
     }
-  }, [isEditing, existingConfig, sector]);
+  }, [isEditing, existingConfig, sectorConfigs, sector, editId]);
 
   // Save configuration with proper sector management
   const saveConfiguration = useMutation({
