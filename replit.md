@@ -574,6 +574,30 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v4.9' to return to this stable checkpoint
 
+## REV V4.7 RESTORE - SYSTEM ROLLBACK COMPLETED (July 14, 2025)
+
+🔒 **ROLLBACK TO STABLE STATE SUCCESSFUL:**
+- **Root Cause Identified:** Complex green highlighting logic and URL parameter parsing in REV V5.3+ caused persistent JavaScript errors
+- **Clean Restoration:** Removed all problematic configuration detection logic that was added after REV V4.7
+- **Script Errors Eliminated:** JavaScript "Script error" messages resolved by removing complex useLocation parsing
+- **Simplified Component:** Restored cleaning-options-popover.tsx to REV V4.7 state with simple equipment selection
+- **Working Features Preserved:** Single equipment selection, radio buttons, localStorage persistence, direct routing
+
+🔒 **TECHNICAL CLEANUP:**
+- **Removed Complex Logic:** Eliminated URL parameter parsing: `const urlParams = new URLSearchParams(location.split('?')[1] || '')`
+- **Removed Green Highlighting:** Eliminated `currentEditId` detection and `isCurrentlyEditing` logic
+- **Removed Query Dependencies:** Eliminated React Query hooks that were causing script errors
+- **Simplified Button Logic:** Restored simple "Add" buttons without dynamic "Edit" text detection
+- **Clean Component Structure:** REV V4.7 component with zero JavaScript errors
+
+🔒 **MISTAKE ANALYSIS:**
+- **V5.3 Problem:** Added complex configuration detection logic that introduced script errors
+- **V3.9.2 Problem:** Added URL parameter parsing that caused multiple useLocation hook conflicts
+- **Root Issue:** Attempted to detect "currently editing" state through complex URL parsing instead of simple approach
+- **Lesson Learned:** Simple solutions work better than complex highlighting logic for this use case
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v4.7-restore' to return to this stable checkpoint
+
 ## REV V5.3 CHECKPOINT - EDIT BUTTON SYSTEM FULLY OPERATIONAL (July 14, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE EDIT BUTTON SYSTEM:**
