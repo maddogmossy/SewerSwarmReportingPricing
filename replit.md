@@ -427,22 +427,30 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v3.9' to return to this stable checkpoint
 
-## REV V3.9.1 CHECKPOINT - SECTOR CACHING BUG FIXED (July 14, 2025)
+## REV V3.9.2 CHECKPOINT - COMPLETE DASHBOARD INTEGRATION LOCKED (July 14, 2025)
 
-🔒 **PRODUCTION READY - CRITICAL SECTOR SELECTION CACHING ISSUE RESOLVED:**
-- **Frontend Caching Bug Fixed:** Resolved critical React Query caching issue causing incorrect sector selection in edit mode
-- **Root Cause:** React Query was returning stale cached responses from previous API calls instead of making fresh requests to each sector
-- **Technical Solution:** Disabled caching for sector configuration queries with cache-busting parameters and direct fetch calls
-- **Correct Behavior Restored:** Edit mode now correctly shows only sectors that actually contain the configuration (utilities only for CCTV Jet Vac)
-- **Cache Prevention:** Added `staleTime: 0`, `cacheTime: 0`, and timestamp-based cache-busting to prevent stale data
-- **Silent Operation:** Maintained silent operation without toast notifications as required
+🔒 **PRODUCTION READY - COMPLETE DASHBOARD CONFIGURATION DETECTION & EDITING:**
+- **Dashboard Visual Status:** CCTV/Jet Vac displays with green background and "Configured" badge when configuration exists
+- **Smart Button Text:** Button shows "Edit Configuration" instead of "Configure Pricing" for existing configurations
+- **Seamless Navigation:** Direct routing from dashboard cleaning recommendations to existing configuration edit mode
+- **Complete Form Pre-Population:** All four windows (blue/green/orange/purple) load with existing values in edit mode
+- **Parameter Mapping Fixed:** Resolved edit URL parameter mismatch (`edit` vs `editId`) for proper edit mode detection
+- **Visual Confirmation:** Screenshots confirm complete form pre-population with Day Rate £1850, 30 runs per shift, ranges 100-150
+- **Silent Operation:** Clean operation without debug logs or toast notifications as required
+
+🔒 **COMPLETE WORKFLOW VERIFIED:**
+1. **Dashboard Detection:** Green styling and "Configured" badge for existing equipment
+2. **Equipment Selection:** Popup shows configured status with "Edit Configuration" button
+3. **Edit Navigation:** Direct routing to `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&edit=34`
+4. **Form Loading:** All checkboxes checked, values populated, ranges filled correctly
+5. **Edit & Save:** Full editing capability with instant database updates
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Cache-Busting Query:** Added `Date.now()` timestamp to query keys and API requests to prevent cached responses
-- **Direct Fetch:** Used direct `fetch()` calls instead of cached `apiRequest()` function for sector checking
-- **Clean Debug Logs:** Removed verbose debugging while maintaining essential functionality
-- **Verified Fix:** Debug logs confirm correct behavior - only utilities sector returns configuration, all others return empty arrays
-- **User Confirmed:** System now correctly shows single sector checkbox selection instead of all sectors being auto-selected
+- **Configuration Detection:** `cleaningOptionsPopover.tsx` queries PR2 configs and matches by `categoryId`
+- **Edit Mode Routing:** Proper URL construction with edit parameter for existing configurations
+- **Form Pre-Population:** `pr2-config-clean.tsx` loads and populates all form fields from existing configuration
+- **Parameter Compatibility:** Supports both `edit` and `editId` URL parameters for maximum compatibility
+- **Database Integration:** Complete CRUD operations with proper configuration persistence
 
 🔒 **PREVIOUS STABLE FEATURES MAINTAINED:**
 - **Red Warning Dialog:** Delete confirmation system working perfectly
@@ -451,7 +459,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Four-Window Configuration:** Blue/green/orange/purple windows with full CRUD functionality
 - **Stack Order System:** Equipment selection with preference ordering locked in
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v3.9.1' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v3.9.2' to return to this stable checkpoint
 
 ## REV V2 - PR2 PRICING SYSTEM ARCHITECTURE (July 13, 2025)
 

@@ -173,13 +173,13 @@ export default function PR2ConfigClean() {
 
   useEffect(() => {
     if (isEditing && existingConfig) {
-      console.log('📋 Loading config in edit mode:', existingConfig);
+
       
       // Get the actual config object (might be wrapped in array)
       const config = Array.isArray(existingConfig) ? existingConfig[0] : existingConfig;
       
       if (config) {
-        console.log('✅ Found existing configuration:', config);
+
         
         // Handle array vs object format for quantityOptions and minQuantityOptions
         const quantityOptions = Array.isArray(config.quantityOptions) ? config.quantityOptions : [];
@@ -200,7 +200,7 @@ export default function PR2ConfigClean() {
           rangeStackOrder: rangeOptions.map((opt: any) => opt.id),
           sector
         };
-        console.log('🔄 Setting form data:', newFormData);
+
         setFormData(newFormData);
       }
     }
