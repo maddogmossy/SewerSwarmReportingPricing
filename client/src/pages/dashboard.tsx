@@ -603,11 +603,15 @@ export default function Dashboard() {
             .filter(obs => obs.length > 0)
             .map(obs => obs.endsWith('.') ? obs : obs + '.'); // Ensure each ends with period
           
-          // Filter out ALL "Line deviates" observations from display
-          observations = observations.filter(obs => 
-            !obs.toLowerCase().includes('line deviates') &&
-            !obs.toLowerCase().includes('line deviation')
-          );
+          // Filter out ONLY "Line deviates" observations, preserve others
+          observations = observations.filter(obs => {
+            const obsLower = obs.toLowerCase();
+            // Remove if ONLY contains line deviation (no other defects)
+            const isOnlyLineDeviation = (obsLower.includes('line deviates') || obsLower.includes('line deviation')) &&
+              !obsLower.includes('deposits') && !obsLower.includes('crack') && !obsLower.includes('water') &&
+              !obsLower.includes('deformation') && !obsLower.includes('defect') && !obsLower.includes('junction');
+            return !isOnlyLineDeviation;
+          });
           
           // If no observations remain after filtering, show clean message
           if (observations.length === 0) {
@@ -634,11 +638,13 @@ export default function Dashboard() {
           );
         }
         
-        // Single observation - check if it's a line deviation that should be filtered
-        const isLineDeviation = defectsText.toLowerCase().includes('line deviates') || 
-                               defectsText.toLowerCase().includes('line deviation');
+        // Single observation - check if it's ONLY a line deviation that should be filtered
+        const defectsLower = defectsText.toLowerCase();
+        const isOnlyLineDeviation = (defectsLower.includes('line deviates') || defectsLower.includes('line deviation')) &&
+          !defectsLower.includes('deposits') && !defectsLower.includes('crack') && !defectsLower.includes('water') &&
+          !defectsLower.includes('deformation') && !defectsLower.includes('defect') && !defectsLower.includes('junction');
         
-        if (isLineDeviation) {
+        if (isOnlyLineDeviation) {
           return (
             <div className="text-sm p-2 w-full">
               <div className="break-words text-left leading-relaxed">
