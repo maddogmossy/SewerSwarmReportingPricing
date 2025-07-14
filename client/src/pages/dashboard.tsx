@@ -1141,8 +1141,7 @@ export default function Dashboard() {
 
   // Fetch PR2 configurations from dedicated PR2 database table (completely separate from legacy)
   const { data: repairPricingData = [] } = useQuery({
-    queryKey: ['/api/pr2-clean', currentSector.id],
-    queryFn: () => apiRequest('GET', '/api/pr2-clean', undefined, { sector: currentSector.id }),
+    queryKey: [`/api/pr2-clean?sector=${currentSector.id}`],
     enabled: !!currentSector?.id,
     staleTime: 0,
     gcTime: 0,
