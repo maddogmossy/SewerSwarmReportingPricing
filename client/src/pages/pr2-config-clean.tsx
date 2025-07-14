@@ -1558,20 +1558,19 @@ export default function PR2ConfigClean() {
                           variant="outline"
                           onClick={() => {
                             console.log('🔧 Edit button clicked for config:', config.id);
+                            console.log('🔧 Config details:', { 
+                              id: config.id, 
+                              categoryName: config.categoryName,
+                              description: config.description,
+                              pricingOptions: config.pricingOptions?.filter((o: any) => o.enabled).map((o: any) => `${o.label}: ${o.value}`)
+                            });
                             console.log('🔧 Current URL params:', { categoryId, sector, editId });
                             const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${config.id}`;
                             console.log('🔧 Navigating to:', newUrl);
                             
-                            // Force page refresh for URL parameter changes
-                            if (config.id === parseInt(editId || '0')) {
-                              console.log('🔧 Same config - forcing page refresh');
-                              window.location.href = newUrl;
-                            } else {
-                              console.log('🔧 Different config - using setLocation');
-                              // Force URL change by updating browser history
-                              window.history.pushState(null, '', newUrl);
-                              setLocation(newUrl);
-                            }
+                            // Always force page refresh to ensure proper configuration loading
+                            console.log('🔧 Forcing page refresh to load config:', config.id);
+                            window.location.href = newUrl;
                           }}
                           className={`text-xs ${
                             config.id === parseInt(editId || '0') 
