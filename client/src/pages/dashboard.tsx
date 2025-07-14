@@ -594,14 +594,11 @@ export default function Dashboard() {
         
         // Debug Item 10 specifically
         if (section.itemNo === 10) {
-          console.log('🔍 Item 10 Debug:', {
-            itemNo: section.itemNo,
-            original: defectsText,
-            hasMultiplePeriods: defectsText.includes('. '),
-            isNotCleanMessage: defectsText !== 'No service or structural defect found',
-            splitResult: defectsText.split(/\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|SC|LR|LL)/),
-            willGoToMultiplePath: defectsText.includes('. ') && defectsText !== 'No service or structural defect found'
-          });
+          const splitResult = defectsText.split(/\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|SC|LR|LL)/);
+          console.log('🔍 Item 10 DETAILED Debug:');
+          console.log('  Original:', defectsText);
+          console.log('  Split result:', splitResult);
+          console.log('  Will use multiple path?', defectsText.includes('. ') && defectsText !== 'No service or structural defect found');
         }
         
         // Check if observations contain multiple distinct observations 
@@ -625,14 +622,12 @@ export default function Dashboard() {
             
             // Debug Item 10 filtering
             if (section.itemNo === 10) {
-              console.log('🔍 Item 10 Filtering:', {
-                observation: obs,
-                obsLower,
-                hasLineDeviates: obsLower.includes('line deviates'),
-                hasDeposits: obsLower.includes('deposits'),
-                isOnlyLineDeviation,
-                willKeep: !isOnlyLineDeviation
-              });
+              console.log(`🔍 Item 10 Filtering observation: "${obs}"`);
+              console.log(`  Lower: "${obsLower}"`);
+              console.log(`  Has line deviates: ${obsLower.includes('line deviates')}`);
+              console.log(`  Has deposits: ${obsLower.includes('deposits')}`);
+              console.log(`  Is ONLY line deviation: ${isOnlyLineDeviation}`);
+              console.log(`  Will KEEP: ${!isOnlyLineDeviation}`);
             }
             
             return !isOnlyLineDeviation;
