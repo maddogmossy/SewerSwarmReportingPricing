@@ -1291,11 +1291,31 @@ export default function Dashboard() {
       return null;
     }
 
-    // Find the most recent PR2 configuration (highest ID)
-    const pr2Config = pr2Configurations.reduce((latest: any, current: any) => 
-      current.id > latest.id ? current : latest
-    );
-    console.log('🎯 Using PR2 config:', pr2Config);
+    // Find the first configuration that this section meets
+    let pr2Config = null;
+    for (const config of pr2Configurations) {
+      if (checkSectionMeetsPR2Requirements(section, config)) {
+        pr2Config = config;
+        break;
+      }
+    }
+    
+    // If no configuration matches, return null to show warning triangles
+    if (!pr2Config) {
+      console.log('❌ Section does not meet any PR2 configuration requirements');
+      return null;
+    }
+    
+    console.log('🎯 Using PR2 config:', pr2Config.id, 'for section:', section.itemNo);
+    
+    // Debug Item 7 specifically
+    if (section.itemNo === 7) {
+      console.log('🔍 ITEM 7 DEBUG - Configuration used:', {
+        configId: pr2Config.id,
+        runsPerShift: pr2Config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value,
+        lengthRange: pr2Config.rangeOptions?.find(range => range.label?.toLowerCase().includes('length'))
+      });
+    }
     
     // Debug: Show specific values being used for calculation
     console.log('💰 Configuration details for cost calculation:', {
