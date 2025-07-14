@@ -592,13 +592,13 @@ export default function Dashboard() {
       case 'defects':
         const defectsText = section.defects || 'No defects recorded';
         
-        // Check if observations contain multiple distinct observations (split by periods followed by capital letters)
+        // Check if observations contain multiple distinct observations 
         const hasMultipleObservations = defectsText.includes('. ') && defectsText !== 'No service or structural defect found';
         
         if (hasMultipleObservations) {
-          // Split observations by periods followed by capital letters or specific patterns
+          // Split observations by periods followed by capital letters or common defect patterns
           let observations = defectsText
-            .split(/\. (?=[A-Z])/) // Split on ". " followed by capital letter
+            .split(/\. (?=[A-Z]|Settled|Water|Line|Deformation|CUW|SA|CPF|SC|LR|LL)/) // Split on period + space + capital/defect codes
             .map(obs => obs.trim())
             .filter(obs => obs.length > 0)
             .map(obs => obs.endsWith('.') ? obs : obs + '.'); // Ensure each ends with period
@@ -1428,16 +1428,25 @@ export default function Dashboard() {
       opt.label?.toLowerCase().includes('runs') && opt.enabled
     );
     
+    console.log('🎯 Status calculation details:', {
+      itemNo: section.itemNo,
+      runsPerShift,
+      minRunsRequired: minRunsRequired?.value,
+      hasMinRequirement: !!minRunsRequired
+    });
+    
     if (minRunsRequired) {
       const minRuns = parseFloat(minRunsRequired.value || '0');
       if (runsPerShift < minRuns) {
         return 'red'; // Below minimum
       } else if (runsPerShift > minRuns * 1.5) {
-        return 'purple'; // Over minimum threshold
+        return 'purple'; // Over minimum threshold  
+      } else {
+        return 'green'; // Exactly meets minimum or just above
       }
     }
     
-    return 'green'; // Meets all requirements
+    return 'green'; // Meets all requirements, no minimum set
   };
 
 
