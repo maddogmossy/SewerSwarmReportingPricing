@@ -253,6 +253,11 @@ export default function PR2ConfigClean() {
           sector
         };
 
+        console.log(`🔧 Setting form data for config ${config.id}:`, {
+          quantityValue: newFormData.quantityOptions?.[0]?.value,
+          rangeLength: newFormData.rangeOptions?.find(r => r.label === 'Length')?.rangeEnd
+        });
+
         setFormData(newFormData);
         
         // Set sectors information
