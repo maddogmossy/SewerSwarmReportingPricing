@@ -262,9 +262,16 @@ export default function PR2ConfigClean() {
     
     setFormData(prev => ({
       ...prev,
-      rangeOptions: prev.rangeOptions.map(opt =>
-        opt.id === optionId ? { ...opt, [field]: value } : opt
-      )
+      rangeOptions: prev.rangeOptions.map(opt => {
+        if (opt.id === optionId) {
+          // When setting rangeEnd (max value), automatically set rangeStart to "0" for 0-X ranges
+          if (field === 'rangeEnd' && value.trim() !== '') {
+            return { ...opt, rangeStart: '0', rangeEnd: value };
+          }
+          return { ...opt, [field]: value };
+        }
+        return opt;
+      })
     }));
   };
 
@@ -1621,25 +1628,25 @@ export default function PR2ConfigClean() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
                       <Label htmlFor="percentage_value" className="text-sm font-medium text-purple-700">
-                        Percentage
+                        Percentage (Max)
                       </Label>
                       <Input
                         id="percentage_value"
-                        placeholder="Enter %"
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeStart || ''}
-                        onChange={(e) => handleRangeValueChange('range_percentage', 'rangeStart', e.target.value)}
+                        placeholder="Enter max %"
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeEnd || ''}
+                        onChange={(e) => handleRangeValueChange('range_percentage', 'rangeEnd', e.target.value)}
                         className="bg-white border-purple-300"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="length_value" className="text-sm font-medium text-purple-700">
-                        Length
+                        Length (Max)
                       </Label>
                       <Input
                         id="length_value"
-                        placeholder="Enter meters"
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeStart || ''}
-                        onChange={(e) => handleRangeValueChange('range_length', 'rangeStart', e.target.value)}
+                        placeholder="Enter max meters"
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
+                        onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
                         className="bg-white border-purple-300"
                       />
                     </div>
