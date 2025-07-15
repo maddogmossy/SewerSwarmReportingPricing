@@ -912,11 +912,11 @@ export default function PR2ConfigClean() {
         </div>
 
         {/* Five Column Layout - Compact Horizontal */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6 justify-center items-center">
           
           {/* Blue Window - Pricing Options */}
-          <Card className="bg-blue-50 h-16">
-            <CardHeader className="pb-0">
+          <Card className="bg-blue-50 h-16 flex flex-col justify-center">
+            <CardHeader className="pb-0 text-center">
               <CardTitle className="text-blue-600 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1">
                   <Coins className="w-3 h-3" />
@@ -925,17 +925,17 @@ export default function PR2ConfigClean() {
                 <Label className="text-xs text-blue-500">Value</Label>
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-1 pb-1">
+            <CardContent className="pt-1 pb-1 flex-1 flex items-center">
               <Input
                 placeholder="Enter pricing value"
-                className="bg-white border-blue-300 h-5 text-xs"
+                className="bg-white border-blue-300 h-5 text-xs w-full"
               />
             </CardContent>
           </Card>
 
           {/* Math Operations - Grey Column */}
-          <Card className="bg-gray-50 h-16">
-            <CardHeader className="pb-0">
+          <Card className="bg-gray-50 h-16 flex flex-col justify-center">
+            <CardHeader className="pb-0 text-center">
               <CardTitle className="text-gray-600 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1">
                   <Calculator className="w-3 h-3" />
@@ -944,9 +944,9 @@ export default function PR2ConfigClean() {
                 <Label className="text-xs text-gray-500">Operation</Label>
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-1 pb-1">
+            <CardContent className="pt-1 pb-1 flex-1 flex items-center">
               <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
-                <SelectTrigger className="bg-white border-gray-300 h-5 text-xs">
+                <SelectTrigger className="bg-white border-gray-300 h-5 text-xs w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -961,8 +961,8 @@ export default function PR2ConfigClean() {
           </Card>
 
           {/* Green Window - Quantity Options */}
-          <Card className="bg-green-50 h-16">
-            <CardHeader className="pb-0">
+          <Card className="bg-green-50 h-16 flex flex-col justify-center">
+            <CardHeader className="pb-0 text-center">
               <CardTitle className="text-green-600 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1">
                   <Package className="w-3 h-3" />
@@ -971,17 +971,17 @@ export default function PR2ConfigClean() {
                 <Label className="text-xs text-green-500">Value</Label>
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-1 pb-1">
+            <CardContent className="pt-1 pb-1 flex-1 flex items-center">
               <Input
                 placeholder="Enter quantity value"
-                className="bg-white border-green-300 h-5 text-xs"
+                className="bg-white border-green-300 h-5 text-xs w-full"
               />
             </CardContent>
           </Card>
 
           {/* Orange Window - Min Quantity Options */}
-          <Card className="bg-orange-50 h-16">
-            <CardHeader className="pb-0">
+          <Card className="bg-orange-50 h-16 flex flex-col justify-center">
+            <CardHeader className="pb-0 text-center">
               <CardTitle className="text-orange-600 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1">
                   <Gauge className="w-3 h-3" />
@@ -990,10 +990,10 @@ export default function PR2ConfigClean() {
                 <Label className="text-xs text-orange-500">Value</Label>
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-1 pb-1">
+            <CardContent className="pt-1 pb-1 flex-1 flex items-center">
               <Input
                 placeholder="Enter min quantity value"
-                className="bg-white border-orange-300 h-5 text-xs"
+                className="bg-white border-orange-300 h-5 text-xs w-full"
               />
             </CardContent>
           </Card>
