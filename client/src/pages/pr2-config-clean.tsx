@@ -1427,15 +1427,17 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="price_dayrate"
-                      checked={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.enabled || false}
-                      onCheckedChange={(checked) => handleOptionToggle('pricingOptions', 'price_dayrate', checked as boolean)}
-                    />
+                  <div className="space-y-2">
                     <Label htmlFor="price_dayrate" className="text-sm font-medium text-blue-700">
                       Day Rate
                     </Label>
+                    <Input
+                      id="price_dayrate"
+                      placeholder="Enter £ value"
+                      value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
+                      onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
+                      className="bg-white border-blue-300"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -1449,15 +1451,17 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="quantity_runs"
-                      checked={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.enabled || false}
-                      onCheckedChange={(checked) => handleOptionToggle('quantityOptions', 'quantity_runs', checked as boolean)}
-                    />
+                  <div className="space-y-2">
                     <Label htmlFor="quantity_runs" className="text-sm font-medium text-green-700">
                       Runs per Shift
                     </Label>
+                    <Input
+                      id="quantity_runs"
+                      placeholder="Enter quantity"
+                      value={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.value || ''}
+                      onChange={(e) => handleValueChange('quantityOptions', 'quantity_runs', e.target.value)}
+                      className="bg-white border-green-300"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -1471,15 +1475,17 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="minquantity_runs"
-                      checked={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.enabled || false}
-                      onCheckedChange={(checked) => handleOptionToggle('minQuantityOptions', 'minquantity_runs', checked as boolean)}
-                    />
+                  <div className="space-y-2">
                     <Label htmlFor="minquantity_runs" className="text-sm font-medium text-orange-700">
                       Min Runs per Shift
                     </Label>
+                    <Input
+                      id="minquantity_runs"
+                      placeholder="Enter minimum"
+                      value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || ''}
+                      onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
+                      className="bg-white border-orange-300"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -1493,25 +1499,47 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="range_percentage"
-                      checked={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.enabled || false}
-                      onCheckedChange={(checked) => handleRangeToggle('range_percentage', checked as boolean)}
-                    />
+                  <div className="space-y-2">
                     <Label htmlFor="range_percentage" className="text-sm font-medium text-purple-700">
                       Percentage
                     </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="range_percentage_start"
+                        placeholder="From %"
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeStart || ''}
+                        onChange={(e) => handleRangeChange('range_percentage', 'start', e.target.value)}
+                        className="bg-white border-purple-300 flex-1"
+                      />
+                      <Input
+                        id="range_percentage_end"
+                        placeholder="To %"
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeEnd || ''}
+                        onChange={(e) => handleRangeChange('range_percentage', 'end', e.target.value)}
+                        className="bg-white border-purple-300 flex-1"
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="range_length"
-                      checked={formData.rangeOptions.find(opt => opt.id === 'range_length')?.enabled || false}
-                      onCheckedChange={(checked) => handleRangeToggle('range_length', checked as boolean)}
-                    />
+                  <div className="space-y-2">
                     <Label htmlFor="range_length" className="text-sm font-medium text-purple-700">
                       Length
                     </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="range_length_start"
+                        placeholder="From m"
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeStart || ''}
+                        onChange={(e) => handleRangeChange('range_length', 'start', e.target.value)}
+                        className="bg-white border-purple-300 flex-1"
+                      />
+                      <Input
+                        id="range_length_end"
+                        placeholder="To m"
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
+                        onChange={(e) => handleRangeChange('range_length', 'end', e.target.value)}
+                        className="bg-white border-purple-300 flex-1"
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
