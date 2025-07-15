@@ -705,6 +705,40 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.3' to return to this stable checkpoint
 
+## REV V6.0 CHECKPOINT - ENHANCED COMPACT INPUT LAYOUT SYSTEM LOCKED (July 15, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE UI LAYOUT OPTIMIZATION:**
+- **9-Column Grid System**: Blue (2 cols), Math (1 col), Green (2 cols), Orange (2 cols), Purple (2 cols)
+- **Horizontal Input Alignment**: All input fields positioned inline with their labels for maximum space efficiency
+- **Compact Input Design**: Consistent h-7 height and py-2 padding across all windows for minimal vertical space
+- **Character Limits**: Blue window (10 chars), Green/Orange windows (4 chars) with maxLength validation
+- **Math Window Optimized**: Narrowed to half size, removed "Operator" label, centered symbol dropdown (÷, ×, +, -)
+- **Purple Window Enhanced**: Replaced "Percentage" with "%" and moved "(Max)" inline for space efficiency
+- **Add Button Integration**: Green and Purple windows include small "Add" buttons in headers with color-matched styling
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Responsive Layout**: lg:col-span-2 for main windows, lg:col-span-1 for math window
+- **Flex Layout**: flex items-center gap-2 for horizontal label/input alignment
+- **Consistent Styling**: flex-shrink-0 for labels, flex-1 for inputs, matching border colors per window
+- **Space Optimization**: Shortened placeholders ("£ value", "qty", "min", "max %", "max m")
+- **ID Display Management**: Removed "(ID: 48)" from green window only to optimize "Quantity Options" line space
+- **Math Dropdown**: w-16 width for compact symbol selection with justify-center positioning
+
+🔒 **USER-CONFIRMED LAYOUT:**
+- **Blue Window**: "Day Rate" + 10-character input (inline)
+- **Math Window**: Centered ÷ symbol dropdown (half width)
+- **Green Window**: "Runs per Shift" + 4-character input + Add button (inline)
+- **Orange Window**: "Min Runs per Shift" + 4-character input (inline)
+- **Purple Window**: "% (Max)" + input and "Length (Max)" + input side-by-side + Add button
+
+🔒 **COMPLETE SYSTEM FEATURES MAINTAINED:**
+- **Authentic Data Only**: Clean ID 48 configuration with empty values ready for user input
+- **Sector Isolation**: Proper sector-based filtering without cross-contamination
+- **Four-Window Configuration**: Complete CRUD operations across all pricing windows
+- **Database Integration**: Full backend API support with proper validation and persistence
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.0' to return to this stable checkpoint
+
 ## REV V5.3 CHECKPOINT - EDIT BUTTON SYSTEM FULLY OPERATIONAL (July 14, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE EDIT BUTTON SYSTEM:**
