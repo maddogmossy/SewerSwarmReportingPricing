@@ -1411,6 +1411,7 @@ export default function PR2ConfigClean() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
                 {isEditing ? 'Edit' : 'Create'} {formData.categoryName || 'Configuration'}
+                {isEditing && editId && <span className="text-sm text-gray-500 ml-2">(ID: {editId})</span>}
               </h1>
               <p className="text-gray-600 mt-1">
                 Sector: <span className="font-medium text-blue-600">{sector}</span>
@@ -1520,7 +1521,7 @@ export default function PR2ConfigClean() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
                     <Coins className="w-4 h-4" />
-                    Price/Cost Options
+                    Price/Cost Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -1572,7 +1573,7 @@ export default function PR2ConfigClean() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2">
                     <Package className="w-4 h-4" />
-                    Quantity Options
+                    Quantity Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -1596,7 +1597,7 @@ export default function PR2ConfigClean() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
                     <Gauge className="w-4 h-4" />
-                    Min Quantity Options
+                    Min Quantity Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -1620,7 +1621,7 @@ export default function PR2ConfigClean() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
                     <Zap className="w-4 h-4" />
-                    Range Options
+                    Range Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
