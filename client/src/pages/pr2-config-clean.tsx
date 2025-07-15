@@ -911,7 +911,7 @@ export default function PR2ConfigClean() {
         </div>
 
         {/* Five Column Layout - Compact Horizontal */}
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-3 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-6">
           
           {/* Blue Window - Pricing Options */}
           <Card className="bg-blue-50 h-80">
