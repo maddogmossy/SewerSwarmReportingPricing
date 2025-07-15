@@ -680,13 +680,123 @@ export default function PR2ConfigClean() {
     }));
   };
 
+  // Auto-calculate sequential ranges
+  const calculateSequentialRanges = (rangeOptions: RangeOption[], updatedOptionId: string, newEndValue: string) => {
+    const enabledOptions = rangeOptions
+      .filter(opt => opt.enabled)
+      .sort((a, b) => {
+        // Sort by the order they were created/enabled
+        const aIndex = rangeOptions.findIndex(opt => opt.id === a.id);
+        const bIndex = rangeOptions.findIndex(opt => opt.id === b.id);
+        return aIndex - bIndex;
+      });
+
+    return rangeOptions.map(option => {
+      if (!option.enabled) return option;
+      
+      const optionIndex = enabledOptions.findIndex(opt => opt.id === option.id);
+      
+      if (option.id === updatedOptionId) {
+        // For the option being updated, calculate the start based on previous ranges
+        const rangeStart = optionIndex === 0 ? '0' : (parseInt(enabledOptions[optionIndex - 1].rangeEnd) + 1).toString();
+        return { ...option, rangeStart, rangeEnd: newEndValue };
+      } else if (optionIndex > enabledOptions.findIndex(opt => opt.id === updatedOptionId)) {
+        // For options after the updated one, recalculate their ranges
+        const rangeStart = optionIndex === 0 ? '0' : (parseInt(enabledOptions[optionIndex - 1].rangeEnd) + 1).toString();
+        return { ...option, rangeStart };
+      } else if (optionIndex === 0) {
+        // First option always starts at 0
+        return { ...option, rangeStart: '0' };
+      }
+      
+      return option;
+    });
+  };
+
+  // Validate range values
+  const validateRangeValue = (value: string, optionId: string, field: 'rangeStart' | 'rangeEnd') => {
+    const numValue = parseInt(value);
+    if (isNaN(numValue) || numValue < 0) {
+      return { isValid: false, message: "Please enter a valid positive number" };
+    }
+    
+    if (field === 'rangeEnd') {
+      // Check if this creates a valid sequence
+      const enabledOptions = formData.rangeOptions.filter(opt => opt.enabled);
+      const currentIndex = enabledOptions.findIndex(opt => opt.id === optionId);
+      
+      if (currentIndex > 0) {
+        const prevOption = enabledOptions[currentIndex - 1];
+        const expectedStart = parseInt(prevOption.rangeEnd) + 1;
+        if (numValue <= parseInt(prevOption.rangeEnd)) {
+          return { 
+            isValid: false, 
+            message: `Value must be greater than ${prevOption.rangeEnd} (previous range end)` 
+          };
+        }
+      }
+    }
+    
+    return { isValid: true, message: "" };
+  };
+
   const updateRangeOption = (optionId: string, field: 'enabled' | 'rangeStart' | 'rangeEnd', value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      rangeOptions: prev.rangeOptions.map(opt =>
-        opt.id === optionId ? { ...opt, [field]: value } : opt
-      )
-    }));
+    if (field === 'enabled') {
+      setFormData(prev => {
+        const updated = prev.rangeOptions.map(opt =>
+          opt.id === optionId ? { ...opt, [field]: value } : opt
+        );
+        
+        if (value) {
+          // When enabling, auto-calculate the start position
+          const enabledCount = updated.filter(opt => opt.enabled).length;
+          const optionIndex = enabledCount - 1;
+          
+          if (optionIndex === 0) {
+            // First option: 0 to empty (user will fill end)
+            return {
+              ...prev,
+              rangeOptions: updated.map(opt =>
+                opt.id === optionId ? { ...opt, rangeStart: '0', rangeEnd: '' } : opt
+              )
+            };
+          } else {
+            // Subsequent options: calculate start based on previous
+            const enabledOptions = updated.filter(opt => opt.enabled && opt.id !== optionId);
+            const lastOption = enabledOptions[enabledOptions.length - 1];
+            const newStart = lastOption?.rangeEnd ? (parseInt(lastOption.rangeEnd) + 1).toString() : '0';
+            
+            return {
+              ...prev,
+              rangeOptions: updated.map(opt =>
+                opt.id === optionId ? { ...opt, rangeStart: newStart, rangeEnd: '' } : opt
+              )
+            };
+          }
+        }
+        
+        return { ...prev, rangeOptions: updated };
+      });
+    } else if (field === 'rangeEnd') {
+      // Validate and auto-calculate sequential ranges
+      const validation = validateRangeValue(value, optionId, field);
+      if (!validation.isValid) {
+        // Show warning but still update (user feedback)
+        console.warn(`Range validation warning: ${validation.message}`);
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        rangeOptions: calculateSequentialRanges(prev.rangeOptions, optionId, value)
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        rangeOptions: prev.rangeOptions.map(opt =>
+          opt.id === optionId ? { ...opt, [field]: value } : opt
+        )
+      }));
+    }
   };
 
   const editRangeOption = (option: RangeOption) => {
@@ -837,6 +947,66 @@ export default function PR2ConfigClean() {
     setFormData(prev => ({ ...prev, description: autoDesc }));
   }, [formData.pricingOptions, formData.quantityOptions, formData.minQuantityOptions, formData.rangeOptions, formData.mathOperators]);
 
+  // Auto-save functionality
+  const handleAutoSaveAndNavigate = (destination: string) => {
+    return async () => {
+      // Check if there are any enabled options to save
+      const hasEnabledOptions = formData.pricingOptions.some(opt => opt.enabled) ||
+                               formData.quantityOptions.some(opt => opt.enabled) ||
+                               formData.minQuantityOptions.some(opt => opt.enabled) ||
+                               formData.rangeOptions.some(opt => opt.enabled);
+
+      if (hasEnabledOptions && formData.categoryName) {
+        try {
+          console.log('🔄 Auto-saving configuration before navigation...');
+          
+          const payload = {
+            categoryName: formData.categoryName,
+            description: formData.description,
+            sectors: selectedSectors,
+            pricingOptions: formData.pricingOptions,
+            quantityOptions: formData.quantityOptions,
+            minQuantityOptions: formData.minQuantityOptions,
+            rangeOptions: formData.rangeOptions,
+            mathOperators: formData.mathOperators,
+            pricingStackOrder: formData.pricingStackOrder,
+            quantityStackOrder: formData.quantityStackOrder,
+            minQuantityStackOrder: formData.minQuantityStackOrder,
+            rangeStackOrder: formData.rangeStackOrder
+          };
+
+          if (isEditing && editId) {
+            // Update existing configuration
+            await fetch(`/api/pr2-clean/${editId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            console.log('✅ Configuration updated successfully');
+          } else {
+            // Create new configuration
+            await fetch('/api/pr2-clean', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            console.log('✅ Configuration saved successfully');
+          }
+        } catch (error) {
+          console.error('❌ Auto-save failed:', error);
+          // Continue with navigation even if save fails
+        }
+      }
+
+      // Navigate to destination with sector context
+      if (destination === '/pr2-pricing') {
+        setLocation(`${destination}?sector=${sector}`);
+      } else {
+        setLocation(destination);
+      }
+    };
+  };
+
   return (
     <>
       <div className="min-h-screen bg-gray-50 p-6">
@@ -855,7 +1025,7 @@ export default function PR2ConfigClean() {
             {/* Navigation Buttons */}
             <div className="flex gap-3">
               <Button
-                onClick={() => setLocation(`/pr2-pricing?sector=${sector}`)}
+                onClick={handleAutoSaveAndNavigate('/pr2-pricing')}
                 variant="outline"
                 className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
               >
@@ -864,7 +1034,7 @@ export default function PR2ConfigClean() {
               </Button>
               
               <Button
-                onClick={() => setLocation('/dashboard')}
+                onClick={handleAutoSaveAndNavigate('/dashboard')}
                 variant="outline"
                 className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
               >
@@ -1207,23 +1377,38 @@ export default function PR2ConfigClean() {
                       </Button>
                     </div>
                     {option.enabled && (
-                      <div className="grid grid-cols-2 gap-1 mt-1">
-                        <Input
-                          key={`${option.id}-start-${option.rangeStart}-${Date.now()}`}
-                          data-range-id={`${option.id}-start`}
-                          defaultValue={option.rangeStart}
-                          onChange={(e) => updateRangeOption(option.id, 'rangeStart', e.target.value)}
-                          placeholder="R1"
-                          className="text-xs h-6"
-                        />
-                        <Input
-                          key={`${option.id}-end-${option.rangeEnd}-${Date.now()}`}
-                          data-range-id={`${option.id}-end`}
-                          defaultValue={option.rangeEnd}
-                          onChange={(e) => updateRangeOption(option.id, 'rangeEnd', e.target.value)}
-                          placeholder="R2"
-                          className="text-xs h-6"
-                        />
+                      <div className="space-y-1 mt-1">
+                        <div className="grid grid-cols-2 gap-1">
+                          <Input
+                            key={`${option.id}-start-${option.rangeStart}-${Date.now()}`}
+                            data-range-id={`${option.id}-start`}
+                            value={option.rangeStart}
+                            readOnly
+                            placeholder="Auto"
+                            className="text-xs h-6 bg-gray-50 text-gray-600"
+                          />
+                          <Input
+                            key={`${option.id}-end-${option.rangeEnd}-${Date.now()}`}
+                            data-range-id={`${option.id}-end`}
+                            value={option.rangeEnd}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              const validation = validateRangeValue(value, option.id, 'rangeEnd');
+                              if (!validation.isValid && value) {
+                                console.warn(`⚠️ Range validation: ${validation.message}`);
+                              }
+                              updateRangeOption(option.id, 'rangeEnd', value);
+                            }}
+                            placeholder="Enter end value"
+                            className="text-xs h-6"
+                          />
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {option.rangeStart && option.rangeEnd ? 
+                            `Range: ${option.rangeStart}-${option.rangeEnd}` : 
+                            'Auto-calculates start from previous range'
+                          }
+                        </div>
                       </div>
                     )}
                   </div>

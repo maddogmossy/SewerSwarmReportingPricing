@@ -566,30 +566,39 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.1' to return to this stable checkpoint
 
-## REV V5.4 CHECKPOINT - CONSISTENT ENTRY POINT NAVIGATION LOCKED (July 15, 2025)
+## REV V5.5 CHECKPOINT - AUTOMATIC RANGE CALCULATION & AUTO-SAVE SYSTEM LOCKED (July 15, 2025)
 
-🔒 **PRODUCTION READY - COMPLETE ENTRY POINT CONSISTENCY:**
-- **Fixed Category Name Duplication:** Resolved "150mm 150mm CCTV Jet Vac Configuration" issue by using configName from URL parameters directly
-- **Enhanced URL Parameter Parsing:** Switched from wouter to browser's native `window.location.search` for reliable parameter parsing
-- **Consistent Pipe Size Context:** Both dashboard and pricing page entry points now include proper pipe size parameters
-- **Dynamic Configuration Names:** System generates "150mm CCTV Jet Vac Configuration" consistently from all entry points
-- **Unified Navigation Logic:** Pricing page now adds default 150mm pipe size context to match dashboard behavior
+🔒 **PRODUCTION READY - INTELLIGENT RANGE CALCULATION & AUTO-SAVE:**
+- **Automatic Range Calculation:** First range starts at 0, subsequent ranges automatically calculate start positions (0-50%, 51-75%, 76-100%)
+- **Sequential Range Logic:** When user enters end value (e.g., 50), system automatically sets start as 0 for first range, 51 for second range, etc.
+- **Read-Only Start Fields:** Range start values are auto-calculated and read-only, users only enter end values
+- **Range Validation System:** Console warnings for invalid values that don't follow sequential rules
+- **Auto-Save on Navigation:** Configuration automatically saves when navigating back to dashboard or pricing page
+- **Visual Range Feedback:** Shows current range (e.g., "Range: 0-50") with helpful text about auto-calculation
+- **Back to Pricing Button:** Added navigation button to return to pricing page with sector context
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Fixed Duplication Logic:** Changed `${pipeSize}mm ${getCategoryName(categoryId)}` to use `configName || getCategoryName(categoryId)`
-- **Enhanced Pricing Navigation:** Added `pipeSize=150` and dynamic `configName` generation to pricing page navigation
-- **Category Name Mapping:** Implemented comprehensive category display name mapping for all equipment types
-- **URL Parameter Consistency:** Both entry points now create identical URL structures with pipe size context
-- **Browser API Integration:** Replaced wouter location parsing with native `URLSearchParams` for reliable parameter extraction
+- **Sequential Calculation Logic:** `calculateSequentialRanges()` function automatically determines start values based on previous range ends
+- **Range Validation:** `validateRangeValue()` function checks for valid positive numbers and proper sequence
+- **Auto-Save Function:** `handleAutoSaveAndNavigate()` saves configuration before navigation if enabled options exist
+- **Enhanced Range UI:** Read-only start fields with gray background, active end fields with validation
+- **Navigation Context:** Auto-save maintains sector context when routing back to pricing page
+- **Console Feedback:** Clear logging for auto-save operations and range validation warnings
 
-🔒 **USER-CONFIRMED WORKING:**
-- **Dashboard Entry:** Creates "150mm CCTV Jet Vac Configuration" with proper pipe size context
-- **Pricing Page Entry:** Now also creates "150mm CCTV Jet Vac Configuration" (consistent behavior)
-- **URL Structure:** Both paths generate `/pr2-config-clean?sector=utilities&categoryId=cctv-jet-vac&pipeSize=150&configName=150mm%20CCTV%20Jet%20Vac%20Configuration`
-- **Page Titles:** Consistent "Create 150mm CCTV Jet Vac Configuration" across all entry points
-- **Dropdown Headers:** Shows "150mm Pipe Configuration Options" from both navigation paths
+🔒 **USER WORKFLOW:**
+1. **Range Setup:** User checks range option checkbox → system sets start to 0 (or next sequential value)
+2. **End Value Entry:** User enters end value (e.g., 50) → system shows "Range: 0-50"
+3. **Next Range:** User enables second range → system auto-sets start to 51, user enters end value
+4. **Auto-Save Navigation:** User clicks "Back to Pricing" or "Dashboard" → system auto-saves and navigates
+5. **Dashboard Integration:** Saved ranges match dashboard validation rules for green status indicators
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v5.4' to return to this stable checkpoint
+🔒 **RANGE CALCULATION EXAMPLES:**
+- **First Range:** User enters 50 → becomes "0-50"
+- **Second Range:** User enters 75 → becomes "51-75" 
+- **Third Range:** User enters 100 → becomes "76-100"
+- **Length Ranges:** Same logic applies to length fields for consistent validation
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v5.5' to return to this stable checkpoint
 
 ## REV V5.3 CHECKPOINT - EDIT BUTTON SYSTEM FULLY OPERATIONAL (July 14, 2025)
 
