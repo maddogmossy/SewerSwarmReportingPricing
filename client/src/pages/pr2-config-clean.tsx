@@ -1580,17 +1580,18 @@ export default function PR2ConfigClean() {
                     </Button>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="quantity_runs" className="text-sm font-medium text-green-700">
+                <CardContent className="py-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="quantity_runs" className="text-sm font-medium text-green-700 flex-shrink-0">
                       Runs per Shift
                     </Label>
                     <Input
                       id="quantity_runs"
-                      placeholder="Enter quantity"
+                      placeholder="qty"
+                      maxLength={4}
                       value={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('quantityOptions', 'quantity_runs', e.target.value)}
-                      className="bg-white border-green-300"
+                      className="bg-white border-green-300 h-7 text-sm flex-1"
                       data-field="runs-per-shift"
                       data-window="green"
                       data-option-id="quantity_runs"
@@ -1607,17 +1608,18 @@ export default function PR2ConfigClean() {
                     Min Quantity Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="minquantity_runs" className="text-sm font-medium text-orange-700">
+                <CardContent className="py-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="minquantity_runs" className="text-sm font-medium text-orange-700 flex-shrink-0">
                       Min Runs per Shift
                     </Label>
                     <Input
                       id="minquantity_runs"
-                      placeholder="Enter minimum"
+                      placeholder="min"
+                      maxLength={4}
                       value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
-                      className="bg-white border-orange-300"
+                      className="bg-white border-orange-300 h-7 text-sm flex-1"
                       data-field="min-runs-per-shift"
                       data-window="orange"
                       data-option-id="minquantity_runs"
