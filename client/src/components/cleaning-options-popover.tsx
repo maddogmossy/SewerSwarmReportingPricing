@@ -170,11 +170,20 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                           // Auto-save current equipment order before navigating
                           localStorage.setItem('equipment-order', JSON.stringify(equipmentOrder));
                           
-                          // Navigate to PR2 pricing page with pipe size configuration
-                          const pipeSize = sectionData.pipeSize.replace(/mm$/i, '');
-                          const configName = getConfigurationName();
-                          
-                          setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentOrder.join(',')}&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`);
+                          // For Option 1 (first in equipmentOrder), route directly to CCTV/Jet Vac configuration
+                          if (index === 0) {
+                            const pipeSize = sectionData.pipeSize.replace(/mm$/i, '');
+                            const configName = `${pipeSize}mm CCTV/Jet Vac Configuration`;
+                            
+                            // Route directly to CCTV/Jet Vac configuration with pipe size context
+                            setLocation(`/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-jet-vac&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`);
+                          } else {
+                            // For Option 2, route to CCTV/Van Pack configuration
+                            const pipeSize = sectionData.pipeSize.replace(/mm$/i, '');
+                            const configName = `${pipeSize}mm CCTV/Van Pack Configuration`;
+                            
+                            setLocation(`/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-van-pack&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`);
+                          }
                         }}
                         className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
                       >

@@ -237,13 +237,29 @@ export default function PR2ConfigClean() {
 
   // Load configurations by category and sector to find the right one for editing
   const { data: sectorConfigs } = useQuery({
-    queryKey: ['/api/pr2-clean', 'sector-category', sector, categoryId],
+    queryKey: ['/api/pr2-clean', 'sector-category', sector, categoryId, pipeSize],
     queryFn: async () => {
       const response = await apiRequest('GET', `/api/pr2-clean?categoryId=${categoryId}`);
       const configs = await response.json();
       console.log(`🔍 Found ${configs.length} configs for categoryId ${categoryId}:`, configs);
       
-      // Prefer configuration that includes the current sector
+      // If we have pipe size, look for pipe size-specific configuration first
+      if (pipeSize) {
+        const pipeSizeConfig = configs.find(config => 
+          config.categoryName && config.categoryName.includes(`${pipeSize}mm`) &&
+          config.sectors && Array.isArray(config.sectors) && config.sectors.includes(sector)
+        );
+        
+        if (pipeSizeConfig) {
+          console.log(`✅ Found pipe size-specific configuration for ${pipeSize}mm:`, pipeSizeConfig);
+          return pipeSizeConfig;
+        } else {
+          console.log(`⚠️ No pipe size-specific configuration found for ${pipeSize}mm, will create new one`);
+          return null; // Return null to indicate we need to create a new config
+        }
+      }
+      
+      // Fallback to general configuration that includes the current sector
       const sectorConfig = configs.find(config => 
         config.sectors && Array.isArray(config.sectors) && config.sectors.includes(sector)
       );
@@ -256,7 +272,7 @@ export default function PR2ConfigClean() {
         return configs[0];
       }
     },
-    enabled: isEditing && !!categoryId && !editId,
+    enabled: !isEditing && !!categoryId && !editId, // Only when not editing with specific ID
   });
 
   // Load all configurations for this category to show in "Saved Configurations"
@@ -384,8 +400,23 @@ export default function PR2ConfigClean() {
       console.log(`🔍 Starting new config with sector: ${sector}`);
       setSelectedSectors([sector]);
       setSectorsWithConfig([]);
+      
+      // If we have pipe size but no existing config, create new pipe size-specific config
+      if (pipeSize && categoryId && !sectorConfigs) {
+        console.log(`🆕 Creating new pipe size-specific configuration for ${pipeSize}mm`);
+        
+        // Set the category name to include pipe size
+        const pipeSizeConfigName = `${pipeSize}mm ${getCategoryName(categoryId)}`;
+        console.log(`🆕 Setting category name to: ${pipeSizeConfigName}`);
+        
+        setFormData(prev => ({
+          ...prev,
+          categoryName: pipeSizeConfigName,
+          description: `Configuration for ${pipeSize}mm ${getCategoryName(categoryId).toLowerCase()}`
+        }));
+      }
     }
-  }, [isEditing, existingConfig, sectorConfigs, sector, editId]);
+  }, [isEditing, existingConfig, sectorConfigs, sector, editId, pipeSize, categoryId]);
 
   // Save configuration with proper sector management
   const saveConfiguration = useMutation({
