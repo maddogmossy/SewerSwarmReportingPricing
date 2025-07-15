@@ -815,6 +815,24 @@ export default function PR2ConfigClean() {
     setAddQuantityDialogOpen(false);
   };
 
+  // Simple add new quantity input function (no dialog needed)
+  const addNewQuantityInput = () => {
+    const newOption: PricingOption = {
+      id: `quantity_${Date.now()}`,
+      label: `No ${formData.quantityOptions.length + 1}`,
+      enabled: true,
+      value: ''
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      quantityOptions: [...prev.quantityOptions, newOption],
+      quantityStackOrder: [...prev.quantityStackOrder, newOption.id]
+    }));
+    
+    console.log(`🔧 Added new quantity input: ${newOption.label}`);
+  };
+
   const deleteQuantityOption = (optionId: string) => {
     setFormData(prev => ({
       ...prev,
@@ -1579,27 +1597,32 @@ export default function PR2ConfigClean() {
                       variant="outline"
                       size="sm"
                       className="h-4 px-1 text-xs border-green-300 text-green-700 hover:bg-green-100"
+                      onClick={() => addNewQuantityInput()}
                     >
                       Add
                     </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="quantity_runs" className="text-xs font-medium text-green-700 flex-shrink-0">
-                      No
-                    </Label>
-                    <Input
-                      id="quantity_runs"
-                      placeholder="qty"
-                      maxLength={4}
-                      value={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.value || ''}
-                      onChange={(e) => handleValueChange('quantityOptions', 'quantity_runs', e.target.value)}
-                      className="bg-white border-green-300 h-6 text-xs w-16"
-                      data-field="runs-per-shift"
-                      data-window="green"
-                      data-option-id="quantity_runs"
-                    />
+                  <div className="space-y-1">
+                    {formData.quantityOptions.map((option, index) => (
+                      <div key={option.id} className="flex items-center gap-2">
+                        <Label htmlFor={option.id} className="text-xs font-medium text-green-700 flex-shrink-0">
+                          No{formData.quantityOptions.length > 1 ? ` ${index + 1}` : ''}
+                        </Label>
+                        <Input
+                          id={option.id}
+                          placeholder="qty"
+                          maxLength={4}
+                          value={option.value || ''}
+                          onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                          className="bg-white border-green-300 h-6 text-xs w-16"
+                          data-field={`quantity-${index}`}
+                          data-window="green"
+                          data-option-id={option.id}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
