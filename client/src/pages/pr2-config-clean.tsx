@@ -914,23 +914,23 @@ export default function PR2ConfigClean() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-6">
           
           {/* Blue Window - Pricing Options */}
-          <Card className="bg-blue-50 h-32">
+          <Card className="bg-blue-50 h-24">
             <CardHeader className="pb-1">
-              <CardTitle className="text-blue-600 flex items-center gap-1 text-xs">
-                <Coins className="w-3 h-3" />
-                Pricing
+              <CardTitle className="text-blue-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Coins className="w-3 h-3" />
+                  Pricing
+                </div>
+                <Label className="text-xs text-blue-500">Value</Label>
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-1">
               {/* Value Input Box */}
               <div className="space-y-1">
-                <div className="flex flex-col gap-1">
-                  <Label className="text-xs text-blue-500">Value</Label>
-                  <Input
-                    placeholder="Enter pricing value"
-                    className="bg-white border-blue-300 h-5 text-xs"
-                  />
-                </div>
+                <Input
+                  placeholder="Enter pricing value"
+                  className="bg-white border-blue-300 h-5 text-xs"
+                />
               </div>
 
               {/* Pricing Options List */}
@@ -1114,52 +1114,52 @@ export default function PR2ConfigClean() {
           </Dialog>
 
           {/* Math Operations - Grey Column */}
-          <Card className="bg-gray-50 h-32">
+          <Card className="bg-gray-50 h-24">
             <CardHeader className="pb-1">
-              <CardTitle className="text-gray-600 flex items-center gap-1 text-xs">
-                <Calculator className="w-3 h-3" />
-                Math
+              <CardTitle className="text-gray-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Calculator className="w-3 h-3" />
+                  Math
+                </div>
+                <Label className="text-xs text-gray-500">Operation</Label>
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-1">
               <div className="space-y-1">
-                <div className="flex flex-col gap-1">
-                  <Label className="text-xs text-gray-500">Operation</Label>
-                  <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
-                    <SelectTrigger className="bg-white border-gray-300 h-5 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="N/A">N/A</SelectItem>
-                      <SelectItem value="+">+ (Add)</SelectItem>
-                      <SelectItem value="-">- (Subtract)</SelectItem>
-                      <SelectItem value="×">× (Multiply)</SelectItem>
-                      <SelectItem value="÷">÷ (Divide)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
+                  <SelectTrigger className="bg-white border-gray-300 h-5 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="N/A">N/A</SelectItem>
+                    <SelectItem value="+">+ (Add)</SelectItem>
+                    <SelectItem value="-">- (Subtract)</SelectItem>
+                    <SelectItem value="×">× (Multiply)</SelectItem>
+                    <SelectItem value="÷">÷ (Divide)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
 
           {/* Green Window - Quantity Options */}
-          <Card className="bg-green-50 h-32">
+          <Card className="bg-green-50 h-24">
             <CardHeader className="pb-1">
-              <CardTitle className="text-green-600 flex items-center gap-1 text-xs">
-                <Package className="w-3 h-3" />
-                Quantity
+              <CardTitle className="text-green-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Package className="w-3 h-3" />
+                  Quantity
+                </div>
+                <Label className="text-xs text-green-500">Value</Label>
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-1">
               {/* Value Input Box */}
               <div className="space-y-1">
-                <div className="flex flex-col gap-1">
-                  <Label className="text-xs text-green-500">Value</Label>
-                  <Input
-                    placeholder="Enter quantity value"
-                    className="bg-white border-green-300 h-5 text-xs"
-                  />
-                </div>
+                <Input
+                  placeholder="Enter quantity value"
+                  className="bg-white border-green-300 h-5 text-xs"
+                />
               </div>
 
               {/* Quantity Options List */}
@@ -1216,23 +1216,23 @@ export default function PR2ConfigClean() {
           </Card>
 
           {/* Orange Window - Min Quantity Options */}
-          <Card className="bg-orange-50 h-32">
+          <Card className="bg-orange-50 h-24">
             <CardHeader className="pb-1">
-              <CardTitle className="text-orange-600 flex items-center gap-1 text-xs">
-                <Gauge className="w-3 h-3" />
-                Min Quantity
+              <CardTitle className="text-orange-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Gauge className="w-3 h-3" />
+                  Min Quantity
+                </div>
+                <Label className="text-xs text-orange-500">Value</Label>
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-1">
               {/* Value Input Box */}
               <div className="space-y-1">
-                <div className="flex flex-col gap-1">
-                  <Label className="text-xs text-orange-500">Value</Label>
-                  <Input
-                    placeholder="Enter min quantity value"
-                    className="bg-white border-orange-300 h-5 text-xs"
-                  />
-                </div>
+                <Input
+                  placeholder="Enter min quantity value"
+                  className="bg-white border-orange-300 h-5 text-xs"
+                />
               </div>
 
               {/* Min Quantity Options List */}
@@ -1288,11 +1288,17 @@ export default function PR2ConfigClean() {
           </Card>
 
           {/* Purple Window - Ranges */}
-          <Card className="bg-purple-50 h-32">
+          <Card className="bg-purple-50 h-24">
             <CardHeader className="pb-1">
-              <CardTitle className="text-purple-600 flex items-center gap-1 text-xs">
-                <Zap className="w-3 h-3" />
-                Ranges
+              <CardTitle className="text-purple-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Zap className="w-3 h-3" />
+                  Ranges
+                </div>
+                <div className="flex gap-2">
+                  <Label className="text-xs text-purple-500">From</Label>
+                  <Label className="text-xs text-purple-500">To</Label>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-1">
@@ -1300,14 +1306,12 @@ export default function PR2ConfigClean() {
               <div className="space-y-1">
                 <div className="flex gap-1">
                   <div className="flex-1">
-                    <Label className="text-xs text-purple-500">From</Label>
                     <Input
                       placeholder="R1"
                       className="bg-white border-purple-300 h-5 text-xs"
                     />
                   </div>
                   <div className="flex-1">
-                    <Label className="text-xs text-purple-500">To</Label>
                     <Input
                       placeholder="R2"
                       className="bg-white border-purple-300 h-5 text-xs"
