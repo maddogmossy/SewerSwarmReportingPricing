@@ -1802,12 +1802,12 @@ export default function PR2ConfigClean() {
                       Range Options
                     </span>
                     <Button
-                      variant="outline"
+                      variant="default"
                       size="sm"
-                      className="h-4 px-1 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
+                      className="h-6 px-3 text-xs bg-green-600 hover:bg-green-700 text-white border-0 shadow-sm font-medium"
                       onClick={() => addNewInputsToAllWindows()}
                     >
-                      Add
+                      ➕ Add New
                     </Button>
                   </CardTitle>
                 </CardHeader>
