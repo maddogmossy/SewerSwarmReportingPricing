@@ -81,6 +81,17 @@ export default function PR2ConfigClean() {
   const configName = urlParams.get('configName');
   const isEditing = !!editId;
   
+  // Debug URL parameters
+  console.log('🔍 PR2ConfigClean URL params:', {
+    location,
+    sector,
+    categoryId,
+    editId,
+    pipeSize,
+    configName,
+    isEditing
+  });
+  
   // Determine category name based on categoryId and pipe size for dynamic naming
   const getCategoryName = (categoryId: string) => {
     // If we have a custom config name from URL (pipe size specific), use it
