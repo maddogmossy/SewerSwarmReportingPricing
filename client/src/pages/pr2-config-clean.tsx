@@ -852,15 +852,26 @@ export default function PR2ConfigClean() {
               </p>
             </div>
             
-            {/* Dashboard Navigation */}
-            <Button
-              onClick={() => setLocation('/dashboard')}
-              variant="outline"
-              className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
-            >
-              <BarChart3 className="h-5 w-5 text-green-600" />
-              Dashboard
-            </Button>
+            {/* Navigation Buttons */}
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setLocation(`/pr2-pricing?sector=${sector}`)}
+                variant="outline"
+                className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
+              >
+                <ChevronLeft className="h-5 w-5 text-blue-600" />
+                Back to Pricing
+              </Button>
+              
+              <Button
+                onClick={() => setLocation('/dashboard')}
+                variant="outline"
+                className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
+              >
+                <BarChart3 className="h-5 w-5 text-green-600" />
+                Dashboard
+              </Button>
+            </div>
           </div>
 
         {/* Sector Selection Checkboxes */}
