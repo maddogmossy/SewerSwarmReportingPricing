@@ -553,13 +553,18 @@ export default function Dashboard() {
         const defectTypeIcon = section.defectType === 'service' ? '💧' : 
                               section.defectType === 'structural' ? '🔧' : '';
         return (
-          <div className="text-center font-medium flex items-center justify-center gap-1">
-            <span>{itemSuffix}</span>
-            {defectTypeIcon && (
-              <span className="text-xs" title={`${section.defectType} defect type`}>
-                {defectTypeIcon}
-              </span>
-            )}
+          <div className="text-center font-medium">
+            <div className="flex items-center justify-center gap-1">
+              <span>{itemSuffix}</span>
+              {defectTypeIcon && (
+                <span className="text-xs" title={`${section.defectType} defect type`}>
+                  {defectTypeIcon}
+                </span>
+              )}
+            </div>
+            <div className="text-xs text-gray-400 mt-1">
+              ID: {section.id}
+            </div>
           </div>
         );
       case 'inspectionNo':
