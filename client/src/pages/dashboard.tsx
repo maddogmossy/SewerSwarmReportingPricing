@@ -822,8 +822,7 @@ export default function Dashboard() {
           // For service defects or cleaning-based defects, show cleaning options
           const needsCleaning = requiresCleaning(section.defects || '');
 
-          // Priority: needsCleaning function overrides defectType field for accurate classification
-          if (needsCleaning || isServiceDefect) {
+          if (isServiceDefect || needsCleaning) {
             // Check if any PR2 configurations exist AND have actual values configured
             const validConfigurations = repairPricingData?.filter(config => 
               isConfigurationProperlyConfigured(config)
