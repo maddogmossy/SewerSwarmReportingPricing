@@ -1415,8 +1415,8 @@ export default function PR2ConfigClean() {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="mb-6">
-            {/* Four-Window Configuration Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4 border rounded-lg bg-gray-50">
+            {/* Five-Window Configuration Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 border rounded-lg bg-gray-50">
               
               {/* Blue Window: Day Rate */}
               <Card className="bg-blue-50 border-blue-200">
@@ -1438,6 +1438,34 @@ export default function PR2ConfigClean() {
                       onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
                       className="bg-white border-blue-300"
                     />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Math Window */}
+              <Card className="bg-gray-50 border-gray-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-gray-700 text-sm flex items-center gap-2">
+                    <Calculator className="w-4 h-4" />
+                    🔢 Math
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="math_operator" className="text-sm font-medium text-gray-700">
+                      Operator
+                    </Label>
+                    <Select>
+                      <SelectTrigger className="bg-white border-gray-300">
+                        <SelectValue placeholder="Select operator" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="divide">÷ (Divide)</SelectItem>
+                        <SelectItem value="multiply">× (Multiply)</SelectItem>
+                        <SelectItem value="add">+ (Add)</SelectItem>
+                        <SelectItem value="subtract">- (Subtract)</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </CardContent>
               </Card>
