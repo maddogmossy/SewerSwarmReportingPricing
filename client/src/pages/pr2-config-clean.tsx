@@ -1543,7 +1543,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Math Window */}
-              <Card className="bg-gray-50 border-gray-200 w-40 flex-shrink-0">
+              <Card className="bg-gray-50 border-gray-200 w-24 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
                     <Calculator className="w-3 h-3 mr-1" />
@@ -1553,7 +1553,7 @@ export default function PR2ConfigClean() {
                 <CardContent className="py-1">
                   <div className="flex items-center justify-center">
                     <Select>
-                      <SelectTrigger className="bg-white border-gray-300 h-6 text-xs w-8">
+                      <SelectTrigger className="bg-white border-gray-300 h-8 text-sm w-16">
                         <SelectValue placeholder="÷" />
                       </SelectTrigger>
                       <SelectContent>
