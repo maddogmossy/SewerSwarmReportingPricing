@@ -204,17 +204,17 @@ export default function PR2ConfigClean() {
     categoryName: categoryId ? getCategoryName(categoryId) : '',
     description: '',
     pricingOptions: [
-      { id: 'price_dayrate', label: 'Day Rate', enabled: false, value: '' }
+      { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
     ],
     quantityOptions: [
-      { id: 'quantity_runs', label: 'Runs per Shift', enabled: false, value: '' }
+      { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
     ],
     minQuantityOptions: [
-      { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: false, value: '' }
+      { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
     ],
     rangeOptions: [
-      { id: 'range_percentage', label: 'Percentage', enabled: false, rangeStart: '', rangeEnd: '' },
-      { id: 'range_length', label: 'Length', enabled: false, rangeStart: '', rangeEnd: '' }
+      { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
+      { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
     ],
     mathOperators: ['N/A'],
     pricingStackOrder: ['price_dayrate'],
@@ -567,20 +567,20 @@ export default function PR2ConfigClean() {
         
         // Initialize single-option defaults for each window (matching your requirement)
         const defaultPricingOptions = [
-          { id: 'price_dayrate', label: 'Day Rate', enabled: false, value: '' }
+          { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
         ];
         
         const defaultQuantityOptions = [
-          { id: 'quantity_runs', label: 'Runs per Shift', enabled: false, value: '' }
+          { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
         ];
         
         const defaultMinQuantityOptions = [
-          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: false, value: '' }
+          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
         ];
         
         const defaultRangeOptions = [
-          { id: 'range_percentage', label: 'Percentage', enabled: false, rangeStart: '', rangeEnd: '' },
-          { id: 'range_length', label: 'Length', enabled: false, rangeStart: '', rangeEnd: '' }
+          { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
         ];
         
         // Use existing options if they exist, otherwise use defaults
@@ -645,20 +645,20 @@ export default function PR2ConfigClean() {
         
         // Initialize with single specific options for each window
         const defaultPricingOptions = [
-          { id: 'price_dayrate', label: 'Day Rate', enabled: false, value: '' }
+          { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
         ];
         
         const defaultQuantityOptions = [
-          { id: 'quantity_runs', label: 'Runs per Shift', enabled: false, value: '' }
+          { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
         ];
         
         const defaultMinQuantityOptions = [
-          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: false, value: '' }
+          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
         ];
         
         const defaultRangeOptions = [
-          { id: 'range_percentage', label: 'Percentage', enabled: false, rangeStart: '', rangeEnd: '' },
-          { id: 'range_length', label: 'Length', enabled: false, rangeStart: '', rangeEnd: '' }
+          { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
         ];
         
         setFormData(prev => ({
@@ -920,27 +920,26 @@ export default function PR2ConfigClean() {
 
   // Auto-calculate sequential ranges
   const calculateSequentialRanges = (rangeOptions: RangeOption[], updatedOptionId: string, newEndValue: string) => {
-    const enabledOptions = rangeOptions
-      .filter(opt => opt.enabled)
+    const activeOptions = rangeOptions
+      .filter(opt => opt.rangeStart !== '' || opt.rangeEnd !== '')
       .sort((a, b) => {
-        // Sort by the order they were created/enabled
+        // Sort by the order they were created
         const aIndex = rangeOptions.findIndex(opt => opt.id === a.id);
         const bIndex = rangeOptions.findIndex(opt => opt.id === b.id);
         return aIndex - bIndex;
       });
 
     return rangeOptions.map(option => {
-      if (!option.enabled) return option;
-      
-      const optionIndex = enabledOptions.findIndex(opt => opt.id === option.id);
+      const optionIndex = activeOptions.findIndex(opt => opt.id === option.id);
+      if (optionIndex === -1) return option;
       
       if (option.id === updatedOptionId) {
         // For the option being updated, calculate the start based on previous ranges
-        const rangeStart = optionIndex === 0 ? '0' : (parseInt(enabledOptions[optionIndex - 1].rangeEnd) + 1).toString();
+        const rangeStart = optionIndex === 0 ? '0' : (parseInt(activeOptions[optionIndex - 1].rangeEnd) + 1).toString();
         return { ...option, rangeStart, rangeEnd: newEndValue };
-      } else if (optionIndex > enabledOptions.findIndex(opt => opt.id === updatedOptionId)) {
+      } else if (optionIndex > activeOptions.findIndex(opt => opt.id === updatedOptionId)) {
         // For options after the updated one, recalculate their ranges
-        const rangeStart = optionIndex === 0 ? '0' : (parseInt(enabledOptions[optionIndex - 1].rangeEnd) + 1).toString();
+        const rangeStart = optionIndex === 0 ? '0' : (parseInt(activeOptions[optionIndex - 1].rangeEnd) + 1).toString();
         return { ...option, rangeStart };
       } else if (optionIndex === 0) {
         // First option always starts at 0
@@ -1139,10 +1138,11 @@ export default function PR2ConfigClean() {
     const parts = [];
     
     // Add pricing options with values
-    const enabledPricing = formData.pricingOptions.filter(opt => opt.enabled);
-    enabledPricing.forEach(opt => {
-      const value = opt.value ? `£${opt.value}` : '[value]';
-      parts.push(`${opt.label} = ${value}`);
+    formData.pricingOptions.forEach(opt => {
+      if (opt.value && opt.value.trim() !== '') {
+        const value = `£${opt.value}`;
+        parts.push(`${opt.label} = ${value}`);
+      }
     });
     
     // Add math operator
@@ -1151,25 +1151,26 @@ export default function PR2ConfigClean() {
     }
     
     // Add quantity options with values
-    const enabledQuantity = formData.quantityOptions.filter(opt => opt.enabled);
-    enabledQuantity.forEach(opt => {
-      const value = opt.value || '[value]';
-      parts.push(`${opt.label} = ${value}`);
+    formData.quantityOptions.forEach(opt => {
+      if (opt.value && opt.value.trim() !== '') {
+        parts.push(`${opt.label} = ${opt.value}`);
+      }
     });
     
     // Add min quantity options with values
-    const enabledMinQuantity = formData.minQuantityOptions.filter(opt => opt.enabled);
-    enabledMinQuantity.forEach(opt => {
-      const value = opt.value || '[value]';
-      parts.push(`${opt.label} = ${value}`);
+    formData.minQuantityOptions.forEach(opt => {
+      if (opt.value && opt.value.trim() !== '') {
+        parts.push(`${opt.label} = ${opt.value}`);
+      }
     });
     
     // Add range options with values
-    const enabledRanges = formData.rangeOptions.filter(opt => opt.enabled);
-    enabledRanges.forEach(opt => {
-      const rangeStart = opt.rangeStart || 'R1';
-      const rangeEnd = opt.rangeEnd || 'R2';
-      parts.push(`${opt.label} = ${rangeStart} to ${rangeEnd}`);
+    formData.rangeOptions.forEach(opt => {
+      if ((opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')) {
+        const rangeStart = opt.rangeStart || 'R1';
+        const rangeEnd = opt.rangeEnd || 'R2';
+        parts.push(`${opt.label} = ${rangeStart} to ${rangeEnd}`);
+      }
     });
     
     if (parts.length === 0) {
@@ -1187,52 +1188,26 @@ export default function PR2ConfigClean() {
 
   // Manual save functionality
   const handleSaveConfiguration = async () => {
-    // Auto-enable options that have values
-    const enabledPricingOptions = formData.pricingOptions.map(opt => ({
-      ...opt,
-      enabled: opt.enabled || (opt.value && opt.value.trim() !== '')
-    }));
+    // All options are enabled, no filtering needed
+    const enabledPricingOptions = formData.pricingOptions;
     
-    const enabledQuantityOptions = formData.quantityOptions.map(opt => ({
-      ...opt,
-      enabled: opt.enabled || (opt.value && opt.value.trim() !== '')
-    }));
-    
-    const enabledMinQuantityOptions = formData.minQuantityOptions.map(opt => ({
-      ...opt,
-      enabled: opt.enabled || (opt.value && opt.value.trim() !== '')
-    }));
-    
-    const enabledRangeOptions = formData.rangeOptions.map(opt => ({
-      ...opt,
-      enabled: opt.enabled || (opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')
-    }));
+    const enabledQuantityOptions = formData.quantityOptions;
+    const enabledMinQuantityOptions = formData.minQuantityOptions;
+    const enabledRangeOptions = formData.rangeOptions;
 
-    // Check if there are any enabled options to save
-    const hasEnabledOptions = enabledPricingOptions.some(opt => opt.enabled) ||
-                             enabledQuantityOptions.some(opt => opt.enabled) ||
-                             enabledMinQuantityOptions.some(opt => opt.enabled) ||
-                             enabledRangeOptions.some(opt => opt.enabled);
-
-    if (!hasEnabledOptions || !formData.categoryName) {
-      console.log('⚠️ No enabled options or category name to save');
-      console.log('📊 Debug formData:', {
-        categoryName: formData.categoryName,
-        pricingOptions: enabledPricingOptions,
-        quantityOptions: enabledQuantityOptions,
-        minQuantityOptions: enabledMinQuantityOptions,
-        rangeOptions: enabledRangeOptions
-      });
+    // Always save if category name exists (no need to check enabled status)
+    if (!formData.categoryName) {
+      console.log('⚠️ No category name to save');
       return;
     }
 
     try {
       console.log('💾 Saving configuration...');
       console.log('📊 Options to save:', {
-        pricing: enabledPricingOptions.filter(opt => opt.enabled),
-        quantity: enabledQuantityOptions.filter(opt => opt.enabled),
-        minQuantity: enabledMinQuantityOptions.filter(opt => opt.enabled),
-        range: enabledRangeOptions.filter(opt => opt.enabled)
+        pricing: enabledPricingOptions,
+        quantity: enabledQuantityOptions,
+        minQuantity: enabledMinQuantityOptions,
+        range: enabledRangeOptions
       });
       
       const payload = {
@@ -1469,7 +1444,7 @@ export default function PR2ConfigClean() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
                     <Coins className="w-4 h-4" />
-                    💰 Price/Cost Options
+                    Price/Cost Options
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -1493,7 +1468,7 @@ export default function PR2ConfigClean() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-gray-700 text-sm flex items-center gap-2">
                     <Calculator className="w-4 h-4" />
-                    🔢 Math
+                    Math
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -1521,7 +1496,7 @@ export default function PR2ConfigClean() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2">
                     <Package className="w-4 h-4" />
-                    📊 Quantity Options
+                    Quantity Options
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
