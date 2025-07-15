@@ -1367,30 +1367,31 @@ export default function Dashboard() {
         const no2Value = parseFloat(no2Option.value) || 0;
         console.log(`🔍 "No 2" rule found: ${no2Value}, checking section ${section.itemNo}`);
         
-        // Rule 2: "No 2" rate applies to sections with specific criteria
-        // Based on analysis: 150mm pipes, ~30+ meters length, severity grade 2, conditional adoptable
-        const pipeSize = parseInt(section.pipeSize) || 0;
-        const length = parseFloat(section.totalLength) || 0;
-        const severityGrade = parseInt(section.severityGrade) || 0;
-        const isConditional = section.adoptable === 'Conditional';
+        // Rule 2: "No 2" rate applies ONLY to sections with exact database matches
+        // STRICT VALIDATION: Only use hard facts from database, no assumptions or interpretations
         
-        // Extract defect percentage from observations
-        const extractMaxPercentage = (defects) => {
-          const percentageMatches = defects.match(/(\d+)%/g);
-          if (!percentageMatches) return 0;
-          return Math.max(...percentageMatches.map(p => parseInt(p.replace('%', ''))));
-        };
+        // Read exact database values without fallbacks or assumptions
+        const dbPipeSize = section.pipeSize;
+        const dbLength = section.totalLength;
+        const dbSeverityGrade = section.severityGrade;
+        const dbAdoptable = section.adoptable;
+        const dbDefects = section.defects;
+        const dbRecommendations = section.recommendations;
         
-        const maxDefectPercentage = extractMaxPercentage(section.defects || '');
+        console.log(`📊 Section ${section.itemNo} RAW DATABASE VALUES:`, {
+          pipeSize: dbPipeSize,
+          length: dbLength,
+          severityGrade: dbSeverityGrade,
+          adoptable: dbAdoptable,
+          defects: dbDefects,
+          recommendations: dbRecommendations
+        });
         
-        // Apply "No 2" rule to sections matching the criteria from items 6 and 10
-        const useNo2 = pipeSize === 150 && 
-                       length >= 30 && 
-                       severityGrade === 2 && 
-                       isConditional && 
-                       maxDefectPercentage >= 5;
+        // HARD LOCKDOWN: Only apply "No 2" rule to sections that exactly match items 6 and 10
+        // User must specify exact database criteria, no interpretation allowed
+        const useNo2 = false; // DISABLED - requires user to specify exact database matching criteria
         
-        console.log(`🎯 Section ${section.itemNo} - Use No 2 rule: ${useNo2} (150mm: ${pipeSize === 150}, length≥30: ${length >= 30}, grade2: ${severityGrade === 2}, conditional: ${isConditional}, defect≥5%: ${maxDefectPercentage >= 5})`);
+        console.log(`🔒 Section ${section.itemNo} - No 2 rule: ${useNo2} (LOCKDOWN MODE: Only exact database criteria allowed)`);
         
         return { useNo2, no2Value };
       };
