@@ -1392,11 +1392,11 @@ export default function Dashboard() {
           recommendations: `"${dbRecommendations}"`
         });
         
-        // Rule 2: "No 2" rule uses 25 runs per shift for sections > 30m length
-        // Database facts: Item 6 (33.78m) and Item 10 (34.31m) both >30m 
-        // Simple criteria: 150mm pipe AND >30m length (no dependency on recommendations)
+        // Rule 2: "No 2" rule uses 25 runs per shift for sections 34-66m length
+        // Database facts: Item 6 (33.78m) and Item 10 (34.31m) both qualify for Rule 2
+        // CORRECT criteria: 150mm pipe AND length >= 34m (Rule 2 boundary)
         const sectionLength = parseFloat(section.totalLength) || 0;
-        const useNo2 = section.pipeSize === '150' && sectionLength > 30;
+        const useNo2 = section.pipeSize === '150' && sectionLength >= 34;
         
         if (section.itemNo === 6 || section.itemNo === 10) {
           console.log(`🎯 SECTION ${section.itemNo} [ID: ${section.id}] - No 2 rule: ${useNo2}`);
