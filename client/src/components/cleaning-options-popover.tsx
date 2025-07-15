@@ -59,13 +59,18 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   useEffect(() => {
     try {
       const savedOrder = localStorage.getItem('equipment-order');
+      console.log('📥 Loading saved equipment order:', savedOrder);
       if (savedOrder) {
         const parsed = JSON.parse(savedOrder);
         if (Array.isArray(parsed)) {
+          console.log('✅ Restored equipment order:', parsed);
           setEquipmentOrder(parsed);
         }
+      } else {
+        console.log('ℹ️ No saved equipment order found, using default');
       }
-    } catch {
+    } catch (error) {
+      console.error('❌ Failed to load equipment order:', error);
       // Silent fallback to default order
     }
   }, []);
@@ -82,7 +87,13 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
 
   // Save equipment order to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('equipment-order', JSON.stringify(equipmentOrder));
+    console.log('💾 Auto-saving equipment order to localStorage:', equipmentOrder);
+    try {
+      localStorage.setItem('equipment-order', JSON.stringify(equipmentOrder));
+      console.log('✅ Equipment order saved successfully');
+    } catch (error) {
+      console.error('❌ Failed to save equipment order:', error);
+    }
   }, [equipmentOrder]);
 
   const moveEquipmentUp = (equipmentId: string) => {
