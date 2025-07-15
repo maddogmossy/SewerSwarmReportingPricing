@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -1099,6 +1099,74 @@ export default function PR2ConfigClean() {
     setFormData(prev => ({ ...prev, description: autoDesc }));
   }, [formData.pricingOptions, formData.quantityOptions, formData.minQuantityOptions, formData.rangeOptions, formData.mathOperators]);
 
+  // Manual save functionality
+  const handleSaveConfiguration = async () => {
+    // Check if there are any enabled options to save
+    const hasEnabledOptions = formData.pricingOptions.some(opt => opt.enabled) ||
+                             formData.quantityOptions.some(opt => opt.enabled) ||
+                             formData.minQuantityOptions.some(opt => opt.enabled) ||
+                             formData.rangeOptions.some(opt => opt.enabled);
+
+    if (!hasEnabledOptions || !formData.categoryName) {
+      console.log('⚠️ No enabled options or category name to save');
+      return;
+    }
+
+    try {
+      console.log('💾 Saving configuration...');
+      
+      const payload = {
+        categoryName: formData.categoryName,
+        description: formData.description,
+        sector: sector, // Save to current sector only
+        categoryId: categoryId,
+        pricingOptions: formData.pricingOptions,
+        quantityOptions: formData.quantityOptions,
+        minQuantityOptions: formData.minQuantityOptions,
+        rangeOptions: formData.rangeOptions,
+        mathOperators: formData.mathOperators,
+        pricingStackOrder: formData.pricingStackOrder,
+        quantityStackOrder: formData.quantityStackOrder,
+        minQuantityStackOrder: formData.minQuantityStackOrder,
+        rangeStackOrder: formData.rangeStackOrder
+      };
+
+      let response;
+      if (isEditing && editId) {
+        // Update existing configuration
+        response = await fetch(`/api/pr2-clean/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        console.log('✅ Configuration updated successfully');
+      } else {
+        // Create new configuration
+        response = await fetch('/api/pr2-clean', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        console.log('✅ Configuration created successfully');
+      }
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('📁 Saved configuration:', result);
+        
+        // Invalidate cache to refresh data
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+        
+        // Show success message
+        console.log('✅ Configuration saved with ID:', result.id);
+      } else {
+        console.error('❌ Save failed:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('❌ Save failed:', error);
+    }
+  };
+
   // Auto-save functionality
   const handleAutoSaveAndNavigate = (destination: string) => {
     return async () => {
@@ -1176,6 +1244,14 @@ export default function PR2ConfigClean() {
             
             {/* Navigation Buttons */}
             <div className="flex gap-3">
+              <Button
+                onClick={handleSaveConfiguration}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2"
+              >
+                <Save className="h-5 w-5" />
+                Save Configuration
+              </Button>
+              
               <Button
                 onClick={handleAutoSaveAndNavigate('/pr2-pricing')}
                 variant="outline"
