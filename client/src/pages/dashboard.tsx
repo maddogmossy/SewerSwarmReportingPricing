@@ -750,33 +750,14 @@ export default function Dashboard() {
           </div>
         );
       case 'severityGrade':
-        // Check for dual defects
-        const dualInfo = hasDualDefects(section.defects || '');
-        
-        // Display dual grades if both service and structural defects exist
-        if (dualInfo.hasService && dualInfo.hasStructural && dualInfo.serviceGrade > 0 && dualInfo.structuralGrade > 0) {
-          return (
-            <div className="flex items-center gap-0.5" title={`Service Grade: ${dualInfo.serviceGrade} | Structural Grade: ${dualInfo.structuralGrade}`}>
-              <span className={`px-1 py-0.5 rounded text-xs font-semibold ${getGradeColor(dualInfo.serviceGrade, 'service')}`}>
-                {dualInfo.serviceGrade}
-              </span>
-              <span className="text-xs">/</span>
-              <span className={`px-1 py-0.5 rounded text-xs font-semibold ${getGradeColor(dualInfo.structuralGrade, 'structural')}`}>
-                {dualInfo.structuralGrade}
-              </span>
-            </div>
-          );
-        }
-        
-        // Single grade display with enhanced color logic
-        const currentGrade = parseInt(section.severityGrade || '0');
-        const defectType = dualInfo.hasStructural ? 'structural' : 'service';
-        
         return (
           <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
             section.severityGrade === "0" && section.adoptable === "Yes" ? 'bg-green-100 text-green-800' :
             section.severityGrade === "0" && (section.adoptable === "No" || section.adoptable === "Conditional") ? 'bg-gray-100 text-gray-800' :
-            getGradeColor(currentGrade, defectType)
+            section.severityGrade === "1" ? 'bg-emerald-100 text-emerald-800' :
+            section.severityGrade === "2" ? 'bg-amber-100 text-amber-800' :
+            section.severityGrade === "3" ? 'bg-red-100 text-red-800' :
+            'bg-red-100 text-red-800'
           }`}>
             {section.severityGrade}
           </span>
