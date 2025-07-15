@@ -443,9 +443,7 @@ export default function PR2ConfigClean() {
     createNewConfig();
   };
 
-  const handleBack = () => {
-    setLocation('/dashboard');
-  };
+
 
   // Pricing option management
   const addPricingOption = () => {
@@ -1427,16 +1425,7 @@ export default function PR2ConfigClean() {
 
 
         {/* Action Buttons */}
-        <div className="flex justify-between items-center">
-          <Button 
-            onClick={handleBack}
-            variant="outline"
-            className="border-gray-300"
-          >
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Cancel
-          </Button>
-          
+        <div className="flex justify-end items-center">
           <div className="flex gap-2">
             {isEditing && (
               <Button 
