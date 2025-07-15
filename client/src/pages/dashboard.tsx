@@ -571,8 +571,8 @@ export default function Dashboard() {
           const waterLevelMatch = defectsText.match(/(\d+)%.*vertical dimension/);
           const percentage = waterLevelMatch ? parseInt(waterLevelMatch[1]) : 0;
           console.log('Water level percentage:', percentage);
-          console.log('Max allowed percentage (from config):', 15);
-          console.log('Fails percentage check?', percentage > 15);
+          console.log('Max allowed percentage (from config): [varies by configuration]');
+          console.log('Percentage check: depends on PR2 configuration ranges');
         }
         
         // Check if observations contain multiple distinct observations (either line breaks or periods)
