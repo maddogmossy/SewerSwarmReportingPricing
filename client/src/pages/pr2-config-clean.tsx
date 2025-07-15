@@ -1512,7 +1512,7 @@ export default function PR2ConfigClean() {
           </div>
           <CollapsibleContent className="mb-6">
             {/* Five-Window Configuration Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-9 gap-4 p-4 border rounded-lg bg-gray-50">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-10 gap-4 p-4 border rounded-lg bg-gray-50">
               
               {/* Blue Window: Day Rate */}
               <Card className="bg-blue-50 border-blue-200 lg:col-span-2">
@@ -1568,7 +1568,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Green Window: Runs per Shift */}
-              <Card className="bg-green-50 border-green-200 lg:col-span-2">
+              <Card className="bg-green-50 border-green-200 lg:col-span-1">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2 justify-between">
                     <span className="flex items-center gap-2">
@@ -1605,7 +1605,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Orange Window: Min Runs per Shift */}
-              <Card className="bg-orange-50 border-orange-200 lg:col-span-2">
+              <Card className="bg-orange-50 border-orange-200 lg:col-span-1">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
                     <Gauge className="w-4 h-4" />
@@ -1633,7 +1633,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Purple Window: Percentage and Length */}
-              <Card className="bg-purple-50 border-purple-200 lg:col-span-2">
+              <Card className="bg-purple-50 border-purple-200 lg:col-span-4">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2 justify-between">
                     <span className="flex items-center gap-2">
@@ -1670,7 +1670,7 @@ export default function PR2ConfigClean() {
                       <Input
                         id="length_value"
                         placeholder="max m"
-                        maxLength={3}
+                        maxLength={4}
                         value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
                         onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
                         className="bg-white border-purple-300 h-7 text-sm flex-1"
