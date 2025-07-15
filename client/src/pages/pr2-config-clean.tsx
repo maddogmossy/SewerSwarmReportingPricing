@@ -1419,129 +1419,156 @@ export default function PR2ConfigClean() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
         </div>
 
-        {/* Collapsible Configuration Panel */}
-        <Collapsible>
-          <CollapsibleTrigger asChild>
-            <Button variant="outline" className="w-full mb-4 flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Settings className="w-4 h-4" />
-                {getDropdownTitle()}
-              </span>
-              <ChevronDown className="w-4 h-4" />
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mb-6">
-            {/* Five Column Layout - Compact Horizontal */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 p-4 border rounded-lg bg-gray-50">
-              
-              {/* Blue Window - Pricing Options */}
-              <Card className="bg-blue-50 h-16 flex flex-col justify-center items-center">
-                <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
-                  <div className="text-blue-600 flex items-center justify-center text-xs mb-2 w-full">
-                    <div className="flex items-center gap-1">
-                      <Coins className="w-3 h-3" />
-                      Pricing
-                    </div>
-                    <Label className="text-xs text-blue-500 ml-auto">Value</Label>
+        {/* Four-Window Configuration System */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          
+          {/* Blue Window: Pricing Options */}
+          <Card className="bg-blue-50 border-blue-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
+                <Coins className="w-4 h-4" />
+                💰 Price/Cost Options
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {formData.pricingOptions.map((option) => (
+                <div key={option.id} className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={option.id}
+                      checked={option.enabled}
+                      onCheckedChange={(checked) => handleOptionToggle('pricingOptions', option.id, checked as boolean)}
+                    />
+                    <Label htmlFor={option.id} className="text-sm font-medium text-blue-700">
+                      {option.label}
+                    </Label>
                   </div>
-                  <Input
-                    placeholder="Enter pricing value"
-                    className="bg-white border-blue-300 h-6 text-xs w-full text-center"
-                  />
+                  {option.enabled && (
+                    <Input
+                      placeholder="Enter £ value"
+                      value={option.value}
+                      onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
+                      className="bg-white border-blue-300"
+                    />
+                  )}
                 </div>
-              </Card>
+              ))}
+            </CardContent>
+          </Card>
 
-              {/* Math Operations - Grey Column */}
-              <Card className="bg-gray-50 h-16 flex flex-col justify-center items-center">
-                <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
-                  <div className="text-gray-600 flex items-center justify-center text-xs mb-2 w-full">
-                    <div className="flex items-center gap-1">
-                      <Calculator className="w-3 h-3" />
-                      Math
-                    </div>
-                    <Label className="text-xs text-gray-500 ml-auto">Operation</Label>
+          {/* Green Window: Quantity Options */}
+          <Card className="bg-green-50 border-green-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-green-700 text-sm flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                📊 Quantity Options
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {formData.quantityOptions.map((option) => (
+                <div key={option.id} className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={option.id}
+                      checked={option.enabled}
+                      onCheckedChange={(checked) => handleOptionToggle('quantityOptions', option.id, checked as boolean)}
+                    />
+                    <Label htmlFor={option.id} className="text-sm font-medium text-green-700">
+                      {option.label}
+                    </Label>
                   </div>
-                  <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
-                    <SelectTrigger className="bg-white border-gray-300 h-6 text-xs w-full text-center">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="N/A">N/A</SelectItem>
-                      <SelectItem value="+">+ (Add)</SelectItem>
-                      <SelectItem value="-">- (Subtract)</SelectItem>
-                      <SelectItem value="×">× (Multiply)</SelectItem>
-                      <SelectItem value="÷">÷ (Divide)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {option.enabled && (
+                    <Input
+                      placeholder="Enter quantity"
+                      value={option.value}
+                      onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                      className="bg-white border-green-300"
+                      data-option-id={option.id}
+                    />
+                  )}
                 </div>
-              </Card>
+              ))}
+            </CardContent>
+          </Card>
 
-              {/* Green Window - Quantity Options */}
-              <Card className="bg-green-50 h-16 flex flex-col justify-center items-center">
-                <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
-                  <div className="text-green-600 flex items-center justify-center text-xs mb-2 w-full">
-                    <div className="flex items-center gap-1">
-                      <Package className="w-3 h-3" />
-                      Quantity
-                    </div>
-                    <Label className="text-xs text-green-500 ml-auto">Value</Label>
+          {/* Orange Window: Min Quantity Options */}
+          <Card className="bg-orange-50 border-orange-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
+                <Gauge className="w-4 h-4" />
+                ⚡ Min Quantity Options
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {formData.minQuantityOptions.map((option) => (
+                <div key={option.id} className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={option.id}
+                      checked={option.enabled}
+                      onCheckedChange={(checked) => handleOptionToggle('minQuantityOptions', option.id, checked as boolean)}
+                    />
+                    <Label htmlFor={option.id} className="text-sm font-medium text-orange-700">
+                      {option.label}
+                    </Label>
                   </div>
-                  <Input
-                    placeholder="Enter quantity value"
-                    className="bg-white border-green-300 h-6 text-xs w-full text-center"
-                  />
+                  {option.enabled && (
+                    <Input
+                      placeholder="Enter minimum"
+                      value={option.value}
+                      onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
+                      className="bg-white border-orange-300"
+                    />
+                  )}
                 </div>
-              </Card>
+              ))}
+            </CardContent>
+          </Card>
 
-              {/* Orange Window - Min Quantity Options */}
-              <Card className="bg-orange-50 h-16 flex flex-col justify-center items-center">
-                <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
-                  <div className="text-orange-600 flex items-center justify-center text-xs mb-2 w-full">
-                    <div className="flex items-center gap-1">
-                      <Gauge className="w-3 h-3" />
-                      Min Quantity
-                    </div>
-                    <Label className="text-xs text-orange-500 ml-auto">Value</Label>
+          {/* Purple Window: Range Options */}
+          <Card className="bg-purple-50 border-purple-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
+                <Zap className="w-4 h-4" />
+                📏 Range Options
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {formData.rangeOptions.map((option) => (
+                <div key={option.id} className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={option.id}
+                      checked={option.enabled}
+                      onCheckedChange={(checked) => handleRangeToggle(option.id, checked as boolean)}
+                    />
+                    <Label htmlFor={option.id} className="text-sm font-medium text-purple-700">
+                      {option.label}
+                    </Label>
                   </div>
-                  <Input
-                    placeholder="Enter min quantity value"
-                    className="bg-white border-orange-300 h-6 text-xs w-full text-center"
-                  />
-                </div>
-              </Card>
-
-              {/* Purple Window - Ranges */}
-              <Card className="bg-purple-50 h-16 flex flex-col justify-center items-center">
-                <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
-                  <div className="text-purple-600 flex items-center justify-center text-xs mb-2 w-full">
-                    <div className="flex items-center gap-1">
-                      <Zap className="w-3 h-3" />
-                      Ranges
-                    </div>
-                    <div className="flex gap-2 ml-auto">
-                      <Label className="text-xs text-purple-500">From</Label>
-                      <Label className="text-xs text-purple-500">To</Label>
-                    </div>
-                  </div>
-                  <div className="flex gap-1 w-full">
-                    <div className="flex-1">
+                  {option.enabled && (
+                    <div className="flex gap-2">
                       <Input
-                        placeholder="%"
-                        className="bg-white border-purple-300 h-6 text-xs text-center"
+                        placeholder="From"
+                        value={option.rangeStart}
+                        onChange={(e) => handleRangeChange(option.id, 'start', e.target.value)}
+                        className="bg-white border-purple-300 flex-1"
+                        data-range-id={`${option.id}-start`}
+                      />
+                      <Input
+                        placeholder="To"
+                        value={option.rangeEnd}
+                        onChange={(e) => handleRangeChange(option.id, 'end', e.target.value)}
+                        className="bg-white border-purple-300 flex-1"
+                        data-range-id={`${option.id}-end`}
                       />
                     </div>
-                    <div className="flex-1">
-                      <Input
-                        placeholder="Max length"
-                        className="bg-white border-purple-300 h-6 text-xs text-center"
-                      />
-                    </div>
-                  </div>
+                  )}
                 </div>
-              </Card>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
