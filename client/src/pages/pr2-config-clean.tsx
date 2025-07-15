@@ -1527,25 +1527,27 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="percentage_value" className="text-sm font-medium text-purple-700">
-                      Percentage
-                    </Label>
-                    <Input
-                      id="percentage_value"
-                      placeholder="Enter %"
-                      className="bg-white border-purple-300"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="length_value" className="text-sm font-medium text-purple-700">
-                      Length
-                    </Label>
-                    <Input
-                      id="length_value"
-                      placeholder="Enter meters"
-                      className="bg-white border-purple-300"
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="percentage_value" className="text-sm font-medium text-purple-700">
+                        Percentage
+                      </Label>
+                      <Input
+                        id="percentage_value"
+                        placeholder="Enter %"
+                        className="bg-white border-purple-300"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="length_value" className="text-sm font-medium text-purple-700">
+                        Length
+                      </Label>
+                      <Input
+                        id="length_value"
+                        placeholder="Enter meters"
+                        className="bg-white border-purple-300"
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
