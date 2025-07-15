@@ -254,6 +254,18 @@ export default function PR2ConfigClean() {
       console.log(`🔧 Updated ${optionType} with ${optionId} = ${value}`);
       return newFormData;
     });
+  }
+
+  // Handle range value changes for purple window
+  const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
+    console.log(`🔧 handleRangeValueChange called: ${optionId}, ${field}, ${value}`);
+    
+    setFormData(prev => ({
+      ...prev,
+      rangeOptions: prev.rangeOptions.map(opt =>
+        opt.id === optionId ? { ...opt, [field]: value } : opt
+      )
+    }));
   };
 
   // Force form inputs to update when formData changes
@@ -1520,7 +1532,7 @@ export default function PR2ConfigClean() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
                     <Gauge className="w-4 h-4" />
-                    ⚡ Min Quantity Options
+                    Min Quantity Options
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -1544,7 +1556,7 @@ export default function PR2ConfigClean() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
                     <Zap className="w-4 h-4" />
-                    📏 Range Options
+                    Range Options
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -1556,6 +1568,8 @@ export default function PR2ConfigClean() {
                       <Input
                         id="percentage_value"
                         placeholder="Enter %"
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeStart || ''}
+                        onChange={(e) => handleRangeValueChange('range_percentage', 'rangeStart', e.target.value)}
                         className="bg-white border-purple-300"
                       />
                     </div>
@@ -1566,6 +1580,8 @@ export default function PR2ConfigClean() {
                       <Input
                         id="length_value"
                         placeholder="Enter meters"
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeStart || ''}
+                        onChange={(e) => handleRangeValueChange('range_length', 'rangeStart', e.target.value)}
                         className="bg-white border-purple-300"
                       />
                     </div>
