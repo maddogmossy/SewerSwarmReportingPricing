@@ -705,6 +705,11 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.3' to return to this stable checkpoint
 
+## User Preferences (Updated July 15, 2025)
+- **Stability Priority**: User prioritizes app stability over advanced features - avoid breaking working functionality
+- **Screen Flashing Issue**: Complex helper functions cause screen flashing - prefer simple implementations
+- **Performance Focus**: Remove complex useCallback functions that recreate on every render
+
 ## REV V6.2 CHECKPOINT - OPTIMIZED FIVE-WINDOW LAYOUT SYSTEM LOCKED (July 15, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE OPTIMIZED LAYOUT SYSTEM:**
