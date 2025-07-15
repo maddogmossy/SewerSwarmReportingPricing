@@ -1016,13 +1016,13 @@ export default function PR2ConfigClean() {
               <div className="flex gap-1">
                 <div className="flex-1">
                   <Input
-                    placeholder="R1"
+                    placeholder="%"
                     className="bg-white border-purple-300 h-5 text-xs"
                   />
                 </div>
                 <div className="flex-1">
                   <Input
-                    placeholder="R2"
+                    placeholder="Max length"
                     className="bg-white border-purple-300 h-5 text-xs"
                   />
                 </div>
