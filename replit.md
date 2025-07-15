@@ -633,6 +633,24 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.8' to return to this stable checkpoint
 
+## REV V5.9.1 CHECKPOINT - CLEAN ID NUMBERING SYSTEM (July 15, 2025)
+
+🔒 **PRODUCTION READY - CLEAN ID NUMBERING WITH BLANK TEMPLATES:**
+- **Database Cleanup Complete:** Reduced from 37 configurations to 1 authentic configuration (ID 48)
+- **ID Number Visibility:** Configuration IDs now display in category cards for easy identification before editing
+- **Blank Category Templates:** Unconfigured categories show clean without IDs until first pricing data is saved
+- **Authentic Configuration Preserved:** ID 48 (CCTV/Jet Vac - Day Rate £1850, Min Runs 30) maintained as working example
+- **No Auto-Creation:** Categories no longer auto-create configurations when clicked, preventing database clutter
+- **Clean Interface:** Only configured categories show ID numbers, unconfigured show orange settings icons
+
+🔒 **USER PREFERENCES CONFIRMED:**
+- **Template Approach:** User prefers blank templates for each category with no pre-assigned IDs
+- **ID Assignment:** IDs assigned only when first authentic pricing data is saved to a category
+- **Clean Database:** Eliminated all test/duplicate configurations, maintaining only authentic working data
+- **Visual Indicators:** ID numbers visible in selection interface, not just edit mode
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.1' to return to this stable checkpoint
+
 ## REV V5.3 CHECKPOINT - EDIT BUTTON SYSTEM FULLY OPERATIONAL (July 14, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE EDIT BUTTON SYSTEM:**
