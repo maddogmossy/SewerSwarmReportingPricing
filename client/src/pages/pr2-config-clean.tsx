@@ -427,8 +427,8 @@ export default function PR2ConfigClean() {
       if (pipeSize && categoryId && !sectorConfigs) {
         console.log(`🆕 Creating new pipe size-specific configuration for ${pipeSize}mm`);
         
-        // Set the category name to include pipe size
-        const pipeSizeConfigName = `${pipeSize}mm ${getCategoryName(categoryId)}`;
+        // Use the configName from URL if available, otherwise generate it
+        const pipeSizeConfigName = configName || getCategoryName(categoryId);
         console.log(`🆕 Setting category name to: ${pipeSizeConfigName}`);
         
         setFormData(prev => ({
