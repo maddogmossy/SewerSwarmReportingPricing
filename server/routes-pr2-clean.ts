@@ -133,7 +133,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       
       let configurations;
       if (sector && categoryId) {
-        // Filter by userId, sector, and categoryId
+        // Filter by userId, sector, and categoryId using single sector field
         console.log(`🔍 Filtering by userId: "test-user", sector: "${sector}", AND categoryId: "${categoryId}"`);
         configurations = await db
           .select()
@@ -141,7 +141,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           .where(and(
             eq(pr2Configurations.userId, "test-user"),
             eq(pr2Configurations.categoryId, categoryId),
-            sql`${pr2Configurations.sectors} && ARRAY[${sql.raw(`'${sector}'`)}]::text[]`
+            eq(pr2Configurations.sector, sector)
           ));
       } else if (categoryId) {
         // Filter by userId and categoryId only
@@ -154,14 +154,14 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
             eq(pr2Configurations.categoryId, categoryId)
           ));
       } else if (sector) {
-        // Filter by both userId and sector using array contains operator
+        // Filter by both userId and sector using single sector field
         console.log(`🔍 Filtering by userId: "test-user" AND sector: "${sector}"`);
         configurations = await db
           .select()
           .from(pr2Configurations)
           .where(and(
             eq(pr2Configurations.userId, "test-user"),
-            sql`${pr2Configurations.sectors} && ARRAY[${sql.raw(`'${sector}'`)}]::text[]`
+            eq(pr2Configurations.sector, sector)
           ));
       } else {
         // If no sector specified, return all configurations for user
@@ -174,16 +174,10 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       
       console.log(`✅ Query returned ${configurations.length} configurations`);
       if (configurations.length > 0) {
-        console.log(`📊 Configuration details:`, configurations.map(c => `ID: ${c.id}, Sectors: ${JSON.stringify(c.sectors)}`));
+        console.log(`📊 Configuration details:`, configurations.map(c => `ID: ${c.id}, Sector: ${c.sector}`));
       }
       
-      // Map sectors array to legacy sector field for frontend compatibility
-      const mappedConfigurations = configurations.map(config => ({
-        ...config,
-        sector: config.sectors && config.sectors.length > 0 ? config.sectors[0] : 'utilities' // Use first sector as legacy field
-      }));
-      
-      res.json(mappedConfigurations);
+      res.json(configurations);
     } catch (error) {
       console.error('Error fetching clean PR2 configurations:', error);
       res.status(500).json({ error: 'Failed to fetch configurations' });
@@ -229,15 +223,9 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         return res.status(404).json({ error: 'Configuration not found' });
       }
       
-      console.log(`✅ Loading clean PR2 configuration ${configId} with sectors:`, configuration.sectors);
+      console.log(`✅ Loading clean PR2 configuration ${configId} for sector:`, configuration.sector);
       
-      // Map sectors array to legacy sector field for frontend compatibility
-      const mappedConfiguration = {
-        ...configuration,
-        sector: configuration.sectors && configuration.sectors.length > 0 ? configuration.sectors[0] : 'utilities'
-      };
-      
-      res.json(mappedConfiguration);
+      res.json(configuration);
     } catch (error) {
       console.error('Error fetching clean PR2 configuration:', error);
       res.status(500).json({ error: 'Failed to fetch configuration' });
@@ -273,13 +261,13 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           categoryId: req.body.categoryId || "clean-" + Date.now(),
           categoryName: categoryName || 'New Clean Configuration',
           description: description || 'Clean PR2 configuration',
+          sector: sector || 'utilities', // Single sector per configuration
           pricingOptions: pricingOptions || [],
           quantityOptions: quantityOptions || [],
           minQuantityOptions: minQuantityOptions || [],
           rangeOptions: rangeOptions || [],
           rangeValues: {},
           mathOperators: mathOperators || ['N/A'],
-          sectors: sectors || [sector || 'utilities'],
           isActive: true
         })
         .returning();
@@ -320,13 +308,13 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         .set({
           categoryName: categoryName || 'Updated Clean Configuration',
           description: description || 'Clean PR2 configuration',
+          sector: sector || 'utilities', // Single sector per configuration
           pricingOptions: pricingOptions || [],
           quantityOptions: quantityOptions || [],
           minQuantityOptions: minQuantityOptions || [],
           rangeOptions: rangeOptions || [],
           rangeValues: {},
           mathOperators: mathOperators || ['N/A'],
-          sectors: sectors || [sector || 'utilities'],
           updatedAt: new Date()
         })
         .where(eq(pr2Configurations.id, configId))

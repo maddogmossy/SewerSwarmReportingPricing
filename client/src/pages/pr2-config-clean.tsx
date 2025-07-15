@@ -302,15 +302,15 @@ export default function PR2ConfigClean() {
   const { data: sectorConfigs } = useQuery({
     queryKey: ['/api/pr2-clean', 'sector-category', sector, categoryId, pipeSize],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/pr2-clean?categoryId=${categoryId}`);
+      const response = await apiRequest('GET', `/api/pr2-clean?categoryId=${categoryId}&sector=${sector}`);
       const configs = await response.json();
-      console.log(`🔍 Found ${configs.length} configs for categoryId ${categoryId}:`, configs);
+      console.log(`🔍 Found ${configs.length} configs for categoryId ${categoryId} in sector ${sector}:`, configs);
       
       // If we have pipe size, look for pipe size-specific configuration first
       if (pipeSize) {
         const pipeSizeConfig = configs.find(config => 
           config.categoryName && config.categoryName.includes(`${pipeSize}mm`) &&
-          config.sectors && Array.isArray(config.sectors) && config.sectors.includes(sector)
+          config.sector === sector
         );
         
         if (pipeSizeConfig) {
@@ -322,17 +322,15 @@ export default function PR2ConfigClean() {
         }
       }
       
-      // Fallback to general configuration that includes the current sector
-      const sectorConfig = configs.find(config => 
-        config.sectors && Array.isArray(config.sectors) && config.sectors.includes(sector)
-      );
+      // Fallback to general configuration for the current sector
+      const sectorConfig = configs.find(config => config.sector === sector);
       
       if (sectorConfig) {
-        console.log(`✅ Found configuration that includes sector ${sector}:`, sectorConfig);
+        console.log(`✅ Found configuration for sector ${sector}:`, sectorConfig);
         return sectorConfig;
       } else {
-        console.log(`⚠️ No configuration found for sector ${sector}, using first available:`, configs[0]);
-        return configs[0];
+        console.log(`⚠️ No configuration found for sector ${sector}, returning null`);
+        return null; // Always return null instead of undefined
       }
     },
     enabled: !isEditing && !!categoryId && !editId, // Only when not editing with specific ID
@@ -352,7 +350,7 @@ export default function PR2ConfigClean() {
   const [sectorsWithConfig, setSectorsWithConfig] = useState<string[]>([]);
 
   // Handle sector checkbox changes
-  const handleSectorChange = (sectorId: string, checked: boolean) => {
+  const handleSectorChange = async (sectorId: string, checked: boolean) => {
     console.log(`🔄 Sector change: ${sectorId}, checked: ${checked}`);
     console.log(`📋 Current sectorsWithConfig:`, sectorsWithConfig);
     console.log(`📋 Current selectedSectors:`, selectedSectors);
@@ -361,6 +359,12 @@ export default function PR2ConfigClean() {
     if (checked) {
       // Add sector to selected list
       setSelectedSectors(prev => [...new Set([...prev, sectorId])]);
+      
+      // If we're in editing mode and adding a new sector, create a copy immediately
+      if (isEditing && editId && !sectorsWithConfig.includes(sectorId)) {
+        console.log(`📋 Creating independent copy for sector: ${sectorId}`);
+        await createSectorCopy(sectorId);
+      }
     } else {
       // Show warning if removing an existing sector with data
       const hasExistingConfig = sectorsWithConfig.includes(sectorId);
@@ -375,6 +379,115 @@ export default function PR2ConfigClean() {
         // Remove sector from selected list
         setSelectedSectors(prev => prev.filter(s => s !== sectorId));
       }
+    }
+  }
+
+  // Create an independent copy of the current configuration for a new sector
+  const createSectorCopy = async (targetSectorId: string) => {
+    try {
+      console.log(`📋 Creating copy for sector: ${targetSectorId}`);
+      
+      const payload = {
+        categoryName: formData.categoryName,
+        description: formData.description,
+        sector: targetSectorId, // Each copy gets its own sector
+        categoryId: categoryId,
+        pricingOptions: formData.pricingOptions,
+        quantityOptions: formData.quantityOptions,
+        minQuantityOptions: formData.minQuantityOptions,
+        rangeOptions: formData.rangeOptions,
+        mathOperators: formData.mathOperators,
+        pricingStackOrder: formData.pricingStackOrder,
+        quantityStackOrder: formData.quantityStackOrder,
+        minQuantityStackOrder: formData.minQuantityStackOrder,
+        rangeStackOrder: formData.rangeStackOrder
+      };
+
+      const response = await fetch('/api/pr2-clean', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const newConfig = await response.json();
+        console.log(`✅ Created independent copy for ${targetSectorId} with ID: ${newConfig.id}`);
+        
+        // Update sectorsWithConfig to include this new sector
+        setSectorsWithConfig(prev => [...new Set([...prev, targetSectorId])]);
+        
+        // Invalidate queries to refresh the UI
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      } else {
+        console.error(`❌ Failed to create copy for ${targetSectorId}`);
+      }
+    } catch (error) {
+      console.error(`❌ Error creating sector copy:`, error);
+    }
+  };
+
+  // Main save function that creates independent copies for each selected sector
+  const handleSave = async () => {
+    try {
+      console.log(`💾 Saving configuration to sectors:`, selectedSectors);
+      
+      // First, update the current configuration (or create it if it's new)
+      const payload = {
+        categoryName: formData.categoryName,
+        description: formData.description,
+        sector: sector, // Current sector
+        categoryId: categoryId,
+        pricingOptions: formData.pricingOptions,
+        quantityOptions: formData.quantityOptions,
+        minQuantityOptions: formData.minQuantityOptions,
+        rangeOptions: formData.rangeOptions,
+        mathOperators: formData.mathOperators,
+        pricingStackOrder: formData.pricingStackOrder,
+        quantityStackOrder: formData.quantityStackOrder,
+        minQuantityStackOrder: formData.minQuantityStackOrder,
+        rangeStackOrder: formData.rangeStackOrder
+      };
+
+      if (isEditing && editId) {
+        // Update existing configuration
+        await fetch(`/api/pr2-clean/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        console.log(`✅ Updated configuration ${editId} for sector ${sector}`);
+      } else {
+        // Create new configuration for current sector
+        const response = await fetch('/api/pr2-clean', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+          const newConfig = await response.json();
+          console.log(`✅ Created new configuration ${newConfig.id} for sector ${sector}`);
+        }
+      }
+
+      // Create independent copies for other selected sectors (excluding current sector)
+      const otherSectors = selectedSectors.filter(s => s !== sector);
+      for (const targetSector of otherSectors) {
+        if (!sectorsWithConfig.includes(targetSector)) {
+          console.log(`📋 Creating independent copy for sector: ${targetSector}`);
+          await createSectorCopy(targetSector);
+        } else {
+          console.log(`⚠️ Sector ${targetSector} already has configuration, skipping copy`);
+        }
+      }
+
+      // Invalidate all queries to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      
+      console.log(`✅ Save complete! Configuration available in sectors: ${selectedSectors.join(', ')}`);
+      
+    } catch (error) {
+      console.error(`❌ Save failed:`, error);
     }
   };
 
@@ -446,17 +559,15 @@ export default function PR2ConfigClean() {
           setFormData(newFormData);
         }, 10);
         
-        // Set sectors information
-        const configSectors = config.sectors && Array.isArray(config.sectors) 
-          ? config.sectors.filter(s => s !== null) // Remove null entries
-          : [config.sector || sector];
+        // Set single sector information
+        const configSector = config.sector || sector;
         
-        console.log(`🔍 Detected existing config in sectors: ${JSON.stringify(configSectors)}`);
-        console.log(`🔍 Setting sectorsWithConfig to:`, configSectors);
-        console.log(`🔍 Setting selectedSectors to:`, configSectors);
+        console.log(`🔍 Detected existing config in sector: ${configSector}`);
+        console.log(`🔍 Setting sectorsWithConfig to: [${configSector}]`);
+        console.log(`🔍 Setting selectedSectors to: [${configSector}]`);
         
-        setSectorsWithConfig(configSectors);
-        setSelectedSectors(configSectors);
+        setSectorsWithConfig([configSector]);
+        setSelectedSectors([configSector]);
       }
     } else if (!isEditing) {
       // Start with the current sector for new configurations
@@ -1004,7 +1115,8 @@ export default function PR2ConfigClean() {
           const payload = {
             categoryName: formData.categoryName,
             description: formData.description,
-            sectors: selectedSectors,
+            sector: sector, // Save to current sector only
+            categoryId: categoryId,
             pricingOptions: formData.pricingOptions,
             quantityOptions: formData.quantityOptions,
             minQuantityOptions: formData.minQuantityOptions,
@@ -1121,9 +1233,17 @@ export default function PR2ConfigClean() {
                 );
               })}
             </div>
-            <div className="mt-4 text-sm text-gray-600">
-              <p>✓ Checked sectors will receive this pricing configuration</p>
-              <p>✗ Unchecking existing configurations will remove them with confirmation</p>
+            <div className="mt-4 flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                <p>✓ Checked sectors will receive this pricing configuration</p>
+                <p>✗ Unchecking existing configurations will remove them with confirmation</p>
+              </div>
+              <Button
+                onClick={handleSave}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg flex items-center gap-2"
+              >
+                💾 Save Configuration
+              </Button>
             </div>
           </CardContent>
         </Card>
