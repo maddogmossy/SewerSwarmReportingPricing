@@ -371,18 +371,22 @@ export default function PR2ConfigClean() {
     console.log(`📋 Current sectorsWithConfig:`, sectorsWithConfig);
     console.log(`📋 Current selectedSectors:`, selectedSectors);
     console.log(`🔍 Is editing:`, isEditing);
+    console.log(`🔍 Edit ID:`, editId);
     
     if (checked) {
       // Add sector to selected list
       setSelectedSectors(prev => [...new Set([...prev, sectorId])]);
       
-      // Auto-save: Create configuration for this sector immediately
-      if (isEditing && editId && !sectorsWithConfig.includes(sectorId)) {
-        console.log(`💾 Auto-saving configuration to sector: ${sectorId}`);
+      // CRITICAL FIX: Only create copies when editing ID 48 specifically
+      // Do NOT create copies for other IDs (94, 95, etc.) as they are just examples
+      if (isEditing && editId && editId === 48 && !sectorsWithConfig.includes(sectorId)) {
+        console.log(`💾 Auto-saving configuration to sector: ${sectorId} (ID 48 context only)`);
         await createSectorCopy(sectorId);
         
         // Update sectorsWithConfig to include this sector
         setSectorsWithConfig(prev => [...new Set([...prev, sectorId])]);
+      } else if (editId !== 48) {
+        console.log(`⚠️ Skipping copy creation - not in ID 48 context (current ID: ${editId})`);
       }
     } else {
       // Auto-remove: Delete configuration from this sector immediately
