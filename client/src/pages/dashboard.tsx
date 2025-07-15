@@ -1509,25 +1509,28 @@ export default function Dashboard() {
     );
     if (lengthRanges.length > 0) {
       let meetsAnyLengthRange = false;
+      let matchedLengthRange = null;
       
       for (const lengthRange of lengthRanges) {
         const minLength = parseFloat(lengthRange.rangeStart || '0');
         const maxLength = parseFloat(lengthRange.rangeEnd || '999');
         if (sectionLength >= minLength && sectionLength <= maxLength) {
-          console.log('✅ Section meets PR2 requirements:', {
-            itemNo: section.itemNo,
-            pipeSize: sectionPipeSize,
-            length: sectionLength,
-            pipeSizeRange: pipeSizeRange ? `${pipeSizeRange.rangeStart}-${pipeSizeRange.rangeEnd}` : 'none',
-            lengthRange: `${lengthRange.rangeStart}-${lengthRange.rangeEnd}`,
-            percentageRange: percentageRange ? `${percentageRange.rangeStart}-${percentageRange.rangeEnd}` : 'none'
-          });
+          matchedLengthRange = lengthRange;
           meetsAnyLengthRange = true;
           break;
         }
       }
       
-      if (!meetsAnyLengthRange) {
+      if (meetsAnyLengthRange && matchedLengthRange) {
+        console.log('✅ Section meets PR2 requirements:', {
+          itemNo: section.itemNo,
+          pipeSize: sectionPipeSize,
+          length: sectionLength,
+          pipeSizeRange: pipeSizeRange ? `${pipeSizeRange.rangeStart}-${pipeSizeRange.rangeEnd}` : 'none',
+          lengthRange: `${matchedLengthRange.rangeStart}-${matchedLengthRange.rangeEnd}`,
+          percentageRange: percentageRange ? `${percentageRange.rangeStart}-${percentageRange.rangeEnd}` : 'none'
+        });
+      } else {
         console.log('❌ Section fails length check:', {
           itemNo: section.itemNo,
           length: sectionLength,
