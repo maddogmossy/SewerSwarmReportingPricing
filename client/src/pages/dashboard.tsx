@@ -690,29 +690,91 @@ export default function Dashboard() {
           </div>
         );
       case 'severityGrade':
-        // Handle dual grading for Section 75 (JDM)
-        if (section.itemNo === 75) {
+        // Function to detect if section has both service and structural defects
+        const hasDualDefects = (defectsText: string): { hasService: boolean, hasStructural: boolean, serviceGrade: number, structuralGrade: number } => {
+          if (!defectsText) return { hasService: false, hasStructural: false, serviceGrade: 0, structuralGrade: 0 };
+          
+          const upperText = defectsText.toUpperCase();
+          
+          // Service defect indicators
+          const serviceKeywords = ['DEPOSITS', 'SETTLED', 'WATER LEVEL', 'GREASE', 'DEBRIS', 'BLOCKAGE', 'DES', 'DEG', 'DEC', 'WL', 'OB'];
+          const hasService = serviceKeywords.some(keyword => upperText.includes(keyword));
+          
+          // Structural defect indicators  
+          const structuralKeywords = ['CRACK', 'FRACTURE', 'DEFORMED', 'JOINT', 'DISPLACEMENT', 'FC', 'FL', 'CR', 'JDL', 'JDM', 'JDS', 'D '];
+          const hasStructural = structuralKeywords.some(keyword => upperText.includes(keyword));
+          
+          // Calculate grades based on severity
+          let serviceGrade = 0;
+          let structuralGrade = 0;
+          
+          if (hasService) {
+            // Extract percentage for service grading
+            const percentageMatch = defectsText.match(/(\d+)%/);
+            const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 0;
+            
+            if (percentage >= 50) serviceGrade = 5; // Blocked
+            else if (percentage >= 20) serviceGrade = 4; // Major
+            else if (percentage >= 5) serviceGrade = 3; // Moderate  
+            else if (percentage > 0) serviceGrade = 2; // Minor
+            else serviceGrade = 1; // Minor impacts
+          }
+          
+          if (hasStructural) {
+            // Structural grading based on defect type and severity
+            if (upperText.includes('CRACK') || upperText.includes('FRACTURE') || upperText.includes('FC') || upperText.includes('FL')) {
+              structuralGrade = 3; // Major structural defect
+            } else if (upperText.includes('JOINT') || upperText.includes('JDM') || upperText.includes('JDL')) {
+              structuralGrade = 2; // Moderate structural defect
+            } else if (upperText.includes('DEFORMED') || upperText.includes('D ')) {
+              structuralGrade = 1; // Minor structural defect
+            }
+          }
+          
+          return { hasService, hasStructural, serviceGrade, structuralGrade };
+        };
+        
+        // Function to get grade color based on MSCC5 standards
+        const getGradeColor = (grade: number, defectType: 'service' | 'structural') => {
+          if (grade === 0) return 'bg-green-100 text-green-800';
+          if (grade === 1) return 'bg-emerald-100 text-emerald-800';
+          if (grade === 2) return 'bg-amber-100 text-amber-800';
+          if (grade === 3) return 'bg-red-100 text-red-800';
+          if (grade === 4) {
+            // Grade 4 service defects (like DEC) show green per MSCC5
+            return defectType === 'service' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+          }
+          if (grade === 5) return 'bg-green-100 text-green-800'; // Service & Operational Observations
+          return 'bg-red-100 text-red-800';
+        };
+        
+        // Check for dual defects
+        const dualInfo = hasDualDefects(section.defects || '');
+        
+        // Display dual grades if both service and structural defects exist
+        if (dualInfo.hasService && dualInfo.hasStructural && dualInfo.serviceGrade > 0 && dualInfo.structuralGrade > 0) {
           return (
-            <div className="flex items-center gap-0.5">
-              <span className="px-1 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800">
-                1
+            <div className="flex items-center gap-0.5" title={`Service Grade: ${dualInfo.serviceGrade} | Structural Grade: ${dualInfo.structuralGrade}`}>
+              <span className={`px-1 py-0.5 rounded text-xs font-semibold ${getGradeColor(dualInfo.serviceGrade, 'service')}`}>
+                {dualInfo.serviceGrade}
               </span>
               <span className="text-xs">/</span>
-              <span className="px-1 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">
-                3
+              <span className={`px-1 py-0.5 rounded text-xs font-semibold ${getGradeColor(dualInfo.structuralGrade, 'structural')}`}>
+                {dualInfo.structuralGrade}
               </span>
             </div>
           );
         }
         
+        // Single grade display with enhanced color logic
+        const currentGrade = parseInt(section.severityGrade || '0');
+        const defectType = dualInfo.hasStructural ? 'structural' : 'service';
+        
         return (
           <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
             section.severityGrade === "0" && section.adoptable === "Yes" ? 'bg-green-100 text-green-800' :
             section.severityGrade === "0" && (section.adoptable === "No" || section.adoptable === "Conditional") ? 'bg-gray-100 text-gray-800' :
-            section.severityGrade === "2" ? 'bg-amber-100 text-amber-800' :
-            section.severityGrade === "5" ? 'bg-green-100 text-green-800' :
-            (section.severityGrade === "4" && section.defects && section.defects.includes('DEC')) ? 'bg-green-100 text-green-800' :
-            'bg-red-100 text-red-800'
+            getGradeColor(currentGrade, defectType)
           }`}>
             {section.severityGrade}
           </span>
