@@ -1814,12 +1814,9 @@ export default function PR2ConfigClean() {
                   <div className="space-y-1">
                     {/* Group range options by pairs (percentage + length) */}
                     {Array.from({ length: Math.ceil(formData.rangeOptions.length / 2) }, (_, setIndex) => {
-                      const percentageOption = formData.rangeOptions.find(opt => 
-                        opt.id.includes('percentage') && (setIndex === 0 ? !opt.id.includes('_') : opt.id.includes(`_${setIndex}`))
-                      );
-                      const lengthOption = formData.rangeOptions.find(opt => 
-                        opt.id.includes('length') && (setIndex === 0 ? !opt.id.includes('_') : opt.id.includes(`_${setIndex}`))
-                      );
+                      // Get pairs by array indices: 0,1 then 2,3 then 4,5 etc.
+                      const percentageOption = formData.rangeOptions[setIndex * 2];
+                      const lengthOption = formData.rangeOptions[setIndex * 2 + 1];
                       
                       return (
                         <div key={`range-set-${setIndex}`} className="flex items-center gap-2 w-full">
