@@ -1511,11 +1511,11 @@ export default function Dashboard() {
       let meetsAnyLengthRange = false;
       let matchedLengthRange = null;
       
-      for (const lengthRange of lengthRanges) {
-        const minLength = parseFloat(lengthRange.rangeStart || '0');
-        const maxLength = parseFloat(lengthRange.rangeEnd || '999');
+      for (const currentLengthRange of lengthRanges) {
+        const minLength = parseFloat(currentLengthRange.rangeStart || '0');
+        const maxLength = parseFloat(currentLengthRange.rangeEnd || '999');
         if (sectionLength >= minLength && sectionLength <= maxLength) {
-          matchedLengthRange = lengthRange;
+          matchedLengthRange = currentLengthRange;
           meetsAnyLengthRange = true;
           break;
         }
