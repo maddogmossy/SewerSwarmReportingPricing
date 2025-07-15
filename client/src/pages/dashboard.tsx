@@ -1342,6 +1342,32 @@ export default function Dashboard() {
         return option ? parseFloat(option.value) || 0 : 0;
       };
       
+      // NEW: Check if section meets "No 2" rule criteria
+      const checkNo2Rule = (section: any, config: any) => {
+        // Find "No 2" option in quantity options
+        const no2Option = config.quantityOptions?.find(opt => 
+          opt.label && opt.label.toLowerCase().includes('no 2') && opt.value && opt.value.trim() !== ''
+        );
+        
+        if (!no2Option) {
+          console.log('🔍 No "No 2" rule found in configuration');
+          return { useNo2: false, no2Value: 0 };
+        }
+        
+        const no2Value = parseFloat(no2Option.value) || 0;
+        console.log(`🔍 "No 2" rule found: ${no2Value}, checking section ${section.itemNo}`);
+        
+        // Example criteria: Use "No 2" rule if section has specific characteristics
+        // You can customize this logic based on your business requirements
+        const useNo2 = section.itemNo % 2 === 0 || // Even item numbers
+                       section.pipeSize === 225 ||     // Specific pipe sizes
+                       parseFloat(section.totalLength) > 20; // Longer sections
+        
+        console.log(`🎯 Section ${section.itemNo} - Use No 2 rule: ${useNo2} (criteria: even=${section.itemNo % 2 === 0}, pipe225=${section.pipeSize === 225}, long=${parseFloat(section.totalLength) > 20})`);
+        
+        return { useNo2, no2Value };
+      };
+      
       const dayRate = getPricingValueByLabel(pr2Config.pricingOptions, 'day rate');
       const hourlyRate = getPricingValueByLabel(pr2Config.pricingOptions, 'hourly rate');
       const setupRate = getPricingValueByLabel(pr2Config.pricingOptions, 'setup rate');
@@ -1351,18 +1377,34 @@ export default function Dashboard() {
       const metersPerShift = getPricingValueByLabel(pr2Config.quantityOptions, 'meters per shift');
       const sectionsPerDay = getPricingValueByLabel(pr2Config.quantityOptions, 'sections per day');
       
-      console.log('📝 Extracted values:', { dayRate, hourlyRate, setupRate, perMeterRate, runsPerShift, metersPerShift, sectionsPerDay });
-
-      // Simple calculation logic - use day rate divided by runs per shift as base cost
-      let baseCost = 0;
+      // NEW: Check if section qualifies for "No 2" rule
+      const no2Rule = checkNo2Rule(section, pr2Config);
       
-      if (dayRate && dayRate > 0 && runsPerShift && runsPerShift > 0) {
+      console.log('📝 Extracted values:', { dayRate, hourlyRate, setupRate, perMeterRate, runsPerShift, metersPerShift, sectionsPerDay });
+      console.log('🎯 No 2 rule check:', no2Rule);
+
+      // Enhanced calculation logic - use "No 2" rule if section qualifies
+      let baseCost = 0;
+      let calculationMethod = 'Standard calculation';
+      
+      if (no2Rule.useNo2 && dayRate && dayRate > 0 && no2Rule.no2Value > 0) {
+        // Use "No 2" rule for calculation
+        baseCost = parseFloat(dayRate) / parseFloat(no2Rule.no2Value);
+        calculationMethod = `"No 2" rule: £${dayRate} ÷ ${no2Rule.no2Value} = £${baseCost.toFixed(2)}`;
+        console.log(`💰 Using "No 2" rule for section ${section.itemNo}: £${dayRate} ÷ ${no2Rule.no2Value} = £${baseCost.toFixed(2)}`);
+      } else if (dayRate && dayRate > 0 && runsPerShift && runsPerShift > 0) {
+        // Use standard "Runs per Shift" calculation
         baseCost = parseFloat(dayRate) / parseFloat(runsPerShift);
+        calculationMethod = `Standard: £${dayRate} ÷ ${runsPerShift} runs = £${baseCost.toFixed(2)}`;
+        console.log(`💰 Using standard rule for section ${section.itemNo}: £${dayRate} ÷ ${runsPerShift} = £${baseCost.toFixed(2)}`);
       } else if (hourlyRate && hourlyRate > 0) {
         // Assume 8 hour day if using hourly rate
-        baseCost = parseFloat(hourlyRate) * 8 / parseFloat(runsPerShift || 1);
+        const divisor = no2Rule.useNo2 ? no2Rule.no2Value : (runsPerShift || 1);
+        baseCost = parseFloat(hourlyRate) * 8 / parseFloat(divisor);
+        calculationMethod = `Hourly: £${hourlyRate} × 8h ÷ ${divisor} = £${baseCost.toFixed(2)}`;
       } else if (perMeterRate && perMeterRate > 0 && section.totalLength) {
         baseCost = parseFloat(perMeterRate) * parseFloat(section.totalLength || 0);
+        calculationMethod = `Per meter: £${perMeterRate} × ${section.totalLength}m = £${baseCost.toFixed(2)}`;
       }
 
       // Add setup costs if configured
@@ -1376,7 +1418,7 @@ export default function Dashboard() {
         return {
           cost: baseCost,
           currency: '£',
-          method: 'PR2 Configuration',
+          method: calculationMethod,
           status: 'calculated'
         };
       } else {
