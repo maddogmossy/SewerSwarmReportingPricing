@@ -1711,7 +1711,7 @@ export default function PR2ConfigClean() {
                             onClick={() => deleteQuantityOption(option.id)}
                             title="Delete this input"
                           >
-                            ×
+                            <Trash2 className="w-3 h-3" />
                           </Button>
                         )}
                       </div>
@@ -1801,6 +1801,21 @@ export default function PR2ConfigClean() {
                             onChange={(e) => lengthOption && handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
                             className="bg-white border-purple-300 h-6 text-xs w-20"
                           />
+                          {/* Show delete button for dynamically added range pairs (not the original percentage/length) */}
+                          {setIndex > 0 && percentageOption && lengthOption && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-4 w-4 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                deleteRangeOption(percentageOption.id);
+                                deleteRangeOption(lengthOption.id);
+                              }}
+                              title="Delete this range pair"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          )}
                         </div>
                       );
                     })}
