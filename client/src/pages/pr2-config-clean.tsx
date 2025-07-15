@@ -1807,7 +1807,7 @@ export default function PR2ConfigClean() {
                       className="h-6 px-3 text-xs bg-green-600 hover:bg-green-700 text-white border-0 shadow-sm font-medium"
                       onClick={() => addNewInputsToAllWindows()}
                     >
-                      ➕ Add New
+                      <span className="text-white">✚</span> Add New
                     </Button>
                   </CardTitle>
                 </CardHeader>
