@@ -111,17 +111,6 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     return `${normalizedSize}mm Pipe Configuration Options`;
   };
 
-  const handleConfigureSelected = () => {
-    setIsOpen(false);
-    
-    // Route to PR2 pricing with equipment in current order and dynamic pipe size naming
-    const equipmentParam = equipmentOrder.join(',');
-    const configName = getConfigurationName();
-    const pipeSize = sectionData.pipeSize.replace(/mm$/i, ''); // Clean pipe size for URL
-    
-    setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentParam}&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`);
-  };
-
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -176,11 +165,16 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          const route = equipment.id === 'cctv-van-pack' 
-                            ? '/pr2-config-clean?categoryId=cctv-van-pack'
-                            : '/pr2-config-clean?categoryId=cctv-jet-vac';
-                          setLocation(`${route}&sector=${sectionData.sector}`);
                           setIsOpen(false);
+                          
+                          // Auto-save current equipment order before navigating
+                          localStorage.setItem('equipment-order', JSON.stringify(equipmentOrder));
+                          
+                          // Navigate to PR2 pricing page with pipe size configuration
+                          const pipeSize = sectionData.pipeSize.replace(/mm$/i, '');
+                          const configName = getConfigurationName();
+                          
+                          setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentOrder.join(',')}&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`);
                         }}
                         className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
                       >
@@ -200,15 +194,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           <div className="pt-2 border-t">
             <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground mb-3">
               <ArrowUp className="h-3 w-3" />
-              <span>Use ↑↓ arrows to set priority order</span>
+              <span>Equipment order is automatically saved</span>
               <ArrowDown className="h-3 w-3" />
             </div>
-            <Button 
-              onClick={handleConfigureSelected}
-              className="w-full"
-            >
-              Configure Equipment Stack Order
-            </Button>
           </div>
         </div>
       </PopoverContent>

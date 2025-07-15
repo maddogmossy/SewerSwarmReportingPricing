@@ -533,46 +533,38 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v4.7' to return to this stable checkpoint
 
-## REV V4.9 CHECKPOINT - REMARK ENHANCEMENT SYSTEM LOCKED (July 14, 2025)
+## REV V5.1 CHECKPOINT - AUTO-SAVE EQUIPMENT ORDER SYSTEM LOCKED (July 15, 2025)
 
-🔒 **PRODUCTION READY - COMPLETE REMARK ENHANCEMENT SYSTEM:**
-- **Observation Code Enhancement:** Implemented `enhanceObservationWithRemark()` function that automatically appends explanatory remarks to observation codes
-- **Smart Pattern Matching:** Detects observation codes with meterage patterns (e.g., "SA 27.9m") and adds contextual remarks in parentheses
-- **Comprehensive Remark Mappings:** Added common observation codes with their explanatory remarks:
-  - **SA** → "Due to camera under water"
-  - **CUW** → "Camera under water"
-  - **LV** → "Due to loss of vision"
-  - **BL** → "Due to blockage"
-  - **OF** → "Due to overflow conditions"
-  - **IC** → "Inspection continues"
-  - **ICF** → "Inspection continues forward"
-- **Enhanced Line Break Handling:** Fixed dashboard display to properly handle line breaks in database and create clean bullet point lists
-- **Bullet Point Formatting:** System removes existing bullet points from stored text and creates fresh UI bullet points for consistent display
+🔒 **PRODUCTION READY - SIMPLIFIED EQUIPMENT SELECTION WITH AUTO-SAVE:**
+- **"Configure Equipment Stack Order" Button Removed:** Eliminated the main configuration button per user request
+- **Auto-Save Equipment Order:** Equipment priority order now automatically saves to localStorage when users reorder with up/down arrows
+- **Streamlined User Experience:** Users simply arrange equipment order with arrows and navigate directly to pricing configuration
+- **Visual Feedback Updated:** Bottom message changed to "Equipment order is automatically saved" to inform users
+- **Direct Navigation:** Add/Edit buttons route directly to PR2 pricing page with complete pipe size context
+- **Immediate Order Persistence:** useEffect automatically saves equipmentOrder changes without requiring button clicks
 
-🔒 **MULTI-DEFECT SPLITTING PROOF OF CONCEPT CONFIRMED:**
-- **Safe Implementation:** Item 13/13a splitting working correctly with proper letter suffix handling
-- **Service/Structural Separation:** Service defects (💧) remain in original item, structural defects (🔧) moved to letter suffix items
-- **Cost Display Logic:** Sections with letter suffixes show warning triangles instead of calculated costs
-- **Database Integration:** letterSuffix field properly handled with correct sorting (13, 13a, 13b order)
-- **Visual Indicators:** Multi-defect sections display appropriate icons for defect types
+🔒 **ENHANCED PIPE SIZE WORKFLOW:**
+- **Dynamic Pipe Size Configuration:** PR2 pricing page displays "150mm Pipe Configuration Options" dropdown when navigating from dashboard
+- **Equipment Priority Integration:** Selected equipment order (Option 1, Option 2) carries through to pricing configuration
+- **Complete URL Parameter Passing:** Includes pipeSize, configName, itemNo, and sector for full context
+- **Pipe Size-Specific Cards:** Shows "CCTV/Jet Vac - 150mm" and "CCTV/Van Pack - 150mm" cards in dedicated dropdown
+- **Future Multi-Size Support:** Different pipe sizes (225mm, 300mm) will create separate dropdown sections
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Backend Enhancement:** `server/wincan-db-reader.ts` enhanced with `enhanceObservationWithRemark()` function
-- **Frontend Display:** `client/src/pages/dashboard.tsx` updated with line break handling and bullet point formatting
-- **Database Structure:** Multi-defect sections stored with proper letterSuffix field for sorting
-- **Remark Integration:** Applied to both grouped and non-grouped observations for comprehensive coverage
+- **Auto-Save Logic:** Equipment order saved via localStorage on every reorder action in moveEquipmentUp/moveEquipmentDown functions
+- **Removed Functions:** handleConfigureSelected function removed since configuration button eliminated
+- **Enhanced Navigation:** Add/Edit buttons pass complete equipment order and pipe size information to PR2 pricing page
+- **Dynamic Naming:** Configuration names automatically include pipe size (e.g., "150mm CCTV Jet Vac Configuration")
+- **Persistent State:** Equipment order maintains between sessions through localStorage persistence
 
-🔒 **USER-CONFIRMED WORKING FEATURES:**
-- **Item 13 Enhanced Display:** Shows proper bullet points with remarks:
-  • Settled deposits, coarse, 30% cross-sectional area loss at 25.21m
-  • Water level, 50% of the vertical dimension at 26.65m
-  • CUW 26.87m (Camera under water)
-  • SA 27.9m (Due to camera under water)
-- **Item 13a Structural Display:** Shows separated structural defects with warning triangle cost display
-- **Clean Formatting:** Each observation appears on separate line with proper bullet point formatting
-- **Contextual Remarks:** Observation codes enhanced with explanatory text for improved clarity
+🔒 **USER WORKFLOW SIMPLIFIED:**
+1. **Dashboard Click:** User clicks blue cleaning recommendation (e.g., Item 3 with 150mm pipe)
+2. **Equipment Selection:** Popup shows numbered options with up/down arrow controls for reordering
+3. **Auto-Save Order:** Equipment priority automatically saves when arrows are used
+4. **Direct Navigation:** Add/Edit buttons route to PR2 pricing with pipe size-specific configuration dropdown
+5. **Configuration Access:** Users immediately see "150mm Pipe Configuration Options" with both equipment types
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v4.9' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v5.1' to return to this stable checkpoint
 
 ## REV V4.7 RESTORE - SYSTEM ROLLBACK COMPLETED (July 14, 2025)
 
