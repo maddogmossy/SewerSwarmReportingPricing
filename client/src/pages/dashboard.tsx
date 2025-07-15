@@ -1392,17 +1392,20 @@ export default function Dashboard() {
           recommendations: `"${dbRecommendations}"`
         });
         
-        // Rule 2: "No 2" rule applies to items 6 and 10 specifically
-        // User confirmed: Rule 2 uses 25 runs per shift (not length criteria)
-        // Apply to sections with patch lining recommendations (items 6 and 10)
-        const useNo2 = (section.itemNo === 6 || section.itemNo === 10) && 
+        // Rule 2: "No 2" rule uses 25 runs per shift for sections > 30m with patch lining
+        // Database facts: Item 6 (33.78m) and Item 10 (34.31m) both >30m with patch recommendations
+        // Check: 150mm pipe, >30m length, patch lining recommendations
+        const sectionLength = parseFloat(section.totalLength) || 0;
+        const useNo2 = section.pipeSize === '150' && 
+                       sectionLength > 30 && 
                        (dbRecommendations || '').toLowerCase().includes('patch lining');
         
         if (section.itemNo === 6 || section.itemNo === 10) {
           console.log(`🎯 SECTION ${section.itemNo} [ID: ${section.id}] - No 2 rule: ${useNo2}`);
-          console.log(`   - Is item 6 or 10: ${(section.itemNo === 6 || section.itemNo === 10)}`);
+          console.log(`   - Pipe size 150mm: ${section.pipeSize === '150'} (actual: ${section.pipeSize})`);
+          console.log(`   - Length > 30m: ${sectionLength > 30} (actual: ${sectionLength}m)`);
           console.log(`   - Has patch lining: ${(dbRecommendations || '').toLowerCase().includes('patch lining')}`);
-          console.log(`   - Recommendations: "${dbRecommendations}"`);
+          console.log(`   - All criteria met: ${useNo2}`);
         }
         
         return { useNo2, no2Value };

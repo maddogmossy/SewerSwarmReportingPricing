@@ -2,42 +2,50 @@ import fetch from 'node-fetch';
 
 async function debugItem6Detailed() {
   try {
-    console.log('🔍 FETCHING ITEM 6 WITH EXACT DATABASE ID...');
     const response = await fetch('http://localhost:5000/api/uploads/80/sections');
     const sections = await response.json();
     
     const item6 = sections.find(s => s.itemNo === 6);
+    const item10 = sections.find(s => s.itemNo === 10);
     
-    if (!item6) {
-      console.log('❌ ITEM 6 NOT FOUND');
-      return;
+    console.log('=== ITEM 6 ANALYSIS ===');
+    if (item6) {
+      console.log('ID:', item6.id);
+      console.log('Item No:', item6.itemNo);
+      console.log('Pipe Size:', item6.pipeSize);
+      console.log('Length:', item6.totalLength);
+      console.log('Defects:', item6.defects);
+      console.log('Recommendations:', item6.recommendations);
+      console.log('Has "patch lining":', (item6.recommendations || '').toLowerCase().includes('patch lining'));
+      
+      // Check specific criteria
+      console.log('\n--- RULE 2 CRITERIA CHECK ---');
+      console.log('Is item 6:', item6.itemNo === 6);
+      console.log('Length > 30m:', parseFloat(item6.totalLength) > 30);
+      console.log('Pipe size 150mm:', item6.pipeSize === '150');
+      console.log('Has patch lining rec:', (item6.recommendations || '').toLowerCase().includes('patch lining'));
     }
     
-    console.log('📊 ITEM 6 COMPLETE DATABASE RECORD [ID:', item6.id, ']:');
-    console.log('itemNo:', item6.itemNo);
-    console.log('pipeSize:', `"${item6.pipeSize}" (${typeof item6.pipeSize})`);
-    console.log('totalLength:', `"${item6.totalLength}" (${typeof item6.totalLength})`);
-    console.log('severityGrade:', `"${item6.severityGrade}" (${typeof item6.severityGrade})`);
-    console.log('adoptable:', `"${item6.adoptable}" (${typeof item6.adoptable})`);
-    console.log('defects:', `"${item6.defects}"`);
-    console.log('recommendations:', `"${item6.recommendations}"`);
-    console.log('');
-    
-    console.log('🎯 KEY ISSUES IDENTIFIED:');
-    console.log('1. User says severity grade should be 3, database shows:', item6.severityGrade);
-    console.log('2. User says "No 2" rule is for 25, not 30m length');
-    console.log('3. User says no structural defects, but WRc recommendation suggests patch needed');
-    console.log('4. User says no prices showing on dashboard despite console showing calculations');
-    console.log('');
-    
-    console.log('🔧 CURRENT CONFIGURATION ISSUES:');
-    console.log('- "No 2" rule uses value 25 (correct)');
-    console.log('- Length criteria seems to be 30m+ but user says it should be different');
-    console.log('- Severity grade mismatch between user expectation (3) and database (2)');
-    console.log('- MSCC5 classifier generating structural recommendations for service defects');
+    console.log('\n=== ITEM 10 ANALYSIS ===');
+    if (item10) {
+      console.log('ID:', item10.id);
+      console.log('Item No:', item10.itemNo);
+      console.log('Pipe Size:', item10.pipeSize);
+      console.log('Length:', item10.totalLength);
+      console.log('Defects:', item10.defects);
+      console.log('Recommendations:', item10.recommendations);
+      console.log('Has "patch lining":', (item10.recommendations || '').toLowerCase().includes('patch lining'));
+      
+      // Check specific criteria
+      console.log('\n--- RULE 2 CRITERIA CHECK ---');
+      console.log('Is item 10:', item10.itemNo === 10);
+      console.log('Length > 30m:', parseFloat(item10.totalLength) > 30);
+      console.log('Pipe size 150mm:', item10.pipeSize === '150');
+      console.log('Has patch lining rec:', (item10.recommendations || '').toLowerCase().includes('patch lining'));
+    }
     
   } catch (error) {
-    console.error('❌ ERROR:', error);
+    console.error('ERROR:', error);
   }
 }
 
