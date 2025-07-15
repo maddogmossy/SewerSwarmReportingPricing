@@ -1257,12 +1257,131 @@ export default function PR2ConfigClean() {
           </CollapsibleContent>
         </Collapsible>
 
+        {/* Saved Configurations Section */}
+        {allConfigs && allConfigs.length > 0 && (
+          <div className="mb-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Saved Configurations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {allConfigs.map((config: any, index: number) => (
+                    <div key={config.id} className={`flex items-center justify-between p-3 rounded-lg ${
+                      config.id === parseInt(editId || '0') 
+                        ? 'bg-green-50 border-2 border-green-300' 
+                        : 'bg-slate-50'
+                    }`}>
+                      <div className="flex-1">
+                        <div className="font-medium text-slate-900">{config.categoryName} (ID: {config.id})</div>
+                        
+                        {/* Color-coded configuration display */}
+                        <div className="mt-2">
+                          <div className="flex gap-2">
+                            {/* Main configuration window - Blue, Math, Green */}
+                            <div className="bg-white p-2 rounded-lg border border-gray-200 w-fit">
+                              <div className="flex items-center gap-1 flex-wrap">
+                                {/* Blue pricing options */}
+                                {config.pricingOptions?.filter((opt: any) => opt.enabled).map((opt: any, idx: number) => (
+                                  <div key={opt.id} className="flex items-center gap-1">
+                                    <div className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium whitespace-nowrap">
+                                      {opt.label}: £{opt.value}
+                                    </div>
+                                    {idx < config.pricingOptions.filter((o: any) => o.enabled).length - 1 && config.mathOperators?.[idx] && (
+                                      <div className="px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-medium">
+                                        {config.mathOperators[idx]}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                                
+                                {/* Green quantity options */}
+                                {config.quantityOptions?.filter((opt: any) => opt.enabled).map((opt: any) => (
+                                  <div key={opt.id} className="px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium whitespace-nowrap">
+                                    {opt.label}: {opt.value}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {/* Orange min quantity options */}
+                            {config.minQuantityOptions?.filter((opt: any) => opt.enabled).length > 0 && (
+                              <div className="bg-white p-2 rounded-lg border border-gray-200 w-fit">
+                                {config.minQuantityOptions.filter((opt: any) => opt.enabled).map((opt: any) => (
+                                  <div key={opt.id} className="px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-medium whitespace-nowrap">
+                                    {opt.label}: {opt.value}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* Purple range options */}
+                            {config.rangeOptions?.filter((opt: any) => opt.enabled).length > 0 && (
+                              <div className="bg-white p-2 rounded-lg border border-gray-200 w-fit">
+                                {config.rangeOptions.filter((opt: any) => opt.enabled).map((opt: any) => (
+                                  <div key={opt.id} className="px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-medium whitespace-nowrap">
+                                    {opt.label}: {opt.rangeStart} to {opt.rangeEnd}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleNavigateToEdit(config.id)}
+                          variant="outline"
+                          size="sm"
+                          className={`px-3 py-1 text-xs ${
+                            config.id === parseInt(editId || '0') 
+                              ? 'bg-green-100 border-green-500 text-green-700 hover:bg-green-200' 
+                              : ''
+                          }`}
+                        >
+                          <Edit2 className="w-3 h-3 mr-1" />
+                          {config.id === parseInt(editId || '0') ? 'Click to Edit' : 'Edit'}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Alert Dialog for removing configurations */}
+        <AlertDialog open={showRemoveWarning} onOpenChange={setShowRemoveWarning}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-red-600">Remove Configuration from Sector</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete the configuration from the {SECTORS.find(s => s.id === sectorToRemove)?.name} sector. 
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setShowRemoveWarning(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={confirmRemoveFromSector}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Remove Configuration
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         {/* Hidden dialogs and lists - keeping functionality but removing from visible area */}
         <div className="hidden">
           {/* Pricing Options List */}
           <div className="h-24 overflow-y-auto">
             {formData.pricingOptions.length === 0 ? null : (
-                  <div className="space-y-2">
+              <div className="space-y-2">
                     {getOrderedPricingOptions().map((option) => (
                       <div key={option.id} className={`p-2 rounded border text-xs ${
                         isOptionSelected(option.id, 'pricing') 
@@ -1307,9 +1426,9 @@ export default function PR2ConfigClean() {
                           />
                         )}
                       </div>
-                    ))}
-                  </div>
-                )}
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Quantity Options List */}
@@ -1736,29 +1855,29 @@ export default function PR2ConfigClean() {
           </div>
         )}
 
-          {/* Red Warning Dialog for Sector Removal */}
-          <AlertDialog open={showRemoveWarning} onOpenChange={setShowRemoveWarning}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-red-600">Remove Configuration from Sector</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently delete the configuration from the {SECTORS.find(s => s.id === sectorToRemove)?.name} sector. 
-                  This action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setShowRemoveWarning(false)}>
-                  Cancel
-                </AlertDialogCancel>
-                <AlertDialogAction 
-                  onClick={confirmSectorRemoval}
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                >
-                  Remove Configuration
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+        {/* Red Warning Dialog for Sector Removal */}
+        <AlertDialog open={showRemoveWarning} onOpenChange={setShowRemoveWarning}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-red-600">Remove Configuration from Sector</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete the configuration from the {SECTORS.find(s => s.id === sectorToRemove)?.name} sector. 
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setShowRemoveWarning(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={confirmSectorRemoval}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Remove Configuration
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
