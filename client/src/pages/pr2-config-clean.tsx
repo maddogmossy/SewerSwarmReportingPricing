@@ -1514,8 +1514,8 @@ export default function PR2ConfigClean() {
             {/* Five-Window Configuration Layout */}
             <div className="flex gap-4 p-4 border rounded-lg bg-gray-50 w-full">
               
-              {/* Blue Window: Day Rate */}
-              <Card className="bg-blue-50 border-blue-200 flex-1">
+              {/* Blue Window: Day Rate - Fixed Width */}
+              <Card className="bg-blue-50 border-blue-200 w-48 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
                     <Coins className="w-3 h-3" />
@@ -1567,8 +1567,8 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Green Window: Runs per Shift */}
-              <Card className="bg-green-50 border-green-200 flex-1">
+              {/* Green Window: Runs per Shift - Fixed Width */}
+              <Card className="bg-green-50 border-green-200 w-52 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-green-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
                     <span className="flex items-center gap-1">
@@ -1604,8 +1604,8 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Orange Window: Min Runs per Shift - Made Smaller */}
-              <Card className="bg-orange-50 border-orange-200 w-32 flex-shrink-0">
+              {/* Orange Window: Min Runs per Shift - Made Bigger */}
+              <Card className="bg-orange-50 border-orange-200 w-44 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-orange-700 text-xs flex items-center gap-1 whitespace-nowrap">
                     <Gauge className="w-3 h-3" />
@@ -1623,7 +1623,7 @@ export default function PR2ConfigClean() {
                       maxLength={4}
                       value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
-                      className="bg-white border-orange-300 h-6 text-xs w-12"
+                      className="bg-white border-orange-300 h-6 text-xs w-16"
                       data-field="min-runs-per-shift"
                       data-window="orange"
                       data-option-id="minquantity_runs"
@@ -1632,8 +1632,8 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Purple Window: Percentage and Length on One Row */}
-              <Card className="bg-purple-50 border-purple-200 flex-1">
+              {/* Purple Window: Percentage and Length on One Row - Single Line Layout */}
+              <Card className="bg-purple-50 border-purple-200 w-64 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-purple-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
                     <span className="flex items-center gap-1">
@@ -1650,33 +1650,29 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1">
-                      <Label htmlFor="percentage_value" className="text-xs font-medium text-purple-700 flex-shrink-0 w-10">
-                        % (Max)
-                      </Label>
-                      <Input
-                        id="percentage_value"
-                        placeholder="%"
-                        maxLength={3}
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeEnd || ''}
-                        onChange={(e) => handleRangeValueChange('range_percentage', 'rangeEnd', e.target.value)}
-                        className="bg-white border-purple-300 h-6 text-xs w-12 min-w-0"
-                      />
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Label htmlFor="length_value" className="text-xs font-medium text-purple-700 flex-shrink-0 w-16">
-                        Length (Max)
-                      </Label>
-                      <Input
-                        id="length_value"
-                        placeholder="m"
-                        maxLength={4}
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
-                        onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                        className="bg-white border-purple-300 h-6 text-xs w-16 min-w-0"
-                      />
-                    </div>
+                  <div className="flex items-center gap-1 w-full">
+                    <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                      % (Max)
+                    </Label>
+                    <Input
+                      id="percentage_value"
+                      placeholder="%"
+                      maxLength={3}
+                      value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeEnd || ''}
+                      onChange={(e) => handleRangeValueChange('range_percentage', 'rangeEnd', e.target.value)}
+                      className="bg-white border-purple-300 h-6 text-xs w-8"
+                    />
+                    <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-2">
+                      Length (Max)
+                    </Label>
+                    <Input
+                      id="length_value"
+                      placeholder="m"
+                      maxLength={4}
+                      value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
+                      onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
+                      className="bg-white border-purple-300 h-6 text-xs w-12"
+                    />
                   </div>
                 </CardContent>
               </Card>
