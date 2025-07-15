@@ -1367,11 +1367,11 @@ export default function Dashboard() {
         const no2Value = parseFloat(no2Option.value) || 0;
         console.log(`🔍 "No 2" rule found: ${no2Value}, checking section ${section.itemNo}`);
         
-        // Rule 2: "No 2" rate applies to specific sections only
-        // DISABLED until user specifies which exact sections should use £74.00
-        const useNo2 = false; // Only apply to specific sections, not all 150mm pipes
+        // Rule 2: "No 2" rate applies to specific items 6 and 10 only
+        // User confirmed items 6 and 10 should use £74.00 (£1850 ÷ 25)
+        const useNo2 = section.itemNo === 6 || section.itemNo === 10; // Apply only to items 6 and 10
         
-        console.log(`🎯 Section ${section.itemNo} - Use No 2 rule: ${useNo2} (pipe size: ${section.pipeSize}, is150mm: ${parseInt(section.pipeSize) === 150})`);
+        console.log(`🎯 Section ${section.itemNo} - Use No 2 rule: ${useNo2} (item 6 or 10: ${section.itemNo === 6 || section.itemNo === 10}, pipe size: ${section.pipeSize})`);
         
         return { useNo2, no2Value };
       };
