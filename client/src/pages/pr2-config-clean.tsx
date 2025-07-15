@@ -953,6 +953,40 @@ export default function PR2ConfigClean() {
     console.log(`🔧 Added new inputs to all windows: ${newQuantityOption.label}, ${newMinQuantityOption.label}, ${newPercentageOption.label} & ${newLengthOption.label}`);
   };
 
+  // Master delete function that removes corresponding inputs from all three windows
+  const deleteInputsFromAllWindows = (setIndex: number) => {
+    // Calculate which entries to delete based on set index
+    const quantityIndexToDelete = setIndex; // Quantity index matches set index (0-based)
+    const minQuantityIndexToDelete = setIndex; // Min quantity index matches set index (0-based)
+    const rangePercentageIndex = setIndex * 2; // Range pairs: 0,1 then 2,3 then 4,5
+    const rangeLengthIndex = setIndex * 2 + 1;
+    
+    // Get the IDs to delete
+    const quantityIdToDelete = formData.quantityOptions[quantityIndexToDelete]?.id;
+    const minQuantityIdToDelete = formData.minQuantityOptions[minQuantityIndexToDelete]?.id;
+    const percentageIdToDelete = formData.rangeOptions[rangePercentageIndex]?.id;
+    const lengthIdToDelete = formData.rangeOptions[rangeLengthIndex]?.id;
+    
+    setFormData(prev => ({
+      ...prev,
+      // Remove from quantity options
+      quantityOptions: prev.quantityOptions.filter(option => option.id !== quantityIdToDelete),
+      quantityStackOrder: prev.quantityStackOrder.filter(id => id !== quantityIdToDelete),
+      // Remove from min quantity options
+      minQuantityOptions: prev.minQuantityOptions.filter(option => option.id !== minQuantityIdToDelete),
+      minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => id !== minQuantityIdToDelete),
+      // Remove from range options (both percentage and length)
+      rangeOptions: prev.rangeOptions.filter(option => 
+        option.id !== percentageIdToDelete && option.id !== lengthIdToDelete
+      ),
+      rangeStackOrder: prev.rangeStackOrder.filter(id => 
+        id !== percentageIdToDelete && id !== lengthIdToDelete
+      )
+    }));
+    
+    console.log(`🗑️ Deleted inputs from all windows at set ${setIndex + 1}: quantity ${quantityIdToDelete}, min quantity ${minQuantityIdToDelete}, range ${percentageIdToDelete} & ${lengthIdToDelete}`);
+  };
+
   const deleteQuantityOption = (optionId: string) => {
     setFormData(prev => ({
       ...prev,
@@ -1731,18 +1765,7 @@ export default function PR2ConfigClean() {
                           data-window="green"
                           data-option-id={option.id}
                         />
-                        {/* Show delete button for dynamically added options (not the original "quantity_runs") */}
-                        {option.id !== 'quantity_runs' && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-4 w-4 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => deleteQuantityOption(option.id)}
-                            title="Delete this input"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        )}
+
                       </div>
                     ))}
                   </div>
@@ -1775,18 +1798,7 @@ export default function PR2ConfigClean() {
                           data-window="orange"
                           data-option-id={option.id}
                         />
-                        {/* Show delete button for dynamically added options (not the original "minquantity_runs") */}
-                        {option.id !== 'minquantity_runs' && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-4 w-4 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => deleteMinQuantityOption(option.id)}
-                            title="Delete this input"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        )}
+
                       </div>
                     ))}
                   </div>
@@ -1843,17 +1855,14 @@ export default function PR2ConfigClean() {
                             onChange={(e) => lengthOption && handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
                             className="bg-white border-purple-300 h-6 text-xs w-20"
                           />
-                          {/* Show delete button for dynamically added range pairs (not the original percentage/length) */}
+                          {/* Show delete button for dynamically added sets (not the original set) */}
                           {setIndex > 0 && percentageOption && lengthOption && (
                             <Button
                               variant="ghost"
                               size="sm"
                               className="h-4 w-4 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => {
-                                deleteRangeOption(percentageOption.id);
-                                deleteRangeOption(lengthOption.id);
-                              }}
-                              title="Delete this range pair"
+                              onClick={() => deleteInputsFromAllWindows(setIndex)}
+                              title="Delete inputs from all windows"
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
