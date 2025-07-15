@@ -1533,7 +1533,7 @@ export default function PR2ConfigClean() {
                       maxLength={10}
                       value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
                       onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
-                      className="bg-white border-blue-300 h-6 text-xs flex-1 min-w-0"
+                      className="bg-white border-blue-300 h-6 text-xs w-20"
                       data-field="day-rate"
                       data-window="blue"
                       data-option-id="price_dayrate"
