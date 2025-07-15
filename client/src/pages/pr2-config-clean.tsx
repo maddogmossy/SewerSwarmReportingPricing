@@ -1419,10 +1419,10 @@ export default function PR2ConfigClean() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
         </div>
 
-        {/* Four-Window Configuration System */}
+        {/* Configuration Options Display */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           
-          {/* Blue Window: Pricing Options */}
+          {/* Blue Window: Price/Cost Options */}
           <Card className="bg-blue-50 border-blue-200">
             <CardHeader className="pb-3">
               <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
@@ -1432,25 +1432,15 @@ export default function PR2ConfigClean() {
             </CardHeader>
             <CardContent className="space-y-3">
               {formData.pricingOptions.map((option) => (
-                <div key={option.id} className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={option.id}
-                      checked={option.enabled}
-                      onCheckedChange={(checked) => handleOptionToggle('pricingOptions', option.id, checked as boolean)}
-                    />
-                    <Label htmlFor={option.id} className="text-sm font-medium text-blue-700">
-                      {option.label}
-                    </Label>
-                  </div>
-                  {option.enabled && (
-                    <Input
-                      placeholder="Enter £ value"
-                      value={option.value}
-                      onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
-                      className="bg-white border-blue-300"
-                    />
-                  )}
+                <div key={option.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={option.id}
+                    checked={option.enabled}
+                    onCheckedChange={(checked) => handleOptionToggle('pricingOptions', option.id, checked as boolean)}
+                  />
+                  <Label htmlFor={option.id} className="text-sm font-medium text-blue-700">
+                    {option.label}
+                  </Label>
                 </div>
               ))}
             </CardContent>
@@ -1466,26 +1456,15 @@ export default function PR2ConfigClean() {
             </CardHeader>
             <CardContent className="space-y-3">
               {formData.quantityOptions.map((option) => (
-                <div key={option.id} className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={option.id}
-                      checked={option.enabled}
-                      onCheckedChange={(checked) => handleOptionToggle('quantityOptions', option.id, checked as boolean)}
-                    />
-                    <Label htmlFor={option.id} className="text-sm font-medium text-green-700">
-                      {option.label}
-                    </Label>
-                  </div>
-                  {option.enabled && (
-                    <Input
-                      placeholder="Enter quantity"
-                      value={option.value}
-                      onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                      className="bg-white border-green-300"
-                      data-option-id={option.id}
-                    />
-                  )}
+                <div key={option.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={option.id}
+                    checked={option.enabled}
+                    onCheckedChange={(checked) => handleOptionToggle('quantityOptions', option.id, checked as boolean)}
+                  />
+                  <Label htmlFor={option.id} className="text-sm font-medium text-green-700">
+                    {option.label}
+                  </Label>
                 </div>
               ))}
             </CardContent>
@@ -1501,25 +1480,15 @@ export default function PR2ConfigClean() {
             </CardHeader>
             <CardContent className="space-y-3">
               {formData.minQuantityOptions.map((option) => (
-                <div key={option.id} className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={option.id}
-                      checked={option.enabled}
-                      onCheckedChange={(checked) => handleOptionToggle('minQuantityOptions', option.id, checked as boolean)}
-                    />
-                    <Label htmlFor={option.id} className="text-sm font-medium text-orange-700">
-                      {option.label}
-                    </Label>
-                  </div>
-                  {option.enabled && (
-                    <Input
-                      placeholder="Enter minimum"
-                      value={option.value}
-                      onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
-                      className="bg-white border-orange-300"
-                    />
-                  )}
+                <div key={option.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={option.id}
+                    checked={option.enabled}
+                    onCheckedChange={(checked) => handleOptionToggle('minQuantityOptions', option.id, checked as boolean)}
+                  />
+                  <Label htmlFor={option.id} className="text-sm font-medium text-orange-700">
+                    {option.label}
+                  </Label>
                 </div>
               ))}
             </CardContent>
@@ -1535,35 +1504,15 @@ export default function PR2ConfigClean() {
             </CardHeader>
             <CardContent className="space-y-3">
               {formData.rangeOptions.map((option) => (
-                <div key={option.id} className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={option.id}
-                      checked={option.enabled}
-                      onCheckedChange={(checked) => handleRangeToggle(option.id, checked as boolean)}
-                    />
-                    <Label htmlFor={option.id} className="text-sm font-medium text-purple-700">
-                      {option.label}
-                    </Label>
-                  </div>
-                  {option.enabled && (
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="From"
-                        value={option.rangeStart}
-                        onChange={(e) => handleRangeChange(option.id, 'start', e.target.value)}
-                        className="bg-white border-purple-300 flex-1"
-                        data-range-id={`${option.id}-start`}
-                      />
-                      <Input
-                        placeholder="To"
-                        value={option.rangeEnd}
-                        onChange={(e) => handleRangeChange(option.id, 'end', e.target.value)}
-                        className="bg-white border-purple-300 flex-1"
-                        data-range-id={`${option.id}-end`}
-                      />
-                    </div>
-                  )}
+                <div key={option.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={option.id}
+                    checked={option.enabled}
+                    onCheckedChange={(checked) => handleRangeToggle(option.id, checked as boolean)}
+                  />
+                  <Label htmlFor={option.id} className="text-sm font-medium text-purple-700">
+                    {option.label}
+                  </Label>
                 </div>
               ))}
             </CardContent>
