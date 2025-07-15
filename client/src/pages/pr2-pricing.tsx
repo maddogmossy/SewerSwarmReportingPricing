@@ -449,7 +449,18 @@ export default function PR2Pricing() {
                   >
                     <CardContent className="p-4 text-center relative">
                       <Waves className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                      <h3 className="font-medium text-sm mb-1">CCTV/Jet Vac - {pipeSize}mm</h3>
+                      <h3 className="font-medium text-sm mb-1">
+                        CCTV/Jet Vac - {pipeSize}mm
+                        {(() => {
+                          const existingConfig = pr2Configurations.find(config => 
+                            config.categoryId === 'cctv-jet-vac' && 
+                            config.categoryName?.includes(`${pipeSize}mm`)
+                          );
+                          return existingConfig ? (
+                            <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
+                          ) : null;
+                        })()}
+                      </h3>
                       <p className="text-xs text-gray-600">High-pressure cleaning configuration for {pipeSize}mm pipes</p>
                       <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
                     </CardContent>
@@ -474,7 +485,18 @@ export default function PR2Pricing() {
                   >
                     <CardContent className="p-4 text-center relative">
                       <Monitor className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                      <h3 className="font-medium text-sm mb-1">CCTV/Van Pack - {pipeSize}mm</h3>
+                      <h3 className="font-medium text-sm mb-1">
+                        CCTV/Van Pack - {pipeSize}mm
+                        {(() => {
+                          const existingConfig = pr2Configurations.find(config => 
+                            config.categoryId === 'cctv-van-pack' && 
+                            config.categoryName?.includes(`${pipeSize}mm`)
+                          );
+                          return existingConfig ? (
+                            <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
+                          ) : null;
+                        })()}
+                      </h3>
                       <p className="text-xs text-gray-600">Traditional cleaning configuration for {pipeSize}mm pipes</p>
                       <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
                     </CardContent>
@@ -518,7 +540,12 @@ export default function PR2Pricing() {
                         <category.icon className={`h-8 w-8 mx-auto mb-2 ${
                           isUserCreated ? 'text-green-700' : 'text-gray-700'
                         }`} />
-                        <h3 className="font-medium text-sm mb-1 text-gray-800">{category.name}</h3>
+                        <h3 className="font-medium text-sm mb-1 text-gray-800">
+                          {category.name}
+                          {existingConfiguration && (
+                            <span className="text-xs text-blue-600 ml-1">(ID: {existingConfiguration.id})</span>
+                          )}
+                        </h3>
                         <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                         
                         {/* Show status icon and Edit button based on configuration */}
