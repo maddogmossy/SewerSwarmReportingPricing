@@ -1387,12 +1387,13 @@ export default function Dashboard() {
           recommendations: `"${dbRecommendations}"`
         });
         
-        // HARD LOCKDOWN: Only apply "No 2" rule to sections that exactly match items 6 and 10
-        // User must specify exact database criteria, no interpretation allowed
-        // TEMPORARILY ENABLE STANDARD PRICING: All sections get Rule 1 (£61.67) until "No 2" criteria specified
-        const useNo2 = false; // Standard pricing enabled for all sections
+        // Rule 2: "No 2" rule applies to items 6 and 10 specifically
+        // User confirmed: Rule 2 uses 25 runs per shift (not length criteria)
+        // Apply to sections with patch lining recommendations (items 6 and 10)
+        const useNo2 = (section.itemNo === 6 || section.itemNo === 10) && 
+                       (dbRecommendations || '').toLowerCase().includes('patch lining');
         
-        console.log(`🔒 Section ${section.itemNo} - No 2 rule: ${useNo2} (LOCKDOWN MODE: Only exact database criteria allowed)`);
+        console.log(`🔒 SECTION ${section.itemNo} [ID: ${section.id}] - No 2 rule: ${useNo2} (items 6&10 with patch lining: ${(section.itemNo === 6 || section.itemNo === 10)} + ${(dbRecommendations || '').toLowerCase().includes('patch lining')})`);
         
         return { useNo2, no2Value };
       };
