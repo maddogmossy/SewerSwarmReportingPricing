@@ -1626,7 +1626,6 @@ export default function PR2ConfigClean() {
               </div>
             </DialogContent>
           </Dialog>
-
         </div>
 
         {/* Saved Configurations Section */}
