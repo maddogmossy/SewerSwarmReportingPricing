@@ -914,14 +914,14 @@ export default function PR2ConfigClean() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-6">
           
           {/* Blue Window - Pricing Options */}
-          <Card className="bg-blue-50 h-64">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-blue-600 flex items-center gap-1 text-sm">
-                <Coins className="w-4 h-4" />
+          <Card className="bg-blue-50 h-48">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-blue-600 flex items-center gap-1 text-xs">
+                <Coins className="w-3 h-3" />
                 Pricing
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-2">
+            <CardContent className="pt-0 pb-1">
               {/* Action Buttons */}
               <div className="flex gap-1 mb-2">
                 <Dialog open={addPricingDialogOpen} onOpenChange={setAddPricingDialogOpen}>
@@ -1005,7 +1005,7 @@ export default function PR2ConfigClean() {
               </div>
 
               {/* Pricing Options List */}
-              <div className="h-40 overflow-y-auto">
+              <div className="h-24 overflow-y-auto">
                 {formData.pricingOptions.length === 0 ? (
                   <div className="text-center py-4 text-gray-500">
                     <p className="text-xs">No options added</p>
@@ -1185,14 +1185,14 @@ export default function PR2ConfigClean() {
           </Dialog>
 
           {/* Math Operations - Grey Column */}
-          <Card className="bg-gray-50 h-64">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-gray-600 flex items-center gap-1 text-sm">
-                <Calculator className="w-4 h-4" />
+          <Card className="bg-gray-50 h-48">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-gray-600 flex items-center gap-1 text-xs">
+                <Calculator className="w-3 h-3" />
                 Math
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-2">
+            <CardContent className="pt-0 pb-1">
               <div className="space-y-2">
                 <div className="flex flex-col gap-1">
                   <Label className="text-xs text-gray-500">Operation</Label>
@@ -1214,14 +1214,14 @@ export default function PR2ConfigClean() {
           </Card>
 
           {/* Green Window - Quantity Options */}
-          <Card className="bg-green-50 h-64">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-green-600 flex items-center gap-1 text-sm">
-                <Package className="w-4 h-4" />
+          <Card className="bg-green-50 h-48">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-green-600 flex items-center gap-1 text-xs">
+                <Package className="w-3 h-3" />
                 Quantity
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-2">
+            <CardContent className="pt-0 pb-1">
               {/* Action Buttons */}
               <div className="flex gap-1 mb-2">
                 <Dialog open={addQuantityDialogOpen} onOpenChange={setAddQuantityDialogOpen}>
@@ -1271,7 +1271,7 @@ export default function PR2ConfigClean() {
               </div>
 
               {/* Quantity Options List */}
-              <div className="h-40 overflow-y-auto">
+              <div className="h-24 overflow-y-auto">
                 {formData.quantityOptions.length === 0 ? (
                   <div className="text-center py-4 text-gray-500">
                     <p className="text-xs">No options added</p>
@@ -1324,14 +1324,14 @@ export default function PR2ConfigClean() {
           </Card>
 
           {/* Orange Window - Min Quantity Options */}
-          <Card className="bg-orange-50 h-64">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-orange-600 flex items-center gap-1 text-sm">
-                <Gauge className="w-4 h-4" />
+          <Card className="bg-orange-50 h-48">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-orange-600 flex items-center gap-1 text-xs">
+                <Gauge className="w-3 h-3" />
                 Min Quantity
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-2">
+            <CardContent className="pt-0 pb-1">
               {/* Action Buttons */}
               <div className="flex gap-1 mb-2">
                 <Dialog open={addMinQuantityDialogOpen} onOpenChange={setAddMinQuantityDialogOpen}>
@@ -1381,7 +1381,7 @@ export default function PR2ConfigClean() {
               </div>
 
               {/* Min Quantity Options List */}
-              <div className="h-40 overflow-y-auto">
+              <div className="h-24 overflow-y-auto">
                 {formData.minQuantityOptions.length === 0 ? (
                   <div className="text-center py-4 text-gray-500">
                     <p className="text-xs">No options added</p>
@@ -1433,14 +1433,14 @@ export default function PR2ConfigClean() {
           </Card>
 
           {/* Purple Window - Ranges */}
-          <Card className="bg-purple-50 h-64">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-purple-600 flex items-center gap-1 text-sm">
-                <Zap className="w-4 h-4" />
+          <Card className="bg-purple-50 h-48">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-purple-600 flex items-center gap-1 text-xs">
+                <Zap className="w-3 h-3" />
                 Ranges
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-2">
+            <CardContent className="pt-0 pb-1">
               <div className="flex gap-1 mb-2">
                 <Dialog open={addRangeDialogOpen} onOpenChange={setAddRangeDialogOpen}>
                   <DialogTrigger asChild>
@@ -1490,7 +1490,7 @@ export default function PR2ConfigClean() {
                 )}
               </div>
               {/* Range Options List */}
-              <div className="h-40 overflow-y-auto">
+              <div className="h-24 overflow-y-auto">
                 {getOrderedRangeOptions().length === 0 ? (
                   <div className="text-center py-4 text-gray-500">
                     <p className="text-xs">No options added</p>
