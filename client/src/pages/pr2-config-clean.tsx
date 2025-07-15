@@ -1353,14 +1353,6 @@ export default function PR2ConfigClean() {
             {/* Navigation Buttons */}
             <div className="flex gap-3">
               <Button
-                onClick={handleSaveConfiguration}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2"
-              >
-                <Save className="h-5 w-5" />
-                Save Configuration
-              </Button>
-              
-              <Button
                 onClick={handleAutoSaveAndNavigate('/pr2-pricing')}
                 variant="outline"
                 className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
@@ -1423,10 +1415,11 @@ export default function PR2ConfigClean() {
                 <p>✗ Unchecking existing configurations will remove them with confirmation</p>
               </div>
               <Button
-                onClick={handleSave}
+                onClick={handleSaveConfiguration}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg flex items-center gap-2"
               >
-                💾 Save Configuration
+                <Save className="h-5 w-5" />
+                Save Configuration
               </Button>
             </div>
           </CardContent>
