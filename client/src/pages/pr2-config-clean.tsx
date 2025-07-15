@@ -284,6 +284,57 @@ export default function PR2ConfigClean() {
     console.log(`   📊 Min quantity options:`, formData.minQuantityOptions);
   }, [formData, editId]);
 
+  // Auto-save when form data changes (with debouncing)
+  useEffect(() => {
+    if (isEditing && editId && formData.categoryName) {
+      const hasActualValues = 
+        formData.pricingOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
+        formData.quantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
+        formData.minQuantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
+        formData.rangeOptions.some(opt => opt.enabled && ((opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')));
+      
+      if (hasActualValues) {
+        console.log('💾 Auto-saving configuration with current data...');
+        console.log('   📚 Quantity count:', formData.quantityOptions.length);
+        console.log('   📚 Range count:', formData.rangeOptions.length);
+        console.log('   📚 Quantity stack order:', formData.quantityStackOrder);
+        console.log('   📚 Range stack order:', formData.rangeStackOrder);
+        
+        // Auto-save with debouncing
+        const timeoutId = setTimeout(async () => {
+          try {
+            const payload = {
+              categoryName: formData.categoryName,
+              description: formData.description,
+              sector: sector,
+              categoryId: categoryId,
+              pricingOptions: formData.pricingOptions,
+              quantityOptions: formData.quantityOptions,
+              minQuantityOptions: formData.minQuantityOptions,
+              rangeOptions: formData.rangeOptions,
+              mathOperators: formData.mathOperators,
+              pricingStackOrder: formData.pricingStackOrder,
+              quantityStackOrder: formData.quantityStackOrder,
+              minQuantityStackOrder: formData.minQuantityStackOrder,
+              rangeStackOrder: formData.rangeStackOrder
+            };
+
+            await fetch(`/api/pr2-clean/${editId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            console.log('✅ Auto-save completed successfully');
+          } catch (error) {
+            console.error('❌ Auto-save failed:', error);
+          }
+        }, 1000);
+        
+        return () => clearTimeout(timeoutId);
+      }
+    }
+  }, [formData, isEditing, editId, sector, categoryId]);
+
   // Dialog states
   const [addPricingDialogOpen, setAddPricingDialogOpen] = useState(false);
   const [editPricingDialogOpen, setEditPricingDialogOpen] = useState(false);
@@ -831,6 +882,36 @@ export default function PR2ConfigClean() {
     }));
     
     console.log(`🔧 Added new quantity input: ${newOption.label}`);
+  };
+
+  // Simple add new range input function for purple window (adds both % and Length)
+  const addNewRangeInput = () => {
+    const timestamp = Date.now();
+    const setNumber = Math.floor(formData.rangeOptions.length / 2) + 1;
+    
+    const newPercentageOption: RangeOption = {
+      id: `range_percentage_${timestamp}`,
+      label: `Percentage ${setNumber}`,
+      enabled: true,
+      rangeStart: '0',
+      rangeEnd: ''
+    };
+    
+    const newLengthOption: RangeOption = {
+      id: `range_length_${timestamp + 1}`,
+      label: `Length ${setNumber}`,
+      enabled: true,
+      rangeStart: '0',
+      rangeEnd: ''
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      rangeOptions: [...prev.rangeOptions, newPercentageOption, newLengthOption],
+      rangeStackOrder: [...prev.rangeStackOrder, newPercentageOption.id, newLengthOption.id]
+    }));
+    
+    console.log(`🔧 Added new range input set: ${newPercentageOption.label} & ${newLengthOption.label}`);
   };
 
   const deleteQuantityOption = (optionId: string) => {
@@ -1667,35 +1748,50 @@ export default function PR2ConfigClean() {
                       variant="outline"
                       size="sm"
                       className="h-4 px-1 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
+                      onClick={() => addNewRangeInput()}
                     >
                       Add
                     </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
-                  <div className="flex items-center gap-2 w-full">
-                    <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                      % (Max)
-                    </Label>
-                    <Input
-                      id="percentage_value"
-                      placeholder="%"
-                      maxLength={3}
-                      value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeEnd || ''}
-                      onChange={(e) => handleRangeValueChange('range_percentage', 'rangeEnd', e.target.value)}
-                      className="bg-white border-purple-300 h-6 text-xs w-16"
-                    />
-                    <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                      Length (Max)
-                    </Label>
-                    <Input
-                      id="length_value"
-                      placeholder="m"
-                      maxLength={4}
-                      value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
-                      onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                      className="bg-white border-purple-300 h-6 text-xs w-20"
-                    />
+                  <div className="space-y-1">
+                    {/* Group range options by pairs (percentage + length) */}
+                    {Array.from({ length: Math.ceil(formData.rangeOptions.length / 2) }, (_, setIndex) => {
+                      const percentageOption = formData.rangeOptions.find(opt => 
+                        opt.id.includes('percentage') && (setIndex === 0 ? !opt.id.includes('_') : opt.id.includes(`_${setIndex}`))
+                      );
+                      const lengthOption = formData.rangeOptions.find(opt => 
+                        opt.id.includes('length') && (setIndex === 0 ? !opt.id.includes('_') : opt.id.includes(`_${setIndex}`))
+                      );
+                      
+                      return (
+                        <div key={`range-set-${setIndex}`} className="flex items-center gap-2 w-full">
+                          <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                            % (Max){Math.ceil(formData.rangeOptions.length / 2) > 1 ? ` ${setIndex + 1}` : ''}
+                          </Label>
+                          <Input
+                            id={percentageOption?.id || `percentage_${setIndex}`}
+                            placeholder="%"
+                            maxLength={3}
+                            value={percentageOption?.rangeEnd || ''}
+                            onChange={(e) => percentageOption && handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
+                            className="bg-white border-purple-300 h-6 text-xs w-16"
+                          />
+                          <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                            Length (Max){Math.ceil(formData.rangeOptions.length / 2) > 1 ? ` ${setIndex + 1}` : ''}
+                          </Label>
+                          <Input
+                            id={lengthOption?.id || `length_${setIndex}`}
+                            placeholder="m"
+                            maxLength={4}
+                            value={lengthOption?.rangeEnd || ''}
+                            onChange={(e) => lengthOption && handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
+                            className="bg-white border-purple-300 h-6 text-xs w-20"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
