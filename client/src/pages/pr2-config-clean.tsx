@@ -1515,9 +1515,9 @@ export default function PR2ConfigClean() {
             <div className="flex gap-2 p-3 border rounded-lg bg-gray-50 overflow-x-auto min-w-fit">
               
               {/* Blue Window: Day Rate */}
-              <Card className="bg-blue-50 border-blue-200 w-40 flex-shrink-0">
+              <Card className="bg-blue-50 border-blue-200 w-48 flex-shrink-0">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-blue-700 text-xs flex items-center gap-1">
+                  <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
                     <Coins className="w-3 h-3" />
                     Price/Cost Options
                   </CardTitle>
@@ -1543,10 +1543,11 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Math Window */}
-              <Card className="bg-gray-50 border-gray-200 w-16 flex-shrink-0">
+              <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-gray-700 text-xs flex items-center justify-center">
-                    <Calculator className="w-3 h-3" />
+                  <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
+                    <Calculator className="w-3 h-3 mr-1" />
+                    Math
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
@@ -1567,9 +1568,9 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Green Window: Runs per Shift */}
-              <Card className="bg-green-50 border-green-200 w-44 flex-shrink-0">
+              <Card className="bg-green-50 border-green-200 w-52 flex-shrink-0">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-green-700 text-xs flex items-center gap-1 justify-between">
+                  <CardTitle className="text-green-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
                     <span className="flex items-center gap-1">
                       <Package className="w-3 h-3" />
                       Quantity Options
@@ -1604,9 +1605,9 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Orange Window: Min Runs per Shift */}
-              <Card className="bg-orange-50 border-orange-200 w-44 flex-shrink-0">
+              <Card className="bg-orange-50 border-orange-200 w-56 flex-shrink-0">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
+                  <CardTitle className="text-orange-700 text-xs flex items-center gap-1 whitespace-nowrap">
                     <Gauge className="w-3 h-3" />
                     Min Quantity Options
                   </CardTitle>
@@ -1632,9 +1633,9 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Purple Window: Percentage and Length */}
-              <Card className="bg-purple-50 border-purple-200 w-56 flex-shrink-0">
+              <Card className="bg-purple-50 border-purple-200 w-64 flex-shrink-0">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-purple-700 text-xs flex items-center gap-1 justify-between">
+                  <CardTitle className="text-purple-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
                     <span className="flex items-center gap-1">
                       <Zap className="w-3 h-3" />
                       Range Options
