@@ -307,7 +307,31 @@ export default function PR2Pricing() {
     
     // If no existing configuration, create new one
     const mappedCategoryId = categoryMapping[categoryId as keyof typeof categoryMapping] || categoryId;
-    const createURL = `/pr2-config-clean?sector=${sector}&categoryId=${mappedCategoryId}`;
+    
+    // Add default pipe size context for consistency with dashboard entry
+    const defaultPipeSize = '150'; // Default to 150mm for new configurations
+    
+    // Generate pipe size-specific configuration name based on category
+    const getCategoryDisplayName = (catId: string) => {
+      const nameMap = {
+        'cctv': 'CCTV Configuration',
+        'van-pack': 'Van Pack Configuration',
+        'jet-vac': 'Jet Vac Configuration',
+        'cctv-van-pack': 'CCTV Van Pack Configuration',
+        'cctv-jet-vac': 'CCTV Jet Vac Configuration',
+        'directional-water-cutter': 'Directional Water Cutter Configuration',
+        'ambient-lining': 'Ambient Lining Configuration',
+        'hot-cure-lining': 'Hot Cure Lining Configuration',
+        'uv-lining': 'UV Lining Configuration',
+        'ims-cutting': 'IMS Cutting Configuration',
+        'excavation': 'Excavation Configuration',
+        'tankering': 'Tankering Configuration'
+      };
+      return nameMap[catId as keyof typeof nameMap] || 'Configuration';
+    };
+    
+    const configName = `${defaultPipeSize}mm ${getCategoryDisplayName(mappedCategoryId)}`;
+    const createURL = `/pr2-config-clean?sector=${sector}&categoryId=${mappedCategoryId}&pipeSize=${defaultPipeSize}&configName=${encodeURIComponent(configName)}`;
     console.log('🆕 Creating new config at URL:', createURL);
     setLocation(createURL);
   };
