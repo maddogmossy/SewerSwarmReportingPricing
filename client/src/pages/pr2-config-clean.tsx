@@ -583,10 +583,44 @@ export default function PR2ConfigClean() {
         const pipeSizeConfigName = configName || getCategoryName(categoryId);
         console.log(`🆕 Setting category name to: ${pipeSizeConfigName}`);
         
+        // Initialize with default options
+        const defaultPricingOptions = [
+          { id: 'pricing_dayrate', label: 'Day Rate', enabled: false, value: '' },
+          { id: 'pricing_hourlyrate', label: 'Hourly Rate', enabled: false, value: '' },
+          { id: 'pricing_setuprate', label: 'Setup Rate', enabled: false, value: '' },
+          { id: 'pricing_permeter', label: 'Per Meter', enabled: false, value: '' }
+        ];
+        
+        const defaultQuantityOptions = [
+          { id: 'quantity_runs', label: 'Runs per Shift', enabled: false, value: '' },
+          { id: 'quantity_meters', label: 'Meters per Shift', enabled: false, value: '' },
+          { id: 'quantity_sections', label: 'Sections per Day', enabled: false, value: '' }
+        ];
+        
+        const defaultMinQuantityOptions = [
+          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: false, value: '' },
+          { id: 'minquantity_meters', label: 'Min Meters per Shift', enabled: false, value: '' },
+          { id: 'minquantity_sections', label: 'Min Sections per Day', enabled: false, value: '' }
+        ];
+        
+        const defaultRangeOptions = [
+          { id: 'range_pipesize', label: 'Pipe Size', enabled: false, rangeStart: '', rangeEnd: '' },
+          { id: 'range_percentage', label: 'Percentage', enabled: false, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length', enabled: false, rangeStart: '', rangeEnd: '' }
+        ];
+        
         setFormData(prev => ({
           ...prev,
           categoryName: pipeSizeConfigName,
-          description: `Configuration for ${pipeSize}mm ${getCategoryName(categoryId).toLowerCase()}`
+          description: `Configuration for ${pipeSize}mm ${getCategoryName(categoryId).toLowerCase()}`,
+          pricingOptions: defaultPricingOptions,
+          quantityOptions: defaultQuantityOptions,
+          minQuantityOptions: defaultMinQuantityOptions,
+          rangeOptions: defaultRangeOptions,
+          pricingStackOrder: defaultPricingOptions.map(opt => opt.id),
+          quantityStackOrder: defaultQuantityOptions.map(opt => opt.id),
+          minQuantityStackOrder: defaultMinQuantityOptions.map(opt => opt.id),
+          rangeStackOrder: defaultRangeOptions.map(opt => opt.id)
         }));
       }
     }
