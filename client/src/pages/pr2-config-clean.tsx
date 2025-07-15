@@ -1395,8 +1395,6 @@ export default function PR2ConfigClean() {
               </div>
             </DialogContent>
           </Dialog>
-
-          )}
         </div>
 
           {/* Min Quantity Options List */}
@@ -1628,7 +1626,6 @@ export default function PR2ConfigClean() {
               </div>
             </DialogContent>
           </Dialog>
-        )}
 
         </div>
 
