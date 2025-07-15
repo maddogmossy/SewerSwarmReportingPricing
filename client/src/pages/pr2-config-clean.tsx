@@ -1512,28 +1512,28 @@ export default function PR2ConfigClean() {
           </div>
           <CollapsibleContent className="mb-6">
             {/* Five-Window Configuration Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 p-4 border rounded-lg bg-gray-50">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-14 gap-3 p-4 border rounded-lg bg-gray-50">
               
               {/* Blue Window: Day Rate */}
-              <Card className="bg-blue-50 border-blue-200 lg:col-span-2">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
-                    <Coins className="w-4 h-4" />
+              <Card className="bg-blue-50 border-blue-200 lg:col-span-3">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-blue-700 text-xs flex items-center gap-1">
+                    <Coins className="w-3 h-3" />
                     Price/Cost Options
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="py-2">
+                <CardContent className="py-1">
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="price_dayrate" className="text-sm font-medium text-blue-700 flex-shrink-0">
+                    <Label htmlFor="price_dayrate" className="text-xs font-medium text-blue-700 flex-shrink-0 w-12">
                       Day Rate
                     </Label>
                     <Input
                       id="price_dayrate"
-                      placeholder="£ value"
+                      placeholder="£"
                       maxLength={10}
                       value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
                       onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
-                      className="bg-white border-blue-300 h-7 text-sm flex-1"
+                      className="bg-white border-blue-300 h-6 text-xs flex-1 min-w-0"
                       data-field="day-rate"
                       data-window="blue"
                       data-option-id="price_dayrate"
@@ -1542,18 +1542,17 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Math Window - Half size */}
+              {/* Math Window */}
               <Card className="bg-gray-50 border-gray-200 lg:col-span-1">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-gray-700 text-sm flex items-center gap-2">
-                    <Calculator className="w-4 h-4" />
-                    Math
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-gray-700 text-xs flex items-center justify-center">
+                    <Calculator className="w-3 h-3" />
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="py-2">
+                <CardContent className="py-1">
                   <div className="flex items-center justify-center">
                     <Select>
-                      <SelectTrigger className="bg-white border-gray-300 h-7 text-sm w-16">
+                      <SelectTrigger className="bg-white border-gray-300 h-6 text-xs w-8">
                         <SelectValue placeholder="÷" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1568,26 +1567,26 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Green Window: Runs per Shift */}
-              <Card className="bg-green-50 border-green-200 lg:col-span-2">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-green-700 text-sm flex items-center gap-2 justify-between">
-                    <span className="flex items-center gap-2">
-                      <Package className="w-4 h-4" />
+              <Card className="bg-green-50 border-green-200 lg:col-span-3">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-green-700 text-xs flex items-center gap-1 justify-between">
+                    <span className="flex items-center gap-1">
+                      <Package className="w-3 h-3" />
                       Quantity Options
                     </span>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-6 px-2 text-xs border-green-300 text-green-700 hover:bg-green-100"
+                      className="h-4 px-1 text-xs border-green-300 text-green-700 hover:bg-green-100"
                     >
                       Add
                     </Button>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="py-2">
+                <CardContent className="py-1">
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="quantity_runs" className="text-sm font-medium text-green-700 flex-shrink-0">
-                      Runs per Shift
+                    <Label htmlFor="quantity_runs" className="text-xs font-medium text-green-700 flex-shrink-0 w-16">
+                      Runs/Shift
                     </Label>
                     <Input
                       id="quantity_runs"
@@ -1595,7 +1594,7 @@ export default function PR2ConfigClean() {
                       maxLength={4}
                       value={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('quantityOptions', 'quantity_runs', e.target.value)}
-                      className="bg-white border-green-300 h-7 text-sm flex-1"
+                      className="bg-white border-green-300 h-6 text-xs flex-1 min-w-0"
                       data-field="runs-per-shift"
                       data-window="green"
                       data-option-id="quantity_runs"
@@ -1605,17 +1604,17 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Orange Window: Min Runs per Shift */}
-              <Card className="bg-orange-50 border-orange-200 lg:col-span-2">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
-                    <Gauge className="w-4 h-4" />
+              <Card className="bg-orange-50 border-orange-200 lg:col-span-3">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
+                    <Gauge className="w-3 h-3" />
                     Min Quantity Options
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="py-2">
+                <CardContent className="py-1">
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="minquantity_runs" className="text-sm font-medium text-orange-700 flex-shrink-0">
-                      Min Runs per Shift
+                    <Label htmlFor="minquantity_runs" className="text-xs font-medium text-orange-700 flex-shrink-0 w-12">
+                      Min Runs
                     </Label>
                     <Input
                       id="minquantity_runs"
@@ -1623,7 +1622,7 @@ export default function PR2ConfigClean() {
                       maxLength={4}
                       value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
-                      className="bg-white border-orange-300 h-7 text-sm flex-1"
+                      className="bg-white border-orange-300 h-6 text-xs flex-1 min-w-0"
                       data-field="min-runs-per-shift"
                       data-window="orange"
                       data-option-id="minquantity_runs"
@@ -1633,7 +1632,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Purple Window: Percentage and Length */}
-              <Card className="bg-purple-50 border-purple-200 lg:col-span-5">
+              <Card className="bg-purple-50 border-purple-200 lg:col-span-4">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2 justify-between">
                     <span className="flex items-center gap-2">
