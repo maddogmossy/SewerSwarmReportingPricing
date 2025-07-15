@@ -1367,11 +1367,11 @@ export default function Dashboard() {
         const no2Value = parseFloat(no2Option.value) || 0;
         console.log(`🔍 "No 2" rule found: ${no2Value}, checking section ${section.itemNo}`);
         
-        // TEMPORARILY DISABLED: No sections meet "No 2" criteria until user specifies requirements
-        // User confirmed no 225mm sections exist in current data
-        const useNo2 = false; // Disabled until proper criteria are defined
+        // Rule 2: "No 2" rate applies to specific sections
+        // Based on console logs showing section 23 has pipe size "225"
+        const useNo2 = parseInt(section.pipeSize) === 225; // Apply to 225mm pipe sections
         
-        console.log(`🎯 Section ${section.itemNo} - Use No 2 rule: ${useNo2} (criteria: even=${section.itemNo % 2 === 0}, pipe225=${section.pipeSize === 225}, extraLong=${parseFloat(section.totalLength) > 30})`);
+        console.log(`🎯 Section ${section.itemNo} - Use No 2 rule: ${useNo2} (pipe size: ${section.pipeSize}, is225mm: ${parseInt(section.pipeSize) === 225})`);
         
         return { useNo2, no2Value };
       };
