@@ -1419,105 +1419,119 @@ export default function PR2ConfigClean() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
         </div>
 
-        {/* Configuration Options Display */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          
-          {/* Blue Window: Price/Cost Options */}
-          <Card className="bg-blue-50 border-blue-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
-                <Coins className="w-4 h-4" />
-                💰 Price/Cost Options
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {formData.pricingOptions.map((option) => (
-                <div key={option.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={option.id}
-                    checked={option.enabled}
-                    onCheckedChange={(checked) => handleOptionToggle('pricingOptions', option.id, checked as boolean)}
-                  />
-                  <Label htmlFor={option.id} className="text-sm font-medium text-blue-700">
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+        {/* Collapsible Configuration Panel */}
+        <Collapsible>
+          <CollapsibleTrigger asChild>
+            <Button variant="outline" className="w-full mb-4 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                150mm Configuration Options
+              </span>
+              <ChevronDown className="w-4 h-4" />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mb-6">
+            {/* Four-Window Configuration Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4 border rounded-lg bg-gray-50">
+              
+              {/* Blue Window: Price/Cost Options */}
+              <Card className="bg-blue-50 border-blue-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
+                    <Coins className="w-4 h-4" />
+                    💰 Price/Cost Options
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.pricingOptions.map((option) => (
+                    <div key={option.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={option.id}
+                        checked={option.enabled}
+                        onCheckedChange={(checked) => handleOptionToggle('pricingOptions', option.id, checked as boolean)}
+                      />
+                      <Label htmlFor={option.id} className="text-sm font-medium text-blue-700">
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
 
-          {/* Green Window: Quantity Options */}
-          <Card className="bg-green-50 border-green-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                <Package className="w-4 h-4" />
-                📊 Quantity Options
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {formData.quantityOptions.map((option) => (
-                <div key={option.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={option.id}
-                    checked={option.enabled}
-                    onCheckedChange={(checked) => handleOptionToggle('quantityOptions', option.id, checked as boolean)}
-                  />
-                  <Label htmlFor={option.id} className="text-sm font-medium text-green-700">
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+              {/* Green Window: Quantity Options */}
+              <Card className="bg-green-50 border-green-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-green-700 text-sm flex items-center gap-2">
+                    <Package className="w-4 h-4" />
+                    📊 Quantity Options
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.quantityOptions.map((option) => (
+                    <div key={option.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={option.id}
+                        checked={option.enabled}
+                        onCheckedChange={(checked) => handleOptionToggle('quantityOptions', option.id, checked as boolean)}
+                      />
+                      <Label htmlFor={option.id} className="text-sm font-medium text-green-700">
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
 
-          {/* Orange Window: Min Quantity Options */}
-          <Card className="bg-orange-50 border-orange-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
-                <Gauge className="w-4 h-4" />
-                ⚡ Min Quantity Options
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {formData.minQuantityOptions.map((option) => (
-                <div key={option.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={option.id}
-                    checked={option.enabled}
-                    onCheckedChange={(checked) => handleOptionToggle('minQuantityOptions', option.id, checked as boolean)}
-                  />
-                  <Label htmlFor={option.id} className="text-sm font-medium text-orange-700">
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+              {/* Orange Window: Min Quantity Options */}
+              <Card className="bg-orange-50 border-orange-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
+                    <Gauge className="w-4 h-4" />
+                    ⚡ Min Quantity Options
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.minQuantityOptions.map((option) => (
+                    <div key={option.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={option.id}
+                        checked={option.enabled}
+                        onCheckedChange={(checked) => handleOptionToggle('minQuantityOptions', option.id, checked as boolean)}
+                      />
+                      <Label htmlFor={option.id} className="text-sm font-medium text-orange-700">
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
 
-          {/* Purple Window: Range Options */}
-          <Card className="bg-purple-50 border-purple-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
-                <Zap className="w-4 h-4" />
-                📏 Range Options
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {formData.rangeOptions.map((option) => (
-                <div key={option.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={option.id}
-                    checked={option.enabled}
-                    onCheckedChange={(checked) => handleRangeToggle(option.id, checked as boolean)}
-                  />
-                  <Label htmlFor={option.id} className="text-sm font-medium text-purple-700">
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
+              {/* Purple Window: Range Options */}
+              <Card className="bg-purple-50 border-purple-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
+                    <Zap className="w-4 h-4" />
+                    📏 Range Options
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.rangeOptions.map((option) => (
+                    <div key={option.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={option.id}
+                        checked={option.enabled}
+                        onCheckedChange={(checked) => handleRangeToggle(option.id, checked as boolean)}
+                      />
+                      <Label htmlFor={option.id} className="text-sm font-medium text-purple-700">
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </div>
   );
