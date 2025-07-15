@@ -55,6 +55,7 @@ const STANDARD_CATEGORIES = [
   { id: 'uv-lining', name: 'UV Lining', description: 'Ultraviolet cured pipe lining installation', icon: Sun },
   { id: 'ims-cutting', name: 'IMS Cutting', description: 'Integrated Management System cutting services', icon: Scissors },
   { id: 'excavation', name: 'Excavation', description: 'Traditional excavation and repair services', icon: Pickaxe },
+  { id: 'patching', name: 'Patching', description: 'Localized pipe repair and patching services according to WRc Drain Repair Book standards', icon: Edit },
   { id: 'tankering', name: 'Tankering', description: 'Waste removal and tankering services', icon: Truck }
 ];
 

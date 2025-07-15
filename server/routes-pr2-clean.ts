@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { db } from "./db";
 import { pr2Configurations, standardCategories } from "../shared/schema";
 import { eq, and, sql, desc } from "drizzle-orm";
+import { getSectorStandards } from "./sector-standards";
 
 // Legacy routes function - still needed for server startup
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -30,6 +31,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching standard categories:', error);
       res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+  });
+
+  // Generate standard description based on category name and sector standards
+  const generateStandardDescription = (categoryName: string): string => {
+    const name = categoryName.toLowerCase();
+    
+    // Get utilities sector standards for description consistency
+    const utilitiesStandards = getSectorStandards('utilities');
+    const baseStandards = utilitiesStandards?.standards || [];
+    
+    // Category-specific descriptions based on WRc and industry standards
+    const categoryDescriptions: Record<string, string> = {
+      'patching': 'Localized pipe repair and patching services according to WRc Drain Repair Book standards',
+      'lining': 'Pipe lining installation services compliant with WRc Drain Rehabilitation Manual',
+      'relining': 'Structural pipe relining services following WRc and MSCC5 standards',
+      'excavation': 'Traditional excavation and repair services per WRc Drain Repair Book guidelines',
+      'cctv': 'Closed-circuit television inspection services according to WRc standards',
+      'cleaning': 'Drain and sewer cleaning services per WRc Drain & Sewer Cleaning Manual',
+      'jetting': 'High-pressure water jetting services following WRc cleaning standards',
+      'tankering': 'Waste removal and tankering services compliant with industry standards',
+      'cutting': 'Precision cutting services according to WRc technical guidelines',
+      'inspection': 'Comprehensive inspection services per MSCC5 and WRc standards'
+    };
+    
+    // Find matching description based on category name keywords
+    for (const [key, description] of Object.entries(categoryDescriptions)) {
+      if (name.includes(key)) {
+        return description;
+      }
+    }
+    
+    // Default description referencing WRc standards
+    return `${categoryName} services compliant with WRc Group standards and industry best practices`;
+  };
+
+  // POST endpoint for creating standard categories
+  app.post('/api/standard-categories', async (req, res) => {
+    try {
+      const { categoryName, description } = req.body;
+      
+      if (!categoryName) {
+        return res.status(400).json({ error: 'Category name is required' });
+      }
+
+      // Generate category ID from name (lowercase, hyphenated)
+      const categoryId = categoryName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+      
+      // Auto-generate description if not provided
+      const finalDescription = description || generateStandardDescription(categoryName);
+      
+      // Check if category already exists
+      const existingCategory = await db
+        .select()
+        .from(standardCategories)
+        .where(eq(standardCategories.categoryId, categoryId));
+      
+      if (existingCategory.length > 0) {
+        return res.status(409).json({ error: 'Category already exists' });
+      }
+
+      // Insert new category
+      const newCategory = await db
+        .insert(standardCategories)
+        .values({
+          categoryId,
+          categoryName,
+          description: finalDescription,
+          iconName: 'Edit', // Default icon
+          isDefault: true,
+          isActive: true
+        })
+        .returning();
+
+      console.log(`✅ Created new standard category: ${categoryName} (ID: ${categoryId})`);
+      console.log(`📝 Auto-generated description: ${finalDescription}`);
+      res.json(newCategory[0]);
+    } catch (error) {
+      console.error('Error creating standard category:', error);
+      res.status(500).json({ error: 'Failed to create category' });
     }
   });
 
