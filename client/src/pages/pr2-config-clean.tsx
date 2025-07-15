@@ -1566,7 +1566,7 @@ export default function PR2ConfigClean() {
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2 justify-between">
                     <span className="flex items-center gap-2">
                       <Package className="w-4 h-4" />
-                      Quantity Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
+                      Quantity Options
                     </span>
                     <Button
                       variant="outline"
