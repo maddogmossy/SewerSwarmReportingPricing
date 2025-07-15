@@ -1624,15 +1624,6 @@ export default function Dashboard() {
       }
     }
     
-    console.log('✅ Section meets PR2 requirements:', {
-      itemNo: section.itemNo,
-      pipeSize: sectionPipeSize,
-      length: sectionLength,
-      pipeSizeRange: pipeSizeRange ? `${pipeSizeRange.rangeStart}-${pipeSizeRange.rangeEnd}` : 'none',
-      lengthRange: lengthRange ? `${lengthRange.rangeStart}-${lengthRange.rangeEnd}` : 'none',
-      percentageRange: percentageRange ? `${percentageRange.rangeStart}-${percentageRange.rangeEnd}` : 'none'
-    });
-    
     return true;
   };
 
