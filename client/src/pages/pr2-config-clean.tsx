@@ -316,6 +316,8 @@ export default function PR2ConfigClean() {
       return response.json();
     },
     enabled: isEditing && !!editId,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true, // Refetch when component mounts
   });
 
   // Load configurations by category and sector to find the right one for editing
@@ -568,6 +570,11 @@ export default function PR2ConfigClean() {
 
   // Single useEffect to handle all configuration loading
   useEffect(() => {
+    // Force cache invalidation for this specific configuration when loading
+    if (isEditing && editId) {
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
+    }
+    
     // Use sectorConfigs for navigation without editId, existingConfig for direct editId access
     const configToUse = editId ? existingConfig : sectorConfigs;
     console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, editId: ${editId}, configToUse:`, configToUse);
