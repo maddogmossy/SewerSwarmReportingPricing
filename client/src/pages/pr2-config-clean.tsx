@@ -910,20 +910,20 @@ export default function PR2ConfigClean() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
         </div>
 
-        {/* Three Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Five Column Layout - Compact Horizontal */}
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-3 mb-6">
           
           {/* Blue Window - Pricing Options */}
-          <Card className="bg-blue-50">
-            <CardHeader>
-              <CardTitle className="text-blue-600 flex items-center gap-2">
-                <Coins className="w-5 h-5" />
-                Pricing Options
+          <Card className="bg-blue-50 h-80">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-blue-600 flex items-center gap-1 text-sm">
+                <Coins className="w-4 h-4" />
+                Pricing
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0 pb-2">
               {/* Action Buttons */}
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-1 mb-2">
                 <Dialog open={addPricingDialogOpen} onOpenChange={setAddPricingDialogOpen}>
                   <DialogTrigger asChild>
                     <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -1005,50 +1005,54 @@ export default function PR2ConfigClean() {
               </div>
 
               {/* Pricing Options List */}
-              {formData.pricingOptions.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <p>No pricing options added</p>
-                  <p className="text-sm">Click "Add" to create your first option</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {getOrderedPricingOptions().map((option) => (
-                    <div key={option.id} className="bg-white p-3 rounded border">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Checkbox
-                          checked={option.enabled}
-                          onCheckedChange={(checked) => updatePricingOption(option.id, 'enabled', checked)}
-                        />
-                        <span className="flex-1 font-medium">{option.label}</span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => editPricingOption(option)}
-                        >
-                          <Edit2 className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => deletePricingOption(option.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
+              <div className="h-56 overflow-y-auto">
+                {formData.pricingOptions.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500">
+                    <p className="text-xs">No options added</p>
+                    <p className="text-xs">Click "Add"</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {getOrderedPricingOptions().map((option) => (
+                      <div key={option.id} className="bg-white p-2 rounded border text-xs">
+                        <div className="flex items-center gap-1 mb-1">
+                          <Checkbox
+                            checked={option.enabled}
+                            onCheckedChange={(checked) => updatePricingOption(option.id, 'enabled', checked)}
+                            className="h-3 w-3"
+                          />
+                          <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => editPricingOption(option)}
+                            className="h-5 w-5 p-0"
+                          >
+                            <Edit2 className="w-2 h-2" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deletePricingOption(option.id)}
+                            className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
+                          >
+                            <Trash2 className="w-2 h-2" />
+                          </Button>
+                        </div>
+                        {option.enabled && (
+                          <Input
+                            key={`${option.id}-${option.value}`}
+                            value={option.value}
+                            onChange={(e) => updatePricingOption(option.id, 'value', e.target.value)}
+                            placeholder="Enter value"
+                            className="text-xs h-6"
+                          />
+                        )}
                       </div>
-                      {option.enabled && (
-                        <Input
-                          key={`${option.id}-${option.value}`}
-                          value={option.value}
-                          onChange={(e) => updatePricingOption(option.id, 'value', e.target.value)}
-                          placeholder="Enter value"
-                          className="text-sm"
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
 
@@ -1180,20 +1184,20 @@ export default function PR2ConfigClean() {
             </DialogContent>
           </Dialog>
 
-          {/* Math Operations - Middle Column */}
-          <Card className="bg-gray-50">
-            <CardHeader>
-              <CardTitle className="text-gray-600 flex items-center gap-2">
-                <Calculator className="w-5 h-5" />
-                Math Operations
+          {/* Math Operations - Grey Column */}
+          <Card className="bg-gray-50 h-80">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-gray-600 flex items-center gap-1 text-sm">
+                <Calculator className="w-4 h-4" />
+                Math
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex flex-col gap-2">
-                  <Label className="text-sm text-gray-500">Math Operation</Label>
+            <CardContent className="pt-0 pb-2">
+              <div className="space-y-2">
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs text-gray-500">Operation</Label>
                   <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
-                    <SelectTrigger className="bg-gray-100 border-gray-300">
+                    <SelectTrigger className="bg-gray-100 border-gray-300 h-7 text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1210,16 +1214,16 @@ export default function PR2ConfigClean() {
           </Card>
 
           {/* Green Window - Quantity Options */}
-          <Card className="bg-green-50">
-            <CardHeader>
-              <CardTitle className="text-green-600 flex items-center gap-2">
-                <Package className="w-5 h-5" />
-                Quantity Options
+          <Card className="bg-green-50 h-80">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-green-600 flex items-center gap-1 text-sm">
+                <Package className="w-4 h-4" />
+                Quantity
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0 pb-2">
               {/* Action Buttons */}
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-1 mb-2">
                 <Dialog open={addQuantityDialogOpen} onOpenChange={setAddQuantityDialogOpen}>
                   <DialogTrigger asChild>
                     <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
@@ -1267,75 +1271,69 @@ export default function PR2ConfigClean() {
               </div>
 
               {/* Quantity Options List */}
-              {formData.quantityOptions.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <p>No quantity options added</p>
-                  <p className="text-sm">Click "Add" to create your first option</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {getOrderedQuantityOptions().map((option) => {
-                    console.log(`🎯 Rendering quantity option ${option.id}: ${option.label} = ${option.value}`);
-                    return (
-                    <div key={option.id} className="bg-white p-3 rounded border">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Checkbox
-                          checked={option.enabled}
-                          onCheckedChange={(checked) => updateQuantityOption(option.id, 'enabled', checked)}
-                        />
-                        <span className="flex-1 font-medium">{option.label}</span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => editQuantityOption(option)}
-                        >
-                          <Edit2 className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => deleteQuantityOption(option.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
+              <div className="h-56 overflow-y-auto">
+                {formData.quantityOptions.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500">
+                    <p className="text-xs">No options added</p>
+                    <p className="text-xs">Click "Add"</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {getOrderedQuantityOptions().map((option) => (
+                      <div key={option.id} className="bg-white p-2 rounded border text-xs">
+                        <div className="flex items-center gap-1 mb-1">
+                          <Checkbox
+                            checked={option.enabled}
+                            onCheckedChange={(checked) => updateQuantityOption(option.id, 'enabled', checked)}
+                            className="h-3 w-3"
+                          />
+                          <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => editQuantityOption(option)}
+                            className="h-5 w-5 p-0"
+                          >
+                            <Edit2 className="w-2 h-2" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteQuantityOption(option.id)}
+                            className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
+                          >
+                            <Trash2 className="w-2 h-2" />
+                          </Button>
+                        </div>
+                        {option.enabled && (
+                          <Input
+                            key={`${option.id}-${option.value}-${Date.now()}`}
+                            data-option-id={option.id}
+                            defaultValue={option.value}
+                            onChange={(e) => updateQuantityOption(option.id, 'value', e.target.value)}
+                            placeholder="Enter value"
+                            className="text-xs h-6"
+                          />
+                        )}
                       </div>
-                      {option.enabled && (
-                        <Input
-                          key={`${option.id}-${option.value}-${Date.now()}`}
-                          data-option-id={option.id}
-                          defaultValue={option.value}
-                          onChange={(e) => {
-                            console.log(`🔄 Quantity input changed for ${option.id}: ${e.target.value}`);
-                            updateQuantityOption(option.id, 'value', e.target.value);
-                          }}
-                          placeholder="Enter value"
-                          className="text-sm"
-                        />
-                      )}
-                    </div>
-                    );
-                  })}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Two Column Layout Below */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          
           {/* Orange Window - Min Quantity Options */}
-          <Card className="bg-orange-50">
-            <CardHeader>
-              <CardTitle className="text-orange-600 flex items-center gap-2">
-                <Gauge className="w-5 h-5" />
-                Min Quantity Options
+          <Card className="bg-orange-50 h-80">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-orange-600 flex items-center gap-1 text-sm">
+                <Gauge className="w-4 h-4" />
+                Min Quantity
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0 pb-2">
               {/* Action Buttons */}
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-1 mb-2">
                 <Dialog open={addMinQuantityDialogOpen} onOpenChange={setAddMinQuantityDialogOpen}>
                   <DialogTrigger asChild>
                     <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
@@ -1383,61 +1381,67 @@ export default function PR2ConfigClean() {
               </div>
 
               {/* Min Quantity Options List */}
-              {formData.minQuantityOptions.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <p>No min quantity options added</p>
-                  <p className="text-sm">Click "Add" to create your first option</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {getOrderedMinQuantityOptions().map((option) => (
-                    <div key={option.id} className="bg-white p-3 rounded border">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Checkbox
-                          checked={option.enabled}
-                          onCheckedChange={(checked) => updateMinQuantityOption(option.id, 'enabled', checked)}
-                        />
-                        <span className="flex-1 font-medium">{option.label}</span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => editMinQuantityOption(option)}
-                        >
-                          <Edit2 className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => deleteMinQuantityOption(option.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
+              <div className="h-56 overflow-y-auto">
+                {formData.minQuantityOptions.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500">
+                    <p className="text-xs">No options added</p>
+                    <p className="text-xs">Click "Add"</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {getOrderedMinQuantityOptions().map((option) => (
+                      <div key={option.id} className="bg-white p-2 rounded border text-xs">
+                        <div className="flex items-center gap-1 mb-1">
+                          <Checkbox
+                            checked={option.enabled}
+                            onCheckedChange={(checked) => updateMinQuantityOption(option.id, 'enabled', checked)}
+                            className="h-3 w-3"
+                          />
+                          <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => editMinQuantityOption(option)}
+                            className="h-5 w-5 p-0"
+                          >
+                            <Edit2 className="w-2 h-2" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteMinQuantityOption(option.id)}
+                            className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
+                          >
+                            <Trash2 className="w-2 h-2" />
+                          </Button>
+                        </div>
+                        {option.enabled && (
+                          <Input
+                            key={`${option.id}-${option.value}`}
+                            value={option.value}
+                            onChange={(e) => updateMinQuantityOption(option.id, 'value', e.target.value)}
+                            placeholder="Enter value"
+                            className="text-xs h-6"
+                          />
+                        )}
                       </div>
-                      {option.enabled && (
-                        <Input
-                          key={`${option.id}-${option.value}`}
-                          value={option.value}
-                          onChange={(e) => updateMinQuantityOption(option.id, 'value', e.target.value)}
-                          placeholder="Enter value"
-                          className="text-sm"
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
 
           {/* Purple Window - Ranges */}
-          <Card className="bg-purple-50">
-            <CardHeader>
-              <CardTitle className="text-purple-600 flex items-center gap-2">
-                <Zap className="w-5 h-5" />
+          <Card className="bg-purple-50 h-80">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-purple-600 flex items-center gap-1 text-sm">
+                <Zap className="w-4 h-4" />
                 Ranges
               </CardTitle>
-              <div className="flex gap-2">
+            </CardHeader>
+            <CardContent className="pt-0 pb-2">
+              <div className="flex gap-1 mb-2">
                 <Dialog open={addRangeDialogOpen} onOpenChange={setAddRangeDialogOpen}>
                   <DialogTrigger asChild>
                     <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
@@ -1485,65 +1489,66 @@ export default function PR2ConfigClean() {
                   </Button>
                 )}
               </div>
-            </CardHeader>
-            <CardContent>
-              {getOrderedRangeOptions().length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <p>No range options added</p>
-                  <p className="text-sm">Click "Add" to create your first option</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {getOrderedRangeOptions().map((option) => (
-                    <div key={option.id} className="bg-white p-3 rounded border">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Checkbox
-                          checked={option.enabled}
-                          onCheckedChange={(checked) => updateRangeOption(option.id, 'enabled', checked)}
-                        />
-                        <span className="flex-1 font-medium">{option.label}</span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => editRangeOption(option)}
-                        >
-                          <Edit2 className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => deleteRangeOption(option.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                      {option.enabled && (
-                        <div className="flex gap-2 items-center">
-                          <span className="text-sm font-medium">R1:</span>
-                          <Input
-                            key={`${option.id}-start-${option.rangeStart}-${Date.now()}`}
-                            data-range-id={`${option.id}-start`}
-                            defaultValue={option.rangeStart}
-                            onChange={(e) => updateRangeOption(option.id, 'rangeStart', e.target.value)}
-                            placeholder="Start"
-                            className="text-sm flex-1"
+              {/* Range Options List */}
+              <div className="h-56 overflow-y-auto">
+                {getOrderedRangeOptions().length === 0 ? (
+                  <div className="text-center py-4 text-gray-500">
+                    <p className="text-xs">No options added</p>
+                    <p className="text-xs">Click "Add"</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {getOrderedRangeOptions().map((option) => (
+                      <div key={option.id} className="bg-white p-2 rounded border text-xs">
+                        <div className="flex items-center gap-1 mb-1">
+                          <Checkbox
+                            checked={option.enabled}
+                            onCheckedChange={(checked) => updateRangeOption(option.id, 'enabled', checked)}
+                            className="h-3 w-3"
                           />
-                          <span className="text-sm font-medium">to R2:</span>
-                          <Input
-                            key={`${option.id}-end-${option.rangeEnd}-${Date.now()}`}
-                            data-range-id={`${option.id}-end`}
-                            defaultValue={option.rangeEnd}
-                            onChange={(e) => updateRangeOption(option.id, 'rangeEnd', e.target.value)}
-                            placeholder="End"
-                            className="text-sm flex-1"
-                          />
+                          <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => editRangeOption(option)}
+                            className="h-5 w-5 p-0"
+                          >
+                            <Edit2 className="w-2 h-2" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteRangeOption(option.id)}
+                            className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
+                          >
+                            <Trash2 className="w-2 h-2" />
+                          </Button>
                         </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+                        {option.enabled && (
+                          <div className="grid grid-cols-2 gap-1 mt-1">
+                            <Input
+                              key={`${option.id}-start-${option.rangeStart}-${Date.now()}`}
+                              data-range-id={`${option.id}-start`}
+                              defaultValue={option.rangeStart}
+                              onChange={(e) => updateRangeOption(option.id, 'rangeStart', e.target.value)}
+                              placeholder="R1"
+                              className="text-xs h-6"
+                            />
+                            <Input
+                              key={`${option.id}-end-${option.rangeEnd}-${Date.now()}`}
+                              data-range-id={`${option.id}-end`}
+                              defaultValue={option.rangeEnd}
+                              onChange={(e) => updateRangeOption(option.id, 'rangeEnd', e.target.value)}
+                              placeholder="R2"
+                              className="text-xs h-6"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
