@@ -1543,13 +1543,10 @@ export default function PR2ConfigClean() {
                     Math
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="math_operator" className="text-sm font-medium text-gray-700">
-                      Operator
-                    </Label>
+                <CardContent className="py-2">
+                  <div className="flex items-center justify-center">
                     <Select>
-                      <SelectTrigger className="bg-white border-gray-300">
+                      <SelectTrigger className="bg-white border-gray-300 h-7 text-sm w-16">
                         <SelectValue placeholder="÷" />
                       </SelectTrigger>
                       <SelectContent>
