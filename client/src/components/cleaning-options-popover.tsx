@@ -190,14 +190,22 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                           // Route based on actual equipment type, not position
                           if (equipmentId === 'cctv-jet-vac') {
                             const configName = `${pipeSize}mm CCTV Jet Vac Configuration`;
-                            // Check if ID 48 exists for this equipment type and route to edit mode
-                            const url = `/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-jet-vac&edit=48&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`;
-                            console.log('🔗 Navigating to CCTV/Jet Vac config (edit ID 48):', url);
-                            setLocation(url);
+                            // For 150mm pipes with CCTV/Jet Vac, route to existing ID 48
+                            if (pipeSize === '150') {
+                              const url = `/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-jet-vac&edit=48&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`;
+                              console.log('🔗 Navigating to CCTV/Jet Vac config (edit ID 48 for 150mm):', url);
+                              setLocation(url);
+                            } else {
+                              // For other pipe sizes, create new configuration
+                              const url = `/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-jet-vac&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`;
+                              console.log('🔗 Navigating to CCTV/Jet Vac config (new config for ' + pipeSize + 'mm):', url);
+                              setLocation(url);
+                            }
                           } else if (equipmentId === 'cctv-van-pack') {
                             const configName = `${pipeSize}mm CCTV Van Pack Configuration`;
+                            // For CCTV/Van Pack, always create new since no existing config
                             const url = `/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-van-pack&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`;
-                            console.log('🔗 Navigating to CCTV/Van Pack config:', url);
+                            console.log('🔗 Navigating to CCTV/Van Pack config (new config):', url);
                             setLocation(url);
                           }
                         }}
