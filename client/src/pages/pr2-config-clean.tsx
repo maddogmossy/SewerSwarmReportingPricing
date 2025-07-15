@@ -1523,8 +1523,8 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="price_dayrate" className="text-xs font-medium text-blue-700 flex-shrink-0 w-12">
+                  <div className="flex items-center gap-1">
+                    <Label htmlFor="price_dayrate" className="text-xs font-medium text-blue-700 flex-shrink-0">
                       Day Rate
                     </Label>
                     <Input
@@ -1533,7 +1533,7 @@ export default function PR2ConfigClean() {
                       maxLength={10}
                       value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
                       onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
-                      className="bg-white border-blue-300 h-6 text-xs w-20"
+                      className="bg-white border-blue-300 h-6 text-xs w-16"
                       data-field="day-rate"
                       data-window="blue"
                       data-option-id="price_dayrate"
@@ -1543,7 +1543,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Math Window */}
-              <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
+              <Card className="bg-gray-50 border-gray-200 w-32 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
                     <Calculator className="w-3 h-3 mr-1" />
