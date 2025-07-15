@@ -8,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { ChevronLeft, Save, Calculator, Coins, Package, Gauge, Zap, Plus, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users } from 'lucide-react';
+import { ChevronLeft, Save, Calculator, Coins, Package, Gauge, Zap, Plus, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
@@ -909,115 +910,129 @@ export default function PR2ConfigClean() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
         </div>
 
-        {/* Five Column Layout - Compact Horizontal */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6 justify-center items-center">
-          
-          {/* Blue Window - Pricing Options */}
-          <Card className="bg-blue-50 h-16 flex flex-col justify-center items-center">
-            <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
-              <div className="text-blue-600 flex items-center justify-center text-xs mb-2 w-full">
-                <div className="flex items-center gap-1">
-                  <Coins className="w-3 h-3" />
-                  Pricing
-                </div>
-                <Label className="text-xs text-blue-500 ml-auto">Value</Label>
-              </div>
-              <Input
-                placeholder="Enter pricing value"
-                className="bg-white border-blue-300 h-6 text-xs w-full text-center"
-              />
-            </div>
-          </Card>
-
-          {/* Math Operations - Grey Column */}
-          <Card className="bg-gray-50 h-16 flex flex-col justify-center items-center">
-            <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
-              <div className="text-gray-600 flex items-center justify-center text-xs mb-2 w-full">
-                <div className="flex items-center gap-1">
-                  <Calculator className="w-3 h-3" />
-                  Math
-                </div>
-                <Label className="text-xs text-gray-500 ml-auto">Operation</Label>
-              </div>
-              <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
-                <SelectTrigger className="bg-white border-gray-300 h-6 text-xs w-full text-center">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="N/A">N/A</SelectItem>
-                  <SelectItem value="+">+ (Add)</SelectItem>
-                  <SelectItem value="-">- (Subtract)</SelectItem>
-                  <SelectItem value="×">× (Multiply)</SelectItem>
-                  <SelectItem value="÷">÷ (Divide)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </Card>
-
-          {/* Green Window - Quantity Options */}
-          <Card className="bg-green-50 h-16 flex flex-col justify-center items-center">
-            <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
-              <div className="text-green-600 flex items-center justify-center text-xs mb-2 w-full">
-                <div className="flex items-center gap-1">
-                  <Package className="w-3 h-3" />
-                  Quantity
-                </div>
-                <Label className="text-xs text-green-500 ml-auto">Value</Label>
-              </div>
-              <Input
-                placeholder="Enter quantity value"
-                className="bg-white border-green-300 h-6 text-xs w-full text-center"
-              />
-            </div>
-          </Card>
-
-          {/* Orange Window - Min Quantity Options */}
-          <Card className="bg-orange-50 h-16 flex flex-col justify-center items-center">
-            <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
-              <div className="text-orange-600 flex items-center justify-center text-xs mb-2 w-full">
-                <div className="flex items-center gap-1">
-                  <Gauge className="w-3 h-3" />
-                  Min Quantity
-                </div>
-                <Label className="text-xs text-orange-500 ml-auto">Value</Label>
-              </div>
-              <Input
-                placeholder="Enter min quantity value"
-                className="bg-white border-orange-300 h-6 text-xs w-full text-center"
-              />
-            </div>
-          </Card>
-
-          {/* Purple Window - Ranges */}
-          <Card className="bg-purple-50 h-16 flex flex-col justify-center items-center">
-            <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
-              <div className="text-purple-600 flex items-center justify-center text-xs mb-2 w-full">
-                <div className="flex items-center gap-1">
-                  <Zap className="w-3 h-3" />
-                  Ranges
-                </div>
-                <div className="flex gap-2 ml-auto">
-                  <Label className="text-xs text-purple-500">From</Label>
-                  <Label className="text-xs text-purple-500">To</Label>
-                </div>
-              </div>
-              <div className="flex gap-1 w-full">
-                <div className="flex-1">
+        {/* Collapsible Configuration Panel */}
+        <Collapsible>
+          <CollapsibleTrigger asChild>
+            <Button variant="outline" className="w-full mb-4 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Configuration Options
+              </span>
+              <ChevronDown className="w-4 h-4" />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mb-6">
+            {/* Five Column Layout - Compact Horizontal */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 p-4 border rounded-lg bg-gray-50">
+              
+              {/* Blue Window - Pricing Options */}
+              <Card className="bg-blue-50 h-16 flex flex-col justify-center items-center">
+                <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
+                  <div className="text-blue-600 flex items-center justify-center text-xs mb-2 w-full">
+                    <div className="flex items-center gap-1">
+                      <Coins className="w-3 h-3" />
+                      Pricing
+                    </div>
+                    <Label className="text-xs text-blue-500 ml-auto">Value</Label>
+                  </div>
                   <Input
-                    placeholder="%"
-                    className="bg-white border-purple-300 h-6 text-xs text-center"
+                    placeholder="Enter pricing value"
+                    className="bg-white border-blue-300 h-6 text-xs w-full text-center"
                   />
                 </div>
-                <div className="flex-1">
+              </Card>
+
+              {/* Math Operations - Grey Column */}
+              <Card className="bg-gray-50 h-16 flex flex-col justify-center items-center">
+                <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
+                  <div className="text-gray-600 flex items-center justify-center text-xs mb-2 w-full">
+                    <div className="flex items-center gap-1">
+                      <Calculator className="w-3 h-3" />
+                      Math
+                    </div>
+                    <Label className="text-xs text-gray-500 ml-auto">Operation</Label>
+                  </div>
+                  <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
+                    <SelectTrigger className="bg-white border-gray-300 h-6 text-xs w-full text-center">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="N/A">N/A</SelectItem>
+                      <SelectItem value="+">+ (Add)</SelectItem>
+                      <SelectItem value="-">- (Subtract)</SelectItem>
+                      <SelectItem value="×">× (Multiply)</SelectItem>
+                      <SelectItem value="÷">÷ (Divide)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </Card>
+
+              {/* Green Window - Quantity Options */}
+              <Card className="bg-green-50 h-16 flex flex-col justify-center items-center">
+                <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
+                  <div className="text-green-600 flex items-center justify-center text-xs mb-2 w-full">
+                    <div className="flex items-center gap-1">
+                      <Package className="w-3 h-3" />
+                      Quantity
+                    </div>
+                    <Label className="text-xs text-green-500 ml-auto">Value</Label>
+                  </div>
                   <Input
-                    placeholder="Max length"
-                    className="bg-white border-purple-300 h-6 text-xs text-center"
+                    placeholder="Enter quantity value"
+                    className="bg-white border-green-300 h-6 text-xs w-full text-center"
                   />
                 </div>
-              </div>
+              </Card>
+
+              {/* Orange Window - Min Quantity Options */}
+              <Card className="bg-orange-50 h-16 flex flex-col justify-center items-center">
+                <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
+                  <div className="text-orange-600 flex items-center justify-center text-xs mb-2 w-full">
+                    <div className="flex items-center gap-1">
+                      <Gauge className="w-3 h-3" />
+                      Min Quantity
+                    </div>
+                    <Label className="text-xs text-orange-500 ml-auto">Value</Label>
+                  </div>
+                  <Input
+                    placeholder="Enter min quantity value"
+                    className="bg-white border-orange-300 h-6 text-xs w-full text-center"
+                  />
+                </div>
+              </Card>
+
+              {/* Purple Window - Ranges */}
+              <Card className="bg-purple-50 h-16 flex flex-col justify-center items-center">
+                <div className="flex flex-col items-center justify-center h-full w-full px-3 py-2">
+                  <div className="text-purple-600 flex items-center justify-center text-xs mb-2 w-full">
+                    <div className="flex items-center gap-1">
+                      <Zap className="w-3 h-3" />
+                      Ranges
+                    </div>
+                    <div className="flex gap-2 ml-auto">
+                      <Label className="text-xs text-purple-500">From</Label>
+                      <Label className="text-xs text-purple-500">To</Label>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 w-full">
+                    <div className="flex-1">
+                      <Input
+                        placeholder="%"
+                        className="bg-white border-purple-300 h-6 text-xs text-center"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        placeholder="Max length"
+                        className="bg-white border-purple-300 h-6 text-xs text-center"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
             </div>
-          </Card>
-        </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         {/* Hidden dialogs and lists - keeping functionality but removing from visible area */}
         <div className="hidden">
