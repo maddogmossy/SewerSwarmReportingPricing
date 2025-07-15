@@ -91,6 +91,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       const newOrder = [...equipmentOrder];
       [newOrder[currentIndex - 1], newOrder[currentIndex]] = [newOrder[currentIndex], newOrder[currentIndex - 1]];
       setEquipmentOrder(newOrder);
+      console.log('🔄 Equipment moved up:', equipmentId, 'New order:', newOrder);
     }
   };
 
@@ -100,6 +101,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       const newOrder = [...equipmentOrder];
       [newOrder[currentIndex], newOrder[currentIndex + 1]] = [newOrder[currentIndex + 1], newOrder[currentIndex]];
       setEquipmentOrder(newOrder);
+      console.log('🔄 Equipment moved down:', equipmentId, 'New order:', newOrder);
     }
   };
 
@@ -170,19 +172,21 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                           // Auto-save current equipment order before navigating
                           localStorage.setItem('equipment-order', JSON.stringify(equipmentOrder));
                           
-                          // For Option 1 (first in equipmentOrder), route directly to CCTV/Jet Vac configuration
-                          if (index === 0) {
-                            const pipeSize = sectionData.pipeSize.replace(/mm$/i, '');
-                            const configName = `${pipeSize}mm CCTV/Jet Vac Configuration`;
-                            
-                            // Route directly to CCTV/Jet Vac configuration with pipe size context
-                            setLocation(`/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-jet-vac&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`);
-                          } else {
-                            // For Option 2, route to CCTV/Van Pack configuration
-                            const pipeSize = sectionData.pipeSize.replace(/mm$/i, '');
-                            const configName = `${pipeSize}mm CCTV/Van Pack Configuration`;
-                            
-                            setLocation(`/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-van-pack&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`);
+                          // Get the actual equipment ID regardless of position
+                          const equipmentId = equipment.id;
+                          const pipeSize = sectionData.pipeSize.replace(/mm$/i, '');
+                          
+                          // Route based on actual equipment type, not position
+                          if (equipmentId === 'cctv-jet-vac') {
+                            const configName = `${pipeSize}mm CCTV Jet Vac Configuration`;
+                            const url = `/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-jet-vac&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`;
+                            console.log('🔗 Navigating to CCTV/Jet Vac config:', url);
+                            setLocation(url);
+                          } else if (equipmentId === 'cctv-van-pack') {
+                            const configName = `${pipeSize}mm CCTV Van Pack Configuration`;
+                            const url = `/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-van-pack&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`;
+                            console.log('🔗 Navigating to CCTV/Van Pack config:', url);
+                            setLocation(url);
                           }
                         }}
                         className="text-xs h-6 px-2 text-blue-600 border-blue-200 hover:bg-blue-50"
