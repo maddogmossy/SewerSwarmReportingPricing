@@ -60,6 +60,29 @@ const requiresCleaning = (defects: string): boolean => {
   return cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
 };
 
+// Function to check if PR2 configuration has actual values configured
+const isConfigurationProperlyConfigured = (config: any): boolean => {
+  if (!config) return false;
+  
+  // Check if any pricing options have non-empty values
+  const hasValidPricingValues = config.pricingOptions?.some((option: any) => 
+    option.enabled && option.value && option.value.trim() !== '' && option.value !== '0'
+  );
+  
+  // Check if any quantity options have non-empty values
+  const hasValidQuantityValues = config.quantityOptions?.some((option: any) => 
+    option.enabled && option.value && option.value.trim() !== '' && option.value !== '0'
+  );
+  
+  // Check if any min quantity options have non-empty values
+  const hasValidMinQuantityValues = config.minQuantityOptions?.some((option: any) => 
+    option.enabled && option.value && option.value.trim() !== '' && option.value !== '0'
+  );
+  
+  // Configuration is properly configured if it has at least pricing AND quantity values
+  return hasValidPricingValues && hasValidQuantityValues;
+};
+
 // Generate dynamic recommendations based on section data
 const generateDynamicRecommendation = (section: any): string => {
   const { startMH, finishMH, pipeSize, totalLength, defects, recommendations } = section;
@@ -738,16 +761,20 @@ export default function Dashboard() {
           const needsCleaning = requiresCleaning(section.defects || '');
 
           if (isServiceDefect || needsCleaning) {
-            const hasLinkedPR2 = repairPricingData && repairPricingData.length > 0;
+            // Check if any PR2 configurations exist AND have actual values configured
+            const validConfigurations = repairPricingData?.filter(config => 
+              isConfigurationProperlyConfigured(config)
+            ) || [];
+            const hasLinkedPR2 = validConfigurations.length > 0;
             
             // Calculate section status color based on PR2 requirements
             let statusColor = 'default';
             let statusMessage = 'Click for cleaning pricing options';
             let backgroundClass = 'bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400';
             
-            if (hasLinkedPR2 && repairPricingData.length > 0) {
-              // Find the most recent PR2 configuration (highest ID) - same logic as calculateAutoCost
-              const pr2Config = repairPricingData.reduce((latest: any, current: any) => 
+            if (hasLinkedPR2) {
+              // Find the most recent PR2 configuration (highest ID) from valid configurations only
+              const pr2Config = validConfigurations.reduce((latest: any, current: any) => 
                 current.id > latest.id ? current : latest
               );
               statusColor = calculateSectionStatusColor(section, pr2Config);
@@ -798,7 +825,7 @@ export default function Dashboard() {
                 hasLinkedPR2={hasLinkedPR2}
               >
                 <div className={`text-sm w-full ${backgroundClass} p-2 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
-                  <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 && repairPricingData.length > 0 ? repairPricingData[0].categoryName : 'CLEANSE/SURVEY'}</div>
+                  <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? validConfigurations[0].categoryName : 'CLEANSE/SURVEY'}</div>
                   <div className="text-black">{generateDynamicRecommendation(section)}</div>
                   <div className="text-sm text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
