@@ -1512,10 +1512,10 @@ export default function PR2ConfigClean() {
           </div>
           <CollapsibleContent className="mb-6">
             {/* Five-Window Configuration Layout */}
-            <div className="flex gap-2 p-3 border rounded-lg bg-gray-50 overflow-x-auto min-w-fit">
+            <div className="flex gap-4 p-4 border rounded-lg bg-gray-50 w-full">
               
               {/* Blue Window: Day Rate */}
-              <Card className="bg-blue-50 border-blue-200 w-48 flex-shrink-0">
+              <Card className="bg-blue-50 border-blue-200 flex-1">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
                     <Coins className="w-3 h-3" />
@@ -1568,7 +1568,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Green Window: Runs per Shift */}
-              <Card className="bg-green-50 border-green-200 w-52 flex-shrink-0">
+              <Card className="bg-green-50 border-green-200 flex-1">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-green-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
                     <span className="flex items-center gap-1">
@@ -1605,7 +1605,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Orange Window: Min Runs per Shift */}
-              <Card className="bg-orange-50 border-orange-200 w-56 flex-shrink-0">
+              <Card className="bg-orange-50 border-orange-200 flex-1">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-orange-700 text-xs flex items-center gap-1 whitespace-nowrap">
                     <Gauge className="w-3 h-3" />
@@ -1633,7 +1633,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Purple Window: Percentage and Length */}
-              <Card className="bg-purple-50 border-purple-200 w-64 flex-shrink-0">
+              <Card className="bg-purple-50 border-purple-200 flex-1">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-purple-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
                     <span className="flex items-center gap-1">
