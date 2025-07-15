@@ -1468,7 +1468,7 @@ export default function PR2ConfigClean() {
                     <Input
                       id="price_dayrate"
                       placeholder="Enter £ value"
-                      value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || '1850'}
+                      value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
                       onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
                       className="bg-white border-blue-300"
                     />
@@ -1520,7 +1520,7 @@ export default function PR2ConfigClean() {
                     <Input
                       id="quantity_runs"
                       placeholder="Enter quantity"
-                      value={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.value || '30'}
+                      value={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('quantityOptions', 'quantity_runs', e.target.value)}
                       className="bg-white border-green-300"
                     />
@@ -1544,7 +1544,7 @@ export default function PR2ConfigClean() {
                     <Input
                       id="minquantity_runs"
                       placeholder="Enter minimum"
-                      value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || '20'}
+                      value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
                       className="bg-white border-orange-300"
                     />
@@ -1569,7 +1569,7 @@ export default function PR2ConfigClean() {
                       <Input
                         id="percentage_value"
                         placeholder="Enter %"
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeStart || '15'}
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeStart || ''}
                         onChange={(e) => handleRangeValueChange('range_percentage', 'rangeStart', e.target.value)}
                         className="bg-white border-purple-300"
                       />
@@ -1581,7 +1581,7 @@ export default function PR2ConfigClean() {
                       <Input
                         id="length_value"
                         placeholder="Enter meters"
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeStart || '50'}
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeStart || ''}
                         onChange={(e) => handleRangeValueChange('range_length', 'rangeStart', e.target.value)}
                         className="bg-white border-purple-300"
                       />
