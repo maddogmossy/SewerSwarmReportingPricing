@@ -157,7 +157,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Cleanse/Survey Equipment Selection</h3>
             <p className="text-sm text-muted-foreground">
-              Select equipment types for cleansing and survey operations
+              Select equipment types and arrange priority order for cleansing and survey operations
             </p>
           </div>
 
@@ -174,12 +174,12 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                     <div className="flex items-center space-x-2">
                       <equipment.icon className="h-4 w-4 text-blue-600" />
                       <span className="font-medium text-sm">{equipment.name}</span>
-                      {equipment.isPrimary && (
+                      {equipment.isPrimary && equipment.isSelected && (
                         <Badge variant="secondary" className="text-xs">Preferred</Badge>
                       )}
                     </div>
                     <div className="flex items-center space-x-2">
-                      {showStackOrder && equipment.isSelected && (
+                      {equipment.isSelected && (
                         <>
                           <Button
                             size="sm"
@@ -187,6 +187,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                             onClick={() => moveEquipmentUp(equipment.id)}
                             disabled={selectedEquipment.indexOf(equipment.id) === 0}
                             className="h-6 w-6 p-0"
+                            title="Move up"
                           >
                             <ArrowUp className="h-3 w-3" />
                           </Button>
@@ -196,6 +197,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                             onClick={() => moveEquipmentDown(equipment.id)}
                             disabled={selectedEquipment.indexOf(equipment.id) === selectedEquipment.length - 1}
                             className="h-6 w-6 p-0"
+                            title="Move down"
                           >
                             <ArrowDown className="h-3 w-3" />
                           </Button>
@@ -228,14 +230,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
 
           {selectedEquipment.length >= 2 && (
             <div className="pt-2 border-t">
-              <Button 
-                onClick={() => setShowStackOrder(!showStackOrder)}
-                variant="outline"
-                className="w-full mb-2"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                {showStackOrder ? 'Hide' : 'Show'} Stack Order
-              </Button>
+              <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
+                <ArrowUp className="h-3 w-3" />
+                <span>Use ↑↓ arrows to set priority order</span>
+                <ArrowDown className="h-3 w-3" />
+              </div>
             </div>
           )}
 
@@ -245,7 +244,12 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
               disabled={selectedEquipment.length === 0}
               className="w-full"
             >
-              Configure Selected Equipment ({selectedEquipment.length})
+              {selectedEquipment.length === 0 
+                ? 'Select Equipment Types' 
+                : selectedEquipment.length === 1 
+                  ? 'Configure Selected Equipment'
+                  : `Configure Stack Order (${selectedEquipment.length} items)`
+              }
             </Button>
           </div>
         </div>
