@@ -1702,6 +1702,18 @@ export default function PR2ConfigClean() {
                           data-window="green"
                           data-option-id={option.id}
                         />
+                        {/* Show delete button for dynamically added options (not the original "quantity_runs") */}
+                        {option.id !== 'quantity_runs' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-4 w-4 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => deleteQuantityOption(option.id)}
+                            title="Delete this input"
+                          >
+                            ×
+                          </Button>
+                        )}
                       </div>
                     ))}
                   </div>
