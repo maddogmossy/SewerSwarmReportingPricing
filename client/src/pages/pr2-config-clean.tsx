@@ -1262,6 +1262,17 @@ export default function PR2ConfigClean() {
         const result = await response.json();
         console.log('📁 Saved configuration:', result);
         
+        // Update sector state to reflect saved configuration
+        console.log('🔄 Updating sector state after save...');
+        console.log('✅ Saved to sectors:', selectedSectors);
+        
+        // Update sectorsWithConfig to include all selected sectors
+        setSectorsWithConfig(prev => {
+          const newSectorsWithConfig = [...new Set([...prev, ...selectedSectors])];
+          console.log('🔄 Updated sectorsWithConfig:', newSectorsWithConfig);
+          return newSectorsWithConfig;
+        });
+        
         // Invalidate cache to refresh data
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
         
@@ -1419,7 +1430,7 @@ export default function PR2ConfigClean() {
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg flex items-center gap-2"
               >
                 <Save className="h-5 w-5" />
-                Save Configuration
+                Save Sectors
               </Button>
             </div>
           </CardContent>
