@@ -1644,28 +1644,28 @@ export default function PR2ConfigClean() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="percentage_value" className="text-sm font-medium text-purple-700">
-                        Percentage (Max)
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="percentage_value" className="text-sm font-medium text-purple-700 flex-shrink-0">
+                        % (Max)
                       </Label>
                       <Input
                         id="percentage_value"
-                        placeholder="Enter max %"
+                        placeholder="max %"
                         value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeEnd || ''}
                         onChange={(e) => handleRangeValueChange('range_percentage', 'rangeEnd', e.target.value)}
-                        className="bg-white border-purple-300"
+                        className="bg-white border-purple-300 h-7 text-sm flex-1"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="length_value" className="text-sm font-medium text-purple-700">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="length_value" className="text-sm font-medium text-purple-700 flex-shrink-0">
                         Length (Max)
                       </Label>
                       <Input
                         id="length_value"
-                        placeholder="Enter max meters"
+                        placeholder="max m"
                         value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
                         onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                        className="bg-white border-purple-300"
+                        className="bg-white border-purple-300 h-7 text-sm flex-1"
                       />
                     </div>
                   </div>
