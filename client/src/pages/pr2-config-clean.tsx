@@ -1514,8 +1514,8 @@ export default function PR2ConfigClean() {
             {/* Five-Window Configuration Layout */}
             <div className="flex gap-4 p-4 border rounded-lg bg-gray-50 w-full">
               
-              {/* Blue Window: Day Rate - Fixed Width */}
-              <Card className="bg-blue-50 border-blue-200 w-48 flex-shrink-0">
+              {/* Blue Window: Day Rate */}
+              <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
                     <Coins className="w-3 h-3" />
@@ -1533,7 +1533,7 @@ export default function PR2ConfigClean() {
                       maxLength={10}
                       value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
                       onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
-                      className="bg-white border-blue-300 h-6 text-xs w-16"
+                      className="bg-white border-blue-300 h-6 text-xs w-20"
                       data-field="day-rate"
                       data-window="blue"
                       data-option-id="price_dayrate"
@@ -1543,7 +1543,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Math Window */}
-              <Card className="bg-gray-50 border-gray-200 w-24 flex-shrink-0">
+              <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
                     <Calculator className="w-3 h-3 mr-1" />
@@ -1553,7 +1553,7 @@ export default function PR2ConfigClean() {
                 <CardContent className="py-1">
                   <div className="flex items-center justify-center">
                     <Select>
-                      <SelectTrigger className="bg-white border-gray-300 h-8 text-sm w-16">
+                      <SelectTrigger className="bg-white border-gray-300 h-8 text-sm w-12">
                         <SelectValue placeholder="÷" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1567,8 +1567,8 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Green Window: Runs per Shift - Fixed Width */}
-              <Card className="bg-green-50 border-green-200 w-52 flex-shrink-0">
+              {/* Green Window: Runs per Shift */}
+              <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-green-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
                     <span className="flex items-center gap-1">
@@ -1586,7 +1586,7 @@ export default function PR2ConfigClean() {
                 </CardHeader>
                 <CardContent className="py-1">
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="quantity_runs" className="text-xs font-medium text-green-700 flex-shrink-0 w-16">
+                    <Label htmlFor="quantity_runs" className="text-xs font-medium text-green-700 flex-shrink-0">
                       Runs/Shift
                     </Label>
                     <Input
@@ -1595,7 +1595,7 @@ export default function PR2ConfigClean() {
                       maxLength={4}
                       value={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('quantityOptions', 'quantity_runs', e.target.value)}
-                      className="bg-white border-green-300 h-6 text-xs flex-1 min-w-0"
+                      className="bg-white border-green-300 h-6 text-xs w-16"
                       data-field="runs-per-shift"
                       data-window="green"
                       data-option-id="quantity_runs"
@@ -1604,8 +1604,8 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Orange Window: Min Runs per Shift - Made Bigger */}
-              <Card className="bg-orange-50 border-orange-200 w-44 flex-shrink-0">
+              {/* Orange Window: Min Runs per Shift */}
+              <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-orange-700 text-xs flex items-center gap-1 whitespace-nowrap">
                     <Gauge className="w-3 h-3" />
@@ -1632,8 +1632,8 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Purple Window: Percentage and Length on One Row - Single Line Layout */}
-              <Card className="bg-purple-50 border-purple-200 w-64 flex-shrink-0">
+              {/* Purple Window: Percentage and Length on One Row */}
+              <Card className="bg-purple-50 border-purple-200 flex-1">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-purple-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
                     <span className="flex items-center gap-1">
@@ -1650,7 +1650,7 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
-                  <div className="flex items-center gap-1 w-full">
+                  <div className="flex items-center gap-2 w-full">
                     <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
                       % (Max)
                     </Label>
@@ -1660,9 +1660,9 @@ export default function PR2ConfigClean() {
                       maxLength={3}
                       value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeEnd || ''}
                       onChange={(e) => handleRangeValueChange('range_percentage', 'rangeEnd', e.target.value)}
-                      className="bg-white border-purple-300 h-6 text-xs w-8"
+                      className="bg-white border-purple-300 h-6 text-xs w-16"
                     />
-                    <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-2">
+                    <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
                       Length (Max)
                     </Label>
                     <Input
@@ -1671,7 +1671,7 @@ export default function PR2ConfigClean() {
                       maxLength={4}
                       value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
                       onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                      className="bg-white border-purple-300 h-6 text-xs w-12"
+                      className="bg-white border-purple-300 h-6 text-xs w-20"
                     />
                   </div>
                 </CardContent>
