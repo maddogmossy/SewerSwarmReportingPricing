@@ -725,10 +725,10 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Space Utilization**: Purple window expands to use all remaining horizontal space effectively
 
 🔒 **USER-CONFIRMED LAYOUT:**
-- **Blue Window**: "Day Rate" with 5-character input (w-20) for values like "1850"
+- **Blue Window**: "Rate" with 5-character input (w-20) for values like "1850"
 - **Math Window**: Compact division symbol dropdown (w-12) 
-- **Green Window**: "Runs/Shift" with 3-character input (w-16) for values like "30"
-- **Orange Window**: "Min" with 3-character input (w-16) for minimum values
+- **Green Window**: "No" with 3-character input (w-16) for values like "30"
+- **Orange Window**: "Qty" with 3-character input (w-16) for minimum values
 - **Purple Window**: "% (Max)" and "Length (Max)" side-by-side on single row with proper input sizing
 
 🔒 **COMPLETE SYSTEM FEATURES MAINTAINED:**
