@@ -710,24 +710,31 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Screen Flashing Issue**: Complex helper functions cause screen flashing - prefer simple implementations
 - **Performance Focus**: Remove complex useCallback functions that recreate on every render
 
-## REV V6.3 CHECKPOINT - DYNAMIC PRICING CRITERIA FIXED (July 15, 2025)
+## REV V6.4 CHECKPOINT - DUAL RULE SYSTEM FULLY OPERATIONAL (July 15, 2025)
 
-🔒 **PRODUCTION READY - CORRECTED "NO 2" RULE APPLICATION:**
-- **Fixed Over-Application Issue**: "No 2" rule was incorrectly applying to too many sections (items 3,8,14,21,23) showing £74.00 instead of £61.67
-- **Restrictive Criteria Implemented**: "No 2" rule now only applies to sections meeting ALL three conditions: even item numbers AND 225mm pipe size AND >30m length
-- **Standard Rate Restored**: Most sections now correctly display £61.67 (£1850 ÷ 30 runs per shift) as the default calculation
-- **Selective Special Rate**: Only sections meeting all restrictive criteria receive £74.00 (£1850 ÷ 25 "No 2" rate)
-- **Cache Invalidation Enhanced**: Dashboard PR2 query key format fixed to match PR2 pages for proper real-time updates
-- **Real-Time Display Confirmed**: Cost calculations update immediately when PR2 configurations are modified
+🔒 **PRODUCTION READY - COMPLETE DUAL PRICING RULE SYSTEM:**
+- **Fixed Critical Gap**: Extended Rule 1 from 0-33m to 0-33.99m to eliminate 1-meter "no man's land" between rules
+- **Dual Range Detection**: Modified `checkSectionMeetsPR2Requirements` to check ALL length ranges, passing if section meets ANY range (Rule 1 OR Rule 2)
+- **Rule 1 (0-33.99m)**: £61.67 using 30 runs per shift - covers items 6, 3, 7, 8, 16, 17, 18, etc.
+- **Rule 2 (34-66m)**: £74.00 using 25 "No 2" runs per shift - covers items 10, 19, etc.
+- **JavaScript Errors Fixed**: Resolved variable scope issues with `percentageRange` and `lengthRange` declarations
+- **Console Verification**: Logs show "✅ Section meets PR2 requirements" with correct lengthRange values
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Criteria Logic**: Changed from OR logic (||) to AND logic (&&) for "No 2" rule application
-- **Query Key Standardization**: Dashboard now uses ['pr2-configs', sector] format matching PR2 configuration pages
-- **Cache Management**: Added PR2 configuration invalidation to refresh mutation for consistent data display
-- **Debug Logging**: Enhanced console output shows exact criteria evaluation for each section
-- **Calculation Method**: Proper selection between standard "Runs per Shift" and special "No 2" rates
+- **Multi-Range Logic**: `lengthRanges.filter()` checks both "Length" and "Length 2" ranges
+- **Variable Scope Fix**: Moved range variable declarations to function top to prevent "before initialization" errors
+- **Gap Elimination**: Rule 1 extended from 33m to 33.99m to include item 6 (33.78m)
+- **Smart Counting**: 22 sections now qualify for pricing (significant increase from previous counts)
+- **Range Validation**: Each section validated against ALL available ranges, passing on first match
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v6.3' to return to this stable checkpoint
+🔒 **USER-CONFIRMED RESULTS:**
+- **Item 6 (33.78m)**: Shows £61.67 with lengthRange "0-33.99" ✓
+- **Item 10 (34.31m)**: Shows £74.00 with lengthRange "34-66" ✓  
+- **Item 19 (59.49m)**: Shows £74.00 with lengthRange "34-66" ✓
+- **22 Total Sections**: Now pass PR2 requirements check and receive pricing
+- **Zero Blue Triangles**: All qualifying sections display calculated costs instead of warning symbols
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.4' to return to this stable checkpoint
 
 ## REV V6.2 CHECKPOINT - OPTIMIZED FIVE-WINDOW LAYOUT SYSTEM LOCKED (July 15, 2025)
 
