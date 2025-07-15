@@ -77,6 +77,7 @@ export default function PR2ConfigClean() {
   const sector = urlParams.get('sector') || 'utilities';
   const categoryId = urlParams.get('categoryId');
   const editId = urlParams.get('edit') || urlParams.get('editId');
+  const pipeSize = urlParams.get('pipeSize') || urlParams.get('pipe_size');
   const isEditing = !!editId;
   
   // Determine category name based on categoryId for standard categories
@@ -96,6 +97,16 @@ export default function PR2ConfigClean() {
       'tankering': 'Tankering Configuration'
     };
     return categoryMap[categoryId] || 'Price Configuration';
+  };
+
+  // Generate dynamic dropdown title based on pipe size
+  const getDropdownTitle = () => {
+    if (pipeSize) {
+      // Format pipe size - ensure it has 'mm' suffix
+      const formattedSize = pipeSize.endsWith('mm') ? pipeSize : `${pipeSize}mm`;
+      return `${formattedSize} Pipe Configuration Options`;
+    }
+    return 'Configuration Options';
   };
 
   // Clean form state
@@ -916,7 +927,7 @@ export default function PR2ConfigClean() {
             <Button variant="outline" className="w-full mb-4 flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <Settings className="w-4 h-4" />
-                Configuration Options
+                {getDropdownTitle()}
               </span>
               <ChevronDown className="w-4 h-4" />
             </Button>
