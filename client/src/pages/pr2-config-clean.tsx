@@ -914,8 +914,8 @@ export default function PR2ConfigClean() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-6">
           
           {/* Blue Window - Pricing Options */}
-          <Card className="bg-blue-50 h-24">
-            <CardHeader className="pb-1">
+          <Card className="bg-blue-50 h-16">
+            <CardHeader className="pb-0">
               <CardTitle className="text-blue-600 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1">
                   <Coins className="w-3 h-3" />
@@ -924,23 +924,117 @@ export default function PR2ConfigClean() {
                 <Label className="text-xs text-blue-500">Value</Label>
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-1">
-              {/* Value Input Box */}
-              <div className="space-y-1">
-                <Input
-                  placeholder="Enter pricing value"
-                  className="bg-white border-blue-300 h-5 text-xs"
-                />
-              </div>
+            <CardContent className="pt-1 pb-1">
+              <Input
+                placeholder="Enter pricing value"
+                className="bg-white border-blue-300 h-5 text-xs"
+              />
+            </CardContent>
+          </Card>
 
-              {/* Pricing Options List */}
-              <div className="h-24 overflow-y-auto">
-                {formData.pricingOptions.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500">
-                    <p className="text-xs">No options added</p>
-                    <p className="text-xs">Click "Add"</p>
-                  </div>
-                ) : (
+          {/* Math Operations - Grey Column */}
+          <Card className="bg-gray-50 h-16">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-gray-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Calculator className="w-3 h-3" />
+                  Math
+                </div>
+                <Label className="text-xs text-gray-500">Operation</Label>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-1 pb-1">
+              <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
+                <SelectTrigger className="bg-white border-gray-300 h-5 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="N/A">N/A</SelectItem>
+                  <SelectItem value="+">+ (Add)</SelectItem>
+                  <SelectItem value="-">- (Subtract)</SelectItem>
+                  <SelectItem value="×">× (Multiply)</SelectItem>
+                  <SelectItem value="÷">÷ (Divide)</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
+
+          {/* Green Window - Quantity Options */}
+          <Card className="bg-green-50 h-16">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-green-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Package className="w-3 h-3" />
+                  Quantity
+                </div>
+                <Label className="text-xs text-green-500">Value</Label>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-1 pb-1">
+              <Input
+                placeholder="Enter quantity value"
+                className="bg-white border-green-300 h-5 text-xs"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Orange Window - Min Quantity Options */}
+          <Card className="bg-orange-50 h-16">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-orange-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Gauge className="w-3 h-3" />
+                  Min Quantity
+                </div>
+                <Label className="text-xs text-orange-500">Value</Label>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-1 pb-1">
+              <Input
+                placeholder="Enter min quantity value"
+                className="bg-white border-orange-300 h-5 text-xs"
+              />
+            </CardContent>
+          </Card>
+
+          {/* Purple Window - Ranges */}
+          <Card className="bg-purple-50 h-16">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-purple-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Zap className="w-3 h-3" />
+                  Ranges
+                </div>
+                <div className="flex gap-2">
+                  <Label className="text-xs text-purple-500">From</Label>
+                  <Label className="text-xs text-purple-500">To</Label>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-1 pb-1">
+              <div className="flex gap-1">
+                <div className="flex-1">
+                  <Input
+                    placeholder="R1"
+                    className="bg-white border-purple-300 h-5 text-xs"
+                  />
+                </div>
+                <div className="flex-1">
+                  <Input
+                    placeholder="R2"
+                    className="bg-white border-purple-300 h-5 text-xs"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Hidden dialogs and lists - keeping functionality but removing from visible area */}
+        <div className="hidden">
+          {/* Pricing Options List */}
+          <div className="h-24 overflow-y-auto">
+            {formData.pricingOptions.length === 0 ? null : (
                   <div className="space-y-2">
                     {getOrderedPricingOptions().map((option) => (
                       <div key={option.id} className="bg-white p-2 rounded border text-xs">
@@ -981,11 +1075,11 @@ export default function PR2ConfigClean() {
                     ))}
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
+          </div>
 
-          {/* Edit Pricing Dialog */}
+          {/* Quantity Options List */}
+          <div className="h-24 overflow-y-auto">
+            {formData.quantityOptions.length === 0 ? null : (
           <Dialog open={editPricingDialogOpen} onOpenChange={setEditPricingDialogOpen}>
             <DialogContent aria-describedby="edit-pricing-description">
               <DialogHeader>
@@ -1017,7 +1111,112 @@ export default function PR2ConfigClean() {
             </DialogContent>
           </Dialog>
 
-          {/* Edit Quantity Dialog */}
+          )}
+        </div>
+
+          {/* Min Quantity Options List */}
+          <div className="h-24 overflow-y-auto">
+            {formData.minQuantityOptions.length === 0 ? null : (
+              <div className="space-y-2">
+                {getOrderedMinQuantityOptions().map((option) => (
+                  <div key={option.id} className="bg-white p-2 rounded border text-xs">
+                    <div className="flex items-center gap-1 mb-1">
+                      <Checkbox
+                        checked={option.enabled}
+                        onCheckedChange={(checked) => updateMinQuantityOption(option.id, 'enabled', checked)}
+                        className="h-3 w-3"
+                      />
+                      <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => editMinQuantityOption(option)}
+                        className="h-5 w-5 p-0"
+                      >
+                        <Edit2 className="w-2 h-2" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteMinQuantityOption(option.id)}
+                        className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
+                      >
+                        <Trash2 className="w-2 h-2" />
+                      </Button>
+                    </div>
+                    {option.enabled && (
+                      <Input
+                        key={`${option.id}-${option.value}`}
+                        value={option.value}
+                        onChange={(e) => updateMinQuantityOption(option.id, 'value', e.target.value)}
+                        placeholder="Enter value"
+                        className="text-xs h-6"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Range Options List */}
+          <div className="h-24 overflow-y-auto">
+            {getOrderedRangeOptions().length === 0 ? null : (
+              <div className="space-y-2">
+                {getOrderedRangeOptions().map((option) => (
+                  <div key={option.id} className="bg-white p-2 rounded border text-xs">
+                    <div className="flex items-center gap-1 mb-1">
+                      <Checkbox
+                        checked={option.enabled}
+                        onCheckedChange={(checked) => updateRangeOption(option.id, 'enabled', checked)}
+                        className="h-3 w-3"
+                      />
+                      <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => editRangeOption(option)}
+                        className="h-5 w-5 p-0"
+                      >
+                        <Edit2 className="w-2 h-2" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteRangeOption(option.id)}
+                        className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
+                      >
+                        <Trash2 className="w-2 h-2" />
+                      </Button>
+                    </div>
+                    {option.enabled && (
+                      <div className="grid grid-cols-2 gap-1 mt-1">
+                        <Input
+                          key={`${option.id}-start-${option.rangeStart}-${Date.now()}`}
+                          data-range-id={`${option.id}-start`}
+                          defaultValue={option.rangeStart}
+                          onChange={(e) => updateRangeOption(option.id, 'rangeStart', e.target.value)}
+                          placeholder="R1"
+                          className="text-xs h-6"
+                        />
+                        <Input
+                          key={`${option.id}-end-${option.rangeEnd}-${Date.now()}`}
+                          data-range-id={`${option.id}-end`}
+                          defaultValue={option.rangeEnd}
+                          onChange={(e) => updateRangeOption(option.id, 'rangeEnd', e.target.value)}
+                          placeholder="R2"
+                          className="text-xs h-6"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Edit Pricing Dialog */}
           <Dialog open={editQuantityDialogOpen} onOpenChange={setEditQuantityDialogOpen}>
             <DialogContent aria-describedby="edit-quantity-description">
               <DialogHeader>
@@ -1113,274 +1312,7 @@ export default function PR2ConfigClean() {
             </DialogContent>
           </Dialog>
 
-          {/* Math Operations - Grey Column */}
-          <Card className="bg-gray-50 h-24">
-            <CardHeader className="pb-1">
-              <CardTitle className="text-gray-600 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1">
-                  <Calculator className="w-3 h-3" />
-                  Math
-                </div>
-                <Label className="text-xs text-gray-500">Operation</Label>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 pb-1">
-              <div className="space-y-1">
-                <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
-                  <SelectTrigger className="bg-white border-gray-300 h-5 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="N/A">N/A</SelectItem>
-                    <SelectItem value="+">+ (Add)</SelectItem>
-                    <SelectItem value="-">- (Subtract)</SelectItem>
-                    <SelectItem value="×">× (Multiply)</SelectItem>
-                    <SelectItem value="÷">÷ (Divide)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Green Window - Quantity Options */}
-          <Card className="bg-green-50 h-24">
-            <CardHeader className="pb-1">
-              <CardTitle className="text-green-600 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1">
-                  <Package className="w-3 h-3" />
-                  Quantity
-                </div>
-                <Label className="text-xs text-green-500">Value</Label>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 pb-1">
-              {/* Value Input Box */}
-              <div className="space-y-1">
-                <Input
-                  placeholder="Enter quantity value"
-                  className="bg-white border-green-300 h-5 text-xs"
-                />
-              </div>
-
-              {/* Quantity Options List */}
-              <div className="h-24 overflow-y-auto">
-                {formData.quantityOptions.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500">
-                    <p className="text-xs">No options added</p>
-                    <p className="text-xs">Click "Add"</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {getOrderedQuantityOptions().map((option) => (
-                      <div key={option.id} className="bg-white p-2 rounded border text-xs">
-                        <div className="flex items-center gap-1 mb-1">
-                          <Checkbox
-                            checked={option.enabled}
-                            onCheckedChange={(checked) => updateQuantityOption(option.id, 'enabled', checked)}
-                            className="h-3 w-3"
-                          />
-                          <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => editQuantityOption(option)}
-                            className="h-5 w-5 p-0"
-                          >
-                            <Edit2 className="w-2 h-2" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => deleteQuantityOption(option.id)}
-                            className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
-                          >
-                            <Trash2 className="w-2 h-2" />
-                          </Button>
-                        </div>
-                        {option.enabled && (
-                          <Input
-                            key={`${option.id}-${option.value}-${Date.now()}`}
-                            data-option-id={option.id}
-                            defaultValue={option.value}
-                            onChange={(e) => updateQuantityOption(option.id, 'value', e.target.value)}
-                            placeholder="Enter value"
-                            className="text-xs h-6"
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Orange Window - Min Quantity Options */}
-          <Card className="bg-orange-50 h-24">
-            <CardHeader className="pb-1">
-              <CardTitle className="text-orange-600 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1">
-                  <Gauge className="w-3 h-3" />
-                  Min Quantity
-                </div>
-                <Label className="text-xs text-orange-500">Value</Label>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 pb-1">
-              {/* Value Input Box */}
-              <div className="space-y-1">
-                <Input
-                  placeholder="Enter min quantity value"
-                  className="bg-white border-orange-300 h-5 text-xs"
-                />
-              </div>
-
-              {/* Min Quantity Options List */}
-              <div className="h-24 overflow-y-auto">
-                {formData.minQuantityOptions.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500">
-                    <p className="text-xs">No options added</p>
-                    <p className="text-xs">Click "Add"</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {getOrderedMinQuantityOptions().map((option) => (
-                      <div key={option.id} className="bg-white p-2 rounded border text-xs">
-                        <div className="flex items-center gap-1 mb-1">
-                          <Checkbox
-                            checked={option.enabled}
-                            onCheckedChange={(checked) => updateMinQuantityOption(option.id, 'enabled', checked)}
-                            className="h-3 w-3"
-                          />
-                          <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => editMinQuantityOption(option)}
-                            className="h-5 w-5 p-0"
-                          >
-                            <Edit2 className="w-2 h-2" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => deleteMinQuantityOption(option.id)}
-                            className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
-                          >
-                            <Trash2 className="w-2 h-2" />
-                          </Button>
-                        </div>
-                        {option.enabled && (
-                          <Input
-                            key={`${option.id}-${option.value}`}
-                            value={option.value}
-                            onChange={(e) => updateMinQuantityOption(option.id, 'value', e.target.value)}
-                            placeholder="Enter value"
-                            className="text-xs h-6"
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Purple Window - Ranges */}
-          <Card className="bg-purple-50 h-24">
-            <CardHeader className="pb-1">
-              <CardTitle className="text-purple-600 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1">
-                  <Zap className="w-3 h-3" />
-                  Ranges
-                </div>
-                <div className="flex gap-2">
-                  <Label className="text-xs text-purple-500">From</Label>
-                  <Label className="text-xs text-purple-500">To</Label>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 pb-1">
-              {/* Value Input Boxes */}
-              <div className="space-y-1">
-                <div className="flex gap-1">
-                  <div className="flex-1">
-                    <Input
-                      placeholder="R1"
-                      className="bg-white border-purple-300 h-5 text-xs"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Input
-                      placeholder="R2"
-                      className="bg-white border-purple-300 h-5 text-xs"
-                    />
-                  </div>
-                </div>
-              </div>
-              {/* Range Options List */}
-              <div className="h-24 overflow-y-auto">
-                {getOrderedRangeOptions().length === 0 ? (
-                  <div className="text-center py-4 text-gray-500">
-                    <p className="text-xs">No options added</p>
-                    <p className="text-xs">Click "Add"</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {getOrderedRangeOptions().map((option) => (
-                      <div key={option.id} className="bg-white p-2 rounded border text-xs">
-                        <div className="flex items-center gap-1 mb-1">
-                          <Checkbox
-                            checked={option.enabled}
-                            onCheckedChange={(checked) => updateRangeOption(option.id, 'enabled', checked)}
-                            className="h-3 w-3"
-                          />
-                          <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => editRangeOption(option)}
-                            className="h-5 w-5 p-0"
-                          >
-                            <Edit2 className="w-2 h-2" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => deleteRangeOption(option.id)}
-                            className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
-                          >
-                            <Trash2 className="w-2 h-2" />
-                          </Button>
-                        </div>
-                        {option.enabled && (
-                          <div className="grid grid-cols-2 gap-1 mt-1">
-                            <Input
-                              key={`${option.id}-start-${option.rangeStart}-${Date.now()}`}
-                              data-range-id={`${option.id}-start`}
-                              defaultValue={option.rangeStart}
-                              onChange={(e) => updateRangeOption(option.id, 'rangeStart', e.target.value)}
-                              placeholder="R1"
-                              className="text-xs h-6"
-                            />
-                            <Input
-                              key={`${option.id}-end-${option.rangeEnd}-${Date.now()}`}
-                              data-range-id={`${option.id}-end`}
-                              defaultValue={option.rangeEnd}
-                              onChange={(e) => updateRangeOption(option.id, 'rangeEnd', e.target.value)}
-                              placeholder="R2"
-                              className="text-xs h-6"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Saved Configurations Section */}
