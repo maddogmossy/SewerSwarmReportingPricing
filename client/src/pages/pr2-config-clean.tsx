@@ -1613,8 +1613,8 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="minquantity_runs" className="text-xs font-medium text-orange-700 flex-shrink-0 w-12">
+                  <div className="flex items-center gap-1">
+                    <Label htmlFor="minquantity_runs" className="text-xs font-medium text-orange-700 flex-shrink-0">
                       Min Runs
                     </Label>
                     <Input
@@ -1623,7 +1623,7 @@ export default function PR2ConfigClean() {
                       maxLength={4}
                       value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
-                      className="bg-white border-orange-300 h-6 text-xs flex-1 min-w-0"
+                      className="bg-white border-orange-300 h-6 text-xs w-16"
                       data-field="min-runs-per-shift"
                       data-window="orange"
                       data-option-id="minquantity_runs"
