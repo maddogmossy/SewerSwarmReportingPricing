@@ -1092,6 +1092,9 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
       queryClient.invalidateQueries({ queryKey: [`/api/pricing/check/${currentSector.id}`] });
+      // Force refresh PR2 configurations to show latest pricing rules
+      queryClient.invalidateQueries({ queryKey: ['pr2-configs'] });
+      queryClient.invalidateQueries({ queryKey: ['pr2-configs', currentSector.id] });
       // Force refresh all section data
       queryClient.removeQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
       queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload?.id}/sections`] });
@@ -1214,7 +1217,14 @@ export default function Dashboard() {
 
   // Fetch PR2 configurations from dedicated PR2 database table (completely separate from legacy)
   const { data: repairPricingData = [] } = useQuery({
-    queryKey: [`/api/pr2-clean?sector=${currentSector.id}`],
+    queryKey: ['pr2-configs', currentSector.id],
+    queryFn: async () => {
+      console.log('🔍 Dashboard fetching PR2 configs for sector:', currentSector.id);
+      const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector: currentSector.id });
+      const data = await response.json();
+      console.log('📥 Dashboard received PR2 configs:', data.length, 'configurations');
+      return data;
+    },
     enabled: !!currentSector?.id,
     staleTime: 0,
     gcTime: 0,
