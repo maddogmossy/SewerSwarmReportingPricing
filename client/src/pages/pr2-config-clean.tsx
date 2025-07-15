@@ -1515,7 +1515,7 @@ export default function PR2ConfigClean() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 p-4 border rounded-lg bg-gray-50">
               
               {/* Blue Window: Day Rate */}
-              <Card className="bg-blue-50 border-blue-200 lg:col-span-3">
+              <Card className="bg-blue-50 border-blue-200 lg:col-span-2">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
                     <Coins className="w-4 h-4" />
@@ -1568,7 +1568,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Green Window: Runs per Shift */}
-              <Card className="bg-green-50 border-green-200 lg:col-span-3">
+              <Card className="bg-green-50 border-green-200 lg:col-span-2">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2 justify-between">
                     <span className="flex items-center gap-2">
@@ -1605,7 +1605,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Orange Window: Min Runs per Shift */}
-              <Card className="bg-orange-50 border-orange-200 lg:col-span-3">
+              <Card className="bg-orange-50 border-orange-200 lg:col-span-2">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
                     <Gauge className="w-4 h-4" />
@@ -1633,7 +1633,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Purple Window: Percentage and Length */}
-              <Card className="bg-purple-50 border-purple-200 lg:col-span-2">
+              <Card className="bg-purple-50 border-purple-200 lg:col-span-5">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2 justify-between">
                     <span className="flex items-center gap-2">
