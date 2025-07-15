@@ -78,10 +78,37 @@ export default function PR2ConfigClean() {
   const categoryId = urlParams.get('categoryId');
   const editId = urlParams.get('edit') || urlParams.get('editId');
   const pipeSize = urlParams.get('pipeSize') || urlParams.get('pipe_size');
+  const configName = urlParams.get('configName');
   const isEditing = !!editId;
   
-  // Determine category name based on categoryId for standard categories
+  // Determine category name based on categoryId and pipe size for dynamic naming
   const getCategoryName = (categoryId: string) => {
+    // If we have a custom config name from URL (pipe size specific), use it
+    if (configName) {
+      return decodeURIComponent(configName);
+    }
+    
+    // If we have pipe size, create pipe-size-specific names
+    if (pipeSize) {
+      const formattedSize = pipeSize.endsWith('mm') ? pipeSize : `${pipeSize}mm`;
+      const categoryMap: { [key: string]: string } = {
+        'cctv': `${formattedSize} CCTV Configuration`,
+        'van-pack': `${formattedSize} Van Pack Configuration`,
+        'jet-vac': `${formattedSize} Jet Vac Configuration`,
+        'cctv-van-pack': `${formattedSize} CCTV Van Pack Configuration`,
+        'cctv-jet-vac': `${formattedSize} CCTV Jet Vac Configuration`,
+        'directional-water-cutter': `${formattedSize} Directional Water Cutter Configuration`,
+        'ambient-lining': `${formattedSize} Ambient Lining Configuration`,
+        'hot-cure-lining': `${formattedSize} Hot Cure Lining Configuration`,
+        'uv-lining': `${formattedSize} UV Lining Configuration`,
+        'ims-cutting': `${formattedSize} IMS Cutting Configuration`,
+        'excavation': `${formattedSize} Excavation Configuration`,
+        'tankering': `${formattedSize} Tankering Configuration`
+      };
+      return categoryMap[categoryId] || `${formattedSize} Configuration`;
+    }
+    
+    // Fallback to standard names
     const categoryMap: { [key: string]: string } = {
       'cctv': 'CCTV Price Configuration',
       'van-pack': 'Van Pack Configuration',

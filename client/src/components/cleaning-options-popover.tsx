@@ -103,12 +103,23 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     }
   };
 
+  // Generate dynamic configuration name based on pipe size
+  const getConfigurationName = (): string => {
+    const pipeSize = sectionData.pipeSize;
+    // Normalize pipe size (remove 'mm' if present, then add it back)
+    const normalizedSize = pipeSize.replace(/mm$/i, '');
+    return `${normalizedSize}mm Pipe Configuration Options`;
+  };
+
   const handleConfigureSelected = () => {
     setIsOpen(false);
     
-    // Route to PR2 pricing with equipment in current order
+    // Route to PR2 pricing with equipment in current order and dynamic pipe size naming
     const equipmentParam = equipmentOrder.join(',');
-    setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentParam}`);
+    const configName = getConfigurationName();
+    const pipeSize = sectionData.pipeSize.replace(/mm$/i, ''); // Clean pipe size for URL
+    
+    setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentParam}&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`);
   };
 
   return (

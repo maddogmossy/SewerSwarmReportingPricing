@@ -64,13 +64,28 @@ export default function PR2Pricing() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<{id: string, name: string, affectedSectors?: string[]} | null>(null);
   
-  // Initialize sector from URL on page load only
+  // Extract URL parameters for dynamic pipe size configuration
+  const [pipeSize, setPipeSize] = useState<string | null>(null);
+  const [configName, setConfigName] = useState<string | null>(null);
+  const [sourceItemNo, setSourceItemNo] = useState<number | null>(null);
+
+  // Initialize sector and pipe size parameters from URL on page load only
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
     const initialSector = urlParams.get('sector') || 'utilities';
+    const initialPipeSize = urlParams.get('pipeSize');
+    const initialConfigName = urlParams.get('configName');
+    const initialItemNo = urlParams.get('itemNo');
     
     console.log('Initial page load - setting sector to:', initialSector);
+    console.log('Pipe size from URL:', initialPipeSize);
+    console.log('Config name from URL:', initialConfigName);
+    console.log('Source item number:', initialItemNo);
+    
     setSector(initialSector);
+    setPipeSize(initialPipeSize);
+    setConfigName(initialConfigName);
+    setSourceItemNo(initialItemNo ? parseInt(initialItemNo) : null);
   }, []); // Empty dependency array - only run once on mount
   
   // Get current sector info
@@ -377,6 +392,76 @@ export default function PR2Pricing() {
             Create New Category
           </Button>
         </div>
+
+        {/* Pipe Size Specific Configuration Section - Show when navigating from dashboard */}
+        {pipeSize && configName && (
+          <div className="space-y-4">
+            <Card className={`${currentSector.bgColor} border-2 border-blue-400`}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-blue-600" />
+                  {configName}
+                </CardTitle>
+                <p className="text-sm text-gray-600">
+                  Configuration for {pipeSize}mm pipe size - sourced from dashboard item {sourceItemNo}
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* CCTV/Jet Vac Option for this pipe size */}
+                  <Card
+                    className="cursor-pointer transition-all hover:shadow-md bg-white border-2 border-blue-200"
+                    onClick={() => {
+                      const categoryId = 'cctv-jet-vac';
+                      const existingConfig = pr2Configurations.find(config => 
+                        config.categoryId === categoryId && 
+                        config.categoryName?.includes(`${pipeSize}mm`)
+                      );
+                      
+                      if (existingConfig) {
+                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
+                      } else {
+                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Jet Vac Configuration`)}`);
+                      }
+                    }}
+                  >
+                    <CardContent className="p-4 text-center relative">
+                      <Waves className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                      <h3 className="font-medium text-sm mb-1">CCTV/Jet Vac - {pipeSize}mm</h3>
+                      <p className="text-xs text-gray-600">High-pressure cleaning configuration for {pipeSize}mm pipes</p>
+                      <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                    </CardContent>
+                  </Card>
+
+                  {/* CCTV/Van Pack Option for this pipe size */}
+                  <Card
+                    className="cursor-pointer transition-all hover:shadow-md bg-white border-2 border-blue-200"
+                    onClick={() => {
+                      const categoryId = 'cctv-van-pack';
+                      const existingConfig = pr2Configurations.find(config => 
+                        config.categoryId === categoryId && 
+                        config.categoryName?.includes(`${pipeSize}mm`)
+                      );
+                      
+                      if (existingConfig) {
+                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
+                      } else {
+                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Van Pack Configuration`)}`);
+                      }
+                    }}
+                  >
+                    <CardContent className="p-4 text-center relative">
+                      <Monitor className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                      <h3 className="font-medium text-sm mb-1">CCTV/Van Pack - {pipeSize}mm</h3>
+                      <p className="text-xs text-gray-600">Traditional cleaning configuration for {pipeSize}mm pipes</p>
+                      <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Standard Categories Section - Always Visible */}
         <div className="space-y-6">
