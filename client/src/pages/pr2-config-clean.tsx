@@ -514,24 +514,64 @@ export default function PR2ConfigClean() {
         console.log(`🔧 Loading configuration data:`, config);
         
         // Handle array vs object format for quantityOptions and minQuantityOptions
-        const quantityOptions = Array.isArray(config.quantityOptions) ? config.quantityOptions : [];
-        const minQuantityOptions = Array.isArray(config.minQuantityOptions) ? config.minQuantityOptions : [];
-        const rangeOptions = Array.isArray(config.rangeOptions) ? config.rangeOptions : [];
+        const existingQuantityOptions = Array.isArray(config.quantityOptions) ? config.quantityOptions : [];
+        const existingMinQuantityOptions = Array.isArray(config.minQuantityOptions) ? config.minQuantityOptions : [];
+        const existingRangeOptions = Array.isArray(config.rangeOptions) ? config.rangeOptions : [];
+        const existingPricingOptions = Array.isArray(config.pricingOptions) ? config.pricingOptions : [];
+        
+        // Initialize default options if arrays are empty (for existing configs that were saved without defaults)
+        const defaultPricingOptions = [
+          { id: 'pricing_dayrate', label: 'Day Rate', enabled: false, value: '' },
+          { id: 'pricing_hourlyrate', label: 'Hourly Rate', enabled: false, value: '' },
+          { id: 'pricing_setuprate', label: 'Setup Rate', enabled: false, value: '' },
+          { id: 'pricing_permeter', label: 'Per Meter', enabled: false, value: '' }
+        ];
+        
+        const defaultQuantityOptions = [
+          { id: 'quantity_runs', label: 'Runs per Shift', enabled: false, value: '' },
+          { id: 'quantity_meters', label: 'Meters per Shift', enabled: false, value: '' },
+          { id: 'quantity_sections', label: 'Sections per Day', enabled: false, value: '' }
+        ];
+        
+        const defaultMinQuantityOptions = [
+          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: false, value: '' },
+          { id: 'minquantity_meters', label: 'Min Meters per Shift', enabled: false, value: '' },
+          { id: 'minquantity_sections', label: 'Min Sections per Day', enabled: false, value: '' }
+        ];
+        
+        const defaultRangeOptions = [
+          { id: 'range_pipesize', label: 'Pipe Size', enabled: false, rangeStart: '', rangeEnd: '' },
+          { id: 'range_percentage', label: 'Percentage', enabled: false, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length', enabled: false, rangeStart: '', rangeEnd: '' }
+        ];
+        
+        // Use existing options if they exist, otherwise use defaults
+        const pricingOptions = existingPricingOptions.length > 0 ? existingPricingOptions : defaultPricingOptions;
+        const quantityOptions = existingQuantityOptions.length > 0 ? existingQuantityOptions : defaultQuantityOptions;
+        const minQuantityOptions = existingMinQuantityOptions.length > 0 ? existingMinQuantityOptions : defaultMinQuantityOptions;
+        const rangeOptions = existingRangeOptions.length > 0 ? existingRangeOptions : defaultRangeOptions;
         
         const newFormData = {
           categoryName: config.categoryName || 'CCTV Price Configuration',
           description: config.description || '',
-          pricingOptions: config.pricingOptions || [],
+          pricingOptions: pricingOptions,
           quantityOptions: quantityOptions,
           minQuantityOptions: minQuantityOptions,
           rangeOptions: rangeOptions,
           mathOperators: config.mathOperators || ['N/A'],
-          pricingStackOrder: (config.pricingOptions || []).map((opt: any) => opt.id),
+          pricingStackOrder: pricingOptions.map((opt: any) => opt.id),
           quantityStackOrder: quantityOptions.map((opt: any) => opt.id),
           minQuantityStackOrder: minQuantityOptions.map((opt: any) => opt.id),
           rangeStackOrder: rangeOptions.map((opt: any) => opt.id),
           sector
         };
+        
+        console.log(`🔧 Initialized form data with options:`, {
+          pricingCount: pricingOptions.length,
+          quantityCount: quantityOptions.length,
+          minQuantityCount: minQuantityOptions.length,
+          rangeCount: rangeOptions.length
+        });
 
         console.log(`🔧 Setting form data for config ${config.id}:`, {
           quantityValue: newFormData.quantityOptions?.[0]?.value,
