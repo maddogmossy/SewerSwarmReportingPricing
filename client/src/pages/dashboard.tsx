@@ -1402,8 +1402,7 @@ export default function Dashboard() {
           console.log(`🎯 SECTION ${section.itemNo} [ID: ${section.id}] - No 2 rule: ${useNo2}`);
           console.log(`   - Pipe size 150mm: ${section.pipeSize === '150'} (actual: ${section.pipeSize})`);
           console.log(`   - Length > 30m: ${sectionLength > 30} (actual: ${sectionLength}m)`);
-          console.log(`   - Has patch lining: ${(dbRecommendations || '').toLowerCase().includes('patch lining')}`);
-          console.log(`   - All criteria met: ${useNo2}`);
+          console.log(`   - Rule 2 should apply: ${useNo2}`);
         }
         
         return { useNo2, no2Value };
