@@ -651,6 +651,34 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.1' to return to this stable checkpoint
 
+## REV V5.9.2 CHECKPOINT - SYSTEMATIC DEBUGGING IDS ADDED (July 15, 2025)
+
+🔒 **PRODUCTION READY - COMPREHENSIVE DEBUG ID SYSTEM:**
+- **Dashboard Table Identifiers:** Added data-section-id, data-section-row-id, data-upload-id, data-page attributes to all table rows
+- **CleaningOptionsPopover IDs:** Added data-component, data-section-id, data-has-config, data-pipe-size, data-sector attributes  
+- **Table Structure IDs:** Added data-component="sections-table", data-total-sections, data-upload-id to main dashboard table
+- **Page-Level Identifiers:** Added data-page, data-config-id, data-category-id, data-sector, data-is-editing to main page containers
+- **Form Field IDs:** Added data-field, data-window, data-option-id to key input fields (Day Rate, Runs per Shift, Min Runs)
+- **Button Action IDs:** Added data-action="delete-configuration", data-config-id to Delete button
+- **Hidden from Users:** All IDs are data attributes invisible to end users but accessible for debugging
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Dashboard Enhancement:** Table rows now include complete context (section ID, upload ID, row ID) for tracking
+- **Component Identification:** Key components have systematic naming (cleaning-options-popover, sections-table, page-title)  
+- **Form Field Tracking:** Blue/Green/Orange/Purple windows have consistent data-window attributes
+- **Action Tracking:** Delete and save operations include relevant IDs for debugging
+- **Page Context:** All major pages include data-page attribute for navigation debugging
+- **Configuration Context:** Edit mode detection and configuration ID tracking across components
+
+🔒 **DEBUGGING BENEFITS:**
+- **Element Targeting:** Can target specific sections, configurations, or form fields in browser console
+- **State Tracking:** Easy identification of which configuration, sector, or upload is being processed
+- **Error Isolation:** Failed operations can be traced to specific components and data IDs
+- **Testing Support:** Automated tests can reliably target elements using data attributes
+- **Development Efficiency:** Faster debugging with systematic element identification
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.2' to return to this stable checkpoint
+
 ## REV V5.3 CHECKPOINT - EDIT BUTTON SYSTEM FULLY OPERATIONAL (July 14, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE EDIT BUTTON SYSTEM:**

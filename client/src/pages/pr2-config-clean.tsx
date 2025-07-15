@@ -1364,12 +1364,22 @@ export default function PR2ConfigClean() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div 
+      className="min-h-screen bg-gray-50 p-6"
+      data-page="pr2-config-clean"
+      data-config-id={editId}
+      data-category-id={categoryId}
+      data-sector={sector}
+      data-is-editing={isEditing}
+    >
       <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 
+                className="text-2xl font-bold text-gray-900"
+                data-component="page-title"
+              >
                 {isEditing ? 'Edit' : 'Create'} {formData.categoryName || 'Configuration'}
                 {isEditing && editId && <span className="text-sm text-gray-500 ml-2">(ID: {editId})</span>}
               </h1>
@@ -1495,6 +1505,9 @@ export default function PR2ConfigClean() {
                       value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
                       onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
                       className="bg-white border-blue-300"
+                      data-field="day-rate"
+                      data-window="blue"
+                      data-option-id="price_dayrate"
                     />
                   </div>
                 </CardContent>
@@ -1547,6 +1560,9 @@ export default function PR2ConfigClean() {
                       value={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('quantityOptions', 'quantity_runs', e.target.value)}
                       className="bg-white border-green-300"
+                      data-field="runs-per-shift"
+                      data-window="green"
+                      data-option-id="quantity_runs"
                     />
                   </div>
                 </CardContent>
@@ -1571,6 +1587,9 @@ export default function PR2ConfigClean() {
                       value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || ''}
                       onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
                       className="bg-white border-orange-300"
+                      data-field="min-runs-per-shift"
+                      data-window="orange"
+                      data-option-id="minquantity_runs"
                     />
                   </div>
                 </CardContent>
@@ -1632,6 +1651,8 @@ export default function PR2ConfigClean() {
             <AlertDialogAction
               onClick={handleDeleteConfiguration}
               className="bg-red-600 hover:bg-red-700"
+              data-action="delete-configuration"
+              data-config-id={editId}
             >
               Delete
             </AlertDialogAction>

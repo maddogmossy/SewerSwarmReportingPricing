@@ -823,6 +823,11 @@ export default function Dashboard() {
                   console.log('Cleaning pricing needed for:', method, pipeSize, sector);
                 }}
                 hasLinkedPR2={hasLinkedPR2}
+                data-component="cleaning-options-popover"
+                data-section-id={section.itemNo}
+                data-has-config={hasLinkedPR2}
+                data-pipe-size={section.pipeSize}
+                data-sector={currentSector.id}
               >
                 <div className={`text-sm w-full ${backgroundClass} p-2 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
                   <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? validConfigurations[0].categoryName : 'CLEANSE/SURVEY'}</div>
@@ -2803,9 +2808,19 @@ export default function Dashboard() {
                   </div>
                 )}
                 <div className="overflow-x-auto">
-                  <table className="w-full text-xs border-collapse border border-slate-300" style={{ tableLayout: 'fixed' }}>
+                  <table 
+                    className="w-full text-xs border-collapse border border-slate-300" 
+                    style={{ tableLayout: 'fixed' }}
+                    data-component="sections-table"
+                    data-upload-id={currentUpload?.id}
+                    data-page="dashboard"
+                    data-total-sections={sectionData.length}
+                  >
                     <thead>
-                      <tr className="bg-slate-100">
+                      <tr 
+                        className="bg-slate-100"
+                        data-component="table-header"
+                      >
                         {columns.map((column) => {
                           if (hiddenColumns.has(column.key)) return null;
                           const canBeHidden = column.hideable;
@@ -2842,7 +2857,13 @@ export default function Dashboard() {
                         const repairStatus = hasApprovedRepairPricing(section);
                         
                         return (
-                        <tr key={`${section.id}-${section.itemNo}-${index}-${section.defects?.substring(0, 10)}`} className={`${
+                        <tr 
+                          key={`${section.id}-${section.itemNo}-${index}-${section.defects?.substring(0, 10)}`} 
+                          data-section-id={section.itemNo}
+                          data-section-row-id={section.rowId}
+                          data-upload-id={currentUpload?.id}
+                          data-page="dashboard"
+                          className={`${
                           // Standard Grade 0 adoptable highlighting only
                           (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
                           ? 'bg-green-200 hover:bg-green-300' 

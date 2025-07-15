@@ -350,11 +350,21 @@ export default function PR2Pricing() {
 
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div 
+      className="container mx-auto p-6 space-y-6"
+      data-page="pr2-pricing"
+      data-sector={sector}
+      data-pipe-size={pipeSize}
+      data-config-name={configName}
+      data-source-item={sourceItemNo}
+    >
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold">Pricing Configuration</h1>
+          <h1 
+            className="text-3xl font-bold"
+            data-component="page-title"
+          >Pricing Configuration</h1>
           <p className="text-gray-600">
             Configure pricing for <span className={`font-medium ${currentSector.color}`}>{currentSector.name}</span> sector cleaning and repairs
           </p>
