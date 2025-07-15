@@ -1415,8 +1415,8 @@ export default function PR2ConfigClean() {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="mb-6">
-            {/* Five-Window Configuration Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 border rounded-lg bg-gray-50">
+            {/* Four-Window Configuration Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4 border rounded-lg bg-gray-50">
               
               {/* Blue Window: Day Rate */}
               <Card className="bg-blue-50 border-blue-200">
