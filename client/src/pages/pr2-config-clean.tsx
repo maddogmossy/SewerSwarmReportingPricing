@@ -1512,10 +1512,10 @@ export default function PR2ConfigClean() {
           </div>
           <CollapsibleContent className="mb-6">
             {/* Five-Window Configuration Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-14 gap-3 p-4 border rounded-lg bg-gray-50">
+            <div className="flex gap-2 p-3 border rounded-lg bg-gray-50 overflow-x-auto min-w-fit">
               
               {/* Blue Window: Day Rate */}
-              <Card className="bg-blue-50 border-blue-200 lg:col-span-3">
+              <Card className="bg-blue-50 border-blue-200 w-40 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-blue-700 text-xs flex items-center gap-1">
                     <Coins className="w-3 h-3" />
@@ -1543,7 +1543,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Math Window */}
-              <Card className="bg-gray-50 border-gray-200 lg:col-span-1">
+              <Card className="bg-gray-50 border-gray-200 w-16 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-gray-700 text-xs flex items-center justify-center">
                     <Calculator className="w-3 h-3" />
@@ -1567,7 +1567,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Green Window: Runs per Shift */}
-              <Card className="bg-green-50 border-green-200 lg:col-span-3">
+              <Card className="bg-green-50 border-green-200 w-44 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-green-700 text-xs flex items-center gap-1 justify-between">
                     <span className="flex items-center gap-1">
@@ -1604,7 +1604,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Orange Window: Min Runs per Shift */}
-              <Card className="bg-orange-50 border-orange-200 lg:col-span-3">
+              <Card className="bg-orange-50 border-orange-200 w-44 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
                     <Gauge className="w-3 h-3" />
@@ -1632,48 +1632,48 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Purple Window: Percentage and Length */}
-              <Card className="bg-purple-50 border-purple-200 lg:col-span-4">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-700 text-sm flex items-center gap-2 justify-between">
-                    <span className="flex items-center gap-2">
-                      <Zap className="w-4 h-4" />
-                      Range Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
+              <Card className="bg-purple-50 border-purple-200 w-56 flex-shrink-0">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-purple-700 text-xs flex items-center gap-1 justify-between">
+                    <span className="flex items-center gap-1">
+                      <Zap className="w-3 h-3" />
+                      Range Options
                     </span>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-6 px-2 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
+                      className="h-4 px-1 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
                     >
                       Add
                     </Button>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="percentage_value" className="text-sm font-medium text-purple-700 flex-shrink-0">
+                <CardContent className="py-1">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      <Label htmlFor="percentage_value" className="text-xs font-medium text-purple-700 flex-shrink-0 w-10">
                         % (Max)
                       </Label>
                       <Input
                         id="percentage_value"
-                        placeholder="max %"
+                        placeholder="%"
                         maxLength={3}
                         value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeEnd || ''}
                         onChange={(e) => handleRangeValueChange('range_percentage', 'rangeEnd', e.target.value)}
-                        className="bg-white border-purple-300 h-7 text-sm flex-1"
+                        className="bg-white border-purple-300 h-6 text-xs w-12 min-w-0"
                       />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="length_value" className="text-sm font-medium text-purple-700 flex-shrink-0">
+                    <div className="flex items-center gap-1">
+                      <Label htmlFor="length_value" className="text-xs font-medium text-purple-700 flex-shrink-0 w-16">
                         Length (Max)
                       </Label>
                       <Input
                         id="length_value"
-                        placeholder="max m"
+                        placeholder="m"
                         maxLength={4}
                         value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
                         onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                        className="bg-white border-purple-300 h-7 text-sm flex-1"
+                        className="bg-white border-purple-300 h-6 text-xs w-16 min-w-0"
                       />
                     </div>
                   </div>
