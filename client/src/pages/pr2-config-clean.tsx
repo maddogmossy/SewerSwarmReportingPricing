@@ -413,20 +413,55 @@ export default function PR2ConfigClean() {
       // Add sector to selected list
       setSelectedSectors(prev => [...new Set([...prev, sectorId])]);
       
-      // If we're in editing mode and adding a new sector, create a copy immediately
+      // Auto-save: Create configuration for this sector immediately
       if (isEditing && editId && !sectorsWithConfig.includes(sectorId)) {
-        console.log(`📋 Creating independent copy for sector: ${sectorId}`);
+        console.log(`💾 Auto-saving configuration to sector: ${sectorId}`);
         await createSectorCopy(sectorId);
+        
+        // Update sectorsWithConfig to include this sector
+        setSectorsWithConfig(prev => [...new Set([...prev, sectorId])]);
       }
     } else {
-      // Show warning if removing an existing sector with data
+      // Auto-remove: Delete configuration from this sector immediately
       const hasExistingConfig = sectorsWithConfig.includes(sectorId);
       console.log(`⚠️ Has existing config for ${sectorId}:`, hasExistingConfig);
       
       if (hasExistingConfig && isEditing) {
-        console.log(`🚨 Showing removal warning for ${sectorId}`);
-        setSectorToRemove(sectorId);
-        setShowRemoveWarning(true);
+        console.log(`🗑️ Auto-removing configuration from sector: ${sectorId}`);
+        
+        // Find and delete the configuration for this sector
+        try {
+          const response = await fetch(`/api/pr2-clean`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (response.ok) {
+            const allConfigs = await response.json();
+            const configToDelete = allConfigs.find((config: any) => 
+              config.sector === sectorId && config.categoryId === categoryId
+            );
+            
+            if (configToDelete) {
+              console.log(`🗑️ Deleting configuration ID: ${configToDelete.id}`);
+              await fetch(`/api/pr2-clean/${configToDelete.id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+              });
+              
+              // Update local state
+              setSelectedSectors(prev => prev.filter(s => s !== sectorId));
+              setSectorsWithConfig(prev => prev.filter(s => s !== sectorId));
+              
+              // Refresh data
+              queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+              
+              console.log(`✅ Configuration removed from sector: ${sectorId}`);
+            }
+          }
+        } catch (error) {
+          console.error(`❌ Failed to remove configuration from ${sectorId}:`, error);
+        }
       } else {
         console.log(`✅ Directly removing ${sectorId} from selected sectors`);
         // Remove sector from selected list
@@ -1420,18 +1455,9 @@ export default function PR2ConfigClean() {
                 );
               })}
             </div>
-            <div className="mt-4 flex items-center justify-between">
-              <div className="text-sm text-gray-600">
-                <p>✓ Checked sectors will receive this pricing configuration</p>
-                <p>✗ Unchecking existing configurations will remove them with confirmation</p>
-              </div>
-              <Button
-                onClick={handleSaveConfiguration}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg flex items-center gap-2"
-              >
-                <Save className="h-5 w-5" />
-                Save Sectors
-              </Button>
+            <div className="mt-4 text-sm text-gray-600">
+              <p>✓ Checking sectors automatically saves this pricing configuration</p>
+              <p>✗ Unchecking sectors automatically removes the configuration</p>
             </div>
           </CardContent>
         </Card>
