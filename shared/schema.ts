@@ -451,7 +451,7 @@ export const pr2Configurations = pgTable("pr2_configurations", {
   rangeOptions: jsonb("range_options").default('[]'),
   rangeValues: jsonb("range_values").default('{}'),
   mathOperators: jsonb("math_operators").default('[]'), // Array of operator strings
-  sectors: text("sectors").array().notNull().default(sql`ARRAY['utilities']::text[]`), // Array of sectors this config applies to
+  sector: varchar("sector").notNull().default("utilities"), // Single sector this config applies to
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

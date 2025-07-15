@@ -135,14 +135,19 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       if (sector && categoryId) {
         // Filter by userId, sector, and categoryId using single sector field
         console.log(`🔍 Filtering by userId: "test-user", sector: "${sector}", AND categoryId: "${categoryId}"`);
-        configurations = await db
-          .select()
-          .from(pr2Configurations)
-          .where(and(
-            eq(pr2Configurations.userId, "test-user"),
-            eq(pr2Configurations.categoryId, categoryId),
-            eq(pr2Configurations.sector, sector)
-          ));
+        try {
+          configurations = await db
+            .select()
+            .from(pr2Configurations)
+            .where(and(
+              eq(pr2Configurations.userId, "test-user"),
+              eq(pr2Configurations.categoryId, categoryId),
+              eq(pr2Configurations.sector, sector)
+            ));
+        } catch (queryError) {
+          console.error('Query error details:', queryError);
+          throw queryError;
+        }
       } else if (categoryId) {
         // Filter by userId and categoryId only
         console.log(`🔍 Filtering by userId: "test-user" AND categoryId: "${categoryId}"`);
