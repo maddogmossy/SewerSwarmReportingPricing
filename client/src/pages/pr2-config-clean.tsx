@@ -1519,7 +1519,7 @@ export default function PR2ConfigClean() {
                     <Input
                       id="quantity_runs"
                       placeholder="Enter quantity"
-                      value={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.value || ''}
+                      value={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.value || '30'}
                       onChange={(e) => handleValueChange('quantityOptions', 'quantity_runs', e.target.value)}
                       className="bg-white border-green-300"
                     />
@@ -1543,7 +1543,7 @@ export default function PR2ConfigClean() {
                     <Input
                       id="minquantity_runs"
                       placeholder="Enter minimum"
-                      value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || ''}
+                      value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || '20'}
                       onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
                       className="bg-white border-orange-300"
                     />
@@ -1568,7 +1568,7 @@ export default function PR2ConfigClean() {
                       <Input
                         id="percentage_value"
                         placeholder="Enter %"
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeStart || ''}
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeStart || '15'}
                         onChange={(e) => handleRangeValueChange('range_percentage', 'rangeStart', e.target.value)}
                         className="bg-white border-purple-300"
                       />
@@ -1580,7 +1580,7 @@ export default function PR2ConfigClean() {
                       <Input
                         id="length_value"
                         placeholder="Enter meters"
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeStart || ''}
+                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeStart || '50'}
                         onChange={(e) => handleRangeValueChange('range_length', 'rangeStart', e.target.value)}
                         className="bg-white border-purple-300"
                       />
