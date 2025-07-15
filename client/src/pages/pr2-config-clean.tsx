@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -1415,8 +1415,8 @@ export default function PR2ConfigClean() {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="mb-6">
-            {/* Four-Window Configuration Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4 border rounded-lg bg-gray-50">
+            {/* Five-Window Configuration Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 border rounded-lg bg-gray-50">
               
               {/* Blue Window: Day Rate */}
               <Card className="bg-blue-50 border-blue-200">
@@ -1490,56 +1490,46 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Purple Window: Percentage and Length */}
+              {/* Purple Window: Percentage */}
               <Card className="bg-purple-50 border-purple-200">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
                     <Zap className="w-4 h-4" />
-                    📏 Range Options
+                    📏 Percentage
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="space-y-2">
-                    <Label htmlFor="range_percentage" className="text-sm font-medium text-purple-700">
+                    <Label htmlFor="percentage_value" className="text-sm font-medium text-purple-700">
                       Percentage
                     </Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="range_percentage_start"
-                        placeholder="From %"
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeStart || ''}
-                        onChange={(e) => handleRangeChange('range_percentage', 'start', e.target.value)}
-                        className="bg-white border-purple-300 flex-1"
-                      />
-                      <Input
-                        id="range_percentage_end"
-                        placeholder="To %"
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.rangeEnd || ''}
-                        onChange={(e) => handleRangeChange('range_percentage', 'end', e.target.value)}
-                        className="bg-white border-purple-300 flex-1"
-                      />
-                    </div>
+                    <Input
+                      id="percentage_value"
+                      placeholder="Enter %"
+                      className="bg-white border-purple-300"
+                    />
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Fifth Window: Length */}
+              <Card className="bg-gray-50 border-gray-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-gray-700 text-sm flex items-center gap-2">
+                    <Ruler className="w-4 h-4" />
+                    📐 Length
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
                   <div className="space-y-2">
-                    <Label htmlFor="range_length" className="text-sm font-medium text-purple-700">
+                    <Label htmlFor="length_value" className="text-gray-700 text-sm font-medium">
                       Length
                     </Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="range_length_start"
-                        placeholder="From m"
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeStart || ''}
-                        onChange={(e) => handleRangeChange('range_length', 'start', e.target.value)}
-                        className="bg-white border-purple-300 flex-1"
-                      />
-                      <Input
-                        id="range_length_end"
-                        placeholder="To m"
-                        value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
-                        onChange={(e) => handleRangeChange('range_length', 'end', e.target.value)}
-                        className="bg-white border-purple-300 flex-1"
-                      />
-                    </div>
+                    <Input
+                      id="length_value"
+                      placeholder="Enter meters"
+                      className="bg-white border-gray-300"
+                    />
                   </div>
                 </CardContent>
               </Card>
