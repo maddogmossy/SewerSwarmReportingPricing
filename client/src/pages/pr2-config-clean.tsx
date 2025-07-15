@@ -471,6 +471,9 @@ export default function PR2ConfigClean() {
   const handleSave = async () => {
     try {
       console.log(`💾 Saving configuration to sectors:`, selectedSectors);
+      console.log(`🔍 Current formData:`, formData);
+      console.log(`🔍 Pricing options before save:`, formData.pricingOptions);
+      console.log(`🔍 Quantity options before save:`, formData.quantityOptions);
       
       // First, update the current configuration (or create it if it's new)
       const payload = {
@@ -488,6 +491,8 @@ export default function PR2ConfigClean() {
         minQuantityStackOrder: formData.minQuantityStackOrder,
         rangeStackOrder: formData.rangeStackOrder
       };
+      
+      console.log(`🔍 Payload being sent to server:`, payload);
 
       if (isEditing && editId) {
         // Update existing configuration
@@ -1475,7 +1480,7 @@ export default function PR2ConfigClean() {
                     <Input
                       id="price_dayrate"
                       placeholder="Enter £ value"
-                      value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
+                      value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || '1850'}
                       onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
                       className="bg-white border-blue-300"
                     />
