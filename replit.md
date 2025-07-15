@@ -710,6 +710,25 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Screen Flashing Issue**: Complex helper functions cause screen flashing - prefer simple implementations
 - **Performance Focus**: Remove complex useCallback functions that recreate on every render
 
+## REV V6.3 CHECKPOINT - DYNAMIC PRICING CRITERIA FIXED (July 15, 2025)
+
+🔒 **PRODUCTION READY - CORRECTED "NO 2" RULE APPLICATION:**
+- **Fixed Over-Application Issue**: "No 2" rule was incorrectly applying to too many sections (items 3,8,14,21,23) showing £74.00 instead of £61.67
+- **Restrictive Criteria Implemented**: "No 2" rule now only applies to sections meeting ALL three conditions: even item numbers AND 225mm pipe size AND >30m length
+- **Standard Rate Restored**: Most sections now correctly display £61.67 (£1850 ÷ 30 runs per shift) as the default calculation
+- **Selective Special Rate**: Only sections meeting all restrictive criteria receive £74.00 (£1850 ÷ 25 "No 2" rate)
+- **Cache Invalidation Enhanced**: Dashboard PR2 query key format fixed to match PR2 pages for proper real-time updates
+- **Real-Time Display Confirmed**: Cost calculations update immediately when PR2 configurations are modified
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Criteria Logic**: Changed from OR logic (||) to AND logic (&&) for "No 2" rule application
+- **Query Key Standardization**: Dashboard now uses ['pr2-configs', sector] format matching PR2 configuration pages
+- **Cache Management**: Added PR2 configuration invalidation to refresh mutation for consistent data display
+- **Debug Logging**: Enhanced console output shows exact criteria evaluation for each section
+- **Calculation Method**: Proper selection between standard "Runs per Shift" and special "No 2" rates
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.3' to return to this stable checkpoint
+
 ## REV V6.2 CHECKPOINT - OPTIMIZED FIVE-WINDOW LAYOUT SYSTEM LOCKED (July 15, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE OPTIMIZED LAYOUT SYSTEM:**

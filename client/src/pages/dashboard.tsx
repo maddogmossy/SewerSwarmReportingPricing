@@ -1367,13 +1367,13 @@ export default function Dashboard() {
         const no2Value = parseFloat(no2Option.value) || 0;
         console.log(`🔍 "No 2" rule found: ${no2Value}, checking section ${section.itemNo}`);
         
-        // Example criteria: Use "No 2" rule if section has specific characteristics
-        // You can customize this logic based on your business requirements
-        const useNo2 = section.itemNo % 2 === 0 || // Even item numbers
-                       section.pipeSize === 225 ||     // Specific pipe sizes
-                       parseFloat(section.totalLength) > 20; // Longer sections
+        // Restrictive criteria: Use "No 2" rule only for sections meeting ALL specific characteristics
+        // FIXED: More selective criteria to avoid over-applying the special rate
+        const useNo2 = section.itemNo % 2 === 0 && // Even item numbers AND
+                       section.pipeSize === 225 &&     // Specific pipe sizes AND  
+                       parseFloat(section.totalLength) > 30; // Extra-long sections only
         
-        console.log(`🎯 Section ${section.itemNo} - Use No 2 rule: ${useNo2} (criteria: even=${section.itemNo % 2 === 0}, pipe225=${section.pipeSize === 225}, long=${parseFloat(section.totalLength) > 20})`);
+        console.log(`🎯 Section ${section.itemNo} - Use No 2 rule: ${useNo2} (criteria: even=${section.itemNo % 2 === 0}, pipe225=${section.pipeSize === 225}, extraLong=${parseFloat(section.totalLength) > 30})`);
         
         return { useNo2, no2Value };
       };
