@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useToast } from '@/hooks/use-toast';
-import { ChevronLeft, Save, Calculator, Coins, Package, Gauge, Zap, Plus, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown } from 'lucide-react';
+
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -70,7 +70,7 @@ const SECTORS = [
 
 export default function PR2ConfigClean() {
   const [location, setLocation] = useLocation();
-  const { toast } = useToast();
+
   
   // Get URL parameters safely using window.location.search
   const searchParams = window.location.search;
@@ -440,100 +440,11 @@ export default function PR2ConfigClean() {
     }
   }, [isEditing, existingConfig, sectorConfigs, sector, editId, pipeSize, categoryId]);
 
-  // Save configuration with proper sector management
-  const saveConfiguration = useMutation({
-    mutationFn: async (data: CleanFormData) => {
-      console.log(`💾 Saving with selectedSectors:`, selectedSectors);
-      console.log(`💾 sectorsWithConfig:`, sectorsWithConfig);
-      
-      // If no sectors selected and this was an existing config, show warning instead of deleting
-      if (selectedSectors.length === 0 && isEditing && editId) {
-        alert('Configuration must be assigned to at least one sector. Please select at least one sector.');
-        return [];
-      }
-      
-      // Use the full sectors array for multi-sector support
-      const sectorsData = { ...data, sectors: selectedSectors.length > 0 ? selectedSectors : [sector] };
-      
-      if (isEditing && editId) {
-        // Update existing configuration with new sectors
-        const result = await apiRequest('PUT', `/api/pr2-clean/${editId}`, sectorsData);
-        console.log(`✅ Updated configuration sectors from ${JSON.stringify(sectorsWithConfig)} to: ${JSON.stringify(selectedSectors)}`);
-        return [result];
-      } else {
-        // Create new configuration
-        const result = await apiRequest('POST', '/api/pr2-clean', { 
-          ...sectorsData, 
-          categoryId: categoryId || 'custom' 
-        });
-        console.log(`✅ Created new configuration for sectors: ${JSON.stringify(selectedSectors)}`);
-        return [result];
-      }
-    },
-    onSuccess: (savedConfigs) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
-      console.log('✅ Configuration saved successfully');
-      setLocation(`/dashboard`);
-    },
-    onError: (error: any) => {
-      console.error('❌ Error saving configuration:', error);
-    }
-  });
 
-  const handleSave = () => {
-    console.log('💾 Clean save button clicked:', formData);
-    saveConfiguration.mutate(formData);
-  };
 
-  const handleSaveAsNew = () => {
-    console.log('💾 Save as new button clicked:', formData);
-    
-    // Debug: Show specific quantity values being saved
-    const runsPerShiftOption = formData.quantityOptions.find(opt => opt.label?.toLowerCase().includes('runs per shift'));
-    console.log('🔍 Save as New - Current form data:', {
-      allQuantityOptions: formData.quantityOptions,
-      runsPerShiftOption: runsPerShiftOption,
-      runsPerShiftValue: runsPerShiftOption?.value,
-      fullFormData: formData
-    });
-    
-    // Create new configuration by removing the editId and treating it as a new config
-    const newConfigData = {
-      ...formData,
-      categoryName: `${formData.categoryName} (Copy)` // Add (Copy) to distinguish from original
-    };
-    
-    // Force create new configuration by calling API directly without editId
-    const createNewConfig = async () => {
-      try {
-        const result = await apiRequest('POST', '/api/pr2-clean', { 
-          ...newConfigData, 
-          categoryId: categoryId || 'custom',
-          sectors: selectedSectors.length > 0 ? selectedSectors : [sector]
-        });
-        console.log('✅ Created new configuration copy:', result);
-        
-        // Invalidate cache and navigate back
-        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-        queryClient.invalidateQueries({ queryKey: ['/api/pr2-pricing'] });
-        toast({
-          title: "Success",
-          description: "Configuration saved as new copy successfully",
-        });
-        setLocation(`/dashboard`);
-      } catch (error: any) {
-        console.error('❌ Error creating new configuration:', error);
-        toast({
-          title: "Error",
-          description: "Failed to create new configuration",
-          variant: "destructive",
-        });
-      }
-    };
-    
-    createNewConfig();
-  };
+
+
+
 
 
 
@@ -1520,31 +1431,7 @@ export default function PR2ConfigClean() {
 
 
 
-        {/* Action Buttons */}
-        <div className="flex justify-end items-center">
-          <div className="flex gap-2">
-            {isEditing && (
-              <Button 
-                onClick={handleSaveAsNew} 
-                disabled={saveConfiguration.isPending}
-                variant="outline"
-                className="border-blue-300 text-blue-600 hover:bg-blue-50"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Save As New
-              </Button>
-            )}
-            
-            <Button 
-              onClick={handleSave} 
-              disabled={saveConfiguration.isPending}
-              className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {saveConfiguration.isPending ? 'Saving...' : (isEditing ? 'Update Configuration' : 'Save Configuration')}
-            </Button>
-          </div>
-        </div>
+
 
         {/* Red Warning Dialog for Sector Removal */}
         <AlertDialog open={showRemoveWarning} onOpenChange={setShowRemoveWarning}>
