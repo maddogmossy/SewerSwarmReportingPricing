@@ -1498,19 +1498,35 @@ export default function Dashboard() {
       }
     }
     
-    // Check length range
-    const lengthRange = pr2Config.rangeOptions.find((range: any) => 
+    // Check length ranges - section must meet AT LEAST ONE length range (Rule 1 OR Rule 2)
+    const lengthRanges = pr2Config.rangeOptions.filter((range: any) => 
       range.label?.toLowerCase().includes('length') && range.enabled
     );
-    if (lengthRange) {
-      const minLength = parseFloat(lengthRange.rangeStart || '0');
-      const maxLength = parseFloat(lengthRange.rangeEnd || '999');
-      if (sectionLength < minLength || sectionLength > maxLength) {
+    if (lengthRanges.length > 0) {
+      let meetsAnyLengthRange = false;
+      
+      for (const lengthRange of lengthRanges) {
+        const minLength = parseFloat(lengthRange.rangeStart || '0');
+        const maxLength = parseFloat(lengthRange.rangeEnd || '999');
+        if (sectionLength >= minLength && sectionLength <= maxLength) {
+          console.log('✅ Section meets PR2 requirements:', {
+            itemNo: section.itemNo,
+            pipeSize: sectionPipeSize,
+            length: sectionLength,
+            pipeSizeRange: pipeSizeRange ? `${pipeSizeRange.rangeStart}-${pipeSizeRange.rangeEnd}` : 'none',
+            lengthRange: `${lengthRange.rangeStart}-${lengthRange.rangeEnd}`,
+            percentageRange: percentageRange ? `${percentageRange.rangeStart}-${percentageRange.rangeEnd}` : 'none'
+          });
+          meetsAnyLengthRange = true;
+          break;
+        }
+      }
+      
+      if (!meetsAnyLengthRange) {
         console.log('❌ Section fails length check:', {
           itemNo: section.itemNo,
           length: sectionLength,
-          minLength,
-          maxLength
+          availableRanges: lengthRanges.map(r => `${r.rangeStart}-${r.rangeEnd}`)
         });
         return false;
       }

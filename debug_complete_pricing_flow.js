@@ -2,77 +2,64 @@ import fetch from 'node-fetch';
 
 async function debugCompletePricingFlow() {
   try {
-    console.log('=== COMPLETE PRICING FLOW DEBUG ===');
+    console.log('=== DEBUGGING COMPLETE PRICING FLOW FOR ITEM 10 ===');
     
-    // Step 1: Get sections data
+    // Get sections data
     const response = await fetch('http://localhost:5000/api/uploads/80/sections');
     const sections = await response.json();
     
-    const item6 = sections.find(s => s.itemNo === 6);
     const item10 = sections.find(s => s.itemNo === 10);
     
-    console.log('\n=== STEP 1: DATABASE VALUES ===');
-    console.log('Item 6:');
-    console.log('- Pipe Size:', item6.pipeSize, '(type:', typeof item6.pipeSize + ')');
-    console.log('- Length:', item6.totalLength, '(type:', typeof item6.totalLength + ')');
-    console.log('- Length as number:', parseFloat(item6.totalLength));
-    console.log('- Length > 30?', parseFloat(item6.totalLength) > 30);
+    console.log('\n=== ITEM 10 DATABASE VALUES ===');
+    console.log('Item No:', item10.itemNo);
+    console.log('Pipe Size:', item10.pipeSize, typeof item10.pipeSize);
+    console.log('Total Length:', item10.totalLength, typeof item10.totalLength);
+    console.log('Length as number:', parseFloat(item10.totalLength));
     
-    console.log('\nItem 10:');
-    console.log('- Pipe Size:', item10.pipeSize, '(type:', typeof item10.pipeSize + ')');
-    console.log('- Length:', item10.totalLength, '(type:', typeof item10.totalLength + ')');
-    console.log('- Length as number:', parseFloat(item10.totalLength));
-    console.log('- Length > 30?', parseFloat(item10.totalLength) > 30);
-    
-    console.log('\n=== STEP 2: RULE 2 LOGIC CHECK ===');
-    console.log('Item 6 Rule 2 criteria:');
-    console.log('- Pipe size === "150":', item6.pipeSize === '150');
-    console.log('- Length > 30:', parseFloat(item6.totalLength) > 30);
-    console.log('- Should use Rule 2:', item6.pipeSize === '150' && parseFloat(item6.totalLength) > 30);
-    
-    console.log('\nItem 10 Rule 2 criteria:');
-    console.log('- Pipe size === "150":', item10.pipeSize === '150');
-    console.log('- Length > 30:', parseFloat(item10.totalLength) > 30);
-    console.log('- Should use Rule 2:', item10.pipeSize === '150' && parseFloat(item10.totalLength) > 30);
-    
-    // Step 3: Get PR2 configuration
-    console.log('\n=== STEP 3: PR2 CONFIGURATION ===');
+    // Get PR2 configuration
     const configResponse = await fetch('http://localhost:5000/api/pr2-clean');
     const configs = await configResponse.json();
-    console.log('Number of configs:', configs.length);
+    const config = configs[0];
     
-    if (configs.length > 0) {
-      const config = configs[0];
-      console.log('Config ID:', config.id);
-      console.log('Pricing options:', config.pricingOptions);
-      console.log('Quantity options:', config.quantityOptions);
-      
-      // Find Day Rate
-      const dayRateOption = config.pricingOptions.find(p => p.enabled);
-      console.log('Day Rate:', dayRateOption ? dayRateOption.value : 'NOT FOUND');
-      
-      // Find standard runs
-      const standardRuns = config.quantityOptions.find(q => q.id === 'quantity_runs');
-      console.log('Standard Runs per Shift:', standardRuns ? standardRuns.value : 'NOT FOUND');
-      
-      // Find "No 2" runs
-      const no2Runs = config.quantityOptions.find(q => q.label === 'No 2');
-      console.log('"No 2" Runs per Shift:', no2Runs ? no2Runs.value : 'NOT FOUND');
-      
-      if (dayRateOption && standardRuns && no2Runs) {
-        const dayRate = parseFloat(dayRateOption.value);
-        const standardCost = dayRate / parseFloat(standardRuns.value);
-        const no2Cost = dayRate / parseFloat(no2Runs.value);
-        
-        console.log('\n=== STEP 4: COST CALCULATIONS ===');
-        console.log(`Standard calculation: £${dayRate} ÷ ${standardRuns.value} = £${standardCost.toFixed(2)}`);
-        console.log(`"No 2" calculation: £${dayRate} ÷ ${no2Runs.value} = £${no2Cost.toFixed(2)}`);
-        
-        console.log('\n=== EXPECTED RESULTS ===');
-        console.log(`Item 6 should show: £${no2Cost.toFixed(2)} (meets Rule 2 criteria)`);
-        console.log(`Item 10 should show: £${no2Cost.toFixed(2)} (meets Rule 2 criteria)`);
-        console.log('Other items should show:', `£${standardCost.toFixed(2)}`);
-      }
+    console.log('\n=== PR2 CONFIGURATION RANGES ===');
+    config.rangeOptions.forEach(range => {
+      console.log(`${range.label}: ${range.rangeStart} to ${range.rangeEnd} (enabled: ${range.enabled})`);
+    });
+    
+    console.log('\n=== CHECKING ITEM 10 AGAINST RANGES ===');
+    
+    // Rule 1 check
+    const rule1Range = config.rangeOptions.find(range => range.label === 'Length');
+    const rule1Min = parseFloat(rule1Range.rangeStart);
+    const rule1Max = parseFloat(rule1Range.rangeEnd);
+    const meetsRule1 = item10.totalLength >= rule1Min && item10.totalLength <= rule1Max;
+    console.log(`Rule 1 (${rule1Range.label}): ${rule1Min}-${rule1Max}`);
+    console.log(`Item 10 (${item10.totalLength}) meets Rule 1? ${meetsRule1}`);
+    
+    // Rule 2 check
+    const rule2Range = config.rangeOptions.find(range => range.label === 'Length 2');
+    const rule2Min = parseFloat(rule2Range.rangeStart);
+    const rule2Max = parseFloat(rule2Range.rangeEnd);
+    const meetsRule2 = item10.totalLength >= rule2Min && item10.totalLength <= rule2Max;
+    console.log(`Rule 2 (${rule2Range.label}): ${rule2Min}-${rule2Max}`);
+    console.log(`Item 10 (${item10.totalLength}) meets Rule 2? ${meetsRule2}`);
+    
+    console.log('\n=== CHECKING NO 2 RULE LOGIC ===');
+    const sectionLength = parseFloat(item10.totalLength) || 0;
+    const useNo2Frontend = item10.pipeSize === '150' && sectionLength >= 34;
+    console.log('Frontend No 2 logic:');
+    console.log(`- Pipe size 150mm: ${item10.pipeSize === '150'} (actual: ${item10.pipeSize})`);
+    console.log(`- Length >= 34m: ${sectionLength >= 34} (actual: ${sectionLength}m)`);
+    console.log(`- Should use No 2 rule: ${useNo2Frontend}`);
+    
+    if (!meetsRule1 && !meetsRule2) {
+      console.log('\n❌ PROBLEM: Item 10 meets neither rule range!');
+      console.log('This is why it shows blue triangle instead of pricing');
+    } else if (meetsRule2 && !useNo2Frontend) {
+      console.log('\n❌ PROBLEM: Item 10 meets Rule 2 range but No 2 logic fails!');
+      console.log('Frontend logic needs to match the range configuration');
+    } else {
+      console.log('\n✅ Item 10 should work correctly');
     }
     
   } catch (error) {
