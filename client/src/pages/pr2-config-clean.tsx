@@ -1215,6 +1215,7 @@ export default function PR2ConfigClean() {
 
     try {
       console.log('💾 Saving configuration...');
+      console.log('📊 FormData before save:', formData);
       console.log('📊 Options to save:', {
         pricing: enabledPricingOptions,
         quantity: enabledQuantityOptions,
