@@ -199,21 +199,62 @@ export default function PR2ConfigClean() {
     return false;
   };
 
-  // Clean form state
+  // Clean form state with default options initialized
   const [formData, setFormData] = useState<CleanFormData>({
     categoryName: categoryId ? getCategoryName(categoryId) : '',
     description: '',
-    pricingOptions: [],
-    quantityOptions: [],
-    minQuantityOptions: [],
-    rangeOptions: [],
+    pricingOptions: [
+      { id: 'price_dayrate', label: 'Day Rate', enabled: false, value: '' }
+    ],
+    quantityOptions: [
+      { id: 'quantity_runs', label: 'Runs per Shift', enabled: false, value: '' }
+    ],
+    minQuantityOptions: [
+      { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: false, value: '' }
+    ],
+    rangeOptions: [
+      { id: 'range_percentage', label: 'Percentage', enabled: false, rangeStart: '', rangeEnd: '' },
+      { id: 'range_length', label: 'Length', enabled: false, rangeStart: '', rangeEnd: '' }
+    ],
     mathOperators: ['N/A'],
-    pricingStackOrder: [],
-    quantityStackOrder: [],
-    minQuantityStackOrder: [],
-    rangeStackOrder: [],
+    pricingStackOrder: ['price_dayrate'],
+    quantityStackOrder: ['quantity_runs'],
+    minQuantityStackOrder: ['minquantity_runs'],
+    rangeStackOrder: ['range_percentage', 'range_length'],
     sector
   });
+
+  // Handle value changes for input fields
+  const handleValueChange = (optionType: string, optionId: string, value: string) => {
+    console.log(`🔧 handleValueChange called: ${optionType}, ${optionId}, ${value}`);
+    
+    setFormData(prev => {
+      const newFormData = { ...prev };
+      
+      switch (optionType) {
+        case 'pricingOptions':
+          newFormData.pricingOptions = prev.pricingOptions.map(opt =>
+            opt.id === optionId ? { ...opt, value } : opt
+          );
+          break;
+        case 'quantityOptions':
+          newFormData.quantityOptions = prev.quantityOptions.map(opt =>
+            opt.id === optionId ? { ...opt, value } : opt
+          );
+          break;
+        case 'minQuantityOptions':
+          newFormData.minQuantityOptions = prev.minQuantityOptions.map(opt =>
+            opt.id === optionId ? { ...opt, value } : opt
+          );
+          break;
+        default:
+          break;
+      }
+      
+      console.log(`🔧 Updated ${optionType} with ${optionId} = ${value}`);
+      return newFormData;
+    });
+  };
 
   // Force form inputs to update when formData changes
   useEffect(() => {
