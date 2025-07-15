@@ -1490,12 +1490,12 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Purple Window: Percentage */}
+              {/* Purple Window: Percentage and Length */}
               <Card className="bg-purple-50 border-purple-200">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
                     <Zap className="w-4 h-4" />
-                    📏 Percentage
+                    📏 Range Options
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -1509,26 +1509,14 @@ export default function PR2ConfigClean() {
                       className="bg-white border-purple-300"
                     />
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Fifth Window: Length */}
-              <Card className="bg-gray-50 border-gray-200">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-gray-700 text-sm flex items-center gap-2">
-                    <Ruler className="w-4 h-4" />
-                    📐 Length
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
                   <div className="space-y-2">
-                    <Label htmlFor="length_value" className="text-gray-700 text-sm font-medium">
+                    <Label htmlFor="length_value" className="text-sm font-medium text-purple-700">
                       Length
                     </Label>
                     <Input
                       id="length_value"
                       placeholder="Enter meters"
-                      className="bg-white border-gray-300"
+                      className="bg-white border-purple-300"
                     />
                   </div>
                 </CardContent>
