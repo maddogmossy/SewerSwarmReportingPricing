@@ -519,28 +519,20 @@ export default function PR2ConfigClean() {
         const existingRangeOptions = Array.isArray(config.rangeOptions) ? config.rangeOptions : [];
         const existingPricingOptions = Array.isArray(config.pricingOptions) ? config.pricingOptions : [];
         
-        // Initialize default options if arrays are empty (for existing configs that were saved without defaults)
+        // Initialize single-option defaults for each window (matching your requirement)
         const defaultPricingOptions = [
-          { id: 'pricing_dayrate', label: 'Day Rate', enabled: false, value: '' },
-          { id: 'pricing_hourlyrate', label: 'Hourly Rate', enabled: false, value: '' },
-          { id: 'pricing_setuprate', label: 'Setup Rate', enabled: false, value: '' },
-          { id: 'pricing_permeter', label: 'Per Meter', enabled: false, value: '' }
+          { id: 'price_dayrate', label: 'Day Rate', enabled: false, value: '' }
         ];
         
         const defaultQuantityOptions = [
-          { id: 'quantity_runs', label: 'Runs per Shift', enabled: false, value: '' },
-          { id: 'quantity_meters', label: 'Meters per Shift', enabled: false, value: '' },
-          { id: 'quantity_sections', label: 'Sections per Day', enabled: false, value: '' }
+          { id: 'quantity_runs', label: 'Runs per Shift', enabled: false, value: '' }
         ];
         
         const defaultMinQuantityOptions = [
-          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: false, value: '' },
-          { id: 'minquantity_meters', label: 'Min Meters per Shift', enabled: false, value: '' },
-          { id: 'minquantity_sections', label: 'Min Sections per Day', enabled: false, value: '' }
+          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: false, value: '' }
         ];
         
         const defaultRangeOptions = [
-          { id: 'range_pipesize', label: 'Pipe Size', enabled: false, rangeStart: '', rangeEnd: '' },
           { id: 'range_percentage', label: 'Percentage', enabled: false, rangeStart: '', rangeEnd: '' },
           { id: 'range_length', label: 'Length', enabled: false, rangeStart: '', rangeEnd: '' }
         ];
@@ -605,28 +597,20 @@ export default function PR2ConfigClean() {
         const pipeSizeConfigName = configName || getCategoryName(categoryId);
         console.log(`🆕 Setting category name to: ${pipeSizeConfigName}`);
         
-        // Initialize with default options
+        // Initialize with single specific options for each window
         const defaultPricingOptions = [
-          { id: 'pricing_dayrate', label: 'Day Rate', enabled: false, value: '' },
-          { id: 'pricing_hourlyrate', label: 'Hourly Rate', enabled: false, value: '' },
-          { id: 'pricing_setuprate', label: 'Setup Rate', enabled: false, value: '' },
-          { id: 'pricing_permeter', label: 'Per Meter', enabled: false, value: '' }
+          { id: 'price_dayrate', label: 'Day Rate', enabled: false, value: '' }
         ];
         
         const defaultQuantityOptions = [
-          { id: 'quantity_runs', label: 'Runs per Shift', enabled: false, value: '' },
-          { id: 'quantity_meters', label: 'Meters per Shift', enabled: false, value: '' },
-          { id: 'quantity_sections', label: 'Sections per Day', enabled: false, value: '' }
+          { id: 'quantity_runs', label: 'Runs per Shift', enabled: false, value: '' }
         ];
         
         const defaultMinQuantityOptions = [
-          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: false, value: '' },
-          { id: 'minquantity_meters', label: 'Min Meters per Shift', enabled: false, value: '' },
-          { id: 'minquantity_sections', label: 'Min Sections per Day', enabled: false, value: '' }
+          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: false, value: '' }
         ];
         
         const defaultRangeOptions = [
-          { id: 'range_pipesize', label: 'Pipe Size', enabled: false, rangeStart: '', rangeEnd: '' },
           { id: 'range_percentage', label: 'Percentage', enabled: false, rangeStart: '', rangeEnd: '' },
           { id: 'range_length', label: 'Length', enabled: false, rangeStart: '', rangeEnd: '' }
         ];
@@ -1434,7 +1418,7 @@ export default function PR2ConfigClean() {
             {/* Four-Window Configuration Layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4 border rounded-lg bg-gray-50">
               
-              {/* Blue Window: Price/Cost Options */}
+              {/* Blue Window: Day Rate */}
               <Card className="bg-blue-50 border-blue-200">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
@@ -1443,22 +1427,20 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {formData.pricingOptions.map((option) => (
-                    <div key={option.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={option.id}
-                        checked={option.enabled}
-                        onCheckedChange={(checked) => handleOptionToggle('pricingOptions', option.id, checked as boolean)}
-                      />
-                      <Label htmlFor={option.id} className="text-sm font-medium text-blue-700">
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="price_dayrate"
+                      checked={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.enabled || false}
+                      onCheckedChange={(checked) => handleOptionToggle('pricingOptions', 'price_dayrate', checked as boolean)}
+                    />
+                    <Label htmlFor="price_dayrate" className="text-sm font-medium text-blue-700">
+                      Day Rate
+                    </Label>
+                  </div>
                 </CardContent>
               </Card>
 
-              {/* Green Window: Quantity Options */}
+              {/* Green Window: Runs per Shift */}
               <Card className="bg-green-50 border-green-200">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2">
@@ -1467,22 +1449,20 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {formData.quantityOptions.map((option) => (
-                    <div key={option.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={option.id}
-                        checked={option.enabled}
-                        onCheckedChange={(checked) => handleOptionToggle('quantityOptions', option.id, checked as boolean)}
-                      />
-                      <Label htmlFor={option.id} className="text-sm font-medium text-green-700">
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="quantity_runs"
+                      checked={formData.quantityOptions.find(opt => opt.id === 'quantity_runs')?.enabled || false}
+                      onCheckedChange={(checked) => handleOptionToggle('quantityOptions', 'quantity_runs', checked as boolean)}
+                    />
+                    <Label htmlFor="quantity_runs" className="text-sm font-medium text-green-700">
+                      Runs per Shift
+                    </Label>
+                  </div>
                 </CardContent>
               </Card>
 
-              {/* Orange Window: Min Quantity Options */}
+              {/* Orange Window: Min Runs per Shift */}
               <Card className="bg-orange-50 border-orange-200">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
@@ -1491,22 +1471,20 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {formData.minQuantityOptions.map((option) => (
-                    <div key={option.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={option.id}
-                        checked={option.enabled}
-                        onCheckedChange={(checked) => handleOptionToggle('minQuantityOptions', option.id, checked as boolean)}
-                      />
-                      <Label htmlFor={option.id} className="text-sm font-medium text-orange-700">
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="minquantity_runs"
+                      checked={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.enabled || false}
+                      onCheckedChange={(checked) => handleOptionToggle('minQuantityOptions', 'minquantity_runs', checked as boolean)}
+                    />
+                    <Label htmlFor="minquantity_runs" className="text-sm font-medium text-orange-700">
+                      Min Runs per Shift
+                    </Label>
+                  </div>
                 </CardContent>
               </Card>
 
-              {/* Purple Window: Range Options */}
+              {/* Purple Window: Percentage and Length */}
               <Card className="bg-purple-50 border-purple-200">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
@@ -1515,18 +1493,26 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {formData.rangeOptions.map((option) => (
-                    <div key={option.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={option.id}
-                        checked={option.enabled}
-                        onCheckedChange={(checked) => handleRangeToggle(option.id, checked as boolean)}
-                      />
-                      <Label htmlFor={option.id} className="text-sm font-medium text-purple-700">
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="range_percentage"
+                      checked={formData.rangeOptions.find(opt => opt.id === 'range_percentage')?.enabled || false}
+                      onCheckedChange={(checked) => handleRangeToggle('range_percentage', checked as boolean)}
+                    />
+                    <Label htmlFor="range_percentage" className="text-sm font-medium text-purple-700">
+                      Percentage
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="range_length"
+                      checked={formData.rangeOptions.find(opt => opt.id === 'range_length')?.enabled || false}
+                      onCheckedChange={(checked) => handleRangeToggle('range_length', checked as boolean)}
+                    />
+                    <Label htmlFor="range_length" className="text-sm font-medium text-purple-700">
+                      Length
+                    </Label>
+                  </div>
                 </CardContent>
               </Card>
             </div>
