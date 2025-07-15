@@ -1101,29 +1101,63 @@ export default function PR2ConfigClean() {
 
   // Manual save functionality
   const handleSaveConfiguration = async () => {
+    // Auto-enable options that have values
+    const enabledPricingOptions = formData.pricingOptions.map(opt => ({
+      ...opt,
+      enabled: opt.enabled || (opt.value && opt.value.trim() !== '')
+    }));
+    
+    const enabledQuantityOptions = formData.quantityOptions.map(opt => ({
+      ...opt,
+      enabled: opt.enabled || (opt.value && opt.value.trim() !== '')
+    }));
+    
+    const enabledMinQuantityOptions = formData.minQuantityOptions.map(opt => ({
+      ...opt,
+      enabled: opt.enabled || (opt.value && opt.value.trim() !== '')
+    }));
+    
+    const enabledRangeOptions = formData.rangeOptions.map(opt => ({
+      ...opt,
+      enabled: opt.enabled || (opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')
+    }));
+
     // Check if there are any enabled options to save
-    const hasEnabledOptions = formData.pricingOptions.some(opt => opt.enabled) ||
-                             formData.quantityOptions.some(opt => opt.enabled) ||
-                             formData.minQuantityOptions.some(opt => opt.enabled) ||
-                             formData.rangeOptions.some(opt => opt.enabled);
+    const hasEnabledOptions = enabledPricingOptions.some(opt => opt.enabled) ||
+                             enabledQuantityOptions.some(opt => opt.enabled) ||
+                             enabledMinQuantityOptions.some(opt => opt.enabled) ||
+                             enabledRangeOptions.some(opt => opt.enabled);
 
     if (!hasEnabledOptions || !formData.categoryName) {
       console.log('⚠️ No enabled options or category name to save');
+      console.log('📊 Debug formData:', {
+        categoryName: formData.categoryName,
+        pricingOptions: enabledPricingOptions,
+        quantityOptions: enabledQuantityOptions,
+        minQuantityOptions: enabledMinQuantityOptions,
+        rangeOptions: enabledRangeOptions
+      });
       return;
     }
 
     try {
       console.log('💾 Saving configuration...');
+      console.log('📊 Options to save:', {
+        pricing: enabledPricingOptions.filter(opt => opt.enabled),
+        quantity: enabledQuantityOptions.filter(opt => opt.enabled),
+        minQuantity: enabledMinQuantityOptions.filter(opt => opt.enabled),
+        range: enabledRangeOptions.filter(opt => opt.enabled)
+      });
       
       const payload = {
         categoryName: formData.categoryName,
         description: formData.description,
         sector: sector, // Save to current sector only
         categoryId: categoryId,
-        pricingOptions: formData.pricingOptions,
-        quantityOptions: formData.quantityOptions,
-        minQuantityOptions: formData.minQuantityOptions,
-        rangeOptions: formData.rangeOptions,
+        pricingOptions: enabledPricingOptions,
+        quantityOptions: enabledQuantityOptions,
+        minQuantityOptions: enabledMinQuantityOptions,
+        rangeOptions: enabledRangeOptions,
         mathOperators: formData.mathOperators,
         pricingStackOrder: formData.pricingStackOrder,
         quantityStackOrder: formData.quantityStackOrder,
