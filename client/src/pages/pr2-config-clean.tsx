@@ -916,89 +916,9 @@ export default function PR2ConfigClean() {
           {/* Blue Window - Pricing Options */}
           <Card className="bg-blue-50 h-32">
             <CardHeader className="pb-1">
-              <CardTitle className="text-blue-600 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1">
-                  <Coins className="w-3 h-3" />
-                  Pricing
-                </div>
-                <Dialog open={addPricingDialogOpen} onOpenChange={setAddPricingDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white h-4 px-2 text-xs">
-                      <Plus className="w-3 h-3 mr-1" />
-                      Add
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent aria-describedby="add-pricing-description">
-                    <DialogHeader>
-                      <DialogTitle>Add Pricing Option</DialogTitle>
-                    </DialogHeader>
-                    <div id="add-pricing-description" className="space-y-4">
-                      <div>
-                        <Label htmlFor="newPricingLabel">Option Name</Label>
-                        <Input
-                          id="newPricingLabel"
-                          value={newPricingLabel}
-                          onChange={(e) => setNewPricingLabel(e.target.value)}
-                          placeholder="Enter pricing option name"
-                          autoFocus
-                        />
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setAddPricingDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button 
-                          onClick={addPricingOption}
-                          disabled={!newPricingLabel.trim()}
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                          Add Option
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-
-                {formData.pricingOptions.length >= 2 && (
-                  <Dialog open={stackOrderDialogOpen} onOpenChange={setStackOrderDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button size="sm" variant="outline" className="border-blue-300 text-blue-600">
-                        <ArrowUpDown className="w-4 h-4 mr-1" />
-                        Stack Order
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent aria-describedby="stack-order-description">
-                      <DialogHeader>
-                        <DialogTitle>Reorder Pricing Options</DialogTitle>
-                      </DialogHeader>
-                      <div id="stack-order-description" className="space-y-2">
-                        {getOrderedPricingOptions().map((option, index) => (
-                          <div key={option.id} className="flex items-center gap-2 p-2 bg-blue-50 rounded">
-                            <span className="flex-1">{option.label}</span>
-                            <div className="flex gap-1">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => moveOptionInStack(option.id, 'up')}
-                                disabled={index === 0}
-                              >
-                                <ArrowUp className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => moveOptionInStack(option.id, 'down')}
-                                disabled={index === getOrderedPricingOptions().length - 1}
-                              >
-                                <ArrowDown className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                )}
+              <CardTitle className="text-blue-600 flex items-center gap-1 text-xs">
+                <Coins className="w-3 h-3" />
+                Pricing
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-1">
@@ -1225,48 +1145,9 @@ export default function PR2ConfigClean() {
           {/* Green Window - Quantity Options */}
           <Card className="bg-green-50 h-32">
             <CardHeader className="pb-1">
-              <CardTitle className="text-green-600 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1">
-                  <Package className="w-3 h-3" />
-                  Quantity
-                </div>
-                <Dialog open={addQuantityDialogOpen} onOpenChange={setAddQuantityDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-4 px-2 text-xs">
-                      <Plus className="w-3 h-3 mr-1" />
-                      Add
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent aria-describedby="add-quantity-description">
-                    <DialogHeader>
-                      <DialogTitle>Add Quantity Option</DialogTitle>
-                    </DialogHeader>
-                    <div id="add-quantity-description" className="space-y-4">
-                      <div>
-                        <Label htmlFor="newQuantityLabel">Option Name</Label>
-                        <Input
-                          id="newQuantityLabel"
-                          value={newQuantityLabel}
-                          onChange={(e) => setNewQuantityLabel(e.target.value)}
-                          placeholder="Enter quantity option name"
-                          autoFocus
-                        />
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setAddQuantityDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button 
-                          onClick={addQuantityOption}
-                          disabled={!newQuantityLabel.trim()}
-                          className="bg-green-600 hover:bg-green-700 text-white"
-                        >
-                          Add Option
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+              <CardTitle className="text-green-600 flex items-center gap-1 text-xs">
+                <Package className="w-3 h-3" />
+                Quantity
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-1">
@@ -1337,48 +1218,9 @@ export default function PR2ConfigClean() {
           {/* Orange Window - Min Quantity Options */}
           <Card className="bg-orange-50 h-32">
             <CardHeader className="pb-1">
-              <CardTitle className="text-orange-600 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1">
-                  <Gauge className="w-3 h-3" />
-                  Min Quantity
-                </div>
-                <Dialog open={addMinQuantityDialogOpen} onOpenChange={setAddMinQuantityDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white h-4 px-2 text-xs">
-                      <Plus className="w-3 h-3 mr-1" />
-                      Add
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent aria-describedby="add-min-quantity-description">
-                    <DialogHeader>
-                      <DialogTitle>Add Min Quantity Option</DialogTitle>
-                    </DialogHeader>
-                    <div id="add-min-quantity-description" className="space-y-4">
-                      <div>
-                        <Label htmlFor="newMinQuantityLabel">Option Name</Label>
-                        <Input
-                          id="newMinQuantityLabel"
-                          value={newMinQuantityLabel}
-                          onChange={(e) => setNewMinQuantityLabel(e.target.value)}
-                          placeholder="Enter min quantity option name"
-                          autoFocus
-                        />
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setAddMinQuantityDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button 
-                          onClick={addMinQuantityOption}
-                          disabled={!newMinQuantityLabel.trim()}
-                          className="bg-orange-600 hover:bg-orange-700 text-white"
-                        >
-                          Add Option
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+              <CardTitle className="text-orange-600 flex items-center gap-1 text-xs">
+                <Gauge className="w-3 h-3" />
+                Min Quantity
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-1">
@@ -1448,57 +1290,9 @@ export default function PR2ConfigClean() {
           {/* Purple Window - Ranges */}
           <Card className="bg-purple-50 h-32">
             <CardHeader className="pb-1">
-              <CardTitle className="text-purple-600 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1">
-                  <Zap className="w-3 h-3" />
-                  Ranges
-                </div>
-                <Dialog open={addRangeDialogOpen} onOpenChange={setAddRangeDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white h-4 px-2 text-xs">
-                      <Plus className="w-3 h-3 mr-1" />
-                      Add
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent aria-describedby="add-range-description">
-                    <DialogHeader>
-                      <DialogTitle>Add Range Option</DialogTitle>
-                    </DialogHeader>
-                    <div id="add-range-description" className="space-y-4">
-                      <div>
-                        <Label htmlFor="newRangeLabel">Option Name</Label>
-                        <Input
-                          id="newRangeLabel"
-                          value={newRangeLabel}
-                          onChange={(e) => setNewRangeLabel(e.target.value)}
-                          placeholder="Enter range option name"
-                        />
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setAddRangeDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button 
-                          onClick={addRangeOption}
-                          disabled={!newRangeLabel.trim()}
-                          className="bg-purple-600 hover:bg-purple-700 text-white"
-                        >
-                          Add Option
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                
-                {getOrderedRangeOptions().length >= 2 && (
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    className="border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white"
-                  >
-                    Stack Order
-                  </Button>
-                )}
+              <CardTitle className="text-purple-600 flex items-center gap-1 text-xs">
+                <Zap className="w-3 h-3" />
+                Ranges
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-1">
