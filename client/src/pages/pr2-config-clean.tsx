@@ -928,7 +928,7 @@ export default function PR2ConfigClean() {
                   <Label className="text-xs text-blue-500">Value</Label>
                   <Input
                     placeholder="Enter pricing value"
-                    className="bg-blue-100 border-blue-300 h-5 text-xs"
+                    className="bg-white border-blue-300 h-5 text-xs"
                   />
                 </div>
               </div>
@@ -1126,7 +1126,7 @@ export default function PR2ConfigClean() {
                 <div className="flex flex-col gap-1">
                   <Label className="text-xs text-gray-500">Operation</Label>
                   <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
-                    <SelectTrigger className="bg-gray-100 border-gray-300 h-5 text-xs">
+                    <SelectTrigger className="bg-white border-gray-300 h-5 text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1157,7 +1157,7 @@ export default function PR2ConfigClean() {
                   <Label className="text-xs text-green-500">Value</Label>
                   <Input
                     placeholder="Enter quantity value"
-                    className="bg-green-100 border-green-300 h-5 text-xs"
+                    className="bg-white border-green-300 h-5 text-xs"
                   />
                 </div>
               </div>
@@ -1230,7 +1230,7 @@ export default function PR2ConfigClean() {
                   <Label className="text-xs text-orange-500">Value</Label>
                   <Input
                     placeholder="Enter min quantity value"
-                    className="bg-orange-100 border-orange-300 h-5 text-xs"
+                    className="bg-white border-orange-300 h-5 text-xs"
                   />
                 </div>
               </div>
@@ -1303,14 +1303,14 @@ export default function PR2ConfigClean() {
                     <Label className="text-xs text-purple-500">From</Label>
                     <Input
                       placeholder="R1"
-                      className="bg-purple-100 border-purple-300 h-5 text-xs"
+                      className="bg-white border-purple-300 h-5 text-xs"
                     />
                   </div>
                   <div className="flex-1">
                     <Label className="text-xs text-purple-500">To</Label>
                     <Input
                       placeholder="R2"
-                      className="bg-purple-100 border-purple-300 h-5 text-xs"
+                      className="bg-white border-purple-300 h-5 text-xs"
                     />
                   </div>
                 </div>
