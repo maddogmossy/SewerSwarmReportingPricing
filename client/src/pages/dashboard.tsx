@@ -1378,13 +1378,13 @@ export default function Dashboard() {
         const dbDefects = section.defects;
         const dbRecommendations = section.recommendations;
         
-        console.log(`📊 Section ${section.itemNo} RAW DATABASE VALUES:`, {
-          pipeSize: dbPipeSize,
-          length: dbLength,
-          severityGrade: dbSeverityGrade,
-          adoptable: dbAdoptable,
-          defects: dbDefects,
-          recommendations: dbRecommendations
+        console.log(`📊 SECTION ${section.itemNo} RAW DATABASE VALUES [ID: ${section.id}]:`, {
+          pipeSize: `"${dbPipeSize}" (${typeof dbPipeSize})`,
+          length: `"${dbLength}" (${typeof dbLength})`,
+          severityGrade: `"${dbSeverityGrade}" (${typeof dbSeverityGrade})`,
+          adoptable: `"${dbAdoptable}" (${typeof dbAdoptable})`,
+          defects: `"${dbDefects}"`,
+          recommendations: `"${dbRecommendations}"`
         });
         
         // HARD LOCKDOWN: Only apply "No 2" rule to sections that exactly match items 6 and 10
@@ -1425,7 +1425,7 @@ export default function Dashboard() {
         // Use standard "Runs per Shift" calculation
         baseCost = parseFloat(dayRate) / parseFloat(runsPerShift);
         calculationMethod = `Standard: £${dayRate} ÷ ${runsPerShift} runs = £${baseCost.toFixed(2)}`;
-        console.log(`💰 Using standard rule for section ${section.itemNo}: £${dayRate} ÷ ${runsPerShift} = £${baseCost.toFixed(2)}`);
+        console.log(`💰 SECTION ${section.itemNo} [ID: ${section.id}] Using standard rule: £${dayRate} ÷ ${runsPerShift} = £${baseCost.toFixed(2)}`);
       } else if (hourlyRate && hourlyRate > 0) {
         // Assume 8 hour day if using hourly rate
         const divisor = no2Rule.useNo2 ? no2Rule.no2Value : (runsPerShift || 1);
