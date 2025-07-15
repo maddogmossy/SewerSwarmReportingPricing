@@ -914,20 +914,17 @@ export default function PR2ConfigClean() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-6">
           
           {/* Blue Window - Pricing Options */}
-          <Card className="bg-blue-50 h-48">
+          <Card className="bg-blue-50 h-32">
             <CardHeader className="pb-1">
-              <CardTitle className="text-blue-600 flex items-center gap-1 text-xs">
-                <Coins className="w-3 h-3" />
-                Pricing
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 pb-1">
-              {/* Action Buttons */}
-              <div className="flex gap-1 mb-2">
+              <CardTitle className="text-blue-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Coins className="w-3 h-3" />
+                  Pricing
+                </div>
                 <Dialog open={addPricingDialogOpen} onOpenChange={setAddPricingDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
-                      <Plus className="w-4 h-4 mr-1" />
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white h-4 px-2 text-xs">
+                      <Plus className="w-3 h-3 mr-1" />
                       Add
                     </Button>
                   </DialogTrigger>
@@ -1002,6 +999,18 @@ export default function PR2ConfigClean() {
                     </DialogContent>
                   </Dialog>
                 )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0 pb-1">
+              {/* Value Input Box */}
+              <div className="space-y-1">
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs text-blue-500">Value</Label>
+                  <Input
+                    placeholder="Enter pricing value"
+                    className="bg-blue-100 border-blue-300 h-5 text-xs"
+                  />
+                </div>
               </div>
 
               {/* Pricing Options List */}
@@ -1185,7 +1194,7 @@ export default function PR2ConfigClean() {
           </Dialog>
 
           {/* Math Operations - Grey Column */}
-          <Card className="bg-gray-50 h-48">
+          <Card className="bg-gray-50 h-32">
             <CardHeader className="pb-1">
               <CardTitle className="text-gray-600 flex items-center gap-1 text-xs">
                 <Calculator className="w-3 h-3" />
@@ -1193,11 +1202,11 @@ export default function PR2ConfigClean() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-1">
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex flex-col gap-1">
                   <Label className="text-xs text-gray-500">Operation</Label>
                   <Select value={formData.mathOperators[0]} onValueChange={(value) => updateMathOperator(0, value)}>
-                    <SelectTrigger className="bg-gray-100 border-gray-300 h-7 text-xs">
+                    <SelectTrigger className="bg-gray-100 border-gray-300 h-5 text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1214,20 +1223,17 @@ export default function PR2ConfigClean() {
           </Card>
 
           {/* Green Window - Quantity Options */}
-          <Card className="bg-green-50 h-48">
+          <Card className="bg-green-50 h-32">
             <CardHeader className="pb-1">
-              <CardTitle className="text-green-600 flex items-center gap-1 text-xs">
-                <Package className="w-3 h-3" />
-                Quantity
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 pb-1">
-              {/* Action Buttons */}
-              <div className="flex gap-1 mb-2">
+              <CardTitle className="text-green-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Package className="w-3 h-3" />
+                  Quantity
+                </div>
                 <Dialog open={addQuantityDialogOpen} onOpenChange={setAddQuantityDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                      <Plus className="w-4 h-4 mr-1" />
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-4 px-2 text-xs">
+                      <Plus className="w-3 h-3 mr-1" />
                       Add
                     </Button>
                   </DialogTrigger>
@@ -1261,13 +1267,18 @@ export default function PR2ConfigClean() {
                     </div>
                   </DialogContent>
                 </Dialog>
-
-                {formData.quantityOptions.length >= 2 && (
-                  <Button size="sm" variant="outline" className="border-green-300 text-green-600">
-                    <ArrowUpDown className="w-4 h-4 mr-1" />
-                    Stack Order
-                  </Button>
-                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0 pb-1">
+              {/* Value Input Box */}
+              <div className="space-y-1">
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs text-green-500">Value</Label>
+                  <Input
+                    placeholder="Enter quantity value"
+                    className="bg-green-100 border-green-300 h-5 text-xs"
+                  />
+                </div>
               </div>
 
               {/* Quantity Options List */}
@@ -1324,20 +1335,17 @@ export default function PR2ConfigClean() {
           </Card>
 
           {/* Orange Window - Min Quantity Options */}
-          <Card className="bg-orange-50 h-48">
+          <Card className="bg-orange-50 h-32">
             <CardHeader className="pb-1">
-              <CardTitle className="text-orange-600 flex items-center gap-1 text-xs">
-                <Gauge className="w-3 h-3" />
-                Min Quantity
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 pb-1">
-              {/* Action Buttons */}
-              <div className="flex gap-1 mb-2">
+              <CardTitle className="text-orange-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Gauge className="w-3 h-3" />
+                  Min Quantity
+                </div>
                 <Dialog open={addMinQuantityDialogOpen} onOpenChange={setAddMinQuantityDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
-                      <Plus className="w-4 h-4 mr-1" />
+                    <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white h-4 px-2 text-xs">
+                      <Plus className="w-3 h-3 mr-1" />
                       Add
                     </Button>
                   </DialogTrigger>
@@ -1371,13 +1379,18 @@ export default function PR2ConfigClean() {
                     </div>
                   </DialogContent>
                 </Dialog>
-
-                {formData.minQuantityOptions.length >= 2 && (
-                  <Button size="sm" variant="outline" className="border-orange-300 text-orange-600">
-                    <ArrowUpDown className="w-4 h-4 mr-1" />
-                    Stack Order
-                  </Button>
-                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0 pb-1">
+              {/* Value Input Box */}
+              <div className="space-y-1">
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs text-orange-500">Value</Label>
+                  <Input
+                    placeholder="Enter min quantity value"
+                    className="bg-orange-100 border-orange-300 h-5 text-xs"
+                  />
+                </div>
               </div>
 
               {/* Min Quantity Options List */}
@@ -1433,18 +1446,16 @@ export default function PR2ConfigClean() {
           </Card>
 
           {/* Purple Window - Ranges */}
-          <Card className="bg-purple-50 h-48">
+          <Card className="bg-purple-50 h-32">
             <CardHeader className="pb-1">
-              <CardTitle className="text-purple-600 flex items-center gap-1 text-xs">
-                <Zap className="w-3 h-3" />
-                Ranges
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 pb-1">
-              <div className="flex gap-1 mb-2">
+              <CardTitle className="text-purple-600 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <Zap className="w-3 h-3" />
+                  Ranges
+                </div>
                 <Dialog open={addRangeDialogOpen} onOpenChange={setAddRangeDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
+                    <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white h-4 px-2 text-xs">
                       <Plus className="w-3 h-3 mr-1" />
                       Add
                     </Button>
@@ -1488,6 +1499,27 @@ export default function PR2ConfigClean() {
                     Stack Order
                   </Button>
                 )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0 pb-1">
+              {/* Value Input Boxes */}
+              <div className="space-y-1">
+                <div className="flex gap-1">
+                  <div className="flex-1">
+                    <Label className="text-xs text-purple-500">From</Label>
+                    <Input
+                      placeholder="R1"
+                      className="bg-purple-100 border-purple-300 h-5 text-xs"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Label className="text-xs text-purple-500">To</Label>
+                    <Input
+                      placeholder="R2"
+                      className="bg-purple-100 border-purple-300 h-5 text-xs"
+                    />
+                  </div>
+                </div>
               </div>
               {/* Range Options List */}
               <div className="h-24 overflow-y-auto">
