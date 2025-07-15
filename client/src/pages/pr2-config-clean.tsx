@@ -902,13 +902,30 @@ export default function PR2ConfigClean() {
     console.log(`🔧 Added new min quantity input: ${newOption.label}`);
   };
 
-  // Simple add new range input function for purple window (adds both % and Length)
-  const addNewRangeInput = () => {
+  // Master add function that adds inputs to all three windows (green, orange, purple)
+  const addNewInputsToAllWindows = () => {
     const timestamp = Date.now();
-    const setNumber = Math.floor(formData.rangeOptions.length / 2) + 1;
     
+    // Add new quantity input (green window)
+    const newQuantityOption: PricingOption = {
+      id: `quantity_${timestamp}`,
+      label: `No ${formData.quantityOptions.length + 1}`,
+      enabled: true,
+      value: ''
+    };
+    
+    // Add new min quantity input (orange window)
+    const newMinQuantityOption: PricingOption = {
+      id: `minquantity_${timestamp + 1}`,
+      label: `Qty ${formData.minQuantityOptions.length + 1}`,
+      enabled: true,
+      value: ''
+    };
+    
+    // Add new range inputs (purple window - percentage and length pair)
+    const setNumber = Math.floor(formData.rangeOptions.length / 2) + 1;
     const newPercentageOption: RangeOption = {
-      id: `range_percentage_${timestamp}`,
+      id: `range_percentage_${timestamp + 2}`,
       label: `Percentage ${setNumber}`,
       enabled: true,
       rangeStart: '0',
@@ -916,7 +933,7 @@ export default function PR2ConfigClean() {
     };
     
     const newLengthOption: RangeOption = {
-      id: `range_length_${timestamp + 1}`,
+      id: `range_length_${timestamp + 3}`,
       label: `Length ${setNumber}`,
       enabled: true,
       rangeStart: '0',
@@ -925,11 +942,15 @@ export default function PR2ConfigClean() {
     
     setFormData(prev => ({
       ...prev,
+      quantityOptions: [...prev.quantityOptions, newQuantityOption],
+      quantityStackOrder: [...prev.quantityStackOrder, newQuantityOption.id],
+      minQuantityOptions: [...prev.minQuantityOptions, newMinQuantityOption],
+      minQuantityStackOrder: [...prev.minQuantityStackOrder, newMinQuantityOption.id],
       rangeOptions: [...prev.rangeOptions, newPercentageOption, newLengthOption],
       rangeStackOrder: [...prev.rangeStackOrder, newPercentageOption.id, newLengthOption.id]
     }));
     
-    console.log(`🔧 Added new range input set: ${newPercentageOption.label} & ${newLengthOption.label}`);
+    console.log(`🔧 Added new inputs to all windows: ${newQuantityOption.label}, ${newMinQuantityOption.label}, ${newPercentageOption.label} & ${newLengthOption.label}`);
   };
 
   const deleteQuantityOption = (optionId: string) => {
@@ -1687,19 +1708,9 @@ export default function PR2ConfigClean() {
               {/* Green Window: Runs per Shift */}
               <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-green-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
-                    <span className="flex items-center gap-1">
-                      <Package className="w-3 h-3" />
-                      Quantity Options
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-4 px-1 text-xs border-green-300 text-green-700 hover:bg-green-100"
-                      onClick={() => addNewQuantityInput()}
-                    >
-                      Add
-                    </Button>
+                  <CardTitle className="text-green-700 text-xs flex items-center gap-1">
+                    <Package className="w-3 h-3" />
+                    Quantity Options
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
@@ -1741,19 +1752,9 @@ export default function PR2ConfigClean() {
               {/* Orange Window: Min Runs per Shift */}
               <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-orange-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
-                    <span className="flex items-center gap-1">
-                      <Gauge className="w-3 h-3" />
-                      Min Quantity Options
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-4 px-1 text-xs border-orange-300 text-orange-700 hover:bg-orange-100"
-                      onClick={() => addNewMinQuantityInput()}
-                    >
-                      Add
-                    </Button>
+                  <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
+                    <Gauge className="w-3 h-3" />
+                    Min Quantity Options
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
@@ -1804,7 +1805,7 @@ export default function PR2ConfigClean() {
                       variant="outline"
                       size="sm"
                       className="h-4 px-1 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
-                      onClick={() => addNewRangeInput()}
+                      onClick={() => addNewInputsToAllWindows()}
                     >
                       Add
                     </Button>
