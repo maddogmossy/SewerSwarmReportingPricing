@@ -11,7 +11,6 @@ interface CleansingEquipment {
   name: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
-  isSelected: boolean;
   isPrimary?: boolean;
 }
 
@@ -34,8 +33,11 @@ interface CleaningOptionsPopoverProps {
 export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2 }: CleaningOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
-  const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
-  const [showStackOrder, setShowStackOrder] = useState(false);
+  // Equipment order state - both items always present, just reorderable
+  const [equipmentOrder, setEquipmentOrder] = useState<string[]>([
+    'cctv-van-pack',
+    'cctv-jet-vac'
+  ]);
 
   // Base equipment list
   const baseEquipment = [
@@ -53,97 +55,59 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     }
   ];
 
-  // Load saved selection when component mounts
+  // Load saved order when component mounts
   useEffect(() => {
     try {
-      const savedSelection = localStorage.getItem('selected-equipment');
-      if (savedSelection) {
-        const parsed = JSON.parse(savedSelection);
-        // Handle both old string format and new array format
+      const savedOrder = localStorage.getItem('equipment-order');
+      if (savedOrder) {
+        const parsed = JSON.parse(savedOrder);
         if (Array.isArray(parsed)) {
-          setSelectedEquipment(parsed);
-        } else {
-          setSelectedEquipment(parsed ? [parsed] : []);
+          setEquipmentOrder(parsed);
         }
       }
     } catch {
-      // Silent fallback
+      // Silent fallback to default order
     }
   }, []);
 
-  // Create ordered equipment list with option numbers based on selection order
-  const getOrderedEquipment = (): CleansingEquipment[] => {
-    const orderedItems: CleansingEquipment[] = [];
-    let optionNumber = 1;
+  // Create ordered equipment list with option numbers
+  const cleansingEquipment = equipmentOrder.map((equipmentId, index) => {
+    const baseItem = baseEquipment.find(item => item.id === equipmentId);
+    return {
+      ...baseItem!,
+      name: `Option ${index + 1}: ${baseItem!.name}`,
+      isPrimary: index === 0
+    };
+  });
 
-    // First add selected items in their current order
-    selectedEquipment.forEach(selectedId => {
-      const item = baseEquipment.find(eq => eq.id === selectedId);
-      if (item) {
-        orderedItems.push({
-          ...item,
-          name: `Option ${optionNumber}: ${item.name}`,
-          isSelected: true,
-          isPrimary: optionNumber === 1
-        });
-        optionNumber++;
-      }
-    });
-
-    // Then add unselected items
-    baseEquipment.forEach(item => {
-      if (!selectedEquipment.includes(item.id)) {
-        orderedItems.push({
-          ...item,
-          name: `Option ${optionNumber}: ${item.name}`,
-          isSelected: false,
-          isPrimary: false
-        });
-        optionNumber++;
-      }
-    });
-
-    return orderedItems;
-  };
-
-  const cleansingEquipment = getOrderedEquipment();
-
-  const handleEquipmentChange = (equipmentId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedEquipment(prev => [...prev, equipmentId]);
-    } else {
-      setSelectedEquipment(prev => prev.filter(id => id !== equipmentId));
-    }
-  };
-
-  // Save equipment selection to localStorage whenever it changes
+  // Save equipment order to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('selected-equipment', JSON.stringify(selectedEquipment));
-  }, [selectedEquipment]);
+    localStorage.setItem('equipment-order', JSON.stringify(equipmentOrder));
+  }, [equipmentOrder]);
 
   const moveEquipmentUp = (equipmentId: string) => {
-    const currentIndex = selectedEquipment.indexOf(equipmentId);
+    const currentIndex = equipmentOrder.indexOf(equipmentId);
     if (currentIndex > 0) {
-      const newOrder = [...selectedEquipment];
+      const newOrder = [...equipmentOrder];
       [newOrder[currentIndex - 1], newOrder[currentIndex]] = [newOrder[currentIndex], newOrder[currentIndex - 1]];
-      setSelectedEquipment(newOrder);
+      setEquipmentOrder(newOrder);
     }
   };
 
   const moveEquipmentDown = (equipmentId: string) => {
-    const currentIndex = selectedEquipment.indexOf(equipmentId);
-    if (currentIndex < selectedEquipment.length - 1) {
-      const newOrder = [...selectedEquipment];
+    const currentIndex = equipmentOrder.indexOf(equipmentId);
+    if (currentIndex < equipmentOrder.length - 1) {
+      const newOrder = [...equipmentOrder];
       [newOrder[currentIndex], newOrder[currentIndex + 1]] = [newOrder[currentIndex + 1], newOrder[currentIndex]];
-      setSelectedEquipment(newOrder);
+      setEquipmentOrder(newOrder);
     }
   };
 
   const handleConfigureSelected = () => {
     setIsOpen(false);
     
-    // Route to PR2 pricing with selected equipment in order
-    const equipmentParam = selectedEquipment.join(',');
+    // Route to PR2 pricing with equipment in current order
+    const equipmentParam = equipmentOrder.join(',');
     setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=${equipmentParam}`);
   };
 
@@ -162,47 +126,41 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           </div>
 
           <div className="space-y-3">
-            {cleansingEquipment.map((equipment) => (
+            {cleansingEquipment.map((equipment, index) => (
               <div key={equipment.id} className="flex items-start space-x-3 p-3 border rounded-lg">
-                <Checkbox 
-                  checked={equipment.isSelected}
-                  onCheckedChange={(checked) => handleEquipmentChange(equipment.id, checked as boolean)}
-                  className="mt-1"
-                />
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-medium text-sm mt-1">
+                  {index + 1}
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <equipment.icon className="h-4 w-4 text-blue-600" />
                       <span className="font-medium text-sm">{equipment.name}</span>
-                      {equipment.isPrimary && equipment.isSelected && (
+                      {equipment.isPrimary && (
                         <Badge variant="secondary" className="text-xs">Preferred</Badge>
                       )}
                     </div>
                     <div className="flex items-center space-x-2">
-                      {equipment.isSelected && (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => moveEquipmentUp(equipment.id)}
-                            disabled={selectedEquipment.indexOf(equipment.id) === 0}
-                            className="h-6 w-6 p-0"
-                            title="Move up"
-                          >
-                            <ArrowUp className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => moveEquipmentDown(equipment.id)}
-                            disabled={selectedEquipment.indexOf(equipment.id) === selectedEquipment.length - 1}
-                            className="h-6 w-6 p-0"
-                            title="Move down"
-                          >
-                            <ArrowDown className="h-3 w-3" />
-                          </Button>
-                        </>
-                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => moveEquipmentUp(equipment.id)}
+                        disabled={equipmentOrder.indexOf(equipment.id) === 0}
+                        className="h-6 w-6 p-0"
+                        title="Move up"
+                      >
+                        <ArrowUp className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => moveEquipmentDown(equipment.id)}
+                        disabled={equipmentOrder.indexOf(equipment.id) === equipmentOrder.length - 1}
+                        className="h-6 w-6 p-0"
+                        title="Move down"
+                      >
+                        <ArrowDown className="h-3 w-3" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
@@ -228,28 +186,17 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
             ))}
           </div>
 
-          {selectedEquipment.length >= 2 && (
-            <div className="pt-2 border-t">
-              <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
-                <ArrowUp className="h-3 w-3" />
-                <span>Use ↑↓ arrows to set priority order</span>
-                <ArrowDown className="h-3 w-3" />
-              </div>
-            </div>
-          )}
-
           <div className="pt-2 border-t">
+            <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground mb-3">
+              <ArrowUp className="h-3 w-3" />
+              <span>Use ↑↓ arrows to set priority order</span>
+              <ArrowDown className="h-3 w-3" />
+            </div>
             <Button 
               onClick={handleConfigureSelected}
-              disabled={selectedEquipment.length === 0}
               className="w-full"
             >
-              {selectedEquipment.length === 0 
-                ? 'Select Equipment Types' 
-                : selectedEquipment.length === 1 
-                  ? 'Configure Selected Equipment'
-                  : `Configure Stack Order (${selectedEquipment.length} items)`
-              }
+              Configure Equipment Stack Order
             </Button>
           </div>
         </div>
