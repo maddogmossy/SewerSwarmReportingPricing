@@ -88,6 +88,8 @@ export default function PR2ConfigClean() {
   const editId = urlParams.get('edit') || urlParams.get('editId');
   const pipeSize = urlParams.get('pipeSize') || urlParams.get('pipe_size');
   const configName = urlParams.get('configName');
+  const sourceItemNo = urlParams.get('itemNo');
+  const selectedOptionId = urlParams.get('selectedOption'); // Track which option is selected for editing
   const isEditing = !!editId;
   
   // Debug URL parameters
@@ -110,8 +112,8 @@ export default function PR2ConfigClean() {
       return decodeURIComponent(configName);
     }
     
-    // If we have pipe size, create pipe-size-specific names
-    if (pipeSize) {
+    // Only show pipe size if coming from dashboard (has both pipeSize and sourceItemNo)
+    if (pipeSize && sourceItemNo) {
       const formattedSize = pipeSize.endsWith('mm') ? pipeSize : `${pipeSize}mm`;
       const categoryMap: { [key: string]: string } = {
         'cctv': `${formattedSize} CCTV Configuration`,
@@ -125,14 +127,15 @@ export default function PR2ConfigClean() {
         'uv-lining': `${formattedSize} UV Lining Configuration`,
         'ims-cutting': `${formattedSize} IMS Cutting Configuration`,
         'excavation': `${formattedSize} Excavation Configuration`,
+        'patching': `${formattedSize} Patching Configuration`,
         'tankering': `${formattedSize} Tankering Configuration`
       };
       return categoryMap[categoryId] || `${formattedSize} Configuration`;
     }
     
-    // Fallback to standard names
+    // Standard names without pipe size (until set up from dashboard)
     const categoryMap: { [key: string]: string } = {
-      'cctv': 'CCTV Price Configuration',
+      'cctv': 'CCTV Configuration',
       'van-pack': 'Van Pack Configuration',
       'jet-vac': 'Jet Vac Configuration',
       'cctv-van-pack': 'CCTV Van Pack Configuration',
@@ -143,9 +146,10 @@ export default function PR2ConfigClean() {
       'uv-lining': 'UV Lining Configuration',
       'ims-cutting': 'IMS Cutting Configuration',
       'excavation': 'Excavation Configuration',
+      'patching': 'Patching Configuration',
       'tankering': 'Tankering Configuration'
     };
-    return categoryMap[categoryId] || 'Price Configuration';
+    return categoryMap[categoryId] || 'Configuration';
   };
 
   // Generate dynamic dropdown title based on pipe size
@@ -156,6 +160,43 @@ export default function PR2ConfigClean() {
       return `${formattedSize} Pipe Configuration Options`;
     }
     return 'Configuration Options';
+  };
+
+  // Helper function to check if option should be highlighted green (selected for editing)
+  const isOptionSelected = (optionId: string, optionType: string) => {
+    if (!selectedOptionId) return false;
+    return selectedOptionId === `${optionType}-${optionId}`;
+  };
+
+  // Helper function to check if option should be disabled (not selected when multiple exist)
+  const isOptionDisabled = (optionId: string, optionType: string) => {
+    if (!selectedOptionId) return false; // No selection = all enabled
+    
+    // Get relevant options array based on type
+    let optionsArray;
+    switch (optionType) {
+      case 'pricing':
+        optionsArray = formData.pricingOptions;
+        break;
+      case 'quantity':
+        optionsArray = formData.quantityOptions;
+        break;
+      case 'minQuantity':
+        optionsArray = formData.minQuantityOptions;
+        break;
+      case 'range':
+        optionsArray = formData.rangeOptions;
+        break;
+      default:
+        return false;
+    }
+    
+    // If multiple options exist in this category, disable non-selected ones
+    if (optionsArray.length > 1) {
+      return !isOptionSelected(optionId, optionType);
+    }
+    
+    return false;
   };
 
   // Clean form state
@@ -1008,9 +1049,8 @@ export default function PR2ConfigClean() {
   };
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -1224,12 +1264,17 @@ export default function PR2ConfigClean() {
             {formData.pricingOptions.length === 0 ? null : (
                   <div className="space-y-2">
                     {getOrderedPricingOptions().map((option) => (
-                      <div key={option.id} className="bg-white p-2 rounded border text-xs">
+                      <div key={option.id} className={`p-2 rounded border text-xs ${
+                        isOptionSelected(option.id, 'pricing') 
+                          ? 'bg-green-100 border-green-300' 
+                          : 'bg-white border-gray-200'
+                      } ${isOptionDisabled(option.id, 'pricing') ? 'opacity-50' : ''}`}>
                         <div className="flex items-center gap-1 mb-1">
                           <Checkbox
                             checked={option.enabled}
                             onCheckedChange={(checked) => updatePricingOption(option.id, 'enabled', checked)}
                             className="h-3 w-3"
+                            disabled={isOptionDisabled(option.id, 'pricing')}
                           />
                           <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
                           <Button
@@ -1237,6 +1282,7 @@ export default function PR2ConfigClean() {
                             variant="ghost"
                             onClick={() => editPricingOption(option)}
                             className="h-5 w-5 p-0"
+                            disabled={isOptionDisabled(option.id, 'pricing')}
                           >
                             <Edit2 className="w-2 h-2" />
                           </Button>
@@ -1245,6 +1291,7 @@ export default function PR2ConfigClean() {
                             variant="ghost"
                             onClick={() => deletePricingOption(option.id)}
                             className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
+                            disabled={isOptionDisabled(option.id, 'pricing')}
                           >
                             <Trash2 className="w-2 h-2" />
                           </Button>
@@ -1256,6 +1303,7 @@ export default function PR2ConfigClean() {
                             onChange={(e) => updatePricingOption(option.id, 'value', e.target.value)}
                             placeholder="Enter value"
                             className="text-xs h-6"
+                            disabled={isOptionDisabled(option.id, 'pricing')}
                           />
                         )}
                       </div>
@@ -1267,6 +1315,56 @@ export default function PR2ConfigClean() {
           {/* Quantity Options List */}
           <div className="h-24 overflow-y-auto">
             {formData.quantityOptions.length === 0 ? null : (
+              <div className="space-y-2">
+                {getOrderedQuantityOptions().map((option) => (
+                  <div key={option.id} className={`p-2 rounded border text-xs ${
+                    isOptionSelected(option.id, 'quantity') 
+                      ? 'bg-green-100 border-green-300' 
+                      : 'bg-white border-gray-200'
+                  } ${isOptionDisabled(option.id, 'quantity') ? 'opacity-50' : ''}`}>
+                    <div className="flex items-center gap-1 mb-1">
+                      <Checkbox
+                        checked={option.enabled}
+                        onCheckedChange={(checked) => updateQuantityOption(option.id, 'enabled', checked)}
+                        className="h-3 w-3"
+                        disabled={isOptionDisabled(option.id, 'quantity')}
+                      />
+                      <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => editQuantityOption(option)}
+                        className="h-5 w-5 p-0"
+                        disabled={isOptionDisabled(option.id, 'quantity')}
+                      >
+                        <Edit2 className="w-2 h-2" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteQuantityOption(option.id)}
+                        className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
+                        disabled={isOptionDisabled(option.id, 'quantity')}
+                      >
+                        <Trash2 className="w-2 h-2" />
+                      </Button>
+                    </div>
+                    {option.enabled && (
+                      <Input
+                        key={`${option.id}-${option.value}`}
+                        value={option.value}
+                        onChange={(e) => updateQuantityOption(option.id, 'value', e.target.value)}
+                        placeholder="Enter value"
+                        className="text-xs h-6"
+                        disabled={isOptionDisabled(option.id, 'quantity')}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <Dialog open={editPricingDialogOpen} onOpenChange={setEditPricingDialogOpen}>
             <DialogContent aria-describedby="edit-pricing-description">
               <DialogHeader>
@@ -1306,12 +1404,17 @@ export default function PR2ConfigClean() {
             {formData.minQuantityOptions.length === 0 ? null : (
               <div className="space-y-2">
                 {getOrderedMinQuantityOptions().map((option) => (
-                  <div key={option.id} className="bg-white p-2 rounded border text-xs">
+                  <div key={option.id} className={`p-2 rounded border text-xs ${
+                    isOptionSelected(option.id, 'minQuantity') 
+                      ? 'bg-green-100 border-green-300' 
+                      : 'bg-white border-gray-200'
+                  } ${isOptionDisabled(option.id, 'minQuantity') ? 'opacity-50' : ''}`}>
                     <div className="flex items-center gap-1 mb-1">
                       <Checkbox
                         checked={option.enabled}
                         onCheckedChange={(checked) => updateMinQuantityOption(option.id, 'enabled', checked)}
                         className="h-3 w-3"
+                        disabled={isOptionDisabled(option.id, 'minQuantity')}
                       />
                       <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
                       <Button
@@ -1319,6 +1422,7 @@ export default function PR2ConfigClean() {
                         variant="ghost"
                         onClick={() => editMinQuantityOption(option)}
                         className="h-5 w-5 p-0"
+                        disabled={isOptionDisabled(option.id, 'minQuantity')}
                       >
                         <Edit2 className="w-2 h-2" />
                       </Button>
@@ -1327,6 +1431,7 @@ export default function PR2ConfigClean() {
                         variant="ghost"
                         onClick={() => deleteMinQuantityOption(option.id)}
                         className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
+                        disabled={isOptionDisabled(option.id, 'minQuantity')}
                       >
                         <Trash2 className="w-2 h-2" />
                       </Button>
@@ -1338,6 +1443,7 @@ export default function PR2ConfigClean() {
                         onChange={(e) => updateMinQuantityOption(option.id, 'value', e.target.value)}
                         placeholder="Enter value"
                         className="text-xs h-6"
+                        disabled={isOptionDisabled(option.id, 'minQuantity')}
                       />
                     )}
                   </div>
@@ -1351,12 +1457,17 @@ export default function PR2ConfigClean() {
             {getOrderedRangeOptions().length === 0 ? null : (
               <div className="space-y-2">
                 {getOrderedRangeOptions().map((option) => (
-                  <div key={option.id} className="bg-white p-2 rounded border text-xs">
+                  <div key={option.id} className={`p-2 rounded border text-xs ${
+                    isOptionSelected(option.id, 'range') 
+                      ? 'bg-green-100 border-green-300' 
+                      : 'bg-white border-gray-200'
+                  } ${isOptionDisabled(option.id, 'range') ? 'opacity-50' : ''}`}>
                     <div className="flex items-center gap-1 mb-1">
                       <Checkbox
                         checked={option.enabled}
                         onCheckedChange={(checked) => updateRangeOption(option.id, 'enabled', checked)}
                         className="h-3 w-3"
+                        disabled={isOptionDisabled(option.id, 'range')}
                       />
                       <span className="flex-1 font-medium text-xs truncate">{option.label}</span>
                       <Button
@@ -1364,6 +1475,7 @@ export default function PR2ConfigClean() {
                         variant="ghost"
                         onClick={() => editRangeOption(option)}
                         className="h-5 w-5 p-0"
+                        disabled={isOptionDisabled(option.id, 'range')}
                       >
                         <Edit2 className="w-2 h-2" />
                       </Button>
@@ -1372,6 +1484,7 @@ export default function PR2ConfigClean() {
                         variant="ghost"
                         onClick={() => deleteRangeOption(option.id)}
                         className="text-red-600 hover:text-red-700 h-5 w-5 p-0"
+                        disabled={isOptionDisabled(option.id, 'range')}
                       >
                         <Trash2 className="w-2 h-2" />
                       </Button>
@@ -1386,6 +1499,7 @@ export default function PR2ConfigClean() {
                             readOnly
                             placeholder="Auto"
                             className="text-xs h-6 bg-gray-50 text-gray-600"
+                            disabled={isOptionDisabled(option.id, 'range')}
                           />
                           <Input
                             key={`${option.id}-end-${option.rangeEnd}-${Date.now()}`}
@@ -1401,6 +1515,7 @@ export default function PR2ConfigClean() {
                             }}
                             placeholder="Enter end value"
                             className="text-xs h-6"
+                            disabled={isOptionDisabled(option.id, 'range')}
                           />
                         </div>
                         <div className="text-xs text-gray-500">
@@ -1418,8 +1533,8 @@ export default function PR2ConfigClean() {
           </div>
         </div>
 
-        {/* Edit Pricing Dialog */}
-          <Dialog open={editQuantityDialogOpen} onOpenChange={setEditQuantityDialogOpen}>
+        {/* Edit Quantity Dialog */}
+        <Dialog open={editQuantityDialogOpen} onOpenChange={setEditQuantityDialogOpen}>
             <DialogContent aria-describedby="edit-quantity-description">
               <DialogHeader>
                 <DialogTitle>Edit Quantity Option</DialogTitle>
@@ -1513,7 +1628,7 @@ export default function PR2ConfigClean() {
               </div>
             </DialogContent>
           </Dialog>
-
+        )}
 
         </div>
 
@@ -1625,34 +1740,30 @@ export default function PR2ConfigClean() {
           </div>
         )}
 
-
-
-
-
-        {/* Red Warning Dialog for Sector Removal */}
-        <AlertDialog open={showRemoveWarning} onOpenChange={setShowRemoveWarning}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-red-600">Remove Configuration from Sector</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will permanently delete the configuration from the {SECTORS.find(s => s.id === sectorToRemove)?.name} sector. 
-                This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setShowRemoveWarning(false)}>
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={confirmSectorRemoval}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
-                Remove Configuration
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          {/* Red Warning Dialog for Sector Removal */}
+          <AlertDialog open={showRemoveWarning} onOpenChange={setShowRemoveWarning}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-red-600">Remove Configuration from Sector</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete the configuration from the {SECTORS.find(s => s.id === sectorToRemove)?.name} sector. 
+                  This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setShowRemoveWarning(false)}>
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={confirmSectorRemoval}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Remove Configuration
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
       </div>
-    </>
+    </div>
   );
 }

@@ -566,39 +566,40 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.1' to return to this stable checkpoint
 
-## REV V5.5 CHECKPOINT - AUTOMATIC RANGE CALCULATION & AUTO-SAVE SYSTEM LOCKED (July 15, 2025)
+## REV V5.6 CHECKPOINT - GREEN HIGHLIGHTING SYSTEM COMPLETE (July 15, 2025)
 
-🔒 **PRODUCTION READY - INTELLIGENT RANGE CALCULATION & AUTO-SAVE:**
-- **Automatic Range Calculation:** First range starts at 0, subsequent ranges automatically calculate start positions (0-50%, 51-75%, 76-100%)
-- **Sequential Range Logic:** When user enters end value (e.g., 50), system automatically sets start as 0 for first range, 51 for second range, etc.
-- **Read-Only Start Fields:** Range start values are auto-calculated and read-only, users only enter end values
-- **Range Validation System:** Console warnings for invalid values that don't follow sequential rules
-- **Auto-Save on Navigation:** Configuration automatically saves when navigating back to dashboard or pricing page
-- **Visual Range Feedback:** Shows current range (e.g., "Range: 0-50") with helpful text about auto-calculation
-- **Back to Pricing Button:** Added navigation button to return to pricing page with sector context
+🔒 **PRODUCTION READY - COMPREHENSIVE GREEN HIGHLIGHTING SYSTEM:**
+- **Multi-Option Green Highlighting:** Selected options display with green background (`bg-green-100 border-green-300`) during editing
+- **Disabled State Management:** Non-selected options become disabled when multiple options exist in same category
+- **Four-Window Coverage:** Green highlighting works across all option types (pricing, quantity, min quantity, range)
+- **Helper Functions:** `isOptionSelected()` and `isOptionDisabled()` manage highlighting and disable states
+- **URL Parameter Integration:** System tracks selected option via `selectedOption` URL parameter
+- **Visual Feedback:** Edit buttons show green styling when configuration is currently selected
+- **Input Field Control:** Input fields and buttons disabled for non-selected options during editing
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Sequential Calculation Logic:** `calculateSequentialRanges()` function automatically determines start values based on previous range ends
-- **Range Validation:** `validateRangeValue()` function checks for valid positive numbers and proper sequence
-- **Auto-Save Function:** `handleAutoSaveAndNavigate()` saves configuration before navigation if enabled options exist
-- **Enhanced Range UI:** Read-only start fields with gray background, active end fields with validation
-- **Navigation Context:** Auto-save maintains sector context when routing back to pricing page
-- **Console Feedback:** Clear logging for auto-save operations and range validation warnings
+- **Green Highlighting Logic:** Uses `bg-green-100 border-green-300 text-green-700` classes for selected options
+- **State Management:** `selectedEditingOption` state tracks which option is currently being edited
+- **URL Parameter Detection:** Extracts `selectedOption` from URL parameters for highlighting logic
+- **Helper Functions:** `isOptionSelected(optionId, type)` and `isOptionDisabled(optionId, type)` manage states
+- **Edit Button Styling:** Dynamic button styling with green background for currently selected configurations
+- **JSX Structure Fix:** Resolved critical JSX closing tag issue for max-w-7xl container div
 
 🔒 **USER WORKFLOW:**
-1. **Range Setup:** User checks range option checkbox → system sets start to 0 (or next sequential value)
-2. **End Value Entry:** User enters end value (e.g., 50) → system shows "Range: 0-50"
-3. **Next Range:** User enables second range → system auto-sets start to 51, user enters end value
-4. **Auto-Save Navigation:** User clicks "Back to Pricing" or "Dashboard" → system auto-saves and navigates
-5. **Dashboard Integration:** Saved ranges match dashboard validation rules for green status indicators
+1. **Dashboard Navigation:** User clicks cleaning recommendation → routes to configuration page
+2. **Option Selection:** Selected option automatically highlighted in green based on URL parameter
+3. **Edit Restriction:** Only highlighted option can be edited, others become disabled
+4. **Visual Feedback:** Clear indication of which option is currently being modified
+5. **Seamless Editing:** User can edit values while non-selected options remain disabled
 
-🔒 **RANGE CALCULATION EXAMPLES:**
-- **First Range:** User enters 50 → becomes "0-50"
-- **Second Range:** User enters 75 → becomes "51-75" 
-- **Third Range:** User enters 100 → becomes "76-100"
-- **Length Ranges:** Same logic applies to length fields for consistent validation
+🔒 **PREVIOUS STABLE FEATURES MAINTAINED:**
+- **Automatic Range Calculation:** Sequential range logic (0-50%, 51-75%, 76-100%) operational
+- **Auto-Save on Navigation:** Configuration saves automatically when navigating back to dashboard
+- **Range Validation System:** Console warnings for invalid values and proper sequence validation
+- **Four-Window Configuration:** Blue/green/orange/purple windows with complete CRUD functionality
+- **Multi-Sector Support:** Shared configurations across multiple sectors with proper isolation
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v5.5' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v5.6' to return to this stable checkpoint
 
 ## REV V5.3 CHECKPOINT - EDIT BUTTON SYSTEM FULLY OPERATIONAL (July 14, 2025)
 

@@ -309,10 +309,7 @@ export default function PR2Pricing() {
     // If no existing configuration, create new one
     const mappedCategoryId = categoryMapping[categoryId as keyof typeof categoryMapping] || categoryId;
     
-    // Add default pipe size context for consistency with dashboard entry
-    const defaultPipeSize = '150'; // Default to 150mm for new configurations
-    
-    // Generate pipe size-specific configuration name based on category
+    // Generate standard configuration name based on category (no pipe size until set from dashboard)
     const getCategoryDisplayName = (catId: string) => {
       const nameMap = {
         'cctv': 'CCTV Configuration',
@@ -331,8 +328,8 @@ export default function PR2Pricing() {
       return nameMap[catId as keyof typeof nameMap] || 'Configuration';
     };
     
-    const configName = `${defaultPipeSize}mm ${getCategoryDisplayName(mappedCategoryId)}`;
-    const createURL = `/pr2-config-clean?sector=${sector}&categoryId=${mappedCategoryId}&pipeSize=${defaultPipeSize}&configName=${encodeURIComponent(configName)}`;
+    const configName = getCategoryDisplayName(mappedCategoryId);
+    const createURL = `/pr2-config-clean?sector=${sector}&categoryId=${mappedCategoryId}&configName=${encodeURIComponent(configName)}`;
     console.log('🆕 Creating new config at URL:', createURL);
     setLocation(createURL);
   };
