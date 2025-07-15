@@ -705,39 +705,40 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.3' to return to this stable checkpoint
 
-## REV V6.1 CHECKPOINT - SINGLE-ROW LAYOUT SYSTEM LOCKED (July 15, 2025)
+## REV V6.2 CHECKPOINT - OPTIMIZED FIVE-WINDOW LAYOUT SYSTEM LOCKED (July 15, 2025)
 
-🔒 **PRODUCTION READY - COMPLETE SINGLE-ROW TITLE LAYOUT:**
-- **Horizontal Flex Layout**: All five windows display in single horizontal row with proper sizing
-- **Title Wrapping Eliminated**: Added whitespace-nowrap to prevent any title text from wrapping to multiple lines
-- **Optimized Window Widths**: Blue (192px), Math (80px), Green (208px), Orange (224px), Purple (256px)
-- **Full Input Display**: All input fields properly sized to display values like "1850", "30", "15", "3333" completely
-- **Consistent Compact Design**: Reduced text-xs, h-6 inputs, minimal padding for streamlined appearance
-- **Math Window Enhancement**: Added "Math" label to provide context alongside calculator icon
-- **Visual Consistency**: All windows maintain proper spacing and color-coded styling per function
+🔒 **PRODUCTION READY - COMPLETE OPTIMIZED LAYOUT SYSTEM:**
+- **Full-Width Layout**: All five windows properly utilize full available screen width with optimal spacing
+- **Single-Row Purple Configuration**: Purple window displays both % (Max) and Length (Max) fields on one horizontal line as requested
+- **Proper Input Sizing**: All input fields sized to fully display their values without truncation
+- **Balanced Window Distribution**: Blue (w-56), Math (w-20), Green (w-60), Orange (w-52), Purple (flex-1)
+- **Enhanced Input Widths**: Day Rate (w-20), Quantity (w-16), Min Quantity (w-16), Percentage (w-16), Length (w-20)
+- **Streamlined Math Window**: Compact design with w-12 select for division symbol
+- **Professional Spacing**: Consistent gap-2 spacing throughout with proper label alignment
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Responsive Layout**: lg:col-span-2 for main windows, lg:col-span-1 for math window
-- **Flex Layout**: flex items-center gap-2 for horizontal label/input alignment
-- **Consistent Styling**: flex-shrink-0 for labels, flex-1 for inputs, matching border colors per window
-- **Space Optimization**: Shortened placeholders ("£ value", "qty", "min", "max %", "max m")
-- **ID Display Management**: Removed "(ID: 48)" from green window only to optimize "Quantity Options" line space
-- **Math Dropdown**: w-16 width for compact symbol selection with justify-center positioning
+- **Responsive Flex Layout**: Full-width container with flex gap-4 for optimal window distribution
+- **Fixed Window Sizing**: Blue, Math, Green, Orange use fixed widths; Purple uses flex-1 for remaining space
+- **Single-Row Purple Layout**: Horizontal flex container with proper gap spacing for % and Length inputs
+- **Input Field Optimization**: Each input sized appropriately for expected values (1850, 30, 150, 3333)
+- **Consistent Styling**: Maintained color-coded theming and proper form field hierarchy
+- **Space Utilization**: Purple window expands to use all remaining horizontal space effectively
 
 🔒 **USER-CONFIRMED LAYOUT:**
-- **Blue Window**: "Day Rate" + 10-character input (inline)
-- **Math Window**: Centered ÷ symbol dropdown (half width)
-- **Green Window**: "Runs per Shift" + 4-character input + Add button (inline)
-- **Orange Window**: "Min Runs per Shift" + 4-character input (inline)
-- **Purple Window**: "% (Max)" + input and "Length (Max)" + input side-by-side + Add button
+- **Blue Window**: "Day Rate" with 5-character input (w-20) for values like "1850"
+- **Math Window**: Compact division symbol dropdown (w-12) 
+- **Green Window**: "Runs/Shift" with 3-character input (w-16) for values like "30"
+- **Orange Window**: "Min" with 3-character input (w-16) for minimum values
+- **Purple Window**: "% (Max)" and "Length (Max)" side-by-side on single row with proper input sizing
 
 🔒 **COMPLETE SYSTEM FEATURES MAINTAINED:**
-- **Authentic Data Only**: Clean ID 48 configuration with empty values ready for user input
-- **Sector Isolation**: Proper sector-based filtering without cross-contamination
-- **Four-Window Configuration**: Complete CRUD operations across all pricing windows
-- **Database Integration**: Full backend API support with proper validation and persistence
+- **Authentic Data Loading**: Configuration ID 48 properly loads with Day Rate £1850, Runs 30, Min 30, % 15, Length 3333
+- **Real-Time Updates**: Form changes reflect immediately in console logs and database
+- **Sector Isolation**: Utilities sector filtering working correctly without cross-contamination
+- **Full CRUD Operations**: Complete create, read, update, delete functionality across all windows
+- **Database Integration**: Backend API endpoints fully operational with proper validation
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v6.0' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.2' to return to this stable checkpoint
 
 ## REV V5.3 CHECKPOINT - EDIT BUTTON SYSTEM FULLY OPERATIONAL (July 14, 2025)
 
