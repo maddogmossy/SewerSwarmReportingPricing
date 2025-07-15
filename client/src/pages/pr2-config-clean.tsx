@@ -72,8 +72,17 @@ export default function PR2ConfigClean() {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
   
-  // Get URL parameters safely
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  // Get URL parameters safely using window.location.search
+  const searchParams = window.location.search;
+  const urlParams = new URLSearchParams(searchParams);
+  
+  // Debug the URLSearchParams parsing
+  console.log('🔍 URLSearchParams debug:', {
+    searchParams,
+    urlParamsSize: urlParams.size,
+    allParams: Object.fromEntries(urlParams.entries())
+  });
+  
   const sector = urlParams.get('sector') || 'utilities';
   const categoryId = urlParams.get('categoryId');
   const editId = urlParams.get('edit') || urlParams.get('editId');
@@ -84,6 +93,8 @@ export default function PR2ConfigClean() {
   // Debug URL parameters
   console.log('🔍 PR2ConfigClean URL params:', {
     location,
+    fullURL: window.location.href,
+    search: window.location.search,
     sector,
     categoryId,
     editId,
