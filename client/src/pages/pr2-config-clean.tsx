@@ -884,6 +884,24 @@ export default function PR2ConfigClean() {
     console.log(`🔧 Added new quantity input: ${newOption.label}`);
   };
 
+  // Simple add new min quantity input function (no dialog needed)
+  const addNewMinQuantityInput = () => {
+    const newOption: PricingOption = {
+      id: `minquantity_${Date.now()}`,
+      label: `Qty ${formData.minQuantityOptions.length + 1}`,
+      enabled: true,
+      value: ''
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      minQuantityOptions: [...prev.minQuantityOptions, newOption],
+      minQuantityStackOrder: [...prev.minQuantityStackOrder, newOption.id]
+    }));
+    
+    console.log(`🔧 Added new min quantity input: ${newOption.label}`);
+  };
+
   // Simple add new range input function for purple window (adds both % and Length)
   const addNewRangeInput = () => {
     const timestamp = Date.now();
@@ -1723,27 +1741,53 @@ export default function PR2ConfigClean() {
               {/* Orange Window: Min Runs per Shift */}
               <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-orange-700 text-xs flex items-center gap-1 whitespace-nowrap">
-                    <Gauge className="w-3 h-3" />
-                    Min Quantity Options
+                  <CardTitle className="text-orange-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
+                    <span className="flex items-center gap-1">
+                      <Gauge className="w-3 h-3" />
+                      Min Quantity Options
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-4 px-1 text-xs border-orange-300 text-orange-700 hover:bg-orange-100"
+                      onClick={() => addNewMinQuantityInput()}
+                    >
+                      Add
+                    </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
-                  <div className="flex items-center gap-1">
-                    <Label htmlFor="minquantity_runs" className="text-xs font-medium text-orange-700 flex-shrink-0">
-                      Qty
-                    </Label>
-                    <Input
-                      id="minquantity_runs"
-                      placeholder="min"
-                      maxLength={4}
-                      value={formData.minQuantityOptions.find(opt => opt.id === 'minquantity_runs')?.value || ''}
-                      onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
-                      className="bg-white border-orange-300 h-6 text-xs w-16"
-                      data-field="min-runs-per-shift"
-                      data-window="orange"
-                      data-option-id="minquantity_runs"
-                    />
+                  <div className="space-y-1">
+                    {formData.minQuantityOptions.map((option, index) => (
+                      <div key={option.id} className="flex items-center gap-2">
+                        <Label htmlFor={option.id} className="text-xs font-medium text-orange-700 flex-shrink-0">
+                          Qty{formData.minQuantityOptions.length > 1 ? ` ${index + 1}` : ''}
+                        </Label>
+                        <Input
+                          id={option.id}
+                          placeholder="min"
+                          maxLength={4}
+                          value={option.value || ''}
+                          onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
+                          className="bg-white border-orange-300 h-6 text-xs w-16"
+                          data-field={`min-quantity-${index}`}
+                          data-window="orange"
+                          data-option-id={option.id}
+                        />
+                        {/* Show delete button for dynamically added options (not the original "minquantity_runs") */}
+                        {option.id !== 'minquantity_runs' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-4 w-4 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => deleteMinQuantityOption(option.id)}
+                            title="Delete this input"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
