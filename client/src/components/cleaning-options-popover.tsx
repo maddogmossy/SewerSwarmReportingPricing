@@ -190,8 +190,9 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                           // Route based on actual equipment type, not position
                           if (equipmentId === 'cctv-jet-vac') {
                             const configName = `${pipeSize}mm CCTV Jet Vac Configuration`;
-                            const url = `/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-jet-vac&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`;
-                            console.log('🔗 Navigating to CCTV/Jet Vac config:', url);
+                            // Check if ID 48 exists for this equipment type and route to edit mode
+                            const url = `/pr2-config-clean?sector=${sectionData.sector}&categoryId=cctv-jet-vac&edit=48&pipeSize=${pipeSize}&configName=${encodeURIComponent(configName)}&itemNo=${sectionData.itemNo}`;
+                            console.log('🔗 Navigating to CCTV/Jet Vac config (edit ID 48):', url);
                             setLocation(url);
                           } else if (equipmentId === 'cctv-van-pack') {
                             const configName = `${pipeSize}mm CCTV Van Pack Configuration`;
