@@ -1393,7 +1393,12 @@ export default function Dashboard() {
         const useNo2 = (section.itemNo === 6 || section.itemNo === 10) && 
                        (dbRecommendations || '').toLowerCase().includes('patch lining');
         
-        console.log(`🔒 SECTION ${section.itemNo} [ID: ${section.id}] - No 2 rule: ${useNo2} (items 6&10 with patch lining: ${(section.itemNo === 6 || section.itemNo === 10)} + ${(dbRecommendations || '').toLowerCase().includes('patch lining')})`);
+        if (section.itemNo === 6 || section.itemNo === 10) {
+          console.log(`🎯 SECTION ${section.itemNo} [ID: ${section.id}] - No 2 rule: ${useNo2}`);
+          console.log(`   - Is item 6 or 10: ${(section.itemNo === 6 || section.itemNo === 10)}`);
+          console.log(`   - Has patch lining: ${(dbRecommendations || '').toLowerCase().includes('patch lining')}`);
+          console.log(`   - Recommendations: "${dbRecommendations}"`);
+        }
         
         return { useNo2, no2Value };
       };
