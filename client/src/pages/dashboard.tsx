@@ -1392,13 +1392,11 @@ export default function Dashboard() {
           recommendations: `"${dbRecommendations}"`
         });
         
-        // Rule 2: "No 2" rule uses 25 runs per shift for sections > 30m with patch lining
-        // Database facts: Item 6 (33.78m) and Item 10 (34.31m) both >30m with patch recommendations
-        // Check: 150mm pipe, >30m length, patch lining recommendations
+        // Rule 2: "No 2" rule uses 25 runs per shift for sections > 30m length
+        // Database facts: Item 6 (33.78m) and Item 10 (34.31m) both >30m 
+        // Simple criteria: 150mm pipe AND >30m length (no dependency on recommendations)
         const sectionLength = parseFloat(section.totalLength) || 0;
-        const useNo2 = section.pipeSize === '150' && 
-                       sectionLength > 30 && 
-                       (dbRecommendations || '').toLowerCase().includes('patch lining');
+        const useNo2 = section.pipeSize === '150' && sectionLength > 30;
         
         if (section.itemNo === 6 || section.itemNo === 10) {
           console.log(`🎯 SECTION ${section.itemNo} [ID: ${section.id}] - No 2 rule: ${useNo2}`);

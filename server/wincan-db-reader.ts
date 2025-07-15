@@ -295,29 +295,10 @@ function classifyWincanObservations(observationText: string, sector: string) {
   // Extract defect patterns from Wincan observation format
   const upperText = observationText.toUpperCase();
   
-  // Check for structural defects - WRc Drain Repair Book recommendations
-  if (upperText.includes('DEFORMED') || upperText.includes('D ')) {
-    defectType = 'structural';
-    const percentageMatch = observationText.match(/(\d+)%/);
-    const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
-    
-    if (percentage >= 20) {
-      severityGrade = 4;
-      recommendations = 'WRc Drain Repair Book: Excavate and replace affected section due to severe deformation compromising structural integrity';
-      adoptable = 'No';
-    } else if (percentage >= 10) {
-      severityGrade = 3;
-      recommendations = 'WRc Drain Repair Book: Install full-length CIPP liner or consider excavation if at joint or severely displaced';
-      adoptable = 'Conditional';
-    } else {
-      severityGrade = 2;
-      recommendations = 'WRc Drain Repair Book: Local patch lining (glass mat or silicate) recommended for minor deformation';
-      adoptable = 'Conditional';
-    }
-  }
+  // CRITICAL FIX: Check for service defects FIRST before structural defects
   
   // Check for deposits (DES/DER equivalent) - WRc Drain Repair Book recommendations
-  else if (upperText.includes('SETTLED DEPOSITS') || upperText.includes('DES ') || upperText.includes('DER ')) {
+  if (upperText.includes('SETTLED DEPOSITS') || upperText.includes('DES ') || upperText.includes('DER ')) {
     defectType = 'service';
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
@@ -369,6 +350,27 @@ function classifyWincanObservations(observationText: string, sector: string) {
     severityGrade = 0;
     recommendations = 'No action required this pipe section is at an adoptable condition';
     adoptable = 'Yes';
+  }
+  
+  // Check for structural defects ONLY - WRc Drain Repair Book recommendations
+  else if (upperText.includes('DEFORMED') || upperText.includes('D ')) {
+    defectType = 'structural';
+    const percentageMatch = observationText.match(/(\d+)%/);
+    const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
+    
+    if (percentage >= 20) {
+      severityGrade = 4;
+      recommendations = 'WRc Drain Repair Book: Excavate and replace affected section due to severe deformation compromising structural integrity';
+      adoptable = 'No';
+    } else if (percentage >= 10) {
+      severityGrade = 3;
+      recommendations = 'WRc Drain Repair Book: Install full-length CIPP liner or consider excavation if at joint or severely displaced';
+      adoptable = 'Conditional';
+    } else {
+      severityGrade = 2;
+      recommendations = 'WRc Drain Repair Book: Local patch lining (glass mat or silicate) recommended for minor deformation';
+      adoptable = 'Conditional';
+    }
   }
   
   // For any other observation codes that don't match defect patterns, treat as Grade 0
