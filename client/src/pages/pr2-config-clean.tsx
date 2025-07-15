@@ -1244,6 +1244,9 @@ export default function PR2ConfigClean() {
       console.log(`🗑️ Deleting configuration ID: ${editId}`);
       await apiRequest('DELETE', `/api/pr2-clean/${editId}`);
       
+      // Invalidate cache to refresh the PR2 configurations list
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      
       // Navigate back to the pricing page for this sector
       setLocation(`/pr2-pricing?sector=${sector}`);
     } catch (error) {
@@ -1492,7 +1495,7 @@ export default function PR2ConfigClean() {
               <Button variant="outline" className="flex-1 flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   <Settings className="w-4 h-4" />
-                  150mm Configuration Options
+                  {pipeSize ? `${pipeSize}mm Configuration Options` : 'Configuration Options'}
                 </span>
                 <ChevronDown className="w-4 h-4" />
               </Button>
