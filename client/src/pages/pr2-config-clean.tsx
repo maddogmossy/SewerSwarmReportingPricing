@@ -1505,10 +1505,10 @@ export default function PR2ConfigClean() {
           </div>
           <CollapsibleContent className="mb-6">
             {/* Five-Window Configuration Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 border rounded-lg bg-gray-50">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-9 gap-4 p-4 border rounded-lg bg-gray-50">
               
               {/* Blue Window: Day Rate */}
-              <Card className="bg-blue-50 border-blue-200">
+              <Card className="bg-blue-50 border-blue-200 lg:col-span-2">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
                     <Coins className="w-4 h-4" />
@@ -1534,8 +1534,8 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Math Window */}
-              <Card className="bg-gray-50 border-gray-200">
+              {/* Math Window - Half size */}
+              <Card className="bg-gray-50 border-gray-200 lg:col-span-1">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-gray-700 text-sm flex items-center gap-2">
                     <Calculator className="w-4 h-4" />
@@ -1549,13 +1549,13 @@ export default function PR2ConfigClean() {
                     </Label>
                     <Select>
                       <SelectTrigger className="bg-white border-gray-300">
-                        <SelectValue placeholder="Select operator" />
+                        <SelectValue placeholder="÷" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="divide">÷ (Divide)</SelectItem>
-                        <SelectItem value="multiply">× (Multiply)</SelectItem>
-                        <SelectItem value="add">+ (Add)</SelectItem>
-                        <SelectItem value="subtract">- (Subtract)</SelectItem>
+                        <SelectItem value="divide">÷</SelectItem>
+                        <SelectItem value="multiply">×</SelectItem>
+                        <SelectItem value="add">+</SelectItem>
+                        <SelectItem value="subtract">-</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1563,11 +1563,20 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Green Window: Runs per Shift */}
-              <Card className="bg-green-50 border-green-200">
+              <Card className="bg-green-50 border-green-200 lg:col-span-2">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                    <Package className="w-4 h-4" />
-                    Quantity Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
+                  <CardTitle className="text-green-700 text-sm flex items-center gap-2 justify-between">
+                    <span className="flex items-center gap-2">
+                      <Package className="w-4 h-4" />
+                      Quantity Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 px-2 text-xs border-green-300 text-green-700 hover:bg-green-100"
+                    >
+                      Add
+                    </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -1590,7 +1599,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Orange Window: Min Runs per Shift */}
-              <Card className="bg-orange-50 border-orange-200">
+              <Card className="bg-orange-50 border-orange-200 lg:col-span-2">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
                     <Gauge className="w-4 h-4" />
@@ -1617,11 +1626,20 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Purple Window: Percentage and Length */}
-              <Card className="bg-purple-50 border-purple-200">
+              <Card className="bg-purple-50 border-purple-200 lg:col-span-2">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
-                    <Zap className="w-4 h-4" />
-                    Range Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
+                  <CardTitle className="text-purple-700 text-sm flex items-center gap-2 justify-between">
+                    <span className="flex items-center gap-2">
+                      <Zap className="w-4 h-4" />
+                      Range Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 px-2 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
+                    >
+                      Add
+                    </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
