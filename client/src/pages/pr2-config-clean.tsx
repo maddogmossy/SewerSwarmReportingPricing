@@ -1515,17 +1515,18 @@ export default function PR2ConfigClean() {
                     Price/Cost Options {editId && <span className="text-xs text-gray-500">(ID: {editId})</span>}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="price_dayrate" className="text-sm font-medium text-blue-700">
+                <CardContent className="py-2">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="price_dayrate" className="text-sm font-medium text-blue-700 flex-shrink-0">
                       Day Rate
                     </Label>
                     <Input
                       id="price_dayrate"
-                      placeholder="Enter £ value"
+                      placeholder="£ value"
+                      maxLength={10}
                       value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
                       onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
-                      className="bg-white border-blue-300"
+                      className="bg-white border-blue-300 h-7 text-sm flex-1"
                       data-field="day-rate"
                       data-window="blue"
                       data-option-id="price_dayrate"
