@@ -1543,7 +1543,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Math Window */}
-              <Card className="bg-gray-50 border-gray-200 w-32 flex-shrink-0">
+              <Card className="bg-gray-50 border-gray-200 w-40 flex-shrink-0">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
                     <Calculator className="w-3 h-3 mr-1" />
