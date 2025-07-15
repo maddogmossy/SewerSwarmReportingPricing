@@ -1480,10 +1480,15 @@ export default function Dashboard() {
     const sectionPipeSize = parseInt(section.pipeSize?.replace(/[^\d]/g, '') || '0');
     const sectionLength = parseFloat(section.totalLength || '0');
     
-    // Check pipe size range
+    // Define all range variables at the top to avoid scope issues
     const pipeSizeRange = pr2Config.rangeOptions.find((range: any) => 
       range.label?.toLowerCase().includes('pipe size') && range.enabled
     );
+    const percentageRange = pr2Config.rangeOptions.find((range: any) => 
+      range.label?.toLowerCase().includes('percent') && range.enabled
+    );
+    
+    // Check pipe size range
     if (pipeSizeRange) {
       const minSize = parseInt(pipeSizeRange.rangeStart || '0');
       const maxSize = parseInt(pipeSizeRange.rangeEnd || '999');
@@ -1533,9 +1538,6 @@ export default function Dashboard() {
     }
     
     // Check percentage range - SEPARATE water levels from defect percentages
-    const percentageRange = pr2Config.rangeOptions.find((range: any) => 
-      range.label?.toLowerCase().includes('percent') && range.enabled
-    );
     if (percentageRange && section.defects) {
       // Extract DEFECT percentages only (exclude water levels)
       const defectMatches = section.defects.match(/(\d+)%(?!\s*of the vertical dimension)/g);
