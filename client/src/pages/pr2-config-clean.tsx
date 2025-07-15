@@ -837,29 +837,30 @@ export default function PR2ConfigClean() {
   }, [formData.pricingOptions, formData.quantityOptions, formData.minQuantityOptions, formData.rangeOptions, formData.mathOperators]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {isEditing ? 'Edit' : 'Create'} {formData.categoryName || 'Configuration'}
-            </h1>
-            <p className="text-gray-600 mt-1">
-              Sector: <span className="font-medium text-blue-600">{sector}</span>
-            </p>
+    <>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {isEditing ? 'Edit' : 'Create'} {formData.categoryName || 'Configuration'}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Sector: <span className="font-medium text-blue-600">{sector}</span>
+              </p>
+            </div>
+            
+            {/* Dashboard Navigation */}
+            <Button
+              onClick={() => setLocation('/dashboard')}
+              variant="outline"
+              className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
+            >
+              <BarChart3 className="h-5 w-5 text-green-600" />
+              Dashboard
+            </Button>
           </div>
-          
-          {/* Dashboard Navigation */}
-          <Button
-            onClick={() => setLocation('/dashboard')}
-            variant="outline"
-            className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
-          >
-            <BarChart3 className="h-5 w-5 text-green-600" />
-            Dashboard
-          </Button>
-        </div>
 
         {/* Sector Selection Checkboxes */}
         <Card className="mb-6">
@@ -1484,6 +1485,6 @@ export default function PR2ConfigClean() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </div>
+    </>
   );
 }
