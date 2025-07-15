@@ -1525,7 +1525,7 @@ export default function PR2ConfigClean() {
                 <CardContent className="py-1">
                   <div className="flex items-center gap-1">
                     <Label htmlFor="price_dayrate" className="text-xs font-medium text-blue-700 flex-shrink-0">
-                      Day Rate
+                      Rate
                     </Label>
                     <Input
                       id="price_dayrate"
@@ -1587,7 +1587,7 @@ export default function PR2ConfigClean() {
                 <CardContent className="py-1">
                   <div className="flex items-center gap-2">
                     <Label htmlFor="quantity_runs" className="text-xs font-medium text-green-700 flex-shrink-0">
-                      Runs/Shift
+                      No
                     </Label>
                     <Input
                       id="quantity_runs"
@@ -1615,7 +1615,7 @@ export default function PR2ConfigClean() {
                 <CardContent className="py-1">
                   <div className="flex items-center gap-1">
                     <Label htmlFor="minquantity_runs" className="text-xs font-medium text-orange-700 flex-shrink-0">
-                      Min
+                      Qty
                     </Label>
                     <Input
                       id="minquantity_runs"
