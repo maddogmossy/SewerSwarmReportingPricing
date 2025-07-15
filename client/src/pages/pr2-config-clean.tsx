@@ -268,54 +268,14 @@ export default function PR2ConfigClean() {
     }));
   };
 
-  // Force form inputs to update when formData changes
+  // Debug form data loading (removed DOM manipulation - React state should handle values)
   useEffect(() => {
-    console.log(`🔄 DOM manipulation useEffect triggered for Config ${editId}`);
-    console.log(`🔄 Quantity options:`, formData.quantityOptions);
-    console.log(`🔄 Range options:`, formData.rangeOptions);
-    
-    const timer = setTimeout(() => {
-      // Force update all quantity inputs
-      formData.quantityOptions.forEach(option => {
-        if (option.enabled) {
-          const inputElement = document.querySelector(`input[data-option-id="${option.id}"]`) as HTMLInputElement;
-          console.log(`🔄 Looking for input with data-option-id="${option.id}", found:`, inputElement);
-          if (inputElement) {
-            console.log(`🔄 Current input value: "${inputElement.value}", expected: "${option.value}"`);
-            if (inputElement.value !== option.value) {
-              inputElement.value = option.value;
-              console.log(`🔄 Force updated input ${option.id} to: ${option.value}`);
-            }
-          }
-        }
-      });
-
-      // Force update all range inputs
-      formData.rangeOptions.forEach(option => {
-        if (option.enabled) {
-          const startInput = document.querySelector(`input[data-range-id="${option.id}-start"]`) as HTMLInputElement;
-          const endInput = document.querySelector(`input[data-range-id="${option.id}-end"]`) as HTMLInputElement;
-          console.log(`🔄 Looking for range inputs for ${option.id}, found start:`, startInput, 'end:', endInput);
-          if (startInput) {
-            console.log(`🔄 Current start value: "${startInput.value}", expected: "${option.rangeStart}"`);
-            if (startInput.value !== option.rangeStart) {
-              startInput.value = option.rangeStart;
-              console.log(`🔄 Force updated range start ${option.id} to: ${option.rangeStart}`);
-            }
-          }
-          if (endInput) {
-            console.log(`🔄 Current end value: "${endInput.value}", expected: "${option.rangeEnd}"`);
-            if (endInput.value !== option.rangeEnd) {
-              endInput.value = option.rangeEnd;
-              console.log(`🔄 Force updated range end ${option.id} to: ${option.rangeEnd}`);
-            }
-          }
-        }
-      });
-    }, 200); // Increased delay to ensure DOM is fully updated
-
-    return () => clearTimeout(timer);
-  }, [formData.quantityOptions, formData.rangeOptions, editId]);
+    console.log(`✅ Form data loaded for Config ${editId}:`);
+    console.log(`   📊 Quantity options:`, formData.quantityOptions);
+    console.log(`   📊 Range options:`, formData.rangeOptions);
+    console.log(`   📊 Pricing options:`, formData.pricingOptions);
+    console.log(`   📊 Min quantity options:`, formData.minQuantityOptions);
+  }, [formData, editId]);
 
   // Dialog states
   const [addPricingDialogOpen, setAddPricingDialogOpen] = useState(false);
@@ -1490,7 +1450,7 @@ export default function PR2ConfigClean() {
         </div>
 
         {/* Collapsible Configuration Panel */}
-        <Collapsible>
+        <Collapsible defaultOpen={isEditing}>
           <div className="flex items-center gap-2 mb-4">
             <CollapsibleTrigger asChild>
               <Button variant="outline" className="flex-1 flex items-center justify-between">
