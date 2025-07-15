@@ -401,6 +401,9 @@ export default function PR2ConfigClean() {
 
   // State to track which sectors have this configuration (loaded once when editing starts)
   const [sectorsWithConfig, setSectorsWithConfig] = useState<string[]>([]);
+  
+  // State for delete confirmation dialog
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Handle sector checkbox changes
   const handleSectorChange = async (sectorId: string, checked: boolean) => {
@@ -1233,6 +1236,21 @@ export default function PR2ConfigClean() {
     setFormData(prev => ({ ...prev, description: autoDesc }));
   }, [formData.pricingOptions, formData.quantityOptions, formData.minQuantityOptions, formData.rangeOptions, formData.mathOperators]);
 
+  // Delete configuration functionality
+  const handleDeleteConfiguration = async () => {
+    if (!editId) return;
+    
+    try {
+      console.log(`🗑️ Deleting configuration ID: ${editId}`);
+      await apiRequest('DELETE', `/api/pr2-clean/${editId}`);
+      
+      // Navigate back to the pricing page for this sector
+      setLocation(`/pr2-pricing?sector=${sector}`);
+    } catch (error) {
+      console.error('❌ Error deleting configuration:', error);
+    }
+  };
+
   // Manual save functionality
   const handleSaveConfiguration = async () => {
     // All options are enabled, no filtering needed
@@ -1469,15 +1487,27 @@ export default function PR2ConfigClean() {
 
         {/* Collapsible Configuration Panel */}
         <Collapsible>
-          <CollapsibleTrigger asChild>
-            <Button variant="outline" className="w-full mb-4 flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Settings className="w-4 h-4" />
-                150mm Configuration Options
-              </span>
-              <ChevronDown className="w-4 h-4" />
-            </Button>
-          </CollapsibleTrigger>
+          <div className="flex items-center gap-2 mb-4">
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" className="flex-1 flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Settings className="w-4 h-4" />
+                  150mm Configuration Options
+                </span>
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </CollapsibleTrigger>
+            {isEditing && editId && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowDeleteDialog(true)}
+                className="px-3 py-2 text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
           <CollapsibleContent className="mb-6">
             {/* Five-Window Configuration Layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 border rounded-lg bg-gray-50">
@@ -1623,6 +1653,27 @@ export default function PR2ConfigClean() {
           </CollapsibleContent>
         </Collapsible>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Configuration</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this configuration? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfiguration}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
