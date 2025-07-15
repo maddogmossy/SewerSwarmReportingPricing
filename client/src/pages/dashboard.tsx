@@ -1389,7 +1389,8 @@ export default function Dashboard() {
         
         // HARD LOCKDOWN: Only apply "No 2" rule to sections that exactly match items 6 and 10
         // User must specify exact database criteria, no interpretation allowed
-        const useNo2 = false; // DISABLED - requires user to specify exact database matching criteria
+        // TEMPORARILY ENABLE STANDARD PRICING: All sections get Rule 1 (£61.67) until "No 2" criteria specified
+        const useNo2 = false; // Standard pricing enabled for all sections
         
         console.log(`🔒 Section ${section.itemNo} - No 2 rule: ${useNo2} (LOCKDOWN MODE: Only exact database criteria allowed)`);
         
