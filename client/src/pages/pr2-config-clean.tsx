@@ -1672,7 +1672,7 @@ export default function PR2ConfigClean() {
                         placeholder="max m"
                         value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || ''}
                         onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                        className="bg-white border-purple-300 h-7 text-sm flex-1"
+                        className="bg-white border-purple-300 h-7 text-sm flex-1 w-20 min-w-20"
                       />
                     </div>
                   </div>
