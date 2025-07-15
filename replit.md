@@ -566,29 +566,30 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.1' to return to this stable checkpoint
 
-## REV V4.7 RESTORE - SYSTEM ROLLBACK COMPLETED (July 14, 2025)
+## REV V5.4 CHECKPOINT - CONSISTENT ENTRY POINT NAVIGATION LOCKED (July 15, 2025)
 
-🔒 **ROLLBACK TO STABLE STATE SUCCESSFUL:**
-- **Root Cause Identified:** Complex green highlighting logic and URL parameter parsing in REV V5.3+ caused persistent JavaScript errors
-- **Clean Restoration:** Removed all problematic configuration detection logic that was added after REV V4.7
-- **Script Errors Eliminated:** JavaScript "Script error" messages resolved by removing complex useLocation parsing
-- **Simplified Component:** Restored cleaning-options-popover.tsx to REV V4.7 state with simple equipment selection
-- **Working Features Preserved:** Single equipment selection, radio buttons, localStorage persistence, direct routing
+🔒 **PRODUCTION READY - COMPLETE ENTRY POINT CONSISTENCY:**
+- **Fixed Category Name Duplication:** Resolved "150mm 150mm CCTV Jet Vac Configuration" issue by using configName from URL parameters directly
+- **Enhanced URL Parameter Parsing:** Switched from wouter to browser's native `window.location.search` for reliable parameter parsing
+- **Consistent Pipe Size Context:** Both dashboard and pricing page entry points now include proper pipe size parameters
+- **Dynamic Configuration Names:** System generates "150mm CCTV Jet Vac Configuration" consistently from all entry points
+- **Unified Navigation Logic:** Pricing page now adds default 150mm pipe size context to match dashboard behavior
 
-🔒 **TECHNICAL CLEANUP:**
-- **Removed Complex Logic:** Eliminated URL parameter parsing: `const urlParams = new URLSearchParams(location.split('?')[1] || '')`
-- **Removed Green Highlighting:** Eliminated `currentEditId` detection and `isCurrentlyEditing` logic
-- **Removed Query Dependencies:** Eliminated React Query hooks that were causing script errors
-- **Simplified Button Logic:** Restored simple "Add" buttons without dynamic "Edit" text detection
-- **Clean Component Structure:** REV V4.7 component with zero JavaScript errors
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Fixed Duplication Logic:** Changed `${pipeSize}mm ${getCategoryName(categoryId)}` to use `configName || getCategoryName(categoryId)`
+- **Enhanced Pricing Navigation:** Added `pipeSize=150` and dynamic `configName` generation to pricing page navigation
+- **Category Name Mapping:** Implemented comprehensive category display name mapping for all equipment types
+- **URL Parameter Consistency:** Both entry points now create identical URL structures with pipe size context
+- **Browser API Integration:** Replaced wouter location parsing with native `URLSearchParams` for reliable parameter extraction
 
-🔒 **MISTAKE ANALYSIS:**
-- **V5.3 Problem:** Added complex configuration detection logic that introduced script errors
-- **V3.9.2 Problem:** Added URL parameter parsing that caused multiple useLocation hook conflicts
-- **Root Issue:** Attempted to detect "currently editing" state through complex URL parsing instead of simple approach
-- **Lesson Learned:** Simple solutions work better than complex highlighting logic for this use case
+🔒 **USER-CONFIRMED WORKING:**
+- **Dashboard Entry:** Creates "150mm CCTV Jet Vac Configuration" with proper pipe size context
+- **Pricing Page Entry:** Now also creates "150mm CCTV Jet Vac Configuration" (consistent behavior)
+- **URL Structure:** Both paths generate `/pr2-config-clean?sector=utilities&categoryId=cctv-jet-vac&pipeSize=150&configName=150mm%20CCTV%20Jet%20Vac%20Configuration`
+- **Page Titles:** Consistent "Create 150mm CCTV Jet Vac Configuration" across all entry points
+- **Dropdown Headers:** Shows "150mm Pipe Configuration Options" from both navigation paths
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v4.7-restore' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v5.4' to return to this stable checkpoint
 
 ## REV V5.3 CHECKPOINT - EDIT BUTTON SYSTEM FULLY OPERATIONAL (July 14, 2025)
 
