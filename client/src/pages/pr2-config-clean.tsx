@@ -1309,13 +1309,23 @@ export default function PR2ConfigClean() {
   // Auto-save functionality
   const handleAutoSaveAndNavigate = (destination: string) => {
     return async () => {
-      // Check if there are any enabled options to save
-      const hasEnabledOptions = formData.pricingOptions.some(opt => opt.enabled) ||
-                               formData.quantityOptions.some(opt => opt.enabled) ||
-                               formData.minQuantityOptions.some(opt => opt.enabled) ||
-                               formData.rangeOptions.some(opt => opt.enabled);
+      // CRITICAL FIX: Only save when there are actual VALUES entered, not just enabled options
+      // This prevents creating empty configurations when navigating between categories
+      const hasActualValues = formData.pricingOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
+                             formData.quantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
+                             formData.minQuantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
+                             formData.rangeOptions.some(opt => opt.enabled && ((opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')));
 
-      if (hasEnabledOptions && formData.categoryName) {
+      // Only save if we're editing an existing configuration OR if there are actual values
+      const shouldSave = (isEditing && editId) || (hasActualValues && formData.categoryName);
+      
+      if (shouldSave) {
+        console.log('💾 Auto-saving configuration before navigation (has actual values or editing existing)...');
+      } else {
+        console.log('⏭️ Skipping auto-save - no actual values entered, just navigating...');
+      }
+
+      if (shouldSave) {
         try {
           console.log('🔄 Auto-saving configuration before navigation...');
           
