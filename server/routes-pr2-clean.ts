@@ -268,7 +268,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           categoryName: categoryName || 'New Clean Configuration',
           description: description || 'Clean PR2 configuration',
           sector: sector || 'utilities', // Single sector per configuration
-          categoryColor: categoryColor || '#93c5fd', // Default pastel blue color
+          categoryColor: categoryColor || '#2563eb', // Default blue color only for new configs
           pricingOptions: pricingOptions || [],
           quantityOptions: quantityOptions || [],
           minQuantityOptions: minQuantityOptions || [],
@@ -317,7 +317,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           categoryName: categoryName || 'Updated Clean Configuration',
           description: description || 'Clean PR2 configuration',
           sector: sector || 'utilities', // Single sector per configuration
-          categoryColor: categoryColor || '#93c5fd', // Default pastel blue color
+          categoryColor: categoryColor, // Use the provided color
           pricingOptions: pricingOptions || [],
           quantityOptions: quantityOptions || [],
           minQuantityOptions: minQuantityOptions || [],
