@@ -7,6 +7,7 @@ import { getSectorStandards, getAllSectorStandards } from "./sector-standards";
 import { db } from "./db";
 import { pr2Configurations, standardCategories } from "../shared/schema";
 import { eq, sql } from "drizzle-orm";
+import { registerAdminControlRoutes } from "./routes-admin-controls";
 
 // Debug: Test import at module level
 console.log('Testing sector standards import...');
@@ -128,6 +129,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Simple test user creation
     res.json({ success: true, message: "Test user access granted" });
   });
+
+  // Register admin control routes
+  registerAdminControlRoutes(app);
 
   // REV_V1: Essential endpoints for frontend functionality
   app.get('/api/uploads', async (req, res) => {

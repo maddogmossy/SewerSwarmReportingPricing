@@ -192,7 +192,7 @@ export class DatabaseStorage implements IStorage {
   async updateProjectFolder(id: number, folderUpdate: Partial<ProjectFolder>): Promise<ProjectFolder> {
     const [updated] = await db
       .update(projectFolders)
-      .set({ ...folderUpdate, updatedAt: new Date() })
+      .set(folderUpdate)
       .where(eq(projectFolders.id, id))
       .returning();
     return updated;

@@ -457,8 +457,25 @@ export const pr2Configurations = pgTable("pr2_configurations", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Admin Controls table for configuration locks
+export const adminControls = pgTable("admin_controls", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  controlType: varchar("control_type").notNull(), // "tp2_option_1_lock", "tp2_option_2_lock", etc.
+  sector: varchar("sector"), // utilities, adoption, highways, etc.
+  categoryId: varchar("category_id"), // "patching", "cctv", etc.
+  isLocked: boolean("is_locked").default(true), // true = locked, false = unlocked
+  lockedBy: varchar("locked_by").references(() => users.id), // Admin who locked it
+  unlockedBy: varchar("unlocked_by").references(() => users.id), // Admin who unlocked it
+  lockReason: text("lock_reason"), // Optional reason for lock
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+export type AdminControl = typeof adminControls.$inferSelect;
+export type InsertAdminControl = typeof adminControls.$inferInsert;
 export type FileUpload = typeof fileUploads.$inferSelect;
 export type InsertFileUpload = typeof fileUploads.$inferInsert;
 export type SectionInspection = typeof sectionInspections.$inferSelect;
@@ -512,7 +529,6 @@ export const insertProjectFolderSchema = createInsertSchema(projectFolders).omit
   id: true,
   userId: true,
   createdAt: true,
-  updatedAt: true,
 });
 
 export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({

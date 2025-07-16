@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -412,6 +412,43 @@ export default function PR2ConfigClean() {
     enabled: isEditing && !!editId,
     staleTime: 0, // Always fetch fresh data
     refetchOnMount: true, // Refetch when component mounts
+  });
+
+  // Admin controls
+  const { data: adminData } = useQuery({
+    queryKey: ['/api/admin-controls/check-admin'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin-controls/check-admin');
+      return response.json();
+    }
+  });
+
+  const { data: adminControls } = useQuery({
+    queryKey: ['/api/admin-controls', sector, categoryId],
+    queryFn: async () => {
+      const response = await fetch(`/api/admin-controls?sector=${sector}&categoryId=${categoryId}&controlType=tp2_option_1_lock`);
+      return response.json();
+    },
+    enabled: !!sector && !!categoryId
+  });
+
+  const toggleAdminControl = useMutation({
+    mutationFn: async ({ isLocked, lockReason }: { isLocked: boolean; lockReason?: string }) => {
+      const response = await apiRequest('/api/admin-controls', {
+        method: 'POST',
+        body: JSON.stringify({
+          controlType: 'tp2_option_1_lock',
+          sector: sector,
+          categoryId: categoryId,
+          isLocked: isLocked,
+          lockReason: lockReason
+        })
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin-controls'] });
+    }
   });
 
   // Load configurations by category and sector to find the right one for editing
@@ -1887,8 +1924,30 @@ export default function PR2ConfigClean() {
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
                               1.
                             </Label>
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-32">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-32 flex items-center gap-2">
                               Single Layer
+                              {/* Admin Lock/Unlock icon for TP2 Option 1 */}
+                              {adminData?.isAdmin && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const currentLock = adminControls?.find(c => c.controlType === 'tp2_option_1_lock');
+                                    const isLocked = currentLock?.isLocked || false;
+                                    toggleAdminControl.mutate({
+                                      isLocked: !isLocked,
+                                      lockReason: isLocked ? undefined : 'Admin-level security control'
+                                    });
+                                  }}
+                                  className="h-4 w-4 p-0 text-purple-700 hover:text-red-600"
+                                >
+                                  {adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked ? (
+                                    <Lock className="h-3 w-3" />
+                                  ) : (
+                                    <Unlock className="h-3 w-3" />
+                                  )}
+                                </Button>
+                              )}
                             </Label>
                             <Input
                               id="single_layer_cost"
@@ -1896,9 +1955,18 @@ export default function PR2ConfigClean() {
                               maxLength={6}
                               value={formData.pricingOptions.find(opt => opt.id === 'single_layer_cost')?.value || ''}
                               onChange={(e) => handleValueChange('pricingOptions', 'single_layer_cost', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-16"
+                              className={`h-6 text-xs w-16 ${
+                                adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
+                                  ? 'bg-gray-100 border-gray-300 text-gray-500'
+                                  : 'bg-white border-purple-300'
+                              }`}
+                              disabled={adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
                             />
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
+                            <Label className={`text-xs font-medium flex-shrink-0 ml-4 ${
+                              adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
+                                ? 'text-gray-500'
+                                : 'text-purple-700'
+                            }`}>
                               Min Qty
                             </Label>
                             <Input
@@ -1907,9 +1975,18 @@ export default function PR2ConfigClean() {
                               maxLength={3}
                               value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
                               onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-12"
+                              className={`h-6 text-xs w-12 ${
+                                adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
+                                  ? 'bg-gray-100 border-gray-300 text-gray-500'
+                                  : 'bg-white border-purple-300'
+                              }`}
+                              disabled={adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
                             />
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
+                            <Label className={`text-xs font-medium flex-shrink-0 ml-4 ${
+                              adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
+                                ? 'text-gray-500'
+                                : 'text-purple-700'
+                            }`}>
                               Length (Max)
                             </Label>
                             <Input
@@ -1918,7 +1995,12 @@ export default function PR2ConfigClean() {
                               maxLength={4}
                               value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
                               onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-20"
+                              className={`h-6 text-xs w-20 ${
+                                adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
+                                  ? 'bg-gray-100 border-gray-300 text-gray-500'
+                                  : 'bg-white border-purple-300'
+                              }`}
+                              disabled={adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
                             />
                           </div>
                           <div className="flex items-center gap-2">
