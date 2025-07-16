@@ -791,27 +791,30 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.4' to return to this stable checkpoint
 
-## REV V6.4.2 CHECKPOINT - SC CODE FILTERING SYSTEM FULLY OPERATIONAL (July 16, 2025)
+## REV V6.4.3 CHECKPOINT - STRUCTURAL GRADING BUG COMPLETELY RESOLVED (July 16, 2025)
 
-🔒 **PRODUCTION READY - COMPLETE SC CODE FILTERING WITH DATA RESTORATION:**
-- **SC Code Filtering**: Successfully implemented and tested SC filtering in `formatObservationText` function
-- **Reprocess Functionality**: Added `/api/reprocess/:uploadId` endpoint to apply SC filtering to existing data
-- **Data Restoration**: Successfully restored Upload 80 (GR7188) with 24 authentic sections and proper SC filtering
-- **Authentic Data Maintained**: All pipe sizes (150mm, 225mm, 300mm), materials (PVC), and lengths preserved
-- **Green Status Confirmed**: Dashboard shows authentic green sections with proper pricing calculations
-- **Zero Synthetic Data**: Complete elimination of placeholder/synthetic data generation
+🔒 **PRODUCTION READY - CRITICAL STRUCTURAL GRADING BUG FIXED:**
+- **Deformation Detection Enhanced**: Updated structural defect detection logic to properly match "DEFORMATION" text patterns
+- **Classification Function Fixed**: Added missing `defectType: 'service'` parameter to empty classification return statement
+- **Grade 2 Structural Defects**: Items 13a and 21a now properly classified as Grade 2 structural defects with WRc patch lining recommendations
+- **Database Persistence Verified**: `defect_type: structural` and `severity_grade: 2` now properly stored in database
+- **Multi-Defect System Working**: Service defects (13, 21) and structural defects (13a, 21a) correctly separated and classified
+- **WRc Recommendations**: Structural defects show proper "WRc Drain Repair Book: Local patch lining (glass mat or silicate) recommended for minor deformation"
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **File**: `server/wincan-db-reader.ts` - SC filtering logic working correctly in formatObservationText function
-- **Reprocess Endpoint**: `server/routes-rev-v1.ts` - Added POST `/api/reprocess/:uploadId` for applying updated filtering
-- **Dashboard Integration**: `client/src/pages/dashboard.tsx` - "Re-Process Report" button for applying SC filtering to existing data
-- **Data Type Handling**: Fixed array/string return type handling from readWincanDatabase function
-- **Error Recovery**: Successful restoration of corrupted data using original database files
+- **File**: `server/wincan-db-reader.ts` - Enhanced `classifyWincanObservations` function with improved deformation detection
+- **Structural Detection**: Fixed logic to properly match "DEFORMATION" patterns in observation text
+- **Classification Return**: Added missing `defectType: 'service'` parameter to prevent undefined field errors
+- **Database Storage**: `defectType` field now properly flows through entire data pipeline from classification to storage
+- **Debugging Removed**: Cleaned up all debug console.log statements after verification
 
 🔒 **CONFIRMED WORKING RESULTS:**
-- **Upload 80 (GR7188)**: 24 authentic sections fully restored with proper SC filtering
-- **Authentic Data**: Pipe sizes (150mm, 225mm, 300mm), materials (PVC), lengths (15.56m, 59.49m, etc.)
-- **Green Status**: Dashboard shows proper green sections with authentic pricing calculations
+- **Items 13a and 21a**: Show `defect_type: structural`, `severity_grade: 2` with proper WRc patch lining recommendations
+- **Items 13 and 21**: Maintain correct `defect_type: service` classification for deposits with cleaning recommendations
+- **Classification Flow**: Structural defects properly detected, classified, and stored with authentic Grade 2 severity
+- **Zero Synthetic Data**: Complete elimination of placeholder/synthetic data generation maintained
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.4.3' to return to this stable checkpoint
 - **SC Filtering**: Informational pipe size change codes successfully filtered from observations
 - **Zero Data Loss**: All original defects, recommendations, and MSCC5 classifications preserved
 

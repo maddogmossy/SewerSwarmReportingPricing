@@ -347,7 +347,8 @@ function classifyWincanObservations(observationText: string, sector: string) {
       severityGrade: 0, 
       recommendations, 
       adoptable: 'Yes',
-      srmGrading 
+      srmGrading,
+      defectType: 'service'
     };
   }
   
@@ -412,7 +413,7 @@ function classifyWincanObservations(observationText: string, sector: string) {
   }
   
   // Check for structural defects ONLY - WRc Drain Repair Book recommendations
-  else if (upperText.includes('DEFORMED') || upperText.includes('D ')) {
+  else if (upperText.includes('DEFORMATION') || upperText.includes('DEFORMED') || upperText.includes('D ')) {
     defectType = 'structural';
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
@@ -442,7 +443,7 @@ function classifyWincanObservations(observationText: string, sector: string) {
   // Get SRM grading for final result
   const srmGrading = getSRMGrading(severityGrade, defectType);
   
-  return { severityGrade, recommendations, adoptable, srmGrading };
+  return { severityGrade, recommendations, adoptable, srmGrading, defectType };
 }
 
 // Get SRM grading based on severity grade and defect type
@@ -486,6 +487,7 @@ export interface WincanSectionData {
   inspectionDate: string;
   inspectionTime: string;
   letterSuffix?: string; // For 13a, 13b, etc.
+  defectType?: string; // 'structural' | 'service'
 }
 
 export async function readWincanDatabase(filePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
@@ -782,7 +784,8 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           severityGrade: serviceClassification.severityGrade,
           adoptable: serviceClassification.adoptable,
           inspectionDate: inspectionDate,
-          inspectionTime: inspectionTime
+          inspectionTime: inspectionTime,
+          defectType: serviceClassification.defectType
         };
         
         // Create structural defect section (with 'a' suffix)
@@ -804,7 +807,8 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           severityGrade: structuralClassification.severityGrade,
           adoptable: structuralClassification.adoptable,
           inspectionDate: inspectionDate,
-          inspectionTime: inspectionTime
+          inspectionTime: inspectionTime,
+          defectType: structuralClassification.defectType
         };
         
         authenticSections.push(serviceSection);
@@ -827,6 +831,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       let recommendations = 'No action required this pipe section is at an adoptable condition';
       let adoptable = 'Yes';
       let srmGrading = getSRMGrading(0, 'service');
+      let defectType = 'service';
       
       if (observations.length > 0) {
         console.log(`🎯 Applying MSCC5 classification to: "${defectText.substring(0, 100)}..."`);
@@ -835,6 +840,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         recommendations = classification.recommendations;
         adoptable = classification.adoptable;
         srmGrading = classification.srmGrading;
+        defectType = classification.defectType;
         
         console.log(`📊 MSCC5 Classification Result: Grade ${severityGrade}, ${adoptable}, SRM: ${srmGrading.description}, Recommendations: ${recommendations.substring(0, 80)}...`);
       } else {
@@ -858,6 +864,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         adoptable: adoptable,
         inspectionDate: inspectionDate,
         inspectionTime: inspectionTime,
+        defectType: defectType,
         // Note: srmGrading will be calculated in API response
       };
       
@@ -936,6 +943,7 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         totalLength: section.totalLength,
         lengthSurveyed: section.lengthSurveyed,
         defects: section.defects,
+        defectType: section.defectType,
         recommendations: section.recommendations,
         severityGrade: section.severityGrade,
         adoptable: section.adoptable,
