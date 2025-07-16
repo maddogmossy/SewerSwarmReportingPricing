@@ -1215,9 +1215,9 @@ export default function Dashboard() {
     }
   };
 
-  const refreshMutation = useMutation({
-    mutationFn: () => apiRequest("GET", "/api/uploads"),
-    onSuccess: () => {
+  const reprocessMutation = useMutation({
+    mutationFn: (uploadId: number) => apiRequest("POST", `/api/reprocess/${uploadId}`),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/uploads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user-pricing"] });
       queryClient.invalidateQueries({ queryKey: ["/api/equipment-types/2"] });
@@ -1233,11 +1233,18 @@ export default function Dashboard() {
         queryClient.refetchQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
       }
       toast({
-        title: "Reports Refreshed",
-        description: "Dashboard data and pricing updated.",
+        title: "Report Reprocessed",
+        description: `${data.message} - SC codes have been filtered out.`,
       });
       // Force page reload to ensure fresh data
       setTimeout(() => window.location.reload(), 1000);
+    },
+    onError: (error) => {
+      toast({
+        title: "Reprocessing Failed",
+        description: error.message || "Failed to reprocess report. Please try again.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -2482,19 +2489,21 @@ export default function Dashboard() {
 
           <div className="ml-auto flex gap-2">
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                // Force cache invalidation and refresh to show authentic data
-                queryClient.invalidateQueries();
-                queryClient.clear();
-                setTimeout(() => window.location.reload(), 100);
-              }}
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh Dashboard
-            </Button>
+            {currentUpload && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (currentUpload?.id) {
+                    reprocessMutation.mutate(currentUpload.id);
+                  }
+                }}
+                disabled={reprocessMutation.isPending}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                {reprocessMutation.isPending ? "Reprocessing..." : "Re-Process Report"}
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"

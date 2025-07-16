@@ -425,6 +425,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reprocess existing upload endpoint
+  app.post('/api/reprocess/:uploadId', async (req, res) => {
+    try {
+      const uploadId = parseInt(req.params.uploadId);
+      
+      // Get the upload record
+      const upload = await storage.getFileUploadById(uploadId);
+      if (!upload) {
+        return res.status(404).json({ error: 'Upload not found' });
+      }
+      
+      console.log(`🔄 Reprocessing upload ${uploadId}: ${upload.fileName}`);
+      
+      // Update status to processing
+      await storage.updateFileUploadStatus(uploadId, 'processing');
+      
+      // Clear existing sections
+      await storage.deleteSectionInspectionsByFileUpload(uploadId);
+      
+      // Process file based on type with updated logic
+      if (upload.fileName.toLowerCase().endsWith('.db3') || upload.fileName.toLowerCase().endsWith('.db')) {
+        // Process Wincan database file with updated SC filtering
+        const sections = await readWincanDatabase(upload.filePath);
+        if (sections && sections.length > 0) {
+          await storeWincanSections(uploadId, sections);
+          await storage.updateFileUploadStatus(uploadId, 'completed');
+          console.log(`✅ Reprocessed ${sections.length} sections from Wincan database with updated filtering`);
+          
+          res.json({ 
+            success: true, 
+            message: `Reprocessed ${sections.length} sections with updated SC filtering`,
+            sectionsCount: sections.length 
+          });
+        } else {
+          await storage.updateFileUploadStatus(uploadId, 'failed');
+          res.status(500).json({ error: 'No sections found during reprocessing' });
+        }
+      } else {
+        await storage.updateFileUploadStatus(uploadId, 'failed');
+        res.status(400).json({ error: 'File type not supported for reprocessing' });
+      }
+      
+    } catch (error) {
+      console.error('Reprocessing error:', error);
+      
+      // Update status to failed
+      const uploadId = parseInt(req.params.uploadId);
+      await storage.updateFileUploadStatus(uploadId, 'failed');
+      
+      res.status(500).json({ error: 'Reprocessing failed: ' + error.message });
+    }
+  });
+
   // Section data endpoint
   app.get('/api/sections/:uploadId', async (req, res) => {
     try {
