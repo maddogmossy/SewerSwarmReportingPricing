@@ -1448,18 +1448,57 @@ export default function Dashboard() {
       defectsText: defectsText
     });
     
-    // Find the active patching option (e.g., "Double Layer")
-    const activePatchingOption = tp2Config.pricingOptions?.find((option: any) => 
-      option.enabled && option.value && option.value.trim() !== ''
-    );
+    // Determine which patching option to use based on recommendations or default
+    let selectedPatchingOption = null;
+    const recommendations = section.recommendations || '';
     
-    if (!activePatchingOption) {
-      console.log('❌ No active patching option found in TP2 config');
+    // Check if recommendations specify a specific patch type
+    if (recommendations.toLowerCase().includes('single layer')) {
+      selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
+        option.label?.toLowerCase().includes('single layer')
+      );
+      console.log('🔧 Using Single Layer based on recommendations');
+    } else if (recommendations.toLowerCase().includes('triple layer')) {
+      // Check for extra cure first, then regular triple layer
+      if (recommendations.toLowerCase().includes('extra cure')) {
+        selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
+          option.label?.toLowerCase().includes('triple layer') && option.label?.toLowerCase().includes('extra cure')
+        );
+        console.log('🔧 Using Triple Layer (Extra Cure) based on recommendations');
+      } else {
+        selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
+          option.label?.toLowerCase().includes('triple layer') && !option.label?.toLowerCase().includes('extra cure')
+        );
+        console.log('🔧 Using Triple Layer based on recommendations');
+      }
+    } else if (recommendations.toLowerCase().includes('double layer')) {
+      selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
+        option.label?.toLowerCase().includes('double layer')
+      );
+      console.log('🔧 Using Double Layer based on recommendations');
+    } else {
+      // DEFAULT: If no depth recorded or no specific recommendation, use Double Layer (option 2)
+      selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
+        option.label?.toLowerCase().includes('double layer')
+      );
+      console.log('🔧 Using Double Layer as default (no depth recorded or specific recommendation)');
+    }
+    
+    // Fallback: if selected option has no value, find any option with a value
+    if (!selectedPatchingOption || !selectedPatchingOption.value || selectedPatchingOption.value.trim() === '') {
+      selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
+        option.enabled && option.value && option.value.trim() !== ''
+      );
+      console.log('🔧 Fallback: Using first available option with value:', selectedPatchingOption?.label);
+    }
+    
+    if (!selectedPatchingOption || !selectedPatchingOption.value || selectedPatchingOption.value.trim() === '') {
+      console.log('❌ No patching option found with value in TP2 config');
       return null;
     }
     
     // Get the cost per unit and minimum quantity
-    const costPerUnit = parseFloat(activePatchingOption.value) || 0;
+    const costPerUnit = parseFloat(selectedPatchingOption.value) || 0;
     
     // Find the minimum quantity option
     const minQuantityOption = tp2Config.minQuantityOptions?.find((option: any) => 
@@ -1475,7 +1514,7 @@ export default function Dashboard() {
     const meetsMinimumQuantity = defectCount >= minQuantity;
     
     console.log('🔧 TP2 cost calculation:', {
-      activePatchingOption: activePatchingOption.label,
+      selectedPatchingOption: selectedPatchingOption.label,
       costPerUnit: costPerUnit,
       minQuantity: minQuantity,
       defectCount: defectCount,
@@ -1503,14 +1542,14 @@ export default function Dashboard() {
     }
     
     // Update recommendation to include pipe size and length
-    const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${activePatchingOption.label.toLowerCase()} patching`;
+    const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${selectedPatchingOption.label.toLowerCase()} patching`;
     
     return {
       cost: totalCost,
       costPerUnit: costPerUnit,
       defectCount: defectCount,
       minQuantity: minQuantity,
-      patchingType: activePatchingOption.label,
+      patchingType: selectedPatchingOption.label,
       recommendation: recommendationText
     };
   };
