@@ -1713,6 +1713,7 @@ export default function Dashboard() {
         return calculateTP2PatchingCost(section, tp2PatchingConfig);
       } else {
         console.log(`❌ No TP2 patching configuration found for ${pipeSize}mm in ${currentSector.id} sector`);
+        return null; // Return null to show warning triangle
       }
     }
 
