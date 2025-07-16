@@ -1726,33 +1726,35 @@ export default function PR2ConfigClean() {
             {/* Five-Window Configuration Layout */}
             <div className="flex gap-4 p-4 border rounded-lg bg-gray-50 w-full">
               
-              {/* Blue Window: Day Rate */}
-              <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
-                    <Coins className="w-3 h-3" />
-                    Price/Cost Options
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="py-1">
-                  <div className="flex items-center gap-1">
-                    <Label htmlFor="price_dayrate" className="text-xs font-medium text-blue-700 flex-shrink-0">
-                      Rate
-                    </Label>
-                    <Input
-                      id="price_dayrate"
-                      placeholder="£"
-                      maxLength={10}
-                      value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
-                      onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
-                      className="bg-white border-blue-300 h-6 text-xs w-20"
-                      data-field="day-rate"
-                      data-window="blue"
-                      data-option-id="price_dayrate"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Blue Window: Day Rate - Hidden for TP2 */}
+              {categoryId !== 'patching' && (
+                <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
+                      <Coins className="w-3 h-3" />
+                      Price/Cost Options
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-1">
+                    <div className="flex items-center gap-1">
+                      <Label htmlFor="price_dayrate" className="text-xs font-medium text-blue-700 flex-shrink-0">
+                        Rate
+                      </Label>
+                      <Input
+                        id="price_dayrate"
+                        placeholder="£"
+                        maxLength={10}
+                        value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
+                        onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
+                        className="bg-white border-blue-300 h-6 text-xs w-20"
+                        data-field="day-rate"
+                        data-window="blue"
+                        data-option-id="price_dayrate"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Math Window - Hidden for TP2 */}
               {categoryId !== 'patching' && (
@@ -1816,38 +1818,40 @@ export default function PR2ConfigClean() {
                 </Card>
               )}
 
-              {/* Orange Window: Min Runs per Shift */}
-              <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
-                    <Gauge className="w-3 h-3" />
-                    Min Quantity Options
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="py-1">
-                  <div className="space-y-1">
-                    {formData.minQuantityOptions.map((option, index) => (
-                      <div key={option.id} className="flex items-center gap-2">
-                        <Label htmlFor={option.id} className="text-xs font-medium text-orange-700 flex-shrink-0">
-                          Qty{formData.minQuantityOptions.length > 1 ? ` ${index + 1}` : ''}
-                        </Label>
-                        <Input
-                          id={option.id}
-                          placeholder="min"
-                          maxLength={4}
-                          value={option.value || ''}
-                          onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
-                          className="bg-white border-orange-300 h-6 text-xs w-16"
-                          data-field={`min-quantity-${index}`}
-                          data-window="orange"
-                          data-option-id={option.id}
-                        />
+              {/* Orange Window: Min Runs per Shift - Hidden for TP2 */}
+              {categoryId !== 'patching' && (
+                <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
+                      <Gauge className="w-3 h-3" />
+                      Min Quantity Options
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-1">
+                    <div className="space-y-1">
+                      {formData.minQuantityOptions.map((option, index) => (
+                        <div key={option.id} className="flex items-center gap-2">
+                          <Label htmlFor={option.id} className="text-xs font-medium text-orange-700 flex-shrink-0">
+                            Qty{formData.minQuantityOptions.length > 1 ? ` ${index + 1}` : ''}
+                          </Label>
+                          <Input
+                            id={option.id}
+                            placeholder="min"
+                            maxLength={4}
+                            value={option.value || ''}
+                            onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
+                            className="bg-white border-orange-300 h-6 text-xs w-16"
+                            data-field={`min-quantity-${index}`}
+                            data-window="orange"
+                            data-option-id={option.id}
+                          />
 
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Purple Window: Percentage and Length on One Row */}
               <Card className="bg-purple-50 border-purple-200 flex-1">
@@ -1857,14 +1861,16 @@ export default function PR2ConfigClean() {
                       <Zap className="w-3 h-3" />
                       Range Options
                     </span>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="h-6 px-3 text-xs bg-green-600 hover:bg-green-700 text-white border-0 shadow-sm font-medium"
-                      onClick={() => addNewInputsToAllWindows()}
-                    >
-                      <span className="text-white">✚</span> Add New
-                    </Button>
+                    {categoryId !== 'patching' && (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="h-6 px-3 text-xs bg-green-600 hover:bg-green-700 text-white border-0 shadow-sm font-medium"
+                        onClick={() => addNewInputsToAllWindows()}
+                      >
+                        <span className="text-white">✚</span> Add New
+                      </Button>
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
