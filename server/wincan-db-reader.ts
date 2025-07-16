@@ -124,6 +124,8 @@ function formatObservationText(observations: string[]): string {
     }
   }
   
+  console.log(`🔧 Found ${junctionPositions.length} junctions and ${structuralDefectPositions.length} structural defects`);
+  
   // STEP 3: Process observations with enhanced detailed descriptions
   for (const obs of preFiltered) {
     // Try to extract code and meterage for grouping - handle database format like "WL 1.3m (Water level...)"
@@ -132,11 +134,7 @@ function formatObservationText(observations: string[]): string {
       codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)m?/);
     }
     
-    // Additional debug logging for water level observations
-    if (obs.includes('WL ') || obs.includes('Water level')) {
-      console.log(`🔧 Processing WL observation: "${obs}"`);
-      console.log(`🔧 Code match result:`, codeMatch);
-    }
+
     
     if (codeMatch) {
       const code = codeMatch[1];
@@ -149,7 +147,6 @@ function formatObservationText(observations: string[]): string {
         );
         
         if (!hasNearbyStructuralDefect) {
-          console.log(`🔧 Skipping JN ${meterage}m - no structural defect within 1m`);
           continue;
         }
       }
