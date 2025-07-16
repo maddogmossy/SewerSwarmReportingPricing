@@ -840,6 +840,9 @@ export default function Dashboard() {
             let statusMessage = 'Click for cleaning pricing options';
             let backgroundClass = 'bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400';
             
+            // Get the configuration color if available (define outside the block)
+            const configColor = hasLinkedPR2 ? validConfigurations[0]?.categoryColor : undefined;
+            
             if (hasLinkedPR2) {
               // Find the most recent PR2 configuration (highest ID) from valid configurations only
               const pr2Config = validConfigurations.reduce((latest: any, current: any) => 
@@ -853,9 +856,6 @@ export default function Dashboard() {
                 pipeSize: section.pipeSize,
                 totalLength: section.totalLength
               });
-              
-              // Get the configuration color if available
-              const configColor = validConfigurations[0]?.categoryColor;
               
               switch (statusColor) {
                 case 'green':

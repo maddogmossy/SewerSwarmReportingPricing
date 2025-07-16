@@ -82,7 +82,7 @@ const OUTLOOK_COLORS = [
   { name: 'Indigo', value: '#4f46e5' },
   { name: 'Emerald', value: '#059669' },
   { name: 'Rose', value: '#e11d48' },
-  { name: 'Cyan', value: '#0891b2' },
+  { name: 'Cyan', value: '#06b6d4' },
   { name: 'Lime', value: '#65a30d' },
   { name: 'Amber', value: '#d97706' },
   { name: 'Violet', value: '#7c3aed' },
