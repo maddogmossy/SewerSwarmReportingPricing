@@ -1377,55 +1377,24 @@ export default function Dashboard() {
   console.log('🔧 RepairPricingData from query:', repairPricingData);
   console.log('🔧 PR2 Configurations assigned:', pr2Configurations);
 
-  // Function to count repair patches needed from recommendation text (TP2 patching logic)
-  const countRepairPatches = (section: any): number => {
-    const recommendationsText = section.recommendations || '';
-    const defectsText = section.defects || '';
-    
+  // Function to count defects in a section for TP2 patching cost calculation
+  const countDefects = (defectsText: string): number => {
     if (!defectsText || defectsText === 'No service or structural defect found') {
       return 0;
     }
     
-    // First try to extract repair count from recommendations text
-    // Look for patterns like "3 repairs", "2 patches", "1 repair" etc.
-    const repairCountMatch = recommendationsText.match(/(\d+)\s+(?:repair|patch)/i);
-    if (repairCountMatch) {
-      const repairCount = parseInt(repairCountMatch[1]);
-      console.log('🔧 Repair count from recommendations:', {
-        recommendationsText: recommendationsText.substring(0, 100) + '...',
-        extractedCount: repairCount
-      });
-      return repairCount;
-    }
+    // Count meterage references that indicate defect locations
+    // Use word boundaries to prevent false counting of "5mm" from crack descriptions
+    const meterageMatches = defectsText.match(/\b\d+\.?\d*m\b(?!\s*m)/g);
+    const defectCount = meterageMatches ? meterageMatches.length : 1;
     
-    // If no explicit repair count in recommendations, use proximity-based grouping
-    // Group defects within 1000mm (1m) as single patch requirement
-    const meterageMatches = defectsText.match(/\b(\d+\.?\d*)m\b(?!\s*m)/g);
-    if (!meterageMatches) {
-      return 1; // If no meterage found, assume 1 repair needed
-    }
-    
-    // Convert to numbers and sort
-    const meterages = meterageMatches.map(m => parseFloat(m.replace('m', ''))).sort((a, b) => a - b);
-    
-    // Group meterages within 1m of each other
-    let patchGroups = 0;
-    let lastMeterage = -2; // Start with value that won't group with first meterage
-    
-    for (const meterage of meterages) {
-      if (meterage - lastMeterage > 1) { // More than 1m apart = new patch
-        patchGroups++;
-      }
-      lastMeterage = meterage;
-    }
-    
-    console.log('🔧 Proximity-based patch counting:', {
+    console.log('🔧 Defect counting:', {
       defectsText: defectsText.substring(0, 100) + '...',
-      meterages: meterages,
-      patchGroups: patchGroups
+      meterageMatches: meterageMatches,
+      defectCount: defectCount
     });
     
-    return patchGroups;
+    return defectCount;
   };
 
   // Function to calculate TP2 patching cost for repair sections
@@ -1437,15 +1406,15 @@ export default function Dashboard() {
     const pipeSize = section.pipeSize || '150';
     const sectionLength = parseFloat(section.totalLength) || 0;
     
-    // Count repair patches needed (reads from recommendations or uses proximity grouping)
-    const repairCount = countRepairPatches(section);
+    // Count defects for per-unit cost calculation
+    const defectsText = section.defects || '';
+    const defectCount = countDefects(defectsText);
     
     console.log('🔧 TP2 calculation inputs:', {
       pipeSize: pipeSize,
       sectionLength: sectionLength,
-      repairCount: repairCount,
-      recommendations: section.recommendations,
-      defectsText: section.defects
+      defectCount: defectCount,
+      defectsText: defectsText
     });
     
     // Find the active patching option (e.g., "Double Layer")
@@ -1468,24 +1437,24 @@ export default function Dashboard() {
     
     const minQuantity = minQuantityOption ? parseFloat(minQuantityOption.value) || 0 : 0;
     
-    // Calculate total cost: cost per unit × repair count
-    const totalCost = costPerUnit * repairCount;
+    // Calculate total cost: cost per unit × defect count
+    const totalCost = costPerUnit * defectCount;
     
     console.log('🔧 TP2 cost calculation:', {
       activePatchingOption: activePatchingOption.label,
       costPerUnit: costPerUnit,
       minQuantity: minQuantity,
-      repairCount: repairCount,
+      defectCount: defectCount,
       totalCost: totalCost
     });
     
-    // Update recommendation to include pipe size and actual repair count
-    const recommendationText = `To install ${repairCount} × ${pipeSize}mm ${activePatchingOption.label.toLowerCase()} patch${repairCount > 1 ? 'es' : ''}`;
+    // Update recommendation to include pipe size and length
+    const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${activePatchingOption.label.toLowerCase()} patching`;
     
     return {
       cost: totalCost,
       costPerUnit: costPerUnit,
-      repairCount: repairCount,
+      defectCount: defectCount,
       minQuantity: minQuantity,
       patchingType: activePatchingOption.label,
       recommendation: recommendationText
@@ -1499,10 +1468,9 @@ export default function Dashboard() {
     console.log('🔍 PR2 configurations count:', pr2Configurations.length);
     console.log('🔍 Current sector:', currentSector.id);
     
-    // Letter suffixes (like 13a) can still use TP2 patching if they have structural defects
-    // Only force warning triangles for letter suffixes that don't need structural repair
-    if (section.letterSuffix && !requiresStructuralRepair(section.defects || '')) {
-      console.log('⚠️ Section has letter suffix:', section.letterSuffix, '- forcing warning triangle (no structural repair needed)');
+    // Force warning triangles for sections with letter suffixes (like 13a)
+    if (section.letterSuffix) {
+      console.log('⚠️ Section has letter suffix:', section.letterSuffix, '- forcing warning triangle');
       return null;
     }
     
