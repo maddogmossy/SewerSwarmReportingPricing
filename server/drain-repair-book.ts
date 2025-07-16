@@ -21,7 +21,8 @@ export const DRAIN_REPAIR_BOOK: Record<string, DrainRepairData> = {
     defect: "Fracture - longitudinal",
     symptoms: "Longitudinal cracking which may leak or allow root ingress",
     suggested_repairs: [
-      "Install full-length CIPP liner",
+      "First consideration: patch repair for localized defects (WRc recommended for Grade 3)",
+      "Alternative: install full-length CIPP liner for extensive damage",
       "Excavate and replace if at joint or severely displaced"
     ],
     repair_priority: "High",

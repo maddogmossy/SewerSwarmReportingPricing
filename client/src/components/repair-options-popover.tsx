@@ -31,20 +31,72 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
 
-  // Simple repair options - all route to PR2
-  const repairOptions: RepairOption[] = [
-    {
-      id: 1,
-      name: 'Configure Pricing',
-      description: 'Set up repair pricing in PR2 system',
-      configured: false,
-      configurationMessage: 'Configure repair pricing'
+  // Repair options based on WRc standards and severity grade
+  const getRepairOptions = (): RepairOption[] => {
+    const severityMatch = sectionData.recommendations?.match(/Grade (\d)/);
+    const severityGrade = severityMatch ? parseInt(severityMatch[1]) : 3;
+    
+    // Determine if defects warrant patch repair vs full lining
+    const defectsText = sectionData.defects || '';
+    const hasLocalizedDefects = defectsText.includes('at ') || defectsText.includes('m.');
+    const hasMultipleDefects = (defectsText.match(/\d+\.?\d*m/g) || []).length > 2;
+    
+    if (severityGrade <= 3 && hasLocalizedDefects && !hasMultipleDefects) {
+      return [
+        {
+          id: 1,
+          name: 'Patch Repair Configuration',
+          description: 'Configure patch repair pricing for localized defects (WRc recommended)',
+          configured: false,
+          configurationMessage: 'Set up patch repair pricing for utilities sector'
+        },
+        {
+          id: 2,
+          name: 'Alternative: CIPP Lining',
+          description: 'Configure full lining if patch repair unsuitable',
+          configured: false,
+          configurationMessage: 'Set up lining pricing for severe cases'
+        }
+      ];
+    } else {
+      return [
+        {
+          id: 1,
+          name: 'CIPP Lining Configuration',
+          description: 'Configure lining pricing for extensive defects',
+          configured: false,
+          configurationMessage: 'Set up lining pricing for utilities sector'
+        },
+        {
+          id: 2,
+          name: 'Alternative: Excavation',
+          description: 'Configure excavation if lining unsuitable',
+          configured: false,
+          configurationMessage: 'Set up excavation pricing for severe cases'
+        }
+      ];
     }
-  ];
+  };
+
+  const repairOptions = getRepairOptions();
 
   const handleOptionClick = (option: RepairOption) => {
     setIsOpen(false);
-    setLocation('/pr2-pricing');
+    
+    // Route to specific repair configuration based on option selected
+    if (option.name.includes('Patch Repair')) {
+      // Route to patch repair configuration for utilities sector
+      setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=patch-repair&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
+    } else if (option.name.includes('CIPP Lining')) {
+      // Route to lining configuration
+      setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=cipp-lining&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
+    } else if (option.name.includes('Excavation')) {
+      // Route to excavation configuration
+      setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=excavation&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
+    } else {
+      // Fallback to general PR2 pricing
+      setLocation(`/pr2-pricing?sector=${sectionData.sector}`);
+    }
   };
 
   return (

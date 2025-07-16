@@ -1448,6 +1448,19 @@ export class MSCC5Classifier {
       sectorSpecificRecommendation = 'We recommend directional water cutting to remove hard deposit and concrete';
     } else if (sector === 'construction' && (defectCode === 'OJL' || defectCode === 'JDL')) {
       sectorSpecificRecommendation = `${detectedDefect.recommended_action} - patch repair preferred for construction standards`;
+    } else if (sector === 'utilities' && adjustedGrade === 3 && detectedDefect.type === 'structural') {
+      // WRc Drain Repair Book standards: Grade 3 structural defects should prioritize patch repair
+      const drainRepairData = DRAIN_REPAIR_BOOK[defectCode];
+      if (drainRepairData?.suggested_repairs) {
+        const patchRepairOption = drainRepairData.suggested_repairs.find(repair => 
+          repair.toLowerCase().includes('patch repair') || repair.toLowerCase().includes('first consideration')
+        );
+        if (patchRepairOption) {
+          sectorSpecificRecommendation = `WRc Drain Repair Book: ${patchRepairOption}`;
+        } else {
+          sectorSpecificRecommendation = `WRc Drain Repair Book: First consideration should be given to patch repair for Grade 3 defects. ${drainRepairData.suggested_repairs[0]}`;
+        }
+      }
     }
 
     return {
