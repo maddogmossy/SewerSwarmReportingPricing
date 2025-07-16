@@ -127,8 +127,8 @@ const isConfigurationProperlyConfigured = (config: any): boolean => {
   return hasValidPricingValues && hasValidQuantityValues;
 };
 
-// Generate dynamic recommendations based on section data
-const generateDynamicRecommendation = (section: any): string => {
+// Generate dynamic recommendations based on section data and PR2 configurations
+const generateDynamicRecommendation = (section: any, pr2Configurations: any[], checkFunction?: any): string => {
   const { startMH, finishMH, pipeSize, totalLength, defects, recommendations } = section;
   
   // Extract defect percentages and types from observations
@@ -213,9 +213,60 @@ const generateDynamicRecommendation = (section: any): string => {
     return length; // Fallback to total length if no specific meterage found
   };
 
-  // Generate contextual recommendation based on defect type
+  // Helper function to get PR2 configuration details for dynamic recommendations
+  const getPR2ConfigurationDetails = (section: any, pr2Configurations: any[], checkFunction: any): string => {
+    if (!pr2Configurations || pr2Configurations.length === 0) {
+      return 'cleanse and survey'; // Default fallback
+    }
+    
+    // Find the configuration that this section meets
+    const matchingConfig = pr2Configurations.find(config => 
+      checkFunction(section, config)
+    );
+    
+    if (!matchingConfig) {
+      return 'cleanse and survey'; // Default fallback
+    }
+    
+    console.log('🎯 Dynamic recommendation using PR2 config:', matchingConfig.id, 'for section:', section.itemNo);
+    
+    // Extract equipment type from category name
+    let equipmentType = 'cleanse and survey';
+    if (matchingConfig.categoryName) {
+      const categoryName = matchingConfig.categoryName.toLowerCase();
+      if (categoryName.includes('cctv') && categoryName.includes('jet vac')) {
+        equipmentType = 'CCTV and jet vac';
+      } else if (categoryName.includes('cctv') && categoryName.includes('van pack')) {
+        equipmentType = 'CCTV and van pack';
+      } else if (categoryName.includes('jetting')) {
+        equipmentType = 'high-pressure jetting';
+      } else if (categoryName.includes('vacuum')) {
+        equipmentType = 'vacuum tanker';
+      }
+    }
+    
+    // Get additional configuration details
+    const dayRate = matchingConfig.pricingOptions?.find(opt => 
+      opt.label?.toLowerCase().includes('day rate')
+    )?.value;
+    
+    const runsPerShift = matchingConfig.quantityOptions?.find(opt => 
+      opt.label?.toLowerCase().includes('runs per shift')
+    )?.value;
+    
+    if (dayRate && runsPerShift) {
+      const costPerSection = (parseFloat(dayRate) / parseFloat(runsPerShift)).toFixed(2);
+      console.log(`💰 Dynamic recommendation cost calculation: £${dayRate} ÷ ${runsPerShift} = £${costPerSection} per section`);
+    }
+    
+    return equipmentType;
+  };
+
+  // Generate contextual recommendation based on defect type and PR2 configuration
   if (defectSummary) {
     if (requiresCleaning(defects || '')) {
+      // For now, return a simple static recommendation since we need the checkFunction
+      // This will be enhanced once we have access to the check function within the Dashboard component
       return `To cleanse and survey ${length} from ${from} to ${to}, ${pipe} to remove ${defectSummary}`;
     } else {
       // For structural repairs, use defect-specific meterage instead of total length
@@ -915,7 +966,7 @@ export default function Dashboard() {
                   } : {}}
                 >
                   <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? validConfigurations[0].categoryName : 'CLEANSE/SURVEY'}</div>
-                  <div className="text-black">{generateDynamicRecommendation(section)}</div>
+                  <div className="text-black">{generateDynamicRecommendationWithPR2(section, repairPricingData)}</div>
                   <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
               </CleaningOptionsPopover>
@@ -962,7 +1013,7 @@ export default function Dashboard() {
               >
                 <div className={`text-xs max-w-sm ${backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
                   <div className="font-bold text-black mb-1">🔧 {titleText}</div>
-                  <div className="text-black">{generateDynamicRecommendation(section)}</div>
+                  <div className="text-black">{generateDynamicRecommendationWithPR2(section, repairPricingData)}</div>
                   <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
               </RepairOptionsPopover>
@@ -1936,6 +1987,104 @@ export default function Dashboard() {
     }
     
     return true;
+  };
+
+  // Component-level dynamic recommendation function with access to checkSectionMeetsPR2Requirements
+  const generateDynamicRecommendationWithPR2 = (section: any, pr2Configurations: any[]): string => {
+    const { startMH, finishMH, pipeSize, totalLength, defects, recommendations } = section;
+    
+    // Ensure totalLength has 'm' suffix
+    const length = totalLength ? 
+      (totalLength.includes('m') ? totalLength : `${totalLength}m`) : 
+      '30.00m';
+    
+    // Ensure pipeSize has 'mm' suffix  
+    const pipe = pipeSize ? 
+      (pipeSize.includes('mm') ? pipeSize : `${pipeSize}mm`) : 
+      '150mm';
+      
+    const from = startMH || 'Start';
+    const to = finishMH || 'Finish';
+    
+    // Extract defect summary for contextual recommendation
+    const extractDefectSummary = (defectsText: string): string => {
+      if (!defectsText || defectsText.includes('No service or structural defect found')) {
+        return '';
+      }
+      
+      // Extract defects with percentages from detailed observation text
+      const defectMatches = [];
+      
+      // Pattern for deposits (fine = DES, coarse = DER)
+      const depositPattern = /Settled deposits, (fine|coarse), (\d+)% cross-sectional area loss/g;
+      let depositMatch;
+      while ((depositMatch = depositPattern.exec(defectsText)) !== null) {
+        const depositType = depositMatch[1] === 'fine' ? 'DES' : 'DER';
+        const percentage = depositMatch[2];
+        defectMatches.push(`${depositType} ${percentage}%`);
+      }
+      
+      if (defectMatches.length > 0) {
+        return defectMatches.join(' and ');
+      }
+      
+      // Fallback: extract basic defect codes without percentages
+      const basicMatches = defectsText.match(/([A-Z]{2,3})/g);
+      if (basicMatches) {
+        const uniqueDefects = [...new Set(basicMatches)];
+        const cleaningRelevantDefects = uniqueDefects.filter(code => code !== 'LL');
+        return cleaningRelevantDefects.length > 0 ? cleaningRelevantDefects.join(' and ') : 'defects';
+      }
+      
+      return 'defects';
+    };
+    
+    const defectSummary = extractDefectSummary(defects || '');
+    
+    // NEW: Get PR2 configuration details for dynamic recommendations
+    if (defectSummary && requiresCleaning(defects || '')) {
+      if (pr2Configurations && pr2Configurations.length > 0) {
+        // Find the configuration that this section meets
+        const matchingConfig = pr2Configurations.find(config => 
+          checkSectionMeetsPR2Requirements(section, config)
+        );
+        
+        if (matchingConfig) {
+          console.log('🎯 Dynamic recommendation using PR2 config:', matchingConfig.id, 'for section:', section.itemNo);
+          
+          // Extract equipment type from category name
+          let equipmentType = 'cleanse and survey';
+          if (matchingConfig.categoryName) {
+            const categoryName = matchingConfig.categoryName.toLowerCase();
+            if (categoryName.includes('cctv') && categoryName.includes('jet vac')) {
+              equipmentType = 'CCTV and jet vac';
+            } else if (categoryName.includes('cctv') && categoryName.includes('van pack')) {
+              equipmentType = 'CCTV and van pack';
+            } else if (categoryName.includes('jetting')) {
+              equipmentType = 'high-pressure jetting';
+            } else if (categoryName.includes('vacuum')) {
+              equipmentType = 'vacuum tanker';
+            }
+          }
+          
+          return `To ${equipmentType} ${length} from ${from} to ${to}, ${pipe} to remove ${defectSummary}`;
+        }
+      }
+      
+      // Fallback if no matching configuration found
+      return `To cleanse and survey ${length} from ${from} to ${to}, ${pipe} to remove ${defectSummary}`;
+    } else if (defectSummary) {
+      // For structural repairs, use defect-specific meterage
+      const meterageMatches = (defects || '').match(/\b(\d+\.?\d*)m\b/g);
+      if (meterageMatches && meterageMatches.length > 0) {
+        const defectMeterage = meterageMatches[0];
+        return `To install a ${pipe} double layer Patch at ${defectMeterage}, ${from} to ${to} addressing ${defectSummary}`;
+      } else {
+        return `To repair ${length} from ${from} to ${to}, ${pipe} addressing ${defectSummary}`;
+      }
+    } else {
+      return `${length} section from ${from} to ${to}, ${pipe} - No action required, pipe section is in adoptable condition`;
+    }
   };
 
   // Smart counting system: count sections that meet any configuration toward orange minimum
