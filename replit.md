@@ -823,6 +823,32 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.4.2' to return to this stable checkpoint
 
+## REV V6.4.3 CHECKPOINT - JN FILTERING RESTORATION COMPLETE (July 16, 2025)
+
+🔒 **PRODUCTION READY - JN FILTERING LOGIC FULLY RESTORED:**
+- **Critical Bug Fixed**: JN filtering logic fully restored after temporary regression during meterage sorting implementation
+- **Sophisticated Logic Maintained**: All original observation grouping and filtering logic preserved
+- **Meterage Sorting Working**: Observations now properly sorted by meterage (0.61m, 1.61m, 14.94m, 20.4m, 20.46m, 21.22m)
+- **JN Conditional Display**: Junction codes only appear when structural defects exist within 1 meter radius
+- **PR2 Pricing Intact**: All pricing calculations and requirements checking working correctly
+- **24 Authentic Sections**: Upload 80 (GR7188) operational with complete authentic data
+
+🔒 **TECHNICAL RESTORATION:**
+- **File**: `server/wincan-db-reader.ts` - JN filtering logic restored to original working state
+- **Function**: `formatObservationText()` - Sophisticated observation processing maintained
+- **Filtering Logic**: First pass identifies junctions and structural defects, second pass applies conditional filtering
+- **Debug Logging**: Added console logging for junction and structural defect detection
+- **System Stability**: Returned to REV V6.4.2 stable state with meterage sorting enhancement
+
+🔒 **CONFIRMED WORKING RESULTS:**
+- **Junction Filtering**: JN codes only display when structural defects are within 1m (e.g., "Junction at 26.38m. Deformation at 26.47m")
+- **Meterage Sorting**: All observations properly sorted by position along pipe length
+- **Dashboard Loading**: All 24 sections loading correctly with proper pricing calculations
+- **Observation Quality**: Clean, professional observation text with enhanced defect descriptions
+- **Zero Regression**: All previously working features maintained without compromise
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.4.3' to return to this stable checkpoint
+
 ## REV V6.2 CHECKPOINT - OPTIMIZED FIVE-WINDOW LAYOUT SYSTEM LOCKED (July 15, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE OPTIMIZED LAYOUT SYSTEM:**
