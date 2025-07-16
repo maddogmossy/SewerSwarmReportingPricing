@@ -27,7 +27,7 @@ import { db } from "./db";
 import { sectionInspections } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
-// Multi-defect splitting disabled - using single section logic only
+// Multi-defect splitting enabled - sections with both service and structural defects will be split
 
 // Enhanced observation with remark system
 function enhanceObservationWithRemark(observation: string): string {
@@ -573,7 +573,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       if (sectionRecords.length > 0) {
         console.log(`📄 Sample SECTION data:`, sectionRecords[0]);
         console.log(`🔍 SECTION table fields:`, Object.keys(sectionRecords[0]));
-        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap);
+        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector);
       }
     }
     
@@ -617,7 +617,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
 }
 
 // Process authentic SECTION data with manhole name mapping - ZERO SYNTHETIC DATA
-async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>, observationMap: Map<string, string[]>): Promise<WincanSectionData[]> {
+async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>, observationMap: Map<string, string[]>, sector: string = 'utilities'): Promise<WincanSectionData[]> {
   console.log(`🔒 LOCKDOWN: Processing authentic SECTION data only`);
   
   if (!sectionRecords || sectionRecords.length === 0) {
@@ -699,39 +699,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         console.log(`⚠️ No timestamp in database - using 'No data'`);
       }
       
-      // Multi-defect section splitting: Check if both service and structural defects exist
-      // Single-section processing (multi-defect splitting disabled)
-      const formattedText = observations.length > 0 ? await formatObservationText(observations, sector) : '';
-      let defectText = formattedText || 'No service or structural defect found';
-      
-      // If after formatting we only have 5% WL observations, treat as no defects
-      if (defectText.trim() === '' || defectText.match(/^WL \(Water level, 5% of the vertical dimension\),?\s*$/)) {
-        defectText = 'No service or structural defect found';
-      }
-      
-      console.log(`📝 Formatted defect text: "${defectText.substring(0, 80)}..."`);
-      console.log(`📊 About to add section with itemNo: ${authenticSections.length + 1}`);
-      
-      // Apply MSCC5 classification for defect analysis
-      let severityGrade = 0;
-      let recommendations = 'No action required this pipe section is at an adoptable condition';
-      let adoptable = 'Yes';
-      let srmGrading = getSRMGrading(0, 'service');
-      
-      if (observations.length > 0) {
-        console.log(`🎯 Applying MSCC5 classification to: "${defectText.substring(0, 100)}..."`);
-        const classification = classifyWincanObservations(defectText, 'utilities');
-        severityGrade = classification.severityGrade;
-        recommendations = classification.recommendations;
-        adoptable = classification.adoptable;
-        srmGrading = classification.srmGrading;
-        
-        console.log(`📊 MSCC5 Classification Result: Grade ${severityGrade}, ${adoptable}, SRM: ${srmGrading.description}, Recommendations: ${recommendations.substring(0, 80)}...`);
-      } else {
-        console.log(`📊 No observations found, using default Grade 0`);
-      }
-      
-      // Extract authentic item number from Wincan database
+      // Extract authentic item number from Wincan database FIRST (needed for multi-defect logic)
       // Detect database type based on record count to apply correct mapping
       const sortOrder = Number(record.OBJ_SortOrder);
       let authenticItemNo: number;
@@ -765,6 +733,107 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         authenticItemNo = sortOrder === 0 ? 1 : sortOrder;
         console.log(`🎯 GR7188 Full Database: Converted SortOrder ${sortOrder} → Consecutive Item Number: ${authenticItemNo}`);
       }
+      
+      // Multi-defect section splitting: Check if both service and structural defects exist
+      const formattedText = observations.length > 0 ? await formatObservationText(observations, sector) : '';
+      let defectText = formattedText || 'No service or structural defect found';
+      
+      // Check if section has both service and structural defects (multi-defect splitting logic)
+      const hasServiceDefects = defectText.includes('deposits') || defectText.includes('Water level') || defectText.includes('Root intrusion');
+      const hasStructuralDefects = defectText.includes('Deformation') || defectText.includes('Fracture') || defectText.includes('Crack') || defectText.includes('Joint');
+      
+      if (hasServiceDefects && hasStructuralDefects) {
+        console.log(`🔄 Multi-defect section detected: Item ${authenticItemNo} has both service and structural defects`);
+        
+        // Split observations into service and structural categories
+        const serviceObservations = observations.filter(obs => {
+          const upperObs = obs.toUpperCase();
+          return upperObs.includes('DES') || upperObs.includes('DER') || upperObs.includes('WL') || upperObs.includes('RI') || upperObs.includes('ROOT');
+        });
+        
+        const structuralObservations = observations.filter(obs => {
+          const upperObs = obs.toUpperCase();
+          return upperObs.includes('D ') || upperObs.includes('FC') || upperObs.includes('FL') || upperObs.includes('CR') || upperObs.includes('JDL') || upperObs.includes('JDS') || upperObs.includes('DEF');
+        });
+        
+        // Create service defect section (original item number)
+        const serviceDefectText = serviceObservations.length > 0 ? await formatObservationText(serviceObservations, sector) : 'No service defects found';
+        const serviceClassification = classifyWincanObservations(serviceDefectText, sector);
+        
+        const serviceSection: WincanSectionData = {
+          itemNo: authenticItemNo,
+          projectNo: record.OBJ_Name || 'GR7188',
+          startMH: startMH,
+          finishMH: finishMH,
+          pipeSize: pipeSize.toString(),
+          pipeMaterial: pipeMaterial,
+          totalLength: totalLength,
+          lengthSurveyed: totalLength,
+          defects: serviceDefectText,
+          recommendations: serviceClassification.recommendations,
+          severityGrade: serviceClassification.severityGrade,
+          adoptable: serviceClassification.adoptable,
+          inspectionDate: inspectionDate,
+          inspectionTime: inspectionTime
+        };
+        
+        // Create structural defect section (with 'a' suffix)
+        const structuralDefectText = structuralObservations.length > 0 ? await formatObservationText(structuralObservations, sector) : 'No structural defects found';
+        const structuralClassification = classifyWincanObservations(structuralDefectText, sector);
+        
+        const structuralSection: WincanSectionData = {
+          itemNo: authenticItemNo,
+          letterSuffix: 'a',
+          projectNo: record.OBJ_Name || 'GR7188',
+          startMH: startMH,
+          finishMH: finishMH,
+          pipeSize: pipeSize.toString(),
+          pipeMaterial: pipeMaterial,
+          totalLength: totalLength,
+          lengthSurveyed: totalLength,
+          defects: structuralDefectText,
+          recommendations: structuralClassification.recommendations,
+          severityGrade: structuralClassification.severityGrade,
+          adoptable: structuralClassification.adoptable,
+          inspectionDate: inspectionDate,
+          inspectionTime: inspectionTime
+        };
+        
+        authenticSections.push(serviceSection);
+        authenticSections.push(structuralSection);
+        
+        console.log(`✅ Created multi-defect sections: ${authenticItemNo} (service) and ${authenticItemNo}a (structural)`);
+        continue; // Skip the single-section logic below
+      }
+      
+      // If after formatting we only have 5% WL observations, treat as no defects
+      if (defectText.trim() === '' || defectText.match(/^WL \(Water level, 5% of the vertical dimension\),?\s*$/)) {
+        defectText = 'No service or structural defect found';
+      }
+      
+      console.log(`📝 Formatted defect text: "${defectText.substring(0, 80)}..."`);
+      console.log(`📊 About to add section with itemNo: ${authenticSections.length + 1}`);
+      
+      // Apply MSCC5 classification for defect analysis
+      let severityGrade = 0;
+      let recommendations = 'No action required this pipe section is at an adoptable condition';
+      let adoptable = 'Yes';
+      let srmGrading = getSRMGrading(0, 'service');
+      
+      if (observations.length > 0) {
+        console.log(`🎯 Applying MSCC5 classification to: "${defectText.substring(0, 100)}..."`);
+        const classification = classifyWincanObservations(defectText, 'utilities');
+        severityGrade = classification.severityGrade;
+        recommendations = classification.recommendations;
+        adoptable = classification.adoptable;
+        srmGrading = classification.srmGrading;
+        
+        console.log(`📊 MSCC5 Classification Result: Grade ${severityGrade}, ${adoptable}, SRM: ${srmGrading.description}, Recommendations: ${recommendations.substring(0, 80)}...`);
+      } else {
+        console.log(`📊 No observations found, using default Grade 0`);
+      }
+      
+      // Item number already calculated above for multi-defect logic
       
       const sectionData: WincanSectionData = {
         itemNo: authenticItemNo,
