@@ -214,8 +214,7 @@ function formatObservationText(observations: string[]): string {
       }
       
       // Group similar codes for meterage consolidation with full descriptions
-      // WL codes are excluded to preserve original compact format "WL10% 1.3 18.03"
-      if (['LL', 'LR', 'D', 'DER', 'DES', 'JN'].includes(code)) {
+      if (['WL', 'LL', 'LR', 'D', 'DER', 'DES', 'JN'].includes(code)) {
         if (!codeGroups[code]) {
           codeGroups[code] = [];
         }
