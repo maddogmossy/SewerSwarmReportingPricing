@@ -710,32 +710,37 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Screen Flashing Issue**: Complex helper functions cause screen flashing - prefer simple implementations
 - **Performance Focus**: Remove complex useCallback functions that recreate on every render
 
-## REV V6.5 CHECKPOINT - COMPLETE COLOR CUSTOMIZATION SYSTEM LOCKED (July 16, 2025)
+## REV V6.6 CHECKPOINT - COLOR PERSISTENCE BUG COMPLETELY FIXED (July 16, 2025)
 
-🔒 **PRODUCTION READY - COMPREHENSIVE COLOR CUSTOMIZATION FEATURE:**
-- **Outlook-Style Color Palette**: 18 predefined colors with visual selection interface
-- **Custom Color Picker**: Paint/Word style color picker using HTML5 color input
-- **Database Integration**: Color field added to pr2_configurations table with proper backend API support
-- **Dashboard Color Display**: Selected configuration colors replace default green in dashboard cleaning recommendations
-- **Visual Feedback**: Color preview in configuration header and real-time color application
-- **Professional UI**: Clean color selection interface with hex value display and description text
+🔒 **PRODUCTION READY - COMPLETE COLOR CUSTOMIZATION SYSTEM WITH PERSISTENCE FIX:**
+- **Critical Bug Fixed**: Resolved backend PUT route forcing colors back to light blue (#93c5fd) overriding user selections
+- **Color Persistence Working**: User-selected colors now properly save and persist in database without reverting
+- **Dashboard Color Application**: Configuration colors (like purple #a21688) now correctly display in dashboard cleaning recommendation boxes
+- **Backend Logic Corrected**: Removed fallback logic from PUT route that was overwriting user color choices
+- **Database Integration Complete**: Color field properly handles custom colors without forced defaults
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Backend**: Color field added to database schema with #2563eb default (blue)
-- **API Integration**: POST/PUT operations handle categoryColor field in server/routes-pr2-clean.ts
-- **Frontend**: Color picker component with 18 predefined swatches + custom color input
-- **Dashboard Integration**: hexToRgba utility function converts hex colors to rgba with opacity
-- **Dynamic Styling**: Configuration colors applied to dashboard cleaning recommendation boxes
-- **Color Persistence**: Selected colors save to database and persist across sessions
+- **Backend Fix**: Modified server/routes-pr2-clean.ts PUT route to preserve categoryColor without fallback override
+- **Database Schema**: Uses category_color varchar field with proper hex color storage
+- **Color Flow**: Frontend → API → Database → Dashboard display chain working correctly
+- **Dynamic Styling**: hexToRgba utility function converts hex colors to rgba with proper opacity
+- **No Color Override**: PUT operations now preserve user-selected colors instead of forcing blue default
 
-🔒 **USER-CONFIRMED FEATURES:**
-- **Visual Color Selection**: Grid layout with 18 Outlook-style colors plus custom color picker
+🔒 **ROOT CAUSE RESOLUTION:**
+- **Problem**: Line 320 in PUT route: `categoryColor: categoryColor || '#93c5fd'` forced blue fallback
+- **Solution**: Changed to: `categoryColor: categoryColor` to preserve user selections
+- **Verification**: Database now stores purple #a21688 correctly, dashboard displays custom colors
+- **User Confirmed**: Color system working perfectly with purple background on Item 3
+
+🔒 **COMPLETE FEATURE SET:**
+- **18 Outlook-Style Colors**: Professional color palette with visual selection interface
+- **Custom Color Picker**: HTML5 color input for unlimited color choices
 - **Real-time Preview**: Color changes immediately visible in configuration header
-- **Dashboard Application**: ID 48 configuration color replaces default green in dashboard display
-- **Professional Interface**: Clean color picker with hex value display and helpful descriptions
-- **Database Persistence**: Colors save properly and display consistently across application
+- **Dashboard Integration**: Selected colors replace default backgrounds in cleaning recommendations
+- **Color Persistence**: Colors save properly and persist across sessions without reverting
+- **Professional UI**: Clean interface with hex value display and helpful descriptions
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v6.5' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.6' to return to this stable checkpoint
 
 ## REV V6.4 CHECKPOINT - DUAL RULE SYSTEM FULLY OPERATIONAL (July 15, 2025)
 
