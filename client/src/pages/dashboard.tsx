@@ -988,6 +988,18 @@ export default function Dashboard() {
           // Try to calculate cost using PR2 configuration (includes TP2 patching)
           const costCalculation = calculateAutoCost(section);
           
+          // Check for TP2 below minimum quantity case first
+          if (costCalculation && costCalculation.showRedTriangle) {
+            return (
+              <div 
+                className="flex items-center justify-center p-1 rounded" 
+                title={`${costCalculation.triangleMessage}\nTP2 patching requires minimum ${costCalculation.minRequired} patches (currently ${costCalculation.defectCount})`}
+              >
+                <TriangleAlert className="h-4 w-4 text-red-500" />
+              </div>
+            );
+          }
+          
           if (costCalculation && costCalculation.cost > 0) {
             // Check if orange minimum is met to determine cost color
             const orangeMinimumMet = checkOrangeMinimumMet();
@@ -1459,13 +1471,36 @@ export default function Dashboard() {
     // Calculate total cost: cost per unit × defect count
     const totalCost = costPerUnit * defectCount;
     
+    // CHECK MINIMUM QUANTITY REQUIREMENT
+    const meetsMinimumQuantity = defectCount >= minQuantity;
+    
     console.log('🔧 TP2 cost calculation:', {
       activePatchingOption: activePatchingOption.label,
       costPerUnit: costPerUnit,
       minQuantity: minQuantity,
       defectCount: defectCount,
-      totalCost: totalCost
+      totalCost: totalCost,
+      meetsMinimumQuantity: meetsMinimumQuantity
     });
+    
+    // If doesn't meet minimum quantity, return red triangle indicator
+    if (!meetsMinimumQuantity) {
+      console.log('❌ TP2 section below minimum quantity:', {
+        itemNo: section.itemNo,
+        defectCount: defectCount,
+        minRequired: minQuantity,
+        message: `Need ${minQuantity} patches minimum (currently ${defectCount})`
+      });
+      
+      return {
+        cost: null, // No cost calculated
+        showRedTriangle: true,
+        triangleMessage: `Below minimum quantities: ${defectCount}/${minQuantity} patches required`,
+        defectCount: defectCount,
+        minRequired: minQuantity,
+        status: 'below_minimum'
+      };
+    }
     
     // Update recommendation to include pipe size and length
     const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${activePatchingOption.label.toLowerCase()} patching`;
