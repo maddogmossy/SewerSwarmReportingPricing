@@ -1522,12 +1522,6 @@ export default function Dashboard() {
     console.log('🔍 PR2 configurations count:', pr2Configurations.length);
     console.log('🔍 Current sector:', currentSector.id);
     
-    // Force warning triangles for sections with letter suffixes (like 13a)
-    if (section.letterSuffix) {
-      console.log('⚠️ Section has letter suffix:', section.letterSuffix, '- forcing warning triangle');
-      return null;
-    }
-    
     // If no PR2 configurations exist, return null to show warning triangles
     if (!pr2Configurations || pr2Configurations.length === 0) {
       console.log('❌ No PR2 configurations found');
