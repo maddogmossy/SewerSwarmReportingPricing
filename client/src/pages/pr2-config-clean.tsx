@@ -116,40 +116,40 @@ export default function PR2ConfigClean() {
     if (pipeSize && sourceItemNo) {
       const formattedSize = pipeSize.endsWith('mm') ? pipeSize : `${pipeSize}mm`;
       const categoryMap: { [key: string]: string } = {
-        'cctv': `${formattedSize} CCTV Configuration`,
-        'van-pack': `${formattedSize} Van Pack Configuration`,
-        'jet-vac': `${formattedSize} Jet Vac Configuration`,
-        'cctv-van-pack': `${formattedSize} CCTV Van Pack Configuration`,
-        'cctv-jet-vac': `${formattedSize} CCTV Jet Vac Configuration`,
-        'directional-water-cutter': `${formattedSize} Directional Water Cutter Configuration`,
-        'ambient-lining': `${formattedSize} Ambient Lining Configuration`,
-        'hot-cure-lining': `${formattedSize} Hot Cure Lining Configuration`,
-        'uv-lining': `${formattedSize} UV Lining Configuration`,
-        'ims-cutting': `${formattedSize} IMS Cutting Configuration`,
-        'excavation': `${formattedSize} Excavation Configuration`,
-        'patching': `${formattedSize} Patching Configuration`,
-        'tankering': `${formattedSize} Tankering Configuration`
+        'cctv': `TP1 - ${formattedSize} CCTV Configuration`,
+        'van-pack': `TP1 - ${formattedSize} Van Pack Configuration`,
+        'jet-vac': `TP1 - ${formattedSize} Jet Vac Configuration`,
+        'cctv-van-pack': `TP1 - ${formattedSize} CCTV Van Pack Configuration`,
+        'cctv-jet-vac': `TP1 - ${formattedSize} CCTV Jet Vac Configuration`,
+        'directional-water-cutter': `TP1 - ${formattedSize} Directional Water Cutter Configuration`,
+        'ambient-lining': `TP1 - ${formattedSize} Ambient Lining Configuration`,
+        'hot-cure-lining': `TP1 - ${formattedSize} Hot Cure Lining Configuration`,
+        'uv-lining': `TP1 - ${formattedSize} UV Lining Configuration`,
+        'ims-cutting': `TP1 - ${formattedSize} IMS Cutting Configuration`,
+        'excavation': `TP1 - ${formattedSize} Excavation Configuration`,
+        'patching': `TP2 - ${formattedSize} Patching Configuration`,
+        'tankering': `TP1 - ${formattedSize} Tankering Configuration`
       };
-      return categoryMap[categoryId] || `${formattedSize} Configuration`;
+      return categoryMap[categoryId] || `TP1 - ${formattedSize} Configuration`;
     }
     
     // Standard names without pipe size (until set up from dashboard)
     const categoryMap: { [key: string]: string } = {
-      'cctv': 'CCTV Configuration',
-      'van-pack': 'Van Pack Configuration',
-      'jet-vac': 'Jet Vac Configuration',
-      'cctv-van-pack': 'CCTV Van Pack Configuration',
-      'cctv-jet-vac': 'CCTV Jet Vac Configuration',
-      'directional-water-cutter': 'Directional Water Cutter Configuration',
-      'ambient-lining': 'Ambient Lining Configuration',
-      'hot-cure-lining': 'Hot Cure Lining Configuration',
-      'uv-lining': 'UV Lining Configuration',
-      'ims-cutting': 'IMS Cutting Configuration',
-      'excavation': 'Excavation Configuration',
-      'patching': 'Patching Configuration',
-      'tankering': 'Tankering Configuration'
+      'cctv': 'TP1 - CCTV Configuration',
+      'van-pack': 'TP1 - Van Pack Configuration',
+      'jet-vac': 'TP1 - Jet Vac Configuration',
+      'cctv-van-pack': 'TP1 - CCTV Van Pack Configuration',
+      'cctv-jet-vac': 'TP1 - CCTV Jet Vac Configuration',
+      'directional-water-cutter': 'TP1 - Directional Water Cutter Configuration',
+      'ambient-lining': 'TP1 - Ambient Lining Configuration',
+      'hot-cure-lining': 'TP1 - Hot Cure Lining Configuration',
+      'uv-lining': 'TP1 - UV Lining Configuration',
+      'ims-cutting': 'TP1 - IMS Cutting Configuration',
+      'excavation': 'TP1 - Excavation Configuration',
+      'patching': 'TP2 - Patching Configuration',
+      'tankering': 'TP1 - Tankering Configuration'
     };
-    return categoryMap[categoryId] || 'Configuration';
+    return categoryMap[categoryId] || 'TP1 - Configuration';
   };
 
   // Generate dynamic dropdown title based on pipe size
