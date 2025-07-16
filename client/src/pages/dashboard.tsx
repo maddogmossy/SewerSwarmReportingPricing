@@ -60,6 +60,16 @@ const requiresCleaning = (defects: string): boolean => {
   return cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
 };
 
+// Function to detect if defects require structural repair (TP2 patching)
+const requiresStructuralRepair = (defects: string): boolean => {
+  if (!defects) return false;
+  
+  const structuralCodes = ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'joint'];
+  const defectsUpper = defects.toUpperCase();
+  
+  return structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
+};
+
 
 
 // Function to check if PR2 configuration has actual values configured
@@ -71,6 +81,11 @@ const isConfigurationProperlyConfigured = (config: any): boolean => {
     option.enabled && option.value && option.value.trim() !== '' && option.value !== '0'
   );
   
+  // For TP2 patching configurations, we only need pricing values (cost per unit)
+  if (config.categoryId === 'patching') {
+    return hasValidPricingValues;
+  }
+  
   // Check if any quantity options have non-empty values
   const hasValidQuantityValues = config.quantityOptions?.some((option: any) => 
     option.enabled && option.value && option.value.trim() !== '' && option.value !== '0'
@@ -81,7 +96,7 @@ const isConfigurationProperlyConfigured = (config: any): boolean => {
     option.enabled && option.value && option.value.trim() !== '' && option.value !== '0'
   );
   
-  // Configuration is properly configured if it has at least pricing AND quantity values
+  // For standard configurations, require both pricing AND quantity values
   return hasValidPricingValues && hasValidQuantityValues;
 };
 
@@ -784,8 +799,9 @@ export default function Dashboard() {
           
           // For service defects or cleaning-based defects, show cleaning options
           const needsCleaning = requiresCleaning(section.defects || '');
+          const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
 
-          if (isServiceDefect || needsCleaning) {
+          if ((isServiceDefect || needsCleaning) && !needsStructuralRepair) {
             // Check if any PR2 configurations exist AND have actual values configured
             const validConfigurations = repairPricingData?.filter(config => 
               isConfigurationProperlyConfigured(config)
@@ -948,6 +964,7 @@ export default function Dashboard() {
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
           // Check if this section requires cleaning vs structural repair
           const needsCleaning = requiresCleaning(section.defects || '');
+          const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
           
           // Try to calculate cost using PR2 configuration (includes TP2 patching)
           const costCalculation = calculateAutoCost(section);
@@ -984,13 +1001,22 @@ export default function Dashboard() {
             }
           } else {
             // Show warning triangle when no pricing is configured
-            if (needsCleaning) {
+            if (needsCleaning && !needsStructuralRepair) {
               return (
                 <div 
                   className="flex items-center justify-center p-1 rounded" 
                   title="Pricing not configured - Use recommendation box to set up cleaning costs"
                 >
                   <TriangleAlert className="h-4 w-4 text-blue-500" />
+                </div>
+              );
+            } else if (needsStructuralRepair) {
+              return (
+                <div 
+                  className="flex items-center justify-center p-1 rounded" 
+                  title="Pricing not configured - Use recommendation box to set up TP2 patching costs"
+                >
+                  <TriangleAlert className="h-4 w-4 text-orange-500" />
                 </div>
               );
             } else {
@@ -1455,13 +1481,17 @@ export default function Dashboard() {
     }
 
     // Check for TP2 patching configurations first (for structural repairs)
-    const tp2PatchingConfig = pr2Configurations.find((config: any) => 
-      config.categoryId === 'patching' && config.sector === currentSector.id
-    );
+    const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
     
-    if (tp2PatchingConfig) {
-      console.log('🔧 Found TP2 patching configuration:', tp2PatchingConfig.id);
-      return calculateTP2PatchingCost(section, tp2PatchingConfig);
+    if (needsStructuralRepair) {
+      const tp2PatchingConfig = pr2Configurations.find((config: any) => 
+        config.categoryId === 'patching' && config.sector === currentSector.id
+      );
+      
+      if (tp2PatchingConfig) {
+        console.log('🔧 Found TP2 patching configuration:', tp2PatchingConfig.id);
+        return calculateTP2PatchingCost(section, tp2PatchingConfig);
+      }
     }
 
     // Find the first configuration that this section meets (for cleaning)
