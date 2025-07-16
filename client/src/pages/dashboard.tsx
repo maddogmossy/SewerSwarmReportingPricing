@@ -84,7 +84,7 @@ const requiresStructuralRepair = (defects: string): boolean => {
   }
   
   // PRIORITY 2: Only use TP2 for true structural defects
-  const structuralCodes = ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture'];
+  const structuralCodes = ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'deformation'];
   
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
   if (hasStructuralDefects) {
@@ -1684,6 +1684,18 @@ export default function Dashboard() {
 
     // Check for TP2 patching configurations first (for structural repairs)
     const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
+    
+    // DEBUG: Item 20 specific logging
+    if (section.itemNo === 20) {
+      console.log(`🔍 ITEM 20 DEBUG:`, {
+        itemNo: section.itemNo,
+        pipeSize: section.pipeSize,
+        defects: section.defects,
+        needsStructuralRepair: needsStructuralRepair,
+        defectType: section.defectType,
+        recommendations: section.recommendations
+      });
+    }
     
     if (needsStructuralRepair) {
       // Get pipe size for matching configuration
