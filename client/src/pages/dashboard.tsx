@@ -899,19 +899,18 @@ export default function Dashboard() {
             // Get the configuration color from the same config used for status calculation
             const configColor = pr2Config?.categoryColor;
             
-            // Debug color application
-            if (section.itemNo === '3') {
-              console.log('🎨 Item 3 color debug:', {
-                hasLinkedPR2,
-                validConfigurations: validConfigurations.map(c => ({ id: c.id, categoryColor: c.categoryColor })),
-                configColor,
-                pr2ConfigId: pr2Config?.id,
-                categoryName: pr2Config?.categoryName
-              });
-            }
-            
             if (hasLinkedPR2) {
               statusColor = calculateSectionStatusColor(section, pr2Config);
+              
+              // Debug color application for all sections
+              console.log(`🎨 Item ${section.itemNo} color debug:`, {
+                hasLinkedPR2,
+                configColor,
+                pr2ConfigId: pr2Config?.id,
+                categoryName: pr2Config?.categoryName,
+                statusColor,
+                willUseCustomColor: statusColor === 'green' && configColor
+              });
               
               console.log('🎯 Section status color calculation:', {
                 itemNo: section.itemNo,
@@ -962,7 +961,7 @@ export default function Dashboard() {
                   console.log('Cleaning pricing needed for:', method, pipeSize, sector);
                 }}
                 hasLinkedPR2={hasLinkedPR2}
-                configColor={hasLinkedPR2 ? validConfigurations[0]?.categoryColor : undefined}
+                configColor={configColor}
                 data-component="cleaning-options-popover"
                 data-section-id={section.itemNo}
                 data-has-config={hasLinkedPR2}
@@ -977,7 +976,7 @@ export default function Dashboard() {
                     borderWidth: '2px'
                   } : {}}
                 >
-                  <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? validConfigurations[0].categoryName : 'CLEANSE/SURVEY'}</div>
+                  <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? pr2Config.categoryName : 'CLEANSE/SURVEY'}</div>
                   <div className="text-black">{generateDynamicRecommendationWithPR2(section, repairPricingData)}</div>
                   <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
