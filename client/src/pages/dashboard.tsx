@@ -890,7 +890,7 @@ export default function Dashboard() {
                 data-sector={currentSector.id}
               >
                 <div className={`text-xs max-w-sm ${backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
-                  <div className="font-medium text-black mb-1">💧 {hasLinkedPR2 ? validConfigurations[0].categoryName : 'CLEANSE/SURVEY'}</div>
+                  <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? validConfigurations[0].categoryName : 'CLEANSE/SURVEY'}</div>
                   <div className="text-black">{generateDynamicRecommendation(section)}</div>
                   <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
@@ -937,9 +937,9 @@ export default function Dashboard() {
                 }}
               >
                 <div className={`text-xs max-w-sm ${backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
-                  <div className={`font-medium ${hasTP2Patching ? 'text-green-800' : 'text-orange-800'} mb-1`}>🔧 {titleText}</div>
-                  <div className={`${hasTP2Patching ? 'text-green-700' : 'text-orange-700'}`}>{generateDynamicRecommendation(section)}</div>
-                  <div className={`text-xs ${hasTP2Patching ? 'text-green-600' : 'text-orange-600'} mt-1 font-medium`}>→ {statusMessage}</div>
+                  <div className="font-bold text-black mb-1">🔧 {titleText}</div>
+                  <div className="text-black">{generateDynamicRecommendation(section)}</div>
+                  <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
               </RepairOptionsPopover>
             );
