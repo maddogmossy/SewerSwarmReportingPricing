@@ -57,8 +57,17 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     const hasLocalizedDefects = defectsText.includes('at ') || defectsText.includes('m.');
     const hasMultipleDefects = (defectsText.match(/\d+\.?\d*m/g) || []).length > 2;
     
-    // Check if TP2 patching configuration exists and is properly configured
-    const existingTP2Config = tp2Configs.find((config: any) => config.categoryId === 'patching');
+    // Check if TP2 patching configuration exists for this specific pipe size
+    const pipeSize = sectionData.pipeSize || '150';
+    const pipeSizeSpecificConfig = tp2Configs.find((config: any) => 
+      config.categoryId === 'patching' && 
+      config.categoryName?.includes(`${pipeSize}mm`)
+    );
+    
+    // Fallback to any patching config if no pipe-specific one exists
+    const generalPatchingConfig = tp2Configs.find((config: any) => config.categoryId === 'patching');
+    const existingTP2Config = pipeSizeSpecificConfig || generalPatchingConfig;
+    
     const hasTP2PatchingConfig = existingTP2Config && 
       (existingTP2Config.pricingOptions?.some((opt: any) => opt.enabled && opt.value && opt.value.trim() !== '') ||
        existingTP2Config.minQuantityOptions?.some((opt: any) => opt.enabled && opt.value && opt.value.trim() !== ''));
@@ -71,8 +80,8 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
           description: 'Configure patch repair pricing for localized defects (WRc recommended)',
           configured: hasTP2PatchingConfig,
           configurationMessage: hasTP2PatchingConfig ? 
-            `TP2 Patching configured (ID: ${existingTP2Config?.id})` : 
-            'Set up patch repair pricing for utilities sector'
+            `TP2 ${pipeSize}mm Patching configured (ID: ${existingTP2Config?.id})` : 
+            `Set up ${pipeSize}mm patch repair pricing for utilities sector`
         },
         {
           id: 2,
@@ -109,12 +118,21 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     
     // Route to specific repair configuration based on option selected
     if (option.name.includes('Patch Repair')) {
-      // Get the existing TP2 patching configuration ID for this sector
-      const existingTP2Config = tp2Configs.find((config: any) => config.categoryId === 'patching');
-      const editParam = existingTP2Config ? `&edit=${existingTP2Config.id}` : '';
+      // Get the pipe size-specific TP2 patching configuration
+      const pipeSize = sectionData.pipeSize || '150';
+      const pipeSizeSpecificConfig = tp2Configs.find((config: any) => 
+        config.categoryId === 'patching' && 
+        config.categoryName?.includes(`${pipeSize}mm`)
+      );
       
-      // Route to patch repair configuration with existing config ID if available
-      setLocation(`/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}${editParam}`);
+      // Fallback to general patching config if no pipe-specific exists
+      const generalPatchingConfig = tp2Configs.find((config: any) => config.categoryId === 'patching');
+      const configToUse = pipeSizeSpecificConfig || generalPatchingConfig;
+      
+      const editParam = configToUse ? `&edit=${configToUse.id}` : '';
+      
+      // Route to patch repair configuration with pipe size context
+      setLocation(`/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSize}&itemNo=${sectionData.itemNo}${editParam}`);
     } else if (option.name.includes('CIPP Lining')) {
       // Route to lining configuration
       setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=cipp-lining&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
