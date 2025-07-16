@@ -1689,19 +1689,12 @@ export default function Dashboard() {
       // Get pipe size for matching configuration
       const pipeSize = section.pipeSize || '150';
       
-      // First try to find pipe size-specific configuration
+      // Only find pipe size-specific configuration - no fallback to incompatible sizes
       let tp2PatchingConfig = pr2Configurations.find((config: any) => 
         config.categoryId === 'patching' && 
         config.sector === currentSector.id &&
         config.categoryName?.includes(`${pipeSize}mm`)
       );
-      
-      // Fallback to general patching config if no pipe-specific exists
-      if (!tp2PatchingConfig) {
-        tp2PatchingConfig = pr2Configurations.find((config: any) => 
-          config.categoryId === 'patching' && config.sector === currentSector.id
-        );
-      }
       
       if (tp2PatchingConfig) {
         console.log(`🔧 Found TP2 patching configuration for ${pipeSize}mm:`, tp2PatchingConfig.id, tp2PatchingConfig.categoryName);

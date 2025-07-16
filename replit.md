@@ -886,6 +886,29 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.4.3' to return to this stable checkpoint
 
+## REV V6.4.5 CHECKPOINT - PIPE SIZE VALIDATION SYSTEM FIXED (July 16, 2025)
+
+🔒 **PRODUCTION READY - CRITICAL PIPE SIZE MISMATCH RESOLVED:**
+- **Fixed Logic Flaw**: Removed dangerous fallback logic that caused 300mm pipes to use 150mm configurations incorrectly
+- **Strict Pipe Size Matching**: TP2 configurations now only apply when pipe size explicitly matches configuration name
+- **Warning Triangle Display**: Non-matching pipe sizes (300mm, 225mm) show warning triangles instead of wrong pricing
+- **Data Integrity Enforced**: Prevents incorrect cost calculations from pipe size mismatches (£350 vs £450)
+- **Configuration Requirement**: Each pipe size needs its own specific TP2 configuration for pricing
+- **Zero False Calculations**: Eliminates systematic pricing errors across different pipe diameters
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Removed Fallback Logic**: Eliminated general patching config fallback that ignored pipe size compatibility
+- **Strict Name Matching**: Only uses configurations with `categoryName?.includes('${pipeSize}mm')`
+- **Warning Triangle Logic**: Shows pricing warning when no matching configuration exists
+- **Configuration Detection**: ID 100 only applies to 150mm pipes, other sizes require separate configurations
+- **User-Controlled Creation**: Users must explicitly create pipe size-specific configurations for pricing
+
+🔒 **PREVIOUS ISSUE ANALYSIS:**
+- **Root Cause**: Fallback logic `find(config => categoryId === 'patching')` ignored pipe size validation
+- **Impact**: 300mm pipes incorrectly used 150mm pricing (£350 instead of proper £450+ rates)
+- **Logic Error**: System prioritized showing "some price" over showing "correct price"
+- **Data Integrity Violation**: Cross-contamination between pipe size pricing standards
+
 ## REV V6.4.4 CHECKPOINT - COMPLETE WATER LEVEL FILTERING SYSTEM (July 16, 2025)
 
 🔒 **PRODUCTION READY - ALL WATER LEVEL OBSERVATIONS REMOVED:**
