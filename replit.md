@@ -710,37 +710,39 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Screen Flashing Issue**: Complex helper functions cause screen flashing - prefer simple implementations
 - **Performance Focus**: Remove complex useCallback functions that recreate on every render
 
-## REV V6.6 CHECKPOINT - COLOR PERSISTENCE BUG COMPLETELY FIXED (July 16, 2025)
+## REV V6.7 CHECKPOINT - COMPLETE COLOR CONSISTENCY SYSTEM LOCKED (July 16, 2025)
 
-🔒 **PRODUCTION READY - COMPLETE COLOR CUSTOMIZATION SYSTEM WITH PERSISTENCE FIX:**
-- **Critical Bug Fixed**: Resolved backend PUT route forcing colors back to light blue (#93c5fd) overriding user selections
-- **Color Persistence Working**: User-selected colors now properly save and persist in database without reverting
-- **Dashboard Color Application**: Configuration colors (like purple #a21688) now correctly display in dashboard cleaning recommendation boxes
-- **Backend Logic Corrected**: Removed fallback logic from PUT route that was overwriting user color choices
-- **Database Integration Complete**: Color field properly handles custom colors without forced defaults
+🔒 **PRODUCTION READY - UNIFIED COLOR SYSTEM ACROSS ALL INTERFACES:**
+- **Complete Color Flow**: Configuration colors now consistently display across dashboard boxes, structural repair boxes, and pricing category cards
+- **Enhanced Color Intensity**: Strengthened opacity from 0.1 to 0.3 for better visibility and professional appearance
+- **Database Color Consistency**: Both CCTV/Jet Vac (ID 48) and Patching (ID 100) use matching soft rose colors (#fda4af, #f9a8d4)
+- **Category Card Integration**: Pricing page category cards now display saved configuration colors with proper hexToRgba conversion
+- **Pipe Size Cards**: Both CCTV/Jet Vac and CCTV/Van Pack cards in pipe size dropdown use configuration colors
+- **ID Number Display**: Configuration IDs clearly visible on all category cards for easy identification
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Backend Fix**: Modified server/routes-pr2-clean.ts PUT route to preserve categoryColor without fallback override
-- **Database Schema**: Uses category_color varchar field with proper hex color storage
-- **Color Flow**: Frontend → API → Database → Dashboard display chain working correctly
-- **Dynamic Styling**: hexToRgba utility function converts hex colors to rgba with proper opacity
-- **No Color Override**: PUT operations now preserve user-selected colors instead of forcing blue default
+- **Pricing Page Enhancement**: Added hexToRgba utility and dynamic background styling to all category cards
+- **Pipe Size Integration**: Applied configuration colors to dashboard-sourced pipe size cards
+- **Color Utility**: hexToRgba function with 0.3 opacity for consistent, visible color application
+- **Card Styling**: Enhanced Card components with style attribute for background color application
+- **Color Detection**: Smart logic finds general configurations when pipe-specific configs don't exist
 
-🔒 **ROOT CAUSE RESOLUTION:**
-- **Problem**: Line 320 in PUT route: `categoryColor: categoryColor || '#93c5fd'` forced blue fallback
-- **Solution**: Changed to: `categoryColor: categoryColor` to preserve user selections
-- **Verification**: Database now stores purple #a21688 correctly, dashboard displays custom colors
-- **User Confirmed**: Color system working perfectly with purple background on Item 3
+🔒 **COMPLETE COLOR CONSISTENCY:**
+- **Dashboard Cleaning Boxes**: Display configuration colors with 0.3 opacity
+- **Dashboard Structural Boxes**: Display configuration colors with 0.3 opacity  
+- **Pricing Category Cards**: Display configuration colors with 0.3 opacity
+- **Pipe Size Cards**: Display configuration colors with 0.3 opacity
+- **Configuration Headers**: Display configuration colors in real-time
+- **Professional Appearance**: Eliminated "wishy washy" appearance with stronger color intensity
 
-🔒 **COMPLETE FEATURE SET:**
-- **18 Outlook-Style Colors**: Professional color palette with visual selection interface
-- **Custom Color Picker**: HTML5 color input for unlimited color choices
-- **Real-time Preview**: Color changes immediately visible in configuration header
-- **Dashboard Integration**: Selected colors replace default backgrounds in cleaning recommendations
-- **Color Persistence**: Colors save properly and persist across sessions without reverting
-- **Professional UI**: Clean interface with hex value display and helpful descriptions
+🔒 **USER-CONFIRMED FEATURES:**
+- **Soft Rose Color Theme**: Both cleaning and patching configurations use harmonious soft rose colors
+- **Visual Consistency**: Same color intensity and appearance across all system interfaces
+- **Easy Identification**: ID numbers clearly visible on all category cards
+- **Professional UI**: Eliminated 18 standard colors, keeping only custom color picker for clean interface
+- **Database Integrity**: All configuration colors properly stored and retrieved with hex color format
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v6.6' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.7' to return to this stable checkpoint
 
 ## REV V6.4 CHECKPOINT - DUAL RULE SYSTEM FULLY OPERATIONAL (July 15, 2025)
 
