@@ -1033,6 +1033,28 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 🔒 **PR1 THREE-OPTION STRUCTURE LOCKED** - Fixed initial dialog structure to properly separate options:
 - Option 1: "Cleanse and Survey" (category setup with preloaded options)
+
+## REV V6.4.1 CHECKPOINT - RECOMMENDATION WINDOW STYLING STANDARDIZED (July 16, 2025)
+
+🔒 **PRODUCTION READY - CONSISTENT RECOMMENDATION WINDOW STYLING:**
+- **Bold Titles Restored**: All recommendation window titles now use `font-bold` for proper emphasis
+- **Black Text Consistency**: Both cleaning and structural recommendation windows use black text throughout
+- **Unified Container Styling**: Both window types use identical styling (max-w-sm, p-3, ml-1 mt-1 mr-1)
+- **Professional Appearance**: Consistent font weight and color scheme across all recommendation popups
+
+🔒 **STYLING SPECIFICATIONS:**
+- **Title Styling**: `font-bold text-black mb-1` for both 'CCTV Jet Vac Configuration' and 'TP2 PATCHING'
+- **Content Styling**: `text-black` for recommendation text in both window types
+- **Status Styling**: `text-xs text-black mt-1 font-medium` for status messages
+- **Container Styling**: `text-xs max-w-sm p-3 ml-1 mt-1 mr-1 rounded-lg` for consistent layout
+
+🔒 **VISUAL CONSISTENCY ACHIEVED:**
+- **Item 13 (Cleaning)**: Bold black title, black content, consistent spacing
+- **Item 13a (Structural)**: Bold black title, black content, matching layout
+- **Background Colors**: Maintained distinct background colors (blue for cleaning, green for configured repair)
+- **Professional Unity**: All recommendation windows follow identical typography standards
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.4.1' to return to this stable checkpoint
 - Option 2: "Custom Cleaning" (user-defined cleaning method with custom specs)
 - Option 3: "Add New" (add to existing categories that have been created)
 - Each option has dedicated dialogs with proper color coding (blue, green, purple)
