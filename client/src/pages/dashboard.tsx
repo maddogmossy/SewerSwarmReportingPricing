@@ -622,20 +622,32 @@ export default function Dashboard() {
               return cleanObs.endsWith('.') ? cleanObs : cleanObs + '.';
             });
           
-          // Filter out ONLY "Line deviates" observations, preserve others
+          // Filter out ONLY pure line deviation observations, preserve mixed defect observations
           observations = observations.filter(obs => {
             const obsLower = obs.toLowerCase();
-            // Remove if ONLY contains line deviation (no other defects)
-            const isOnlyLineDeviation = (obsLower.includes('line deviates') || obsLower.includes('line deviation')) &&
-              !obsLower.includes('deposits') && !obsLower.includes('crack') && !obsLower.includes('water') &&
-              !obsLower.includes('deformation') && !obsLower.includes('defect') && !obsLower.includes('junction');
             
-            // Debug Item 10 filtering
-            if (section.itemNo === 10) {
-              console.log(`🔍 Item 10 Filtering observation: "${obs}"`);
-              console.log(`  Lower: "${obsLower}"`);
-              console.log(`  Has line deviates: ${obsLower.includes('line deviates')}`);
-              console.log(`  Has deposits: ${obsLower.includes('deposits')}`);
+            // Enhanced filtering logic - only remove observations that are PURE line deviations
+            // Keep observations that contain line deviations mixed with meaningful defects
+            const hasLineDeviation = obsLower.includes('line deviates') || obsLower.includes('line deviation') || 
+                                     obsLower.includes('lr (') || obsLower.includes('ll (');
+            
+            // Check for meaningful defects in the observation
+            const hasMeaningfulDefects = obsLower.includes('deposits') || obsLower.includes('crack') || 
+                                        obsLower.includes('water level') || obsLower.includes('deformation') || 
+                                        obsLower.includes('fracture') || obsLower.includes('joint') ||
+                                        obsLower.includes('camera under water') || obsLower.includes('cuw') ||
+                                        obsLower.includes('pipe size changes') || obsLower.includes('sc ') ||
+                                        obsLower.includes('catchpit') || obsLower.includes('cpf') ||
+                                        obsLower.includes('sa ') || obsLower.includes('sensor alert');
+            
+            // Only remove if it's ONLY a line deviation with no other meaningful defects
+            const isOnlyLineDeviation = hasLineDeviation && !hasMeaningfulDefects;
+            
+            // Debug Item 13 and 14 filtering
+            if (section.itemNo === 13 || section.itemNo === 14) {
+              console.log(`🔍 Item ${section.itemNo} Filtering observation: "${obs}"`);
+              console.log(`  Has line deviation: ${hasLineDeviation}`);
+              console.log(`  Has meaningful defects: ${hasMeaningfulDefects}`);
               console.log(`  Is ONLY line deviation: ${isOnlyLineDeviation}`);
               console.log(`  Will KEEP: ${!isOnlyLineDeviation}`);
             }
