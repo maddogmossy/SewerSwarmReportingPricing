@@ -745,16 +745,24 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       if (hasServiceDefects && hasStructuralDefects) {
         console.log(`🔄 Multi-defect section detected: Item ${authenticItemNo} has both service and structural defects`);
         
-        // Split observations into service and structural categories
+        // Split observations into service and structural categories based on observation codes
         const serviceObservations = observations.filter(obs => {
           const upperObs = obs.toUpperCase();
-          return upperObs.includes('DES') || upperObs.includes('DER') || upperObs.includes('WL') || upperObs.includes('RI') || upperObs.includes('ROOT');
+          // Service defects: deposits, water levels, line deviations, camera issues
+          return upperObs.startsWith('DES') || upperObs.startsWith('DER') || upperObs.startsWith('WL') || 
+                 upperObs.startsWith('RI') || upperObs.startsWith('ROOT') || upperObs.startsWith('CUW') || 
+                 upperObs.startsWith('SA') || upperObs.startsWith('LR') || upperObs.startsWith('LL');
         });
         
         const structuralObservations = observations.filter(obs => {
           const upperObs = obs.toUpperCase();
-          return upperObs.includes('D ') || upperObs.includes('FC') || upperObs.includes('FL') || upperObs.includes('CR') || upperObs.includes('JDL') || upperObs.includes('JDS') || upperObs.includes('DEF');
+          // Structural defects: deformation, fractures, cracks, joint issues  
+          return upperObs.startsWith('D ') || upperObs.startsWith('FC') || upperObs.startsWith('FL') || 
+                 upperObs.startsWith('CR') || upperObs.startsWith('JDL') || upperObs.startsWith('JDS') || 
+                 upperObs.startsWith('DEF') || upperObs.startsWith('JDM');
         });
+        
+        console.log(`🔍 Split observations - Service: ${serviceObservations.length}, Structural: ${structuralObservations.length}`);
         
         // Create service defect section (original item number)
         const serviceDefectText = serviceObservations.length > 0 ? await formatObservationText(serviceObservations, sector) : 'No service defects found';
