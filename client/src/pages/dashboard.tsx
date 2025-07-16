@@ -894,6 +894,16 @@ export default function Dashboard() {
             // Get the configuration color if available (define outside the block)
             const configColor = hasLinkedPR2 ? validConfigurations[0]?.categoryColor : undefined;
             
+            // Debug color application
+            if (section.itemNo === '3') {
+              console.log('🎨 Item 3 color debug:', {
+                hasLinkedPR2,
+                validConfigurations: validConfigurations.map(c => ({ id: c.id, categoryColor: c.categoryColor })),
+                configColor,
+                categoryName: validConfigurations[0]?.categoryName
+              });
+            }
+            
             if (hasLinkedPR2) {
               // Find the most recent PR2 configuration (highest ID) from valid configurations only
               const pr2Config = validConfigurations.reduce((latest: any, current: any) => 
