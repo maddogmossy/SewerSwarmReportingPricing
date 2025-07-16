@@ -1730,22 +1730,22 @@ export default function Dashboard() {
       if (section.itemNo === 20) {
         console.log(`🔍 ITEM 20 TP2 MATCHING:`, {
           pipeSize: pipeSize,
-          searchingFor: `${pipeSize}mm`,
+          searchingForCategoryId: `patching-${pipeSize}mm`,
+          currentSector: currentSector.id,
           allConfigs: pr2Configurations.map(c => ({
             id: c.id,
             categoryId: c.categoryId,
             categoryName: c.categoryName,
             sector: c.sector,
-            matches: c.categoryId === 'patching' && c.sector === currentSector.id && c.categoryName?.includes(`${pipeSize}mm`)
+            matches: c.categoryId === `patching-${pipeSize}mm` && c.sector === currentSector.id
           }))
         });
       }
       
       // Only find pipe size-specific configuration - no fallback to incompatible sizes
       let tp2PatchingConfig = pr2Configurations.find((config: any) => 
-        config.categoryId === 'patching' && 
-        config.sector === currentSector.id &&
-        config.categoryName?.includes(`${pipeSize}mm`)
+        config.categoryId === `patching-${pipeSize}mm` && 
+        config.sector === currentSector.id
       );
       
       if (tp2PatchingConfig) {
