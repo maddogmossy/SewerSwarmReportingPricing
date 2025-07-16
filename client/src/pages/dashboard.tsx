@@ -996,7 +996,7 @@ export default function Dashboard() {
                 className="flex items-center justify-center p-1 rounded" 
                 title={`${costCalculation.triangleMessage}\nTP2 patching: ${costCalculation.defectCount} defects × £${costCalculation.costPerUnit} = £${calculatedCost.toFixed(2)}\nRequires minimum ${costCalculation.minRequired} patches`}
               >
-                <span className="text-sm font-semibold text-red-600">
+                <span className="text-xs text-red-600">
                   £{calculatedCost.toFixed(2)}
                 </span>
               </div>
@@ -1015,7 +1015,7 @@ export default function Dashboard() {
                   className="flex items-center justify-center p-1 rounded" 
                   title={`TP2 ${costCalculation.patchingType}: £${costCalculation.cost.toFixed(2)}\n${costCalculation.defectCount} defects × £${costCalculation.costPerUnit} per unit\nRecommendation: ${costCalculation.recommendation}`}
                 >
-                  <span className={`text-sm font-semibold ${costColor}`}>
+                  <span className={`text-xs ${costColor}`}>
                     £{costCalculation.cost.toFixed(2)}
                   </span>
                 </div>
@@ -1027,7 +1027,7 @@ export default function Dashboard() {
                   className="flex items-center justify-center p-1 rounded" 
                   title={`${costCalculation.method}: ${costCalculation.currency}${costCalculation.cost.toFixed(2)}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
                 >
-                  <span className={`text-sm font-semibold ${costColor}`}>
+                  <span className={`text-xs ${costColor}`}>
                     {costCalculation.currency}{costCalculation.cost.toFixed(2)}
                   </span>
                 </div>
