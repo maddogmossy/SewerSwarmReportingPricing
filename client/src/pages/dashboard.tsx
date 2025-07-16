@@ -1726,6 +1726,21 @@ export default function Dashboard() {
       // Get pipe size for matching configuration
       const pipeSize = section.pipeSize || '150';
       
+      // DEBUG: Item 20 TP2 matching logic
+      if (section.itemNo === 20) {
+        console.log(`🔍 ITEM 20 TP2 MATCHING:`, {
+          pipeSize: pipeSize,
+          searchingFor: `${pipeSize}mm`,
+          allConfigs: pr2Configurations.map(c => ({
+            id: c.id,
+            categoryId: c.categoryId,
+            categoryName: c.categoryName,
+            sector: c.sector,
+            matches: c.categoryId === 'patching' && c.sector === currentSector.id && c.categoryName?.includes(`${pipeSize}mm`)
+          }))
+        });
+      }
+      
       // Only find pipe size-specific configuration - no fallback to incompatible sizes
       let tp2PatchingConfig = pr2Configurations.find((config: any) => 
         config.categoryId === 'patching' && 
