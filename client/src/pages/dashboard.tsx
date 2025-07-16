@@ -949,7 +949,7 @@ export default function Dashboard() {
           // Check if this section requires cleaning vs structural repair
           const needsCleaning = requiresCleaning(section.defects || '');
           
-          // Try to calculate cost using PR2 configuration
+          // Try to calculate cost using PR2 configuration (includes TP2 patching)
           const costCalculation = calculateAutoCost(section);
           
           if (costCalculation && costCalculation.cost > 0) {
@@ -957,17 +957,31 @@ export default function Dashboard() {
             const orangeMinimumMet = checkOrangeMinimumMet();
             const costColor = orangeMinimumMet ? "text-green-700" : "text-red-600";
             
-            // Show calculated cost with calculation method tooltip
-            return (
-              <div 
-                className="flex items-center justify-center p-1 rounded" 
-                title={`${costCalculation.method}: ${costCalculation.currency}${costCalculation.cost.toFixed(2)}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
-              >
-                <span className={`text-sm font-semibold ${costColor}`}>
-                  {costCalculation.currency}{costCalculation.cost.toFixed(2)}
-                </span>
-              </div>
-            );
+            // For TP2 patching, show cost with patching type info
+            if (costCalculation.patchingType) {
+              return (
+                <div 
+                  className="flex items-center justify-center p-1 rounded" 
+                  title={`TP2 ${costCalculation.patchingType}: £${costCalculation.cost.toFixed(2)}\n${costCalculation.defectCount} defects × £${costCalculation.costPerUnit} per unit\nRecommendation: ${costCalculation.recommendation}`}
+                >
+                  <span className={`text-sm font-semibold ${costColor}`}>
+                    £{costCalculation.cost.toFixed(2)}
+                  </span>
+                </div>
+              );
+            } else {
+              // Standard PR2 cleaning cost
+              return (
+                <div 
+                  className="flex items-center justify-center p-1 rounded" 
+                  title={`${costCalculation.method}: ${costCalculation.currency}${costCalculation.cost.toFixed(2)}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
+                >
+                  <span className={`text-sm font-semibold ${costColor}`}>
+                    {costCalculation.currency}{costCalculation.cost.toFixed(2)}
+                  </span>
+                </div>
+              );
+            }
           } else {
             // Show warning triangle when no pricing is configured
             if (needsCleaning) {
@@ -1337,6 +1351,90 @@ export default function Dashboard() {
   console.log('🔧 RepairPricingData from query:', repairPricingData);
   console.log('🔧 PR2 Configurations assigned:', pr2Configurations);
 
+  // Function to count defects in a section for TP2 patching cost calculation
+  const countDefects = (defectsText: string): number => {
+    if (!defectsText || defectsText === 'No service or structural defect found') {
+      return 0;
+    }
+    
+    // Count meterage references that indicate defect locations
+    // Use word boundaries to prevent false counting of "5mm" from crack descriptions
+    const meterageMatches = defectsText.match(/\b\d+\.?\d*m\b(?!\s*m)/g);
+    const defectCount = meterageMatches ? meterageMatches.length : 1;
+    
+    console.log('🔧 Defect counting:', {
+      defectsText: defectsText.substring(0, 100) + '...',
+      meterageMatches: meterageMatches,
+      defectCount: defectCount
+    });
+    
+    return defectCount;
+  };
+
+  // Function to calculate TP2 patching cost for repair sections
+  const calculateTP2PatchingCost = (section: any, tp2Config: any) => {
+    console.log('🔧 calculateTP2PatchingCost called for section:', section.itemNo);
+    console.log('🔧 TP2 config:', tp2Config);
+    
+    // Extract pipe size and length for cost calculation
+    const pipeSize = section.pipeSize || '150';
+    const sectionLength = parseFloat(section.totalLength) || 0;
+    
+    // Count defects for per-unit cost calculation
+    const defectsText = section.defects || '';
+    const defectCount = countDefects(defectsText);
+    
+    console.log('🔧 TP2 calculation inputs:', {
+      pipeSize: pipeSize,
+      sectionLength: sectionLength,
+      defectCount: defectCount,
+      defectsText: defectsText
+    });
+    
+    // Find the active patching option (e.g., "Double Layer")
+    const activePatchingOption = tp2Config.pricingOptions?.find((option: any) => 
+      option.enabled && option.value && option.value.trim() !== ''
+    );
+    
+    if (!activePatchingOption) {
+      console.log('❌ No active patching option found in TP2 config');
+      return null;
+    }
+    
+    // Get the cost per unit and minimum quantity
+    const costPerUnit = parseFloat(activePatchingOption.value) || 0;
+    
+    // Find the minimum quantity option
+    const minQuantityOption = tp2Config.minQuantityOptions?.find((option: any) => 
+      option.enabled && option.value && option.value.trim() !== ''
+    );
+    
+    const minQuantity = minQuantityOption ? parseFloat(minQuantityOption.value) || 0 : 0;
+    
+    // Calculate total cost: cost per unit × defect count
+    const totalCost = costPerUnit * defectCount;
+    
+    console.log('🔧 TP2 cost calculation:', {
+      activePatchingOption: activePatchingOption.label,
+      costPerUnit: costPerUnit,
+      minQuantity: minQuantity,
+      defectCount: defectCount,
+      totalCost: totalCost
+    });
+    
+    // Update recommendation to include pipe size and length
+    const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${activePatchingOption.label.toLowerCase()} patching`;
+    
+    return {
+      cost: totalCost,
+      costPerUnit: costPerUnit,
+      defectCount: defectCount,
+      minQuantity: minQuantity,
+      patchingType: activePatchingOption.label,
+      recommendation: recommendationText
+    };
+  };
+
   // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {
     console.log('🔍 calculateAutoCost called for section:', section.itemNo);
@@ -1356,7 +1454,17 @@ export default function Dashboard() {
       return null;
     }
 
-    // Find the first configuration that this section meets
+    // Check for TP2 patching configurations first (for structural repairs)
+    const tp2PatchingConfig = pr2Configurations.find((config: any) => 
+      config.categoryId === 'patching' && config.sector === currentSector.id
+    );
+    
+    if (tp2PatchingConfig) {
+      console.log('🔧 Found TP2 patching configuration:', tp2PatchingConfig.id);
+      return calculateTP2PatchingCost(section, tp2PatchingConfig);
+    }
+
+    // Find the first configuration that this section meets (for cleaning)
     let pr2Config = null;
     for (const config of pr2Configurations) {
       if (checkSectionMeetsPR2Requirements(section, config)) {
