@@ -230,8 +230,8 @@ function formatObservationText(observations: string[]): string {
     }
   }
   
-  // STEP 4: Build enhanced grouped observations with detailed descriptions
-  const finalObservations: string[] = [];
+  // STEP 4: Build all observations with meterage for global sorting
+  const allObservationsWithMeterage: Array<{text: string, meterage: number}> = [];
   
   // Add grouped codes with consolidated meterage and full descriptions
   for (const [code, entries] of Object.entries(codeGroups)) {
@@ -247,13 +247,13 @@ function formatObservationText(observations: string[]): string {
         // If we have detailed descriptions, show them, otherwise fall back to basic format
         if (uniqueDescriptions[0] && uniqueDescriptions[0].length > 5) {
           const groupedText = `${uniqueDescriptions[0]} at ${meterages}`;
-          finalObservations.push(groupedText);
+          allObservationsWithMeterage.push({text: groupedText, meterage: parseFloat(sortedEntries[0].meterage)});
           console.log(`🔧 Grouped ${code} with detailed description: ${groupedText}`);
         } else {
           // Basic format with defect description
           const basicDescription = defectDescriptions[code] || code;
           const groupedText = `${basicDescription} at ${meterages}`;
-          finalObservations.push(groupedText);
+          allObservationsWithMeterage.push({text: groupedText, meterage: parseFloat(sortedEntries[0].meterage)});
           console.log(`🔧 Grouped ${code} with basic description: ${groupedText}`);
         }
       } else {
@@ -262,11 +262,11 @@ function formatObservationText(observations: string[]): string {
         for (const entry of sortedEntries) {
           if (entry.fullText && entry.fullText.length > 5) {
             const individualText = `${entry.fullText} at ${entry.meterage}m`;
-            finalObservations.push(individualText);
+            allObservationsWithMeterage.push({text: individualText, meterage: parseFloat(entry.meterage)});
           } else {
             const basicDescription = defectDescriptions[code] || code;
             const individualText = `${basicDescription} at ${entry.meterage}m`;
-            finalObservations.push(individualText);
+            allObservationsWithMeterage.push({text: individualText, meterage: parseFloat(entry.meterage)});
           }
         }
         console.log(`🔧 Listed ${code} with different descriptions separately`);
@@ -276,23 +276,30 @@ function formatObservationText(observations: string[]): string {
       const entry = entries[0];
       if (entry.fullText && entry.fullText.length > 5) {
         const singleText = `${entry.fullText} at ${entry.meterage}m`;
-        finalObservations.push(singleText);
+        allObservationsWithMeterage.push({text: singleText, meterage: parseFloat(entry.meterage)});
       } else {
         const basicDescription = defectDescriptions[code] || code;
         const singleText = `${basicDescription} at ${entry.meterage}m`;
-        finalObservations.push(singleText);
+        allObservationsWithMeterage.push({text: singleText, meterage: parseFloat(entry.meterage)});
       }
     }
   }
   
   // Add non-grouped observations (IC, ICF nodes, etc.) with remark enhancement
   const enhancedNonGroupedObservations = nonGroupedObservations.map(obs => {
-    return enhanceObservationWithRemark(obs);
+    const enhanced = enhanceObservationWithRemark(obs);
+    // Extract meterage from non-grouped observations if possible
+    const meterageMatch = enhanced.match(/(\d+\.?\d*m?)/);
+    const meterage = meterageMatch ? parseFloat(meterageMatch[1]) : 999; // Put at end if no meterage
+    return {text: enhanced, meterage};
   });
   
-  finalObservations.push(...enhancedNonGroupedObservations);
+  allObservationsWithMeterage.push(...enhancedNonGroupedObservations);
   
-  const result = finalObservations.join('. ').trim();
+  // Sort all observations by meterage globally
+  allObservationsWithMeterage.sort((a, b) => a.meterage - b.meterage);
+  
+  const result = allObservationsWithMeterage.map(obs => obs.text).join('. ').trim();
   console.log(`🔧 Final formatted result with detailed descriptions: "${result.substring(0, 100)}..."`);
   
   return result;
