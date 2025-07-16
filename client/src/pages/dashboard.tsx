@@ -1068,6 +1068,19 @@ export default function Dashboard() {
           </span>
         );
       case 'cost':
+        // DEBUG: Track Item 20 data structure
+        if (section.itemNo === 20) {
+          console.log(`🔍 ITEM 20 RAW DATA:`, {
+            itemNo: section.itemNo,
+            severityGrade: section.severityGrade,
+            severityGradeType: typeof section.severityGrade,
+            cost: section.cost,
+            adoptable: section.adoptable,
+            pipeSize: section.pipeSize,
+            defects: section.defects,
+            allSectionData: section
+          });
+        }
 
         
         // Display "Complete" for all Grade 0 sections with "Complete" in cost field
@@ -1084,6 +1097,18 @@ export default function Dashboard() {
         
         // Calculate costs for defective sections using PR2 configurations
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
+          // DEBUG: Track Item 20 before calculateAutoCost
+          if (section.itemNo === 20) {
+            console.log(`🔍 ITEM 20 COST CALCULATION DEBUG:`, {
+              itemNo: section.itemNo,
+              severityGrade: section.severityGrade,
+              pipeSize: section.pipeSize,
+              defects: section.defects,
+              defectType: section.defectType,
+              aboutToCallCalculateAutoCost: true
+            });
+          }
+          
           // Check if this section requires cleaning vs structural repair
           const needsCleaning = requiresCleaning(section.defects || '');
           const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
