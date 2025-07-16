@@ -210,7 +210,10 @@ export default function PR2ConfigClean() {
         description: '',
         pricingOptions: [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' },
-          { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' }
+          { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' },
+          { id: 'double_layer_cost', label: 'Double Layer', enabled: true, value: '' },
+          { id: 'triple_layer_cost', label: 'Triple Layer', enabled: true, value: '' },
+          { id: 'triple_extra_cure_cost', label: 'Triple Layer (with Extra Cure Time)', enabled: true, value: '' }
         ],
         quantityOptions: [], // No green window for TP2
         minQuantityOptions: [
@@ -221,7 +224,7 @@ export default function PR2ConfigClean() {
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
         ],
         mathOperators: [], // No math window for TP2
-        pricingStackOrder: ['price_dayrate', 'single_layer_cost'],
+        pricingStackOrder: ['price_dayrate', 'single_layer_cost', 'double_layer_cost', 'triple_layer_cost', 'triple_extra_cure_cost'],
         quantityStackOrder: [],
         minQuantityStackOrder: ['minquantity_runs', 'patch_min_qty'],
         rangeStackOrder: ['range_length'],
@@ -1876,46 +1879,91 @@ export default function PR2ConfigClean() {
                 <CardContent className="py-1">
                   <div className="space-y-1">
                     {categoryId === 'patching' ? (
-                      /* TP2 Patching: Single Layer + Cost + Min Qty + Length */
-                      <div className="flex items-center gap-2 w-full flex-wrap">
-                        <div className="flex items-center gap-2">
-                          <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                            Single Layer
-                          </Label>
-                          <Input
-                            id="single_layer_cost"
-                            placeholder="£"
-                            maxLength={6}
-                            value={formData.pricingOptions.find(opt => opt.id === 'single_layer_cost')?.value || ''}
-                            onChange={(e) => handleValueChange('pricingOptions', 'single_layer_cost', e.target.value)}
-                            className="bg-white border-purple-300 h-6 text-xs w-16"
-                          />
+                      /* TP2 Patching: Four Layer Options + Min Qty + Length */
+                      <div className="space-y-2">
+                        {/* Layer Options Row */}
+                        <div className="flex items-center gap-2 w-full flex-wrap">
+                          <div className="flex items-center gap-1">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                              Single Layer
+                            </Label>
+                            <Input
+                              id="single_layer_cost"
+                              placeholder="£"
+                              maxLength={6}
+                              value={formData.pricingOptions.find(opt => opt.id === 'single_layer_cost')?.value || ''}
+                              onChange={(e) => handleValueChange('pricingOptions', 'single_layer_cost', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-14"
+                            />
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                              Double Layer
+                            </Label>
+                            <Input
+                              id="double_layer_cost"
+                              placeholder="£"
+                              maxLength={6}
+                              value={formData.pricingOptions.find(opt => opt.id === 'double_layer_cost')?.value || ''}
+                              onChange={(e) => handleValueChange('pricingOptions', 'double_layer_cost', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-14"
+                            />
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                              Triple Layer
+                            </Label>
+                            <Input
+                              id="triple_layer_cost"
+                              placeholder="£"
+                              maxLength={6}
+                              value={formData.pricingOptions.find(opt => opt.id === 'triple_layer_cost')?.value || ''}
+                              onChange={(e) => handleValueChange('pricingOptions', 'triple_layer_cost', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-14"
+                            />
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                              Triple Layer (Extra Cure)
+                            </Label>
+                            <Input
+                              id="triple_extra_cure_cost"
+                              placeholder="£"
+                              maxLength={6}
+                              value={formData.pricingOptions.find(opt => opt.id === 'triple_extra_cure_cost')?.value || ''}
+                              onChange={(e) => handleValueChange('pricingOptions', 'triple_extra_cure_cost', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-14"
+                            />
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                            Min Qty
-                          </Label>
-                          <Input
-                            id="patch_min_qty"
-                            placeholder="qty"
-                            maxLength={3}
-                            value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
-                            onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
-                            className="bg-white border-purple-300 h-6 text-xs w-12"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                            Length (Max)
-                          </Label>
-                          <Input
-                            id="range_length"
-                            placeholder="mm"
-                            maxLength={4}
-                            value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
-                            onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                            className="bg-white border-purple-300 h-6 text-xs w-20"
-                          />
+                        {/* Min Qty and Length Row */}
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                              Min Qty
+                            </Label>
+                            <Input
+                              id="patch_min_qty"
+                              placeholder="qty"
+                              maxLength={3}
+                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
+                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-12"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                              Length (Max)
+                            </Label>
+                            <Input
+                              id="range_length"
+                              placeholder="mm"
+                              maxLength={4}
+                              value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
+                              onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-20"
+                            />
+                          </div>
                         </div>
                       </div>
                     ) : (
