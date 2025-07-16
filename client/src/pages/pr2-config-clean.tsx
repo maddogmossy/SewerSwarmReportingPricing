@@ -330,9 +330,9 @@ export default function PR2ConfigClean() {
     console.log(`   📊 Min quantity options:`, formData.minQuantityOptions);
   }, [formData, editId]);
 
-  // Auto-save when form data changes (with debouncing)
+  // Auto-save when form data changes (with debouncing) - fixed to work for new configurations
   useEffect(() => {
-    if (isEditing && editId && formData.categoryName) {
+    if (formData.categoryName) {
       const hasActualValues = 
         formData.pricingOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
         formData.quantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
@@ -341,10 +341,8 @@ export default function PR2ConfigClean() {
       
       if (hasActualValues) {
         console.log('💾 Auto-saving configuration with current data...');
-        console.log('   📚 Quantity count:', formData.quantityOptions.length);
-        console.log('   📚 Range count:', formData.rangeOptions.length);
-        console.log('   📚 Quantity stack order:', formData.quantityStackOrder);
-        console.log('   📚 Range stack order:', formData.rangeStackOrder);
+        console.log('   📚 IsEditing:', isEditing, 'EditId:', editId);
+        console.log('   📚 Category:', formData.categoryName);
         
         // Auto-save with debouncing
         const timeoutId = setTimeout(async () => {
@@ -365,12 +363,30 @@ export default function PR2ConfigClean() {
               rangeStackOrder: formData.rangeStackOrder
             };
 
-            await fetch(`/api/pr2-clean/${editId}`, {
-              method: 'PUT',
+            // Use PUT for existing configurations, POST for new ones
+            const method = isEditing && editId ? 'PUT' : 'POST';
+            const url = isEditing && editId ? `/api/pr2-clean/${editId}` : '/api/pr2-clean';
+            
+            const response = await fetch(url, {
+              method,
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
             });
-            console.log('✅ Auto-save completed successfully');
+            
+            if (response.ok) {
+              const result = await response.json();
+              console.log('✅ Auto-save completed successfully:', result);
+              
+              // If this was a new configuration, update the URL to reflect editing mode
+              if (!editId && result.id) {
+                console.log('🔄 Updating URL to edit mode with ID:', result.id);
+                // Update the URL to include the new configuration ID
+                const newUrl = `/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${result.id}`;
+                window.history.replaceState({}, '', newUrl);
+              }
+            } else {
+              console.error('❌ Auto-save failed:', response.status, response.statusText);
+            }
           } catch (error) {
             console.error('❌ Auto-save failed:', error);
           }
@@ -1956,10 +1972,11 @@ export default function PR2ConfigClean() {
                               onChange={(e) => handleValueChange('pricingOptions', 'single_layer_cost', e.target.value)}
                               className={`h-6 text-xs w-16 ${
                                 Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
-                                  ? 'bg-gray-100 border-gray-300 text-gray-500'
+                                  ? 'bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed'
                                   : 'bg-white border-purple-300'
                               }`}
                               disabled={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
+                              readOnly={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
                             />
                             <Label className={`text-xs font-medium flex-shrink-0 ml-4 ${
                               Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
@@ -1976,10 +1993,11 @@ export default function PR2ConfigClean() {
                               onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty_1', e.target.value)}
                               className={`h-6 text-xs w-12 ${
                                 Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
-                                  ? 'bg-gray-100 border-gray-300 text-gray-500'
+                                  ? 'bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed'
                                   : 'bg-white border-purple-300'
                               }`}
                               disabled={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
+                              readOnly={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
                             />
                             <Label className={`text-xs font-medium flex-shrink-0 ml-4 ${
                               Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
@@ -1996,10 +2014,11 @@ export default function PR2ConfigClean() {
                               onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
                               className={`h-6 text-xs w-20 ${
                                 Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
-                                  ? 'bg-gray-100 border-gray-300 text-gray-500'
+                                  ? 'bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed'
                                   : 'bg-white border-purple-300'
                               }`}
                               disabled={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
+                              readOnly={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
                             />
                           </div>
                           <div className="flex items-center gap-2">
