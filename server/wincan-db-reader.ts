@@ -192,7 +192,10 @@ function formatObservationText(observations: string[]): string {
       
       // Build full description with defect name and percentage
       if (defectDescriptions[code]) {
-        if (percentageText) {
+        // Special handling for WL codes - keep original compact format
+        if (code === 'WL') {
+          fullDescription = obs; // Keep original format like "WL 20% 1.3m, 18.03m"
+        } else if (percentageText) {
           fullDescription = `${defectDescriptions[code]}, ${percentageText}`;
         } else {
           // Add default percentage for common defects to show enhanced descriptions
@@ -200,8 +203,6 @@ function formatObservationText(observations: string[]): string {
             fullDescription = `${defectDescriptions[code]}, 5% cross-sectional area loss`;
           } else if (code === 'DER') {
             fullDescription = `${defectDescriptions[code]}, 10% cross-sectional area loss`;
-          } else if (code === 'WL') {
-            fullDescription = `${defectDescriptions[code]}, 15% of the vertical dimension`;
           } else if (code === 'D') {
             fullDescription = `${defectDescriptions[code]}, 8% cross-sectional area loss`;
           } else {
