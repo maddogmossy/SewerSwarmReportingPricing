@@ -1789,7 +1789,7 @@ export default function PR2ConfigClean() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-6 md:grid-cols-9 lg:grid-cols-12 gap-3">
+            <div className="grid grid-cols-6 md:grid-cols-9 lg:grid-cols-12 gap-3 mb-4">
               {OUTLOOK_COLORS.map((color) => (
                 <button
                   key={color.value}
@@ -1804,8 +1804,28 @@ export default function PR2ConfigClean() {
                 />
               ))}
             </div>
+            
+            {/* Custom Color Input */}
+            <div className="border-t pt-4">
+              <div className="flex items-center gap-3">
+                <Label htmlFor="custom-color" className="text-sm font-medium text-gray-700">
+                  Custom Color:
+                </Label>
+                <input
+                  id="custom-color"
+                  type="color"
+                  value={formData.categoryColor}
+                  onChange={(e) => setFormData(prev => ({ ...prev, categoryColor: e.target.value }))}
+                  className="w-12 h-8 rounded border border-gray-300 cursor-pointer"
+                />
+                <span className="text-sm text-gray-600 font-mono">
+                  {formData.categoryColor}
+                </span>
+              </div>
+            </div>
+            
             <div className="mt-3 text-sm text-gray-600">
-              <p>Select a color to help distinguish this category in the dashboard</p>
+              <p>Select a preset color or create your own custom color using the color picker</p>
             </div>
           </CardContent>
         </Card>

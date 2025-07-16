@@ -28,9 +28,10 @@ interface CleaningOptionsPopoverProps {
   };
   onPricingNeeded: (method: string, pipeSize: string, sector: string) => void;
   hasLinkedPR2?: boolean;
+  configColor?: string;
 }
 
-export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2 }: CleaningOptionsPopoverProps) {
+export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
   // Equipment order state - both items always present, just reorderable

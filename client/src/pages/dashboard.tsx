@@ -60,6 +60,14 @@ const requiresCleaning = (defects: string): boolean => {
   return cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
 };
 
+// Helper function to convert hex to rgba with opacity
+const hexToRgba = (hex: string, opacity: number): string => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
+
 // Function to detect if defects require structural repair (TP2 patching)
 const requiresStructuralRepair = (defects: string): boolean => {
   if (!defects) return false;
@@ -846,9 +854,17 @@ export default function Dashboard() {
                 totalLength: section.totalLength
               });
               
+              // Get the configuration color if available
+              const configColor = validConfigurations[0]?.categoryColor;
+              
               switch (statusColor) {
                 case 'green':
-                  backgroundClass = 'bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400';
+                  if (configColor) {
+                    // Use custom color from configuration
+                    backgroundClass = `border-2 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`;
+                  } else {
+                    backgroundClass = 'bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400';
+                  }
                   statusMessage = '✅ Meets all PR2 requirements';
                   break;
                 case 'red':
@@ -883,13 +899,21 @@ export default function Dashboard() {
                   console.log('Cleaning pricing needed for:', method, pipeSize, sector);
                 }}
                 hasLinkedPR2={hasLinkedPR2}
+                configColor={hasLinkedPR2 ? validConfigurations[0]?.categoryColor : undefined}
                 data-component="cleaning-options-popover"
                 data-section-id={section.itemNo}
                 data-has-config={hasLinkedPR2}
                 data-pipe-size={section.pipeSize}
                 data-sector={currentSector.id}
               >
-                <div className={`text-xs max-w-sm ${backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
+                <div 
+                  className={`text-xs max-w-sm ${statusColor === 'green' && configColor ? '' : backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}
+                  style={statusColor === 'green' && configColor ? {
+                    backgroundColor: hexToRgba(configColor, 0.1),
+                    borderColor: hexToRgba(configColor, 0.5),
+                    borderWidth: '2px'
+                  } : {}}
+                >
                   <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? validConfigurations[0].categoryName : 'CLEANSE/SURVEY'}</div>
                   <div className="text-black">{generateDynamicRecommendation(section)}</div>
                   <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
