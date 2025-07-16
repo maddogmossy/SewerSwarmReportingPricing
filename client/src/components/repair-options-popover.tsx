@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Settings } from "lucide-react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface RepairOption {
   id: number;
@@ -30,6 +32,20 @@ interface RepairOptionsPopoverProps {
 export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }: RepairOptionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
+  
+  // Fetch existing TP2 patching configurations for this sector
+  const { data: tp2Configs = [] } = useQuery({
+    queryKey: ['tp2-configs', sectionData.sector],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/pr2-clean', undefined, { 
+        sector: sectionData.sector,
+        categoryId: 'patching'
+      });
+      return await response.json();
+    },
+    enabled: !!sectionData.sector,
+    staleTime: 30000
+  });
 
   // Repair options based on WRc standards and severity grade
   const getRepairOptions = (): RepairOption[] => {
@@ -41,14 +57,22 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     const hasLocalizedDefects = defectsText.includes('at ') || defectsText.includes('m.');
     const hasMultipleDefects = (defectsText.match(/\d+\.?\d*m/g) || []).length > 2;
     
+    // Check if TP2 patching configuration exists and is properly configured
+    const existingTP2Config = tp2Configs.find((config: any) => config.categoryId === 'patching');
+    const hasTP2PatchingConfig = existingTP2Config && 
+      (existingTP2Config.pricingOptions?.some((opt: any) => opt.enabled && opt.value && opt.value.trim() !== '') ||
+       existingTP2Config.minQuantityOptions?.some((opt: any) => opt.enabled && opt.value && opt.value.trim() !== ''));
+    
     if (severityGrade <= 3 && hasLocalizedDefects && !hasMultipleDefects) {
       return [
         {
           id: 1,
           name: 'Patch Repair Configuration',
           description: 'Configure patch repair pricing for localized defects (WRc recommended)',
-          configured: false,
-          configurationMessage: 'Set up patch repair pricing for utilities sector'
+          configured: hasTP2PatchingConfig,
+          configurationMessage: hasTP2PatchingConfig ? 
+            `TP2 Patching configured (ID: ${existingTP2Config?.id})` : 
+            'Set up patch repair pricing for utilities sector'
         },
         {
           id: 2,
@@ -85,8 +109,12 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     
     // Route to specific repair configuration based on option selected
     if (option.name.includes('Patch Repair')) {
-      // Route to patch repair configuration for utilities sector
-      setLocation(`/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
+      // Get the existing TP2 patching configuration ID for this sector
+      const existingTP2Config = tp2Configs.find((config: any) => config.categoryId === 'patching');
+      const editParam = existingTP2Config ? `&edit=${existingTP2Config.id}` : '';
+      
+      // Route to patch repair configuration with existing config ID if available
+      setLocation(`/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}${editParam}`);
     } else if (option.name.includes('CIPP Lining')) {
       // Route to lining configuration
       setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=cipp-lining&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
