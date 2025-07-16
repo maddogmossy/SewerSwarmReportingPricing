@@ -1881,7 +1881,7 @@ export default function PR2ConfigClean() {
                     {categoryId === 'patching' ? (
                       /* TP2 Patching: Numbered List with Consistent Input Windows */
                       <div className="space-y-2">
-                        {/* Layer Options as Numbered List with Min Qty and Length in same row */}
+                        {/* Layer Options as Numbered List - All with Same Layout */}
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
@@ -1936,6 +1936,28 @@ export default function PR2ConfigClean() {
                               onChange={(e) => handleValueChange('pricingOptions', 'double_layer_cost', e.target.value)}
                               className="bg-white border-purple-300 h-6 text-xs w-16"
                             />
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
+                              Min Qty
+                            </Label>
+                            <Input
+                              id="patch_min_qty_2"
+                              placeholder="qty"
+                              maxLength={3}
+                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
+                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-12"
+                            />
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
+                              Length (Max)
+                            </Label>
+                            <Input
+                              id="range_length_2"
+                              placeholder="mm"
+                              maxLength={4}
+                              value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
+                              onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-20"
+                            />
                           </div>
                           <div className="flex items-center gap-2">
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
@@ -1952,6 +1974,28 @@ export default function PR2ConfigClean() {
                               onChange={(e) => handleValueChange('pricingOptions', 'triple_layer_cost', e.target.value)}
                               className="bg-white border-purple-300 h-6 text-xs w-16"
                             />
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
+                              Min Qty
+                            </Label>
+                            <Input
+                              id="patch_min_qty_3"
+                              placeholder="qty"
+                              maxLength={3}
+                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
+                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-12"
+                            />
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
+                              Length (Max)
+                            </Label>
+                            <Input
+                              id="range_length_3"
+                              placeholder="mm"
+                              maxLength={4}
+                              value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
+                              onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-20"
+                            />
                           </div>
                           <div className="flex items-center gap-2">
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
@@ -1967,6 +2011,28 @@ export default function PR2ConfigClean() {
                               value={formData.pricingOptions.find(opt => opt.id === 'triple_extra_cure_cost')?.value || ''}
                               onChange={(e) => handleValueChange('pricingOptions', 'triple_extra_cure_cost', e.target.value)}
                               className="bg-white border-purple-300 h-6 text-xs w-16"
+                            />
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
+                              Min Qty
+                            </Label>
+                            <Input
+                              id="patch_min_qty_4"
+                              placeholder="qty"
+                              maxLength={3}
+                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
+                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-12"
+                            />
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
+                              Length (Max)
+                            </Label>
+                            <Input
+                              id="range_length_4"
+                              placeholder="mm"
+                              maxLength={4}
+                              value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
+                              onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-20"
                             />
                           </div>
                         </div>
