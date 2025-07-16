@@ -86,7 +86,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     // Route to specific repair configuration based on option selected
     if (option.name.includes('Patch Repair')) {
       // Route to patch repair configuration for utilities sector
-      setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=patch-repair&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
+      setLocation(`/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
     } else if (option.name.includes('CIPP Lining')) {
       // Route to lining configuration
       setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=cipp-lining&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
@@ -118,7 +118,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
 
   // If this is a patch repair scenario, route directly to patch configuration
   const handleDirectPatchConfig = () => {
-    setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=patch-repair&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
+    setLocation(`/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
   };
 
   // Handle click on the trigger - check if it's a patch repair scenario
