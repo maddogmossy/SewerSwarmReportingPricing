@@ -443,76 +443,104 @@ export default function PR2Pricing() {
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
                   {/* CCTV/Jet Vac Option for this pipe size */}
-                  <Card
-                    className="cursor-pointer transition-all hover:shadow-md bg-white border-2 border-blue-200"
-                    onClick={() => {
-                      const categoryId = 'cctv-jet-vac';
-                      const existingConfig = pr2Configurations.find(config => 
-                        config.categoryId === categoryId && 
-                        config.categoryName?.includes(`${pipeSize}mm`)
-                      );
-                      
-                      if (existingConfig) {
-                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
-                      } else {
-                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Jet Vac Configuration`)}`);
-                      }
-                    }}
-                  >
-                    <CardContent className="p-4 text-center relative">
-                      <Waves className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                      <h3 className="font-medium text-sm mb-1">
-                        CCTV/Jet Vac - {pipeSize}mm
-                        {(() => {
-                          const existingConfig = pr2Configurations.find(config => 
-                            config.categoryId === 'cctv-jet-vac' && 
-                            config.categoryName?.includes(`${pipeSize}mm`)
-                          );
-                          return existingConfig ? (
-                            <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
-                          ) : null;
-                        })()}
-                      </h3>
-                      <p className="text-xs text-gray-600">High-pressure cleaning configuration for {pipeSize}mm pipes</p>
-                      <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
-                    </CardContent>
-                  </Card>
+                  {(() => {
+                    const categoryId = 'cctv-jet-vac';
+                    const existingConfig = pr2Configurations.find(config => 
+                      config.categoryId === categoryId && 
+                      config.categoryName?.includes(`${pipeSize}mm`)
+                    );
+                    const generalConfig = pr2Configurations.find(config => 
+                      config.categoryId === categoryId && !config.categoryName?.includes('mm')
+                    );
+                    const configToUse = existingConfig || generalConfig;
+                    
+                    const hexToRgba = (hex: string, opacity: number) => {
+                      const r = parseInt(hex.slice(1, 3), 16);
+                      const g = parseInt(hex.slice(3, 5), 16);
+                      const b = parseInt(hex.slice(5, 7), 16);
+                      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+                    };
+
+                    return (
+                      <Card
+                        className="cursor-pointer transition-all hover:shadow-md border-2 border-blue-200"
+                        style={{
+                          backgroundColor: configToUse?.categoryColor 
+                            ? hexToRgba(configToUse.categoryColor, 0.1)
+                            : 'white'
+                        }}
+                        onClick={() => {
+                          if (existingConfig) {
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
+                          } else {
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Jet Vac Configuration`)}`);
+                          }
+                        }}
+                      >
+                        <CardContent className="p-4 text-center relative">
+                          <Waves className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                          <h3 className="font-medium text-sm mb-1">
+                            CCTV/Jet Vac - {pipeSize}mm
+                            {existingConfig ? (
+                              <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
+                            ) : null}
+                          </h3>
+                          <p className="text-xs text-gray-600">High-pressure cleaning configuration for {pipeSize}mm pipes</p>
+                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                        </CardContent>
+                      </Card>
+                    );
+                  })()}
 
                   {/* CCTV/Van Pack Option for this pipe size */}
-                  <Card
-                    className="cursor-pointer transition-all hover:shadow-md bg-white border-2 border-blue-200"
-                    onClick={() => {
-                      const categoryId = 'cctv-van-pack';
-                      const existingConfig = pr2Configurations.find(config => 
-                        config.categoryId === categoryId && 
-                        config.categoryName?.includes(`${pipeSize}mm`)
-                      );
-                      
-                      if (existingConfig) {
-                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
-                      } else {
-                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Van Pack Configuration`)}`);
-                      }
-                    }}
-                  >
-                    <CardContent className="p-4 text-center relative">
-                      <Monitor className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                      <h3 className="font-medium text-sm mb-1">
-                        CCTV/Van Pack - {pipeSize}mm
-                        {(() => {
-                          const existingConfig = pr2Configurations.find(config => 
-                            config.categoryId === 'cctv-van-pack' && 
-                            config.categoryName?.includes(`${pipeSize}mm`)
-                          );
-                          return existingConfig ? (
-                            <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
-                          ) : null;
-                        })()}
-                      </h3>
-                      <p className="text-xs text-gray-600">Traditional cleaning configuration for {pipeSize}mm pipes</p>
-                      <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
-                    </CardContent>
-                  </Card>
+                  {(() => {
+                    const categoryId = 'cctv-van-pack';
+                    const existingConfig = pr2Configurations.find(config => 
+                      config.categoryId === categoryId && 
+                      config.categoryName?.includes(`${pipeSize}mm`)
+                    );
+                    const generalConfig = pr2Configurations.find(config => 
+                      config.categoryId === categoryId && !config.categoryName?.includes('mm')
+                    );
+                    const configToUse = existingConfig || generalConfig;
+                    
+                    const hexToRgba = (hex: string, opacity: number) => {
+                      const r = parseInt(hex.slice(1, 3), 16);
+                      const g = parseInt(hex.slice(3, 5), 16);
+                      const b = parseInt(hex.slice(5, 7), 16);
+                      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+                    };
+
+                    return (
+                      <Card
+                        className="cursor-pointer transition-all hover:shadow-md border-2 border-blue-200"
+                        style={{
+                          backgroundColor: configToUse?.categoryColor 
+                            ? hexToRgba(configToUse.categoryColor, 0.1)
+                            : 'white'
+                        }}
+                        onClick={() => {
+                          if (existingConfig) {
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
+                          } else {
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Van Pack Configuration`)}`);
+                          }
+                        }}
+                      >
+                        <CardContent className="p-4 text-center relative">
+                          <Monitor className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                          <h3 className="font-medium text-sm mb-1">
+                            CCTV/Van Pack - {pipeSize}mm
+                            {existingConfig ? (
+                              <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
+                            ) : null}
+                          </h3>
+                          <p className="text-xs text-gray-600">Traditional cleaning configuration for {pipeSize}mm pipes</p>
+                          <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
+                        </CardContent>
+                      </Card>
+                    );
+                  })()}
                 </div>
               </CardContent>
             </Card>
@@ -540,12 +568,25 @@ export default function PR2Pricing() {
                   
 
                   
+                  // Convert hex color to rgba with opacity for background
+                  const hexToRgba = (hex: string, opacity: number) => {
+                    const r = parseInt(hex.slice(1, 3), 16);
+                    const g = parseInt(hex.slice(3, 5), 16);
+                    const b = parseInt(hex.slice(5, 7), 16);
+                    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+                  };
+
                   return (
                     <Card
                       key={category.id}
-                      className={`cursor-pointer transition-all hover:shadow-md bg-white border-2 ${
+                      className={`cursor-pointer transition-all hover:shadow-md border-2 ${
                         isUserCreated ? 'border-green-200' : 'border-gray-200'
                       }`}
+                      style={{
+                        backgroundColor: existingConfiguration?.categoryColor 
+                          ? hexToRgba(existingConfiguration.categoryColor, 0.1)
+                          : 'white'
+                      }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
                       <CardContent className="p-4 text-center relative">
