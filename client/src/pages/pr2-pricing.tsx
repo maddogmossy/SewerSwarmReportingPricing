@@ -295,6 +295,7 @@ export default function PR2Pricing() {
       'uv-lining': 'uv-lining',
       'ims-cutting': 'ims-cutting',
       'excavation': 'excavation',
+      'patching': 'patching',
       'tankering': 'tankering'
     };
     
@@ -312,20 +313,21 @@ export default function PR2Pricing() {
     // Generate standard configuration name based on category (no pipe size until set from dashboard)
     const getCategoryDisplayName = (catId: string) => {
       const nameMap = {
-        'cctv': 'CCTV Configuration',
-        'van-pack': 'Van Pack Configuration',
-        'jet-vac': 'Jet Vac Configuration',
-        'cctv-van-pack': 'CCTV Van Pack Configuration',
-        'cctv-jet-vac': 'CCTV Jet Vac Configuration',
-        'directional-water-cutter': 'Directional Water Cutter Configuration',
-        'ambient-lining': 'Ambient Lining Configuration',
-        'hot-cure-lining': 'Hot Cure Lining Configuration',
-        'uv-lining': 'UV Lining Configuration',
-        'ims-cutting': 'IMS Cutting Configuration',
-        'excavation': 'Excavation Configuration',
-        'tankering': 'Tankering Configuration'
+        'cctv': 'TP1 - CCTV Configuration',
+        'van-pack': 'TP1 - Van Pack Configuration',
+        'jet-vac': 'TP1 - Jet Vac Configuration',
+        'cctv-van-pack': 'TP1 - CCTV Van Pack Configuration',
+        'cctv-jet-vac': 'TP1 - CCTV Jet Vac Configuration',
+        'directional-water-cutter': 'TP1 - Directional Water Cutter Configuration',
+        'ambient-lining': 'TP1 - Ambient Lining Configuration',
+        'hot-cure-lining': 'TP1 - Hot Cure Lining Configuration',
+        'uv-lining': 'TP1 - UV Lining Configuration',
+        'ims-cutting': 'TP1 - IMS Cutting Configuration',
+        'excavation': 'TP1 - Excavation Configuration',
+        'patching': 'TP2 - Patching Configuration',
+        'tankering': 'TP1 - Tankering Configuration'
       };
-      return nameMap[catId as keyof typeof nameMap] || 'Configuration';
+      return nameMap[catId as keyof typeof nameMap] || 'TP1 - Configuration';
     };
     
     const configName = getCategoryDisplayName(mappedCategoryId);
