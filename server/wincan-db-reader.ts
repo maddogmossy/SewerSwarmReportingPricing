@@ -81,6 +81,33 @@ function formatObservationText(observations: string[]): string {
     return '';
   }
   
+  // STEP 1.5: Extract meterage from all observations and sort by meterage first
+  const observationsWithMeterage = preFiltered.map(obs => {
+    // Extract meterage from various formats: "WL 1.3m", "DES 7.91m", "SA 27.9m"
+    const meterageMatch = obs.match(/(\d+\.?\d*)m?\s*\(/);
+    if (!meterageMatch) {
+      // Try simpler pattern without parentheses
+      const simpleMatch = obs.match(/(\d+\.?\d*)m?\s/);
+      if (simpleMatch) {
+        return { obs, meterage: parseFloat(simpleMatch[1]) };
+      }
+    } else {
+      return { obs, meterage: parseFloat(meterageMatch[1]) };
+    }
+    
+    // If no meterage found, put at end
+    return { obs, meterage: 999 };
+  });
+  
+  // Sort all observations by meterage first
+  observationsWithMeterage.sort((a, b) => a.meterage - b.meterage);
+  const sortedObservations = observationsWithMeterage.map(item => item.obs);
+  
+  console.log(`🔧 Sorted observations by meterage:`, sortedObservations.map(obs => obs.substring(0, 30)));
+  
+  // Continue with existing grouping logic using sorted observations
+  const preFilteredSorted = sortedObservations;
+  
   const defectDescriptions: { [key: string]: string } = {
     'DES': 'Settled deposits, fine',
     'DER': 'Settled deposits, coarse', 
@@ -106,7 +133,7 @@ function formatObservationText(observations: string[]): string {
   const structuralDefectPositions: number[] = [];
   
   // STEP 2: First pass - identify junction positions and structural defects
-  for (const obs of preFiltered) {
+  for (const obs of preFilteredSorted) {
     const codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)/);
     if (codeMatch) {
       const code = codeMatch[1];
@@ -123,11 +150,17 @@ function formatObservationText(observations: string[]): string {
   }
   
   // STEP 3: Process observations with enhanced detailed descriptions
-  for (const obs of preFiltered) {
-    // Try to extract code and meterage for grouping
-    let codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*m?)\s*\(/);
+  for (const obs of preFilteredSorted) {
+    // Try to extract code and meterage for grouping - handle database format like "WL 1.3m (Water level...)"
+    let codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)m?\s*\(/);
     if (!codeMatch) {
-      codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*m?)/);
+      codeMatch = obs.match(/^([A-Z]+)\s+(\d+\.?\d*)m?/);
+    }
+    
+    // Additional debug logging for water level observations
+    if (obs.includes('WL ') || obs.includes('Water level')) {
+      console.log(`🔧 Processing WL observation: "${obs}"`);
+      console.log(`🔧 Code match result:`, codeMatch);
     }
     
     if (codeMatch) {
@@ -297,11 +330,9 @@ function formatObservationText(observations: string[]): string {
   
   allObservationsWithMeterage.push(...enhancedNonGroupedObservations);
   
-  // Sort all observations by meterage globally
-  allObservationsWithMeterage.sort((a, b) => a.meterage - b.meterage);
-  
-  const result = allObservationsWithMeterage.map(obs => obs.text).join('. ').trim();
-  console.log(`🔧 Final formatted result with detailed descriptions: "${result.substring(0, 100)}..."`);
+  // Since observations are already sorted by meterage, join them directly
+  const result = preFilteredSorted.join('. ').trim();
+  console.log(`🔧 Final formatted result with meterage sorting: "${result.substring(0, 100)}..."`);
   
   return result;
 }
