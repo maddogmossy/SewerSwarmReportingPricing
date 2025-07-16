@@ -1932,7 +1932,7 @@ export default function PR2ConfigClean() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => {
-                                    const currentLock = adminControls?.find(c => c.controlType === 'tp2_option_1_lock');
+                                    const currentLock = Array.isArray(adminControls) ? adminControls.find(c => c.controlType === 'tp2_option_1_lock') : null;
                                     const isLocked = currentLock?.isLocked || false;
                                     toggleAdminControl.mutate({
                                       isLocked: !isLocked,
@@ -1941,7 +1941,7 @@ export default function PR2ConfigClean() {
                                   }}
                                   className="h-4 w-4 p-0 text-purple-700 hover:text-red-600"
                                 >
-                                  {adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked ? (
+                                  {Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked ? (
                                     <Lock className="h-3 w-3" />
                                   ) : (
                                     <Unlock className="h-3 w-3" />
@@ -1956,14 +1956,14 @@ export default function PR2ConfigClean() {
                               value={formData.pricingOptions.find(opt => opt.id === 'single_layer_cost')?.value || ''}
                               onChange={(e) => handleValueChange('pricingOptions', 'single_layer_cost', e.target.value)}
                               className={`h-6 text-xs w-16 ${
-                                adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
+                                Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
                                   ? 'bg-gray-100 border-gray-300 text-gray-500'
                                   : 'bg-white border-purple-300'
                               }`}
-                              disabled={adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
+                              disabled={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
                             />
                             <Label className={`text-xs font-medium flex-shrink-0 ml-4 ${
-                              adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
+                              Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
                                 ? 'text-gray-500'
                                 : 'text-purple-700'
                             }`}>
@@ -1976,14 +1976,14 @@ export default function PR2ConfigClean() {
                               value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
                               onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
                               className={`h-6 text-xs w-12 ${
-                                adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
+                                Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
                                   ? 'bg-gray-100 border-gray-300 text-gray-500'
                                   : 'bg-white border-purple-300'
                               }`}
-                              disabled={adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
+                              disabled={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
                             />
                             <Label className={`text-xs font-medium flex-shrink-0 ml-4 ${
-                              adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
+                              Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
                                 ? 'text-gray-500'
                                 : 'text-purple-700'
                             }`}>
@@ -1996,11 +1996,11 @@ export default function PR2ConfigClean() {
                               value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
                               onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
                               className={`h-6 text-xs w-20 ${
-                                adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
+                                Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
                                   ? 'bg-gray-100 border-gray-300 text-gray-500'
                                   : 'bg-white border-purple-300'
                               }`}
-                              disabled={adminControls?.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
+                              disabled={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
                             />
                           </div>
                           <div className="flex items-center gap-2">
