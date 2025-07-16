@@ -68,13 +68,32 @@ function enhanceObservationWithRemark(observation: string): string {
 function formatObservationText(observations: string[]): string {
   console.log(`🔧 Formatting ${observations.length} observations with detailed defect descriptions`);
   
-  // STEP 1: Pre-filter to remove all 5% WL observations immediately
+  // STEP 1: Pre-filter to remove all water level observations immediately
   const preFiltered = observations.filter(obs => 
     !obs.includes('Water level, 5% of the vertical dimension') &&
-    !obs.includes('Water level,  5% of the vertical dimension')
+    !obs.includes('Water level,  5% of the vertical dimension') &&
+    !obs.includes('Water level, 10% of the vertical dimension') &&
+    !obs.includes('Water level,  10% of the vertical dimension') &&
+    !obs.includes('Water level, 15% of the vertical dimension') &&
+    !obs.includes('Water level,  15% of the vertical dimension') &&
+    !obs.includes('Water level, 20% of the vertical dimension') &&
+    !obs.includes('Water level,  20% of the vertical dimension') &&
+    !obs.includes('Water level, 25% of the vertical dimension') &&
+    !obs.includes('Water level,  25% of the vertical dimension') &&
+    !obs.includes('Water level, 30% of the vertical dimension') &&
+    !obs.includes('Water level,  30% of the vertical dimension') &&
+    !obs.includes('Water level, 35% of the vertical dimension') &&
+    !obs.includes('Water level,  35% of the vertical dimension') &&
+    !obs.includes('Water level, 40% of the vertical dimension') &&
+    !obs.includes('Water level,  40% of the vertical dimension') &&
+    !obs.includes('Water level, 45% of the vertical dimension') &&
+    !obs.includes('Water level,  45% of the vertical dimension') &&
+    !obs.includes('Water level, 50% of the vertical dimension') &&
+    !obs.includes('Water level,  50% of the vertical dimension') &&
+    !obs.includes('WL (Water level') // This catches the enhanced format like "WL (Water level, 10% of the vertical dimension)"
   );
   
-  console.log(`🔧 After 5% WL filtering: ${preFiltered.length} observations remain`);
+  console.log(`🔧 After water level filtering: ${preFiltered.length} observations remain`);
   
   if (preFiltered.length === 0) {
     console.log(`🔧 No meaningful observations after filtering`);
