@@ -864,6 +864,26 @@ export default function Dashboard() {
           } 
           // For structural defects or non-cleaning defects, show repair options  
           else {
+            // Check if TP2 patching configuration exists for this pipe size and sector
+            const tp2PatchingConfig = repairPricingData?.find(config => 
+              config.categoryId === 'patching' && 
+              config.sector === currentSector.id &&
+              isConfigurationProperlyConfigured(config)
+            );
+            
+            const hasTP2Patching = tp2PatchingConfig !== undefined;
+            
+            // Set background color based on TP2 configuration status
+            let backgroundClass = 'bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 hover:border-orange-400';
+            let statusMessage = 'Click for repair pricing options';
+            let titleText = 'STRUCTURAL REPAIR';
+            
+            if (hasTP2Patching) {
+              backgroundClass = 'bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400';
+              statusMessage = '✅ TP2 Patching configured';
+              titleText = 'TP2 PATCHING';
+            }
+            
             return (
               <RepairOptionsPopover 
                 sectionData={{
@@ -881,10 +901,10 @@ export default function Dashboard() {
                   console.log('Repair pricing needed for:', method, pipeSize, sector);
                 }}
               >
-                <div className="text-xs max-w-sm bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 hover:border-orange-400 p-3 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer">
-                  <div className="font-medium text-orange-800 mb-1">🔧 STRUCTURAL REPAIR</div>
-                  <div className="text-orange-700">{generateDynamicRecommendation(section)}</div>
-                  <div className="text-xs text-orange-600 mt-1 font-medium">→ Click for repair pricing options</div>
+                <div className={`text-xs max-w-sm ${backgroundClass} p-3 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
+                  <div className={`font-medium ${hasTP2Patching ? 'text-green-800' : 'text-orange-800'} mb-1`}>🔧 {titleText}</div>
+                  <div className={`${hasTP2Patching ? 'text-green-700' : 'text-orange-700'}`}>{generateDynamicRecommendation(section)}</div>
+                  <div className={`text-xs ${hasTP2Patching ? 'text-green-600' : 'text-orange-600'} mt-1 font-medium`}>→ {statusMessage}</div>
                 </div>
               </RepairOptionsPopover>
             );
