@@ -240,8 +240,9 @@ function formatObservationText(observations: string[]): string {
       const uniqueDescriptions = [...new Set(entries.map(e => e.fullText))];
       
       if (uniqueDescriptions.length === 1) {
-        // Same description for all - show full description with grouped meterage
-        const meterages = entries.map(e => `${e.meterage}m`).join(', ');
+        // Same description for all - show full description with grouped meterage sorted numerically
+        const sortedEntries = entries.sort((a, b) => parseFloat(a.meterage) - parseFloat(b.meterage));
+        const meterages = sortedEntries.map(e => `${e.meterage}m`).join(', ');
         
         // If we have detailed descriptions, show them, otherwise fall back to basic format
         if (uniqueDescriptions[0] && uniqueDescriptions[0].length > 5) {
@@ -256,8 +257,9 @@ function formatObservationText(observations: string[]): string {
           console.log(`🔧 Grouped ${code} with basic description: ${groupedText}`);
         }
       } else {
-        // Different descriptions - list separately with full descriptions
-        for (const entry of entries) {
+        // Different descriptions - list separately with full descriptions, sorted by meterage
+        const sortedEntries = entries.sort((a, b) => parseFloat(a.meterage) - parseFloat(b.meterage));
+        for (const entry of sortedEntries) {
           if (entry.fullText && entry.fullText.length > 5) {
             const individualText = `${entry.fullText} at ${entry.meterage}m`;
             finalObservations.push(individualText);
