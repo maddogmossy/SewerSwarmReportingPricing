@@ -160,12 +160,31 @@ const generateDynamicRecommendation = (section: any): string => {
   const from = startMH || 'Start';
   const to = finishMH || 'Finish';
   
+  // Extract defect-specific meterage for patch repairs
+  const extractDefectMeterage = (defectsText: string): string => {
+    // Look for meterage patterns in defects (e.g., "5.67m", "at 5.67m")
+    const meterageMatches = defectsText.match(/\b(\d+\.?\d*)m\b/g);
+    if (meterageMatches && meterageMatches.length > 0) {
+      // For structural defects, use the first meterage found (usually the defect location)
+      return meterageMatches[0];
+    }
+    return length; // Fallback to total length if no specific meterage found
+  };
+
   // Generate contextual recommendation based on defect type
   if (defectSummary) {
     if (requiresCleaning(defects || '')) {
       return `To cleanse and survey ${length} from ${from} to ${to}, ${pipe} to remove ${defectSummary}`;
     } else {
-      return `To repair ${length} from ${from} to ${to}, ${pipe} addressing ${defectSummary}`;
+      // For structural repairs, use defect-specific meterage instead of total length
+      const defectMeterage = extractDefectMeterage(defects || '');
+      if (defectMeterage !== length) {
+        // We have specific defect meterage, generate patch repair recommendation
+        return `To install a ${pipe} double layer Patch at ${defectMeterage}, ${from} to ${to} addressing ${defectSummary}`;
+      } else {
+        // Use total length for general repairs
+        return `To repair ${length} from ${from} to ${to}, ${pipe} addressing ${defectSummary}`;
+      }
     }
   } else {
     return `${length} section from ${from} to ${to}, ${pipe} - No action required, pipe section is in adoptable condition`;
