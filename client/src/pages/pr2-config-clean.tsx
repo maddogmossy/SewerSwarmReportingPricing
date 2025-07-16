@@ -1879,12 +1879,15 @@ export default function PR2ConfigClean() {
                 <CardContent className="py-1">
                   <div className="space-y-1">
                     {categoryId === 'patching' ? (
-                      /* TP2 Patching: Four Layer Options + Min Qty + Length */
+                      /* TP2 Patching: Numbered List with Consistent Input Windows */
                       <div className="space-y-2">
-                        {/* Layer Options Row */}
-                        <div className="flex items-center gap-2 w-full flex-wrap">
-                          <div className="flex items-center gap-1">
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                        {/* Layer Options as Numbered List */}
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
+                              1.
+                            </Label>
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 min-w-20">
                               Single Layer
                             </Label>
                             <Input
@@ -1893,11 +1896,14 @@ export default function PR2ConfigClean() {
                               maxLength={6}
                               value={formData.pricingOptions.find(opt => opt.id === 'single_layer_cost')?.value || ''}
                               onChange={(e) => handleValueChange('pricingOptions', 'single_layer_cost', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-14"
+                              className="bg-white border-purple-300 h-6 text-xs w-16"
                             />
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
+                              2.
+                            </Label>
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 min-w-20">
                               Double Layer
                             </Label>
                             <Input
@@ -1906,11 +1912,14 @@ export default function PR2ConfigClean() {
                               maxLength={6}
                               value={formData.pricingOptions.find(opt => opt.id === 'double_layer_cost')?.value || ''}
                               onChange={(e) => handleValueChange('pricingOptions', 'double_layer_cost', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-14"
+                              className="bg-white border-purple-300 h-6 text-xs w-16"
                             />
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
+                              3.
+                            </Label>
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 min-w-20">
                               Triple Layer
                             </Label>
                             <Input
@@ -1919,11 +1928,14 @@ export default function PR2ConfigClean() {
                               maxLength={6}
                               value={formData.pricingOptions.find(opt => opt.id === 'triple_layer_cost')?.value || ''}
                               onChange={(e) => handleValueChange('pricingOptions', 'triple_layer_cost', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-14"
+                              className="bg-white border-purple-300 h-6 text-xs w-16"
                             />
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
+                              4.
+                            </Label>
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 min-w-20">
                               Triple Layer (Extra Cure)
                             </Label>
                             <Input
@@ -1932,12 +1944,12 @@ export default function PR2ConfigClean() {
                               maxLength={6}
                               value={formData.pricingOptions.find(opt => opt.id === 'triple_extra_cure_cost')?.value || ''}
                               onChange={(e) => handleValueChange('pricingOptions', 'triple_extra_cure_cost', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-14"
+                              className="bg-white border-purple-300 h-6 text-xs w-16"
                             />
                           </div>
                         </div>
                         {/* Min Qty and Length Row */}
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 pt-2 border-t border-purple-200">
                           <div className="flex items-center gap-2">
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
                               Min Qty
