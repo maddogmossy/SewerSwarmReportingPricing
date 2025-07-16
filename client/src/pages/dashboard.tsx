@@ -891,8 +891,13 @@ export default function Dashboard() {
             let statusMessage = 'Click for cleaning pricing options';
             let backgroundClass = 'bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400';
             
-            // Get the configuration color if available (define outside the block)
-            const configColor = hasLinkedPR2 ? validConfigurations[0]?.categoryColor : undefined;
+            // Find the most recent PR2 configuration (highest ID) from valid configurations only
+            const pr2Config = hasLinkedPR2 ? validConfigurations.reduce((latest: any, current: any) => 
+              current.id > latest.id ? current : latest
+            ) : null;
+            
+            // Get the configuration color from the same config used for status calculation
+            const configColor = pr2Config?.categoryColor;
             
             // Debug color application
             if (section.itemNo === '3') {
@@ -900,15 +905,12 @@ export default function Dashboard() {
                 hasLinkedPR2,
                 validConfigurations: validConfigurations.map(c => ({ id: c.id, categoryColor: c.categoryColor })),
                 configColor,
-                categoryName: validConfigurations[0]?.categoryName
+                pr2ConfigId: pr2Config?.id,
+                categoryName: pr2Config?.categoryName
               });
             }
             
             if (hasLinkedPR2) {
-              // Find the most recent PR2 configuration (highest ID) from valid configurations only
-              const pr2Config = validConfigurations.reduce((latest: any, current: any) => 
-                current.id > latest.id ? current : latest
-              );
               statusColor = calculateSectionStatusColor(section, pr2Config);
               
               console.log('🎯 Section status color calculation:', {
