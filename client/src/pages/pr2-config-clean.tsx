@@ -231,7 +231,7 @@ export default function PR2ConfigClean() {
       return {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
-        categoryColor: '#2563eb', // Default blue color
+        categoryColor: '#93c5fd', // Default pastel blue color
         pricingOptions: [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' },
           { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' },
@@ -262,7 +262,7 @@ export default function PR2ConfigClean() {
       return {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
-        categoryColor: '#2563eb', // Default blue color
+        categoryColor: '#93c5fd', // Default pastel blue color
         pricingOptions: [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
         ],
@@ -375,6 +375,7 @@ export default function PR2ConfigClean() {
             const payload = {
               categoryName: formData.categoryName,
               description: formData.description,
+              categoryColor: formData.categoryColor,
               sector: sector,
               categoryId: categoryId,
               pricingOptions: formData.pricingOptions,
@@ -674,6 +675,7 @@ export default function PR2ConfigClean() {
       const payload = {
         categoryName: formData.categoryName,
         description: formData.description,
+        categoryColor: formData.categoryColor,
         sector: sector, // Current sector
         categoryId: categoryId,
         pricingOptions: formData.pricingOptions,
@@ -792,7 +794,7 @@ export default function PR2ConfigClean() {
         const newFormData = {
           categoryName: config.categoryName || 'CCTV Price Configuration',
           description: config.description || '',
-          categoryColor: config.categoryColor || '#2563eb',
+          categoryColor: config.categoryColor || '#93c5fd',
           pricingOptions: pricingOptions,
           quantityOptions: quantityOptions,
           minQuantityOptions: minQuantityOptions,
