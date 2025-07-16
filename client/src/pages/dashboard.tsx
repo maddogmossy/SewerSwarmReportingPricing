@@ -64,10 +64,29 @@ const requiresCleaning = (defects: string): boolean => {
 const requiresStructuralRepair = (defects: string): boolean => {
   if (!defects) return false;
   
-  const structuralCodes = ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'joint'];
+  // PRIORITY 1: If defects contain cleaning codes, use TP1 (cleaning), not TP2 (patching)
+  const cleaningCodes = ['deposits', 'settled', 'debris', 'water level', 'blockage', 'grease', 'DEG', 'DES', 'DEC', 'DER'];
   const defectsUpper = defects.toUpperCase();
   
-  return structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
+  // Check for cleaning defects first - these should use TP1
+  const hasCleaningDefects = cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
+  if (hasCleaningDefects) {
+    console.log(`🧹 Section has cleaning defects, routing to TP1: ${defects.substring(0, 100)}...`);
+    return false; // Use TP1 for cleaning
+  }
+  
+  // PRIORITY 2: Only use TP2 for true structural defects
+  const structuralCodes = ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture'];
+  
+  const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
+  if (hasStructuralDefects) {
+    console.log(`🔧 Section has structural defects, routing to TP2: ${defects.substring(0, 100)}...`);
+    return true; // Use TP2 for structural repair
+  }
+  
+  // Default: Use TP1 for any unclassified defects
+  console.log(`🧹 Section defects unclassified, defaulting to TP1: ${defects.substring(0, 100)}...`);
+  return false;
 };
 
 
