@@ -849,6 +849,38 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.4.3' to return to this stable checkpoint
 
+## REV V6.4.4 CHECKPOINT - COMPLETE WATER LEVEL FILTERING SYSTEM (July 16, 2025)
+
+🔒 **PRODUCTION READY - ALL WATER LEVEL OBSERVATIONS REMOVED:**
+- **Complete WL Filtering**: All water level observations now removed from remarks column (5%, 10%, 15%, 20%, 25%, 30%, 35%, 40%, 45%, 50%)
+- **Enhanced Format Support**: Filters both original format and enhanced format "WL (Water level, X% of the vertical dimension)"
+- **Cleaner Observations**: Dashboard now shows only relevant structural and service defects without water level clutter
+- **Improved Readability**: Observations column displays cleaner, more professional defect information
+- **Zero Water Level Display**: Complete elimination of water level observations from user-facing remarks
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **File**: `server/wincan-db-reader.ts` - Enhanced formatObservationText() function with comprehensive WL filtering
+- **Filtering Logic**: Pre-filters all water level observations before processing other defects
+- **Pattern Coverage**: Handles both single and double spaces in "Water level, X% of the vertical dimension" patterns
+- **Enhanced Format**: Catches "WL (Water level" patterns from enhanced observation formatting
+- **Console Logging**: Updated log messages to reflect "water level filtering" instead of "5% WL filtering"
+
+🔒 **CONFIRMED WORKING RESULTS:**
+- **Section 24**: Now shows "Line deviates right at 0.61m, 20.4m. Deformation, 5% cross-sectional area loss at 1.61m" without water level observations
+- **Section 23**: Clean display of "Settled deposits, coarse, 5% cross-sectional area loss at 1.8m, 20.47m. Line deviates left at 15.52m"
+- **Observation Count**: Reduced from 8 to 5 observations in section 24 after filtering water levels
+- **Professional Display**: All sections now show cleaner, more focused defect information
+- **User-Confirmed**: Dashboard displaying clean observations without water level clutter
+
+🔒 **SYSTEM STABILITY MAINTAINED:**
+- **JN Filtering**: Junction filtering logic preserved and working correctly
+- **Meterage Sorting**: Observations still properly sorted by position
+- **PR2 Pricing**: All pricing calculations remain intact
+- **MSCC5 Classification**: Defect classification system unaffected
+- **24 Authentic Sections**: All Upload 80 sections operational with clean observations
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.4.4' to return to this stable checkpoint
+
 ## REV V6.2 CHECKPOINT - OPTIMIZED FIVE-WINDOW LAYOUT SYSTEM LOCKED (July 15, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE OPTIMIZED LAYOUT SYSTEM:**
