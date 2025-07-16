@@ -880,9 +880,9 @@ export default function Dashboard() {
           const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
 
           if ((isServiceDefect || needsCleaning) && !needsStructuralRepair) {
-            // Check if any PR2 configurations exist AND have actual values configured
+            // Check if any CLEANING PR2 configurations exist AND have actual values configured (exclude patching)
             const validConfigurations = repairPricingData?.filter(config => 
-              isConfigurationProperlyConfigured(config)
+              config.categoryId !== 'patching' && isConfigurationProperlyConfigured(config)
             ) || [];
             const hasLinkedPR2 = validConfigurations.length > 0;
             
@@ -902,14 +902,18 @@ export default function Dashboard() {
             if (hasLinkedPR2) {
               statusColor = calculateSectionStatusColor(section, pr2Config);
               
-              // Debug color application for all sections
-              console.log(`🎨 Item ${section.itemNo} color debug:`, {
+              // Debug configuration selection for cleaning recommendations
+              console.log(`🧹 Item ${section.itemNo} CLEANING config:`, {
                 hasLinkedPR2,
                 configColor,
                 pr2ConfigId: pr2Config?.id,
                 categoryName: pr2Config?.categoryName,
+                categoryId: pr2Config?.categoryId,
                 statusColor,
-                willUseCustomColor: statusColor === 'green' && configColor
+                isServiceDefect,
+                needsCleaning: needsCleaning,
+                validConfigsCount: validConfigurations.length,
+                validConfigIds: validConfigurations.map(c => `${c.id}:${c.categoryId}`)
               });
               
               console.log('🎯 Section status color calculation:', {
