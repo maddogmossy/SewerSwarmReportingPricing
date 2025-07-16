@@ -1887,7 +1887,7 @@ export default function PR2ConfigClean() {
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
                               1.
                             </Label>
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 min-w-20">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-32">
                               Single Layer
                             </Label>
                             <Input
@@ -1925,7 +1925,7 @@ export default function PR2ConfigClean() {
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
                               2.
                             </Label>
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 min-w-20">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-32">
                               Double Layer
                             </Label>
                             <Input
@@ -1963,7 +1963,7 @@ export default function PR2ConfigClean() {
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
                               3.
                             </Label>
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 min-w-20">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-32">
                               Triple Layer
                             </Label>
                             <Input
@@ -2001,7 +2001,7 @@ export default function PR2ConfigClean() {
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
                               4.
                             </Label>
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 min-w-20">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-32">
                               Triple Layer (Extra Cure)
                             </Label>
                             <Input
