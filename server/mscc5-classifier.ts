@@ -1171,10 +1171,31 @@ export class MSCC5Classifier {
           const defectDesc = `${defect.meterage}: ${defect.description}`;
           combinedDescription += (index > 0 ? '; ' : '') + defectDesc;
           
-          if (combinedRecommendations && !combinedRecommendations.includes(mscc5Defect.recommended_action)) {
-            combinedRecommendations += '; ' + mscc5Defect.recommended_action;
+          // Generate specific patch repair recommendations for structural defects in utilities sector
+          let defectRecommendation = mscc5Defect.recommended_action;
+          if (sector === 'utilities' && mscc5Defect.type === 'structural' && grade === 3) {
+            const drainRepairData = DRAIN_REPAIR_BOOK[defect.defectCode];
+            const pipeSizeMatch = defectText.match(/(\d+)mm/);
+            const pipeSize = pipeSizeMatch ? pipeSizeMatch[1] : '150';
+            
+            if (drainRepairData?.suggested_repairs) {
+              const patchRepairOption = drainRepairData.suggested_repairs.find(repair => 
+                repair.toLowerCase().includes('patch repair') || repair.toLowerCase().includes('first consideration')
+              );
+              if (patchRepairOption) {
+                defectRecommendation = `To install a ${pipeSize}mm double layer Patch at ${defect.meterage}. ${patchRepairOption}`;
+              } else {
+                defectRecommendation = `To install a ${pipeSize}mm double layer Patch at ${defect.meterage}. First consideration should be given to patch repair for Grade 3 defects`;
+              }
+            } else {
+              defectRecommendation = `To install a ${pipeSize}mm double layer Patch at ${defect.meterage}. First consideration should be given to patch repair for Grade 3 structural defects`;
+            }
+          }
+          
+          if (combinedRecommendations && !combinedRecommendations.includes(defectRecommendation)) {
+            combinedRecommendations += '; ' + defectRecommendation;
           } else if (!combinedRecommendations) {
-            combinedRecommendations = mscc5Defect.recommended_action;
+            combinedRecommendations = defectRecommendation;
           }
         }
       });
@@ -1451,15 +1472,27 @@ export class MSCC5Classifier {
     } else if (sector === 'utilities' && adjustedGrade === 3 && detectedDefect.type === 'structural') {
       // WRc Drain Repair Book standards: Grade 3 structural defects should prioritize patch repair
       const drainRepairData = DRAIN_REPAIR_BOOK[defectCode];
+      
+      // Extract defect meterage from defectText
+      const meterageMatch = defectText.match(/(\d+\.?\d*m)/);
+      const defectMeterage = meterageMatch ? meterageMatch[1] : 'location to be confirmed';
+      
+      // Extract pipe size from defectText or use default
+      const pipeSizeMatch = defectText.match(/(\d+)mm/);
+      const pipeSize = pipeSizeMatch ? pipeSizeMatch[1] : '150'; // Default to 150mm if not specified
+      
       if (drainRepairData?.suggested_repairs) {
         const patchRepairOption = drainRepairData.suggested_repairs.find(repair => 
           repair.toLowerCase().includes('patch repair') || repair.toLowerCase().includes('first consideration')
         );
         if (patchRepairOption) {
-          sectorSpecificRecommendation = `WRc Drain Repair Book: ${patchRepairOption}`;
+          sectorSpecificRecommendation = `WRc Drain Repair Book: To install a ${pipeSize}mm double layer Patch at ${defectMeterage}. ${patchRepairOption}`;
         } else {
-          sectorSpecificRecommendation = `WRc Drain Repair Book: First consideration should be given to patch repair for Grade 3 defects. ${drainRepairData.suggested_repairs[0]}`;
+          sectorSpecificRecommendation = `WRc Drain Repair Book: To install a ${pipeSize}mm double layer Patch at ${defectMeterage}. First consideration should be given to patch repair for Grade 3 defects. ${drainRepairData.suggested_repairs[0]}`;
         }
+      } else {
+        // Fallback recommendation with specific patch details
+        sectorSpecificRecommendation = `WRc Drain Repair Book: To install a ${pipeSize}mm double layer Patch at ${defectMeterage}. First consideration should be given to patch repair for Grade 3 structural defects.`;
       }
     }
 
