@@ -99,10 +99,49 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     }
   };
 
+  // Check if this is a patch repair scenario (specific meterage in recommendations)
+  const isPatchRepairScenario = () => {
+    const recommendations = sectionData.recommendations || '';
+    const defects = sectionData.defects || '';
+    
+    // Check if recommendation mentions patch installation
+    if (recommendations.includes('install') && recommendations.includes('Patch at')) {
+      return true;
+    }
+    
+    // Check if defects have specific meterage (indicating localized defect suitable for patching)
+    const hasSpecificMeterage = /\b\d+\.?\d*m\b/.test(defects);
+    const hasStructuralDefect = defects.includes('CR') || defects.includes('FC') || defects.includes('FL');
+    
+    return hasSpecificMeterage && hasStructuralDefect;
+  };
+
+  // If this is a patch repair scenario, route directly to patch configuration
+  const handleDirectPatchConfig = () => {
+    setLocation(`/pr2-pricing?sector=${sectionData.sector}&equipment=patch-repair&pipeSize=${sectionData.pipeSize}&itemNo=${sectionData.itemNo}`);
+  };
+
+  // Handle click on the trigger - check if it's a patch repair scenario
+  const handleTriggerClick = () => {
+    if (isPatchRepairScenario()) {
+      // Route directly to patch configuration
+      handleDirectPatchConfig();
+    } else {
+      // Show options menu
+      setIsOpen(!isOpen);
+    }
+  };
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <div className="cursor-pointer hover:bg-orange-50 transition-colors duration-200 rounded px-1">
+        <div 
+          className="cursor-pointer hover:bg-orange-50 transition-colors duration-200 rounded px-1"
+          onClick={(e) => {
+            e.preventDefault();
+            handleTriggerClick();
+          }}
+        >
           {children}
         </div>
       </PopoverTrigger>
