@@ -988,14 +988,17 @@ export default function Dashboard() {
           // Try to calculate cost using PR2 configuration (includes TP2 patching)
           const costCalculation = calculateAutoCost(section);
           
-          // Check for TP2 below minimum quantity case first
+          // Check for TP2 below minimum quantity case - show RED COST instead of triangle
           if (costCalculation && costCalculation.showRedTriangle) {
+            const calculatedCost = costCalculation.defectCount * costCalculation.costPerUnit || 0;
             return (
               <div 
                 className="flex items-center justify-center p-1 rounded" 
-                title={`${costCalculation.triangleMessage}\nTP2 patching requires minimum ${costCalculation.minRequired} patches (currently ${costCalculation.defectCount})`}
+                title={`${costCalculation.triangleMessage}\nTP2 patching: ${costCalculation.defectCount} defects × £${costCalculation.costPerUnit} = £${calculatedCost.toFixed(2)}\nRequires minimum ${costCalculation.minRequired} patches`}
               >
-                <TriangleAlert className="h-4 w-4 text-red-500" />
+                <span className="text-sm font-semibold text-red-600">
+                  £{calculatedCost.toFixed(2)}
+                </span>
               </div>
             );
           }
@@ -1537,6 +1540,7 @@ export default function Dashboard() {
         triangleMessage: `Below minimum quantities: ${defectCount}/${minQuantity} patches required`,
         defectCount: defectCount,
         minRequired: minQuantity,
+        costPerUnit: costPerUnit, // Add costPerUnit for red cost display
         status: 'below_minimum'
       };
     }
