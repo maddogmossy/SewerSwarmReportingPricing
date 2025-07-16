@@ -145,6 +145,32 @@ function formatObservationText(observations: string[]): string {
         }
       }
       
+      // SC code filtering - only include if structural failure or lining/patching involved
+      if (code === 'SC') {
+        // Check if SC code indicates structural failure
+        const isStructuralFailure = obs.toLowerCase().includes('fracture') || 
+                                   obs.toLowerCase().includes('crack') || 
+                                   obs.toLowerCase().includes('collapse') ||
+                                   obs.toLowerCase().includes('deformation') ||
+                                   obs.toLowerCase().includes('joint displacement');
+        
+        // Check if this is a lining/patching operation context
+        const isLiningPatchingContext = obs.toLowerCase().includes('lining') || 
+                                       obs.toLowerCase().includes('patch') ||
+                                       obs.toLowerCase().includes('repair') ||
+                                       obs.toLowerCase().includes('replacement');
+        
+        // SC codes about pipe size changes are informational only
+        const isPipeSizeChange = obs.toLowerCase().includes('pipe size changes') ||
+                                obs.toLowerCase().includes('new size');
+        
+        // Skip SC codes that are just informational (like pipe size changes)
+        if (isPipeSizeChange && !isStructuralFailure && !isLiningPatchingContext) {
+          console.log(`🔧 Skipping SC ${meterage}m - informational pipe size change, no structural failure or lining/patching`);
+          continue;
+        }
+      }
+      
       // Extract percentage and description from full observation text
       let percentageText = '';
       let fullDescription = '';
