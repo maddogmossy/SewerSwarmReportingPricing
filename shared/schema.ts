@@ -460,16 +460,14 @@ export const pr2Configurations = pgTable("pr2_configurations", {
 // Admin Controls table for configuration locks
 export const adminControls = pgTable("admin_controls", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  controlType: varchar("control_type").notNull(), // "tp2_option_1_lock", "tp2_option_2_lock", etc.
+  userId: varchar("userId").notNull(),
+  controlType: varchar("controlType").notNull(), // "tp2_option_1_lock", "tp2_option_2_lock", etc.
   sector: varchar("sector"), // utilities, adoption, highways, etc.
-  categoryId: varchar("category_id"), // "patching", "cctv", etc.
-  isLocked: boolean("is_locked").default(true), // true = locked, false = unlocked
-  lockedBy: varchar("locked_by").references(() => users.id), // Admin who locked it
-  unlockedBy: varchar("unlocked_by").references(() => users.id), // Admin who unlocked it
-  lockReason: text("lock_reason"), // Optional reason for lock
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  categoryId: varchar("categoryId"), // "patching", "cctv", etc.
+  isLocked: boolean("isLocked").default(true), // true = locked, false = unlocked
+  lockReason: varchar("lockReason"), // Optional reason for lock
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
 export type UpsertUser = typeof users.$inferInsert;

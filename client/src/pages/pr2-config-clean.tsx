@@ -218,7 +218,10 @@ export default function PR2ConfigClean() {
         quantityOptions: [], // No green window for TP2
         minQuantityOptions: [
           { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' },
-          { id: 'patch_min_qty', label: 'Min Qty', enabled: true, value: '' }
+          { id: 'patch_min_qty_1', label: 'Min Qty 1', enabled: true, value: '' },
+          { id: 'patch_min_qty_2', label: 'Min Qty 2', enabled: true, value: '' },
+          { id: 'patch_min_qty_3', label: 'Min Qty 3', enabled: true, value: '' },
+          { id: 'patch_min_qty_4', label: 'Min Qty 4', enabled: true, value: '' }
         ],
         rangeOptions: [
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
@@ -226,7 +229,7 @@ export default function PR2ConfigClean() {
         mathOperators: [], // No math window for TP2
         pricingStackOrder: ['price_dayrate', 'single_layer_cost', 'double_layer_cost', 'triple_layer_cost', 'triple_extra_cure_cost'],
         quantityStackOrder: [],
-        minQuantityStackOrder: ['minquantity_runs', 'patch_min_qty'],
+        minQuantityStackOrder: ['minquantity_runs', 'patch_min_qty_1', 'patch_min_qty_2', 'patch_min_qty_3', 'patch_min_qty_4'],
         rangeStackOrder: ['range_length'],
         sector
       };
@@ -1966,11 +1969,11 @@ export default function PR2ConfigClean() {
                               Min Qty
                             </Label>
                             <Input
-                              id="patch_min_qty"
+                              id="patch_min_qty_1"
                               placeholder="qty"
                               maxLength={3}
-                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
-                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
+                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty_1')?.value || ''}
+                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty_1', e.target.value)}
                               className={`h-6 text-xs w-12 ${
                                 Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
                                   ? 'bg-gray-100 border-gray-300 text-gray-500'
@@ -2021,8 +2024,8 @@ export default function PR2ConfigClean() {
                               id="patch_min_qty_2"
                               placeholder="qty"
                               maxLength={3}
-                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
-                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
+                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty_2')?.value || ''}
+                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty_2', e.target.value)}
                               className="bg-white border-purple-300 h-6 text-xs w-12"
                             />
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
@@ -2059,8 +2062,8 @@ export default function PR2ConfigClean() {
                               id="patch_min_qty_3"
                               placeholder="qty"
                               maxLength={3}
-                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
-                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
+                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty_3')?.value || ''}
+                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty_3', e.target.value)}
                               className="bg-white border-purple-300 h-6 text-xs w-12"
                             />
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
@@ -2097,8 +2100,8 @@ export default function PR2ConfigClean() {
                               id="patch_min_qty_4"
                               placeholder="qty"
                               maxLength={3}
-                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
-                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
+                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty_4')?.value || ''}
+                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty_4', e.target.value)}
                               className="bg-white border-purple-300 h-6 text-xs w-12"
                             />
                             <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
