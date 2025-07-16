@@ -68,32 +68,13 @@ function enhanceObservationWithRemark(observation: string): string {
 function formatObservationText(observations: string[]): string {
   console.log(`🔧 Formatting ${observations.length} observations with detailed defect descriptions`);
   
-  // STEP 1: Pre-filter to remove all water level observations immediately
+  // STEP 1: Pre-filter to remove only 5% WL observations (keep higher water levels in observations)
   const preFiltered = observations.filter(obs => 
     !obs.includes('Water level, 5% of the vertical dimension') &&
-    !obs.includes('Water level,  5% of the vertical dimension') &&
-    !obs.includes('Water level, 10% of the vertical dimension') &&
-    !obs.includes('Water level,  10% of the vertical dimension') &&
-    !obs.includes('Water level, 15% of the vertical dimension') &&
-    !obs.includes('Water level,  15% of the vertical dimension') &&
-    !obs.includes('Water level, 20% of the vertical dimension') &&
-    !obs.includes('Water level,  20% of the vertical dimension') &&
-    !obs.includes('Water level, 25% of the vertical dimension') &&
-    !obs.includes('Water level,  25% of the vertical dimension') &&
-    !obs.includes('Water level, 30% of the vertical dimension') &&
-    !obs.includes('Water level,  30% of the vertical dimension') &&
-    !obs.includes('Water level, 35% of the vertical dimension') &&
-    !obs.includes('Water level,  35% of the vertical dimension') &&
-    !obs.includes('Water level, 40% of the vertical dimension') &&
-    !obs.includes('Water level,  40% of the vertical dimension') &&
-    !obs.includes('Water level, 45% of the vertical dimension') &&
-    !obs.includes('Water level,  45% of the vertical dimension') &&
-    !obs.includes('Water level, 50% of the vertical dimension') &&
-    !obs.includes('Water level,  50% of the vertical dimension') &&
-    !obs.includes('WL (Water level') // This catches the enhanced format like "WL (Water level, 10% of the vertical dimension)"
+    !obs.includes('Water level,  5% of the vertical dimension')
   );
   
-  console.log(`🔧 After water level filtering: ${preFiltered.length} observations remain`);
+  console.log(`🔧 After 5% WL filtering: ${preFiltered.length} observations remain`);
   
   if (preFiltered.length === 0) {
     console.log(`🔧 No meaningful observations after filtering`);
@@ -378,25 +359,17 @@ function classifyWincanObservations(observationText: string, sector: string) {
     }
   }
   
-  // Check for high water levels - WRc Drain Repair Book recommendations
+  // Check for high water levels - Skip creating recommendations for water level observations
   else if (upperText.includes('WATER LEVEL')) {
     defectType = 'service';
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
     
-    if (percentage >= 50) {
-      severityGrade = 3;
-      recommendations = 'WRc Drain Repair Book: Investigate downstream blockage, check pipe gradient or backfall, flush or survey upstream/downstream to locate issue';
-      adoptable = 'Conditional';
-    } else if (percentage >= 25) {
-      severityGrade = 2;
-      recommendations = 'WRc Sewer Cleaning Manual: Investigation of downstream conditions required, potential cleansing to address water retention';
-      adoptable = 'Conditional';
-    } else {
-      severityGrade = 0; // Low water levels are observations only
-      recommendations = 'No action required this pipe section is at an adoptable condition';
-      adoptable = 'Yes';
-    }
+    // Don't generate recommendations for water level observations
+    // Water levels are informational only and should not contribute to recommendations
+    severityGrade = 0;
+    recommendations = '';
+    adoptable = 'Yes';
   }
   
   // Check for stopper in line (requires cleanse and resurvey)
