@@ -1004,7 +1004,13 @@ export default function Dashboard() {
             let titleText = 'STRUCTURAL REPAIR';
             
             if (hasTP2Patching) {
-              backgroundClass = 'bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400';
+              // Apply custom color from TP2 configuration
+              const tp2ConfigColor = tp2PatchingConfig.categoryColor;
+              if (tp2ConfigColor) {
+                backgroundClass = `border-2 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`;
+              } else {
+                backgroundClass = 'bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400';
+              }
               statusMessage = '✅ TP2 Patching configured';
               titleText = 'TP2 PATCHING';
             }
@@ -1026,7 +1032,14 @@ export default function Dashboard() {
                   console.log('Repair pricing needed for:', method, pipeSize, sector);
                 }}
               >
-                <div className={`text-xs max-w-sm ${backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}>
+                <div 
+                  className={`text-xs max-w-sm ${hasTP2Patching && tp2PatchingConfig.categoryColor ? '' : backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}
+                  style={hasTP2Patching && tp2PatchingConfig.categoryColor ? {
+                    backgroundColor: hexToRgba(tp2PatchingConfig.categoryColor, 0.1),
+                    borderColor: hexToRgba(tp2PatchingConfig.categoryColor, 0.5),
+                    borderWidth: '2px'
+                  } : {}}
+                >
                   <div className="font-bold text-black mb-1">🔧 {hasTP2Patching ? `${titleText} (ID: ${tp2PatchingConfig.id})` : titleText}</div>
                   <div className="text-black">{generateDynamicRecommendationWithPR2(section, repairPricingData)}</div>
                   <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
