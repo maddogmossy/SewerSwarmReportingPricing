@@ -447,9 +447,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Process file based on type with updated logic
       if (upload.fileName.toLowerCase().endsWith('.db3') || upload.fileName.toLowerCase().endsWith('.db')) {
         // Process Wincan database file with updated SC filtering
-        const sections = await readWincanDatabase(upload.filePath);
+        const sectionsResult = await readWincanDatabase(upload.filePath);
+        
+        // Handle both array and string returns from readWincanDatabase
+        let sections: any[];
+        if (typeof sectionsResult === 'string') {
+          try {
+            sections = JSON.parse(sectionsResult);
+          } catch (parseError) {
+            console.error('Failed to parse sections JSON:', parseError);
+            await storage.updateFileUploadStatus(uploadId, 'failed');
+            return res.status(500).json({ error: 'Failed to parse section data' });
+          }
+        } else {
+          sections = sectionsResult;
+        }
+        
         if (sections && sections.length > 0) {
-          await storeWincanSections(uploadId, sections);
+          await storeWincanSections(sections, uploadId);
           await storage.updateFileUploadStatus(uploadId, 'completed');
           console.log(`✅ Reprocessed ${sections.length} sections from Wincan database with updated filtering`);
           
