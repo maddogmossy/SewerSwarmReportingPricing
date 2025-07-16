@@ -434,17 +434,13 @@ export default function PR2ConfigClean() {
 
   const toggleAdminControl = useMutation({
     mutationFn: async ({ isLocked, lockReason }: { isLocked: boolean; lockReason?: string }) => {
-      const response = await apiRequest('/api/admin-controls', {
-        method: 'POST',
-        body: JSON.stringify({
-          controlType: 'tp2_option_1_lock',
-          sector: sector,
-          categoryId: categoryId,
-          isLocked: isLocked,
-          lockReason: lockReason
-        })
+      return await apiRequest('POST', '/api/admin-controls', {
+        controlType: 'tp2_option_1_lock',
+        sector: sector,
+        categoryId: categoryId,
+        isLocked: isLocked,
+        lockReason: lockReason
       });
-      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin-controls'] });

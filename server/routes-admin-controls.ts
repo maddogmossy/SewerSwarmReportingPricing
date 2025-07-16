@@ -11,19 +11,19 @@ export function registerAdminControlRoutes(app: Express) {
       const userId = "test-user"; // Default user for testing
       const { sector, categoryId, controlType } = req.query;
 
-      let query = db.select().from(adminControls).where(eq(adminControls.userId, userId));
+      let conditions = [eq(adminControls.userId, userId)];
 
       if (sector) {
-        query = query.where(eq(adminControls.sector, sector));
+        conditions.push(eq(adminControls.sector, sector));
       }
       if (categoryId) {
-        query = query.where(eq(adminControls.categoryId, categoryId));
+        conditions.push(eq(adminControls.categoryId, categoryId));
       }
       if (controlType) {
-        query = query.where(eq(adminControls.controlType, controlType));
+        conditions.push(eq(adminControls.controlType, controlType));
       }
 
-      const controls = await query;
+      const controls = await db.select().from(adminControls).where(and(...conditions));
       res.json(controls);
     } catch (error) {
       console.error("Error fetching admin controls:", error);
