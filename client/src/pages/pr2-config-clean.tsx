@@ -33,6 +33,7 @@ interface RangeOption {
 interface CleanFormData {
   categoryName: string;
   description: string;
+  categoryColor: string;
   
   // Blue Window - Pricing Options
   pricingOptions: PricingOption[];
@@ -66,6 +67,28 @@ const SECTORS = [
   { id: 'insurance', name: 'Insurance', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
   { id: 'construction', name: 'Construction', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
   { id: 'domestic', name: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+];
+
+// Outlook-style color palette for category customization
+const OUTLOOK_COLORS = [
+  { name: 'Blue', value: '#2563eb' },
+  { name: 'Red', value: '#dc2626' },
+  { name: 'Green', value: '#16a34a' },
+  { name: 'Orange', value: '#ea580c' },
+  { name: 'Purple', value: '#9333ea' },
+  { name: 'Pink', value: '#e91e63' },
+  { name: 'Teal', value: '#0891b2' },
+  { name: 'Yellow', value: '#eab308' },
+  { name: 'Indigo', value: '#4f46e5' },
+  { name: 'Emerald', value: '#059669' },
+  { name: 'Rose', value: '#e11d48' },
+  { name: 'Cyan', value: '#0891b2' },
+  { name: 'Lime', value: '#65a30d' },
+  { name: 'Amber', value: '#d97706' },
+  { name: 'Violet', value: '#7c3aed' },
+  { name: 'Fuchsia', value: '#c026d3' },
+  { name: 'Sky', value: '#0284c7' },
+  { name: 'Slate', value: '#475569' }
 ];
 
 export default function PR2ConfigClean() {
@@ -208,6 +231,7 @@ export default function PR2ConfigClean() {
       return {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
+        categoryColor: '#2563eb', // Default blue color
         pricingOptions: [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' },
           { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' },
@@ -238,6 +262,7 @@ export default function PR2ConfigClean() {
       return {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
+        categoryColor: '#2563eb', // Default blue color
         pricingOptions: [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
         ],
@@ -600,6 +625,7 @@ export default function PR2ConfigClean() {
       const payload = {
         categoryName: formData.categoryName,
         description: formData.description,
+        categoryColor: formData.categoryColor,
         sector: targetSectorId, // Each copy gets its own sector
         categoryId: categoryId,
         pricingOptions: formData.pricingOptions,
@@ -766,6 +792,7 @@ export default function PR2ConfigClean() {
         const newFormData = {
           categoryName: config.categoryName || 'CCTV Price Configuration',
           description: config.description || '',
+          categoryColor: config.categoryColor || '#2563eb',
           pricingOptions: pricingOptions,
           quantityOptions: quantityOptions,
           minQuantityOptions: minQuantityOptions,
@@ -1527,6 +1554,7 @@ export default function PR2ConfigClean() {
       const payload = {
         categoryName: formData.categoryName,
         description: formData.description,
+        categoryColor: formData.categoryColor,
         sector: sector, // Save to current sector only
         categoryId: categoryId,
         pricingOptions: enabledPricingOptions,
@@ -1745,6 +1773,39 @@ export default function PR2ConfigClean() {
             <div className="mt-4 text-sm text-gray-600">
               <p>✓ Checking sectors automatically saves this pricing configuration</p>
               <p>✗ Unchecking sectors automatically removes the configuration</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Color Picker Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-gray-900 flex items-center gap-2">
+              <div 
+                className="w-5 h-5 rounded-full border-2 border-gray-300" 
+                style={{ backgroundColor: formData.categoryColor }}
+              />
+              Category Color
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-6 md:grid-cols-9 lg:grid-cols-12 gap-3">
+              {OUTLOOK_COLORS.map((color) => (
+                <button
+                  key={color.value}
+                  className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${
+                    formData.categoryColor === color.value 
+                      ? 'border-gray-800 shadow-lg' 
+                      : 'border-gray-300 hover:border-gray-500'
+                  }`}
+                  style={{ backgroundColor: color.value }}
+                  title={color.name}
+                  onClick={() => setFormData(prev => ({ ...prev, categoryColor: color.value }))}
+                />
+              ))}
+            </div>
+            <div className="mt-3 text-sm text-gray-600">
+              <p>Select a color to help distinguish this category in the dashboard</p>
             </div>
           </CardContent>
         </Card>

@@ -452,6 +452,7 @@ export const pr2Configurations = pgTable("pr2_configurations", {
   rangeValues: jsonb("range_values").default('{}'),
   mathOperators: jsonb("math_operators").default('[]'), // Array of operator strings
   sector: varchar("sector").notNull().default("utilities"), // Single sector this config applies to
+  categoryColor: varchar("category_color").default("#2563eb"), // Hex color for category identification
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
