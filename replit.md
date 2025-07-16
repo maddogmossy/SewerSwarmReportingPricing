@@ -766,6 +766,31 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.3' to return to this stable checkpoint
 
+## REV V6.4 CHECKPOINT - TP2 COST DISPLAY SYSTEM LOCKED (July 16, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE TP2 MINIMUM QUANTITY COST DISPLAY:**
+- **Red Cost Display**: When minimum quantity not met, shows calculated cost (£350.00) in red instead of red triangle
+- **Smart Price Selection**: Defaults to Option 2 (Double Layer = £350) when no specific recommendation exists
+- **Structural Defect Routing**: "CR" in "cross-sectional" correctly routes to TP2 patching system
+- **Cost Calculation Logic**: 1 defect × £350 = £350.00 displayed in red when below 4-patch minimum
+- **Enhanced Tooltips**: Shows calculation details (defects × cost per unit) and minimum requirement info
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Cost Display Logic**: Modified dashboard cost column to show calculated red cost instead of warning triangle
+- **Price Option Selection**: Enhanced recommendation parsing with fallback to Double Layer default
+- **Minimum Quantity Handling**: Returns costPerUnit in calculation response for red cost display
+- **Visual Feedback**: Red text (text-red-600) with comprehensive tooltip explaining calculation
+- **Template Integration**: TP2 configuration ID 100 with Double Layer = £350, Min Qty = 4 patches
+
+🔒 **USER-CONFIRMED WORKING:**
+- **Item 13a**: Shows £350.00 in red when 1 defect < 4 minimum patches required
+- **Structural Detection**: "Deformation, 5% cross-sectional area loss" triggers TP2 routing
+- **Price Selection**: Automatically selects Double Layer (option 2) as default
+- **Cost Calculation**: Displays calculated cost even when minimum not met
+- **Professional Display**: Clear red cost with detailed tooltip instead of generic warning triangle
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.4' to return to this stable checkpoint
+
 ## REV V6.2 CHECKPOINT - OPTIMIZED FIVE-WINDOW LAYOUT SYSTEM LOCKED (July 15, 2025)
 
 🔒 **PRODUCTION READY - COMPLETE OPTIMIZED LAYOUT SYSTEM:**
