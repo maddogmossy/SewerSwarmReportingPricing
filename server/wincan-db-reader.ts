@@ -39,7 +39,8 @@ function enhanceObservationWithRemark(observation: string): string {
     'BL': 'Due to blockage',
     'OF': 'Due to overflow conditions',
     'IC': 'Inspection continues',
-    'ICF': 'Inspection continues forward'
+    'ICF': 'Inspection continues forward',
+    'SL': 'Stopper in line'
   };
   
   // Check if observation contains a code that needs a remark
@@ -372,6 +373,14 @@ function classifyWincanObservations(observationText: string, sector: string) {
       recommendations = 'No action required this pipe section is at an adoptable condition';
       adoptable = 'Yes';
     }
+  }
+  
+  // Check for stopper in line (requires cleanse and resurvey)
+  else if (upperText.includes('STOPPER IN LINE') || upperText.includes('STOPPER') || upperText.includes('BLOCKAGE')) {
+    defectType = 'service';
+    severityGrade = 3; // Requires action
+    recommendations = 'Cleanse and resurvey once the contractor has connected the line';
+    adoptable = 'Conditional';
   }
   
   // Check for line deviations (minor observation)
