@@ -199,30 +199,69 @@ export default function PR2ConfigClean() {
     return false;
   };
 
-  // Clean form state with default options initialized
-  const [formData, setFormData] = useState<CleanFormData>({
-    categoryName: categoryId ? getCategoryName(categoryId) : '',
-    description: '',
-    pricingOptions: [
-      { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
-    ],
-    quantityOptions: [
-      { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
-    ],
-    minQuantityOptions: [
-      { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
-    ],
-    rangeOptions: [
-      { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
-      { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
-    ],
-    mathOperators: ['N/A'],
-    pricingStackOrder: ['price_dayrate'],
-    quantityStackOrder: ['quantity_runs'],
-    minQuantityStackOrder: ['minquantity_runs'],
-    rangeStackOrder: ['range_percentage', 'range_length'],
-    sector
-  });
+  // Clean form state with default options initialized - different for TP1 vs TP2
+  const getDefaultFormData = () => {
+    const isPatching = categoryId === 'patching';
+    
+    if (isPatching) {
+      // TP2 - Patching Configuration (no green window, no math, custom purple)
+      return {
+        categoryName: categoryId ? getCategoryName(categoryId) : '',
+        description: '',
+        pricingOptions: [
+          { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
+        ],
+        quantityOptions: [], // No green window for TP2
+        minQuantityOptions: [
+          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
+        ],
+        rangeOptions: [
+          { id: 'range_double', label: 'Double', enabled: true, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
+        ],
+        mathOperators: [], // No math window for TP2
+        pricingStackOrder: ['price_dayrate'],
+        quantityStackOrder: [],
+        minQuantityStackOrder: ['minquantity_runs'],
+        rangeStackOrder: ['range_double', 'range_length'],
+        sector
+      };
+    } else {
+      // TP1 - Standard Configuration (all windows)
+      return {
+        categoryName: categoryId ? getCategoryName(categoryId) : '',
+        description: '',
+        pricingOptions: [
+          { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
+        ],
+        quantityOptions: [
+          { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
+        ],
+        minQuantityOptions: [
+          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
+        ],
+        rangeOptions: [
+          { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
+        ],
+        mathOperators: ['N/A'],
+        pricingStackOrder: ['price_dayrate'],
+        quantityStackOrder: ['quantity_runs'],
+        minQuantityStackOrder: ['minquantity_runs'],
+        rangeStackOrder: ['range_percentage', 'range_length'],
+        sector
+      };
+    }
+  };
+
+  const [formData, setFormData] = useState<CleanFormData>(getDefaultFormData());
+
+  // Reset form data when switching between TP1 and TP2
+  useEffect(() => {
+    if (!isEditing && !editId) {
+      setFormData(getDefaultFormData());
+    }
+  }, [categoryId]);
 
   // Handle value changes for input fields
   const handleValueChange = (optionType: string, optionId: string, value: string) => {
@@ -1714,63 +1753,67 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Math Window */}
-              <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
-                    <Calculator className="w-3 h-3 mr-1" />
-                    Math
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="py-1">
-                  <div className="flex items-center justify-center">
-                    <Select>
-                      <SelectTrigger className="bg-white border-gray-300 h-8 text-sm w-12">
-                        <SelectValue placeholder="÷" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="divide">÷</SelectItem>
-                        <SelectItem value="multiply">×</SelectItem>
-                        <SelectItem value="add">+</SelectItem>
-                        <SelectItem value="subtract">-</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Math Window - Hidden for TP2 */}
+              {categoryId !== 'patching' && (
+                <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
+                      <Calculator className="w-3 h-3 mr-1" />
+                      Math
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-1">
+                    <div className="flex items-center justify-center">
+                      <Select>
+                        <SelectTrigger className="bg-white border-gray-300 h-8 text-sm w-12">
+                          <SelectValue placeholder="÷" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="divide">÷</SelectItem>
+                          <SelectItem value="multiply">×</SelectItem>
+                          <SelectItem value="add">+</SelectItem>
+                          <SelectItem value="subtract">-</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
-              {/* Green Window: Runs per Shift */}
-              <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-green-700 text-xs flex items-center gap-1">
-                    <Package className="w-3 h-3" />
-                    Quantity Options
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="py-1">
-                  <div className="space-y-1">
-                    {formData.quantityOptions.map((option, index) => (
-                      <div key={option.id} className="flex items-center gap-2">
-                        <Label htmlFor={option.id} className="text-xs font-medium text-green-700 flex-shrink-0">
-                          No{formData.quantityOptions.length > 1 ? ` ${index + 1}` : ''}
-                        </Label>
-                        <Input
-                          id={option.id}
-                          placeholder="qty"
-                          maxLength={4}
-                          value={option.value || ''}
-                          onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                          className="bg-white border-green-300 h-6 text-xs w-16"
-                          data-field={`quantity-${index}`}
-                          data-window="green"
-                          data-option-id={option.id}
-                        />
+              {/* Green Window: Runs per Shift - Hidden for TP2 */}
+              {categoryId !== 'patching' && (
+                <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-green-700 text-xs flex items-center gap-1">
+                      <Package className="w-3 h-3" />
+                      Quantity Options
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-1">
+                    <div className="space-y-1">
+                      {formData.quantityOptions.map((option, index) => (
+                        <div key={option.id} className="flex items-center gap-2">
+                          <Label htmlFor={option.id} className="text-xs font-medium text-green-700 flex-shrink-0">
+                            No{formData.quantityOptions.length > 1 ? ` ${index + 1}` : ''}
+                          </Label>
+                          <Input
+                            id={option.id}
+                            placeholder="qty"
+                            maxLength={4}
+                            value={option.value || ''}
+                            onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                            className="bg-white border-green-300 h-6 text-xs w-16"
+                            data-field={`quantity-${index}`}
+                            data-window="green"
+                            data-option-id={option.id}
+                          />
 
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Orange Window: Min Runs per Shift */}
               <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
@@ -1834,11 +1877,11 @@ export default function PR2ConfigClean() {
                       return (
                         <div key={`range-set-${setIndex}`} className="flex items-center gap-2 w-full">
                           <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                            % (Max){Math.ceil(formData.rangeOptions.length / 2) > 1 ? ` ${setIndex + 1}` : ''}
+                            {categoryId === 'patching' ? 'Double' : '% (Max)'}{Math.ceil(formData.rangeOptions.length / 2) > 1 ? ` ${setIndex + 1}` : ''}
                           </Label>
                           <Input
                             id={percentageOption?.id || `percentage_${setIndex}`}
-                            placeholder="%"
+                            placeholder={categoryId === 'patching' ? 'x2' : '%'}
                             maxLength={3}
                             value={percentageOption?.rangeEnd || ''}
                             onChange={(e) => percentageOption && handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
@@ -1849,9 +1892,9 @@ export default function PR2ConfigClean() {
                           </Label>
                           <Input
                             id={lengthOption?.id || `length_${setIndex}`}
-                            placeholder="m"
+                            placeholder="mm"
                             maxLength={4}
-                            value={lengthOption?.rangeEnd || ''}
+                            value={lengthOption?.rangeEnd || (categoryId === 'patching' ? '1000' : '')}
                             onChange={(e) => lengthOption && handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
                             className="bg-white border-purple-300 h-6 text-xs w-20"
                           />
