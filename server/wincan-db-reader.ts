@@ -65,16 +65,33 @@ function enhanceObservationWithRemark(observation: string): string {
 
 // Format observation text with detailed defect descriptions and percentages
 // JN codes only display if structural defect within one meter of junction
-function formatObservationText(observations: string[]): string {
+async function formatObservationText(observations: string[], sector: string = 'utilities'): Promise<string> {
   console.log(`🔧 Formatting ${observations.length} observations with detailed defect descriptions`);
   
-  // STEP 1: Pre-filter to remove only 5% WL observations (keep higher water levels in observations)
-  const preFiltered = observations.filter(obs => 
-    !obs.includes('Water level, 5% of the vertical dimension') &&
-    !obs.includes('Water level,  5% of the vertical dimension')
-  );
+  // STEP 1: Check for belly conditions requiring excavation using MSCC5 classifier
+  const { MSCC5Classifier } = await import('./mscc5-classifier');
+  const combinedObservations = observations.join(' ');
+  const bellyAnalysis = await MSCC5Classifier.analyzeBellyCondition(combinedObservations, sector);
   
-  console.log(`🔧 After 5% WL filtering: ${preFiltered.length} observations remain`);
+  // STEP 2: Filter water level observations based on belly analysis
+  const preFiltered = observations.filter(obs => {
+    const isWaterLevel = obs.includes('Water level') || obs.includes('WL ') || obs.includes('WL(');
+    
+    if (isWaterLevel) {
+      // Only keep water level observations if they are part of a belly condition requiring excavation
+      if (bellyAnalysis.hasBelly && bellyAnalysis.adoptionFail) {
+        console.log(`🔧 Keeping water level observation: ${obs} (belly condition requires excavation)`);
+        return true;
+      } else {
+        console.log(`🔧 Removing water level observation: ${obs} (no excavation required)`);
+        return false;
+      }
+    }
+    
+    return true; // Keep all non-water level observations
+  });
+  
+  console.log(`🔧 After belly-based WL filtering: ${preFiltered.length} observations remain`);
   
   if (preFiltered.length === 0) {
     console.log(`🔧 No meaningful observations after filtering`);
@@ -471,7 +488,7 @@ export interface WincanSectionData {
   letterSuffix?: string; // For 13a, 13b, etc.
 }
 
-export async function readWincanDatabase(filePath: string): Promise<WincanSectionData[]> {
+export async function readWincanDatabase(filePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
   console.log("🔒 ZERO TOLERANCE POLICY: AUTHENTIC DATA ONLY");
   console.log("📁 File path:", filePath);
   
@@ -684,7 +701,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       
       // Multi-defect section splitting: Check if both service and structural defects exist
       // Single-section processing (multi-defect splitting disabled)
-      const formattedText = observations.length > 0 ? formatObservationText(observations) : '';
+      const formattedText = observations.length > 0 ? await formatObservationText(observations, sector) : '';
       let defectText = formattedText || 'No service or structural defect found';
       
       // If after formatting we only have 5% WL observations, treat as no defects

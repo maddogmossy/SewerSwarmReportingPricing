@@ -409,10 +409,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Process file based on type
       if (fileName.toLowerCase().endsWith('.db3') || fileName.toLowerCase().endsWith('.db')) {
-        // Process Wincan database file
-        const sections = await readWincanDatabase(filePath);
+        // Process Wincan database file with sector context
+        const sections = await readWincanDatabase(filePath, sector || 'utilities');
         if (sections && sections.length > 0) {
-          await storeWincanSections(upload.id, sections);
+          await storeWincanSections(sections, upload.id);
           await storage.updateFileUpload(upload.id, { status: 'completed' });
           console.log(`✅ Processed ${sections.length} sections from Wincan database`);
         }
@@ -447,7 +447,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Process file based on type with updated logic
       if (upload.fileName.toLowerCase().endsWith('.db3') || upload.fileName.toLowerCase().endsWith('.db')) {
         // Process Wincan database file with updated SC filtering
-        const sectionsResult = await readWincanDatabase(upload.filePath);
+        const sectionsResult = await readWincanDatabase(upload.filePath, upload.sector || 'utilities');
         
         // Handle both array and string returns from readWincanDatabase
         let sections: any[];
