@@ -1445,6 +1445,7 @@ export default function Dashboard() {
       const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector: currentSector.id });
       const data = await response.json();
       console.log('📥 Dashboard received PR2 configs:', data.length, 'configurations');
+      console.log('🎨 Configuration colors received:', data.map(c => ({ id: c.id, categoryColor: c.categoryColor, categoryName: c.categoryName })));
       return data;
     },
     enabled: !!currentSector?.id,
