@@ -216,14 +216,13 @@ export default function PR2ConfigClean() {
           { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
         ],
         rangeOptions: [
-          { id: 'range_double', label: 'Double', enabled: true, rangeStart: '', rangeEnd: '' },
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
         ],
         mathOperators: [], // No math window for TP2
         pricingStackOrder: ['price_dayrate'],
         quantityStackOrder: [],
         minQuantityStackOrder: ['minquantity_runs'],
-        rangeStackOrder: ['range_double', 'range_length'],
+        rangeStackOrder: ['range_length'],
         sector
       };
     } else {
@@ -1868,51 +1867,73 @@ export default function PR2ConfigClean() {
                 </CardHeader>
                 <CardContent className="py-1">
                   <div className="space-y-1">
-                    {/* Group range options by pairs (percentage + length) */}
-                    {Array.from({ length: Math.ceil(formData.rangeOptions.length / 2) }, (_, setIndex) => {
-                      // Get pairs by array indices: 0,1 then 2,3 then 4,5 etc.
-                      const percentageOption = formData.rangeOptions[setIndex * 2];
-                      const lengthOption = formData.rangeOptions[setIndex * 2 + 1];
-                      
-                      return (
-                        <div key={`range-set-${setIndex}`} className="flex items-center gap-2 w-full">
+                    {categoryId === 'patching' ? (
+                      /* TP2 Patching: Single Layer + Length only */
+                      <div className="flex items-center gap-2 w-full">
+                        <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                          Single Layer
+                        </Label>
+                        <div className="flex items-center gap-2 ml-4">
                           <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                            {categoryId === 'patching' ? 'Double' : '% (Max)'}{Math.ceil(formData.rangeOptions.length / 2) > 1 ? ` ${setIndex + 1}` : ''}
+                            Length (Max)
                           </Label>
                           <Input
-                            id={percentageOption?.id || `percentage_${setIndex}`}
-                            placeholder={categoryId === 'patching' ? 'x2' : '%'}
-                            maxLength={3}
-                            value={percentageOption?.rangeEnd || ''}
-                            onChange={(e) => percentageOption && handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
-                            className="bg-white border-purple-300 h-6 text-xs w-16"
-                          />
-                          <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                            Length (Max){Math.ceil(formData.rangeOptions.length / 2) > 1 ? ` ${setIndex + 1}` : ''}
-                          </Label>
-                          <Input
-                            id={lengthOption?.id || `length_${setIndex}`}
+                            id="range_length"
                             placeholder="mm"
                             maxLength={4}
-                            value={lengthOption?.rangeEnd || (categoryId === 'patching' ? '1000' : '')}
-                            onChange={(e) => lengthOption && handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
+                            value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
+                            onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
                             className="bg-white border-purple-300 h-6 text-xs w-20"
                           />
-                          {/* Show delete button for dynamically added sets (not the original set) */}
-                          {setIndex > 0 && percentageOption && lengthOption && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-4 w-4 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => deleteInputsFromAllWindows(setIndex)}
-                              title="Delete inputs from all windows"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          )}
                         </div>
-                      );
-                    })}
+                      </div>
+                    ) : (
+                      /* TP1 Standard: Percentage + Length pairs */
+                      Array.from({ length: Math.ceil(formData.rangeOptions.length / 2) }, (_, setIndex) => {
+                        // Get pairs by array indices: 0,1 then 2,3 then 4,5 etc.
+                        const percentageOption = formData.rangeOptions[setIndex * 2];
+                        const lengthOption = formData.rangeOptions[setIndex * 2 + 1];
+                        
+                        return (
+                          <div key={`range-set-${setIndex}`} className="flex items-center gap-2 w-full">
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                              % (Max){Math.ceil(formData.rangeOptions.length / 2) > 1 ? ` ${setIndex + 1}` : ''}
+                            </Label>
+                            <Input
+                              id={percentageOption?.id || `percentage_${setIndex}`}
+                              placeholder="%"
+                              maxLength={3}
+                              value={percentageOption?.rangeEnd || ''}
+                              onChange={(e) => percentageOption && handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-16"
+                            />
+                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                              Length (Max){Math.ceil(formData.rangeOptions.length / 2) > 1 ? ` ${setIndex + 1}` : ''}
+                            </Label>
+                            <Input
+                              id={lengthOption?.id || `length_${setIndex}`}
+                              placeholder="mm"
+                              maxLength={4}
+                              value={lengthOption?.rangeEnd || ''}
+                              onChange={(e) => lengthOption && handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
+                              className="bg-white border-purple-300 h-6 text-xs w-20"
+                            />
+                            {/* Show delete button for dynamically added sets (not the original set) */}
+                            {setIndex > 0 && percentageOption && lengthOption && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => deleteInputsFromAllWindows(setIndex)}
+                                title="Delete inputs from all windows"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
                 </CardContent>
               </Card>
