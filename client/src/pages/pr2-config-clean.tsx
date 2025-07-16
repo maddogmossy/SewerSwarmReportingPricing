@@ -209,19 +209,21 @@ export default function PR2ConfigClean() {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
         pricingOptions: [
-          { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
+          { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' },
+          { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' }
         ],
         quantityOptions: [], // No green window for TP2
         minQuantityOptions: [
-          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
+          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' },
+          { id: 'patch_min_qty', label: 'Min Qty', enabled: true, value: '' }
         ],
         rangeOptions: [
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
         ],
         mathOperators: [], // No math window for TP2
-        pricingStackOrder: ['price_dayrate'],
+        pricingStackOrder: ['price_dayrate', 'single_layer_cost'],
         quantityStackOrder: [],
-        minQuantityStackOrder: ['minquantity_runs'],
+        minQuantityStackOrder: ['minquantity_runs', 'patch_min_qty'],
         rangeStackOrder: ['range_length'],
         sector
       };
@@ -1868,12 +1870,35 @@ export default function PR2ConfigClean() {
                 <CardContent className="py-1">
                   <div className="space-y-1">
                     {categoryId === 'patching' ? (
-                      /* TP2 Patching: Single Layer + Length only */
-                      <div className="flex items-center gap-2 w-full">
-                        <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                          Single Layer
-                        </Label>
-                        <div className="flex items-center gap-2 ml-4">
+                      /* TP2 Patching: Single Layer + Cost + Min Qty + Length */
+                      <div className="flex items-center gap-2 w-full flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                            Single Layer
+                          </Label>
+                          <Input
+                            id="single_layer_cost"
+                            placeholder="£"
+                            maxLength={6}
+                            value={formData.pricingOptions.find(opt => opt.id === 'single_layer_cost')?.value || ''}
+                            onChange={(e) => handleValueChange('pricingOptions', 'single_layer_cost', e.target.value)}
+                            className="bg-white border-purple-300 h-6 text-xs w-16"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                            Min Qty
+                          </Label>
+                          <Input
+                            id="patch_min_qty"
+                            placeholder="qty"
+                            maxLength={3}
+                            value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty')?.value || ''}
+                            onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty', e.target.value)}
+                            className="bg-white border-purple-300 h-6 text-xs w-12"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
                           <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
                             Length (Max)
                           </Label>
