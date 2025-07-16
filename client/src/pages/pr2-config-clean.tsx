@@ -69,26 +69,26 @@ const SECTORS = [
   { id: 'domestic', name: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
-// Outlook-style color palette for category customization
-const OUTLOOK_COLORS = [
-  { name: 'Blue', value: '#2563eb' },
-  { name: 'Red', value: '#dc2626' },
-  { name: 'Green', value: '#16a34a' },
-  { name: 'Orange', value: '#ea580c' },
-  { name: 'Purple', value: '#9333ea' },
-  { name: 'Pink', value: '#e91e63' },
-  { name: 'Teal', value: '#0891b2' },
-  { name: 'Yellow', value: '#eab308' },
-  { name: 'Indigo', value: '#4f46e5' },
-  { name: 'Emerald', value: '#059669' },
-  { name: 'Rose', value: '#e11d48' },
-  { name: 'Cyan', value: '#06b6d4' },
-  { name: 'Lime', value: '#65a30d' },
-  { name: 'Amber', value: '#d97706' },
-  { name: 'Violet', value: '#7c3aed' },
-  { name: 'Fuchsia', value: '#c026d3' },
-  { name: 'Sky', value: '#0284c7' },
-  { name: 'Slate', value: '#475569' }
+// Beautiful pastel color palette for category customization
+const PASTEL_COLORS = [
+  { name: 'Lavender Blue', value: '#93c5fd' },
+  { name: 'Soft Rose', value: '#fda4af' },
+  { name: 'Mint Green', value: '#86efac' },
+  { name: 'Peach', value: '#fed7aa' },
+  { name: 'Lilac', value: '#c4b5fd' },
+  { name: 'Blush Pink', value: '#f9a8d4' },
+  { name: 'Aqua', value: '#7dd3fc' },
+  { name: 'Lemon', value: '#fde047' },
+  { name: 'Periwinkle', value: '#a5b4fc' },
+  { name: 'Sage', value: '#bbf7d0' },
+  { name: 'Coral', value: '#fb7185' },
+  { name: 'Sky Blue', value: '#bae6fd' },
+  { name: 'Lime', value: '#d9f99d' },
+  { name: 'Apricot', value: '#fbbf24' },
+  { name: 'Amethyst', value: '#d8b4fe' },
+  { name: 'Cotton Candy', value: '#f5d0fe' },
+  { name: 'Powder Blue', value: '#dbeafe' },
+  { name: 'Pearl', value: '#e2e8f0' }
 ];
 
 export default function PR2ConfigClean() {
@@ -1793,7 +1793,7 @@ export default function PR2ConfigClean() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-6 md:grid-cols-9 lg:grid-cols-12 gap-3 mb-4">
-              {OUTLOOK_COLORS.map((color) => (
+              {PASTEL_COLORS.map((color) => (
                 <button
                   key={color.value}
                   className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${
