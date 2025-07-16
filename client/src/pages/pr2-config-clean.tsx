@@ -364,7 +364,8 @@ export default function PR2ConfigClean() {
         formData.minQuantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
         formData.rangeOptions.some(opt => opt.enabled && ((opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')));
       
-      if (hasActualValues) {
+      // Also save when editing existing configuration (for color changes, etc.) or when there are actual values
+      if (hasActualValues || (isEditing && editId)) {
         console.log('💾 Auto-saving configuration with current data...');
         console.log('   📚 IsEditing:', isEditing, 'EditId:', editId);
         console.log('   📚 Category:', formData.categoryName);
