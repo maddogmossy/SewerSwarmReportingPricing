@@ -1706,26 +1706,28 @@ export default function PR2ConfigClean() {
       id: number;
     }> = [];
     
-    // Only show the main editing configuration, not all configurations
-    // This prevents duplicate dropdowns from appearing
-    if (configToUse) {
-      const categoryName = configToUse.categoryName || '';
-      const pipeMatch = categoryName.match(/(\d+)mm/);
-      
-      if (pipeMatch) {
-        // Configuration has pipe size in name
-        pipeSizeConfigs.push({
-          pipeSize: pipeMatch[1] + 'mm',
-          config: configToUse,
-          id: configToUse.id
-        });
-      } else {
-        // Configuration doesn't have pipe size in name, use current pipe size
-        pipeSizeConfigs.push({
-          pipeSize: pipeSize || '150mm',
-          config: configToUse,
-          id: configToUse.id
-        });
+    // Only show the current editing configuration to prevent duplicates
+    if (isEditing && editId && allCategoryConfigs) {
+      const currentConfig = allCategoryConfigs.find(config => config.id === parseInt(editId));
+      if (currentConfig) {
+        const categoryName = currentConfig.categoryName || '';
+        const pipeMatch = categoryName.match(/(\d+)mm/);
+        
+        if (pipeMatch) {
+          // Configuration has pipe size in name
+          pipeSizeConfigs.push({
+            pipeSize: pipeMatch[1] + 'mm',
+            config: currentConfig,
+            id: currentConfig.id
+          });
+        } else {
+          // Configuration doesn't have pipe size in name, use current pipe size
+          pipeSizeConfigs.push({
+            pipeSize: pipeSize || '150mm',
+            config: currentConfig,
+            id: currentConfig.id
+          });
+        }
       }
     }
     
