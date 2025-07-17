@@ -3582,7 +3582,7 @@ export default function Dashboard() {
                                 >
                                   <Button
                                     size="sm"
-                                    className="w-full text-xs h-8 bg-green-600 hover:bg-green-700 text-white font-bold border-0"
+                                    className="w-full text-xs h-8 bg-green-100 hover:bg-green-200 text-green-800 font-medium border border-green-300"
                                   >
                                     Service Recalculations
                                   </Button>
@@ -3596,7 +3596,7 @@ export default function Dashboard() {
                                 >
                                   <Button
                                     size="sm"
-                                    className="w-full text-xs h-8 bg-red-600 hover:bg-red-700 text-white font-bold border-0"
+                                    className="w-full text-xs h-8 bg-red-100 hover:bg-red-200 text-red-800 font-medium border border-red-300"
                                   >
                                     Structural Recalculations
                                   </Button>
