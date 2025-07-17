@@ -413,11 +413,36 @@ export default function PR2ConfigClean() {
     });
   }
 
-  // Disable automatic cleanup to prevent disappearing entries
-  const cleanupExtraEntries = () => {
-    // Keep all entries - don't auto-delete anything
-    console.log(`🧹 Cleanup disabled to preserve user entries`);
+  // Clear values from second purple row
+  const clearSecondRowValues = () => {
+    setFormData(prev => ({
+      ...prev,
+      rangeOptions: prev.rangeOptions.map(opt => {
+        if (opt.label === "Percentage 2") {
+          return { ...opt, rangeStart: '', rangeEnd: '' };
+        }
+        if (opt.label === "Length 2") {
+          return { ...opt, rangeStart: '', rangeEnd: '' };
+        }
+        return opt;
+      })
+    }));
+    console.log(`🧹 Cleared values from second purple row`);
   }
+
+  // Run cleanup to clear second row values
+  React.useEffect(() => {
+    if (editId && formData.rangeOptions.some(opt => 
+      (opt.label === "Percentage 2" && opt.rangeEnd === "5") ||
+      (opt.label === "Length 2" && opt.rangeEnd === "Max")
+    )) {
+      const timeoutId = setTimeout(() => {
+        clearSecondRowValues();
+      }, 500);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [editId, formData.rangeOptions]);
 
   // Handle range value changes for purple window
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
