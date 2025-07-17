@@ -1,0 +1,359 @@
+URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=100', urlParamsSize: 3, allParams: {…}}
+eruda.js:2 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=100', search: '?categoryId=patching&sector=utilities&edit=100', sector: 'utilities', categoryId: 'patching', …}
+eruda.js:2 ✅ Form data loaded for Config 100:
+eruda.js:2    📊 Quantity options: []
+eruda.js:2    📊 Range options: [{…}]
+eruda.js:2    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+eruda.js:2    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+eruda.js:2 💾 Auto-saving configuration with current data...
+eruda.js:2    📚 IsEditing: true EditId: 100
+eruda.js:2    📚 Category: TP2 - Patching Configuration
+eruda.js:2 🔍 useEffect triggered - isEditing: true, editId: 100, configToUse: {id: 100, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+eruda.js:2 🔍 Processing config: {id: 100, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+eruda.js:2 🔧 Loading configuration data: {id: 100, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+eruda.js:2 🔧 Initialized form data with options: {pricingCount: 5, quantityCount: 1, minQuantityCount: 5, rangeCount: 1}
+eruda.js:2 🔧 Setting form data for config 100: {quantityValue: '', rangeLength: '1000'}
+eruda.js:2 🔍 Detected existing config in sector: utilities
+eruda.js:2 🔍 Setting sectorsWithConfig to: [utilities]
+eruda.js:2 🔍 Setting selectedSectors to: [utilities]
+eruda.js:2 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=100', urlParamsSize: 3, allParams: {…}}
+eruda.js:2 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=100', search: '?categoryId=patching&sector=utilities&edit=100', sector: 'utilities', categoryId: 'patching', …}
+eruda.js:2 ✅ Form data loaded for Config 100:
+eruda.js:2    📊 Quantity options: [{…}]
+eruda.js:2    📊 Range options: [{…}]
+eruda.js:2    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+eruda.js:2    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+eruda.js:2 💾 Auto-saving configuration with current data...
+eruda.js:2    📚 IsEditing: true EditId: 100
+eruda.js:2    📚 Category: TP2 - Patching Configuration
+eruda.js:2 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=100', urlParamsSize: 3, allParams: {…}}
+eruda.js:2 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=100', search: '?categoryId=patching&sector=utilities&edit=100', sector: 'utilities', categoryId: 'patching', …}
+eruda.js:2 ✅ Form data loaded for Config 100:
+eruda.js:2    📊 Quantity options: [{…}]
+eruda.js:2    📊 Range options: [{…}]
+eruda.js:2    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+eruda.js:2    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+eruda.js:2 💾 Auto-saving configuration with current data...
+eruda.js:2    📚 IsEditing: true EditId: 100
+eruda.js:2    📚 Category: TP2 - Patching Configuration
+eruda.js:2  GET https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/api/pr2-clean/100 404 (Not Found)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:47
+queryFn @ pr2-config-clean.tsx:436
+fetchFn @ @tanstack_react-query.js?v=9fbe10e7:840
+run @ @tanstack_react-query.js?v=9fbe10e7:494
+start @ @tanstack_react-query.js?v=9fbe10e7:536
+fetch @ @tanstack_react-query.js?v=9fbe10e7:926
+executeFetch_fn @ @tanstack_react-query.js?v=9fbe10e7:2211
+onSubscribe @ @tanstack_react-query.js?v=9fbe10e7:1898
+subscribe @ @tanstack_react-query.js?v=9fbe10e7:24
+(anonymous) @ @tanstack_react-query.js?v=9fbe10e7:3022
+subscribeToStore @ chunk-WERSD76P.js?v=9fbe10e7:11984
+commitHookEffectListMount @ chunk-WERSD76P.js?v=9fbe10e7:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=9fbe10e7:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=9fbe10e7:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=9fbe10e7:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=9fbe10e7:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=9fbe10e7:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=9fbe10e7:19447
+commitRootImpl @ chunk-WERSD76P.js?v=9fbe10e7:19416
+commitRoot @ chunk-WERSD76P.js?v=9fbe10e7:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=9fbe10e7:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=9fbe10e7:9119
+flushSync @ chunk-WERSD76P.js?v=9fbe10e7:18959
+scheduleRefresh @ chunk-WERSD76P.js?v=9fbe10e7:20004
+(anonymous) @ @react-refresh:267
+performReactRefresh @ @react-refresh:256
+(anonymous) @ @react-refresh:677
+setTimeout
+(anonymous) @ @react-refresh:666
+validateRefreshBoundaryAndEnqueueUpdate @ @react-refresh:728
+(anonymous) @ pr2-config-clean.tsx:3237
+(anonymous) @ client:34
+(anonymous) @ client:218
+(anonymous) @ client:193
+queueUpdate @ client:193
+await in queueUpdate
+(anonymous) @ client:642
+handleMessage @ client:640
+(anonymous) @ client:550Understand this error
+eruda.js:2 ⚠️ Configuration 100 not found, redirecting to create mode
+eruda.js:2  GET https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/api/pr2-clean/100 404 (Not Found)
+window.fetch @ Network.js:219
+apiRequest @ queryClient.ts:47
+queryFn @ pr2-config-clean.tsx:436
+fetchFn @ @tanstack_react-query.js?v=9fbe10e7:840
+run @ @tanstack_react-query.js?v=9fbe10e7:494
+start @ @tanstack_react-query.js?v=9fbe10e7:536
+fetch @ @tanstack_react-query.js?v=9fbe10e7:926
+(anonymous) @ @tanstack_react-query.js?v=9fbe10e7:1726
+(anonymous) @ @tanstack_react-query.js?v=9fbe10e7:1725
+batch @ @tanstack_react-query.js?v=9fbe10e7:583
+refetchQueries @ @tanstack_react-query.js?v=9fbe10e7:1724
+(anonymous) @ @tanstack_react-query.js?v=9fbe10e7:1716
+batch @ @tanstack_react-query.js?v=9fbe10e7:583
+invalidateQueries @ @tanstack_react-query.js?v=9fbe10e7:1705
+(anonymous) @ pr2-config-clean.tsx:745
+commitHookEffectListMount @ chunk-WERSD76P.js?v=9fbe10e7:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=9fbe10e7:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=9fbe10e7:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=9fbe10e7:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=9fbe10e7:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=9fbe10e7:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=9fbe10e7:19447
+commitRootImpl @ chunk-WERSD76P.js?v=9fbe10e7:19416
+commitRoot @ chunk-WERSD76P.js?v=9fbe10e7:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=9fbe10e7:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=9fbe10e7:9119
+flushSync @ chunk-WERSD76P.js?v=9fbe10e7:18959
+scheduleRefresh @ chunk-WERSD76P.js?v=9fbe10e7:20004
+(anonymous) @ @react-refresh:267
+performReactRefresh @ @react-refresh:256
+(anonymous) @ @react-refresh:677
+setTimeout
+(anonymous) @ @react-refresh:666
+validateRefreshBoundaryAndEnqueueUpdate @ @react-refresh:728
+(anonymous) @ pr2-config-clean.tsx:3237
+(anonymous) @ client:34
+(anonymous) @ client:218
+(anonymous) @ client:193
+queueUpdate @ client:193
+await in queueUpdate
+(anonymous) @ client:642
+handleMessage @ client:640
+(anonymous) @ client:550Understand this error
+eruda.js:2 ⚠️ Configuration 100 not found, redirecting to create mode
+eruda.js:2 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+eruda.js:2 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+eruda.js:2 ✅ Form data loaded for Config null:
+eruda.js:2    📊 Quantity options: [{…}]
+eruda.js:2    📊 Range options: [{…}]
+eruda.js:2    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+eruda.js:2    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+eruda.js:2 💾 Auto-saving configuration with current data...
+eruda.js:2    📚 IsEditing: false EditId: null
+eruda.js:2    📚 Category: TP2 - Patching Configuration
+eruda.js:2 🔍 useEffect triggered - isEditing: false, editId: null, configToUse: undefined
+eruda.js:2 🔍 Starting new config with sector: utilities
+eruda.js:2 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+eruda.js:2 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+eruda.js:2 🔍 Found 0 configs for categoryId patching in sector utilities: []
+eruda.js:2 ⚠️ No configuration found for sector utilities, returning null
+eruda.js:2 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+eruda.js:2 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+eruda.js:2 🔍 useEffect triggered - isEditing: false, editId: null, configToUse: null
+eruda.js:2 🔍 Starting new config with sector: utilities
+eruda.js:2 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+eruda.js:2 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+eruda.js:2 ✅ Auto-save completed successfully: {id: 121, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+eruda.js:2 🔄 Updating URL to edit mode with ID: 121
+eruda.js:2 [vite] server connection lost. Polling for restart...
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 ✅ Form data loaded for Config null:
+Console.js:61    📊 Quantity options: []
+Console.js:61    📊 Range options: [{…}]
+Console.js:61    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: false EditId: null
+Console.js:61    📚 Category: TP2 - Patching Configuration
+Console.js:61 🔍 useEffect triggered - isEditing: false, editId: null, configToUse: undefined
+Console.js:61 🔍 Starting new config with sector: utilities
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 ✅ Form data loaded for Config null:
+Console.js:61    📊 Quantity options: []
+Console.js:61    📊 Range options: [{…}]
+Console.js:61    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: false EditId: null
+Console.js:61    📚 Category: TP2 - Patching Configuration
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 ✅ Form data loaded for Config null:
+Console.js:61    📊 Quantity options: []
+Console.js:61    📊 Range options: [{…}]
+Console.js:61    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: false EditId: null
+Console.js:61    📚 Category: TP2 - Patching Configuration
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Found 1 configs for categoryId patching in sector utilities: [{…}]
+Console.js:61 ✅ Found configuration for sector utilities: {id: 121, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 useEffect triggered - isEditing: false, editId: null, configToUse: {id: 121, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+Console.js:61 🔍 Starting new config with sector: utilities
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities', urlParamsSize: 2, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…config-clean?categoryId=patching&sector=utilities', search: '?categoryId=patching&sector=utilities', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 ✅ Auto-save completed successfully: {id: 122, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+Console.js:61 🔄 Updating URL to edit mode with ID: 122
+Console.js:61 💾 Auto-saving configuration before navigation (has actual values or editing existing)...
+Console.js:61 🔄 Auto-saving configuration before navigation...
+Console.js:61 💾 Auto-saving configuration before navigation (has actual values or editing existing)...
+Console.js:61 🔄 Auto-saving configuration before navigation...
+Console.js:61 ✅ Configuration saved successfully
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Initial page load - setting sector to: utilities
+Console.js:61 Pipe size from URL: null
+Console.js:61 Config name from URL: null
+Console.js:61 Source item number: null
+Console.js:61 🔍 Making API request for sector: utilities
+Console.js:61 ✅ Configuration saved successfully
+Console.js:61 📥 Raw API response: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61 📊 Response length: 5
+Console.js:61 📊 Response items: (5) ['ID: 48, Sector: utilities', 'ID: 123, Sector: utilities', 'ID: 124, Sector: utilities', 'ID: 121, Sector: utilities', 'ID: 122, Sector: utilities']
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 🔍 Navigation triggered for categoryId: cctv-jet-vac
+Console.js:61 📍 Current sector: utilities
+Console.js:61 🔍 Existing config found: {id: 48, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. Runs per Shift = 30. No 2 = 25. …3.99. Percentage 2 = 0 to 15. Length 2 = 34 to 66', …}
+Console.js:61 🔧 Navigating to edit existing config: /pr2-config-clean?sector=utilities&categoryId=cctv-jet-vac&edit=48
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…?sector=utilities&categoryId=cctv-jet-vac&edit=48', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 ✅ Form data loaded for Config 48:
+Console.js:61    📊 Quantity options: [{…}]
+Console.js:61    📊 Range options: (2) [{…}, {…}]
+Console.js:61    📊 Pricing options: [{…}]
+Console.js:61    📊 Min quantity options: [{…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: true EditId: 48
+Console.js:61    📚 Category: TP1 - CCTV Jet Vac Configuration
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 48, configToUse: undefined
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…?sector=utilities&categoryId=cctv-jet-vac&edit=48', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 ✅ Form data loaded for Config 48:
+Console.js:61    📊 Quantity options: [{…}]
+Console.js:61    📊 Range options: (2) [{…}, {…}]
+Console.js:61    📊 Pricing options: [{…}]
+Console.js:61    📊 Min quantity options: [{…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: true EditId: 48
+Console.js:61    📚 Category: TP1 - CCTV Jet Vac Configuration
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…?sector=utilities&categoryId=cctv-jet-vac&edit=48', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 48, configToUse: {id: 48, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. Runs per Shift = 30. No 2 = 25. …3.99. Percentage 2 = 0 to 15. Length 2 = 34 to 66', …}
+Console.js:61 🔍 Processing config: {id: 48, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. Runs per Shift = 30. No 2 = 25. …3.99. Percentage 2 = 0 to 15. Length 2 = 34 to 66', …}
+Console.js:61 🔧 Loading configuration data: {id: 48, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. Runs per Shift = 30. No 2 = 25. …3.99. Percentage 2 = 0 to 15. Length 2 = 34 to 66', …}
+Console.js:61 🔧 Initialized form data with options: {pricingCount: 1, quantityCount: 2, minQuantityCount: 2, rangeCount: 4}
+Console.js:61 🔧 Setting form data for config 48: {quantityValue: '30', rangeLength: '33.99'}
+Console.js:61 🔍 Detected existing config in sector: utilities
+Console.js:61 🔍 Setting sectorsWithConfig to: [utilities]
+Console.js:61 🔍 Setting selectedSectors to: [utilities]
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…?sector=utilities&categoryId=cctv-jet-vac&edit=48', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 ✅ Form data loaded for Config 48:
+Console.js:61    📊 Quantity options: (2) [{…}, {…}]
+Console.js:61    📊 Range options: (4) [{…}, {…}, {…}, {…}]
+Console.js:61    📊 Pricing options: [{…}]
+Console.js:61    📊 Min quantity options: (2) [{…}, {…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: true EditId: 48
+Console.js:61    📚 Category: CCTV Jet Vac Configuration
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…?sector=utilities&categoryId=cctv-jet-vac&edit=48', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 ✅ Form data loaded for Config 48:
+Console.js:61    📊 Quantity options: (2) [{…}, {…}]
+Console.js:61    📊 Range options: (4) [{…}, {…}, {…}, {…}]
+Console.js:61    📊 Pricing options: [{…}]
+Console.js:61    📊 Min quantity options: (2) [{…}, {…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: true EditId: 48
+Console.js:61    📚 Category: CCTV Jet Vac Configuration
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…?sector=utilities&categoryId=cctv-jet-vac&edit=48', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 ✅ Auto-save completed successfully: {id: 48, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'CCTV Jet Vac Configuration', description: 'Day Rate = £1850. Runs per Shift = 30. No 2 = 25. …3.99. Percentage 2 = 0 to 15. Length 2 = 34 to 66', …}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…?sector=utilities&categoryId=cctv-jet-vac&edit=48', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…?sector=utilities&categoryId=cctv-jet-vac&edit=48', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=48', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 💾 Auto-saving configuration before navigation (has actual values or editing existing)...
+Console.js:61 🔄 Auto-saving configuration before navigation...
+Console.js:61 ✅ Configuration updated successfully
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Initial page load - setting sector to: utilities
+Console.js:61 Pipe size from URL: null
+Console.js:61 Config name from URL: null
+Console.js:61 Source item number: null
+Console.js:61 🔍 Making API request for sector: utilities
+Console.js:61 📥 Raw API response: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61 📊 Response length: 5
+Console.js:61 📊 Response items: (5) ['ID: 48, Sector: utilities', 'ID: 123, Sector: utilities', 'ID: 124, Sector: utilities', 'ID: 121, Sector: utilities', 'ID: 122, Sector: utilities']
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 🔍 Navigation triggered for categoryId: patching
+Console.js:61 📍 Current sector: utilities
+Console.js:61 🔍 Existing config found: {id: 123, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+Console.js:61 🔧 Navigating to edit existing config: /pr2-config-clean?sector=utilities&categoryId=patching&edit=123
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=patching&edit=123', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?sector=utilities&categoryId=patching&edit=123', search: '?sector=utilities&categoryId=patching&edit=123', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 ✅ Form data loaded for Config 123:
+Console.js:61    📊 Quantity options: []
+Console.js:61    📊 Range options: [{…}]
+Console.js:61    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: true EditId: 123
+Console.js:61    📚 Category: TP2 - Patching Configuration
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 123, configToUse: undefined
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=patching&edit=123', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?sector=utilities&categoryId=patching&edit=123', search: '?sector=utilities&categoryId=patching&edit=123', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 ✅ Form data loaded for Config 123:
+Console.js:61    📊 Quantity options: []
+Console.js:61    📊 Range options: [{…}]
+Console.js:61    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: true EditId: 123
+Console.js:61    📚 Category: TP2 - Patching Configuration
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=patching&edit=123', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?sector=utilities&categoryId=patching&edit=123', search: '?sector=utilities&categoryId=patching&edit=123', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 123, configToUse: {id: 123, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+Console.js:61 🔍 Processing config: {id: 123, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+Console.js:61 🔧 Loading configuration data: {id: 123, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
+Console.js:61 🔧 Initialized form data with options: {pricingCount: 5, quantityCount: 1, minQuantityCount: 5, rangeCount: 1}
+Console.js:61 🔧 Setting form data for config 123: {quantityValue: '', rangeLength: '1000'}
+Console.js:61 🔍 Detected existing config in sector: utilities
+Console.js:61 🔍 Setting sectorsWithConfig to: [utilities]
+Console.js:61 🔍 Setting selectedSectors to: [utilities]
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=patching&edit=123', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?sector=utilities&categoryId=patching&edit=123', search: '?sector=utilities&categoryId=patching&edit=123', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 ✅ Form data loaded for Config 123:
+Console.js:61    📊 Quantity options: [{…}]
+Console.js:61    📊 Range options: [{…}]
+Console.js:61    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: true EditId: 123
+Console.js:61    📚 Category: TP2 - Patching Configuration
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=patching&edit=123', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?sector=utilities&categoryId=patching&edit=123', search: '?sector=utilities&categoryId=patching&edit=123', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 ✅ Form data loaded for Config 123:
+Console.js:61    📊 Quantity options: [{…}]
+Console.js:61    📊 Range options: [{…}]
+Console.js:61    📊 Pricing options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61    📊 Min quantity options: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61 💾 Auto-saving configuration with current data...
+Console.js:61    📚 IsEditing: true EditId: 123
+Console.js:61    📚 Category: TP2 - Patching Configuration
+Console.js:61 ✅ Auto-save completed successfully: {id: 123, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - Patching Configuration', description: 'Length = R1 to 1000', …}
