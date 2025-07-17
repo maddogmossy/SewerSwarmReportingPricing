@@ -2608,8 +2608,35 @@ export default function PR2ConfigClean() {
                                   <Button
                                     size="sm"
                                     onClick={() => {
-                                      if (percentageOption?.id) deleteRangeOption(percentageOption.id);
-                                      if (lengthOption?.id) deleteRangeOption(lengthOption.id);
+                                      // Delete from all windows (green, orange, purple)
+                                      const setNumber = index + 1; // index is 0-based, setNumber is 1-based
+                                      
+                                      // Find corresponding green quantity option
+                                      const quantityToDelete = formData.quantityOptions.find(opt => 
+                                        opt.label.includes(`No ${setNumber}`) || opt.label.includes(`${setNumber}`)
+                                      );
+                                      
+                                      // Find corresponding orange min quantity option  
+                                      const minQuantityToDelete = formData.minQuantityOptions.find(opt => 
+                                        opt.label.includes(`Qty ${setNumber}`) || opt.label.includes(`${setNumber}`)
+                                      );
+                                      
+                                      // Remove from all windows
+                                      setFormData(prev => ({
+                                        ...prev,
+                                        quantityOptions: prev.quantityOptions.filter(opt => opt.id !== quantityToDelete?.id),
+                                        quantityStackOrder: prev.quantityStackOrder.filter(id => id !== quantityToDelete?.id),
+                                        minQuantityOptions: prev.minQuantityOptions.filter(opt => opt.id !== minQuantityToDelete?.id),
+                                        minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => id !== minQuantityToDelete?.id),
+                                        rangeOptions: prev.rangeOptions.filter(opt => 
+                                          opt.id !== percentageOption?.id && opt.id !== lengthOption?.id
+                                        ),
+                                        rangeStackOrder: prev.rangeStackOrder.filter(id => 
+                                          id !== percentageOption?.id && id !== lengthOption?.id
+                                        )
+                                      }));
+                                      
+                                      console.log(`🗑️ Deleted row ${setNumber} from all windows`);
                                     }}
                                     className="h-8 w-20 text-sm bg-red-600 text-white hover:bg-red-700 border-0"
                                   >
