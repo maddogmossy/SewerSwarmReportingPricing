@@ -356,11 +356,7 @@ export default function PR2ConfigClean() {
         isActive: true
       };
 
-      const response = await apiRequest('/api/pr2-clean', {
-        method: 'POST',
-        body: JSON.stringify(newConfig),
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const response = await apiRequest('POST', '/api/pr2-clean', newConfig);
 
       if (response.ok) {
         const result = await response.json();
