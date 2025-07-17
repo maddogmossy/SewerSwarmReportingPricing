@@ -116,6 +116,16 @@ export default function PR2ConfigClean() {
     configName,
     isEditing
   });
+
+  // Get all configurations for this category to detect existing pipe sizes (moved here for proper initialization order)
+  const { data: allCategoryConfigs } = useQuery({
+    queryKey: ['/api/pr2-clean', 'category', categoryId, 'all-sectors'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/pr2-clean?categoryId=${categoryId}`);
+      return response.json();
+    },
+    enabled: !!categoryId,
+  });
   
   // Determine category name based on categoryId and pipe size for dynamic naming
   const getCategoryName = (categoryId: string) => {
@@ -1707,15 +1717,7 @@ export default function PR2ConfigClean() {
     // This function exists for UI consistency but sector copying is handled in real-time
   };
 
-  // Get all configurations for this category to detect existing pipe sizes
-  const { data: allCategoryConfigs } = useQuery({
-    queryKey: ['/api/pr2-clean', 'category', categoryId, 'all-sectors'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', `/api/pr2-clean?categoryId=${categoryId}`);
-      return response.json();
-    },
-    enabled: !!categoryId,
-  });
+
 
   // Extract existing pipe sizes from configuration names
   const getExistingPipeSizes = () => {
