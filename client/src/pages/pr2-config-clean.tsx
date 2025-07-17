@@ -1809,11 +1809,6 @@ export default function PR2ConfigClean() {
                 <span className="flex items-center gap-2">
                   <Settings className="w-4 h-4" />
                   {pipeSize ? `${pipeSize}mm Configuration Options` : 'Configuration Options'}
-                  {isEditing && editId && (
-                    <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded ml-2">
-                      ID: {editId}
-                    </span>
-                  )}
                 </span>
                 <ChevronDown className="w-4 h-4" />
               </Button>

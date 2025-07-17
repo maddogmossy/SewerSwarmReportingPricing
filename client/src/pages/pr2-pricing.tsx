@@ -484,6 +484,9 @@ export default function PR2Pricing() {
                             {existingConfig ? (
                               <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
                             ) : null}
+                            <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded ml-2">
+                              Cat Card
+                            </span>
                           </h3>
                           <p className="text-xs text-gray-600">High-pressure cleaning configuration for {pipeSize}mm pipes</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
