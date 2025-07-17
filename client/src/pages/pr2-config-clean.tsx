@@ -2582,6 +2582,15 @@ export default function PR2ConfigClean() {
                             onChange={(e) => handleValueChange('rangeOptions', formData.rangeOptions?.find(opt => opt.label === "Length")?.id, e.target.value, 'rangeEnd')}
                             className="bg-white border-purple-300 h-6 text-xs w-20"
                           />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={addNewInputsToAllWindows}
+                            className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
+                          >
+                            <Plus className="w-3 h-3 mr-1" />
+                            Add
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
