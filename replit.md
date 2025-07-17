@@ -945,6 +945,33 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9' to return to this stable checkpoint
 
+## REV V6.9.1 CHECKPOINT - PRODUCTION READY UI SYSTEM LOCKED (July 17, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE UI UNIFICATION SYSTEM:**
+- **TP1/TP2 Popup Identical Design:** Both cleanse/survey and repair popups have perfectly matching layouts, styling, and behavior
+- **Category Card Icon Integration:** All repair options use proper category card icons (Edit, PaintBucket, Pickaxe) instead of generic Settings
+- **Full Container Clickability:** Entire equipment cards are clickable with hover effects, no separate configure buttons needed
+- **Primary Badge System:** First option in both popups displays "Primary" badge with consistent blue styling
+- **Unified Blue Theme:** Both popup systems use identical color schemes, hover effects, and visual hierarchy
+- **Zero Auto-Save Policy:** Complete manual control system maintained with user-controlled configuration saving
+- **Clean Starting State:** System ready for production use with 0 configurations and clean database
+
+🔒 **USER INTERFACE STANDARDS LOCKED:**
+- **Visual Consistency:** TP1 and TP2 popups indistinguishable in appearance and interaction patterns
+- **Icon Standards:** Repair equipment uses same icons as pricing category cards for visual consistency
+- **Interaction Standards:** Click anywhere on equipment card to navigate to configuration page
+- **Clean Design:** Streamlined interface without redundant buttons or visual clutter
+- **Primary Equipment:** CCTV/Jet Vac maintains first position with Primary badge in both systems
+
+🔒 **TECHNICAL ARCHITECTURE COMPLETE:**
+- **Icon System:** Edit, PaintBucket, Pickaxe icons from lucide-react integrated across all repair options
+- **Container System:** Full card containers clickable with cursor-pointer and hover:bg-blue-50 effects
+- **Template Detection:** Automatic TP1 vs TP2 template selection based on category type
+- **Pipe Size Detection:** Dynamic configuration creation for new pipe sizes with proper template assignment
+- **User Preference Compliance:** All design changes follow documented user interface requirements
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.1' to return to this stable checkpoint
+
 ## REV V6.4.3 CHECKPOINT - JN FILTERING RESTORATION COMPLETE (July 16, 2025)
 
 🔒 **PRODUCTION READY - JN FILTERING LOGIC FULLY RESTORED:**
