@@ -1799,32 +1799,6 @@ export default function PR2ConfigClean() {
         {/* Configuration Title */}
         <div className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
-          
-          {/* Pipe Size Dropdown - shows ID 48 as 150mm option */}
-          <div className="bg-white border rounded-lg p-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Pipe Size Options</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-              {/* Current 150mm option (ID 48) */}
-              <div className="border-2 border-blue-500 bg-blue-50 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-blue-900">150mm</span>
-                  <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded">ID: 48</span>
-                </div>
-                <p className="text-sm text-blue-700">Current Configuration</p>
-              </div>
-              
-              {/* Other pipe sizes - placeholders for future configurations */}
-              {['100mm', '225mm', '300mm'].map((size) => (
-                <div key={size} className="border border-gray-300 bg-gray-50 rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-gray-600">{size}</span>
-                    <span className="text-xs bg-gray-400 text-white px-2 py-1 rounded">New</span>
-                  </div>
-                  <p className="text-sm text-gray-500">Not configured</p>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* Collapsible Configuration Panel */}
