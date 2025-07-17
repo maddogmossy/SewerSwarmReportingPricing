@@ -720,10 +720,15 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.3' to return to this stable checkpoint
 
-## User Preferences (Updated July 15, 2025)
+## User Preferences (Updated July 17, 2025)
 - **Stability Priority**: User prioritizes app stability over advanced features - avoid breaking working functionality
 - **Screen Flashing Issue**: Complex helper functions cause screen flashing - prefer simple implementations
 - **Performance Focus**: Remove complex useCallback functions that recreate on every render
+- **UI Design**: 
+  - TP1 (cleanse/survey) and TP2 (repair) popups should have identical styling and layout
+  - Use category card icons instead of generic icons (Edit for patching, PaintBucket for lining, Pickaxe for excavation)
+  - Make entire UI containers clickable rather than separate buttons
+  - CCTV/Jet Vac should be first option with "Primary" badge
 
 ## REV V6.7 CHECKPOINT - COMPLETE COLOR CONSISTENCY SYSTEM LOCKED (July 16, 2025)
 

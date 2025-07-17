@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings } from "lucide-react";
+import { Edit, PaintBucket, Pickaxe } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -13,6 +13,7 @@ interface RepairOption {
   description: string;
   configured: boolean;
   configurationMessage?: string;
+  icon: any;
 }
 
 interface RepairOptionsPopoverProps {
@@ -81,14 +82,16 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
           configured: hasTP2PatchingConfig,
           configurationMessage: hasTP2PatchingConfig ? 
             `TP2 ${pipeSize}mm Patching configured (ID: ${existingTP2Config?.id})` : 
-            `Set up ${pipeSize}mm patch repair pricing for utilities sector`
+            `Set up ${pipeSize}mm patch repair pricing for utilities sector`,
+          icon: Edit
         },
         {
           id: 2,
           name: 'Alternative: CIPP Lining',
           description: 'Configure full lining if patch repair unsuitable',
           configured: false,
-          configurationMessage: 'Set up lining pricing for severe cases'
+          configurationMessage: 'Set up lining pricing for severe cases',
+          icon: PaintBucket
         }
       ];
     } else {
@@ -98,14 +101,16 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
           name: 'CIPP Lining Configuration',
           description: 'Configure lining pricing for extensive defects',
           configured: false,
-          configurationMessage: 'Set up lining pricing for utilities sector'
+          configurationMessage: 'Set up lining pricing for utilities sector',
+          icon: PaintBucket
         },
         {
           id: 2,
           name: 'Alternative: Excavation',
           description: 'Configure excavation if lining unsuitable',
           configured: false,
-          configurationMessage: 'Set up excavation pricing for severe cases'
+          configurationMessage: 'Set up excavation pricing for severe cases',
+          icon: Pickaxe
         }
       ];
     }
@@ -181,15 +186,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <div 
-          className="cursor-pointer hover:bg-orange-50 transition-colors duration-200 rounded px-1"
-          onClick={(e) => {
-            e.preventDefault();
-            handleTriggerClick();
-          }}
-        >
-          {children}
-        </div>
+        {children}
       </PopoverTrigger>
       <PopoverContent className="w-[400px] max-w-[95vw]" align="start">
         <div className="space-y-4">
@@ -212,7 +209,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
               >
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-2">
-                    <Settings className="h-4 w-4 text-blue-600" />
+                    <option.icon className="h-4 w-4 text-blue-600" />
                     <span className="font-medium text-sm">{option.name}</span>
                     {index === 0 && (
                       <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
