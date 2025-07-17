@@ -2695,7 +2695,7 @@ export default function Dashboard() {
       }
     });
     
-    return sectionCount >= highestMinRequired;
+    return sectionCount > highestMinRequired;
   };
 
   // Cost calculation function for enhanced table
