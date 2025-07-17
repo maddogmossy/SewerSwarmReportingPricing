@@ -875,35 +875,44 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.4.2' to return to this stable checkpoint
 
-## REV V6.5 CHECKPOINT - 100MM DROPDOWN WINDOW SYSTEM LOCKED (July 17, 2025)
+## REV V6.8 CHECKPOINT - AUTOMATIC PIPE SIZE DETECTION SYSTEM LOCKED (July 17, 2025)
 
-🔒 **PRODUCTION READY - COMPLETE 100MM CONFIGURATION SYSTEM:**
-- **New 100mm Dropdown Window**: Added dedicated dropdown window between configuration title and 150mm options
-- **Database Entry Created**: New configuration ID 109 for "100mm CCTV Jet Vac Configuration" with "0 link tp1 template" values
-- **Template Structure**: All five windows (blue/math/green/orange/purple) display with zero values as requested
-- **Read-Only Template**: Input fields are read-only to maintain template state with placeholder values
-- **Proper Positioning**: 100mm dropdown positioned below "CCTV Jet Vac Configuration" title, above "150mm Configuration Options"
-- **Consistent Styling**: Matches existing dropdown structure with proper collapsible functionality
+🔒 **PRODUCTION READY - COMPLETE AUTOMATIC PIPE SIZE DETECTION SYSTEM:**
+- **Template-Aware Detection**: Automatically determines TP1 vs TP2 templates based on category type
+- **TP1 Categories**: CCTV, van pack, jet vac, cctv/van pack, directional water cutting, tankering use standard 5-window layout
+- **TP2 Categories**: Patching only uses specialized patching layout with 4 pricing options
+- **Dynamic Dropdown Creation**: Automatically creates new dropdown windows with unique IDs for detected pipe sizes
+- **Auto-Delete Integration**: All dynamically created configurations get delete buttons automatically
+- **Cross-Sector Detection**: Works across all sectors with proper template selection
 
 🔒 **TECHNICAL IMPLEMENTATION:**
-- **Database Record**: ID 109 created with category_id "cctv-jet-vac-100mm" and utilities sector
-- **UI Component**: New Collapsible section with CollapsibleTrigger showing "100mm Configuration Options (ID: 109)"
-- **Template Values**: All pricing/quantity/range options set to "0" with "0 link tp1 template" description
-- **Icon Import**: Added Target icon import to support orange window Min Quantity Options
-- **Five-Window Layout**: Complete blue/math/green/orange/purple window structure for 100mm configuration
+- **Template Logic**: `getTemplateType()` function determines TP1 vs TP2 based on category
+- **Pipe Size Detection**: `getExistingPipeSizes()` extracts pipe sizes from configuration names
+- **Auto-Creation**: `createPipeSizeConfiguration()` creates template-specific configurations
+- **Dynamic Rendering**: `getPipeSizeConfigurations()` generates sorted dropdown list
+- **useEffect Hook**: Automatically detects new pipe sizes from dashboard navigation
+- **ID Generation**: `getNextAvailableId()` ensures unique configuration IDs
 
-🔒 **DATABASE STATE CONFIRMED:**
+🔒 **DATABASE STATE CURRENT:**
 - **ID 48**: CCTV Jet Vac Configuration (150mm, utilities)
 - **ID 105**: TP2 - Patching Configuration (utilities)  
-- **ID 109**: 100mm CCTV Jet Vac Configuration (NEW, utilities)
+- **ID 109**: 100mm CCTV Jet Vac Configuration (utilities)
+- **Dynamic IDs**: New configurations created automatically as needed
 
-🔒 **UI COMPONENT ARCHITECTURE:**
-- **100mm Dropdown Header**: "100mm Configuration Options (ID: 109)" - CollapsibleTrigger component
-- **Template Display**: All fields show "0" values with read-only attribute to preserve template state
-- **Consistent Layout**: Mirrors 150mm dropdown structure with proper spacing and color-coded windows
-- **Professional Styling**: Uses same card components and styling as existing configuration windows
+🔒 **TEMPLATE STRUCTURES:**
+- **TP1 Template**: Blue (pricing) + Math + Green (quantity) + Orange (min quantity) + Purple (ranges)
+- **TP2 Template**: Purple pricing (4 patching options) + Orange (min quantities) + Purple ranges (no green window)
+- **Future Templates**: System ready for lining, exco, etc. with default TP1 assignment
+- **Template Assignment**: Hardcoded category mapping with extensible structure
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v6.5' to return to this stable checkpoint
+🔒 **AUTO-DETECTION WORKFLOW:**
+1. **Dashboard Navigation**: User clicks item with new pipe size (e.g., 300mm)
+2. **Size Detection**: System checks existing configurations for pipe size match
+3. **Template Selection**: Determines TP1 or TP2 based on category type
+4. **Auto-Creation**: Creates new configuration with appropriate template structure
+5. **Dropdown Generation**: New pipe size dropdown appears with unique ID and delete button
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.8' to return to this stable checkpoint
 
 ## REV V6.4.3 CHECKPOINT - JN FILTERING RESTORATION COMPLETE (July 16, 2025)
 
