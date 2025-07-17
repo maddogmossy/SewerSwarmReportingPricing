@@ -50,19 +50,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     return `${normalizedSize}mm Pipe Configuration Options`;
   };
 
-  // Handle direct navigation with pipe-size-specific auto-creation
+  // Handle direct navigation to existing general configuration
   const handleDirectNavigation = (equipmentId: string) => {
     setIsOpen(false);
-    const pipeSize = sectionData.pipeSize;
     const sector = sectionData.sector;
     
-    // Generate pipe-size-specific configuration name
-    const normalizedPipeSize = pipeSize.replace(/mm$/i, '');
-    const equipmentName = equipmentId === 'cctv-jet-vac' ? 'CCTV Jet Vac' : 'CCTV Van Pack';
-    const pipeSizeConfigName = `${normalizedPipeSize}mm ${equipmentName} Configuration`;
-    
-    // Route to pipe-size-specific configuration (will auto-create if doesn't exist)
-    setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}&pipeSize=${pipeSize}&configName=${encodeURIComponent(pipeSizeConfigName)}`);
+    // Route directly to configuration page (same as pricing page would do)
+    // This will find existing general configuration (ID 136) instead of creating pipe-size-specific ones
+    setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}`);
   };
 
   return (

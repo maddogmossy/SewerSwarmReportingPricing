@@ -441,32 +441,28 @@ export default function PR2ConfigClean() {
     console.log(`   📊 Min quantity options:`, formData.minQuantityOptions);
   }, [formData, editId]);
 
-  // Auto-detect and create pipe-size-specific configurations when navigating from dashboard
+  // Route to existing general configuration when navigating from dashboard
   useEffect(() => {
-    // Only run when:
-    // 1. We have pipeSize from dashboard navigation
-    // 2. We have allCategoryConfigs loaded
-    // 3. We're not already editing a configuration
-    // 4. We have categoryId and sector
-    if (pipeSize && allCategoryConfigs && !isEditing && categoryId && sector) {
-      console.log(`🔍 Auto-detecting pipe-size-specific configuration for ${pipeSize} in ${categoryId}/${sector}`);
+    // Only run when we have categoryId and sector but not already editing
+    if (!isEditing && categoryId && sector && allCategoryConfigs) {
+      console.log(`🔍 Looking for existing general configuration for ${categoryId} in ${sector}`);
       
-      const checkAndCreateConfig = async () => {
-        try {
-          const configId = await ensurePipeSizeConfiguration(pipeSize, categoryId, sector);
-          if (configId) {
-            console.log(`✅ Pipe-size-specific configuration ready, redirecting to edit mode with ID: ${configId}`);
-            // Redirect to edit the pipe-size-specific configuration
-            setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${configId}`);
-          }
-        } catch (error) {
-          console.error('❌ Error creating pipe-size-specific configuration:', error);
-        }
-      };
+      // Find existing general configuration for this category (same logic as pricing page)
+      const existingConfig = allCategoryConfigs.find(config => 
+        config.categoryId === categoryId && 
+        config.sector === sector &&
+        !config.categoryName?.includes('mm') // Exclude pipe-size-specific configs
+      );
       
-      checkAndCreateConfig();
+      if (existingConfig) {
+        console.log(`✅ Found existing general configuration ID: ${existingConfig.id}, redirecting to edit mode`);
+        // Redirect to edit the general configuration
+        setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${existingConfig.id}`);
+      } else {
+        console.log(`🔍 No general configuration found, staying on new config page`);
+      }
     }
-  }, [pipeSize, allCategoryConfigs, isEditing, categoryId, sector, setLocation]);
+  }, [allCategoryConfigs, isEditing, categoryId, sector, setLocation]);
 
   // DISABLED AUTO-SAVE: Prevent unwanted configuration creation
   // Auto-save when form data changes (with debouncing) - DISABLED TO PREVENT UNWANTED CONFIGS
