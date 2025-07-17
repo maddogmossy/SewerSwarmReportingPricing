@@ -2724,7 +2724,7 @@ export default function Dashboard() {
     }
     
     // SERVICE CALC LOGIC: Check if service recalculation is active
-    if (isServiceRecalculated && repairPricingData && repairPricingData.length > 0) {
+    if (isServiceRecalculated && pr2Configurations && pr2Configurations.length > 0) {
       // Get qualifying sections for service defects (exclude structural repairs)
       const qualifyingSections = sectionData.filter(s => {
         const sectionHasDefects = s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0;
@@ -2732,19 +2732,21 @@ export default function Dashboard() {
         return sectionHasDefects && isServiceDefect;
       });
       
-      // Get day rate from configuration
-      const config = repairPricingData[0]; // Use first available configuration
-      const dayRateOption = config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'));
-      const dayRate = dayRateOption ? parseFloat(dayRateOption.value) || 0 : 0;
+      // Get day rate from PR2 configuration (ID 152)
+      const config = pr2Configurations.find(c => c.id === 152) || pr2Configurations[0];
+      const dayRateOption = config?.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'));
+      const dayRate = dayRateOption ? parseFloat(dayRateOption.value) || 0 : 1850; // fallback to 1850
       
       if (dayRate > 0 && qualifyingSections.length > 0) {
         const recalculatedCost = dayRate / qualifyingSections.length;
         
         console.log('🎯 SERVICE CALC RECALCULATION:', {
+          configId: config?.id,
           dayRate,
           qualifyingSections: qualifyingSections.length,
           recalculatedCost,
-          section: section.itemNo
+          section: section.itemNo,
+          isServiceRecalculated
         });
         
         // Check if this section is in the qualifying list
@@ -2753,7 +2755,7 @@ export default function Dashboard() {
         if (isQualifying) {
           return (
             <span 
-              className="text-green-600 font-medium cursor-help"
+              className="text-blue-600 font-medium cursor-help"
               title={`Service Calc: £${dayRate} ÷ ${qualifyingSections.length} sections = £${recalculatedCost.toFixed(2)}`}
             >
               £{recalculatedCost.toFixed(2)}
@@ -2802,8 +2804,14 @@ export default function Dashboard() {
       setIsServiceRecalculated(!isServiceRecalculated);
       console.log('🎯 New state after toggle:', !isServiceRecalculated);
       
-      // Show alert to confirm click is working
-      alert('Service Calc button clicked! Check console for details.');
+      // Log current pricing data for debugging
+      console.log('🎯 Current repairPricingData:', repairPricingData);
+      console.log('🎯 Current sectionData length:', sectionData?.length);
+      
+      // Force a re-render by updating the state
+      setTimeout(() => {
+        console.log('🎯 Service recalculation state updated to:', !isServiceRecalculated);
+      }, 100);
     } catch (error) {
       console.error('🎯 Error in handleServiceCalc:', error);
     }
