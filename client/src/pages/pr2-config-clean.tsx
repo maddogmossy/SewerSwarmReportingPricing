@@ -1680,21 +1680,8 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // Automatically detect new pipe sizes from dashboard navigation
-  useEffect(() => {
-    if (pipeSize && categoryId && allCategoryConfigs) {
-      const existingPipeSizes = getExistingPipeSizes();
-      
-      // Check if this pipe size already exists
-      if (!existingPipeSizes.includes(pipeSize)) {
-        console.log(`🔍 New pipe size detected: ${pipeSize}`);
-        console.log(`📋 Existing pipe sizes:`, existingPipeSizes);
-        
-        // Create new configuration for this pipe size
-        createPipeSizeConfiguration(pipeSize);
-      }
-    }
-  }, [pipeSize, categoryId, allCategoryConfigs]);
+  // Manual pipe size detection - only when explicitly triggered by user
+  // Removed automatic useEffect to prevent unwanted configuration creation
 
   // Get configurations for detected pipe sizes with their IDs
   const getPipeSizeConfigurations = () => {
