@@ -1801,7 +1801,7 @@ export default function PR2ConfigClean() {
     return newConfigId;
   };
 
-  // Get configurations for detected pipe sizes with their IDs
+  // Get all pipe size configurations for this category, sorted by pipe size
   const getPipeSizeConfigurations = () => {
     if (!allCategoryConfigs) return [];
     
@@ -1809,51 +1809,81 @@ export default function PR2ConfigClean() {
       pipeSize: string;
       config: any;
       id: number;
+      pipeSizeNum: number;
     }> = [];
     
-    // Only show the current editing configuration to prevent duplicates
-    if (isEditing && editId && allCategoryConfigs) {
-      const currentConfig = allCategoryConfigs.find(config => config.id === parseInt(editId));
-      console.log(`🔍 getPipeSizeConfigurations called - editId: ${editId}, currentConfig:`, currentConfig);
+    // Get all configurations for this category
+    allCategoryConfigs.forEach(config => {
+      const categoryName = config.categoryName || '';
+      const pipeMatch = categoryName.match(/(\d+)mm/);
       
-      if (currentConfig) {
-        // Only include the configuration if it has been properly loaded with form data
-        // This prevents showing the empty first render
-        const hasValidFormData = formData.pricingOptions?.some(opt => opt.id && opt.label) ||
-                                 formData.quantityOptions?.some(opt => opt.id && opt.label) ||
-                                 formData.minQuantityOptions?.some(opt => opt.id && opt.label) ||
-                                 formData.rangeOptions?.some(opt => opt.id && opt.label);
-        
-        console.log(`🔍 Form data validation - hasValidFormData: ${hasValidFormData}`);
-        console.log(`🔍 FormData pricing options:`, formData.pricingOptions);
-        
-        if (hasValidFormData) {
-          const categoryName = currentConfig.categoryName || '';
-          const pipeMatch = categoryName.match(/(\d+)mm/);
-          
-          if (pipeMatch) {
-            // Configuration has pipe size in name
-            pipeSizeConfigs.push({
-              pipeSize: pipeMatch[1] + 'mm',
-              config: currentConfig,
-              id: currentConfig.id
-            });
-          } else {
-            // Configuration doesn't have pipe size in name, use current pipe size
-            pipeSizeConfigs.push({
-              pipeSize: pipeSize || '150mm',
-              config: currentConfig,
-              id: currentConfig.id
-            });
-          }
-        } else {
-          console.log(`⏭️ Skipping configuration render - form data not fully loaded yet`);
-        }
+      if (pipeMatch) {
+        const pipeSizeNum = parseInt(pipeMatch[1]);
+        pipeSizeConfigs.push({
+          pipeSize: pipeMatch[1] + 'mm',
+          config: config,
+          id: config.id,
+          pipeSizeNum: pipeSizeNum
+        });
       }
-    }
+    });
     
-    console.log(`🔍 Returning ${pipeSizeConfigs.length} configurations:`, pipeSizeConfigs);
+    // Sort by pipe size (smallest to largest)
+    pipeSizeConfigs.sort((a, b) => a.pipeSizeNum - b.pipeSizeNum);
+    
+    console.log(`🔍 getPipeSizeConfigurations found ${pipeSizeConfigs.length} configs:`, 
+                pipeSizeConfigs.map(p => `${p.pipeSize} (ID: ${p.id})`));
+    
     return pipeSizeConfigs;
+  };
+
+  // Update functions for pipe-size-specific configurations
+  const updatePipeSizeConfig = async (configId: number, fieldType: string, optionId: string, value: string) => {
+    try {
+      // Get current configuration
+      const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
+      const currentConfig = await response.json();
+      
+      // Update the specific field
+      const updatedOptions = currentConfig[fieldType].map((opt: any) => 
+        opt.id === optionId ? { ...opt, value } : opt
+      );
+      
+      // Save updated configuration
+      await apiRequest('PUT', `/api/pr2-clean/${configId}`, {
+        ...currentConfig,
+        [fieldType]: updatedOptions
+      });
+      
+      // Refresh the data
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+    } catch (error) {
+      console.error('❌ Failed to update pipe size config:', error);
+    }
+  };
+
+  const updatePipeSizeConfigRange = async (configId: number, rangeId: string, field: string, value: string) => {
+    try {
+      // Get current configuration
+      const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
+      const currentConfig = await response.json();
+      
+      // Update the range field
+      const updatedRangeOptions = currentConfig.rangeOptions.map((range: any) => 
+        range.id === rangeId ? { ...range, [field]: value } : range
+      );
+      
+      // Save updated configuration
+      await apiRequest('PUT', `/api/pr2-clean/${configId}`, {
+        ...currentConfig,
+        rangeOptions: updatedRangeOptions
+      });
+      
+      // Refresh the data
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+    } catch (error) {
+      console.error('❌ Failed to update pipe size config range:', error);
+    }
   };
 
   // Delete handler for any pipe size configuration
@@ -2108,11 +2138,22 @@ export default function PR2ConfigClean() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
         </div>
 
-        {/* Dynamic Pipe Size Configuration Panels */}
+        {/* Dynamic Pipe Size Configuration Panels - Stacked by Size */}
         {getPipeSizeConfigurations().map((pipeSizeConfig) => {
           console.log(`🎨 Rendering configuration dropdown for ID: ${pipeSizeConfig.id}, pipeSize: ${pipeSizeConfig.pipeSize}`);
+          
+          // Create pipe-size-specific form data from this configuration
+          const pipeSizeFormData = {
+            categoryName: pipeSizeConfig.config.categoryName,
+            pricingOptions: pipeSizeConfig.config.pricingOptions || [],
+            quantityOptions: pipeSizeConfig.config.quantityOptions || [],
+            minQuantityOptions: pipeSizeConfig.config.minQuantityOptions || [],
+            rangeOptions: pipeSizeConfig.config.rangeOptions || [],
+            categoryColor: pipeSizeConfig.config.categoryColor || '#f0e998'
+          };
+          
           return (
-          <Collapsible key={pipeSizeConfig.id} defaultOpen={false}>
+          <Collapsible key={pipeSizeConfig.id} defaultOpen={pipeSizeConfig.id === parseInt(editId || '0')}>
             <div className="flex items-center gap-2 mb-4">
               <CollapsibleTrigger asChild>
                 <Button variant="outline" className="flex-1 flex items-center justify-between">
@@ -2149,7 +2190,7 @@ export default function PR2ConfigClean() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {/* Numbered list layout for 4 patching options */}
-                    {formData.pricingOptions?.map((option, index) => (
+                    {pipeSizeFormData.pricingOptions?.map((option, index) => (
                       <div key={option.id} className="flex items-center gap-4">
                         <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
                         <Label className="w-32 text-sm font-medium text-gray-700">
@@ -2160,7 +2201,7 @@ export default function PR2ConfigClean() {
                           <Input
                             placeholder="cost"
                             value={option.value || ""}
-                            onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
+                            onChange={(e) => updatePipeSizeConfig(pipeSizeConfig.id, 'pricingOptions', option.id, e.target.value)}
                             className="w-16 h-8 text-sm"
                           />
                         </div>
@@ -2168,8 +2209,8 @@ export default function PR2ConfigClean() {
                           <Label className="text-xs">Min Qty</Label>
                           <Input
                             placeholder="min"
-                            value={formData.minQuantityOptions?.[index]?.value || ""}
-                            onChange={(e) => handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[index]?.id, e.target.value)}
+                            value={pipeSizeFormData.minQuantityOptions?.[index]?.value || ""}
+                            onChange={(e) => updatePipeSizeConfig(pipeSizeConfig.id, 'minQuantityOptions', pipeSizeFormData.minQuantityOptions?.[index]?.id, e.target.value)}
                             className="w-12 h-8 text-sm"
                           />
                         </div>
@@ -2177,8 +2218,8 @@ export default function PR2ConfigClean() {
                           <Label className="text-xs">Length (Max)</Label>
                           <Input
                             placeholder="length"
-                            value={formData.rangeOptions?.[index]?.rangeEnd || ""}
-                            onChange={(e) => handleRangeValueChange(formData.rangeOptions?.[index]?.id, 'rangeEnd', e.target.value)}
+                            value={pipeSizeFormData.rangeOptions?.[index]?.rangeEnd || ""}
+                            onChange={(e) => updatePipeSizeConfigRange(pipeSizeConfig.id, pipeSizeFormData.rangeOptions?.[index]?.id, 'rangeEnd', e.target.value)}
                             className="w-20 h-8 text-sm"
                           />
                         </div>
