@@ -1531,6 +1531,158 @@ export default function PR2ConfigClean() {
     }
   };
 
+  // Get all configurations for this category to detect existing pipe sizes
+  const { data: allCategoryConfigs } = useQuery({
+    queryKey: ['/api/pr2-clean', 'category', categoryId, 'all-sectors'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/pr2-clean?categoryId=${categoryId}`);
+      return response.json();
+    },
+    enabled: !!categoryId,
+  });
+
+  // Extract existing pipe sizes from configuration names
+  const getExistingPipeSizes = () => {
+    if (!allCategoryConfigs) return [];
+    
+    const pipeSizes = new Set<string>();
+    
+    allCategoryConfigs.forEach((config: any) => {
+      const categoryName = config.categoryName || '';
+      // Extract pipe size from names like "100mm CCTV Jet Vac Configuration" or "TP1 - 150mm CCTV Configuration"
+      const pipeMatch = categoryName.match(/(\d+)mm/);
+      if (pipeMatch) {
+        pipeSizes.add(pipeMatch[1] + 'mm');
+      }
+    });
+    
+    return Array.from(pipeSizes).sort((a, b) => {
+      const numA = parseInt(a.replace('mm', ''));
+      const numB = parseInt(b.replace('mm', ''));
+      return numA - numB;
+    });
+  };
+
+  // Generate next available ID for new configurations
+  const getNextAvailableId = async () => {
+    try {
+      const response = await apiRequest('GET', '/api/pr2-clean');
+      const allConfigs = await response.json();
+      
+      // Find highest ID and add 1
+      const maxId = allConfigs.reduce((max: number, config: any) => {
+        return Math.max(max, config.id || 0);
+      }, 0);
+      
+      return maxId + 1;
+    } catch (error) {
+      console.error('Error getting next ID:', error);
+      return Date.now(); // Fallback to timestamp
+    }
+  };
+
+  // Create new configuration for detected pipe size
+  const createPipeSizeConfiguration = async (pipeSize: string) => {
+    try {
+      const nextId = await getNextAvailableId();
+      const pipeSizeNum = pipeSize.replace('mm', '');
+      
+      const newConfig = {
+        categoryId: `${categoryId}-${pipeSizeNum}mm`,
+        categoryName: `${pipeSizeNum}mm ${getCategoryName(categoryId).replace('TP1 - ', '').replace('TP2 - ', '')}`,
+        description: `0 link tp1 template`,
+        categoryColor: formData.categoryColor,
+        sector: sector,
+        pricingOptions: [{ id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '0' }],
+        quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '0' }],
+        minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '0' }],
+        rangeOptions: [
+          { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '0', rangeEnd: '0' },
+          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '0', rangeEnd: '0' }
+        ],
+        mathOperators: ['N/A'],
+        pricingStackOrder: ['price_dayrate'],
+        quantityStackOrder: ['quantity_runs'],
+        minQuantityStackOrder: ['minquantity_runs'],
+        rangeStackOrder: ['range_percentage', 'range_length']
+      };
+
+      console.log(`🔧 Creating new ${pipeSize} configuration with ID: ${nextId}`);
+      await apiRequest('POST', '/api/pr2-clean', newConfig);
+      
+      // Invalidate cache to refresh configurations
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      
+      return nextId;
+    } catch (error) {
+      console.error(`❌ Error creating ${pipeSize} configuration:`, error);
+      return null;
+    }
+  };
+
+  // Automatically detect new pipe sizes from dashboard navigation
+  useEffect(() => {
+    if (pipeSize && categoryId && allCategoryConfigs) {
+      const existingPipeSizes = getExistingPipeSizes();
+      
+      // Check if this pipe size already exists
+      if (!existingPipeSizes.includes(pipeSize)) {
+        console.log(`🔍 New pipe size detected: ${pipeSize}`);
+        console.log(`📋 Existing pipe sizes:`, existingPipeSizes);
+        
+        // Create new configuration for this pipe size
+        createPipeSizeConfiguration(pipeSize);
+      }
+    }
+  }, [pipeSize, categoryId, allCategoryConfigs]);
+
+  // Get configurations for detected pipe sizes with their IDs
+  const getPipeSizeConfigurations = () => {
+    if (!allCategoryConfigs) return [];
+    
+    const pipeSizeConfigs: Array<{
+      pipeSize: string;
+      config: any;
+      id: number;
+    }> = [];
+    
+    allCategoryConfigs.forEach((config: any) => {
+      const categoryName = config.categoryName || '';
+      const pipeMatch = categoryName.match(/(\d+)mm/);
+      if (pipeMatch) {
+        pipeSizeConfigs.push({
+          pipeSize: pipeMatch[1] + 'mm',
+          config: config,
+          id: config.id
+        });
+      }
+    });
+    
+    // Sort by pipe size numerically
+    return pipeSizeConfigs.sort((a, b) => {
+      const numA = parseInt(a.pipeSize.replace('mm', ''));
+      const numB = parseInt(b.pipeSize.replace('mm', ''));
+      return numA - numB;
+    });
+  };
+
+  // Delete handler for any pipe size configuration
+  const handleDeletePipeSizeConfiguration = async (configId: number, pipeSize: string) => {
+    try {
+      console.log(`🗑️ Deleting ${pipeSize} configuration ID: ${configId}`);
+      await apiRequest('DELETE', `/api/pr2-clean/${configId}`);
+      
+      // Invalidate cache to refresh the PR2 configurations list
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      
+      // Close any open delete dialogs
+      setShow100mmDeleteDialog(false);
+      
+    } catch (error) {
+      console.error(`❌ Error deleting ${pipeSize} configuration:`, error);
+    }
+  };
+
   // Manual save functionality
   const handleSaveConfiguration = async () => {
     // All options are enabled, no filtering needed
