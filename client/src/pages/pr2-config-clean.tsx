@@ -2563,36 +2563,53 @@ export default function PR2ConfigClean() {
                         📏 Ranges
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-4 text-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">Percentage (Max)</span>
-                          <Input
-                            placeholder=""
-                            value={formData.rangeOptions?.find(opt => opt.label === "Percentage")?.rangeEnd || ""}
-                            onChange={(e) => handleValueChange('rangeOptions', formData.rangeOptions?.find(opt => opt.label === "Percentage")?.id, e.target.value, 'rangeEnd')}
-                            className="bg-white border-purple-300 h-6 text-xs w-16"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">Length (Max)</span>
-                          <Input
-                            placeholder=""
-                            value={formData.rangeOptions?.find(opt => opt.label === "Length")?.rangeEnd || ""}
-                            onChange={(e) => handleValueChange('rangeOptions', formData.rangeOptions?.find(opt => opt.label === "Length")?.id, e.target.value, 'rangeEnd')}
-                            className="bg-white border-purple-300 h-6 text-xs w-20"
-                          />
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={addNewInputsToAllWindows}
-                            className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
-                          >
-                            <Plus className="w-3 h-3 mr-1" />
-                            Add
-                          </Button>
-                        </div>
-                      </div>
+                    <CardContent className="space-y-2">
+                      {/* Group range options by pairs (Percentage + Length) */}
+                      {formData.rangeOptions && (() => {
+                        const percentageOptions = formData.rangeOptions.filter(opt => opt.label.includes("Percentage"));
+                        const lengthOptions = formData.rangeOptions.filter(opt => opt.label.includes("Length"));
+                        const maxPairs = Math.max(percentageOptions.length, lengthOptions.length);
+                        
+                        return Array.from({ length: maxPairs }, (_, index) => {
+                          const percentageOption = percentageOptions[index];
+                          const lengthOption = lengthOptions[index];
+                          const isLastRow = index === maxPairs - 1;
+                          
+                          return (
+                            <div key={`row-${index}`} className="flex items-center gap-4 text-xs">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{percentageOption?.label || "Percentage"} (Max)</span>
+                                <Input
+                                  placeholder=""
+                                  value={percentageOption?.rangeEnd || ""}
+                                  onChange={(e) => handleValueChange('rangeOptions', percentageOption?.id, e.target.value, 'rangeEnd')}
+                                  className="bg-white border-purple-300 h-6 text-xs w-16"
+                                />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{lengthOption?.label || "Length"} (Max)</span>
+                                <Input
+                                  placeholder=""
+                                  value={lengthOption?.rangeEnd || ""}
+                                  onChange={(e) => handleValueChange('rangeOptions', lengthOption?.id, e.target.value, 'rangeEnd')}
+                                  className="bg-white border-purple-300 h-6 text-xs w-20"
+                                />
+                                {isLastRow && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={addNewInputsToAllWindows}
+                                    className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
+                                  >
+                                    <Plus className="w-3 h-3 mr-1" />
+                                    Add
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        });
+                      })()}
                     </CardContent>
                   </Card>
                 </div>
