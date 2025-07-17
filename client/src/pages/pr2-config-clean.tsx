@@ -2472,8 +2472,7 @@ export default function PR2ConfigClean() {
                   <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-blue-700 text-xs flex items-center gap-1">
-                        <DollarSign className="w-3 h-3" />
-                        Pricing
+                        💰 Pricing
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
@@ -2481,7 +2480,7 @@ export default function PR2ConfigClean() {
                         <div key={option.id} className="flex items-center gap-2 text-xs">
                           <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
                           <Input
-                            placeholder="£"
+                            placeholder=""
                             value={option.value || ""}
                             onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
                             className="bg-white border-blue-300 h-6 text-xs w-20"
@@ -2495,12 +2494,21 @@ export default function PR2ConfigClean() {
                   <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
-                        <Calculator className="w-3 h-3 mr-1" />
                         Math
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-center">
-                      <span className="text-gray-600 font-semibold text-lg">÷</span>
+                      <Select value="÷" onValueChange={() => {}}>
+                        <SelectTrigger className="w-12 h-6 text-xs">
+                          <SelectValue placeholder="÷" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="÷">÷</SelectItem>
+                          <SelectItem value="+">+</SelectItem>
+                          <SelectItem value="-">-</SelectItem>
+                          <SelectItem value="×">×</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </CardContent>
                   </Card>
 
@@ -2508,16 +2516,15 @@ export default function PR2ConfigClean() {
                   <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-green-700 text-xs flex items-center gap-1">
-                        <Package className="w-3 h-3" />
-                        Quantity
+                        📊 Quantity
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
                       {formData.quantityOptions?.map((option) => (
                         <div key={option.id} className="flex items-center gap-2 text-xs">
-                          <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
+                          <span className="font-medium min-w-0 flex-1 truncate">Runs per Shift</span>
                           <Input
-                            placeholder="qty"
+                            placeholder=""
                             value={option.value || ""}
                             onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
                             className="bg-white border-green-300 h-6 text-xs w-16"
@@ -2531,16 +2538,15 @@ export default function PR2ConfigClean() {
                   <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
-                        <Target className="w-3 h-3" />
-                        Min Quantity
+                        🎯 Min Quantity
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
                       {formData.minQuantityOptions?.map((option) => (
                         <div key={option.id} className="flex items-center gap-2 text-xs">
-                          <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
+                          <span className="font-medium min-w-0 flex-1 truncate">Min Runs per Shift</span>
                           <Input
-                            placeholder="min"
+                            placeholder=""
                             value={option.value || ""}
                             onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
                             className="bg-white border-orange-300 h-6 text-xs w-16"
@@ -2554,23 +2560,22 @@ export default function PR2ConfigClean() {
                   <Card className="bg-purple-50 border-purple-200 flex-1">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
-                        <BarChart3 className="w-3 h-3" />
-                        Ranges
+                        📏 Ranges
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
                       {formData.rangeOptions?.map((option, pairIndex) => (
                         <div key={option.id} className="flex items-center gap-2 text-xs">
-                          <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
+                          <span className="font-medium min-w-0 flex-1 truncate">{option.label === "Percentage" ? "Percentage" : "Length"}</span>
                           <Input
-                            placeholder="R1"
+                            placeholder=""
                             value={option.rangeStart || ""}
                             onChange={(e) => handleValueChange('rangeOptions', option.id, e.target.value, 'rangeStart')}
                             className="bg-white border-purple-300 h-6 text-xs w-12"
                           />
                           <span className="text-xs text-purple-600">to</span>
                           <Input
-                            placeholder="R2"
+                            placeholder=""
                             value={option.rangeEnd || ""}
                             onChange={(e) => handleValueChange('rangeOptions', option.id, e.target.value, 'rangeEnd')}
                             className="bg-white border-purple-300 h-6 text-xs w-12"
