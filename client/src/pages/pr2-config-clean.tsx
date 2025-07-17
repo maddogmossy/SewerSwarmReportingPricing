@@ -2464,7 +2464,6 @@ export default function PR2ConfigClean() {
                             )}
                             {pairIndex === 0 && (
                               <Button
-                                size="sm"
                                 variant="outline"
                                 onClick={addNewInputsToAllWindows}
                                 className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
@@ -2475,7 +2474,6 @@ export default function PR2ConfigClean() {
                             )}
                             {pairIndex > 0 && (
                               <Button
-                                size="sm"
                                 variant="outline"
                                 onClick={() => deleteRangePair(pairIndex)}
                                 className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
