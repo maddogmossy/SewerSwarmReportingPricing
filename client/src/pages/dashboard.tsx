@@ -990,11 +990,22 @@ export default function Dashboard() {
           // For structural defects or non-cleaning defects, show repair options  
           else {
             // Check if TP2 patching configuration exists for this pipe size and sector
-            const tp2PatchingConfig = repairPricingData?.find(config => 
+            const pipeSize = section.pipeSize || '150';
+            const pipeSizeSpecificConfig = repairPricingData?.find(config => 
+              config.categoryId === 'patching' && 
+              config.sector === currentSector.id &&
+              config.categoryName?.includes(`${pipeSize}mm`) &&
+              isConfigurationProperlyConfigured(config)
+            );
+            
+            // Fallback to general patching config if no pipe-specific exists
+            const generalPatchingConfig = repairPricingData?.find(config => 
               config.categoryId === 'patching' && 
               config.sector === currentSector.id &&
               isConfigurationProperlyConfigured(config)
             );
+            
+            const tp2PatchingConfig = pipeSizeSpecificConfig || generalPatchingConfig;
             
             const hasTP2Patching = tp2PatchingConfig !== undefined;
             
