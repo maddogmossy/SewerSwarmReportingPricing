@@ -3581,10 +3581,10 @@ export default function Dashboard() {
                                   className={`${column.width} px-1 py-1 text-center`}
                                 >
                                   <Button
-                                    size="sm"
-                                    className="w-full text-xs h-8 bg-green-100 hover:bg-green-200 text-green-800 font-medium border border-green-300"
+                                    size="lg"
+                                    className="w-full text-sm h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg"
                                   >
-                                    Service Recalculations
+                                    Service Calc
                                   </Button>
                                 </td>
                               );
@@ -3595,10 +3595,10 @@ export default function Dashboard() {
                                   className={`${column.width} px-1 py-1 text-center`}
                                 >
                                   <Button
-                                    size="sm"
-                                    className="w-full text-xs h-8 bg-red-100 hover:bg-red-200 text-red-800 font-medium border border-red-300"
+                                    size="lg"
+                                    className="w-full text-sm h-12 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg"
                                   >
-                                    Structural Recalculations
+                                    Structural Calc
                                   </Button>
                                 </td>
                               );
