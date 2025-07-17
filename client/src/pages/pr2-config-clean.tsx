@@ -1871,11 +1871,24 @@ export default function PR2ConfigClean() {
 
   // Manual save functionality
   const handleSaveConfiguration = async () => {
+    console.log('🔍 Manual save button clicked - checking validation...');
+    
     // Validate .99 format for length ranges before saving
     const lengthRange = formData.rangeOptions?.find(opt => opt.id === 'range_length');
-    if (lengthRange && lengthRange.rangeEnd && !validateLengthFormat(lengthRange.rangeEnd)) {
-      alert('⚠️ Length ranges must be in X.99 format (e.g., 30.99, 35.99, 40.99). Please update your length value before saving.');
-      return;
+    console.log('🔍 Length range found:', lengthRange);
+    
+    if (lengthRange && lengthRange.rangeEnd) {
+      console.log('🔍 Length value to validate:', lengthRange.rangeEnd);
+      const isValid = validateLengthFormat(lengthRange.rangeEnd);
+      console.log('🔍 Validation result:', isValid);
+      
+      if (!isValid) {
+        console.log('❌ Validation failed - showing alert');
+        alert('⚠️ Length ranges must be in X.99 format (e.g., 30.99, 35.99, 40.99). Please update your length value before saving.');
+        return;
+      } else {
+        console.log('✅ Validation passed');
+      }
     }
 
     // All options are enabled, no filtering needed
