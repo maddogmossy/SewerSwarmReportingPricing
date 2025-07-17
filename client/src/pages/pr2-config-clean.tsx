@@ -61,13 +61,22 @@ interface CleanFormData {
 
 // Sector definitions
 const SECTORS = [
-  { id: 'utilities', name: 'Utilities', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'adoption', name: 'Adoption', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
-  { id: 'highways', name: 'Highways', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'insurance', name: 'Insurance', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'construction', name: 'Construction', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
-  { id: 'domestic', name: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
+  { id: 'utilities', name: 'Utilities', label: 'Utilities', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'adoption', name: 'Adoption', label: 'Adoption', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'highways', name: 'Highways', label: 'Highways', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'insurance', name: 'Insurance', label: 'Insurance', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'construction', name: 'Construction', label: 'Construction', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'domestic', name: 'Domestic', label: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
+
+const SECTOR_CONFIG = {
+  utilities: { textColor: 'text-blue-600', bgColor: 'bg-blue-50' },
+  adoption: { textColor: 'text-teal-600', bgColor: 'bg-teal-50' },
+  highways: { textColor: 'text-orange-600', bgColor: 'bg-orange-50' },
+  insurance: { textColor: 'text-red-600', bgColor: 'bg-red-50' },
+  construction: { textColor: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  domestic: { textColor: 'text-amber-600', bgColor: 'bg-amber-50' }
+};
 
 // No standard color options - users can select custom colors only
 
