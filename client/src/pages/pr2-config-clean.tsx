@@ -438,6 +438,7 @@ export default function PR2ConfigClean() {
   
   // Sector selection state
   const [selectedSectors, setSelectedSectors] = useState<string[]>([sector]);
+  const [appliedSectors, setAppliedSectors] = useState<string[]>([]);
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
 
@@ -1560,6 +1561,32 @@ export default function PR2ConfigClean() {
     } catch (error) {
       console.error('❌ Error deleting 100mm configuration:', error);
     }
+  };
+
+  // Handle creating sector copies
+  const handleCreateSectorCopy = async (targetSector: string) => {
+    if (!editId) return;
+    
+    try {
+      const payload = {
+        ...formData,
+        sector: targetSector
+      };
+      
+      const response = await apiRequest('POST', '/api/pr2-clean', payload);
+      
+      if (response.ok) {
+        console.log(`✅ Created copy for sector: ${targetSector}`);
+      }
+    } catch (error) {
+      console.error(`❌ Failed to create copy for sector ${targetSector}:`, error);
+    }
+  };
+
+  // Handle saving sectors
+  const handleSaveSectors = async () => {
+    console.log('💾 Saving sectors:', appliedSectors);
+    // This function exists for UI consistency but sector copying is handled in real-time
   };
 
   // Get all configurations for this category to detect existing pipe sizes
