@@ -2304,55 +2304,7 @@ export default function PR2ConfigClean() {
         {/* Note: Configuration panels now handled by Dynamic Pipe Size Configuration Panels above */}
       </div>
 
-      {/* Sector Selection Checkboxes */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-gray-900 flex items-center gap-2">
-            <Building className="w-5 h-5" />
-            Apply Configuration to Sectors
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {SECTORS.map((sect) => {
-              const sectorConfig = SECTOR_CONFIG[sect.id];
-              const isCurrentSector = sect.id === sector;
-              return (
-                <div key={sect.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={sect.id}
-                    checked={isCurrentSector || appliedSectors.includes(sect.id)}
-                    disabled={isCurrentSector}
-                    onCheckedChange={(checked) => {
-                      if (checked && !isCurrentSector) {
-                        setAppliedSectors(prev => [...prev, sect.id]);
-                        if (editId) {
-                          handleCreateSectorCopy(sect.id);
-                        }
-                      } else if (!checked && !isCurrentSector) {
-                        setAppliedSectors(prev => prev.filter(s => s !== sect.id));
-                      }
-                    }}
-                  />
-                  <Label 
-                    htmlFor={sect.id} 
-                    className={`text-sm font-medium ${sectorConfig.textColor} ${isCurrentSector ? 'opacity-75' : 'cursor-pointer'}`}
-                  >
-                    {sect.label}
-                    {isCurrentSector && ' (Current)'}
-                  </Label>
-                </div>
-              );
-            })}
-          </div>
-          <Button 
-            onClick={handleSaveSectors} 
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            Save Sectors
-          </Button>
-        </CardContent>
-      </Card>
+
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
