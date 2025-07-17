@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -2462,174 +2462,121 @@ export default function PR2ConfigClean() {
                   </Card>
                 </div>
               ) : (
-                /* General Configuration Layout with proper spacing */
-                <div className="grid grid-cols-5 gap-4 mb-6">
+                /* Standard TP1 Configuration Layout - Blue/Green/Orange/Purple Windows */
+                <div 
+                  className="flex gap-4 overflow-x-auto pb-4"
+                  style={{ minWidth: 'fit-content' }}
+                >
                   
-                  {/* Blue Window: Day Rate */}
-                  <Card className="bg-blue-50 border-blue-200">
+                  {/* Blue Window */}
+                  <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0">
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
-                        <Coins className="w-3 h-3" />
-                        Price/Cost Options
+                      <CardTitle className="text-blue-700 text-xs flex items-center gap-1">
+                        <DollarSign className="w-3 h-3" />
+                        Pricing
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="py-1">
-                      <div className="flex items-center gap-1">
-                        <Label className="text-xs font-medium text-blue-700 flex-shrink-0">
-                          Rate
-                        </Label>
-                        <Input
-                          placeholder="£"
-                          maxLength={10}
-                          value={formData.pricingOptions?.[0]?.value || ""}
-                          onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
-                          className="bg-white border-blue-300 h-6 text-xs w-20"
-                        />
-                      </div>
+                    <CardContent className="space-y-2">
+                      {formData.pricingOptions?.map((option) => (
+                        <div key={option.id} className="flex items-center gap-2 text-xs">
+                          <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
+                          <Input
+                            placeholder="£"
+                            value={option.value || ""}
+                            onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
+                            className="bg-white border-blue-300 h-6 text-xs w-16"
+                          />
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
 
                   {/* Math Window */}
-                  <Card className="bg-gray-50 border-gray-200">
+                  <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
                         <Calculator className="w-3 h-3 mr-1" />
                         Math
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="py-1">
-                      <div className="flex items-center justify-center">
-                        <Select disabled>
-                          <SelectTrigger className="bg-white border-gray-300 h-8 text-sm w-12">
-                            <SelectValue placeholder="÷" />
-                          </SelectTrigger>
-                        </Select>
-                      </div>
+                    <CardContent className="flex items-center justify-center">
+                      <span className="text-gray-600 font-semibold text-lg">÷</span>
                     </CardContent>
                   </Card>
 
-                  {/* Green Window: Runs per Shift */}
-                  <Card className="bg-green-50 border-green-200">
+                  {/* Green Window */}
+                  <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-green-700 text-xs flex items-center gap-1">
                         <Package className="w-3 h-3" />
-                        Quantity Options
+                        Quantity
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="py-1">
-                      <div className="space-y-1">
-                        {formData.quantityOptions?.map((option, index) => (
-                          <div key={option.id} className="flex items-center gap-2">
-                            <Label className="text-xs font-medium text-green-700 flex-shrink-0">
-                              {option.label.split(' ')[0]}
-                            </Label>
-                            <Input
-                              placeholder="qty"
-                              maxLength={4}
-                              value={option.value || ""}
-                              onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                              className="bg-white border-green-300 h-6 text-xs w-16"
-                            />
-                          </div>
-                        ))}
-                      </div>
+                    <CardContent className="space-y-2">
+                      {formData.quantityOptions?.map((option) => (
+                        <div key={option.id} className="flex items-center gap-2 text-xs">
+                          <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
+                          <Input
+                            placeholder="qty"
+                            value={option.value || ""}
+                            onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                            className="bg-white border-green-300 h-6 text-xs w-12"
+                          />
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
 
-                  {/* Orange Window: Min Quantity */}
-                  <Card className="bg-orange-50 border-orange-200">
+                  {/* Orange Window */}
+                  <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
                         <Target className="w-3 h-3" />
-                        Min Quantity Options
+                        Min Quantity
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="py-1">
-                      <div className="space-y-1">
-                        {formData.minQuantityOptions?.map((option, index) => (
-                          <div key={option.id} className="flex items-center gap-2">
-                            <Label className="text-xs font-medium text-orange-700 flex-shrink-0">
-                              {option.label.split(' ')[0]}
-                            </Label>
-                            <Input
-                              placeholder="min"
-                              maxLength={4}
-                              value={option.value || ""}
-                              onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
-                              className="bg-white border-orange-300 h-6 text-xs w-16"
-                            />
-                          </div>
-                        ))}
-                      </div>
+                    <CardContent className="space-y-2">
+                      {formData.minQuantityOptions?.map((option) => (
+                        <div key={option.id} className="flex items-center gap-2 text-xs">
+                          <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
+                          <Input
+                            placeholder="min"
+                            value={option.value || ""}
+                            onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
+                            className="bg-white border-orange-300 h-6 text-xs w-12"
+                          />
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
 
-                  {/* Purple Window: Ranges */}
-                  <Card className="bg-purple-50 border-purple-200">
+                  {/* Purple Window */}
+                  <Card className="bg-purple-50 border-purple-200 w-80 flex-shrink-0">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
                         <BarChart3 className="w-3 h-3" />
-                        Range Options
+                        Ranges
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="py-1">
-                      <div className="space-y-1">
-                        {Array.from({ length: Math.ceil(formData.rangeOptions?.length || 0) / 2 }, (_, pairIndex) => {
-                          const startIdx = pairIndex * 2;
-                          const endIdx = startIdx + 1;
-                          const startRange = formData.rangeOptions?.[startIdx];
-                          const endRange = formData.rangeOptions?.[endIdx];
-                          
-                          return (
-                            <div key={pairIndex} className="flex items-center gap-2">
-                              {startRange && (
-                                <>
-                                  <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                                    {startRange.label}
-                                  </Label>
-                                  <Input
-                                    placeholder="R1"
-                                    maxLength={4}
-                                    value={startRange.rangeStart || ""}
-                                    onChange={(e) => handleValueChange('rangeOptions', startRange.id, e.target.value, 'rangeStart')}
-                                    className="bg-white border-purple-300 h-6 text-xs w-12"
-                                  />
-                                  <span className="text-xs text-purple-600">to</span>
-                                  <Input
-                                    placeholder="R2"
-                                    maxLength={4}
-                                    value={startRange.rangeEnd || ""}
-                                    onChange={(e) => handleValueChange('rangeOptions', startRange.id, e.target.value, 'rangeEnd')}
-                                    className="bg-white border-purple-300 h-6 text-xs w-12"
-                                  />
-                                </>
-                              )}
-                              {endRange && (
-                                <>
-                                  <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-2">
-                                    {endRange.label}
-                                  </Label>
-                                  <Input
-                                    placeholder="R1"
-                                    maxLength={4}
-                                    value={endRange.rangeStart || ""}
-                                    onChange={(e) => handleValueChange('rangeOptions', endRange.id, e.target.value, 'rangeStart')}
-                                    className="bg-white border-purple-300 h-6 text-xs w-12"
-                                  />
-                                  <span className="text-xs text-purple-600">to</span>
-                                  <Input
-                                    placeholder="R2"
-                                    maxLength={4}
-                                    value={endRange.rangeEnd || ""}
-                                    onChange={(e) => handleValueChange('rangeOptions', endRange.id, e.target.value, 'rangeEnd')}
-                                    className="bg-white border-purple-300 h-6 text-xs w-12"
-                                  />
-                                </>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
+                    <CardContent className="space-y-2">
+                      {formData.rangeOptions?.map((option) => (
+                        <div key={option.id} className="flex items-center gap-2 text-xs">
+                          <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
+                          <Input
+                            placeholder="R1"
+                            value={option.rangeStart || ""}
+                            onChange={(e) => handleValueChange('rangeOptions', option.id, e.target.value, 'rangeStart')}
+                            className="bg-white border-purple-300 h-6 text-xs w-12"
+                          />
+                          <span className="text-xs text-purple-600">to</span>
+                          <Input
+                            placeholder="R2"
+                            value={option.rangeEnd || ""}
+                            onChange={(e) => handleValueChange('rangeOptions', option.id, e.target.value, 'rangeEnd')}
+                            className="bg-white border-purple-300 h-6 text-xs w-12"
+                          />
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
                 </div>
