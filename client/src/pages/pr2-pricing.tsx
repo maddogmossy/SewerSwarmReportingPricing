@@ -583,9 +583,7 @@ export default function PR2Pricing() {
                         isUserCreated ? 'border-green-200' : 'border-gray-200'
                       }`}
                       style={{
-                        backgroundColor: existingConfiguration?.categoryColor 
-                          ? hexToRgba(existingConfiguration.categoryColor, 0.2)
-                          : 'white'
+                        backgroundColor: existingConfiguration?.categoryColor || 'white'
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
