@@ -2322,7 +2322,7 @@ export default function PR2ConfigClean() {
                   <CardContent className="py-1">
                     <div className="space-y-1">
                       {formData.quantityOptions?.map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-2">
+                        <div key={option.id} className="flex items-center gap-1">
                           <Label className="text-xs font-medium text-green-700 flex-shrink-0">
                             {option.label.split(' ')[0]}
                           </Label>
@@ -2350,7 +2350,7 @@ export default function PR2ConfigClean() {
                   <CardContent className="py-1">
                     <div className="space-y-1">
                       {formData.minQuantityOptions?.map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-2">
+                        <div key={option.id} className="flex items-center gap-1">
                           <Label className="text-xs font-medium text-orange-700 flex-shrink-0">
                             {option.label.split(' ')[0]}
                           </Label>
