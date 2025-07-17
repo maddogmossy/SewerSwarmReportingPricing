@@ -1808,7 +1808,10 @@ export default function PR2ConfigClean() {
               <Button variant="outline" className="flex-1 flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   <Settings className="w-4 h-4" />
-                  {pipeSize ? `${pipeSize}mm Configuration Options` : 'Configuration Options'}
+                  150mm Configuration Options
+                  {editId && (
+                    <span className="text-xs text-blue-600 ml-2">(ID: {editId})</span>
+                  )}
                 </span>
                 <ChevronDown className="w-4 h-4" />
               </Button>
