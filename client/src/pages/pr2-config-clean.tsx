@@ -2185,18 +2185,20 @@ export default function PR2ConfigClean() {
                 </CardHeader>
                 <CardContent className="py-1">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Label className="text-xs font-medium text-green-700 flex-shrink-0">
-                        No
-                      </Label>
-                      <Input
-                        placeholder="qty"
-                        maxLength={4}
-                        value={formData.quantityOptions?.[0]?.value || ""}
-                        onChange={(e) => handleValueChange('quantityOptions', 'quantity_runs', e.target.value)}
-                        className="bg-white border-green-300 h-6 text-xs w-16"
-                      />
-                    </div>
+                    {formData.quantityOptions?.map((option, index) => (
+                      <div key={option.id} className="flex items-center gap-2">
+                        <Label className="text-xs font-medium text-green-700 flex-shrink-0">
+                          {option.label.split(' ')[0]}
+                        </Label>
+                        <Input
+                          placeholder="qty"
+                          maxLength={4}
+                          value={option.value || ""}
+                          onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                          className="bg-white border-green-300 h-6 text-xs w-16"
+                        />
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -2211,18 +2213,20 @@ export default function PR2ConfigClean() {
                 </CardHeader>
                 <CardContent className="py-1">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Label className="text-xs font-medium text-orange-700 flex-shrink-0">
-                        Qty
-                      </Label>
-                      <Input
-                        placeholder="min"
-                        maxLength={4}
-                        value={formData.minQuantityOptions?.[0]?.value || ""}
-                        onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
-                        className="bg-white border-orange-300 h-6 text-xs w-16"
-                      />
-                    </div>
+                    {formData.minQuantityOptions?.map((option, index) => (
+                      <div key={option.id} className="flex items-center gap-2">
+                        <Label className="text-xs font-medium text-orange-700 flex-shrink-0">
+                          {option.label.split(' ')[0]}
+                        </Label>
+                        <Input
+                          placeholder="min"
+                          maxLength={4}
+                          value={option.value || ""}
+                          onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
+                          className="bg-white border-orange-300 h-6 text-xs w-16"
+                        />
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -2236,40 +2240,57 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="py-1">
-                  <div className="flex gap-2">
-                    <div className="flex items-center gap-1">
-                      <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                        % (Max)
-                      </Label>
-                      <Input
-                        placeholder="0"
-                        maxLength={3}
-                        value={formData.rangeOptions?.find(r => r.id === 'range_percentage')?.rangeEnd || ""}
-                        onChange={(e) => handleRangeValueChange('range_percentage', 'rangeEnd', e.target.value)}
-                        className="bg-white border-purple-300 h-6 text-xs w-16"
-                      />
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                        Length (Max)
-                      </Label>
-                      <Input
-                        placeholder="0"
-                        maxLength={6}
-                        value={formData.rangeOptions?.find(r => r.id === 'range_length')?.rangeEnd || ""}
-                        onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                        className="bg-white border-purple-300 h-6 text-xs w-20"
-                      />
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={addNewInputsToAllWindows}
-                      className="h-6 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
-                    >
-                      <Plus className="w-3 h-3 mr-1" />
-                      Add
-                    </Button>
+                  <div className="space-y-1">
+                    {formData.rangeOptions && 
+                      Array.from({ length: Math.ceil(formData.rangeOptions.length / 2) }, (_, pairIndex) => {
+                        const percentageOption = formData.rangeOptions[pairIndex * 2];
+                        const lengthOption = formData.rangeOptions[pairIndex * 2 + 1];
+                        
+                        return (
+                          <div key={`pair-${pairIndex}`} className="flex gap-2">
+                            {percentageOption && (
+                              <div className="flex items-center gap-1">
+                                <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                                  % (Max)
+                                </Label>
+                                <Input
+                                  placeholder="0"
+                                  maxLength={3}
+                                  value={percentageOption.rangeEnd || ""}
+                                  onChange={(e) => handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
+                                  className="bg-white border-purple-300 h-6 text-xs w-16"
+                                />
+                              </div>
+                            )}
+                            {lengthOption && (
+                              <div className="flex items-center gap-1">
+                                <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                                  Length (Max)
+                                </Label>
+                                <Input
+                                  placeholder="0"
+                                  maxLength={6}
+                                  value={lengthOption.rangeEnd || ""}
+                                  onChange={(e) => handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
+                                  className="bg-white border-purple-300 h-6 text-xs w-20"
+                                />
+                              </div>
+                            )}
+                            {pairIndex === 0 && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={addNewInputsToAllWindows}
+                                className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
+                              >
+                                <Plus className="w-3 h-3 mr-1" />
+                                Add
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })
+                    }
                   </div>
                 </CardContent>
               </Card>
