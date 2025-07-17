@@ -919,6 +919,32 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.8' to return to this stable checkpoint
 
+## REV V6.9 CHECKPOINT - UNIFIED POPUP DESIGN COMPLETE (July 17, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE TP1/TP2 POPUP UNIFICATION:**
+- **Identical Visual Design:** Both cleanse/survey (TP1) and repair (TP2) popups now have perfectly matching layouts and styling
+- **Category Card Icons Applied:** TP2 repair popup uses proper category card icons (Edit for patching, PaintBucket for lining, Pickaxe for excavation)
+- **Clickable Container System:** Entire card containers are clickable instead of separate configure buttons - improved user experience
+- **Primary Badge System:** First option in both popups displays "Primary" badge with blue styling
+- **Consistent Blue Theme:** Both popups use unified blue color scheme with matching hover effects and badge styling
+- **Full Auto-Save Disabled:** Complete manual control system maintained with zero auto-save functionality
+- **Clean Database State:** Confirmed 0 configurations for fresh user start
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Icon Integration:** Edit, PaintBucket, Pickaxe icons from lucide-react replacing generic Settings icons
+- **UI Container Clickability:** Removed separate configure buttons, added cursor-pointer and hover effects to full containers
+- **Interface Unification:** Both popups share identical header format, spacing, and visual hierarchy
+- **User Preference Compliance:** All styling changes match documented user preferences for consistent interaction patterns
+
+🔒 **USER-CONFIRMED FEATURES:**
+- **Visual Consistency:** TP1 and TP2 popups indistinguishable in appearance and behavior
+- **Icon Accuracy:** Repair options display same icons as their corresponding pricing category cards
+- **Interaction Pattern:** Clicking anywhere on equipment card navigates to configuration page
+- **Clean Interface:** Streamlined design without redundant buttons or visual clutter
+- **Primary Equipment:** CCTV/Jet Vac maintains first position with Primary badge in both systems
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.9' to return to this stable checkpoint
+
 ## REV V6.4.3 CHECKPOINT - JN FILTERING RESTORATION COMPLETE (July 16, 2025)
 
 🔒 **PRODUCTION READY - JN FILTERING LOGIC FULLY RESTORED:**
