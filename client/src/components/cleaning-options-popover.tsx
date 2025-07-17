@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,16 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
   
+  // Fetch existing configurations to check for existing setup
+  const { data: pr2Configs = [] } = useQuery({
+    queryKey: ['/api/pr2-clean', { sector: sectionData.sector }],
+    queryFn: async () => {
+      const response = await fetch(`/api/pr2-clean?sector=${sectionData.sector}`);
+      if (!response.ok) throw new Error('Failed to fetch configurations');
+      return response.json();
+    }
+  });
+  
   // Fixed equipment list like patching system - CCTV/Jet Vac first
   const cleansingEquipment = [
     {
@@ -50,14 +61,23 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     return `${normalizedSize}mm Pipe Configuration Options`;
   };
 
-  // Handle direct navigation to existing general configuration
+  // Handle direct navigation to existing configuration or create new
   const handleDirectNavigation = (equipmentId: string) => {
     setIsOpen(false);
     const sector = sectionData.sector;
     
-    // Route directly to configuration page (same as pricing page would do)
-    // This will find existing general configuration (ID 136) instead of creating pipe-size-specific ones
-    setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}`);
+    // Check if an existing configuration exists for this equipment type
+    const existingConfig = pr2Configs.find((config: any) => 
+      config.categoryId === equipmentId && config.sector === sector
+    );
+    
+    if (existingConfig) {
+      // Route to existing configuration in edit mode
+      setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}&edit=${existingConfig.id}`);
+    } else {
+      // Route to create new configuration
+      setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}`);
+    }
   };
 
   return (
