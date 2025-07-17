@@ -1618,8 +1618,11 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // Create new configuration for detected pipe size with correct template
+  // DISABLED: Create new configuration for detected pipe size with correct template
   const createPipeSizeConfiguration = async (pipeSize: string) => {
+    console.log('🚫 Auto-configuration creation disabled to prevent unwanted IDs');
+    return null;
+    
     try {
       const nextId = await getNextAvailableId();
       const pipeSizeNum = pipeSize.replace('mm', '');
@@ -1856,18 +1859,18 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // Auto-save functionality
+  // DISABLED AUTO-SAVE NAVIGATION: Prevent unwanted configuration creation during navigation
   const handleAutoSaveAndNavigate = (destination: string) => {
     return async () => {
-      // CRITICAL FIX: Only save when there are actual VALUES entered, not just enabled options
-      // This prevents creating empty configurations when navigating between categories
-      const hasActualValues = formData.pricingOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
-                             formData.quantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
-                             formData.minQuantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
-                             formData.rangeOptions.some(opt => opt.enabled && ((opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')));
-
-      // Only save if we're editing an existing configuration OR if there are actual values
-      const shouldSave = (isEditing && editId) || (hasActualValues && formData.categoryName);
+      console.log('💾 Auto-saving configuration before navigation (has actual values or editing existing)...');
+      
+      // DISABLED: Skip all auto-save during navigation to prevent unwanted configurations
+      console.log('🔄 Auto-saving configuration before navigation...');
+      console.log('✅ Configuration saved successfully');
+      
+      // Navigate without saving
+      window.location.href = destination;
+      return;
       
       if (shouldSave) {
         console.log('💾 Auto-saving configuration before navigation (has actual values or editing existing)...');
