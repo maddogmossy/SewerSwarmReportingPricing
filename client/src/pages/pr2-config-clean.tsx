@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -1800,6 +1800,160 @@ export default function PR2ConfigClean() {
         <div className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
         </div>
+
+        {/* 100mm Configuration Panel */}
+        <Collapsible defaultOpen={false}>
+          <div className="flex items-center gap-2 mb-4">
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" className="flex-1 flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Settings className="w-4 h-4" />
+                  100mm Configuration Options
+                  <span className="text-xs text-blue-600 ml-2">(ID: 109)</span>
+                </span>
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent className="mb-6">
+            {/* Five-Window Configuration Layout for 100mm */}
+            <div className="flex gap-4 p-4 border rounded-lg bg-gray-50 w-full">
+              
+              {/* Blue Window: Day Rate */}
+              <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
+                    <Coins className="w-3 h-3" />
+                    Price/Cost Options
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="py-1">
+                  <div className="flex items-center gap-1">
+                    <Label className="text-xs font-medium text-blue-700 flex-shrink-0">
+                      Rate
+                    </Label>
+                    <Input
+                      placeholder="£"
+                      maxLength={10}
+                      value="0"
+                      readOnly
+                      className="bg-white border-blue-300 h-6 text-xs w-20"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Math Window */}
+              <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
+                    <Calculator className="w-3 h-3 mr-1" />
+                    Math
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="py-1">
+                  <div className="flex items-center justify-center">
+                    <Select disabled>
+                      <SelectTrigger className="bg-white border-gray-300 h-8 text-sm w-12">
+                        <SelectValue placeholder="÷" />
+                      </SelectTrigger>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Green Window: Runs per Shift */}
+              <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-green-700 text-xs flex items-center gap-1">
+                    <Package className="w-3 h-3" />
+                    Quantity Options
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="py-1">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Label className="text-xs font-medium text-green-700 flex-shrink-0">
+                        No
+                      </Label>
+                      <Input
+                        placeholder="qty"
+                        maxLength={4}
+                        value="0"
+                        readOnly
+                        className="bg-white border-green-300 h-6 text-xs w-16"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Orange Window: Min Quantity */}
+              <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
+                    <Target className="w-3 h-3" />
+                    Min Quantity Options
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="py-1">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Label className="text-xs font-medium text-orange-700 flex-shrink-0">
+                        Qty
+                      </Label>
+                      <Input
+                        placeholder="min"
+                        maxLength={4}
+                        value="0"
+                        readOnly
+                        className="bg-white border-orange-300 h-6 text-xs w-16"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Purple Window: Ranges */}
+              <Card className="bg-purple-50 border-purple-200 flex-1">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
+                    <BarChart3 className="w-3 h-3" />
+                    Range Options
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="py-1">
+                  <div className="flex gap-2">
+                    <div className="flex items-center gap-1">
+                      <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                        % (Max)
+                      </Label>
+                      <Input
+                        placeholder="0"
+                        maxLength={3}
+                        value="0"
+                        readOnly
+                        className="bg-white border-purple-300 h-6 text-xs w-16"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                        Length (Max)
+                      </Label>
+                      <Input
+                        placeholder="0"
+                        maxLength={6}
+                        value="0"
+                        readOnly
+                        className="bg-white border-purple-300 h-6 text-xs w-20"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         {/* Collapsible Configuration Panel */}
         <Collapsible defaultOpen={isEditing}>
