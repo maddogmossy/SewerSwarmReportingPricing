@@ -430,19 +430,32 @@ export default function PR2ConfigClean() {
     console.log(`🧹 Cleared values from second purple row`);
   }
 
-  // Run cleanup to clear second row values
+  // Clean up extra green and orange entries while preserving base entries
+  const removeExtraGreenOrangeEntries = () => {
+    setFormData(prev => ({
+      ...prev,
+      quantityOptions: prev.quantityOptions.filter(opt => 
+        opt.id === "quantity_runs" // Keep only "Runs per Shift"
+      ),
+      quantityStackOrder: ["quantity_runs"],
+      minQuantityOptions: prev.minQuantityOptions.filter(opt => 
+        opt.id === "minquantity_runs" // Keep only "Min Runs per Shift"
+      ),
+      minQuantityStackOrder: ["minquantity_runs"]
+    }));
+    console.log(`🧹 Removed extra green and orange entries, kept base entries only`);
+  }
+
+  // Run one-time cleanup when editing configuration 152
   React.useEffect(() => {
-    if (editId && formData.rangeOptions.some(opt => 
-      (opt.label === "Percentage 2" && opt.rangeEnd === "5") ||
-      (opt.label === "Length 2" && opt.rangeEnd === "Max")
-    )) {
+    if (editId === "152" && formData.quantityOptions.length > 1) {
       const timeoutId = setTimeout(() => {
-        clearSecondRowValues();
-      }, 500);
+        removeExtraGreenOrangeEntries();
+      }, 1000);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [editId, formData.rangeOptions]);
+  }, [editId, formData.quantityOptions.length]);
 
   // Handle range value changes for purple window
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
