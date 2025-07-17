@@ -2597,25 +2597,23 @@ export default function PR2ConfigClean() {
                                 {isFirstRow && (
                                   <Button
                                     size="sm"
-                                    variant="outline"
                                     onClick={addNewInputsToAllWindows}
-                                    className="h-6 w-16 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
+                                    className="h-8 w-20 text-sm bg-green-600 text-white hover:bg-green-700 border-0"
                                   >
-                                    <Plus className="w-3 h-3 mr-1" />
+                                    <Plus className="w-4 h-4 mr-2" />
                                     Add
                                   </Button>
                                 )}
                                 {!isFirstRow && (
                                   <Button
                                     size="sm"
-                                    variant="outline"
                                     onClick={() => {
                                       if (percentageOption?.id) deleteRangeOption(percentageOption.id);
                                       if (lengthOption?.id) deleteRangeOption(lengthOption.id);
                                     }}
-                                    className="h-6 w-16 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                                    className="h-8 w-20 text-sm bg-red-600 text-white hover:bg-red-700 border-0"
                                   >
-                                    <Trash2 className="w-3 h-3 mr-1" />
+                                    <Trash2 className="w-4 h-4 mr-2" />
                                     Delete
                                   </Button>
                                 )}
