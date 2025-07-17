@@ -1231,16 +1231,16 @@ export default function PR2ConfigClean() {
       id: `range_percentage_${timestamp + 2}`,
       label: `Percentage ${setNumber}`,
       enabled: true,
-      rangeStart: '0',
-      rangeEnd: '5'
+      rangeStart: '',
+      rangeEnd: ''
     };
     
     const newLengthOption: RangeOption = {
       id: `range_length_${timestamp + 3}`,
       label: `Length ${setNumber}`,
       enabled: true,
-      rangeStart: '0',
-      rangeEnd: 'Max'
+      rangeStart: '',
+      rangeEnd: ''
     };
     
     setFormData(prev => ({
@@ -1256,26 +1256,32 @@ export default function PR2ConfigClean() {
     console.log(`🔧 Added new inputs to all windows: ${newQuantityOption.label}, ${newMinQuantityOption.label}, ${newPercentageOption.label} & ${newLengthOption.label}`);
   };
 
-  // Master delete function that removes corresponding inputs from all three windows
+  // Fixed delete function that removes corresponding inputs from all three windows
   const deleteInputsFromAllWindows = (setIndex: number) => {
-    // Calculate which entries to delete based on set index
-    const quantityIndexToDelete = setIndex; // Quantity index matches set index (0-based)
-    const minQuantityIndexToDelete = setIndex; // Min quantity index matches set index (0-based)
+    // For each purple row deleted, delete the corresponding green and orange entries
+    // setIndex 0 = delete row 1 entries (but skip the base "Runs per Shift" entries)
+    // setIndex 1 = delete row 2 entries
+    
     const rangePercentageIndex = setIndex * 2; // Range pairs: 0,1 then 2,3 then 4,5
     const rangeLengthIndex = setIndex * 2 + 1;
     
-    // Get the IDs to delete
-    const quantityIdToDelete = formData.quantityOptions[quantityIndexToDelete]?.id;
-    const minQuantityIdToDelete = formData.minQuantityOptions[minQuantityIndexToDelete]?.id;
+    // Get the range IDs to delete
     const percentageIdToDelete = formData.rangeOptions[rangePercentageIndex]?.id;
     const lengthIdToDelete = formData.rangeOptions[rangeLengthIndex]?.id;
     
+    // Calculate which green/orange entries to delete (skip index 0 which are the base entries)
+    const quantityIndexToDelete = setIndex + 1; // Skip the first "Runs per Shift" entry
+    const minQuantityIndexToDelete = setIndex + 1; // Skip the first "Min Runs per Shift" entry
+    
+    const quantityIdToDelete = formData.quantityOptions[quantityIndexToDelete]?.id;
+    const minQuantityIdToDelete = formData.minQuantityOptions[minQuantityIndexToDelete]?.id;
+    
     setFormData(prev => ({
       ...prev,
-      // Remove from quantity options
+      // Remove from quantity options (skip base entry)
       quantityOptions: prev.quantityOptions.filter(option => option.id !== quantityIdToDelete),
       quantityStackOrder: prev.quantityStackOrder.filter(id => id !== quantityIdToDelete),
-      // Remove from min quantity options
+      // Remove from min quantity options (skip base entry)
       minQuantityOptions: prev.minQuantityOptions.filter(option => option.id !== minQuantityIdToDelete),
       minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => id !== minQuantityIdToDelete),
       // Remove from range options (both percentage and length)
@@ -1287,7 +1293,7 @@ export default function PR2ConfigClean() {
       )
     }));
     
-    console.log(`🗑️ Deleted inputs from all windows at set ${setIndex + 1}: quantity ${quantityIdToDelete}, min quantity ${minQuantityIdToDelete}, range ${percentageIdToDelete} & ${lengthIdToDelete}`);
+    console.log(`🗑️ FIXED DELETE: Removed row ${setIndex + 1} from all windows - quantity: ${quantityIdToDelete}, min quantity: ${minQuantityIdToDelete}, range: ${percentageIdToDelete} & ${lengthIdToDelete}`);
   };
 
   // Wrapper function for deleting range pairs from purple window
