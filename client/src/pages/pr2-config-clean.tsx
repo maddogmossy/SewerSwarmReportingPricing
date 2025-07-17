@@ -2188,7 +2188,7 @@ export default function PR2ConfigClean() {
                       placeholder="£"
                       maxLength={10}
                       value={formData.pricingOptions?.[0]?.value || ""}
-                      onChange={(e) => handleOptionValueChange('price_dayrate', 'pricingOptions', e.target.value)}
+                      onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
                       className="bg-white border-blue-300 h-6 text-xs w-20"
                     />
                   </div>
@@ -2232,7 +2232,7 @@ export default function PR2ConfigClean() {
                         placeholder="qty"
                         maxLength={4}
                         value={formData.quantityOptions?.[0]?.value || ""}
-                        onChange={(e) => handleOptionValueChange('quantity_runs', 'quantityOptions', e.target.value)}
+                        onChange={(e) => handleValueChange('quantityOptions', 'quantity_runs', e.target.value)}
                         className="bg-white border-green-300 h-6 text-xs w-16"
                       />
                     </div>
@@ -2258,7 +2258,7 @@ export default function PR2ConfigClean() {
                         placeholder="min"
                         maxLength={4}
                         value={formData.minQuantityOptions?.[0]?.value || ""}
-                        onChange={(e) => handleOptionValueChange('minquantity_runs', 'minQuantityOptions', e.target.value)}
+                        onChange={(e) => handleValueChange('minQuantityOptions', 'minquantity_runs', e.target.value)}
                         className="bg-white border-orange-300 h-6 text-xs w-16"
                       />
                     </div>
