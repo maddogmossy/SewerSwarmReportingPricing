@@ -1102,7 +1102,34 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Configuration Priority**: Non-empty values selected over empty templates
 - **Calculation Accuracy**: Uses correct configuration values for authentic cost calculations
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.7' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.8' to return to this stable checkpoint
+
+## REV V6.9.8 CHECKPOINT - DELETE BUTTON SYSTEM COMPLETE (July 17, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE DELETE BUTTON FUNCTIONALITY:**
+- **Purple Window Delete Buttons**: Red delete buttons added to all purple window rows except the first one
+- **Clean Implementation**: Uses existing `deleteInputsFromAllWindows` infrastructure with simple `deleteRangePair` wrapper function
+- **Cross-Window Deletion**: Delete buttons remove corresponding entries from all three windows (green quantity, orange min quantity, purple ranges)
+- **Database Cleanup Confirmed**: Empty ID 151 configuration successfully removed from database
+- **Testing Verified**: ID 152 configuration properly cleaned from 6+ extra rows down to essential 4 windows
+- **Visual Design**: Red styling with trash icon for clear delete indication
+- **Smart Button Logic**: Add button on first row, delete buttons on subsequent rows
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Function**: `deleteRangePair(pairIndex)` wrapper calls existing `deleteInputsFromAllWindows(setIndex)`
+- **UI Integration**: Red delete buttons with `border-red-300 text-red-700 hover:bg-red-100 bg-red-50` styling
+- **Conditional Display**: `{pairIndex > 0 && (...)}` ensures delete buttons only appear on rows 2 and beyond
+- **Infrastructure Reuse**: Leverages existing deletion logic without breaking functionality
+- **Database State**: Clean configuration with authentic values only (Day Rate £1850, 25 runs per shift, essential ranges)
+
+🔒 **USER-CONFIRMED WORKING FEATURES:**
+- **ID 152 Cleanup**: Successfully reduced from multiple test rows to 4 essential windows
+- **Database Integrity**: Empty configurations removed, authentic values preserved
+- **Visual Indicators**: Clear red trash icons for deletion, green plus for addition
+- **Cross-Window Consistency**: Deletion maintains proper pairing across all windows
+- **Production Ready**: System clean and ready for authentic user data
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.8' to return to this stable checkpoint
 
 ## REV V6.4.3 CHECKPOINT - JN FILTERING RESTORATION COMPLETE (July 16, 2025)
 
