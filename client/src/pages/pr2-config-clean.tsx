@@ -335,8 +335,12 @@ export default function PR2ConfigClean() {
     console.log(`   📊 Min quantity options:`, formData.minQuantityOptions);
   }, [formData, editId]);
 
-  // Auto-save when form data changes (with debouncing) - fixed to work for new configurations
+  // DISABLED AUTO-SAVE: Prevent unwanted configuration creation
+  // Auto-save when form data changes (with debouncing) - DISABLED TO PREVENT UNWANTED CONFIGS
+  const disableAutoSave = true; // Set to false to re-enable auto-save
   useEffect(() => {
+    if (disableAutoSave) return; // Skip auto-save entirely
+    
     if (formData.categoryName) {
       const hasActualValues = 
         formData.pricingOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
