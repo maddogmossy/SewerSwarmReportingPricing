@@ -3630,18 +3630,20 @@ export default function Dashboard() {
                                   key={column.key}
                                   className={`${column.width} px-1 py-1 text-center`}
                                 >
-                                  <Button
+                                  <button
                                     onClick={(e) => {
-                                      console.log('🎯 Service Calc button clicked!');
+                                      console.log('🎯 DIRECT BUTTON CLICK - Service Calc button clicked!');
+                                      console.log('🎯 Event details:', e);
                                       e.preventDefault();
                                       e.stopPropagation();
                                       handleServiceCalc();
                                     }}
-                                    size="lg"
+                                    onMouseDown={() => console.log('🎯 Mouse down on Service Calc')}
+                                    onMouseUp={() => console.log('🎯 Mouse up on Service Calc')}
                                     className="w-full text-sm h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg"
                                   >
                                     Service Calc
-                                  </Button>
+                                  </button>
                                 </td>
                               );
                             } else if (column.key === 'cost') {
