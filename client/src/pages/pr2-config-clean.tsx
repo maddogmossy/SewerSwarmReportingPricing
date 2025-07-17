@@ -2578,7 +2578,7 @@ export default function PR2ConfigClean() {
                           return (
                             <div key={`row-${index}`} className="flex items-center gap-4 text-xs">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium">Percentage (Max)</span>
+                                <span className="font-medium">% (Max)</span>
                                 <Input
                                   placeholder=""
                                   value={percentageOption?.rangeEnd || ""}
