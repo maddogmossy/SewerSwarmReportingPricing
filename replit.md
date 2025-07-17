@@ -732,6 +732,41 @@ This prevents data contamination and ensures authentic extraction integrity.
   - Make entire UI containers clickable rather than separate buttons
   - CCTV/Jet Vac should be first option with "Primary" badge
 
+## 🚨 CRITICAL RULE - ZERO SYNTHETIC DATA POLICY (LOCKED JULY 17, 2025)
+**ABSOLUTE PROHIBITION**: Never create, suggest, or use mock, placeholder, fallback, or synthetic data in any circumstances
+- **NO exceptions** - only authentic data from authorized sources
+- **NO synthetic defects, measurements, or calculations**
+- **NO placeholder values or test data**
+- **MUST ask user for approval before ANY structural changes**
+- **Item 13a restoration confirmed**: Multi-defect system requires both service (13) and structural (13a) defects
+- This rule is permanently locked and displayed on screen per user requirement
+
+## REV V7.0 CHECKPOINT - ZERO SYNTHETIC DATA RULE LOCKED & ITEM 13A RESTORED (July 17, 2025)
+
+🔒 **PRODUCTION READY - MASSIVE WIN: ZERO SYNTHETIC DATA POLICY PERMANENTLY ESTABLISHED:**
+- **🚨 CRITICAL RULE LOCKED**: Absolute prohibition on synthetic, mock, placeholder, or fallback data
+- **Item 13a Successfully Restored**: Multi-defect system requirement confirmed - Item 13 (service) + Item 13a (structural) both required
+- **Pipe Size Display Fixed**: Dashboard now shows correct pipe-size-specific configuration IDs (153, 154, 155)
+- **Authentication Working**: User approval required for ALL structural changes - no exceptions
+- **Database Integrity**: Only authentic data from authorized sources permitted
+- **Multi-Defect System Verified**: Service and structural defects properly separated with independent recommendations
+
+🔒 **TECHNICAL IMPLEMENTATION COMPLETE:**
+- **Dashboard Logic Enhanced**: Pipe-size-specific configuration detection prioritizes matching configs over general ones
+- **Configuration Display**: Items 20 (300mm) and 21a (225mm) now show proper IDs instead of fallback ID 153
+- **Data Restoration**: Item 13a recreated with authentic structural defect classification
+- **Zero Tolerance**: Complete elimination of synthetic data generation across entire system
+- **User Control**: Mandatory approval workflow for all data modifications
+
+🔒 **USER-CONFIRMED FEATURES LOCKED:**
+- **Item 13**: Service defect (Settled deposits, Grade 3, cleaning recommendation) ✓
+- **Item 13a**: Structural defect (Deformation, Grade 2, patch lining recommendation) ✓
+- **Pipe Size Accuracy**: 150mm (ID 153), 300mm (ID 154), 225mm (ID 155) configurations display correctly
+- **Authentication System**: User approval required before ANY structural changes
+- **Data Integrity**: Only authentic data sources permitted - zero synthetic fallbacks
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v7.0' to return to this stable checkpoint
+
 ## REV V6.7 CHECKPOINT - COMPLETE COLOR CONSISTENCY SYSTEM LOCKED (July 16, 2025)
 
 🔒 **PRODUCTION READY - UNIFIED COLOR SYSTEM ACROSS ALL INTERFACES:**
