@@ -1858,6 +1858,7 @@ export default function PR2ConfigClean() {
           const payload = {
             categoryName: formData.categoryName,
             description: formData.description,
+            categoryColor: formData.categoryColor,
             sector: sector, // Save to current sector only
             categoryId: categoryId,
             pricingOptions: formData.pricingOptions,
