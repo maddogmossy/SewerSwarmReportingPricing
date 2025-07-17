@@ -1744,8 +1744,9 @@ export default function Dashboard() {
       
       // Only find pipe size-specific configuration - no fallback to incompatible sizes
       let tp2PatchingConfig = pr2Configurations.find((config: any) => 
-        config.categoryId === `patching-${pipeSize}mm` && 
-        config.sector === currentSector.id
+        config.categoryId === 'patching' && 
+        config.sector === currentSector.id &&
+        config.categoryName?.includes(`${pipeSize}mm`)
       );
       
       if (tp2PatchingConfig) {
