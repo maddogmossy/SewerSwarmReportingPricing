@@ -1715,6 +1715,13 @@ export default function PR2ConfigClean() {
           config: config,
           id: config.id
         });
+      } else if (config.categoryId === 'patching') {
+        // Show patching configurations for current pipe size even if name doesn't include pipe size
+        pipeSizeConfigs.push({
+          pipeSize: pipeSize || '150mm', // Use current pipe size
+          config: config,
+          id: config.id
+        });
       }
     });
     
