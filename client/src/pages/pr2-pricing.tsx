@@ -595,9 +595,9 @@ export default function PR2Pricing() {
                         }`} />
                         <h3 className="font-medium text-sm mb-1 text-gray-800">
                           {category.name}
-                          {existingConfiguration && (
-                            <span className="text-xs text-blue-600 ml-1">(ID: {existingConfiguration.id})</span>
-                          )}
+                          <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded ml-2">
+                            Cat Card
+                          </span>
                         </h3>
                         <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                         
