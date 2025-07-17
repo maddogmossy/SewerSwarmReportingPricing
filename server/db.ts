@@ -10,13 +10,14 @@ if (!process.env.DATABASE_URL) {
 
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  max: 20, // increased maximum number of clients in the pool
-  idleTimeoutMillis: 60000, // close idle clients after 60 seconds
-  connectionTimeoutMillis: 10000, // increased timeout to 10 seconds
-  query_timeout: 30000, // query timeout 30 seconds
+  ssl: { rejectUnauthorized: false }, // Always use SSL for Neon DB
+  max: 10, // reduce concurrent connections
+  idleTimeoutMillis: 30000, // close idle clients after 30 seconds  
+  connectionTimeoutMillis: 20000, // increase timeout for SSL handshake
+  query_timeout: 60000, // increase query timeout
   keepAlive: true,
-  keepAliveInitialDelayMillis: 10000,
+  keepAliveInitialDelayMillis: 0,
+  statement_timeout: 30000, // Add statement timeout
 });
 
 export const db = drizzle(pool, { schema });
