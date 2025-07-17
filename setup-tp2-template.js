@@ -10,7 +10,7 @@ const sql = neon(process.env.DATABASE_URL);
 const createBlankTP2Template = () => {
   return {
     categoryId: 'patching',
-    categoryName: 'TP2 - Patching Configuration',
+    categoryName: 'Patching Configuration',
     description: 'Blank TP2 template - configure with authentic values',
     categoryColor: '#ffffff',
     sector: 'utilities', // Start with utilities, can be copied to other sectors

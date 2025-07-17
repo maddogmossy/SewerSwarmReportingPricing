@@ -18,13 +18,13 @@ const TP1_CATEGORIES = [
 ];
 
 const CATEGORY_NAMES = {
-  'cctv': 'TP1 - CCTV Configuration',
-  'van-pack': 'TP1 - Van Pack Configuration',
-  'jet-vac': 'TP1 - Jet Vac Configuration',
-  'cctv-van-pack': 'TP1 - CCTV Van Pack Configuration',
-  'cctv-jet-vac': 'TP1 - CCTV Jet Vac Configuration',
-  'directional-water-cutter': 'TP1 - Directional Water Cutter Configuration',
-  'tankering': 'TP1 - Tankering Configuration'
+  'cctv': 'CCTV Configuration',
+  'van-pack': 'Van Pack Configuration',
+  'jet-vac': 'Jet Vac Configuration',
+  'cctv-van-pack': 'CCTV Van Pack Configuration',
+  'cctv-jet-vac': 'CCTV Jet Vac Configuration',
+  'directional-water-cutter': 'Directional Water Cutter Configuration',
+  'tankering': 'Tankering Configuration'
 };
 
 const createBlankTP1Template = (categoryId) => {

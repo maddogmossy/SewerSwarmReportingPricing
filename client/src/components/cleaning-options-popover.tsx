@@ -50,14 +50,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     return `${normalizedSize}mm Pipe Configuration Options`;
   };
 
-  // Handle direct navigation to configuration
+  // Handle direct navigation to existing clean configuration
   const handleDirectNavigation = (equipmentId: string) => {
     setIsOpen(false);
     const pipeSize = sectionData.pipeSize;
     const sector = sectionData.sector;
     
-    // Route to configuration page
-    setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}&pipeSize=${pipeSize}&configName=TP1 - ${equipmentId === 'cctv-jet-vac' ? 'CCTV Jet Vac' : 'CCTV Van Pack'} Configuration`);
+    // Route to existing clean configuration (no auto-creation)
+    setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}&pipeSize=${pipeSize}`);
   };
 
   return (
