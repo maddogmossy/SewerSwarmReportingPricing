@@ -524,7 +524,7 @@ export default function PR2ConfigClean() {
         return null; // Always return null instead of undefined
       }
     },
-    enabled: !isEditing && !!categoryId && !editId, // Only when not editing with specific ID
+    enabled: !isEditing && !!categoryId && !editId && !pipeSize, // FIXED: Exclude when editing OR when pipeSize exists to avoid conflicts
   });
 
   // Load all configurations for this category to show in "Saved Configurations"
@@ -744,16 +744,12 @@ export default function PR2ConfigClean() {
 
   // Single useEffect to handle all configuration loading
   useEffect(() => {
-    // Force cache invalidation for this specific configuration when loading
-    if (isEditing && editId) {
-      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
-    }
-    
     // Use sectorConfigs for navigation without editId, existingConfig for direct editId access
     const configToUse = editId ? existingConfig : sectorConfigs;
     console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, editId: ${editId}, configToUse:`, configToUse);
     
-    if (isEditing && configToUse) {
+    // FIXED: Only proceed if we have actual config data AND haven't already processed this config
+    if (isEditing && configToUse && configToUse.id) {
       // Get the actual config object (might be wrapped in array)
       const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
       console.log(`🔍 Processing config:`, config);
@@ -879,7 +875,7 @@ export default function PR2ConfigClean() {
         }));
       }
     }
-  }, [isEditing, existingConfig, sectorConfigs, sector, editId, pipeSize, categoryId]);
+  }, [isEditing, existingConfig?.id, sectorConfigs?.id, sector, editId, pipeSize, categoryId]); // FIXED: Use .id to prevent unnecessary triggers
 
 
 
