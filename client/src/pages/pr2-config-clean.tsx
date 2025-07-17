@@ -2484,7 +2484,7 @@ export default function PR2ConfigClean() {
                             placeholder="£"
                             value={option.value || ""}
                             onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
-                            className="bg-white border-blue-300 h-6 text-xs w-16"
+                            className="bg-white border-blue-300 h-6 text-xs w-20"
                           />
                         </div>
                       ))}
@@ -2520,7 +2520,7 @@ export default function PR2ConfigClean() {
                             placeholder="qty"
                             value={option.value || ""}
                             onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                            className="bg-white border-green-300 h-6 text-xs w-12"
+                            className="bg-white border-green-300 h-6 text-xs w-16"
                           />
                         </div>
                       ))}
@@ -2543,7 +2543,7 @@ export default function PR2ConfigClean() {
                             placeholder="min"
                             value={option.value || ""}
                             onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
-                            className="bg-white border-orange-300 h-6 text-xs w-12"
+                            className="bg-white border-orange-300 h-6 text-xs w-16"
                           />
                         </div>
                       ))}
@@ -2551,7 +2551,7 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Purple Window */}
-                  <Card className="bg-purple-50 border-purple-200 w-80 flex-shrink-0">
+                  <Card className="bg-purple-50 border-purple-200 flex-1">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
                         <BarChart3 className="w-3 h-3" />
