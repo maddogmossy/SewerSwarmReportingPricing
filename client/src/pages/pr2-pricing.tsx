@@ -560,21 +560,19 @@ export default function PR2Pricing() {
                   // Check if this is a user-created category
                   const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
                   
-                  // Check for existing configuration with actual values (not blank templates)
-                  const existingConfiguration = pr2Configurations.find(config => {
-                    const isMatchingCategory = config.categoryId === category.id ||
-                      (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac');
-                    
-                    if (!isMatchingCategory) return false;
-                    
-                    // Only consider it "configured" if it has actual values, not blank template
-                    const hasActualValues = config.pricingOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
-                                          config.quantityOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
-                                          config.minQuantityOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
-                                          config.rangeOptions?.some(opt => (opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== ''));
-                    
-                    return hasActualValues;
-                  });
+                  // Check for existing configuration (show ID for any saved config, even blank templates)
+                  const existingConfiguration = pr2Configurations.find(config => 
+                    config.categoryId === category.id ||
+                    (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac')
+                  );
+                  
+                  // Check if configuration has actual values (for status icon logic)
+                  const hasActualValues = existingConfiguration && (
+                    existingConfiguration.pricingOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
+                    existingConfiguration.quantityOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
+                    existingConfiguration.minQuantityOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
+                    existingConfiguration.rangeOptions?.some(opt => (opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== ''))
+                  );
                   
 
                   
@@ -613,7 +611,7 @@ export default function PR2Pricing() {
                         
                         {/* Show status icon and Edit button based on configuration */}
                         {(() => {
-                          if (existingConfiguration) {
+                          if (hasActualValues) {
                             return (
                               <div className="absolute top-2 right-2 flex items-center gap-1">
                                 <Settings className="h-4 w-4 text-green-500" />
