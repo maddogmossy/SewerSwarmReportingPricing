@@ -191,37 +191,50 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
           {children}
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="start">
-        <div className="p-4 border-b">
-          <h4 className="font-semibold text-sm flex items-center gap-2">
-            <Settings className="h-4 w-4 text-orange-600" />
-            Repair Options for {sectionData.pipeSize}
-          </h4>
-          <p className="text-xs text-slate-600 mt-1">
-            Configure repair pricing in PR2 system
-          </p>
-        </div>
-        <div className="p-2 space-y-1">
-          {repairOptions.map((option) => (
-            <div
-              key={option.id}
-              className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
-              onClick={() => handleOptionClick(option)}
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium text-sm">{option.name}</span>
-                  <Badge variant={option.configured ? "default" : "secondary"} className="text-xs">
-                    {option.configured ? "Configured" : "Setup Required"}
-                  </Badge>
-                </div>
-                <p className="text-xs text-slate-600">{option.description}</p>
-                {option.configurationMessage && (
-                  <p className="text-xs text-orange-600 mt-1">{option.configurationMessage}</p>
-                )}
-              </div>
+      <PopoverContent className="w-[400px] max-w-[95vw]" align="start">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">Repair Equipment Selection</h3>
+            <p className="text-sm text-muted-foreground">
+              Select equipment for repair operations
+            </p>
+            <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+              {sectionData.pipeSize}mm Pipe Configuration Options
             </div>
-          ))}
+          </div>
+
+          <div className="space-y-3">
+            {repairOptions.map((option, index) => (
+              <div 
+                key={option.id} 
+                className="flex items-center justify-between p-3 border rounded-lg bg-white"
+                onClick={() => handleOptionClick(option)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2">
+                    <Settings className="h-4 w-4 text-blue-600" />
+                    <span className="font-medium text-sm">{option.name}</span>
+                    {index === 0 && (
+                      <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                        Primary
+                      </Badge>
+                    )}
+                  </div>
+                  <span className="text-xs text-gray-500">{option.description}</span>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs"
+                  >
+                    Configure
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </PopoverContent>
     </Popover>
