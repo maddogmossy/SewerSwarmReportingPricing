@@ -3577,7 +3577,7 @@ export default function Dashboard() {
                         })}
                       </tr>
                     </thead>
-                    <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
+                    <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${isServiceRecalculated}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
                       {sectionData.map((section, index) => {
                         // Check for approved repair pricing
                         const repairStatus = hasApprovedRepairPricing(section);
