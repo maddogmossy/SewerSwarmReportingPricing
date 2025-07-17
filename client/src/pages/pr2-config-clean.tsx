@@ -2544,7 +2544,7 @@ export default function PR2ConfigClean() {
                     <CardContent className="space-y-2">
                       {formData.minQuantityOptions?.map((option) => (
                         <div key={option.id} className="flex items-center gap-2 text-xs">
-                          <span className="font-medium min-w-0 flex-1 truncate">Min Runs per Shift</span>
+                          <span className="font-medium min-w-0 flex-1 truncate">Qty</span>
                           <Input
                             placeholder=""
                             value={option.value || ""}
