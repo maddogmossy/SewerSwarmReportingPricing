@@ -2798,21 +2798,34 @@ export default function Dashboard() {
   }, [isServiceRecalculated, pr2Configurations, sectionData]);
 
   // Service Calc button handler - implements smart pricing recalculation
-  const handleServiceCalc = () => {
+  const handleServiceCalc = (e?: React.MouseEvent) => {
     try {
-      console.log('🎯 Service Calc button clicked - toggling service recalculation');
-      console.log('🎯 Current state before toggle:', isServiceRecalculated);
-      setIsServiceRecalculated(!isServiceRecalculated);
-      console.log('🎯 New state after toggle:', !isServiceRecalculated);
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      console.log('🎯 Service Calc button clicked - current state:', isServiceRecalculated);
       
-      // Log current pricing data for debugging
-      console.log('🎯 Current repairPricingData:', repairPricingData);
-      console.log('🎯 Current sectionData length:', sectionData?.length);
+      const newState = !isServiceRecalculated;
+      setIsServiceRecalculated(newState);
       
-      // Force a re-render by updating the state
-      setTimeout(() => {
-        console.log('🎯 Service recalculation state updated to:', !isServiceRecalculated);
-      }, 100);
+      console.log('🎯 Service recalculation toggled to:', newState);
+      
+      if (newState) {
+        // When activating service calc, log the calculation
+        const qualifyingSections = sectionData.filter(s => {
+          const sectionHasDefects = s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0;
+          const isServiceDefect = s.defectType === 'service' || requiresCleaning(s.defects || '');
+          return sectionHasDefects && isServiceDefect;
+        });
+        
+        console.log('🎯 SERVICE CALC ACTIVATED:', {
+          qualifyingSections: qualifyingSections.length,
+          sections: qualifyingSections.map(s => s.itemNo),
+          dayRate: 1850,
+          costPerSection: (1850 / qualifyingSections.length).toFixed(2)
+        });
+      }
     } catch (error) {
       console.error('🎯 Error in handleServiceCalc:', error);
     }
@@ -3646,7 +3659,7 @@ export default function Dashboard() {
                                   className={`${column.width} px-1 py-1 text-center`}
                                 >
                                   <button
-                                    onClick={handleServiceCalc}
+                                    onClick={(e) => handleServiceCalc(e)}
                                     type="button"
                                     className="w-full text-sm h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg cursor-pointer"
                                   >
