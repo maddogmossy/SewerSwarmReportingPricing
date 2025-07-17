@@ -1687,7 +1687,6 @@ export default function PR2ConfigClean() {
                 data-component="page-title"
               >
                 {isEditing ? 'Edit' : 'Create'} {formData.categoryName || 'Configuration'}
-                {isEditing && editId && <span className="text-sm text-gray-500 ml-2">(ID: {editId})</span>}
               </h1>
               <p className="text-gray-600 mt-1">
                 Sector: <span className="font-medium text-blue-600">{sector}</span>
@@ -1797,55 +1796,35 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* Pipe Size Configuration Section */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center gap-2">
-              <Ruler className="w-5 h-5" />
-              Pipe Size Configuration Options
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {['100mm', '150mm', '225mm', '300mm'].map((size) => (
-                <div key={size} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+        {/* Configuration Title */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
+          
+          {/* Pipe Size Dropdown - shows ID 48 as 150mm option */}
+          <div className="bg-white border rounded-lg p-4">
+            <h3 className="text-sm font-medium text-gray-700 mb-3">Pipe Size Options</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {/* Current 150mm option (ID 48) */}
+              <div className="border-2 border-blue-500 bg-blue-50 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-blue-900">150mm</span>
+                  <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded">ID: 48</span>
+                </div>
+                <p className="text-sm text-blue-700">Current Configuration</p>
+              </div>
+              
+              {/* Other pipe sizes - placeholders for future configurations */}
+              {['100mm', '225mm', '300mm'].map((size) => (
+                <div key={size} className="border border-gray-300 bg-gray-50 rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-gray-900">{size}</h3>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                      {isEditing && editId ? `ID: ${editId}` : 'New'}
-                    </span>
+                    <span className="font-medium text-gray-600">{size}</span>
+                    <span className="text-xs bg-gray-400 text-white px-2 py-1 rounded">New</span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Configure pricing for {size} pipe diameter
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-blue-600 border-blue-200 hover:bg-blue-50"
-                    onClick={() => {
-                      // Navigate to pipe size specific configuration
-                      const sizeValue = size.replace('mm', '');
-                      setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${editId}&pipeSize=${sizeValue}`);
-                    }}
-                  >
-                    <Settings className="w-4 h-4 mr-2" />
-                    Configure {size}
-                  </Button>
+                  <p className="text-sm text-gray-500">Not configured</p>
                 </div>
               ))}
             </div>
-            <div className="mt-4 text-sm text-gray-600">
-              <p>✓ Each pipe size maintains independent pricing configuration</p>
-              <p>✓ Configure all pipe sizes used in your projects for accurate costing</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Configuration Title */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
-            {pipeSize ? `${pipeSize}mm ${formData.categoryName || 'Configuration'}` : (formData.categoryName || 'Price Configuration')}
-          </h2>
+          </div>
         </div>
 
         {/* Collapsible Configuration Panel */}
