@@ -275,6 +275,97 @@ export default function PR2ConfigClean() {
     }
   };
 
+  // Function to determine template type (TP1 vs TP2)
+  const getTemplateType = (categoryId: string) => {
+    // TP1 categories: CCTV, van pack, jet vac, cctv/van pack, directional water cutting, tankering
+    const tp1Categories = [
+      'cctv', 'van-pack', 'jet-vac', 'cctv-van-pack', 'cctv-jet-vac', 
+      'directional-water-cutter', 'tankering'
+    ];
+    
+    // TP2 categories: patching only
+    const tp2Categories = ['patching'];
+    
+    if (tp2Categories.includes(categoryId)) {
+      return 'TP2';
+    } else if (tp1Categories.includes(categoryId)) {
+      return 'TP1';
+    } else {
+      // Default to TP1 for new categories (lining, exco, etc. will be added later)
+      return 'TP1';
+    }
+  };
+
+  // Auto-create pipe-size-specific configuration if needed
+  const createPipeSizeConfiguration = async (categoryId: string, sector: string, pipeSize: string, configName: string): Promise<number | null> => {
+    try {
+      console.log(`🔧 Creating pipe-size-specific configuration: ${configName}`);
+      
+      const templateType = getTemplateType(categoryId);
+      const isTP2 = templateType === 'TP2';
+      
+      // Create configuration based on template type
+      const newConfig = {
+        categoryId,
+        categoryName: configName,
+        description: `${templateType} template for ${pipeSize} pipes - configure with authentic values`,
+        categoryColor: '#ffffff',
+        sector,
+        
+        // Template-specific structure
+        pricingOptions: isTP2 ? [
+          { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' },
+          { id: 'double_layer_cost', label: 'Double Layer', enabled: true, value: '' },
+          { id: 'triple_layer_cost', label: 'Triple Layer', enabled: true, value: '' },
+          { id: 'triple_extra_cure_cost', label: 'Triple Layer (with Extra Cure Time)', enabled: true, value: '' }
+        ] : [
+          { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
+        ],
+        
+        quantityOptions: isTP2 ? [] : [
+          { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
+        ],
+        
+        minQuantityOptions: isTP2 ? [
+          { id: 'patch_min_qty_1', label: 'Min Qty 1', enabled: true, value: '' },
+          { id: 'patch_min_qty_2', label: 'Min Qty 2', enabled: true, value: '' },
+          { id: 'patch_min_qty_3', label: 'Min Qty 3', enabled: true, value: '' },
+          { id: 'patch_min_qty_4', label: 'Min Qty 4', enabled: true, value: '' }
+        ] : [
+          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
+        ],
+        
+        rangeOptions: isTP2 ? [
+          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
+        ] : [
+          { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
+        ],
+        
+        mathOperators: isTP2 ? [] : ['÷'],
+        isActive: true
+      };
+
+      const response = await apiRequest('/api/pr2-clean', {
+        method: 'POST',
+        body: JSON.stringify(newConfig),
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(`✅ Created pipe-size-specific configuration with ID: ${result.id}`);
+        return result.id;
+      } else {
+        console.error('❌ Failed to create pipe-size-specific configuration:', response.statusText);
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ Error creating pipe-size-specific configuration:', error);
+      return null;
+    }
+  };
+
   const [formData, setFormData] = useState<CleanFormData>(getDefaultFormData());
 
   // Reset form data when switching between TP1 and TP2
@@ -343,6 +434,33 @@ export default function PR2ConfigClean() {
     console.log(`   📊 Pricing options:`, formData.pricingOptions);
     console.log(`   📊 Min quantity options:`, formData.minQuantityOptions);
   }, [formData, editId]);
+
+  // Auto-detect and create pipe-size-specific configurations when navigating from dashboard
+  useEffect(() => {
+    // Only run when:
+    // 1. We have pipeSize from dashboard navigation
+    // 2. We have allCategoryConfigs loaded
+    // 3. We're not already editing a configuration
+    // 4. We have categoryId and sector
+    if (pipeSize && allCategoryConfigs && !isEditing && categoryId && sector) {
+      console.log(`🔍 Auto-detecting pipe-size-specific configuration for ${pipeSize} in ${categoryId}/${sector}`);
+      
+      const checkAndCreateConfig = async () => {
+        try {
+          const configId = await ensurePipeSizeConfiguration(pipeSize, categoryId, sector);
+          if (configId) {
+            console.log(`✅ Pipe-size-specific configuration ready, redirecting to edit mode with ID: ${configId}`);
+            // Redirect to edit the pipe-size-specific configuration
+            setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${configId}`);
+          }
+        } catch (error) {
+          console.error('❌ Error creating pipe-size-specific configuration:', error);
+        }
+      };
+      
+      checkAndCreateConfig();
+    }
+  }, [pipeSize, allCategoryConfigs, isEditing, categoryId, sector, setLocation]);
 
   // DISABLED AUTO-SAVE: Prevent unwanted configuration creation
   // Auto-save when form data changes (with debouncing) - DISABLED TO PREVENT UNWANTED CONFIGS
@@ -1639,31 +1757,31 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // Determine which template to use based on category
-  const getTemplateType = (categoryId: string) => {
-    // TP1 categories: CCTV, van pack, jet vac, cctv/van pack, directional water cutting, tankering
-    const tp1Categories = [
-      'cctv', 'van-pack', 'jet-vac', 'cctv-van-pack', 'cctv-jet-vac', 
-      'directional-water-cutter', 'tankering'
-    ];
+
+
+  // Check if pipe-size-specific configuration exists, create if needed
+  const ensurePipeSizeConfiguration = async (pipeSize: string, categoryId: string, sector: string) => {
+    if (!allCategoryConfigs) return null;
     
-    // TP2 categories: patching only
-    const tp2Categories = ['patching'];
+    const normalizedPipeSize = pipeSize.replace(/mm$/i, '');
     
-    if (tp2Categories.includes(categoryId)) {
-      return 'TP2';
-    } else if (tp1Categories.includes(categoryId)) {
-      return 'TP1';
-    } else {
-      // Default to TP1 for new categories (lining, exco, etc. will be added later)
-      return 'TP1';
+    // Look for existing pipe-size-specific configuration
+    const existingConfig = allCategoryConfigs.find(config => 
+      config.categoryId === categoryId && 
+      config.sector === sector &&
+      config.categoryName?.includes(`${normalizedPipeSize}mm`)
+    );
+    
+    if (existingConfig) {
+      console.log(`✅ Found existing ${normalizedPipeSize}mm configuration:`, existingConfig.id);
+      return existingConfig.id;
     }
+    
+    // No pipe-size-specific config exists, create one using existing function
+    console.log(`🔍 No ${normalizedPipeSize}mm configuration found for ${categoryId}, creating new one...`);
+    const newConfigId = await createPipeSizeConfiguration(categoryId, sector, pipeSize, `${normalizedPipeSize}mm ${categoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Configuration`);
+    return newConfigId;
   };
-
-  // AUTO-CREATION DISABLED: No longer creates pipe-specific configurations
-  // Dashboard now routes to existing clean configurations only
-
-  // Auto pipe size detection disabled - use unified approach instead
 
   // Get configurations for detected pipe sizes with their IDs
   const getPipeSizeConfigurations = () => {
