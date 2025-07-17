@@ -1797,9 +1797,55 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
+        {/* Pipe Size Configuration Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-gray-900 flex items-center gap-2">
+              <Ruler className="w-5 h-5" />
+              Pipe Size Configuration Options
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {['100mm', '150mm', '225mm', '300mm'].map((size) => (
+                <div key={size} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium text-gray-900">{size}</h3>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      {isEditing && editId ? `ID: ${editId}` : 'New'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Configure pricing for {size} pipe diameter
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-blue-600 border-blue-200 hover:bg-blue-50"
+                    onClick={() => {
+                      // Navigate to pipe size specific configuration
+                      const sizeValue = size.replace('mm', '');
+                      setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${editId}&pipeSize=${sizeValue}`);
+                    }}
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Configure {size}
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 text-sm text-gray-600">
+              <p>✓ Each pipe size maintains independent pricing configuration</p>
+              <p>✓ Configure all pipe sizes used in your projects for accurate costing</p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Configuration Title */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            {pipeSize ? `${pipeSize}mm ${formData.categoryName || 'Configuration'}` : (formData.categoryName || 'Price Configuration')}
+          </h2>
         </div>
 
         {/* Collapsible Configuration Panel */}
