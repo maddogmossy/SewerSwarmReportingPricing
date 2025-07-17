@@ -1869,115 +1869,6 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // Manual save functionality
-  const handleSaveConfiguration = async () => {
-    console.log('🔍 Manual save button clicked - checking validation...');
-    
-    // Validate .99 format for length ranges before saving
-    const lengthRange = formData.rangeOptions?.find(opt => opt.id === 'range_length');
-    console.log('🔍 Length range found:', lengthRange);
-    
-    if (lengthRange && lengthRange.rangeEnd) {
-      console.log('🔍 Length value to validate:', lengthRange.rangeEnd);
-      const isValid = validateLengthFormat(lengthRange.rangeEnd);
-      console.log('🔍 Validation result:', isValid);
-      
-      if (!isValid) {
-        console.log('❌ Validation failed - showing alert');
-        alert('⚠️ Length ranges must be in X.99 format (e.g., 30.99, 35.99, 40.99). Please update your length value before saving.');
-        return;
-      } else {
-        console.log('✅ Validation passed');
-      }
-    }
-
-    // All options are enabled, no filtering needed
-    const enabledPricingOptions = formData.pricingOptions;
-    
-    const enabledQuantityOptions = formData.quantityOptions;
-    const enabledMinQuantityOptions = formData.minQuantityOptions;
-    const enabledRangeOptions = formData.rangeOptions;
-
-    // Always save if category name exists (no need to check enabled status)
-    if (!formData.categoryName) {
-      console.log('⚠️ No category name to save');
-      return;
-    }
-
-    try {
-      console.log('💾 Saving configuration...');
-      console.log('📊 FormData before save:', formData);
-      console.log('📊 Options to save:', {
-        pricing: enabledPricingOptions,
-        quantity: enabledQuantityOptions,
-        minQuantity: enabledMinQuantityOptions,
-        range: enabledRangeOptions
-      });
-      
-      const payload = {
-        categoryName: formData.categoryName,
-        description: formData.description,
-        categoryColor: formData.categoryColor,
-        sector: sector, // Save to current sector only
-        categoryId: categoryId,
-        pricingOptions: enabledPricingOptions,
-        quantityOptions: enabledQuantityOptions,
-        minQuantityOptions: enabledMinQuantityOptions,
-        rangeOptions: enabledRangeOptions,
-        mathOperators: formData.mathOperators,
-        pricingStackOrder: formData.pricingStackOrder,
-        quantityStackOrder: formData.quantityStackOrder,
-        minQuantityStackOrder: formData.minQuantityStackOrder,
-        rangeStackOrder: formData.rangeStackOrder
-      };
-
-      let response;
-      if (isEditing && editId) {
-        // Update existing configuration
-        response = await fetch(`/api/pr2-clean/${editId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        console.log('✅ Configuration updated successfully');
-      } else {
-        // Create new configuration
-        response = await fetch('/api/pr2-clean', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        console.log('✅ Configuration created successfully');
-      }
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log('📁 Saved configuration:', result);
-        
-        // Update sector state to reflect saved configuration
-        console.log('🔄 Updating sector state after save...');
-        console.log('✅ Saved to sectors:', selectedSectors);
-        
-        // Update sectorsWithConfig to include all selected sectors
-        setSectorsWithConfig(prev => {
-          const newSectorsWithConfig = [...new Set([...prev, ...selectedSectors])];
-          console.log('🔄 Updated sectorsWithConfig:', newSectorsWithConfig);
-          return newSectorsWithConfig;
-        });
-        
-        // Invalidate cache to refresh data
-        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-        
-        // Show success message
-        console.log('✅ Configuration saved with ID:', result.id);
-      } else {
-        console.error('❌ Save failed:', response.status, response.statusText);
-      }
-    } catch (error) {
-      console.error('❌ Save failed:', error);
-    }
-  };
-
   // DISABLED AUTO-SAVE NAVIGATION: Prevent unwanted configuration creation during navigation
   const handleAutoSaveAndNavigate = (destination: string) => {
     return async () => {
@@ -2086,7 +1977,16 @@ export default function PR2ConfigClean() {
               </Button>
               
               <Button
-                onClick={handleAutoSaveAndNavigate('/dashboard')}
+                onClick={async () => {
+                  // Validate .99 format for length ranges before saving
+                  const lengthRange = formData.rangeOptions?.find(opt => opt.id === 'range_length');
+                  if (lengthRange && lengthRange.rangeEnd && !validateLengthFormat(lengthRange.rangeEnd)) {
+                    alert('⚠️ Length ranges must be in X.99 format (e.g., 30.99, 35.99, 40.99). Please update your length value before saving.');
+                    return;
+                  }
+                  // If validation passes, proceed with navigation
+                  handleAutoSaveAndNavigate('/dashboard')();
+                }}
                 variant="outline"
                 className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
               >
@@ -2176,19 +2076,6 @@ export default function PR2ConfigClean() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Save Configuration Button */}
-        <div className="mb-6">
-          <Button 
-            onClick={handleSaveConfiguration}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
-          >
-            Save Configuration
-          </Button>
-          <p className="text-xs text-gray-500 mt-1">
-            Validates .99 format for length ranges before saving
-          </p>
-        </div>
 
         {/* Configuration Title */}
         <div className="mb-6">
