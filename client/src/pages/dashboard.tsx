@@ -2796,11 +2796,17 @@ export default function Dashboard() {
 
   // Service Calc button handler - implements smart pricing recalculation
   const handleServiceCalc = () => {
-    console.log('🎯 Service Calc button clicked - toggling service recalculation');
-    setIsServiceRecalculated(!isServiceRecalculated);
-    
-    // Log current state for debugging
-    console.log('🎯 Service recalculation state:', !isServiceRecalculated);
+    try {
+      console.log('🎯 Service Calc button clicked - toggling service recalculation');
+      console.log('🎯 Current state before toggle:', isServiceRecalculated);
+      setIsServiceRecalculated(!isServiceRecalculated);
+      console.log('🎯 New state after toggle:', !isServiceRecalculated);
+      
+      // Show alert to confirm click is working
+      alert('Service Calc button clicked! Check console for details.');
+    } catch (error) {
+      console.error('🎯 Error in handleServiceCalc:', error);
+    }
   };
 
   return (
@@ -3631,16 +3637,9 @@ export default function Dashboard() {
                                   className={`${column.width} px-1 py-1 text-center`}
                                 >
                                   <button
-                                    onClick={(e) => {
-                                      console.log('🎯 DIRECT BUTTON CLICK - Service Calc button clicked!');
-                                      console.log('🎯 Event details:', e);
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      handleServiceCalc();
-                                    }}
-                                    onMouseDown={() => console.log('🎯 Mouse down on Service Calc')}
-                                    onMouseUp={() => console.log('🎯 Mouse up on Service Calc')}
-                                    className="w-full text-sm h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg"
+                                    onClick={handleServiceCalc}
+                                    type="button"
+                                    className="w-full text-sm h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg cursor-pointer"
                                   >
                                     Service Calc
                                   </button>
