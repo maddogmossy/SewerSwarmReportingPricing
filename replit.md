@@ -972,35 +972,37 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.1' to return to this stable checkpoint
 
-## REV V6.9.3 CHECKPOINT - DUPLICATE DROPDOWN ISSUE COMPLETELY RESOLVED (July 17, 2025)
+## REV V6.9.4 CHECKPOINT - COMPLETE CATEGORY CARD ID DISPLAY SYSTEM LOCKED (July 17, 2025)
 
-🔒 **PRODUCTION READY - DUPLICATE CONFIGURATION DROPDOWN ELIMINATED:**
-- **Root Cause Fixed**: Removed static "150mm Configuration Options" section that was creating visual duplicates
-- **Single Dynamic System**: Only dynamic `getPipeSizeConfigurations()` function remains, returning correct single configuration
-- **JavaScript Errors Resolved**: Added missing `appliedSectors` state variable and `SECTOR_CONFIG` definition
-- **Missing Functions Restored**: Implemented `handleCreateSectorCopy` and `handleSaveSectors` functions
-- **Duplicate Sector Section Removed**: Eliminated duplicate "Apply Configuration to Sectors" section at bottom of page
-- **Clean Interface**: Users now see only one configuration dropdown with actual values instead of two sections
+🔒 **PRODUCTION READY - PURE WHITE CATEGORY CARD SYSTEM WITH COMPLETE ID VISIBILITY:**
+- **CCTV Template Created**: Added missing CCTV configuration template (ID 141) with TP1 designation for proper category card display
+- **Patching Template Created**: Added TP2 patching template (ID 142) for complete template assignments per user request
+- **Complete ID Display**: All category cards in utilities sector now properly display ID numbers when configurations exist
+- **Template Type Indicators**: Category cards show TP1 vs TP2 template types alongside ID numbers
+- **Orange Settings Icons**: Blank templates display orange settings icons indicating unconfigured status
+- **Pure White Color System**: All category colors set to #ffffff maintaining clean appearance with forced manual color assignment
 
-🔒 **TECHNICAL FIXES:**
-- **State Variables**: Added missing `appliedSectors` state and proper `SECTOR_CONFIG` object with sector color definitions
-- **Function Implementation**: Added sector copying and saving functions to prevent undefined function errors
-- **UI Cleanup**: Removed static hardcoded configuration section (lines 2269-2707) causing visual duplicates
-- **Dynamic System**: Kept only the dynamic pipe size configuration system that displays authentic values
+🔒 **FINAL DATABASE STATE:**
+- **Total Configurations**: 9 complete blank templates covering all standard categories
+- **CCTV (ID 141)**: TP1 - CCTV Configuration with blank template structure
+- **Patching (ID 142)**: TP2 - Patching Configuration with specialized patching options
+- **Template Coverage**: Van Pack (133), Jet Vac (134), CCTV Van Pack (135), CCTV Jet Vac (136), Directional Water Cutter (137), Tankering (138), 150mm CCTV Jet Vac (139)
+- **Consistent Structure**: All templates use pure white (#ffffff) category colors requiring manual user color assignment
 
-🔒 **DATABASE STATE MAINTAINED:**
-- **Total Configurations**: 7 authentic blank templates with pure white category colors
-- **Template System**: TP1/TP2 template detection working correctly for category types
-- **Auto-Detection**: Pipe size detection creates appropriate configurations without duplicates
-- **Clean Interface**: Single dropdown shows actual pricing values (£, qty, min, %, mm) instead of placeholder zeros
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Template Assignment Logic**: CCTV categories get TP1 templates, Patching gets TP2 templates with specialized pricing options
+- **ID Visibility Logic**: Category cards display IDs only when configurations exist, maintaining clean appearance for unconfigured categories
+- **Database Schema Compliance**: Templates created using exact pr2_configurations table structure without deprecated stack order columns
+- **Auto-Detection System**: Pipe size detection and template creation working across all sectors with proper template type assignment
 
-🔒 **USER-CONFIRMED WORKING:**
-- **No JavaScript Errors**: Application loads without console errors or undefined function warnings
-- **Single Configuration Display**: Only one configuration dropdown visible with authentic form data
-- **Proper Sector Functionality**: Sector selection and copying functions operational
-- **Template System**: TP1 standard categories and TP2 patching system both working correctly
+🔒 **USER-CONFIRMED FEATURES:**
+- **Complete Category Coverage**: All 9 category cards in utilities sector display ID numbers with proper template types
+- **Clean Visual Design**: Orange settings icons indicate blank template status, white backgrounds force manual color selection
+- **Template Type Display**: Clear distinction between TP1 (standard) and TP2 (patching) template assignments
+- **Zero Duplicate Issues**: Single dynamic configuration system with eliminated dropdown duplicates
+- **Professional Interface**: Clean, consistent category card display with proper ID visibility logic
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.3' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.4' to return to this stable checkpoint
 
 ## REV V6.4.3 CHECKPOINT - JN FILTERING RESTORATION COMPLETE (July 16, 2025)
 
