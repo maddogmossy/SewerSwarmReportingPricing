@@ -437,8 +437,15 @@ export default function PR2ConfigClean() {
     if (!value || value.trim() === '') return true; // Empty is ok
     const numValue = parseFloat(value);
     if (isNaN(numValue)) return false;
-    // Check if it's a whole number (should be X.99 format)
-    return numValue % 1 !== 0 || value.includes('.99');
+    
+    // Must end with .99 format for whole numbers
+    if (numValue % 1 === 0) {
+      // It's a whole number, so it must have .99 format
+      return value.endsWith('.99');
+    }
+    
+    // For decimal numbers, allow anything
+    return true;
   };
 
   // Debug form data loading (removed DOM manipulation - React state should handle values)
