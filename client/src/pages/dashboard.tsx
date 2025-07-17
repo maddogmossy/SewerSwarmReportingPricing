@@ -3660,7 +3660,10 @@ export default function Dashboard() {
                                 >
                                   <button
                                     onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
                                       console.log('🚨 BUTTON CLICKED - Service Calc');
+                                      console.log('🚨 Event details:', e.type, e.target);
                                       handleServiceCalc(e);
                                     }}
                                     type="button"
