@@ -2462,10 +2462,11 @@ export default function PR2ConfigClean() {
                   </Card>
                 </div>
               ) : (
-                <div className="flex gap-4 p-4 border rounded-lg bg-gray-50 w-full">
+                /* General Configuration Layout with proper spacing */
+                <div className="grid grid-cols-5 gap-4 mb-6">
                   
                   {/* Blue Window: Day Rate */}
-                  <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0">
+                  <Card className="bg-blue-50 border-blue-200">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
                         <Coins className="w-3 h-3" />
@@ -2489,7 +2490,7 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Math Window */}
-                  <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
+                  <Card className="bg-gray-50 border-gray-200">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
                         <Calculator className="w-3 h-3 mr-1" />
@@ -2508,7 +2509,7 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Green Window: Runs per Shift */}
-                  <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
+                  <Card className="bg-green-50 border-green-200">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-green-700 text-xs flex items-center gap-1">
                         <Package className="w-3 h-3" />
@@ -2536,7 +2537,7 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Orange Window: Min Quantity */}
-                  <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
+                  <Card className="bg-orange-50 border-orange-200">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
                         <Target className="w-3 h-3" />
@@ -2564,7 +2565,7 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Purple Window: Ranges */}
-                  <Card className="bg-purple-50 border-purple-200 w-80 flex-shrink-0">
+                  <Card className="bg-purple-50 border-purple-200">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
                         <BarChart3 className="w-3 h-3" />
