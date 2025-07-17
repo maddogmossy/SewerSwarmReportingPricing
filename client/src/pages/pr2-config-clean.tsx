@@ -742,14 +742,18 @@ export default function PR2ConfigClean() {
     setSectorToRemove('');
   };
 
+  // Track processed configurations to prevent double loading
+  const [processedConfigId, setProcessedConfigId] = useState<number | null>(null);
+  
   // Single useEffect to handle all configuration loading
   useEffect(() => {
     // Use sectorConfigs for navigation without editId, existingConfig for direct editId access
     const configToUse = editId ? existingConfig : sectorConfigs;
     console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, editId: ${editId}, configToUse:`, configToUse);
+    console.log(`🔍 processedConfigId: ${processedConfigId}, current config ID: ${configToUse?.id}`);
     
-    // FIXED: Only proceed if we have actual config data AND haven't already processed this config
-    if (isEditing && configToUse && configToUse.id) {
+    // FIXED: Only proceed if we have actual config data AND haven't already processed this specific config
+    if (isEditing && configToUse && configToUse.id && processedConfigId !== configToUse.id) {
       // Get the actual config object (might be wrapped in array)
       const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
       console.log(`🔍 Processing config:`, config);
@@ -827,6 +831,12 @@ export default function PR2ConfigClean() {
         
         setSectorsWithConfig([configSector]);
         setSelectedSectors([configSector]);
+        
+        // Mark this config as processed to prevent double loading
+        setProcessedConfigId(config.id);
+        console.log(`✅ Configuration ${config.id} processed and marked as loaded`);
+      } else if (configToUse && configToUse.id && processedConfigId === configToUse.id) {
+        console.log(`⏭️ Skipping already processed configuration ${configToUse.id}`);
       }
     } else if (!isEditing) {
       // Start with the current sector for new configurations
@@ -875,7 +885,7 @@ export default function PR2ConfigClean() {
         }));
       }
     }
-  }, [isEditing, existingConfig?.id, sectorConfigs?.id, sector, editId, pipeSize, categoryId]); // FIXED: Use .id to prevent unnecessary triggers
+  }, [isEditing, existingConfig?.id, editId]); // FIXED: Minimal dependencies to prevent double triggers
 
 
 
