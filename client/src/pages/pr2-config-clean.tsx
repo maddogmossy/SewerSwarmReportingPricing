@@ -432,17 +432,13 @@ export default function PR2ConfigClean() {
     }));
   };
 
-  // Separate function for manual length rounding when user wants it
-  const handleLengthRounding = (optionId: string, value: string) => {
-    if (optionId === 'range_length' && value.trim() !== '') {
-      const numValue = parseFloat(value);
-      if (!isNaN(numValue) && numValue % 1 === 0) {
-        // If it's a whole number (like 30, 35, 40), convert to X.99 format
-        const roundedValue = `${numValue}.99`;
-        console.log(`📏 Manual round length from ${value}m to ${roundedValue}m`);
-        handleRangeValueChange(optionId, 'rangeEnd', roundedValue);
-      }
-    }
+  // Validate .99 format for length ranges
+  const validateLengthFormat = (value: string): boolean => {
+    if (!value || value.trim() === '') return true; // Empty is ok
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return false;
+    // Check if it's a whole number (should be X.99 format)
+    return numValue % 1 !== 0 || value.includes('.99');
   };
 
   // Debug form data loading (removed DOM manipulation - React state should handle values)
@@ -1868,6 +1864,13 @@ export default function PR2ConfigClean() {
 
   // Manual save functionality
   const handleSaveConfiguration = async () => {
+    // Validate .99 format for length ranges before saving
+    const lengthRange = formData.rangeOptions?.find(opt => opt.id === 'range_length');
+    if (lengthRange && lengthRange.rangeEnd && !validateLengthFormat(lengthRange.rangeEnd)) {
+      alert('⚠️ Length ranges must be in X.99 format (e.g., 30.99, 35.99, 40.99). Please update your length value before saving.');
+      return;
+    }
+
     // All options are enabled, no filtering needed
     const enabledPricingOptions = formData.pricingOptions;
     
@@ -2153,6 +2156,19 @@ export default function PR2ConfigClean() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Save Configuration Button */}
+        <div className="mb-6">
+          <Button 
+            onClick={handleSaveConfiguration}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+          >
+            Save Configuration
+          </Button>
+          <p className="text-xs text-gray-500 mt-1">
+            Validates .99 format for length ranges before saving
+          </p>
+        </div>
 
         {/* Configuration Title */}
         <div className="mb-6">
