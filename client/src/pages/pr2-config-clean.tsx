@@ -2605,6 +2605,20 @@ export default function PR2ConfigClean() {
                                     Add
                                   </Button>
                                 )}
+                                {!isFirstRow && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      if (percentageOption?.id) deleteRangeOption(percentageOption.id);
+                                      if (lengthOption?.id) deleteRangeOption(lengthOption.id);
+                                    }}
+                                    className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                                  >
+                                    <Trash2 className="w-3 h-3 mr-1" />
+                                    Delete
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           );
