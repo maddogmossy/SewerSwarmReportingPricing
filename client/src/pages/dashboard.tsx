@@ -2712,18 +2712,17 @@ export default function Dashboard() {
 
   // Cost calculation function for enhanced table
   const calculateCost = (section: any): string | JSX.Element => {
-    console.log('💰 calculateCost called for section:', section.itemNo, 'severityGrade:', section.severityGrade);
+    console.log('💰 calculateCost called for section:', section.itemNo, 'isServiceRecalculated:', isServiceRecalculated);
     
     // Check if section actually has defects based on severity grade
     const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
-    
-    console.log('💰 Section', section.itemNo, 'hasDefects:', hasDefects);
     
     if (!hasDefects) {
       return "£0.00";
     }
     
     // SERVICE CALC LOGIC: Check if service recalculation is active
+    console.log('🎯 Checking service recalc state:', isServiceRecalculated, 'pr2Configs:', pr2Configurations?.length);
     if (isServiceRecalculated && pr2Configurations && pr2Configurations.length > 0) {
       // Get qualifying sections for service defects (exclude structural repairs)
       const qualifyingSections = sectionData.filter(s => {
