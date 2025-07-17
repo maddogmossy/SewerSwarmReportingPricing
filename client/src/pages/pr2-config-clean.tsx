@@ -2569,16 +2569,9 @@ export default function PR2ConfigClean() {
                           <span className="font-medium min-w-0 flex-1 truncate">{option.label === "Percentage" ? "Percentage" : "Length"}</span>
                           <Input
                             placeholder=""
-                            value={option.rangeStart || ""}
-                            onChange={(e) => handleValueChange('rangeOptions', option.id, e.target.value, 'rangeStart')}
-                            className="bg-white border-purple-300 h-6 text-xs w-12"
-                          />
-                          <span className="text-xs text-purple-600">to</span>
-                          <Input
-                            placeholder=""
                             value={option.rangeEnd || ""}
                             onChange={(e) => handleValueChange('rangeOptions', option.id, e.target.value, 'rangeEnd')}
-                            className="bg-white border-purple-300 h-6 text-xs w-12"
+                            className="bg-white border-purple-300 h-6 text-xs w-16"
                           />
                           {pairIndex === 0 && (
                             <Button
