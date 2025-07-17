@@ -526,6 +526,9 @@ export default function PR2ConfigClean() {
   
   // State for delete confirmation dialog
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  
+  // State for 100mm delete confirmation dialog
+  const [show100mmDeleteDialog, setShow100mmDeleteDialog] = useState(false);
 
   // Handle sector checkbox changes
   const handleSectorChange = async (sectorId: string, checked: boolean) => {
@@ -1509,6 +1512,25 @@ export default function PR2ConfigClean() {
     }
   };
 
+  // Delete 100mm configuration functionality
+  const handle100mmDeleteConfiguration = async () => {
+    try {
+      console.log('🗑️ Deleting 100mm configuration ID: 109');
+      await apiRequest('DELETE', '/api/pr2-clean/109');
+      
+      // Invalidate cache to refresh the PR2 configurations list
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      
+      // Close the delete dialog
+      setShow100mmDeleteDialog(false);
+      
+      // Optionally navigate back to pricing page
+      setLocation(`/pr2-pricing?sector=${sector}`);
+    } catch (error) {
+      console.error('❌ Error deleting 100mm configuration:', error);
+    }
+  };
+
   // Manual save functionality
   const handleSaveConfiguration = async () => {
     // All options are enabled, no filtering needed
@@ -1814,6 +1836,14 @@ export default function PR2ConfigClean() {
                 <ChevronDown className="w-4 h-4" />
               </Button>
             </CollapsibleTrigger>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShow100mmDeleteDialog(true)}
+              className="px-3 py-2 text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
           </div>
           <CollapsibleContent className="mb-6">
             {/* Five-Window Configuration Layout for 100mm */}
@@ -2412,6 +2442,29 @@ export default function PR2ConfigClean() {
               className="bg-red-600 hover:bg-red-700"
               data-action="delete-configuration"
               data-config-id={editId}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 100mm Delete Confirmation Dialog */}
+      <AlertDialog open={show100mmDeleteDialog} onOpenChange={setShow100mmDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete 100mm Configuration</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the 100mm CCTV Jet Vac Configuration (ID: 109)? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handle100mmDeleteConfiguration}
+              className="bg-red-600 hover:bg-red-700"
+              data-action="delete-100mm-configuration"
+              data-config-id="109"
             >
               Delete
             </AlertDialogAction>
