@@ -2674,7 +2674,7 @@ export default function PR2ConfigClean() {
                                 <Input
                                   placeholder=""
                                   value={percentageOption?.rangeEnd || ""}
-                                  onChange={(e) => handleValueChange('rangeOptions', percentageOption?.id, e.target.value, 'rangeEnd')}
+                                  onChange={(e) => handleRangeValueChange(percentageOption?.id, 'rangeEnd', e.target.value)}
                                   className="bg-white border-purple-300 h-6 text-xs w-16"
                                 />
                               </div>
@@ -2683,7 +2683,7 @@ export default function PR2ConfigClean() {
                                 <Input
                                   placeholder=""
                                   value={lengthOption?.rangeEnd || ""}
-                                  onChange={(e) => handleValueChange('rangeOptions', lengthOption?.id, e.target.value, 'rangeEnd')}
+                                  onChange={(e) => handleRangeValueChange(lengthOption?.id, 'rangeEnd', e.target.value)}
                                   className="bg-white border-purple-300 h-6 text-xs w-20"
                                 />
                                 {isFirstRow && (
