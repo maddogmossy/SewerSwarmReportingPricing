@@ -54,6 +54,21 @@ This is a full-stack TypeScript application built with React frontend and Expres
 - **Subscription Plans**: Pricing tiers and features
 - **Report Pricing**: Dynamic pricing based on report size
 
+## UI Component Architecture
+
+### Configuration Dropdown Component
+- **Location**: `client/src/pages/pr2-config-clean.tsx` (line 1810-1818)
+- **Component**: `CollapsibleTrigger` with dynamic title display
+- **Display Pattern**: "150mm Configuration Options (ID: {configId})"
+- **Fixed Elements**: Pipe size (150mm) always visible, ID shown when editing
+- **Developer Reference**: "dropdown header" - the collapsible trigger button
+
+### Category Cards (Cat Cards)  
+- **Location**: `client/src/pages/pr2-pricing.tsx` (line 580-650)
+- **Component**: Standard category selection cards in pricing section
+- **Display Pattern**: Simple category name only (no ID or pipe size)
+- **User Preference**: Keep clean without configuration details
+
 ## Data Flow
 
 ### Authentication Flow
