@@ -2182,17 +2182,7 @@ export default function PR2ConfigClean() {
                             className="w-20 h-8 text-sm"
                           />
                         </div>
-                        {/* Delete button for rows 2 and beyond */}
-                        {index > 0 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => deleteRangePair(index)}
-                            className="ml-4 px-2 py-1 border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        )}
+
                       </div>
                     ))}
                   </CardContent>
