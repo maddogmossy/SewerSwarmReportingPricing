@@ -2098,7 +2098,9 @@ export default function PR2ConfigClean() {
         </div>
 
         {/* Dynamic Pipe Size Configuration Panels */}
-        {getPipeSizeConfigurations().map((pipeSizeConfig) => (
+        {getPipeSizeConfigurations().map((pipeSizeConfig) => {
+          console.log(`🎨 Rendering configuration dropdown for ID: ${pipeSizeConfig.id}, pipeSize: ${pipeSizeConfig.pipeSize}`);
+          return (
           <Collapsible key={pipeSizeConfig.id} defaultOpen={false}>
             <div className="flex items-center gap-2 mb-4">
               <CollapsibleTrigger asChild>
@@ -2259,7 +2261,8 @@ export default function PR2ConfigClean() {
             </div>
           </CollapsibleContent>
         </Collapsible>
-        ))}
+          );
+        })}
 
 
 
