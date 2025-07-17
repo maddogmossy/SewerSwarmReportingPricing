@@ -413,34 +413,11 @@ export default function PR2ConfigClean() {
     });
   }
 
-  // Manual cleanup to remove specific extra entries
+  // Disable automatic cleanup to prevent disappearing entries
   const cleanupExtraEntries = () => {
-    setFormData(prev => ({
-      ...prev,
-      quantityOptions: prev.quantityOptions.filter(opt => 
-        opt.id === "quantity_runs" // Keep only "Runs per Shift"
-      ),
-      quantityStackOrder: ["quantity_runs"],
-      minQuantityOptions: prev.minQuantityOptions.filter(opt => 
-        opt.id === "minquantity_runs" // Keep only "Min Runs per Shift"
-      ),
-      minQuantityStackOrder: ["minquantity_runs"]
-    }));
-    console.log(`🧹 Manual cleanup completed - removed all extra entries`);
+    // Keep all entries - don't auto-delete anything
+    console.log(`🧹 Cleanup disabled to preserve user entries`);
   }
-
-  // Add manual cleanup button trigger
-  React.useEffect(() => {
-    // Run cleanup after configuration loads
-    if (editId && formData.quantityOptions.length > 1) {
-      console.log(`🔍 Configuration loaded with extra entries - running cleanup...`);
-      const timeoutId = setTimeout(() => {
-        cleanupExtraEntries();
-      }, 1000); // Delay to ensure data is loaded
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [editId, formData.quantityOptions.length]);
 
   // Handle range value changes for purple window
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
@@ -1207,20 +1184,20 @@ export default function PR2ConfigClean() {
   const addNewInputsToAllWindows = () => {
     const timestamp = Date.now();
     
-    // Add new quantity input (green window) - default value "5"
+    // Add new quantity input (green window) - empty default value
     const newQuantityOption: PricingOption = {
       id: `quantity_${timestamp}`,
       label: `No ${formData.quantityOptions.length + 1}`,
       enabled: true,
-      value: '5'
+      value: ''
     };
     
-    // Add new min quantity input (orange window) - default value "5"
+    // Add new min quantity input (orange window) - empty default value
     const newMinQuantityOption: PricingOption = {
       id: `minquantity_${timestamp + 1}`,
       label: `Qty ${formData.minQuantityOptions.length + 1}`,
       enabled: true,
-      value: '5'
+      value: ''
     };
     
     // Add new range inputs (purple window - percentage and length pair)
