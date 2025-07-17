@@ -2199,21 +2199,7 @@ export default function PR2ConfigClean() {
         </Collapsible>
         ))}
 
-        {/* Manual Test Button - Testing 300mm Patching */}
-        <div className="mb-4 flex gap-2">
-          <Button 
-            onClick={() => createPipeSizeConfiguration('300mm')}
-            className="bg-red-600 text-white"
-          >
-            Test: Create 300mm Patching (TP2)
-          </Button>
-          <Button 
-            onClick={() => createPipeSizeConfiguration('225mm')}
-            className="bg-blue-600 text-white"
-          >
-            Test: Create 225mm CCTV (TP1)
-          </Button>
-        </div>
+
 
         {/* Collapsible Configuration Panel */}
         <Collapsible defaultOpen={isEditing}>
