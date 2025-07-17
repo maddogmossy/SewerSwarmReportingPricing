@@ -566,6 +566,15 @@ export default function PR2Pricing() {
                     (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac')
                   );
                   
+                  // Debug logging for patching category
+                  if (category.id === 'patching') {
+                    console.log('🔧 Patching category check:');
+                    console.log('  Category ID:', category.id);
+                    console.log('  Available configs:', pr2Configurations.map(c => `ID ${c.id}: ${c.categoryId}`));
+                    console.log('  Found existing config:', existingConfiguration ? `ID ${existingConfiguration.id}` : 'NONE');
+                    console.log('  Config color:', existingConfiguration?.categoryColor || 'NO COLOR');
+                  }
+                  
 
                   
                   // Convert hex color to rgba with opacity for background
