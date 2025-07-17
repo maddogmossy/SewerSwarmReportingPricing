@@ -1266,6 +1266,11 @@ export default function PR2ConfigClean() {
     console.log(`🗑️ Deleted inputs from all windows at set ${setIndex + 1}: quantity ${quantityIdToDelete}, min quantity ${minQuantityIdToDelete}, range ${percentageIdToDelete} & ${lengthIdToDelete}`);
   };
 
+  // Wrapper function for deleting range pairs from purple window
+  const deleteRangePair = (pairIndex: number) => {
+    deleteInputsFromAllWindows(pairIndex);
+  };
+
   const deleteQuantityOption = (optionId: string) => {
     setFormData(prev => ({
       ...prev,
@@ -2285,6 +2290,16 @@ export default function PR2ConfigClean() {
                               >
                                 <Plus className="w-3 h-3 mr-1" />
                                 Add
+                              </Button>
+                            )}
+                            {pairIndex > 0 && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => deleteRangePair(pairIndex)}
+                                className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                              >
+                                <Trash2 className="w-3 h-3" />
                               </Button>
                             )}
                           </div>
