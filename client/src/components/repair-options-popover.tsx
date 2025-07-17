@@ -207,7 +207,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
             {repairOptions.map((option, index) => (
               <div 
                 key={option.id} 
-                className="flex items-center justify-between p-3 border rounded-lg bg-white"
+                className="flex items-center justify-between p-3 border rounded-lg bg-white cursor-pointer hover:bg-blue-50 transition-colors"
                 onClick={() => handleOptionClick(option)}
               >
                 <div className="flex items-center space-x-3">
@@ -221,16 +221,6 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
                     )}
                   </div>
                   <span className="text-xs text-gray-500">{option.description}</span>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-xs"
-                  >
-                    Configure
-                  </Button>
                 </div>
               </div>
             ))}

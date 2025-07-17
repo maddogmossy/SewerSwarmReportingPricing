@@ -83,7 +83,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
               return (
                 <div 
                   key={equipment.id} 
-                  className="flex items-center justify-between p-3 border rounded-lg bg-white"
+                  className="flex items-center justify-between p-3 border rounded-lg bg-white cursor-pointer hover:bg-blue-50 transition-colors"
+                  onClick={() => handleDirectNavigation(equipment.id)}
                 >
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2">
@@ -96,17 +97,6 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
                       )}
                     </div>
                     <span className="text-xs text-gray-500">{equipment.description}</span>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDirectNavigation(equipment.id)}
-                      className="text-xs"
-                    >
-                      Configure
-                    </Button>
                   </div>
                 </div>
               );
