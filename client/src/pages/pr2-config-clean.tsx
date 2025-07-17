@@ -2573,12 +2573,12 @@ export default function PR2ConfigClean() {
                         return Array.from({ length: maxPairs }, (_, index) => {
                           const percentageOption = percentageOptions[index];
                           const lengthOption = lengthOptions[index];
-                          const isLastRow = index === maxPairs - 1;
+                          const isFirstRow = index === 0;
                           
                           return (
                             <div key={`row-${index}`} className="flex items-center gap-4 text-xs">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium">{percentageOption?.label || "Percentage"} (Max)</span>
+                                <span className="font-medium">Percentage (Max)</span>
                                 <Input
                                   placeholder=""
                                   value={percentageOption?.rangeEnd || ""}
@@ -2587,14 +2587,14 @@ export default function PR2ConfigClean() {
                                 />
                               </div>
                               <div className="flex items-center gap-2">
-                                <span className="font-medium">{lengthOption?.label || "Length"} (Max)</span>
+                                <span className="font-medium">Length (Max)</span>
                                 <Input
                                   placeholder=""
                                   value={lengthOption?.rangeEnd || ""}
                                   onChange={(e) => handleValueChange('rangeOptions', lengthOption?.id, e.target.value, 'rangeEnd')}
                                   className="bg-white border-purple-300 h-6 text-xs w-20"
                                 />
-                                {isLastRow && (
+                                {isFirstRow && (
                                   <Button
                                     size="sm"
                                     variant="outline"
