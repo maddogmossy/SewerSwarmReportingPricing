@@ -479,6 +479,7 @@ export default function Dashboard() {
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [showExportWarning, setShowExportWarning] = useState(false);
   const [pendingExport, setPendingExport] = useState(false);
+  const [isServiceRecalculated, setIsServiceRecalculated] = useState(false);
   
   // Filter state
   const [filters, setFilters] = useState({
@@ -2722,6 +2723,46 @@ export default function Dashboard() {
       return "£0.00";
     }
     
+    // SERVICE CALC LOGIC: Check if service recalculation is active
+    if (isServiceRecalculated && repairPricingData && repairPricingData.length > 0) {
+      // Get qualifying sections for service defects (exclude structural repairs)
+      const qualifyingSections = sectionData.filter(s => {
+        const sectionHasDefects = s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0;
+        const isServiceDefect = s.defectType === 'service' || requiresCleaning(s.defects || '');
+        return sectionHasDefects && isServiceDefect;
+      });
+      
+      // Get day rate from configuration
+      const config = repairPricingData[0]; // Use first available configuration
+      const dayRateOption = config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'));
+      const dayRate = dayRateOption ? parseFloat(dayRateOption.value) || 0 : 0;
+      
+      if (dayRate > 0 && qualifyingSections.length > 0) {
+        const recalculatedCost = dayRate / qualifyingSections.length;
+        
+        console.log('🎯 SERVICE CALC RECALCULATION:', {
+          dayRate,
+          qualifyingSections: qualifyingSections.length,
+          recalculatedCost,
+          section: section.itemNo
+        });
+        
+        // Check if this section is in the qualifying list
+        const isQualifying = qualifyingSections.some(s => s.itemNo === section.itemNo);
+        
+        if (isQualifying) {
+          return (
+            <span 
+              className="text-green-600 font-medium cursor-help"
+              title={`Service Calc: £${dayRate} ÷ ${qualifyingSections.length} sections = £${recalculatedCost.toFixed(2)}`}
+            >
+              £{recalculatedCost.toFixed(2)}
+            </span>
+          );
+        }
+      }
+    }
+    
     // For defective sections, use PR2 configuration calculations
     const autoCost = calculateAutoCost(section);
     console.log('💰 autoCost result for section', section.itemNo, ':', autoCost);
@@ -2751,6 +2792,15 @@ export default function Dashboard() {
     
     // Show warning triangle icon for sections without pricing
     return "⚠️";
+  };
+
+  // Service Calc button handler - implements smart pricing recalculation
+  const handleServiceCalc = () => {
+    console.log('🎯 Service Calc button clicked - toggling service recalculation');
+    setIsServiceRecalculated(!isServiceRecalculated);
+    
+    // Log current state for debugging
+    console.log('🎯 Service recalculation state:', !isServiceRecalculated);
   };
 
   return (
@@ -3581,6 +3631,7 @@ export default function Dashboard() {
                                   className={`${column.width} px-1 py-1 text-center`}
                                 >
                                   <Button
+                                    onClick={handleServiceCalc}
                                     size="lg"
                                     className="w-full text-sm h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg"
                                   >
