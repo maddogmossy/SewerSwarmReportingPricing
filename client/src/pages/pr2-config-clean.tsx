@@ -2331,7 +2331,7 @@ export default function PR2ConfigClean() {
                             maxLength={4}
                             value={option.value || ""}
                             onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                            className="bg-white border-green-300 h-6 text-xs w-16"
+                            className="bg-white border-green-300 h-6 text-xs w-16 flex items-center"
                           />
                         </div>
                       ))}
@@ -2359,7 +2359,7 @@ export default function PR2ConfigClean() {
                           maxLength={4}
                           value={option.value || ""}
                           onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
-                          className="bg-white border-orange-300 h-6 text-xs w-16"
+                          className="bg-white border-orange-300 h-6 text-xs w-16 flex items-center"
                         />
                       </div>
                     ))}
@@ -2394,7 +2394,7 @@ export default function PR2ConfigClean() {
                                   maxLength={3}
                                   value={percentageOption.rangeEnd || ""}
                                   onChange={(e) => handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
-                                  className="bg-white border-purple-300 h-6 text-xs w-16"
+                                  className="bg-white border-purple-300 h-6 text-xs w-16 flex items-center"
                                 />
                               </div>
                             )}
@@ -2408,7 +2408,7 @@ export default function PR2ConfigClean() {
                                   maxLength={6}
                                   value={lengthOption.rangeEnd || ""}
                                   onChange={(e) => handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
-                                  className="bg-white border-purple-300 h-6 text-xs w-20"
+                                  className="bg-white border-purple-300 h-6 text-xs w-20 flex items-center"
                                 />
                               </div>
                             )}
