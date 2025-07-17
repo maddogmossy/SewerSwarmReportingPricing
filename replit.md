@@ -1119,26 +1119,31 @@ Both rules are permanently locked and displayed on screen per user requirement
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.6' to return to this stable checkpoint
 
-## REV V6.9.7 CHECKPOINT - COST ROUTING & COLOR LOGIC FIXED (July 17, 2025)
+## REV V8.1 CHECKPOINT - TP1 TEMPLATE SYSTEM LOCKED & UI ALIGNMENT FIXED (July 17, 2025)
 
-🔒 **PRODUCTION READY - COMPLETE COST CALCULATION SYSTEM OPERATIONAL:**
-- **Configuration Priority Fixed**: System now prioritizes configurations with actual pricing values over empty templates
-- **Cost Routing Corrected**: Configuration ID 152 (£1850, 25 runs) properly selected over ID 133 (empty values)
-- **Color Logic Fixed**: Costs display red until minimum quantity is exceeded (not just met)
-- **Smart Selection Logic**: Finds all matching configurations and selects first one with valid day rate and runs per shift values
-- **Minimum Quantity Logic**: Changed from `>=` to `>` comparison - costs red when count ≤ minimum, green when count > minimum
-- **Console Verification**: "✅ Selected config with valid pricing values: 152" and "£1850 ÷ 25 = £74.00" calculation confirmed
+🔒 **PRODUCTION READY - COMPLETE TP1 TEMPLATE SYSTEM LOCKED:**
+- **ID 152 RESTORED**: CCTV Jet Vac Configuration fully operational with authentic values (Day Rate £1850, Runs per Shift 25, Min Runs 25, Percentage 0-30, Length 0-33.99)
+- **TP1 Template Specification**: Blue window (💰 pricing), Math window (dropdown), Green/Orange windows (paired layout), Purple window (single row structure)
+- **UI Alignment Fixed**: All three windows (green, orange, purple) now use identical paired row structure with matching input field heights (h-6)
+- **Button Height Consistency**: Add/Delete buttons match input field heights exactly by removing size="sm" override
+- **Configuration Recovery**: Successfully restored ID 152 from empty values back to working state with dashboard cost calculations operational
+- **Console Verification**: "✅ Selected config with valid pricing values: 152" and "💰 SECTION 23 Using standard rule: £1850 ÷ 25 = £74.00" confirmed
 
-🔒 **TECHNICAL IMPLEMENTATION COMPLETE:**
-- **Priority Selection**: Enhanced calculateAutoCost to check all matching configs and prioritize those with non-empty pricing values
-- **Value Validation**: Checks both dayRate and runsPerShift for existence and non-empty strings before selection
-- **Fallback Logic**: If no config with values found, falls back to first matching config with warning
-- **Color Comparison**: Modified checkOrangeMinimumMet from `sectionCount >= highestMinRequired` to `sectionCount > highestMinRequired`
-- **Cost Display**: Proper red/green color coding based on whether minimum quantity threshold is exceeded
+🔒 **LOCKED TP1 TEMPLATE STRUCTURE:**
+- **Blue Window**: Single pricing option (Day Rate) with 💰 emoji
+- **Math Window**: Dropdown operator selection (÷)
+- **Green Window**: Quantity options in paired layout matching purple window structure
+- **Orange Window**: Min quantity options in paired layout matching purple window structure  
+- **Purple Window**: Range options with paired structure (% Max + Length Max per row)
+- **All Input Fields**: Consistent h-6 height with flex items-center alignment
+- **All Buttons**: Consistent h-6 height without size override
 
-🔒 **USER-CONFIRMED WORKING FEATURES:**
-- **Cost Calculation**: £74.00 calculated using authentic configuration values (ID 152)
-- **Configuration Selection**: System selects populated configurations over blank templates
+🔒 **TECHNICAL IMPLEMENTATION LOCKED:**
+- **Paired Layout Logic**: Green and orange windows use Array.from with Math.ceil(length/2) for consistent row pairing
+- **Input Field Consistency**: All inputs use h-6 text-xs w-16 classes for uniform appearance
+- **Button Consistency**: Removed size="sm" property to allow h-6 class full control
+- **Data Recovery**: SQL restoration of ID 152 pricing/quantity/range values from empty state
+- **Length Input Width**: Maintained w-16 width (not w-20) per user requirements
 - **Color Logic**: Costs show red when 25 sections = 25 minimum requirement (not exceeded)
 - **Smart Prioritization**: Automatic preference for configurations with actual pricing data
 - **Database Integration**: Proper storage and retrieval of configuration values with priority logic
