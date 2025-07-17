@@ -3581,11 +3581,10 @@ export default function Dashboard() {
                                   className={`${column.width} px-1 py-1 text-center`}
                                 >
                                   <Button
-                                    variant="outline"
                                     size="sm"
-                                    className="w-full text-xs h-8 bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-800"
+                                    className="w-full text-xs h-8 bg-blue-600 hover:bg-blue-700 text-white font-bold border-0"
                                   >
-                                    Service recalculations
+                                    Recalculations
                                   </Button>
                                 </td>
                               );
@@ -3596,11 +3595,10 @@ export default function Dashboard() {
                                   className={`${column.width} px-1 py-1 text-center`}
                                 >
                                   <Button
-                                    variant="outline"
                                     size="sm"
-                                    className="w-full text-xs h-8 bg-green-50 hover:bg-green-100 border-green-200 text-green-800"
+                                    className="w-full text-xs h-8 bg-green-600 hover:bg-green-700 text-white font-bold border-0"
                                   >
-                                    Service call culations
+                                    Calculations
                                   </Button>
                                 </td>
                               );
