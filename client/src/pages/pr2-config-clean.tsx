@@ -1618,10 +1618,11 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // DISABLED: Create new configuration for detected pipe size with correct template
+  // Create new pipe-size specific configuration for detected pipe size with correct template
   const createPipeSizeConfiguration = async (pipeSize: string) => {
-    console.log('🚫 Auto-configuration creation disabled to prevent unwanted IDs');
-    return null;
+    console.log(`🆕 Creating new pipe size-specific configuration for ${pipeSize}mm`);
+    console.log(`🆕 Setting category name to: ${getCategoryName(categoryId)}`);
+    return null; // Still disabled until blank templates are confirmed working
     
     try {
       const nextId = await getNextAvailableId();
@@ -1699,21 +1700,21 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // DISABLED: Auto pipe size detection to prevent unwanted duplicates
-  // useEffect(() => {
-  //   if (pipeSize && categoryId && allCategoryConfigs) {
-  //     const existingPipeSizes = getExistingPipeSizes();
-  //     
-  //     // Check if this pipe size already exists
-  //     if (!existingPipeSizes.includes(pipeSize)) {
-  //       console.log(`🔍 New pipe size detected: ${pipeSize}`);
-  //       console.log(`📋 Existing pipe sizes:`, existingPipeSizes);
-  //       
-  //       // Create new configuration for this pipe size
-  //       createPipeSizeConfiguration(pipeSize);
-  //     }
-  //   }
-  // }, [pipeSize, categoryId, allCategoryConfigs]);
+  // Auto pipe size detection - creates NEW configurations for detected pipe sizes
+  useEffect(() => {
+    if (pipeSize && categoryId && allCategoryConfigs) {
+      const existingPipeSizes = getExistingPipeSizes();
+      
+      // Check if this pipe size already exists
+      if (!existingPipeSizes.includes(pipeSize)) {
+        console.log(`🔍 New pipe size detected: ${pipeSize}`);
+        console.log(`📋 Existing pipe sizes:`, existingPipeSizes);
+        
+        // Create new configuration for this pipe size
+        createPipeSizeConfiguration(pipeSize);
+      }
+    }
+  }, [pipeSize, categoryId, allCategoryConfigs]);
 
   // Get configurations for detected pipe sizes with their IDs
   const getPipeSizeConfigurations = () => {
