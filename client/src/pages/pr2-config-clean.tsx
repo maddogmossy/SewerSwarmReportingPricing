@@ -413,6 +413,34 @@ export default function PR2ConfigClean() {
     });
   }
 
+  // Clean up extra entries from green and orange windows
+  const cleanupExtraEntries = () => {
+    setFormData(prev => ({
+      ...prev,
+      quantityOptions: prev.quantityOptions.filter(opt => 
+        opt.label === "Runs per Shift" // Keep only the first entry
+      ),
+      quantityStackOrder: prev.quantityStackOrder.filter(id => 
+        prev.quantityOptions.find(opt => opt.id === id && opt.label === "Runs per Shift")
+      ),
+      minQuantityOptions: prev.minQuantityOptions.filter(opt => 
+        opt.label === "Min Runs per Shift" // Keep only the first entry
+      ),
+      minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => 
+        prev.minQuantityOptions.find(opt => opt.id === id && opt.label === "Min Runs per Shift")
+      )
+    }));
+    console.log(`🧹 Cleaned up extra entries from green and orange windows`);
+  }
+
+  // Clean up on component mount if needed
+  React.useEffect(() => {
+    if (formData.quantityOptions.length > 1 || formData.minQuantityOptions.length > 1) {
+      console.log(`🔍 Found extra entries - cleaning up...`);
+      cleanupExtraEntries();
+    }
+  }, []);
+
   // Handle range value changes for purple window
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
     console.log(`🔧 handleRangeValueChange called: ${optionId}, ${field}, ${value}`);
