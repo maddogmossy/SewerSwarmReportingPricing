@@ -691,6 +691,9 @@ export default function PR2ConfigClean() {
   
   // State for 100mm delete confirmation dialog
   const [show100mmDeleteDialog, setShow100mmDeleteDialog] = useState(false);
+  
+  // State for validation warning
+  const [showValidationWarning, setShowValidationWarning] = useState(false);
 
   // Handle sector checkbox changes
   const handleSectorChange = async (sectorId: string, checked: boolean) => {
@@ -1981,20 +1984,38 @@ export default function PR2ConfigClean() {
                   // Validate .99 format for length ranges before saving
                   const lengthRange = formData.rangeOptions?.find(opt => opt.id === 'range_length');
                   if (lengthRange && lengthRange.rangeEnd && !validateLengthFormat(lengthRange.rangeEnd)) {
-                    alert('⚠️ Length ranges must be in X.99 format (e.g., 30.99, 35.99, 40.99). Please update your length value before saving.');
+                    setShowValidationWarning(true);
                     return;
                   }
-                  // If validation passes, proceed with navigation
+                  // If validation passes, clear warning and proceed with navigation
+                  setShowValidationWarning(false);
                   handleAutoSaveAndNavigate('/dashboard')();
                 }}
                 variant="outline"
                 className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
               >
-                <BarChart3 className="h-5 w-5 text-green-600" />
+                {showValidationWarning ? (
+                  <span className="text-red-500 text-lg">⚠️</span>
+                ) : (
+                  <BarChart3 className="h-5 w-5 text-green-600" />
+                )}
                 Dashboard
               </Button>
             </div>
           </div>
+
+          {/* Validation Warning Message */}
+          {showValidationWarning && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center gap-2 text-red-700">
+                <span className="text-red-500 text-lg">⚠️</span>
+                <span className="font-medium">Validation Error</span>
+              </div>
+              <p className="text-red-600 text-sm mt-1">
+                Length ranges must be in X.99 format (e.g., 30.99, 35.99, 40.99). Please update your length value before saving.
+              </p>
+            </div>
+          )}
 
         {/* Sector Selection Checkboxes */}
         <Card className="mb-6">
