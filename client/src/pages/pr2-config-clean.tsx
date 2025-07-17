@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -1185,20 +1185,20 @@ export default function PR2ConfigClean() {
   const addNewInputsToAllWindows = () => {
     const timestamp = Date.now();
     
-    // Add new quantity input (green window)
+    // Add new quantity input (green window) - default value "5"
     const newQuantityOption: PricingOption = {
       id: `quantity_${timestamp}`,
       label: `No ${formData.quantityOptions.length + 1}`,
       enabled: true,
-      value: ''
+      value: '5'
     };
     
-    // Add new min quantity input (orange window)
+    // Add new min quantity input (orange window) - default value "5"
     const newMinQuantityOption: PricingOption = {
       id: `minquantity_${timestamp + 1}`,
       label: `Qty ${formData.minQuantityOptions.length + 1}`,
       enabled: true,
-      value: ''
+      value: '5'
     };
     
     // Add new range inputs (purple window - percentage and length pair)
@@ -1208,7 +1208,7 @@ export default function PR2ConfigClean() {
       label: `Percentage ${setNumber}`,
       enabled: true,
       rangeStart: '0',
-      rangeEnd: ''
+      rangeEnd: '5'
     };
     
     const newLengthOption: RangeOption = {
@@ -1216,7 +1216,7 @@ export default function PR2ConfigClean() {
       label: `Length ${setNumber}`,
       enabled: true,
       rangeStart: '0',
-      rangeEnd: ''
+      rangeEnd: 'Max'
     };
     
     setFormData(prev => ({
@@ -2261,6 +2261,15 @@ export default function PR2ConfigClean() {
                         className="bg-white border-purple-300 h-6 text-xs w-20"
                       />
                     </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={addNewInputsToAllWindows}
+                      className="h-6 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      Add
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
