@@ -1072,6 +1072,38 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.6' to return to this stable checkpoint
 
+## REV V6.9.7 CHECKPOINT - COST ROUTING & COLOR LOGIC FIXED (July 17, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE COST CALCULATION SYSTEM OPERATIONAL:**
+- **Configuration Priority Fixed**: System now prioritizes configurations with actual pricing values over empty templates
+- **Cost Routing Corrected**: Configuration ID 152 (£1850, 25 runs) properly selected over ID 133 (empty values)
+- **Color Logic Fixed**: Costs display red until minimum quantity is exceeded (not just met)
+- **Smart Selection Logic**: Finds all matching configurations and selects first one with valid day rate and runs per shift values
+- **Minimum Quantity Logic**: Changed from `>=` to `>` comparison - costs red when count ≤ minimum, green when count > minimum
+- **Console Verification**: "✅ Selected config with valid pricing values: 152" and "£1850 ÷ 25 = £74.00" calculation confirmed
+
+🔒 **TECHNICAL IMPLEMENTATION COMPLETE:**
+- **Priority Selection**: Enhanced calculateAutoCost to check all matching configs and prioritize those with non-empty pricing values
+- **Value Validation**: Checks both dayRate and runsPerShift for existence and non-empty strings before selection
+- **Fallback Logic**: If no config with values found, falls back to first matching config with warning
+- **Color Comparison**: Modified checkOrangeMinimumMet from `sectionCount >= highestMinRequired` to `sectionCount > highestMinRequired`
+- **Cost Display**: Proper red/green color coding based on whether minimum quantity threshold is exceeded
+
+🔒 **USER-CONFIRMED WORKING FEATURES:**
+- **Cost Calculation**: £74.00 calculated using authentic configuration values (ID 152)
+- **Configuration Selection**: System selects populated configurations over blank templates
+- **Color Logic**: Costs show red when 25 sections = 25 minimum requirement (not exceeded)
+- **Smart Prioritization**: Automatic preference for configurations with actual pricing data
+- **Database Integration**: Proper storage and retrieval of configuration values with priority logic
+
+🔒 **COST LOGIC BEHAVIOR:**
+- **Red Costs**: When section count ≤ minimum requirement (25 ≤ 25)
+- **Green Costs**: When section count > minimum requirement (26+ > 25)
+- **Configuration Priority**: Non-empty values selected over empty templates
+- **Calculation Accuracy**: Uses correct configuration values for authentic cost calculations
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.7' to return to this stable checkpoint
+
 ## REV V6.4.3 CHECKPOINT - JN FILTERING RESTORATION COMPLETE (July 16, 2025)
 
 🔒 **PRODUCTION READY - JN FILTERING LOGIC FULLY RESTORED:**
