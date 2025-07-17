@@ -32,7 +32,7 @@ const createBlankTP1Template = (categoryId) => {
     categoryId: categoryId,
     categoryName: CATEGORY_NAMES[categoryId],
     description: 'Blank TP1 template - configure with authentic values',
-    categoryColor: '#93c5fd',
+    categoryColor: '#ffffff',
     sector: 'utilities', // Start with utilities, can be copied to other sectors
     pricingOptions: [
       { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }

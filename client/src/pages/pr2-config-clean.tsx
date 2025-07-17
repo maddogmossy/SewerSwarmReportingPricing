@@ -211,7 +211,7 @@ export default function PR2ConfigClean() {
       return {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
-        categoryColor: '#93c5fd', // Default pastel blue color
+        categoryColor: '#ffffff', // Default white color - user must assign color
         pricingOptions: [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' },
           { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' },
@@ -242,7 +242,7 @@ export default function PR2ConfigClean() {
       return {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
-        categoryColor: '#93c5fd', // Default pastel blue color
+        categoryColor: '#ffffff', // Default white color - user must assign color
         pricingOptions: [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
         ],
@@ -1620,9 +1620,19 @@ export default function PR2ConfigClean() {
 
   // Create new pipe-size specific configuration for detected pipe size with correct template
   const createPipeSizeConfiguration = async (pipeSize: string) => {
-    console.log(`🆕 Creating new pipe size-specific configuration for ${pipeSize}mm`);
-    console.log(`🆕 Setting category name to: ${getCategoryName(categoryId)}`);
-    return null; // Still disabled until blank templates are confirmed working
+    console.log(`🆕 Auto-detection: Creating new ${pipeSize} configuration for category: ${categoryId}`);
+    console.log(`🆕 Template type: ${getTemplateType(categoryId)}`);
+    
+    // Check if this pipe size configuration already exists to prevent duplicates
+    const existingPipeConfigs = allCategoryConfigs?.filter((config: any) => {
+      const configName = config.categoryName || '';
+      return configName.includes(`${pipeSize}`) && config.categoryId.includes(categoryId);
+    }) || [];
+    
+    if (existingPipeConfigs.length > 0) {
+      console.log(`✅ ${pipeSize} configuration already exists for ${categoryId}, skipping creation`);
+      return existingPipeConfigs[0].id;
+    }
     
     try {
       const nextId = await getNextAvailableId();
