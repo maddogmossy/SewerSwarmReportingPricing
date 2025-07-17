@@ -724,6 +724,8 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Stability Priority**: User prioritizes app stability over advanced features - avoid breaking working functionality
 - **Screen Flashing Issue**: Complex helper functions cause screen flashing - prefer simple implementations
 - **Performance Focus**: Remove complex useCallback functions that recreate on every render
+- **Validation Preferences**: Use visual red triangle warnings in browser interface instead of browser alert popups
+- **Dashboard Button Policy**: Dashboard button should handle save functionality with validation - never add separate save buttons without explicit user request
 - **UI Design**: 
   - TP1 (cleanse/survey) and TP2 (repair) popups should have identical styling and layout
   - Use category card icons instead of generic icons (Edit for patching, PaintBucket for lining, Pickaxe for excavation)
@@ -1003,6 +1005,40 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Professional Interface**: Clean, consistent category card display with proper ID visibility logic
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.4' to return to this stable checkpoint
+
+## REV V6.9.5 CHECKPOINT - VISUAL VALIDATION SYSTEM LOCKED (July 17, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE VISUAL VALIDATION SYSTEM:**
+- **Dashboard Button Validation**: Length format validation (.99 requirement) integrated into dashboard button as sole save method
+- **Visual Red Triangle Warning**: Replaced browser alert popups with in-app red triangle warning system
+- **Smart Icon Toggle**: Dashboard button shows ⚠️ red triangle when validation fails, green chart icon when valid
+- **Professional Warning Display**: Clean red warning box appears with detailed validation message below navigation
+- **Auto-Save Preservation**: Typing in fields maintains auto-save functionality without validation interference
+- **User Preference Compliance**: Dashboard button handles all save functionality - no separate save buttons added
+
+🔒 **VALIDATION LOGIC IMPLEMENTED:**
+- **Length Format Check**: validateLengthFormat() function enforces X.99 format (30.99, 35.99, 40.99)
+- **Visual State Management**: showValidationWarning state controls red triangle display and warning message
+- **Smart Validation Trigger**: Only validates on manual dashboard button click, not during auto-save
+- **Warning Message**: Clear explanation with examples of proper .99 format requirements
+- **Icon Replacement**: Conditional rendering replaces BarChart3 icon with red warning triangle
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **State Management**: Added showValidationWarning boolean state for visual feedback control
+- **Validation Integration**: Dashboard button onClick validates before proceeding with navigation
+- **Visual Feedback**: Red triangle (⚠️) replaces green chart icon when validation fails
+- **Warning Display**: Professional red-bordered warning box with validation message
+- **Auto-Clear Logic**: Warning automatically clears when user fixes length value
+- **Zero Browser Alerts**: Complete elimination of alert() popups in favor of in-app warnings
+
+🔒 **USER-CONFIRMED WORKING FEATURES:**
+- **Length Value "25"**: Correctly triggers validation warning when dashboard button clicked
+- **Red Triangle Display**: Warning triangle appears on button replacing green chart icon
+- **Warning Message**: Professional validation message displays below navigation buttons
+- **Auto-Save Intact**: Typing in length field continues to auto-save without validation interruption
+- **Dashboard Navigation**: Only proceeds when validation passes, preventing invalid data saves
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.5' to return to this stable checkpoint
 
 ## REV V6.4.3 CHECKPOINT - JN FILTERING RESTORATION COMPLETE (July 16, 2025)
 
