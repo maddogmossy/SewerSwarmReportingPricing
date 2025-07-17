@@ -732,14 +732,24 @@ This prevents data contamination and ensures authentic extraction integrity.
   - Make entire UI containers clickable rather than separate buttons
   - CCTV/Jet Vac should be first option with "Primary" badge
 
-## 🚨 CRITICAL RULE - ZERO SYNTHETIC DATA POLICY (LOCKED JULY 17, 2025)
+## 🚨 CRITICAL RULES - LOCKED (JULY 17, 2025)
+
+### 1. ZERO SYNTHETIC DATA POLICY
 **ABSOLUTE PROHIBITION**: Never create, suggest, or use mock, placeholder, fallback, or synthetic data in any circumstances
 - **NO exceptions** - only authentic data from authorized sources
 - **NO synthetic defects, measurements, or calculations**
 - **NO placeholder values or test data**
-- **MUST ask user for approval before ANY structural changes**
 - **Item 13a restoration confirmed**: Multi-defect system requires both service (13) and structural (13a) defects
-- This rule is permanently locked and displayed on screen per user requirement
+
+### 2. MANDATORY USER APPROVAL RULE  
+**MUST ASK/CHECK WITH USER BEFORE MAKING ANY CHANGES**
+- **NO exceptions** - ask before adding ANY new features or UI elements
+- **MUST explain planned changes before implementing**
+- **NO deleting, modifying, or removing data without explicit approval**
+- **NO structural changes without user confirmation**
+- This rule was repeatedly violated and is now permanently locked with zero tolerance
+
+Both rules are permanently locked and displayed on screen per user requirement
 
 ## REV V7.0 CHECKPOINT - ZERO SYNTHETIC DATA RULE LOCKED & ITEM 13A RESTORED (July 17, 2025)
 
