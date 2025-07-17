@@ -481,9 +481,6 @@ export default function PR2Pricing() {
                           <Waves className="h-8 w-8 mx-auto mb-2 text-blue-600" />
                           <h3 className="font-medium text-sm mb-1">
                             CCTV/Jet Vac - {pipeSize}mm
-                            {existingConfig ? (
-                              <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
-                            ) : null}
                             <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded ml-2">
                               Cat Card
                             </span>
