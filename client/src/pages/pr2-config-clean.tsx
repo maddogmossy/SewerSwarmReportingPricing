@@ -1581,33 +1581,93 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // Create new configuration for detected pipe size
+  // Determine which template to use based on category
+  const getTemplateType = (categoryId: string) => {
+    // TP1 categories: CCTV, van pack, jet vac, cctv/van pack, directional water cutting, tankering
+    const tp1Categories = [
+      'cctv', 'van-pack', 'jet-vac', 'cctv-van-pack', 'cctv-jet-vac', 
+      'directional-water-cutter', 'tankering'
+    ];
+    
+    // TP2 categories: patching only
+    const tp2Categories = ['patching'];
+    
+    if (tp2Categories.includes(categoryId)) {
+      return 'TP2';
+    } else if (tp1Categories.includes(categoryId)) {
+      return 'TP1';
+    } else {
+      // Default to TP1 for new categories (lining, exco, etc. will be added later)
+      return 'TP1';
+    }
+  };
+
+  // Create new configuration for detected pipe size with correct template
   const createPipeSizeConfiguration = async (pipeSize: string) => {
     try {
       const nextId = await getNextAvailableId();
       const pipeSizeNum = pipeSize.replace('mm', '');
+      const templateType = getTemplateType(categoryId);
       
-      const newConfig = {
-        categoryId: `${categoryId}-${pipeSizeNum}mm`,
-        categoryName: `${pipeSizeNum}mm ${getCategoryName(categoryId).replace('TP1 - ', '').replace('TP2 - ', '')}`,
-        description: `0 link tp1 template`,
-        categoryColor: formData.categoryColor,
-        sector: sector,
-        pricingOptions: [{ id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '0' }],
-        quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '0' }],
-        minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '0' }],
-        rangeOptions: [
-          { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '0', rangeEnd: '0' },
-          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '0', rangeEnd: '0' }
-        ],
-        mathOperators: ['N/A'],
-        pricingStackOrder: ['price_dayrate'],
-        quantityStackOrder: ['quantity_runs'],
-        minQuantityStackOrder: ['minquantity_runs'],
-        rangeStackOrder: ['range_percentage', 'range_length']
-      };
+      let newConfig;
+      
+      if (templateType === 'TP2') {
+        // TP2 - Patching Configuration (no green window, custom purple with 4 patching options)
+        newConfig = {
+          categoryId: `${categoryId}-${pipeSizeNum}mm`,
+          categoryName: `${pipeSizeNum}mm ${getCategoryName(categoryId).replace('TP1 - ', '').replace('TP2 - ', '')}`,
+          description: `0 link tp2 template`,
+          categoryColor: formData.categoryColor,
+          sector: sector,
+          pricingOptions: [
+            { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '0' },
+            { id: 'double_layer_cost', label: 'Double Layer', enabled: true, value: '0' },
+            { id: 'triple_layer_cost', label: 'Triple Layer', enabled: true, value: '0' },
+            { id: 'triple_extra_cure_cost', label: 'Triple Layer (Extra Cure)', enabled: true, value: '0' }
+          ],
+          quantityOptions: [], // No green window for TP2
+          minQuantityOptions: [
+            { id: 'patch_min_qty_1', label: 'Min Qty 1', enabled: true, value: '0' },
+            { id: 'patch_min_qty_2', label: 'Min Qty 2', enabled: true, value: '0' },
+            { id: 'patch_min_qty_3', label: 'Min Qty 3', enabled: true, value: '0' },
+            { id: 'patch_min_qty_4', label: 'Min Qty 4', enabled: true, value: '0' }
+          ],
+          rangeOptions: [
+            { id: 'patch_length_1', label: 'Length (Max) 1', enabled: true, rangeStart: '0', rangeEnd: '0' },
+            { id: 'patch_length_2', label: 'Length (Max) 2', enabled: true, rangeStart: '0', rangeEnd: '0' },
+            { id: 'patch_length_3', label: 'Length (Max) 3', enabled: true, rangeStart: '0', rangeEnd: '0' },
+            { id: 'patch_length_4', label: 'Length (Max) 4', enabled: true, rangeStart: '0', rangeEnd: '0' }
+          ],
+          mathOperators: ['N/A'],
+          pricingStackOrder: ['single_layer_cost', 'double_layer_cost', 'triple_layer_cost', 'triple_extra_cure_cost'],
+          quantityStackOrder: [],
+          minQuantityStackOrder: ['patch_min_qty_1', 'patch_min_qty_2', 'patch_min_qty_3', 'patch_min_qty_4'],
+          rangeStackOrder: ['patch_length_1', 'patch_length_2', 'patch_length_3', 'patch_length_4']
+        };
+      } else {
+        // TP1 - Standard Configuration (blue/green/orange/purple windows)
+        newConfig = {
+          categoryId: `${categoryId}-${pipeSizeNum}mm`,
+          categoryName: `${pipeSizeNum}mm ${getCategoryName(categoryId).replace('TP1 - ', '').replace('TP2 - ', '')}`,
+          description: `0 link tp1 template`,
+          categoryColor: formData.categoryColor,
+          sector: sector,
+          pricingOptions: [{ id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '0' }],
+          quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '0' }],
+          minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '0' }],
+          rangeOptions: [
+            { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '0', rangeEnd: '0' },
+            { id: 'range_length', label: 'Length', enabled: true, rangeStart: '0', rangeEnd: '0' }
+          ],
+          mathOperators: ['N/A'],
+          pricingStackOrder: ['price_dayrate'],
+          quantityStackOrder: ['quantity_runs'],
+          minQuantityStackOrder: ['minquantity_runs'],
+          rangeStackOrder: ['range_percentage', 'range_length']
+        };
+      }
 
-      console.log(`🔧 Creating new ${pipeSize} configuration with ID: ${nextId}`);
+      console.log(`🔧 Creating new ${pipeSize} ${templateType} configuration with ID: ${nextId}`);
       await apiRequest('POST', '/api/pr2-clean', newConfig);
       
       // Invalidate cache to refresh configurations
@@ -1975,29 +2035,30 @@ export default function PR2ConfigClean() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
         </div>
 
-        {/* 100mm Configuration Panel */}
-        <Collapsible defaultOpen={false}>
-          <div className="flex items-center gap-2 mb-4">
-            <CollapsibleTrigger asChild>
-              <Button variant="outline" className="flex-1 flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <Settings className="w-4 h-4" />
-                  100mm Configuration Options
-                  <span className="text-xs text-blue-600 ml-2">(ID: 109)</span>
-                </span>
-                <ChevronDown className="w-4 h-4" />
+        {/* Dynamic Pipe Size Configuration Panels */}
+        {getPipeSizeConfigurations().map((pipeSizeConfig) => (
+          <Collapsible key={pipeSizeConfig.id} defaultOpen={false}>
+            <div className="flex items-center gap-2 mb-4">
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" className="flex-1 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Settings className="w-4 h-4" />
+                    {pipeSizeConfig.pipeSize} Configuration Options
+                    <span className="text-xs text-blue-600 ml-2">(ID: {pipeSizeConfig.id})</span>
+                  </span>
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </CollapsibleTrigger>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDeletePipeSizeConfiguration(pipeSizeConfig.id, pipeSizeConfig.pipeSize)}
+                className="px-3 py-2 text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+              >
+                <Trash2 className="w-4 h-4" />
               </Button>
-            </CollapsibleTrigger>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShow100mmDeleteDialog(true)}
-              className="px-3 py-2 text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          </div>
-          <CollapsibleContent className="mb-6">
+            </div>
+            <CollapsibleContent className="mb-6">
             {/* Five-Window Configuration Layout for 100mm */}
             <div className="flex gap-4 p-4 border rounded-lg bg-gray-50 w-full">
               
@@ -2136,6 +2197,17 @@ export default function PR2ConfigClean() {
             </div>
           </CollapsibleContent>
         </Collapsible>
+        ))}
+
+        {/* Manual Test Button - Temporary for testing */}
+        <div className="mb-4">
+          <Button 
+            onClick={() => createPipeSizeConfiguration('225mm')}
+            className="bg-blue-600 text-white"
+          >
+            Test: Create 225mm Configuration
+          </Button>
+        </div>
 
         {/* Collapsible Configuration Panel */}
         <Collapsible defaultOpen={isEditing}>
