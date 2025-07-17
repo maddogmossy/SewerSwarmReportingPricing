@@ -1745,28 +1745,45 @@ export default function PR2ConfigClean() {
     // Only show the current editing configuration to prevent duplicates
     if (isEditing && editId && allCategoryConfigs) {
       const currentConfig = allCategoryConfigs.find(config => config.id === parseInt(editId));
+      console.log(`🔍 getPipeSizeConfigurations called - editId: ${editId}, currentConfig:`, currentConfig);
+      
       if (currentConfig) {
-        const categoryName = currentConfig.categoryName || '';
-        const pipeMatch = categoryName.match(/(\d+)mm/);
+        // Only include the configuration if it has been properly loaded with form data
+        // This prevents showing the empty first render
+        const hasValidFormData = formData.pricingOptions?.some(opt => opt.id && opt.label) ||
+                                 formData.quantityOptions?.some(opt => opt.id && opt.label) ||
+                                 formData.minQuantityOptions?.some(opt => opt.id && opt.label) ||
+                                 formData.rangeOptions?.some(opt => opt.id && opt.label);
         
-        if (pipeMatch) {
-          // Configuration has pipe size in name
-          pipeSizeConfigs.push({
-            pipeSize: pipeMatch[1] + 'mm',
-            config: currentConfig,
-            id: currentConfig.id
-          });
+        console.log(`🔍 Form data validation - hasValidFormData: ${hasValidFormData}`);
+        console.log(`🔍 FormData pricing options:`, formData.pricingOptions);
+        
+        if (hasValidFormData) {
+          const categoryName = currentConfig.categoryName || '';
+          const pipeMatch = categoryName.match(/(\d+)mm/);
+          
+          if (pipeMatch) {
+            // Configuration has pipe size in name
+            pipeSizeConfigs.push({
+              pipeSize: pipeMatch[1] + 'mm',
+              config: currentConfig,
+              id: currentConfig.id
+            });
+          } else {
+            // Configuration doesn't have pipe size in name, use current pipe size
+            pipeSizeConfigs.push({
+              pipeSize: pipeSize || '150mm',
+              config: currentConfig,
+              id: currentConfig.id
+            });
+          }
         } else {
-          // Configuration doesn't have pipe size in name, use current pipe size
-          pipeSizeConfigs.push({
-            pipeSize: pipeSize || '150mm',
-            config: currentConfig,
-            id: currentConfig.id
-          });
+          console.log(`⏭️ Skipping configuration render - form data not fully loaded yet`);
         }
       }
     }
     
+    console.log(`🔍 Returning ${pipeSizeConfigs.length} configurations:`, pipeSizeConfigs);
     return pipeSizeConfigs;
   };
 
