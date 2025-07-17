@@ -3631,7 +3631,12 @@ export default function Dashboard() {
                                   className={`${column.width} px-1 py-1 text-center`}
                                 >
                                   <Button
-                                    onClick={handleServiceCalc}
+                                    onClick={(e) => {
+                                      console.log('🎯 Service Calc button clicked!');
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleServiceCalc();
+                                    }}
                                     size="lg"
                                     className="w-full text-sm h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg"
                                   >
