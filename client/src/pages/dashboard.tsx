@@ -3564,6 +3564,61 @@ export default function Dashboard() {
                       })}
                     </tbody>
                   </table>
+                  
+                  {/* Service buttons aligned with table columns */}
+                  <div className="w-full mt-2">
+                    <table className="w-full text-xs border-collapse" style={{ tableLayout: 'fixed' }}>
+                      <tbody>
+                        <tr>
+                          {columns.map((column) => {
+                            if (hiddenColumns.has(column.key)) return null;
+                            
+                            // Only show buttons for adoptable and cost columns
+                            if (column.key === 'adoptable') {
+                              return (
+                                <td 
+                                  key={column.key}
+                                  className={`${column.width} px-1 py-1 text-center`}
+                                >
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full text-xs h-8 bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-800"
+                                  >
+                                    Service recalculations
+                                  </Button>
+                                </td>
+                              );
+                            } else if (column.key === 'cost') {
+                              return (
+                                <td 
+                                  key={column.key}
+                                  className={`${column.width} px-1 py-1 text-center`}
+                                >
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full text-xs h-8 bg-green-50 hover:bg-green-100 border-green-200 text-green-800"
+                                  >
+                                    Service call culations
+                                  </Button>
+                                </td>
+                              );
+                            } else {
+                              // Empty cell for other columns to maintain alignment
+                              return (
+                                <td 
+                                  key={column.key}
+                                  className={`${column.width} px-1 py-1`}
+                                >
+                                </td>
+                              );
+                            }
+                          })}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </CardContent>
             </Card>
