@@ -464,11 +464,11 @@ export default function PR2ConfigClean() {
     }
   }, [allCategoryConfigs, isEditing, categoryId, sector, setLocation]);
 
-  // DISABLED AUTO-SAVE: Prevent unwanted configuration creation
-  // Auto-save when form data changes (with debouncing) - DISABLED TO PREVENT UNWANTED CONFIGS
-  const disableAutoSave = true; // Set to false to re-enable auto-save
+  // AUTO-SAVE: Only enable for editing existing configurations to prevent unwanted creation
+  // Auto-save when form data changes (with debouncing) - ENABLED FOR EXISTING CONFIGS ONLY
+  const disableAutoSave = !isEditing; // Only auto-save when editing existing configurations
   useEffect(() => {
-    if (disableAutoSave) return; // Skip auto-save entirely
+    if (disableAutoSave) return; // Skip auto-save for new configurations
     
     if (formData.categoryName) {
       const hasActualValues = 
@@ -2187,8 +2187,8 @@ export default function PR2ConfigClean() {
                     <Input
                       placeholder="£"
                       maxLength={10}
-                      value="0"
-                      readOnly
+                      value={formData.pricingOptions?.[0]?.value || ""}
+                      onChange={(e) => handleOptionValueChange('price_dayrate', 'pricingOptions', e.target.value)}
                       className="bg-white border-blue-300 h-6 text-xs w-20"
                     />
                   </div>
@@ -2231,8 +2231,8 @@ export default function PR2ConfigClean() {
                       <Input
                         placeholder="qty"
                         maxLength={4}
-                        value="0"
-                        readOnly
+                        value={formData.quantityOptions?.[0]?.value || ""}
+                        onChange={(e) => handleOptionValueChange('quantity_runs', 'quantityOptions', e.target.value)}
                         className="bg-white border-green-300 h-6 text-xs w-16"
                       />
                     </div>
@@ -2257,8 +2257,8 @@ export default function PR2ConfigClean() {
                       <Input
                         placeholder="min"
                         maxLength={4}
-                        value="0"
-                        readOnly
+                        value={formData.minQuantityOptions?.[0]?.value || ""}
+                        onChange={(e) => handleOptionValueChange('minquantity_runs', 'minQuantityOptions', e.target.value)}
                         className="bg-white border-orange-300 h-6 text-xs w-16"
                       />
                     </div>
@@ -2283,8 +2283,8 @@ export default function PR2ConfigClean() {
                       <Input
                         placeholder="0"
                         maxLength={3}
-                        value="0"
-                        readOnly
+                        value={formData.rangeOptions?.find(r => r.id === 'range_percentage')?.rangeEnd || ""}
+                        onChange={(e) => handleRangeValueChange('range_percentage', 'rangeEnd', e.target.value)}
                         className="bg-white border-purple-300 h-6 text-xs w-16"
                       />
                     </div>
@@ -2295,8 +2295,8 @@ export default function PR2ConfigClean() {
                       <Input
                         placeholder="0"
                         maxLength={6}
-                        value="0"
-                        readOnly
+                        value={formData.rangeOptions?.find(r => r.id === 'range_length')?.rangeEnd || ""}
+                        onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
                         className="bg-white border-purple-300 h-6 text-xs w-20"
                       />
                     </div>
