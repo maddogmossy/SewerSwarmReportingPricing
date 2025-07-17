@@ -2444,6 +2444,7 @@ export default function PR2ConfigClean() {
                                   maxLength={3}
                                   value={percentageOption.rangeEnd || ""}
                                   onChange={(e) => handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
+                                  disabled={!percentageOption.enabled}
                                   className="bg-white border-purple-300 h-6 text-xs w-16 flex items-center"
                                 />
                               </div>
@@ -2458,6 +2459,7 @@ export default function PR2ConfigClean() {
                                   maxLength={6}
                                   value={lengthOption.rangeEnd || ""}
                                   onChange={(e) => handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
+                                  disabled={!lengthOption.enabled}
                                   className="bg-white border-purple-300 h-6 text-xs w-16 flex items-center"
                                 />
                               </div>
