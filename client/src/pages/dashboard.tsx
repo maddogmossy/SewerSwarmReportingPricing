@@ -1758,19 +1758,35 @@ export default function Dashboard() {
       }
     }
 
-    // Find the first configuration that this section meets (for cleaning)
-    let pr2Config = null;
+    // Find configurations that this section meets, prioritizing those with actual values
+    let matchingConfigs = [];
     for (const config of pr2Configurations) {
       if (checkSectionMeetsPR2Requirements(section, config)) {
-        pr2Config = config;
-        break;
+        matchingConfigs.push(config);
       }
     }
     
-    // If no configuration matches, return null to show warning triangles
-    if (!pr2Config) {
+    // If no configurations match, return null
+    if (matchingConfigs.length === 0) {
       console.log('❌ Section does not meet any PR2 configuration requirements');
       return null;
+    }
+    
+    // Prioritize configurations with actual pricing values over empty ones
+    let pr2Config = matchingConfigs.find(config => {
+      const dayRate = config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'))?.value;
+      const runsPerShift = config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value;
+      
+      // Return true if both values exist and are not empty strings
+      return dayRate && dayRate.trim() !== '' && runsPerShift && runsPerShift.trim() !== '';
+    });
+    
+    // If no config with values found, fall back to first matching config
+    if (!pr2Config) {
+      pr2Config = matchingConfigs[0];
+      console.log('⚠️ Using first matching config despite empty values:', pr2Config.id);
+    } else {
+      console.log('✅ Selected config with valid pricing values:', pr2Config.id);
     }
     
     console.log('🎯 Using PR2 config:', pr2Config.id, 'for section:', section.itemNo);
