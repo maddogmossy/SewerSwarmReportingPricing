@@ -875,6 +875,36 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.4.2' to return to this stable checkpoint
 
+## REV V6.5 CHECKPOINT - 100MM DROPDOWN WINDOW SYSTEM LOCKED (July 17, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE 100MM CONFIGURATION SYSTEM:**
+- **New 100mm Dropdown Window**: Added dedicated dropdown window between configuration title and 150mm options
+- **Database Entry Created**: New configuration ID 109 for "100mm CCTV Jet Vac Configuration" with "0 link tp1 template" values
+- **Template Structure**: All five windows (blue/math/green/orange/purple) display with zero values as requested
+- **Read-Only Template**: Input fields are read-only to maintain template state with placeholder values
+- **Proper Positioning**: 100mm dropdown positioned below "CCTV Jet Vac Configuration" title, above "150mm Configuration Options"
+- **Consistent Styling**: Matches existing dropdown structure with proper collapsible functionality
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Database Record**: ID 109 created with category_id "cctv-jet-vac-100mm" and utilities sector
+- **UI Component**: New Collapsible section with CollapsibleTrigger showing "100mm Configuration Options (ID: 109)"
+- **Template Values**: All pricing/quantity/range options set to "0" with "0 link tp1 template" description
+- **Icon Import**: Added Target icon import to support orange window Min Quantity Options
+- **Five-Window Layout**: Complete blue/math/green/orange/purple window structure for 100mm configuration
+
+🔒 **DATABASE STATE CONFIRMED:**
+- **ID 48**: CCTV Jet Vac Configuration (150mm, utilities)
+- **ID 105**: TP2 - Patching Configuration (utilities)  
+- **ID 109**: 100mm CCTV Jet Vac Configuration (NEW, utilities)
+
+🔒 **UI COMPONENT ARCHITECTURE:**
+- **100mm Dropdown Header**: "100mm Configuration Options (ID: 109)" - CollapsibleTrigger component
+- **Template Display**: All fields show "0" values with read-only attribute to preserve template state
+- **Consistent Layout**: Mirrors 150mm dropdown structure with proper spacing and color-coded windows
+- **Professional Styling**: Uses same card components and styling as existing configuration windows
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.5' to return to this stable checkpoint
+
 ## REV V6.4.3 CHECKPOINT - JN FILTERING RESTORATION COMPLETE (July 16, 2025)
 
 🔒 **PRODUCTION READY - JN FILTERING LOGIC FULLY RESTORED:**
