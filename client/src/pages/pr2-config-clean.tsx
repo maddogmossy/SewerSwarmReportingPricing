@@ -413,33 +413,34 @@ export default function PR2ConfigClean() {
     });
   }
 
-  // Clean up extra entries from green and orange windows
+  // Manual cleanup to remove specific extra entries
   const cleanupExtraEntries = () => {
     setFormData(prev => ({
       ...prev,
       quantityOptions: prev.quantityOptions.filter(opt => 
-        opt.label === "Runs per Shift" // Keep only the first entry
+        opt.id === "quantity_runs" // Keep only "Runs per Shift"
       ),
-      quantityStackOrder: prev.quantityStackOrder.filter(id => 
-        prev.quantityOptions.find(opt => opt.id === id && opt.label === "Runs per Shift")
-      ),
+      quantityStackOrder: ["quantity_runs"],
       minQuantityOptions: prev.minQuantityOptions.filter(opt => 
-        opt.label === "Min Runs per Shift" // Keep only the first entry
+        opt.id === "minquantity_runs" // Keep only "Min Runs per Shift"
       ),
-      minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => 
-        prev.minQuantityOptions.find(opt => opt.id === id && opt.label === "Min Runs per Shift")
-      )
+      minQuantityStackOrder: ["minquantity_runs"]
     }));
-    console.log(`🧹 Cleaned up extra entries from green and orange windows`);
+    console.log(`🧹 Manual cleanup completed - removed all extra entries`);
   }
 
-  // Clean up on component mount if needed
+  // Add manual cleanup button trigger
   React.useEffect(() => {
-    if (formData.quantityOptions.length > 1 || formData.minQuantityOptions.length > 1) {
-      console.log(`🔍 Found extra entries - cleaning up...`);
-      cleanupExtraEntries();
+    // Run cleanup after configuration loads
+    if (editId && formData.quantityOptions.length > 1) {
+      console.log(`🔍 Configuration loaded with extra entries - running cleanup...`);
+      const timeoutId = setTimeout(() => {
+        cleanupExtraEntries();
+      }, 1000); // Delay to ensure data is loaded
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, []);
+  }, [editId, formData.quantityOptions.length]);
 
   // Handle range value changes for purple window
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
