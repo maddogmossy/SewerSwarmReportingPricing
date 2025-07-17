@@ -2563,39 +2563,27 @@ export default function PR2ConfigClean() {
                         📏 Ranges
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2">
-                      {formData.rangeOptions?.map((option, pairIndex) => (
-                        <div key={option.id} className="flex items-center gap-2 text-xs">
-                          <span className="font-medium min-w-0 flex-1 truncate">{option.label === "Percentage" ? "Percentage" : "Length"}</span>
+                    <CardContent>
+                      <div className="flex items-center gap-4 text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">Percentage (Max)</span>
                           <Input
                             placeholder=""
-                            value={option.rangeEnd || ""}
-                            onChange={(e) => handleValueChange('rangeOptions', option.id, e.target.value, 'rangeEnd')}
+                            value={formData.rangeOptions?.find(opt => opt.label === "Percentage")?.rangeEnd || ""}
+                            onChange={(e) => handleValueChange('rangeOptions', formData.rangeOptions?.find(opt => opt.label === "Percentage")?.id, e.target.value, 'rangeEnd')}
                             className="bg-white border-purple-300 h-6 text-xs w-16"
                           />
-                          {pairIndex === 0 && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={addNewInputsToAllWindows}
-                              className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
-                            >
-                              <Plus className="w-3 h-3 mr-1" />
-                              Add
-                            </Button>
-                          )}
-                          {pairIndex > 0 && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => deleteRangePair(pairIndex)}
-                              className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          )}
                         </div>
-                      ))}
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">Length (Max)</span>
+                          <Input
+                            placeholder=""
+                            value={formData.rangeOptions?.find(opt => opt.label === "Length")?.rangeEnd || ""}
+                            onChange={(e) => handleValueChange('rangeOptions', formData.rangeOptions?.find(opt => opt.label === "Length")?.id, e.target.value, 'rangeEnd')}
+                            className="bg-white border-purple-300 h-6 text-xs w-20"
+                          />
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
