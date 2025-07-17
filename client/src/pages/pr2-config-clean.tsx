@@ -1706,31 +1706,30 @@ export default function PR2ConfigClean() {
       id: number;
     }> = [];
     
-    allCategoryConfigs.forEach((config: any) => {
-      const categoryName = config.categoryName || '';
+    // Only show the main editing configuration, not all configurations
+    // This prevents duplicate dropdowns from appearing
+    if (configToUse) {
+      const categoryName = configToUse.categoryName || '';
       const pipeMatch = categoryName.match(/(\d+)mm/);
+      
       if (pipeMatch) {
+        // Configuration has pipe size in name
         pipeSizeConfigs.push({
           pipeSize: pipeMatch[1] + 'mm',
-          config: config,
-          id: config.id
+          config: configToUse,
+          id: configToUse.id
         });
-      } else if (config.categoryId === 'patching') {
-        // Show patching configurations for current pipe size even if name doesn't include pipe size
+      } else {
+        // Configuration doesn't have pipe size in name, use current pipe size
         pipeSizeConfigs.push({
-          pipeSize: pipeSize || '150mm', // Use current pipe size
-          config: config,
-          id: config.id
+          pipeSize: pipeSize || '150mm',
+          config: configToUse,
+          id: configToUse.id
         });
       }
-    });
+    }
     
-    // Sort by pipe size numerically
-    return pipeSizeConfigs.sort((a, b) => {
-      const numA = parseInt(a.pipeSize.replace('mm', ''));
-      const numB = parseInt(b.pipeSize.replace('mm', ''));
-      return numA - numB;
-    });
+    return pipeSizeConfigs;
   };
 
   // Delete handler for any pipe size configuration
