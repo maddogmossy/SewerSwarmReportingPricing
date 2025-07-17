@@ -2265,447 +2265,58 @@ export default function PR2ConfigClean() {
         })}
 
 
-
-        {/* Collapsible Configuration Panel */}
-        <Collapsible defaultOpen={isEditing}>
-          <div className="flex items-center gap-2 mb-4">
-            <CollapsibleTrigger asChild>
-              <Button variant="outline" className="flex-1 flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <Settings className="w-4 h-4" />
-                  150mm Configuration Options
-                  {editId && (
-                    <span className="text-xs text-blue-600 ml-2">(ID: {editId})</span>
-                  )}
-                </span>
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-            </CollapsibleTrigger>
-            {isEditing && editId && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowDeleteDialog(true)}
-                className="px-3 py-2 text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
-          <CollapsibleContent className="mb-6">
-            {/* Five-Window Configuration Layout */}
-            <div className="flex gap-4 p-4 border rounded-lg bg-gray-50 w-full">
-              
-              {/* Blue Window: Day Rate - Hidden for TP2 */}
-              {categoryId !== 'patching' && (
-                <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
-                      <Coins className="w-3 h-3" />
-                      Price/Cost Options
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-1">
-                    <div className="flex items-center gap-1">
-                      <Label htmlFor="price_dayrate" className="text-xs font-medium text-blue-700 flex-shrink-0">
-                        Rate
-                      </Label>
-                      <Input
-                        id="price_dayrate"
-                        placeholder="£"
-                        maxLength={10}
-                        value={formData.pricingOptions.find(opt => opt.id === 'price_dayrate')?.value || ''}
-                        onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
-                        className="bg-white border-blue-300 h-6 text-xs w-20"
-                        data-field="day-rate"
-                        data-window="blue"
-                        data-option-id="price_dayrate"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Math Window - Hidden for TP2 */}
-              {categoryId !== 'patching' && (
-                <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
-                      <Calculator className="w-3 h-3 mr-1" />
-                      Math
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-1">
-                    <div className="flex items-center justify-center">
-                      <Select>
-                        <SelectTrigger className="bg-white border-gray-300 h-8 text-sm w-12">
-                          <SelectValue placeholder="÷" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="divide">÷</SelectItem>
-                          <SelectItem value="multiply">×</SelectItem>
-                          <SelectItem value="add">+</SelectItem>
-                          <SelectItem value="subtract">-</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Green Window: Runs per Shift - Hidden for TP2 */}
-              {categoryId !== 'patching' && (
-                <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-green-700 text-xs flex items-center gap-1">
-                      <Package className="w-3 h-3" />
-                      Quantity Options
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-1">
-                    <div className="space-y-1">
-                      {formData.quantityOptions.map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-2">
-                          <Label htmlFor={option.id} className="text-xs font-medium text-green-700 flex-shrink-0">
-                            No{formData.quantityOptions.length > 1 ? ` ${index + 1}` : ''}
-                          </Label>
-                          <Input
-                            id={option.id}
-                            placeholder="qty"
-                            maxLength={4}
-                            value={option.value || ''}
-                            onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                            className="bg-white border-green-300 h-6 text-xs w-16"
-                            data-field={`quantity-${index}`}
-                            data-window="green"
-                            data-option-id={option.id}
-                          />
-
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Orange Window: Min Runs per Shift - Hidden for TP2 */}
-              {categoryId !== 'patching' && (
-                <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
-                      <Gauge className="w-3 h-3" />
-                      Min Quantity Options
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-1">
-                    <div className="space-y-1">
-                      {formData.minQuantityOptions.map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-2">
-                          <Label htmlFor={option.id} className="text-xs font-medium text-orange-700 flex-shrink-0">
-                            Qty{formData.minQuantityOptions.length > 1 ? ` ${index + 1}` : ''}
-                          </Label>
-                          <Input
-                            id={option.id}
-                            placeholder="min"
-                            maxLength={4}
-                            value={option.value || ''}
-                            onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
-                            className="bg-white border-orange-300 h-6 text-xs w-16"
-                            data-field={`min-quantity-${index}`}
-                            data-window="orange"
-                            data-option-id={option.id}
-                          />
-
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Purple Window: Percentage and Length on One Row */}
-              <Card className="bg-purple-50 border-purple-200 flex-1">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-purple-700 text-xs flex items-center gap-1 justify-between whitespace-nowrap">
-                    <span className="flex items-center gap-1">
-                      <Zap className="w-3 h-3" />
-                      Range Options
-                    </span>
-                    {categoryId !== 'patching' && (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="h-6 px-3 text-xs bg-green-600 hover:bg-green-700 text-white border-0 shadow-sm font-medium"
-                        onClick={() => addNewInputsToAllWindows()}
-                      >
-                        <span className="text-white">✚</span> Add New
-                      </Button>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="py-1">
-                  <div className="space-y-1">
-                    {categoryId === 'patching' ? (
-                      /* TP2 Patching: Numbered List with Consistent Input Windows */
-                      <div className="space-y-2">
-                        {/* Layer Options as Numbered List - All with Same Layout */}
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
-                              1.
-                            </Label>
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-32 flex items-center gap-2">
-                              Single Layer
-                              {/* Admin Lock/Unlock icon for TP2 Option 1 */}
-                              {adminData?.isAdmin && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    const currentLock = Array.isArray(adminControls) ? adminControls.find(c => c.controlType === 'tp2_option_1_lock') : null;
-                                    const isLocked = currentLock?.isLocked || false;
-                                    toggleAdminControl.mutate({
-                                      isLocked: !isLocked,
-                                      lockReason: isLocked ? undefined : 'Admin-level security control'
-                                    });
-                                  }}
-                                  className="h-4 w-4 p-0 text-purple-700 hover:text-red-600"
-                                >
-                                  {Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked ? (
-                                    <Lock className="h-3 w-3" />
-                                  ) : (
-                                    <Unlock className="h-3 w-3" />
-                                  )}
-                                </Button>
-                              )}
-                            </Label>
-                            <Input
-                              id="single_layer_cost"
-                              placeholder="£"
-                              maxLength={6}
-                              value={formData.pricingOptions.find(opt => opt.id === 'single_layer_cost')?.value || ''}
-                              onChange={(e) => handleValueChange('pricingOptions', 'single_layer_cost', e.target.value)}
-                              className={`h-6 text-xs w-16 ${
-                                Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
-                                  ? 'bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed'
-                                  : 'bg-white border-purple-300'
-                              }`}
-                              disabled={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
-                              readOnly={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
-                            />
-                            <Label className={`text-xs font-medium flex-shrink-0 ml-4 ${
-                              Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
-                                ? 'text-gray-500'
-                                : 'text-purple-700'
-                            }`}>
-                              Min Qty
-                            </Label>
-                            <Input
-                              id="patch_min_qty_1"
-                              placeholder="qty"
-                              maxLength={3}
-                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty_1')?.value || ''}
-                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty_1', e.target.value)}
-                              className={`h-6 text-xs w-12 ${
-                                Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
-                                  ? 'bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed'
-                                  : 'bg-white border-purple-300'
-                              }`}
-                              disabled={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
-                              readOnly={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
-                            />
-                            <Label className={`text-xs font-medium flex-shrink-0 ml-4 ${
-                              Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
-                                ? 'text-gray-500'
-                                : 'text-purple-700'
-                            }`}>
-                              Length (Max)
-                            </Label>
-                            <Input
-                              id="range_length"
-                              placeholder="mm"
-                              maxLength={4}
-                              value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
-                              onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                              className={`h-6 text-xs w-20 ${
-                                Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin
-                                  ? 'bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed'
-                                  : 'bg-white border-purple-300'
-                              }`}
-                              disabled={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
-                              readOnly={Array.isArray(adminControls) && adminControls.find(c => c.controlType === 'tp2_option_1_lock')?.isLocked && !adminData?.isAdmin}
-                            />
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
-                              2.
-                            </Label>
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-32">
-                              Double Layer
-                            </Label>
-                            <Input
-                              id="double_layer_cost"
-                              placeholder="£"
-                              maxLength={6}
-                              value={formData.pricingOptions.find(opt => opt.id === 'double_layer_cost')?.value || ''}
-                              onChange={(e) => handleValueChange('pricingOptions', 'double_layer_cost', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-16"
-                            />
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
-                              Min Qty
-                            </Label>
-                            <Input
-                              id="patch_min_qty_2"
-                              placeholder="qty"
-                              maxLength={3}
-                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty_2')?.value || ''}
-                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty_2', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-12"
-                            />
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
-                              Length (Max)
-                            </Label>
-                            <Input
-                              id="range_length_2"
-                              placeholder="mm"
-                              maxLength={4}
-                              value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
-                              onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-20"
-                            />
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
-                              3.
-                            </Label>
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-32">
-                              Triple Layer
-                            </Label>
-                            <Input
-                              id="triple_layer_cost"
-                              placeholder="£"
-                              maxLength={6}
-                              value={formData.pricingOptions.find(opt => opt.id === 'triple_layer_cost')?.value || ''}
-                              onChange={(e) => handleValueChange('pricingOptions', 'triple_layer_cost', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-16"
-                            />
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
-                              Min Qty
-                            </Label>
-                            <Input
-                              id="patch_min_qty_3"
-                              placeholder="qty"
-                              maxLength={3}
-                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty_3')?.value || ''}
-                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty_3', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-12"
-                            />
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
-                              Length (Max)
-                            </Label>
-                            <Input
-                              id="range_length_3"
-                              placeholder="mm"
-                              maxLength={4}
-                              value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
-                              onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-20"
-                            />
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-8">
-                              4.
-                            </Label>
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 w-32">
-                              Triple Layer (Extra Cure)
-                            </Label>
-                            <Input
-                              id="triple_extra_cure_cost"
-                              placeholder="£"
-                              maxLength={6}
-                              value={formData.pricingOptions.find(opt => opt.id === 'triple_extra_cure_cost')?.value || ''}
-                              onChange={(e) => handleValueChange('pricingOptions', 'triple_extra_cure_cost', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-16"
-                            />
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
-                              Min Qty
-                            </Label>
-                            <Input
-                              id="patch_min_qty_4"
-                              placeholder="qty"
-                              maxLength={3}
-                              value={formData.minQuantityOptions.find(opt => opt.id === 'patch_min_qty_4')?.value || ''}
-                              onChange={(e) => handleValueChange('minQuantityOptions', 'patch_min_qty_4', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-12"
-                            />
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0 ml-4">
-                              Length (Max)
-                            </Label>
-                            <Input
-                              id="range_length_4"
-                              placeholder="mm"
-                              maxLength={4}
-                              value={formData.rangeOptions.find(opt => opt.id === 'range_length')?.rangeEnd || '1000'}
-                              onChange={(e) => handleRangeValueChange('range_length', 'rangeEnd', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-20"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      /* TP1 Standard: Percentage + Length pairs */
-                      Array.from({ length: Math.ceil(formData.rangeOptions.length / 2) }, (_, setIndex) => {
-                        // Get pairs by array indices: 0,1 then 2,3 then 4,5 etc.
-                        const percentageOption = formData.rangeOptions[setIndex * 2];
-                        const lengthOption = formData.rangeOptions[setIndex * 2 + 1];
-                        
-                        return (
-                          <div key={`range-set-${setIndex}`} className="flex items-center gap-2 w-full">
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                              % (Max){Math.ceil(formData.rangeOptions.length / 2) > 1 ? ` ${setIndex + 1}` : ''}
-                            </Label>
-                            <Input
-                              id={percentageOption?.id || `percentage_${setIndex}`}
-                              placeholder="%"
-                              maxLength={3}
-                              value={percentageOption?.rangeEnd || ''}
-                              onChange={(e) => percentageOption && handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-16"
-                            />
-                            <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                              Length (Max){Math.ceil(formData.rangeOptions.length / 2) > 1 ? ` ${setIndex + 1}` : ''}
-                            </Label>
-                            <Input
-                              id={lengthOption?.id || `length_${setIndex}`}
-                              placeholder="mm"
-                              maxLength={4}
-                              value={lengthOption?.rangeEnd || ''}
-                              onChange={(e) => lengthOption && handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-20"
-                            />
-                            {/* Show delete button for dynamically added sets (not the original set) */}
-                            {setIndex > 0 && percentageOption && lengthOption && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-4 w-4 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                onClick={() => deleteInputsFromAllWindows(setIndex)}
-                                title="Delete inputs from all windows"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            )}
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+        {/* Note: Configuration panels now handled by Dynamic Pipe Size Configuration Panels above */}
       </div>
+
+      {/* Sector Selection Checkboxes */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="text-gray-900 flex items-center gap-2">
+            <Building className="w-5 h-5" />
+            Apply Configuration to Sectors
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {SECTORS.map((sect) => {
+              const sectorConfig = SECTOR_CONFIG[sect.id];
+              const isCurrentSector = sect.id === sector;
+              return (
+                <div key={sect.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={sect.id}
+                    checked={isCurrentSector || appliedSectors.includes(sect.id)}
+                    disabled={isCurrentSector}
+                    onCheckedChange={(checked) => {
+                      if (checked && !isCurrentSector) {
+                        setAppliedSectors(prev => [...prev, sect.id]);
+                        if (editId) {
+                          handleCreateSectorCopy(sect.id);
+                        }
+                      } else if (!checked && !isCurrentSector) {
+                        setAppliedSectors(prev => prev.filter(s => s !== sect.id));
+                      }
+                    }}
+                  />
+                  <Label 
+                    htmlFor={sect.id} 
+                    className={`text-sm font-medium ${sectorConfig.textColor} ${isCurrentSector ? 'opacity-75' : 'cursor-pointer'}`}
+                  >
+                    {sect.label}
+                    {isCurrentSector && ' (Current)'}
+                  </Label>
+                </div>
+              );
+            })}
+          </div>
+          <Button 
+            onClick={handleSaveSectors} 
+            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Save Sectors
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
