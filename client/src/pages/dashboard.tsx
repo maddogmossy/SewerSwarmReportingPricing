@@ -3700,19 +3700,7 @@ export default function Dashboard() {
                     </table>
                   </div>
                   
-                  {/* TEST BUTTON - Outside table structure */}
-                  <div className="w-full mt-4 flex justify-center">
-                    <button
-                      onClick={() => {
-                        console.log('🔥 TEST BUTTON CLICKED - Service Calc Test');
-                        alert('Test button works!');
-                      }}
-                      type="button"
-                      className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg"
-                    >
-                      TEST Service Calc Button
-                    </button>
-                  </div>
+
                 </div>
               </CardContent>
             </Card>
