@@ -3582,9 +3582,9 @@ export default function Dashboard() {
                                 >
                                   <Button
                                     size="sm"
-                                    className="w-full text-xs h-8 bg-blue-600 hover:bg-blue-700 text-white font-bold border-0"
+                                    className="w-full text-xs h-8 bg-green-600 hover:bg-green-700 text-white font-bold border-0"
                                   >
-                                    Recalculations
+                                    Service Recalculations
                                   </Button>
                                 </td>
                               );
@@ -3596,9 +3596,9 @@ export default function Dashboard() {
                                 >
                                   <Button
                                     size="sm"
-                                    className="w-full text-xs h-8 bg-green-600 hover:bg-green-700 text-white font-bold border-0"
+                                    className="w-full text-xs h-8 bg-red-600 hover:bg-red-700 text-white font-bold border-0"
                                   >
-                                    Calculations
+                                    Structural Recalculations
                                   </Button>
                                 </td>
                               );
