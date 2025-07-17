@@ -446,16 +446,8 @@ export default function PR2ConfigClean() {
     console.log(`🧹 Removed extra green and orange entries, kept base entries only`);
   }
 
-  // Run one-time cleanup when editing configuration 152
-  React.useEffect(() => {
-    if (editId === "152" && formData.quantityOptions.length > 1) {
-      const timeoutId = setTimeout(() => {
-        removeExtraGreenOrangeEntries();
-      }, 1000);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [editId, formData.quantityOptions.length]);
+  // DISABLED: Auto cleanup was interfering with manual add operations
+  // User needs to manually control when to clean up extra entries
 
   // Handle range value changes for purple window
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
