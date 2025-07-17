@@ -1682,15 +1682,15 @@ export default function PR2ConfigClean() {
 
   // Automatically detect new pipe sizes from dashboard navigation
   useEffect(() => {
-    if (pipeSize && categoryId && allCategoryConfigs && pipeSize !== '225') {
+    if (pipeSize && categoryId && allCategoryConfigs) {
       const existingPipeSizes = getExistingPipeSizes();
       
-      // Check if this pipe size already exists and exclude 225mm to prevent test cards
+      // Check if this pipe size already exists
       if (!existingPipeSizes.includes(pipeSize)) {
         console.log(`🔍 New pipe size detected: ${pipeSize}`);
         console.log(`📋 Existing pipe sizes:`, existingPipeSizes);
         
-        // Create new configuration for this pipe size (except 225mm test cases)
+        // Create new configuration for this pipe size
         createPipeSizeConfiguration(pipeSize);
       }
     }
