@@ -2520,7 +2520,7 @@ export default function PR2ConfigClean() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {formData.quantityOptions?.map((option, index) => (
+                      {formData.quantityOptions?.map((option) => (
                         <div key={option.id} className="flex items-center gap-2 text-xs">
                           <span className="font-medium min-w-0 flex-1 truncate">Runs per Shift</span>
                           <Input
@@ -2529,27 +2529,6 @@ export default function PR2ConfigClean() {
                             onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
                             className="bg-white border-green-300 h-6 text-xs w-16"
                           />
-                          {index === 0 && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={addNewInputsToAllWindows}
-                              className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
-                            >
-                              <Plus className="w-3 h-3 mr-1" />
-                              Add
-                            </Button>
-                          )}
-                          {index > 0 && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => deleteRangePair(index)}
-                              className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          )}
                         </div>
                       ))}
                     </CardContent>
@@ -2563,7 +2542,7 @@ export default function PR2ConfigClean() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {formData.minQuantityOptions?.map((option, index) => (
+                      {formData.minQuantityOptions?.map((option) => (
                         <div key={option.id} className="flex items-center gap-2 text-xs">
                           <span className="font-medium min-w-0 flex-1 truncate">Min Runs per Shift</span>
                           <Input
@@ -2572,16 +2551,6 @@ export default function PR2ConfigClean() {
                             onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
                             className="bg-white border-orange-300 h-6 text-xs w-16"
                           />
-                          {index > 0 && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => deleteRangePair(index)}
-                              className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          )}
                         </div>
                       ))}
                     </CardContent>
@@ -2596,16 +2565,25 @@ export default function PR2ConfigClean() {
                     </CardHeader>
                     <CardContent className="space-y-2">
                       {formData.rangeOptions?.map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-4 text-xs">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{option.label === "Percentage" ? "Percentage (Max)" : `${option.label} (Max)`}</span>
-                            <Input
-                              placeholder=""
-                              value={option.rangeEnd || ""}
-                              onChange={(e) => handleValueChange('rangeOptions', option.id, e.target.value, 'rangeEnd')}
-                              className="bg-white border-purple-300 h-6 text-xs w-16"
-                            />
-                          </div>
+                        <div key={option.id} className="flex items-center gap-2 text-xs">
+                          <span className="font-medium min-w-0 flex-1 truncate">{option.label === "Percentage" ? "Percentage (Max)" : `${option.label} (Max)`}</span>
+                          <Input
+                            placeholder=""
+                            value={option.rangeEnd || ""}
+                            onChange={(e) => handleValueChange('rangeOptions', option.id, e.target.value, 'rangeEnd')}
+                            className="bg-white border-purple-300 h-6 text-xs w-16"
+                          />
+                          {index === 0 && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={addNewInputsToAllWindows}
+                              className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
+                            >
+                              <Plus className="w-3 h-3 mr-1" />
+                              Add
+                            </Button>
+                          )}
                           {index > 0 && (
                             <Button
                               size="sm"
