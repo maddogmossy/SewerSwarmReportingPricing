@@ -560,11 +560,21 @@ export default function PR2Pricing() {
                   // Check if this is a user-created category
                   const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
                   
-                  // Check for existing configuration (simplified logic)
-                  const existingConfiguration = pr2Configurations.find(config => 
-                    config.categoryId === category.id ||
-                    (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac')
-                  );
+                  // Check for existing configuration with actual values (not blank templates)
+                  const existingConfiguration = pr2Configurations.find(config => {
+                    const isMatchingCategory = config.categoryId === category.id ||
+                      (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac');
+                    
+                    if (!isMatchingCategory) return false;
+                    
+                    // Only consider it "configured" if it has actual values, not blank template
+                    const hasActualValues = config.pricingOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
+                                          config.quantityOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
+                                          config.minQuantityOptions?.some(opt => opt.value && opt.value.trim() !== '') ||
+                                          config.rangeOptions?.some(opt => (opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== ''));
+                    
+                    return hasActualValues;
+                  });
                   
 
                   
