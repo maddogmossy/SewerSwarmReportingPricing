@@ -1855,6 +1855,10 @@ export default function PR2ConfigClean() {
       // Close any open delete dialogs
       setShow100mmDeleteDialog(false);
       
+      // Navigate back to pricing page after successful deletion
+      console.log(`✅ Configuration ${configId} deleted successfully, navigating to pricing page`);
+      setLocation(`/pr2-pricing?sector=${sector || 'utilities'}`);
+      
     } catch (error) {
       console.error(`❌ Error deleting ${pipeSize} configuration:`, error);
     }
