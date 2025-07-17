@@ -2559,7 +2559,7 @@ export default function PR2ConfigClean() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {formData.rangeOptions?.map((option) => (
+                      {formData.rangeOptions?.map((option, pairIndex) => (
                         <div key={option.id} className="flex items-center gap-2 text-xs">
                           <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
                           <Input
@@ -2575,6 +2575,27 @@ export default function PR2ConfigClean() {
                             onChange={(e) => handleValueChange('rangeOptions', option.id, e.target.value, 'rangeEnd')}
                             className="bg-white border-purple-300 h-6 text-xs w-12"
                           />
+                          {pairIndex === 0 && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={addNewInputsToAllWindows}
+                              className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
+                            >
+                              <Plus className="w-3 h-3 mr-1" />
+                              Add
+                            </Button>
+                          )}
+                          {pairIndex > 0 && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => deleteRangePair(pairIndex)}
+                              className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          )}
                         </div>
                       ))}
                     </CardContent>
