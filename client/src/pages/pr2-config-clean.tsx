@@ -2321,20 +2321,45 @@ export default function PR2ConfigClean() {
                   </CardHeader>
                   <CardContent className="py-1">
                     <div className="space-y-1">
-                      {formData.quantityOptions?.map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-1">
-                          <Label className="text-xs font-medium text-green-700 flex-shrink-0">
-                            {option.label.split(' ')[0]}
-                          </Label>
-                          <Input
-                            placeholder="qty"
-                            maxLength={4}
-                            value={option.value || ""}
-                            onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                            className="bg-white border-green-300 h-6 text-xs w-16 flex items-center"
-                          />
-                        </div>
-                      ))}
+                      {formData.quantityOptions && 
+                        Array.from({ length: Math.ceil(formData.quantityOptions.length / 2) }, (_, pairIndex) => {
+                          const firstOption = formData.quantityOptions[pairIndex * 2];
+                          const secondOption = formData.quantityOptions[pairIndex * 2 + 1];
+                          
+                          return (
+                            <div key={`pair-${pairIndex}`} className="flex gap-2">
+                              {firstOption && (
+                                <div className="flex items-center gap-1">
+                                  <Label className="text-xs font-medium text-green-700 flex-shrink-0">
+                                    {firstOption.label.split(' ')[0]}
+                                  </Label>
+                                  <Input
+                                    placeholder="qty"
+                                    maxLength={4}
+                                    value={firstOption.value || ""}
+                                    onChange={(e) => handleValueChange('quantityOptions', firstOption.id, e.target.value)}
+                                    className="bg-white border-green-300 h-6 text-xs w-16 flex items-center"
+                                  />
+                                </div>
+                              )}
+                              {secondOption && (
+                                <div className="flex items-center gap-1">
+                                  <Label className="text-xs font-medium text-green-700 flex-shrink-0">
+                                    {secondOption.label.split(' ')[0]}
+                                  </Label>
+                                  <Input
+                                    placeholder="qty"
+                                    maxLength={4}
+                                    value={secondOption.value || ""}
+                                    onChange={(e) => handleValueChange('quantityOptions', secondOption.id, e.target.value)}
+                                    className="bg-white border-green-300 h-6 text-xs w-16 flex items-center"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })
+                      }
                     </div>
                   </CardContent>
                 </Card>
@@ -2349,22 +2374,47 @@ export default function PR2ConfigClean() {
                   </CardHeader>
                   <CardContent className="py-1">
                     <div className="space-y-1">
-                      {formData.minQuantityOptions?.map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-1">
-                          <Label className="text-xs font-medium text-orange-700 flex-shrink-0">
-                            {option.label.split(' ')[0]}
-                          </Label>
-                        <Input
-                          placeholder="min"
-                          maxLength={4}
-                          value={option.value || ""}
-                          onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
-                          className="bg-white border-orange-300 h-6 text-xs w-16 flex items-center"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
+                      {formData.minQuantityOptions && 
+                        Array.from({ length: Math.ceil(formData.minQuantityOptions.length / 2) }, (_, pairIndex) => {
+                          const firstOption = formData.minQuantityOptions[pairIndex * 2];
+                          const secondOption = formData.minQuantityOptions[pairIndex * 2 + 1];
+                          
+                          return (
+                            <div key={`pair-${pairIndex}`} className="flex gap-2">
+                              {firstOption && (
+                                <div className="flex items-center gap-1">
+                                  <Label className="text-xs font-medium text-orange-700 flex-shrink-0">
+                                    {firstOption.label.split(' ')[0]}
+                                  </Label>
+                                  <Input
+                                    placeholder="min"
+                                    maxLength={4}
+                                    value={firstOption.value || ""}
+                                    onChange={(e) => handleValueChange('minQuantityOptions', firstOption.id, e.target.value)}
+                                    className="bg-white border-orange-300 h-6 text-xs w-16 flex items-center"
+                                  />
+                                </div>
+                              )}
+                              {secondOption && (
+                                <div className="flex items-center gap-1">
+                                  <Label className="text-xs font-medium text-orange-700 flex-shrink-0">
+                                    {secondOption.label.split(' ')[0]}
+                                  </Label>
+                                  <Input
+                                    placeholder="min"
+                                    maxLength={4}
+                                    value={secondOption.value || ""}
+                                    onChange={(e) => handleValueChange('minQuantityOptions', secondOption.id, e.target.value)}
+                                    className="bg-white border-orange-300 h-6 text-xs w-16 flex items-center"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })
+                      }
+                    </div>
+                  </CardContent>
               </Card>
 
               {/* Purple Window: Ranges */}
@@ -2408,7 +2458,7 @@ export default function PR2ConfigClean() {
                                   maxLength={6}
                                   value={lengthOption.rangeEnd || ""}
                                   onChange={(e) => handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
-                                  className="bg-white border-purple-300 h-6 text-xs w-20 flex items-center"
+                                  className="bg-white border-purple-300 h-6 text-xs w-16 flex items-center"
                                 />
                               </div>
                             )}
