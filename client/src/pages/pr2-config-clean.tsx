@@ -480,77 +480,70 @@ export default function PR2ConfigClean() {
     }
   }, [allCategoryConfigs, isEditing, categoryId, sector, setLocation]);
 
-  // AUTO-SAVE: Only enable for editing existing configurations to prevent unwanted creation
-  // Auto-save when form data changes (with debouncing) - ENABLED FOR EXISTING CONFIGS ONLY
-  const disableAutoSave = !isEditing; // Only auto-save when editing existing configurations
+  // AUTO-SAVE: Proper debounced auto-save for editing existing configurations
+  const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  
   useEffect(() => {
-    if (disableAutoSave) return; // Skip auto-save for new configurations
-    
-    if (formData.categoryName) {
-      const hasActualValues = 
-        formData.pricingOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
-        formData.quantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
-        formData.minQuantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
-        formData.rangeOptions.some(opt => opt.enabled && ((opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')));
-      
-      // Also save when editing existing configuration (for color changes, etc.) or when there are actual values
-      if (hasActualValues || (isEditing && editId)) {
-        console.log('💾 Auto-saving configuration with current data...');
-        console.log('   📚 IsEditing:', isEditing, 'EditId:', editId);
-        console.log('   📚 Category:', formData.categoryName);
-        
-        // Auto-save with debouncing
-        const timeoutId = setTimeout(async () => {
-          try {
-            const payload = {
-              categoryName: formData.categoryName,
-              description: formData.description,
-              categoryColor: formData.categoryColor,
-              sector: sector,
-              categoryId: categoryId,
-              pricingOptions: formData.pricingOptions,
-              quantityOptions: formData.quantityOptions,
-              minQuantityOptions: formData.minQuantityOptions,
-              rangeOptions: formData.rangeOptions,
-              mathOperators: formData.mathOperators,
-              pricingStackOrder: formData.pricingStackOrder,
-              quantityStackOrder: formData.quantityStackOrder,
-              minQuantityStackOrder: formData.minQuantityStackOrder,
-              rangeStackOrder: formData.rangeStackOrder
-            };
-
-            // Use PUT for existing configurations, POST for new ones
-            const method = isEditing && editId ? 'PUT' : 'POST';
-            const url = isEditing && editId ? `/api/pr2-clean/${editId}` : '/api/pr2-clean';
-            
-            const response = await fetch(url, {
-              method,
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            
-            if (response.ok) {
-              const result = await response.json();
-              console.log('✅ Auto-save completed successfully:', result);
-              
-              // If this was a new configuration, update the URL to reflect editing mode
-              if (!editId && result.id) {
-                console.log('🔄 Updating URL to edit mode with ID:', result.id);
-                // Update the URL to include the new configuration ID
-                const newUrl = `/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${result.id}`;
-                window.history.replaceState({}, '', newUrl);
-              }
-            } else {
-              console.error('❌ Auto-save failed:', response.status, response.statusText);
-            }
-          } catch (error) {
-            console.error('❌ Auto-save failed:', error);
-          }
-        }, 1000);
-        
-        return () => clearTimeout(timeoutId);
-      }
+    // Clear previous timeout
+    if (autoSaveTimeout) {
+      clearTimeout(autoSaveTimeout);
     }
+    
+    // Only auto-save when editing existing configurations
+    if (!isEditing || !editId || !formData.categoryName) return;
+    
+    const hasActualValues = 
+      formData.pricingOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
+      formData.quantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
+      formData.minQuantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
+      formData.rangeOptions.some(opt => opt.enabled && ((opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')));
+    
+    // Save when editing existing configuration or when there are actual values
+    if (hasActualValues || (isEditing && editId)) {
+      const timeoutId = setTimeout(async () => {
+        try {
+          const payload = {
+            categoryName: formData.categoryName,
+            description: formData.description,
+            categoryColor: formData.categoryColor,
+            sector: sector,
+            categoryId: categoryId,
+            pricingOptions: formData.pricingOptions,
+            quantityOptions: formData.quantityOptions,
+            minQuantityOptions: formData.minQuantityOptions,
+            rangeOptions: formData.rangeOptions,
+            mathOperators: formData.mathOperators,
+            pricingStackOrder: formData.pricingStackOrder,
+            quantityStackOrder: formData.quantityStackOrder,
+            minQuantityStackOrder: formData.minQuantityStackOrder,
+            rangeStackOrder: formData.rangeStackOrder
+          };
+
+          const response = await fetch(`/api/pr2-clean/${editId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            console.log('✅ Auto-save completed successfully:', result);
+          }
+        } catch (error) {
+          console.error('❌ Auto-save failed:', error);
+        }
+        setAutoSaveTimeout(null);
+      }, 300);
+      
+      setAutoSaveTimeout(timeoutId);
+    }
+    
+    // Cleanup function
+    return () => {
+      if (autoSaveTimeout) {
+        clearTimeout(autoSaveTimeout);
+      }
+    };
   }, [formData, isEditing, editId, sector, categoryId]);
 
   // Dialog states
