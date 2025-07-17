@@ -417,30 +417,32 @@ export default function PR2ConfigClean() {
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
     console.log(`🔧 handleRangeValueChange called: ${optionId}, ${field}, ${value}`);
     
-    // Auto-round length values up to .99 when user enters meter values
-    let processedValue = value;
-    if (optionId === 'range_length' && field === 'rangeEnd' && value.trim() !== '') {
-      const numValue = parseFloat(value);
-      if (!isNaN(numValue) && numValue % 1 === 0) {
-        // If it's a whole number (like 30, 35, 40), convert to X.99 format
-        processedValue = `${numValue}.99`;
-        console.log(`📏 Auto-rounded length from ${value}m to ${processedValue}m`);
-      }
-    }
-    
     setFormData(prev => ({
       ...prev,
       rangeOptions: prev.rangeOptions.map(opt => {
         if (opt.id === optionId) {
           // When setting rangeEnd (max value), automatically set rangeStart to "0" for 0-X ranges
-          if (field === 'rangeEnd' && processedValue.trim() !== '') {
-            return { ...opt, rangeStart: '0', rangeEnd: processedValue };
+          if (field === 'rangeEnd' && value.trim() !== '') {
+            return { ...opt, rangeStart: '0', rangeEnd: value };
           }
-          return { ...opt, [field]: processedValue };
+          return { ...opt, [field]: value };
         }
         return opt;
       })
     }));
+  };
+
+  // Separate function for manual length rounding when user wants it
+  const handleLengthRounding = (optionId: string, value: string) => {
+    if (optionId === 'range_length' && value.trim() !== '') {
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue) && numValue % 1 === 0) {
+        // If it's a whole number (like 30, 35, 40), convert to X.99 format
+        const roundedValue = `${numValue}.99`;
+        console.log(`📏 Manual round length from ${value}m to ${roundedValue}m`);
+        handleRangeValueChange(optionId, 'rangeEnd', roundedValue);
+      }
+    }
   };
 
   // Debug form data loading (removed DOM manipulation - React state should handle values)
