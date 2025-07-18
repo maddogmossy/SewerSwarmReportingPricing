@@ -2252,7 +2252,7 @@ export default function PR2ConfigClean() {
                       };
                       return pipeConfigIds[editId as keyof typeof pipeConfigIds] || 'Unknown';
                     })()} configuration (ID: ${editId})`
-                  : 'Currently only 150mm available for CCTV category to prevent configuration conflicts'
+                  : 'Currently only 150mm available for CCTV category to prevent configuration conflicts (ID: 152)'
                 }
               </p>
             </CardContent>
