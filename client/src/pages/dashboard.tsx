@@ -1105,19 +1105,7 @@ export default function Dashboard() {
           </span>
         );
       case 'cost':
-        // DEBUG: Track Item 20 data structure
-        if (section.itemNo === 20) {
-          console.log(`🔍 ITEM 20 RAW DATA:`, {
-            itemNo: section.itemNo,
-            severityGrade: section.severityGrade,
-            severityGradeType: typeof section.severityGrade,
-            cost: section.cost,
-            adoptable: section.adoptable,
-            pipeSize: section.pipeSize,
-            defects: section.defects,
-            allSectionData: section
-          });
-        }
+        // DEBUG: Removed console logging to prevent infinite loops
 
         
         // Display "Complete" for all Grade 0 sections with "Complete" in cost field
@@ -1134,17 +1122,7 @@ export default function Dashboard() {
         
         // Calculate costs for defective sections using PR2 configurations
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
-          // DEBUG: Track Item 20 before calculateAutoCost
-          if (section.itemNo === 20) {
-            console.log(`🔍 ITEM 20 COST CALCULATION DEBUG:`, {
-              itemNo: section.itemNo,
-              severityGrade: section.severityGrade,
-              pipeSize: section.pipeSize,
-              defects: section.defects,
-              defectType: section.defectType,
-              aboutToCallCalculateAutoCost: true
-            });
-          }
+          // DEBUG: Removed console logging to prevent infinite loops
           
           // Check if this section requires cleaning vs structural repair
           const needsCleaning = requiresCleaning(section.defects || '');
@@ -1437,20 +1415,8 @@ export default function Dashboard() {
   // We'll check this after we fetch the section data below
   const currentUpload = potentialCurrentUpload;
   
-  // Cache invalidation when switching between reports - simplified approach
-  const [lastReportId, setLastReportId] = useState<number | null>(null);
-  
-  useEffect(() => {
-    if (currentUpload?.id && currentUpload.id !== lastReportId) {
-      console.log(`🔄 Switching from report ${lastReportId} to ${currentUpload.id}`);
-      // Only invalidate when actually switching reports
-      if (lastReportId !== null) {
-        queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/sections`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/uploads/${currentUpload.id}/defects`] });
-      }
-      setLastReportId(currentUpload.id);
-    }
-  }, [currentUpload?.id, lastReportId, queryClient]);
+  // FIXED: Removed cache invalidation useEffect that was causing infinite loops
+  // Cache invalidation will be handled by React Query automatically
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
@@ -1466,22 +1432,18 @@ export default function Dashboard() {
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
   const hasAuthenticData = rawSectionData && rawSectionData.length > 0;
   
-  // Use a stable state for rendering decision to prevent flashing
-  const [renderingState, setRenderingState] = useState<'loading' | 'empty' | 'data'>('loading');
-  
-  useEffect(() => {
+  // FIXED: Removed problematic useEffect that was causing infinite loops
+  // Static rendering state determination without state or useEffect to prevent dependency issues
+  const determineRenderingState = (): 'loading' | 'empty' | 'data' => {
     if (completedUploads.length === 0) {
-      setRenderingState('empty');
+      return 'empty';
     } else if (currentUpload && !sectionsLoading) {
-      if (hasAuthenticData) {
-        setRenderingState('data');
-      } else {
-        // Upload exists but no sections data - still show the dashboard interface
-        // This allows users to select reports and see appropriate "no data" messages
-        setRenderingState('data');
-      }
+      return 'data'; // Always show data interface when upload exists
     }
-  }, [completedUploads.length, currentUpload, sectionsLoading, hasAuthenticData]);
+    return 'loading';
+  };
+  
+  const renderingState = determineRenderingState();
   
   // Stable condition for showing folder selector - don't depend on loading states that fluctuate
   const shouldShowEmptyState = renderingState === 'empty';
