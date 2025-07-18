@@ -1721,10 +1721,7 @@ export default function Dashboard() {
 
   // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {
-    console.log('🔍 calculateAutoCost called for section:', section.itemNo);
-    console.log('📊 PR2 configurations:', pr2Configurations);
-    console.log('🔍 PR2 configurations count:', pr2Configurations.length);
-    console.log('🔍 Current sector:', currentSector.id);
+    // Removed excessive logging for performance
     
     // If no PR2 configurations exist, return null to show warning triangles
     if (!pr2Configurations || pr2Configurations.length === 0) {
@@ -2824,16 +2821,7 @@ export default function Dashboard() {
       const cost = calculateCost(section);
       const hasWarningTriangle = cost === "⚠️";
       
-      // Enhanced logging for debugging
-      if (section.itemNo <= 5) { // Log first 5 sections for debugging
-        console.log(`🔍 Section ${section.itemNo} analysis:`, {
-          defects: section.defects,
-          isServiceDefect,
-          isStructuralDefect,
-          cost: typeof cost === 'string' ? cost : 'calculated',
-          hasWarningTriangle
-        });
-      }
+
       
       if (hasWarningTriangle) {
         if (isServiceDefect) serviceWarnings++;
@@ -2848,16 +2836,7 @@ export default function Dashboard() {
     const serviceCompleted = previousCostState.serviceWarnings > 0 && serviceWarnings === 0;
     const structuralCompleted = previousCostState.structuralWarnings > 0 && structuralWarnings === 0;
     
-    console.log('🎯 TRIGGER CHECK:', {
-      previousServiceWarnings: previousCostState.serviceWarnings,
-      currentServiceWarnings: serviceWarnings,
-      previousStructuralWarnings: previousCostState.structuralWarnings,
-      currentStructuralWarnings: structuralWarnings,
-      serviceCompleted,
-      structuralCompleted,
-      autoCostMode,
-      totalSections
-    });
+    // Removed excessive trigger logging for performance
     
     // ONLY trigger when there's an actual completion (warnings → calculations)
     if (serviceCompleted && autoCostMode === 'manual') {
@@ -2868,6 +2847,16 @@ export default function Dashboard() {
     if (structuralCompleted && autoCostMode === 'manual') {
       console.log('🚨 TRIGGERING STRUCTURAL AUTO-COST DIALOG - Last structural values calculated!');
       setShowStructuralAutoCostDialog(true);
+    }
+    
+    // TEMPORARY TEST: Trigger service popup if we have service defects and no service warnings
+    if (serviceWarnings === 0 && sectionData.some(s => s.defects && s.defects.includes('deposits'))) {
+      // Only trigger once per session
+      if (!sessionStorage.getItem('servicePopupTriggered')) {
+        console.log('🧪 TEST TRIGGER: Service popup for sections with deposits');
+        setShowServiceAutoCostDialog(true);
+        sessionStorage.setItem('servicePopupTriggered', 'true');
+      }
     }
     
     // Update previous state
