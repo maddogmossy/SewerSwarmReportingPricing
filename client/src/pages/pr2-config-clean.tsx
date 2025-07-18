@@ -2186,14 +2186,25 @@ export default function PR2ConfigClean() {
             <CardContent>
               <div className="flex gap-4">
                 {['150mm', '225mm', '300mm'].map((pipeSize) => {
-                  // Map pipe sizes to correct configuration IDs
-                  const pipeConfigIds = {
-                    '150mm': 153, // General TP2 Patching Configuration
-                    '225mm': 156, // 225mm TP2 Patching Configuration  
-                    '300mm': 157  // 300mm TP2 Patching Configuration
-                  };
+                  // Map pipe sizes to correct configuration IDs based on current category
+                  let configId;
+                  let targetCategoryId;
                   
-                  const configId = pipeConfigIds[pipeSize as keyof typeof pipeConfigIds];
+                  if (categoryId === 'patching') {
+                    // TP2 Patching configurations
+                    const patchingConfigIds = {
+                      '150mm': 153, // General TP2 Patching Configuration
+                      '225mm': 156, // 225mm TP2 Patching Configuration  
+                      '300mm': 157  // 300mm TP2 Patching Configuration
+                    };
+                    configId = patchingConfigIds[pipeSize as keyof typeof patchingConfigIds];
+                    targetCategoryId = 'patching';
+                  } else {
+                    // TP1 CCTV configurations - use existing CCTV config for all pipe sizes for now
+                    configId = 152; // CCTV Jet Vac Configuration
+                    targetCategoryId = categoryId; // Keep current category
+                  }
+                  
                   const isCurrentConfig = editId === String(configId);
                   
                   return (
@@ -2201,9 +2212,9 @@ export default function PR2ConfigClean() {
                       key={pipeSize}
                       variant={isCurrentConfig ? "default" : "outline"}
                       onClick={() => {
-                        console.log(`🚀 Navigating to pipe size ${pipeSize} (ID: ${configId})`);
+                        console.log(`🚀 Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
                         // Navigate to the correct configuration ID for this pipe size
-                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=patching&edit=${configId}`);
+                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`);
                       }}
                       className={isCurrentConfig ? "bg-yellow-500 hover:bg-yellow-600" : ""}
                       disabled={false}
