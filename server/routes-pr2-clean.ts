@@ -341,22 +341,49 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
     }
   });
 
-  // DELETE clean PR2 configuration
+  // DELETE clean PR2 configuration - PROTECTED WITH USER CONFIRMATION
   app.delete('/api/pr2-clean/:id', async (req, res) => {
     try {
       const configId = parseInt(req.params.id);
+      const { userConfirmed } = req.body; // Require explicit user confirmation
       
+      // CRITICAL: Require explicit user confirmation to prevent data loss
+      if (!userConfirmed) {
+        return res.status(400).json({ 
+          error: 'DELETION BLOCKED: User confirmation required',
+          configId: configId,
+          message: 'This deletion requires explicit user approval to prevent accidental data loss'
+        });
+      }
+
+      // Get configuration details before deletion for audit logging
+      const existingConfig = await db.select()
+        .from(pr2Configurations)
+        .where(eq(pr2Configurations.id, configId))
+        .limit(1);
+
+      if (existingConfig.length === 0) {
+        return res.status(404).json({ error: 'Configuration not found' });
+      }
+
+      // Log deletion for audit trail
+      console.log('🚨 USER-APPROVED DELETION:', {
+        configId: configId,
+        categoryId: existingConfig[0].categoryId,
+        categoryName: existingConfig[0].categoryName,
+        timestamp: new Date().toISOString()
+      });
+
       const [deletedConfig] = await db
         .delete(pr2Configurations)
         .where(eq(pr2Configurations.id, configId))
         .returning();
 
-      if (!deletedConfig) {
-        return res.status(404).json({ error: 'Configuration not found' });
-      }
-
       console.log('✅ Deleted clean PR2 configuration:', deletedConfig.id);
-      res.json({ message: 'Configuration deleted successfully' });
+      res.json({ 
+        message: 'Configuration deleted successfully',
+        deletedConfig: deletedConfig
+      });
     } catch (error) {
       console.error('Error deleting clean PR2 configuration:', error);
       res.status(500).json({ error: 'Failed to delete configuration' });
