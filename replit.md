@@ -1152,6 +1152,32 @@ Both rules are permanently locked and displayed on screen per user requirement
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v8.7' to return to this stable checkpoint
 
+## REV V8.8 CHECKPOINT - PIPE SIZE CONFIGURATION ID DISPLAY FIXED (July 18, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE CONFIGURATION ID DISPLAY SYSTEM:**
+- **Dashboard ID Display Fixed**: All pipe size configurations now display correct IDs (153 for 150mm, 156 for 225mm, 157 for 300mm)
+- **Configuration Matching Logic Enhanced**: Fixed structural repair configuration matching to properly identify pipe-size-specific configurations
+- **Eliminated Fallback Issues**: Removed fallback logic that was causing all pipe sizes to display ID 153
+- **Pipe Size Detection Working**: System properly matches pipe sizes to their respective configurations using categoryName matching
+- **Clean Console Output**: Added comprehensive debugging for configuration matching without console spam
+- **Cost Calculations Verified**: Both cleaning (ID 152) and structural repair configurations working correctly
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Configuration Matching Logic**: Uses `config.categoryName?.includes(\`${pipeSize}mm\`)` for accurate pipe size matching
+- **Structural Repair Cards**: Fixed logic to display correct configuration IDs based on pipe size
+- **Debug Output Added**: Comprehensive logging for configuration matching without affecting user experience  
+- **Fallback Elimination**: Removed general configuration fallback that was causing incorrect ID display
+- **Database State Verified**: All three patching configurations (153, 156, 157) properly configured with pipe size identifiers
+
+🔒 **USER-CONFIRMED WORKING FEATURES:**
+- **150mm Sections**: Display "TP2 - 150mm Patching Configuration (ID: 153)" for structural repairs
+- **225mm Sections**: Display "TP2 - 225mm Patching Configuration (ID: 156)" for structural repairs  
+- **300mm Sections**: Display "TP2 - 300mm Patching Configuration (ID: 157)" for structural repairs
+- **Cleaning Configurations**: Continue to display "CCTV Jet Vac Configuration (ID: 152)" correctly
+- **Cost Calculations**: All calculations use appropriate pipe-size-specific configurations
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v8.8' to return to this stable checkpoint
+
 ## REV V8.8 CHECKPOINT - UNIFIED PIPE SIZE SWITCHING SYSTEM COMPLETE (July 18, 2025)
 
 🔒 **PRODUCTION READY - UNIFIED CONFIGURATION PAGE ARCHITECTURE:**

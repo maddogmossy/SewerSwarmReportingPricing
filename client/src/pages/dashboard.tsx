@@ -993,22 +993,7 @@ export default function Dashboard() {
               isConfigurationProperlyConfigured(config)
             );
             
-            // Debug structural repair configuration matching
-            if (section.itemNo === 20 || section.itemNo === 21) {
-              console.log(`🔍 DEBUG ${section.itemNo} STRUCTURAL REPAIR CONFIG MATCHING:`, {
-                pipeSize: pipeSize,
-                searchingFor: `${pipeSize}mm`,
-                configs: repairPricingData?.filter(c => c.categoryId === 'patching').map(c => ({
-                  id: c.id,
-                  categoryName: c.categoryName,
-                  sector: c.sector,
-                  matches: c.categoryName?.includes(`${pipeSize}mm`),
-                  sectorMatch: c.sector === currentSector.id,
-                  isConfigured: isConfigurationProperlyConfigured(c)
-                })),
-                foundConfig: pipeSizeSpecificConfig ? pipeSizeSpecificConfig.id : 'none'
-              });
-            }
+
             
             // NO FALLBACK - Only use pipe-size-specific configuration
             const tp2PatchingConfig = pipeSizeSpecificConfig;
@@ -1724,21 +1709,7 @@ export default function Dashboard() {
         config.categoryName?.includes(`${pipeSize}mm`)
       );
       
-      // Debug pipe size matching
-      if (section.itemNo === 20 || section.itemNo === 21) {
-        console.log(`🔍 DEBUG ${section.itemNo} PIPE SIZE MATCHING:`, {
-          pipeSize: pipeSize,
-          searchingFor: `${pipeSize}mm`,
-          configs: pr2Configurations.filter(c => c.categoryId === 'patching').map(c => ({
-            id: c.id,
-            categoryName: c.categoryName,
-            sector: c.sector,
-            matches: c.categoryName?.includes(`${pipeSize}mm`),
-            sectorMatch: c.sector === currentSector.id
-          })),
-          foundConfig: tp2PatchingConfig ? tp2PatchingConfig.id : 'none'
-        });
-      }
+
       
       if (tp2PatchingConfig) {
         console.log(`🔧 Found TP2 patching configuration for ${pipeSize}mm:`, tp2PatchingConfig.id, tp2PatchingConfig.categoryName);
