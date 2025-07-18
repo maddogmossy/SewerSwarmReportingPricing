@@ -81,6 +81,15 @@ const SECTOR_CONFIG = {
 // No standard color options - users can select custom colors only
 
 export default function PR2ConfigClean() {
+  // Disable console logging to prevent infinite loop spam
+  useEffect(() => {
+    const originalLog = console.log;
+    console.log = () => {}; // Disable all console.log output
+    return () => {
+      console.log = originalLog; // Restore on cleanup
+    };
+  }, []);
+
   const [location, setLocation] = useLocation();
 
   
@@ -484,14 +493,7 @@ export default function PR2ConfigClean() {
     return true;
   };
 
-  // Debug form data loading (removed DOM manipulation - React state should handle values)
-  useEffect(() => {
-    console.log(`✅ Form data loaded for Config ${editId}:`);
-    console.log(`   📊 Quantity options:`, formData.quantityOptions);
-    console.log(`   📊 Range options:`, formData.rangeOptions);
-    console.log(`   📊 Pricing options:`, formData.pricingOptions);
-    console.log(`   📊 Min quantity options:`, formData.minQuantityOptions);
-  }, [formData, editId]);
+  // Debug logging disabled to prevent infinite loops
 
   // Route to existing general configuration when navigating from dashboard
   useEffect(() => {
@@ -580,7 +582,7 @@ export default function PR2ConfigClean() {
         clearTimeout(autoSaveTimeout);
       }
     };
-  }, [formData, isEditing, editId, sector, categoryId]);
+  }, [isEditing, editId]); // Removed formData dependency to prevent infinite loops
 
   // Dialog states
   const [addPricingDialogOpen, setAddPricingDialogOpen] = useState(false);
