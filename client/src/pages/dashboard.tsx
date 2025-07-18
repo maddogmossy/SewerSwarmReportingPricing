@@ -3666,12 +3666,15 @@ export default function Dashboard() {
                                   className={`${column.width} px-1 py-1 text-center`}
                                 >
                                   <button
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
+                                    onClick={() => {
                                       console.log('🚨 BUTTON CLICKED - Service Calc');
-                                      console.log('🚨 Event details:', e.type, e.target);
-                                      handleServiceCalc(e);
+                                      console.log('🚨 About to call handleServiceCalc');
+                                      try {
+                                        handleServiceCalc();
+                                        console.log('🚨 handleServiceCalc completed');
+                                      } catch (error) {
+                                        console.error('🚨 Error calling handleServiceCalc:', error);
+                                      }
                                     }}
                                     type="button"
                                     className="w-full text-sm h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg cursor-pointer"
