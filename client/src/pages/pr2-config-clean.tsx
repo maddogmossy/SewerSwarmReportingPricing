@@ -944,10 +944,15 @@ export default function PR2ConfigClean() {
     console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, editId: ${editId}, configToUse:`, configToUse);
     console.log(`🔍 processedConfigId: ${processedConfigId}, current config ID: ${configToUse?.id}`);
     
-    // FIXED: Only proceed if we have actual config data AND haven't already processed this specific config
-    if (isEditing && configToUse && configToUse.id && processedConfigId !== configToUse.id) {
-      // Get the actual config object (might be wrapped in array)
-      const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
+    // FIXED: Force reload when editId changes, even if we processed this config before
+    if (isEditing && configToUse && configToUse.id) {
+      const configId = parseInt(editId || '0');
+      console.log(`🔍 Force processing config ID: ${configId} (editId: ${editId})`);
+      
+      // Always process when editId is present, regardless of processedConfigId
+      if (configId > 0) {
+        // Get the actual config object (might be wrapped in array)
+        const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
       console.log(`🔍 Processing config:`, config);
       
       if (config) {
@@ -1030,6 +1035,7 @@ export default function PR2ConfigClean() {
       } else if (configToUse && configToUse.id && processedConfigId === configToUse.id) {
         console.log(`⏭️ Skipping already processed configuration ${configToUse.id}`);
       }
+      } // Close the if (configId > 0) block
     } else if (!isEditing) {
       // Start with the current sector for new configurations
       console.log(`🔍 Starting new config with sector: ${sector}`);
@@ -1861,31 +1867,51 @@ export default function PR2ConfigClean() {
       pipeSizeNum: number;
     }> = [];
     
-    // Get all configurations for this specific category only
-    allCategoryConfigs.forEach(config => {
-      // Only include configurations that match the current category
-      if (config.categoryId !== categoryId) return;
+    // FIXED: For patching, we have specific IDs that are pipe-size-specific
+    if (categoryId === 'patching') {
+      // Add all three patching configurations directly
+      const patchingConfigs = [
+        { id: 153, pipeSize: '150mm', pipeSizeNum: 150 },
+        { id: 156, pipeSize: '225mm', pipeSizeNum: 225 },
+        { id: 157, pipeSize: '300mm', pipeSizeNum: 300 }
+      ];
       
-      const categoryName = config.categoryName || '';
-      const pipeMatch = categoryName.match(/(\d+)mm/);
-      
-      if (pipeMatch) {
-        const pipeSizeNum = parseInt(pipeMatch[1]);
-        pipeSizeConfigs.push({
-          pipeSize: pipeMatch[1] + 'mm',
-          config: config,
-          id: config.id,
-          pipeSizeNum: pipeSizeNum
-        });
-      }
-    });
+      patchingConfigs.forEach(({ id, pipeSize, pipeSizeNum }) => {
+        const config = allCategoryConfigs.find(c => c.id === id);
+        if (config) {
+          pipeSizeConfigs.push({
+            pipeSize,
+            config,
+            id,
+            pipeSizeNum
+          });
+        }
+      });
+    } else {
+      // Original logic for other categories
+      allCategoryConfigs.forEach(config => {
+        if (config.categoryId !== categoryId) return;
+        
+        const categoryName = config.categoryName || '';
+        const pipeMatch = categoryName.match(/(\d+)mm/);
+        
+        if (pipeMatch) {
+          const pipeSizeNum = parseInt(pipeMatch[1]);
+          pipeSizeConfigs.push({
+            pipeSize: pipeMatch[1] + 'mm',
+            config: config,
+            id: config.id,
+            pipeSizeNum: pipeSizeNum
+          });
+        }
+      });
+    }
     
     // Sort by pipe size (smallest to largest)
     pipeSizeConfigs.sort((a, b) => a.pipeSizeNum - b.pipeSizeNum);
     
     console.log(`🔍 getPipeSizeConfigurations for category ${categoryId} found ${pipeSizeConfigs.length} configs:`, 
                 pipeSizeConfigs.map(p => `${p.pipeSize} (ID: ${p.id})`));
-    console.log(`🔍 Current categoryId filter: ${categoryId}`);
     
     return pipeSizeConfigs;
   };
