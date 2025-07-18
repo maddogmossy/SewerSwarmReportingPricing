@@ -29,12 +29,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   
   // Fetch existing configurations to check for existing setup
   const { data: pr2Configs = [] } = useQuery({
-    queryKey: ['/api/pr2-clean', { sector: sectionData.sector }],
+    queryKey: ['/api/pr2-clean', sectionData.sector],
     queryFn: async () => {
       const response = await fetch(`/api/pr2-clean?sector=${sectionData.sector}`);
       if (!response.ok) throw new Error('Failed to fetch configurations');
       return response.json();
-    }
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    enabled: isOpen // Only fetch when popover is open
   });
   
   // Fixed equipment list like patching system - CCTV/Jet Vac first
@@ -66,18 +68,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     setIsOpen(false);
     const sector = sectionData.sector;
     
-    // Check if an existing configuration exists for this equipment type
-    const existingConfig = pr2Configs.find((config: any) => 
-      config.categoryId === equipmentId && config.sector === sector
-    );
-    
-    if (existingConfig) {
-      // Route to existing configuration in edit mode
-      setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}&edit=${existingConfig.id}`);
-    } else {
-      // Route to create new configuration
-      setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}`);
-    }
+    // Simple navigation without complex logic that could cause re-renders
+    setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}`);
   };
 
   return (

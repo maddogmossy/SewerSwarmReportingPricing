@@ -1,0 +1,49 @@
+Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-HIQGUL6L.js?v=9fbe10e7:1927:13
+    at https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=9fbe10e7:113:13
+    at Provider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DAKDTFIW.js?v=9fbe10e7:48:15)
+    at Provider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DAKDTFIW.js?v=9fbe10e7:48:15)
+    at Popper (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-HIQGUL6L.js?v=9fbe10e7:1919:11)
+    at Popover (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=9fbe10e7:62:5)
+    at CleaningOptionsPopover (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/components/cleaning-options-popover.tsx:24:42)
+    at td
+    at tr
+    at tbody
+    at table
+    at div
+    at div
+    at _c9 (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at Dashboard (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/pages/dashboard.tsx:371:3)
+    at Route (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=9fbe10e7:323:16)
+    at Switch (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=9fbe10e7:379:17)
+    at Router (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/App.tsx?v=iFBZzzgOuSDQDqgBWLIHl:44:42)
+    at Provider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DAKDTFIW.js?v=9fbe10e7:48:15)
+    at TooltipProvider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=9fbe10e7:61:5)
+    at QueryClientProvider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=9fbe10e7:2805:3)
+    at App
+Mt.forEach.n.<computed> @ Console.js:61
+printWarning @ chunk-WERSD76P.js?v=9fbe10e7:521
+error @ chunk-WERSD76P.js?v=9fbe10e7:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=9fbe10e7:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=9fbe10e7:18533
+dispatchSetState @ chunk-WERSD76P.js?v=9fbe10e7:12403
+(anonymous) @ chunk-HIQGUL6L.js?v=9fbe10e7:1932
+commitHookEffectListMount @ chunk-WERSD76P.js?v=9fbe10e7:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=9fbe10e7:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=9fbe10e7:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=9fbe10e7:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=9fbe10e7:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=9fbe10e7:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=9fbe10e7:19447
+(anonymous) @ chunk-WERSD76P.js?v=9fbe10e7:19328
+workLoop @ chunk-WERSD76P.js?v=9fbe10e7:197
+flushWork @ chunk-WERSD76P.js?v=9fbe10e7:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=9fbe10e7:384Understand this error
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/dashboard:1 Blocked aria-hidden on an element because its descendant retained focus. The focus must not be hidden from assistive technology users. Avoid using aria-hidden on a focused element or its ancestor. Consider using the inert attribute instead, which will also prevent focus. For more details, see the aria-hidden section of the WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.
+Element with focus: <button.inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-32>
+Ancestor with aria-hidden: <div.fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg sm:max-w-lg#radix-:rl:> <div role=​"dialog" id=​"radix-:​rl:​" aria-describedby=​"radix-:​rn:​" aria-labelledby=​"radix-:​rm:​" data-state=​"open" data-replit-metadata=​"client/​src/​pages/​dashboard.tsx:​3841:​8" data-component-name=​"DialogContent" class=​"fixed left-[50%]​ top-[50%]​ z-50 grid w-full max-w-lg translate-x-[-50%]​ translate-y-[-50%]​ gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]​:​animate-in data-[state=closed]​:​animate-out data-[state=closed]​:​fade-out-0 data-[state=open]​:​fade-in-0 data-[state=closed]​:​zoom-out-95 data-[state=open]​:​zoom-in-95 data-[state=closed]​:​slide-out-to-left-1/​2 data-[state=closed]​:​slide-out-to-top-[48%]​ data-[state=open]​:​slide-in-from-left-1/​2 data-[state=open]​:​slide-in-from-top-[48%]​ sm:​rounded-lg sm:​max-w-lg" tabindex=​"-1" data-aria-hidden=​"true" aria-hidden=​"true">​…​</div>​gridUnderstand this warning
