@@ -2185,7 +2185,20 @@ export default function PR2ConfigClean() {
             </CardHeader>
             <CardContent>
               <div className="flex gap-4">
-                {['150mm', '225mm', '300mm'].map((pipeSize) => {
+                {(() => {
+                  // Define pipe sizes based on category type
+                  let availablePipeSizes;
+                  
+                  if (categoryId === 'patching') {
+                    // TP2 Patching - all pipe sizes available with unique IDs
+                    availablePipeSizes = ['150mm', '225mm', '300mm'];
+                  } else {
+                    // TP1 CCTV - only 150mm available to prevent ID sharing conflict
+                    availablePipeSizes = ['150mm'];
+                  }
+                  
+                  return availablePipeSizes;
+                })().map((pipeSize) => {
                   // Map pipe sizes to correct configuration IDs based on current category
                   let configId;
                   let targetCategoryId;
@@ -2200,7 +2213,7 @@ export default function PR2ConfigClean() {
                     configId = patchingConfigIds[pipeSize as keyof typeof patchingConfigIds];
                     targetCategoryId = 'patching';
                   } else {
-                    // TP1 CCTV configurations - use existing CCTV config for all pipe sizes for now
+                    // TP1 CCTV configurations - only 150mm available (ID 152)
                     configId = 152; // CCTV Jet Vac Configuration
                     targetCategoryId = categoryId; // Keep current category
                   }
@@ -2230,14 +2243,17 @@ export default function PR2ConfigClean() {
                 })}
               </div>
               <p className="text-sm text-gray-600 mt-2">
-                Select pipe size to edit pricing: Currently editing <strong>{(() => {
-                  const pipeConfigIds = {
-                    '153': '150mm',
-                    '156': '225mm', 
-                    '157': '300mm'
-                  };
-                  return pipeConfigIds[editId as keyof typeof pipeConfigIds] || 'Unknown';
-                })()}</strong> configuration (ID: {editId})
+                {categoryId === 'patching' 
+                  ? `Select pipe size to edit pricing: Currently editing ${(() => {
+                      const pipeConfigIds = {
+                        '153': '150mm',
+                        '156': '225mm', 
+                        '157': '300mm'
+                      };
+                      return pipeConfigIds[editId as keyof typeof pipeConfigIds] || 'Unknown';
+                    })()} configuration (ID: ${editId})`
+                  : 'Currently only 150mm available for CCTV category to prevent configuration conflicts'
+                }
               </p>
             </CardContent>
           </Card>
