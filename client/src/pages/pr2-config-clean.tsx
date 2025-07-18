@@ -2185,16 +2185,31 @@ export default function PR2ConfigClean() {
             </CardHeader>
             <CardContent>
               <div className="flex gap-4">
-                {['150mm', '225mm', '300mm'].map((pipeSize) => (
-                  <Button
-                    key={pipeSize}
-                    variant={selectedPipeSize === pipeSize ? "default" : "outline"}
-                    onClick={() => setSelectedPipeSize(pipeSize)}
-                    className={selectedPipeSize === pipeSize ? "bg-yellow-500 hover:bg-yellow-600" : ""}
-                  >
-                    {pipeSize}
-                  </Button>
-                ))}
+                {['150mm', '225mm', '300mm'].map((pipeSize) => {
+                  // Map pipe sizes to correct configuration IDs
+                  const pipeConfigIds = {
+                    '150mm': 153, // General TP2 Patching Configuration
+                    '225mm': 156, // 225mm TP2 Patching Configuration  
+                    '300mm': 157  // 300mm TP2 Patching Configuration
+                  };
+                  
+                  const configId = pipeConfigIds[pipeSize as keyof typeof pipeConfigIds];
+                  const isCurrentConfig = editId === String(configId);
+                  
+                  return (
+                    <Button
+                      key={pipeSize}
+                      variant={isCurrentConfig ? "default" : "outline"}
+                      onClick={() => {
+                        // Navigate to the correct configuration ID for this pipe size
+                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=patching&edit=${configId}`);
+                      }}
+                      className={isCurrentConfig ? "bg-yellow-500 hover:bg-yellow-600" : ""}
+                    >
+                      {pipeSize} (ID: {configId})
+                    </Button>
+                  );
+                })}
               </div>
               <p className="text-sm text-gray-600 mt-2">
                 Select pipe size to edit pricing: Currently editing <strong>{selectedPipeSize}</strong> configuration (ID: {editId})
