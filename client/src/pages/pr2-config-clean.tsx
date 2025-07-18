@@ -2230,15 +2230,23 @@ export default function PR2ConfigClean() {
                     <Button
                       key={pipeSize}
                       variant={isCurrentConfig ? "default" : "outline"}
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         console.log(`🚀 Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
                         
-                        // Force browser navigation using window.location
+                        // Smooth client-side navigation without white screen
                         const newUrl = `/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`;
-                        console.log(`🔗 Forcing navigation to:`, newUrl);
-                        window.location.href = newUrl;
+                        console.log(`🔗 Smooth navigation to:`, newUrl);
+                        
+                        // Update URL without page reload
+                        window.history.pushState({}, '', newUrl);
+                        
+                        // Force re-render by updating location state
+                        setLocation(newUrl);
+                        
+                        // Invalidate queries to reload data
+                        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
                       }}
                       className={isCurrentConfig ? "bg-yellow-500 hover:bg-yellow-600" : ""}
                       disabled={false}
