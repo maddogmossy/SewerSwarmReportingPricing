@@ -469,6 +469,15 @@ const tableColumns = [
 ];
 
 export default function Dashboard() {
+  // Disable console logging to prevent infinite loop spam
+  useEffect(() => {
+    const originalLog = console.log;
+    console.log = () => {}; // Disable all console.log output
+    return () => {
+      console.log = originalLog; // Restore on cleanup
+    };
+  }, []);
+
   const { toast } = useToast();
   const search = useSearch();
   const urlParams = new URLSearchParams(search);
