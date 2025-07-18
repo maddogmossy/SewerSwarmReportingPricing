@@ -2200,7 +2200,7 @@ export default function PR2ConfigClean() {
                   let availablePipeSizes;
                   
                   if (categoryId === 'patching') {
-                    // TP2 Patching - all pipe sizes available with unique IDs
+                    // TP2 Patching - unified configuration handles all pipe sizes in one interface
                     availablePipeSizes = ['150mm', '225mm', '300mm'];
                   } else {
                     // TP1 CCTV - only 150mm available to prevent ID sharing conflict
@@ -2214,13 +2214,8 @@ export default function PR2ConfigClean() {
                   let targetCategoryId;
                   
                   if (categoryId === 'patching') {
-                    // TP2 Patching configurations
-                    const patchingConfigIds = {
-                      '150mm': 153, // General TP2 Patching Configuration
-                      '225mm': 156, // 225mm TP2 Patching Configuration  
-                      '300mm': 157  // 300mm TP2 Patching Configuration
-                    };
-                    configId = patchingConfigIds[pipeSize as keyof typeof patchingConfigIds];
+                    // TP2 Patching - use single unified configuration (ID 153) for all pipe sizes
+                    configId = 153; // Unified TP2 Patching Configuration
                     targetCategoryId = 'patching';
                   } else {
                     // TP1 CCTV configurations - only 150mm available (ID 152)
@@ -2278,15 +2273,7 @@ export default function PR2ConfigClean() {
               </div>
               <p className="text-sm text-gray-600 mt-2">
                 {categoryId === 'patching' 
-                  ? `Select pipe size to edit pricing: Currently editing ${(() => {
-                      const pipeConfigIds = {
-                        '153': '150mm',
-                        '156': '225mm', 
-                        '157': '300mm'
-                      };
-                      const activeConfigId = currentConfigId || parseInt(editId);
-                      return pipeConfigIds[activeConfigId as keyof typeof pipeConfigIds] || 'Unknown';
-                    })()} configuration (ID: ${currentConfigId || editId})`
+                  ? `Unified patching configuration - All pipe sizes use the same configuration with range-based pricing (ID: ${currentConfigId || editId})`
                   : `Currently only 150mm available for ${formData.categoryName || 'this category'} to prevent configuration conflicts (ID: ${editId})`
                 }
               </p>
