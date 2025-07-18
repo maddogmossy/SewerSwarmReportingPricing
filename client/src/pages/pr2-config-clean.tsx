@@ -2237,33 +2237,16 @@ export default function PR2ConfigClean() {
                   const isCurrentConfig = editId === String(configId);
                   
                   return (
-                    <Button
+                    <button
                       key={pipeSize}
-                      variant={isCurrentConfig ? "default" : "outline"}
-                      onClick={(e) => {
-                        console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log(`🚀 BUTTON CLICKED: Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
-                        
-                        // Smooth client-side navigation without white screen
-                        const newUrl = `/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`;
-                        console.log(`🔗 Smooth navigation to:`, newUrl);
-                        
-                        // Update URL without page reload
-                        window.history.pushState({}, '', newUrl);
-                        
-                        // Force re-render by updating location state
-                        setLocation(newUrl);
-                        
-                        // Invalidate queries to reload data
-                        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+                      onClick={() => {
+                        console.log(`🚀 SIMPLE BUTTON CLICKED: ${pipeSize}`);
+                        alert(`Button ${pipeSize} clicked!`);
                       }}
-                      className={isCurrentConfig ? "bg-yellow-500 hover:bg-yellow-600" : ""}
-                      disabled={false}
+                      className={`px-4 py-2 rounded border ${isCurrentConfig ? "bg-yellow-500 text-white" : "bg-white border-gray-300"}`}
                     >
                       {pipeSize}
-                    </Button>
+                    </button>
                   );
                 })}
               </div>
