@@ -2570,48 +2570,8 @@ export default function Dashboard() {
         return "£0.00";
       }
       
-      // AUTO-COST LOGIC: Check if automatic calculation is active
-      // Removed excessive logging
-      if (autoCostMode === 'automatic' && pr2Configurations && pr2Configurations.length > 0) {
-      // Get qualifying sections for service defects (exclude structural repairs)
-      const qualifyingSections = sectionData.filter(s => {
-        const sectionHasDefects = s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0;
-        const isServiceDefect = s.defectType === 'service' || requiresCleaning(s.defects || '');
-        return sectionHasDefects && isServiceDefect;
-      });
-      
-      // Get day rate from PR2 configuration (ID 152)
-      const config = pr2Configurations.find(c => c.id === 152) || pr2Configurations[0];
-      const dayRateOption = config?.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'));
-      const dayRate = dayRateOption ? parseFloat(dayRateOption.value) || 0 : 1850; // fallback to 1850
-      
-      if (dayRate > 0 && qualifyingSections.length > 0) {
-        const recalculatedCost = dayRate / qualifyingSections.length;
-        
-        console.log('🎯 AUTO-COST RECALCULATION:', {
-          configId: config?.id,
-          dayRate,
-          qualifyingSections: qualifyingSections.length,
-          recalculatedCost,
-          section: section.itemNo,
-          autoCostMode
-        });
-        
-        // Check if this section is in the qualifying list
-        const isQualifying = qualifyingSections.some(s => s.itemNo === section.itemNo);
-        
-        if (isQualifying) {
-          return (
-            <span 
-              className="text-blue-600 font-medium cursor-help"
-              title={`Auto Calc: £${dayRate} ÷ ${qualifyingSections.length} sections = £${recalculatedCost.toFixed(2)}`}
-            >
-              £{recalculatedCost.toFixed(2)}
-            </span>
-          );
-        }
-      }
-    }
+      // REMOVED: Auto-cost mode logic that was causing infinite loops
+      // Cost calculations now use standard PR2 configuration logic only
     
     // For defective sections, use PR2 configuration calculations
     const autoCost = calculateAutoCost(section);
@@ -2639,7 +2599,7 @@ export default function Dashboard() {
     // Show warning triangle icon for sections without pricing
     return "⚠️";
     };
-  }, [autoCostMode, pr2Configurations, sectionData]);
+  }, [pr2Configurations, sectionData]);
 
   // REMOVED: Auto-cost trigger useEffect was causing infinite loops
   // Cost calculations continue working normally without popup dialogs
@@ -3405,7 +3365,7 @@ export default function Dashboard() {
                         })}
                       </tr>
                     </thead>
-                    <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${autoCostMode}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
+                    <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
                       {sectionData.map((section, index) => {
                         // Check for approved repair pricing
                         const repairStatus = hasApprovedRepairPricing(section);
