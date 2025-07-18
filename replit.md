@@ -1119,33 +1119,37 @@ Both rules are permanently locked and displayed on screen per user requirement
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.6' to return to this stable checkpoint
 
-## REV V8.4 CHECKPOINT - TP2 TEMPLATE ROW 1 SIMPLIFIED (July 18, 2025)
+## REV V8.5 CHECKPOINT - SEPARATE SERVICE & STRUCTURAL AUTO-COST DIALOGS (July 18, 2025)
 
-🔒 **PRODUCTION READY - TP2 TEMPLATE ROW STRUCTURE FINALIZED:**
-- **Row 1 Simplified**: Day Rate shows only cost input field (£1850) - Min Qty and Length (Max) inputs removed
-- **Rows 2-5 Preserved**: Single Layer, Double Layer, Triple Layer, Triple Layer (Extra Cure) maintain complete structure (cost + Min Qty + Length Max)
-- **Conditional Input Display**: Added `{index > 0 && ...}` logic to hide Min Qty and Length inputs for Row 1 only
-- **User Specifications Met**: Row 1 shows only Day Rate cost input as requested, other rows unchanged
-- **Template Integrity**: TP2 patching template maintains functionality with simplified first row
+🔒 **PRODUCTION READY - COMPLETE SEPARATE POPUP SYSTEM:**
+- **Fixed Premature Trigger**: Removed `newReportWithCosts` logic that was causing popup to appear immediately on load
+- **Separate Service Dialog**: Blue-themed popup (🧹 Service Cost Calculation) with service-specific formula display
+- **Separate Structural Dialog**: Orange-themed popup (🔧 Structural Cost Calculation) with structural-specific formula display
+- **Proper Trigger Logic**: Only triggers when actual transition from ⚠️ warning triangles to calculated costs occurs
+- **Individual Completion Detection**: Service and structural dialogs trigger independently based on their respective defect types
+- **Console Verification**: Trigger check logs show `serviceCompleted: false, structuralCompleted: false` until actual transitions occur
 
-🔒 **TP2 ROW STRUCTURE:**
-- **Row 1**: Day Rate £1850 (cost input only)
-- **Row 2**: Single Layer + Min Qty + Length (Max) inputs
-- **Row 3**: Double Layer £425 + Min Qty + Length (Max) inputs
-- **Row 4**: Triple Layer + Min Qty + Length (Max) inputs
-- **Row 5**: Triple Layer (Extra Cure) + Min Qty + Length (Max) inputs
+🔒 **TRIGGER SYSTEM ENHANCED:**
+- **Service Trigger**: Activates when `previousServiceWarnings > 0 && currentServiceWarnings === 0`
+- **Structural Trigger**: Activates when `previousStructuralWarnings > 0 && currentStructuralWarnings === 0`
+- **Independent Operation**: Each dialog triggers separately based on completion of respective defect type calculations
+- **Console Logging**: Enhanced debug output shows "🚨 TRIGGERING SERVICE AUTO-COST DIALOG" vs "🚨 TRIGGERING STRUCTURAL AUTO-COST DIALOG"
+- **Warning Count Tracking**: System monitors warning triangles separately for service vs structural defects
 
-🔒 **TECHNICAL IMPLEMENTATION:**
-- **File**: `client/src/pages/pr2-config-clean.tsx` - Modified TP2 pricing options display
-- **Conditional Logic**: `{index > 0 && (<>Min Qty and Length inputs</>)}` hides inputs for Row 1
-- **Preserved Functionality**: Rows 2-5 maintain all original input fields and functionality
-- **Auto-Save**: All input changes continue to trigger auto-save functionality
-- **User Testing**: Successfully verified Row 1 shows only Day Rate, Rows 2-5 unchanged
+🔒 **DIALOG DESIGN DIFFERENCES:**
+- **Service Dialog**: Blue theme (text-blue-600, bg-blue-50, border-blue-200) with 🧹 cleaning icon
+- **Structural Dialog**: Orange theme (text-orange-600, bg-orange-50, border-orange-200) with 🔧 repair icon
+- **Formula Display**: Each dialog shows defect-type-specific calculation formulas
+- **Button Colors**: Service uses blue buttons, Structural uses orange buttons
+- **Independent State**: Separate `showServiceAutoCostDialog` and `showStructuralAutoCostDialog` state management
 
-🔒 **COMPLETE FIVE-WINDOW FUNCTIONALITY MAINTAINED:**
-- **Blue Window**: Pricing options (Day Rate £1850) with 💰 emoji
-- **Math Window**: Division operator (÷) selection  
-- **Green Window**: Quantity options (Runs per Shift 25, No 2: 22) in paired layout
+🔒 **TESTING APPROACH:**
+- **Create Warning Triangles**: Remove Day Rate from configuration ID 152 to generate ⚠️ symbols
+- **Trigger Service Dialog**: Add Day Rate back for service defects to trigger blue popup
+- **Trigger Structural Dialog**: Configure structural pricing to trigger orange popup  
+- **Verification**: Console logs will show specific dialog triggers when transitions occur
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v8.5' to return to this stable checkpoint
 - **Orange Window**: Min quantity options (Min Runs 25, Qty 2: 25) in paired layout
 - **Purple Window**: Range options (Percentage 0-30, Length 0-33.99, Percentage 2: 0-30, Length 2: 0-66.99) with working inputs
 

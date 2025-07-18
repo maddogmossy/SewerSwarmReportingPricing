@@ -481,7 +481,8 @@ export default function Dashboard() {
   const [pendingExport, setPendingExport] = useState(false);
   
   // Auto-cost calculation popup state
-  const [showAutoCostDialog, setShowAutoCostDialog] = useState(false);
+  const [showServiceAutoCostDialog, setShowServiceAutoCostDialog] = useState(false);
+  const [showStructuralAutoCostDialog, setShowStructuralAutoCostDialog] = useState(false);
   const [autoCostMode, setAutoCostMode] = useState<'manual' | 'automatic'>('manual');
   
   // Track previous costs to detect when last value is added
@@ -2831,10 +2832,10 @@ export default function Dashboard() {
     
     const totalSections = sectionData.length;
     
-    // Trigger popup when last service or structural value gets calculated
+    // ONLY trigger when there's an actual transition from warnings to calculations
+    // (when user adds pricing data and warning triangles disappear)
     const serviceCompleted = previousCostState.serviceWarnings > 0 && serviceWarnings === 0;
     const structuralCompleted = previousCostState.structuralWarnings > 0 && structuralWarnings === 0;
-    const newReportWithCosts = previousCostState.totalSections === 0 && totalSections > 0 && (serviceWarnings > 0 || structuralWarnings > 0);
     
     console.log('🎯 TRIGGER CHECK:', {
       previousServiceWarnings: previousCostState.serviceWarnings,
@@ -2843,13 +2844,19 @@ export default function Dashboard() {
       currentStructuralWarnings: structuralWarnings,
       serviceCompleted,
       structuralCompleted,
-      newReportWithCosts,
-      autoCostMode
+      autoCostMode,
+      totalSections
     });
     
-    if ((serviceCompleted || structuralCompleted || newReportWithCosts) && autoCostMode === 'manual') {
-      console.log('🚨 TRIGGERING AUTO-COST DIALOG');
-      setShowAutoCostDialog(true);
+    // ONLY trigger when there's an actual completion (warnings → calculations)
+    if (serviceCompleted && autoCostMode === 'manual') {
+      console.log('🚨 TRIGGERING SERVICE AUTO-COST DIALOG - Last service values calculated!');
+      setShowServiceAutoCostDialog(true);
+    }
+    
+    if (structuralCompleted && autoCostMode === 'manual') {
+      console.log('🚨 TRIGGERING STRUCTURAL AUTO-COST DIALOG - Last structural values calculated!');
+      setShowStructuralAutoCostDialog(true);
     }
     
     // Update previous state
@@ -3855,22 +3862,71 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Auto-Cost Calculation Dialog */}
-      <Dialog open={showAutoCostDialog} onOpenChange={setShowAutoCostDialog}>
+      {/* Service Cost Dialog */}
+      <Dialog open={showServiceAutoCostDialog} onOpenChange={setShowServiceAutoCostDialog}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-blue-600 text-center">🧮 Automatic Cost Calculation</DialogTitle>
+            <DialogTitle className="text-blue-600 text-center">🧹 Service Cost Calculation</DialogTitle>
             <DialogDescription className="text-center">
-              Would you like to automatically calculate service and structural costs using your approved formulas?
+              Would you like to automatically calculate service costs using your approved formula?
             </DialogDescription>
           </DialogHeader>
           <div className="py-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
               <p className="text-sm text-blue-800 font-medium mb-2">
-                📊 Approved Calculation Formulas:
+                📊 Approved Service Cost Formula:
               </p>
               <ul className="text-xs text-blue-700 space-y-1">
                 <li><strong>Service Cost:</strong> Day Rate ÷ Qualifying Sections = Cost per section</li>
+                <li><strong>Qualifying Criteria:</strong> Excludes Grade 0 sections from calculations</li>
+              </ul>
+            </div>
+            
+            <div className="text-center space-y-3">
+              <p className="text-sm text-slate-600">
+                Choose your preferred calculation mode:
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2 justify-center">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setAutoCostMode('manual');
+                setShowServiceAutoCostDialog(false);
+              }}
+              className="w-32"
+            >
+              🔧 Manual Mode
+            </Button>
+            <Button
+              onClick={() => {
+                setAutoCostMode('automatic');
+                setShowServiceAutoCostDialog(false);
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white w-32"
+            >
+              ⚡ Auto Calculate
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Structural Cost Dialog */}
+      <Dialog open={showStructuralAutoCostDialog} onOpenChange={setShowStructuralAutoCostDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-orange-600 text-center">🔧 Structural Cost Calculation</DialogTitle>
+            <DialogDescription className="text-center">
+              Would you like to automatically calculate structural costs using your approved formula?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6">
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+              <p className="text-sm text-orange-800 font-medium mb-2">
+                📊 Approved Structural Cost Formula:
+              </p>
+              <ul className="text-xs text-orange-700 space-y-1">
                 <li><strong>Structural Cost:</strong> Day Rate ÷ Qualifying Sections = Cost per section</li>
                 <li><strong>Qualifying Criteria:</strong> Excludes Grade 0 sections from calculations</li>
               </ul>
@@ -3887,7 +3943,7 @@ export default function Dashboard() {
               variant="outline"
               onClick={() => {
                 setAutoCostMode('manual');
-                setShowAutoCostDialog(false);
+                setShowStructuralAutoCostDialog(false);
               }}
               className="w-32"
             >
@@ -3896,9 +3952,9 @@ export default function Dashboard() {
             <Button
               onClick={() => {
                 setAutoCostMode('automatic');
-                setShowAutoCostDialog(false);
+                setShowStructuralAutoCostDialog(false);
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-32"
+              className="bg-orange-600 hover:bg-orange-700 text-white w-32"
             >
               ⚡ Auto Calculate
             </Button>
