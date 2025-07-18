@@ -2223,9 +2223,41 @@ export default function PR2ConfigClean() {
                   id="custom-color"
                   type="color"
                   value={formData.categoryColor}
-                  onChange={(e) => {
-                    setFormData(prev => ({ ...prev, categoryColor: e.target.value }));
-                    debouncedSave();
+                  onChange={async (e) => {
+                    const newColor = e.target.value;
+                    console.log(`🎨 Color changed to: ${newColor}`);
+                    
+                    // Update form data immediately
+                    setFormData(prev => ({ ...prev, categoryColor: newColor }));
+                    
+                    // For patching category, sync color across all pipe sizes
+                    if (categoryId === 'patching') {
+                      console.log('🎨 Syncing color across all patching configurations...');
+                      
+                      const patchingConfigIds = [153, 156, 157];
+                      const updatePromises = patchingConfigIds.map(async (configId) => {
+                        try {
+                          const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
+                          const config = await response.json();
+                          
+                          // Update the color for this configuration
+                          await apiRequest('PUT', `/api/pr2-clean/${configId}`, {
+                            ...config,
+                            categoryColor: newColor
+                          });
+                          
+                          console.log(`✅ Updated color for config ${configId} to ${newColor}`);
+                        } catch (error) {
+                          console.error(`❌ Failed to update color for config ${configId}:`, error);
+                        }
+                      });
+                      
+                      await Promise.all(updatePromises);
+                      console.log('✅ All patching configurations updated with new color');
+                    } else {
+                      // For non-patching categories, just save the current configuration
+                      debouncedSave();
+                    }
                   }}
                   className="w-12 h-8 rounded border border-gray-300 cursor-pointer"
                 />
