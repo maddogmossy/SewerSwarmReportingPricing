@@ -2051,11 +2051,14 @@ export default function PR2ConfigClean() {
               
               <Button
                 onClick={async () => {
-                  // Validate .99 format for length ranges before saving
-                  const lengthRange = formData.rangeOptions?.find(opt => opt.id === 'range_length');
-                  if (lengthRange && lengthRange.rangeEnd && !validateLengthFormat(lengthRange.rangeEnd)) {
-                    setShowValidationWarning(true);
-                    return;
+                  // Only validate .99 format for TP1 configurations, not TP2 patching
+                  const isTP2 = categoryId === 'patching';
+                  if (!isTP2) {
+                    const lengthRange = formData.rangeOptions?.find(opt => opt.id === 'range_length');
+                    if (lengthRange && lengthRange.rangeEnd && !validateLengthFormat(lengthRange.rangeEnd)) {
+                      setShowValidationWarning(true);
+                      return;
+                    }
                   }
                   // If validation passes, clear warning and proceed with navigation
                   setShowValidationWarning(false);
