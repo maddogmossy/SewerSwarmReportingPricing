@@ -931,6 +931,12 @@ export default function PR2ConfigClean() {
   // Track processed configurations to prevent double loading
   const [processedConfigId, setProcessedConfigId] = useState<number | null>(null);
   
+  // Clear processedConfigId when editId changes to allow new configuration loading
+  useEffect(() => {
+    console.log(`🔄 editId changed to: ${editId}, clearing processedConfigId`);
+    setProcessedConfigId(null);
+  }, [editId]);
+  
   // Single useEffect to handle all configuration loading
   useEffect(() => {
     // Use sectorConfigs for navigation without editId, existingConfig for direct editId access
