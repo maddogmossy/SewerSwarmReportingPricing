@@ -1885,6 +1885,7 @@ export default function PR2ConfigClean() {
     
     console.log(`🔍 getPipeSizeConfigurations for category ${categoryId} found ${pipeSizeConfigs.length} configs:`, 
                 pipeSizeConfigs.map(p => `${p.pipeSize} (ID: ${p.id})`));
+    console.log(`🔍 Current categoryId filter: ${categoryId}`);
     
     return pipeSizeConfigs;
   };
