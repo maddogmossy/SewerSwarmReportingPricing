@@ -2424,7 +2424,13 @@ export default function PR2ConfigClean() {
               </div>
               <p className="text-sm text-gray-600 mt-2">
                 {categoryId === 'patching' 
-                  ? `Separate configurations for each pipe size - 150mm (ID: 153), 225mm (ID: 156), 300mm (ID: 157). Currently editing: ${editId}`
+                  ? `Currently editing: ${(() => {
+                      const activeConfigId = currentConfigId || (editId ? parseInt(editId) : null);
+                      if (activeConfigId === 153) return '150mm (ID: 153)';
+                      if (activeConfigId === 156) return '225mm (ID: 156)';
+                      if (activeConfigId === 157) return '300mm (ID: 157)';
+                      return 'Loading...';
+                    })()}`
                   : `Currently only 150mm available for ${formData.categoryName || 'this category'} to prevent configuration conflicts (ID: ${editId})`
                 }
               </p>
