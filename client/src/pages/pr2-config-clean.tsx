@@ -2236,6 +2236,8 @@ export default function PR2ConfigClean() {
                   
                   const isCurrentConfig = editId === String(configId);
                   
+                  console.log(`🔍 Rendering button: ${pipeSize} (ID: ${configId}) - Current: ${isCurrentConfig}`);
+                  
                   return (
                     <button
                       key={pipeSize}
@@ -2243,18 +2245,12 @@ export default function PR2ConfigClean() {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
                         console.log(`🚀 BUTTON CLICKED: Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
                         
-                        // Smooth client-side navigation without white screen
+                        // Direct page navigation - most reliable approach
                         const newUrl = `/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`;
-                        console.log(`🔗 Smooth navigation to:`, newUrl);
+                        console.log(`🔗 Direct navigation to:`, newUrl);
                         
-                        // Update URL without page reload
-                        window.history.pushState({}, '', newUrl);
-                        
-                        // Force re-render by updating location state
-                        setLocation(newUrl);
-                        
-                        // Invalidate queries to reload data
-                        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+                        // Force page reload to new URL
+                        window.location.href = newUrl;
                       }}
                       className={`px-4 py-2 rounded border hover:bg-gray-50 transition-colors ${isCurrentConfig ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-white border-gray-300"}`}
                     >
