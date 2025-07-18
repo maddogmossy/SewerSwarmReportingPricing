@@ -16,10 +16,14 @@ interface CleaningOptionsPopoverProps {
 }
 
 export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
-  // TEMPORARY FIX: Replace problematic Popover with direct navigation to eliminate infinite loops
+  // FIXED: Route to specific configuration ID instead of generic category
   const handleDirectClick = () => {
-    // Navigate directly to CCTV/Jet Vac configuration (primary option)
-    window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}`;
+    // Extract pipe size from section data
+    const pipeSize = sectionData.pipeSize || '150mm';
+    const pipeSizeNumber = pipeSize.replace('mm', '');
+    
+    // Route with pipe size to ensure correct configuration is loaded
+    window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
   };
 
   // Return simple clickable element instead of complex Popover that causes infinite loops

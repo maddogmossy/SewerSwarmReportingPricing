@@ -529,11 +529,26 @@ export default function PR2ConfigClean() {
 
   // Debug logging disabled to prevent infinite loops
 
-  // Route to existing general configuration when navigating from dashboard
+  // Route to existing configuration when navigating from dashboard
   useEffect(() => {
     // Only run when we have categoryId and sector but not already editing
     if (!isEditing && categoryId && sector && allCategoryConfigs) {
-      console.log(`🔍 Looking for existing general configuration for ${categoryId} in ${sector}`);
+      console.log(`🔍 Looking for existing configuration for ${categoryId} in ${sector}, pipeSize: ${pipeSize}`);
+      
+      // If we have a pipe size, look for pipe-size-specific configuration first
+      if (pipeSize) {
+        const pipeSizeConfig = allCategoryConfigs.find(config => 
+          config.categoryId === categoryId && 
+          config.sector === sector &&
+          config.description && config.description.includes(`${pipeSize}mm`)
+        );
+        
+        if (pipeSizeConfig) {
+          console.log(`✅ Found pipe size-specific configuration ID: ${pipeSizeConfig.id}, redirecting to edit mode`);
+          setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${pipeSizeConfig.id}`);
+          return;
+        }
+      }
       
       // Find existing general configuration for this category (same logic as pricing page)
       const existingConfig = allCategoryConfigs.find(config => 
@@ -550,7 +565,7 @@ export default function PR2ConfigClean() {
         console.log(`🔍 No general configuration found, staying on new config page`);
       }
     }
-  }, [allCategoryConfigs, isEditing, categoryId, sector, setLocation]);
+  }, [allCategoryConfigs, isEditing, categoryId, sector, pipeSize, setLocation]);
 
   // DEBOUNCED SAVE: Save input values after user stops typing
   const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -687,7 +702,7 @@ export default function PR2ConfigClean() {
       // If we have pipe size, look for pipe size-specific configuration first
       if (pipeSize) {
         const pipeSizeConfig = configs.find(config => 
-          config.categoryName && config.categoryName.includes(`${pipeSize}mm`) &&
+          config.description && config.description.includes(`${pipeSize}mm`) &&
           config.sector === sector
         );
         
@@ -711,7 +726,7 @@ export default function PR2ConfigClean() {
         return null; // Always return null instead of undefined
       }
     },
-    enabled: !isEditing && !!categoryId && !editId && !pipeSize, // FIXED: Exclude when editing OR when pipeSize exists to avoid conflicts
+    enabled: !isEditing && !!categoryId && !editId, // FIXED: Enable when pipeSize exists to find correct config
   });
 
   // Load all configurations for this category to show in "Saved Configurations"
