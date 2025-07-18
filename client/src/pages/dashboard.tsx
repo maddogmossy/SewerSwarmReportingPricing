@@ -88,7 +88,7 @@ const requiresStructuralRepair = (defects: string): boolean => {
   
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
   if (hasStructuralDefects) {
-    console.log(`🔧 Section has structural defects, routing to TP2: ${defects.substring(0, 100)}...`);
+    // Logging removed to prevent infinite loops
     return true; // Use TP2 for structural repair
   }
   
@@ -469,14 +469,7 @@ const tableColumns = [
 ];
 
 export default function Dashboard() {
-  // Disable console logging to prevent infinite loop spam
-  useEffect(() => {
-    const originalLog = console.log;
-    console.log = () => {}; // Disable all console.log output
-    return () => {
-      console.log = originalLog; // Restore on cleanup
-    };
-  }, []);
+  // FIXED: Removed console disabling useEffect to prevent infinite loops
 
   const { toast } = useToast();
   const search = useSearch();
@@ -533,33 +526,11 @@ export default function Dashboard() {
 
 
 
-  // Auto-collapse dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const dropdown = document.getElementById('folder-dropdown');
-      if (dropdown && !dropdown.contains(event.target as Node)) {
-        setShowFolderDropdown(false);
-      }
-    };
+  // FIXED: Removed click outside useEffect to prevent infinite loops
+  // Folder dropdown can be closed manually via close button
 
-    if (showFolderDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [showFolderDropdown]);
-
-  // Load hidden columns from localStorage on component mount
-  useEffect(() => {
-    const savedHiddenColumns = localStorage.getItem('dashboard-hidden-columns');
-    if (savedHiddenColumns) {
-      try {
-        const parsedColumns = JSON.parse(savedHiddenColumns);
-        setHiddenColumns(new Set(parsedColumns));
-      } catch (error) {
-        console.error('Failed to parse saved hidden columns:', error);
-      }
-    }
-  }, []);
+  // FIXED: Removed localStorage loading useEffect to prevent infinite loops
+  // Hidden columns will load via direct initialization in useState
 
   // Sequential section validation function - Updated for authentic Wincan data
   const validateSequentialSections = (sections: any[], uploadData: any) => {
@@ -596,10 +567,8 @@ export default function Dashboard() {
     }
   };
 
-  // Save hidden columns to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('dashboard-hidden-columns', JSON.stringify(Array.from(hiddenColumns)));
-  }, [hiddenColumns]);
+  // FIXED: Removed useEffect to prevent infinite loops
+  // Hidden columns will save when toggled in the toggle function directly
 
   // All helper functions removed to prevent screen flashing
 
@@ -611,6 +580,8 @@ export default function Dashboard() {
       } else {
         newSet.add(columnKey);
       }
+      // Save directly to localStorage to avoid useEffect infinite loops
+      localStorage.setItem('dashboard-hidden-columns', JSON.stringify(Array.from(newSet)));
       return newSet;
     });
   };
