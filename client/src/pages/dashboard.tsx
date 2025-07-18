@@ -479,7 +479,10 @@ export default function Dashboard() {
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [showExportWarning, setShowExportWarning] = useState(false);
   const [pendingExport, setPendingExport] = useState(false);
-  const [isServiceRecalculated, setIsServiceRecalculated] = useState(false);
+  
+  // Auto-cost calculation popup state
+  const [showAutoCostDialog, setShowAutoCostDialog] = useState(false);
+  const [autoCostMode, setAutoCostMode] = useState<'manual' | 'automatic'>('manual');
   
   // Filter state
   const [filters, setFilters] = useState({
@@ -2713,7 +2716,7 @@ export default function Dashboard() {
   // Cost calculation function for enhanced table - using useMemo to ensure reactivity
   const calculateCost = useMemo(() => {
     return (section: any): string | JSX.Element => {
-      console.log('💰 calculateCost called for section:', section.itemNo, 'isServiceRecalculated:', isServiceRecalculated);
+      console.log('💰 calculateCost called for section:', section.itemNo, 'autoCostMode:', autoCostMode);
       
       // Check if section actually has defects based on severity grade
       const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
@@ -2722,9 +2725,9 @@ export default function Dashboard() {
         return "£0.00";
       }
       
-      // SERVICE CALC LOGIC: Check if service recalculation is active
-      console.log('🎯 Checking service recalc state:', isServiceRecalculated, 'pr2Configs:', pr2Configurations?.length);
-      if (isServiceRecalculated && pr2Configurations && pr2Configurations.length > 0) {
+      // AUTO-COST LOGIC: Check if automatic calculation is active
+      console.log('🎯 Checking auto-cost mode:', autoCostMode, 'pr2Configs:', pr2Configurations?.length);
+      if (autoCostMode === 'automatic' && pr2Configurations && pr2Configurations.length > 0) {
       // Get qualifying sections for service defects (exclude structural repairs)
       const qualifyingSections = sectionData.filter(s => {
         const sectionHasDefects = s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0;
@@ -2740,13 +2743,13 @@ export default function Dashboard() {
       if (dayRate > 0 && qualifyingSections.length > 0) {
         const recalculatedCost = dayRate / qualifyingSections.length;
         
-        console.log('🎯 SERVICE CALC RECALCULATION:', {
+        console.log('🎯 AUTO-COST RECALCULATION:', {
           configId: config?.id,
           dayRate,
           qualifyingSections: qualifyingSections.length,
           recalculatedCost,
           section: section.itemNo,
-          isServiceRecalculated
+          autoCostMode
         });
         
         // Check if this section is in the qualifying list
@@ -2756,7 +2759,7 @@ export default function Dashboard() {
           return (
             <span 
               className="text-blue-600 font-medium cursor-help"
-              title={`Service Calc: £${dayRate} ÷ ${qualifyingSections.length} sections = £${recalculatedCost.toFixed(2)}`}
+              title={`Auto Calc: £${dayRate} ÷ ${qualifyingSections.length} sections = £${recalculatedCost.toFixed(2)}`}
             >
               £{recalculatedCost.toFixed(2)}
             </span>
@@ -2795,7 +2798,7 @@ export default function Dashboard() {
     // Show warning triangle icon for sections without pricing
     return "⚠️";
     };
-  }, [isServiceRecalculated, pr2Configurations, sectionData]);
+  }, [autoCostMode, pr2Configurations, sectionData]);
 
 
 
@@ -3560,7 +3563,7 @@ export default function Dashboard() {
                         })}
                       </tr>
                     </thead>
-                    <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${isServiceRecalculated}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
+                    <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${autoCostMode}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
                       {sectionData.map((section, index) => {
                         // Check for approved repair pricing
                         const repairStatus = hasApprovedRepairPricing(section);
@@ -3788,6 +3791,57 @@ export default function Dashboard() {
               className="bg-amber-600 hover:bg-amber-700 text-white"
             >
               {clearDataMutation.isPending ? "Hiding..." : "Hide Dashboard Data"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Auto-Cost Calculation Dialog */}
+      <Dialog open={showAutoCostDialog} onOpenChange={setShowAutoCostDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-blue-600 text-center">🧮 Automatic Cost Calculation</DialogTitle>
+            <DialogDescription className="text-center">
+              Would you like to automatically calculate service and structural costs using your approved formulas?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <p className="text-sm text-blue-800 font-medium mb-2">
+                📊 Approved Calculation Formulas:
+              </p>
+              <ul className="text-xs text-blue-700 space-y-1">
+                <li><strong>Service Cost:</strong> Day Rate ÷ Qualifying Sections = Cost per section</li>
+                <li><strong>Structural Cost:</strong> Day Rate ÷ Qualifying Sections = Cost per section</li>
+                <li><strong>Qualifying Criteria:</strong> Excludes Grade 0 sections from calculations</li>
+              </ul>
+            </div>
+            
+            <div className="text-center space-y-3">
+              <p className="text-sm text-slate-600">
+                Choose your preferred calculation mode:
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2 justify-center">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setAutoCostMode('manual');
+                setShowAutoCostDialog(false);
+              }}
+              className="w-32"
+            >
+              🔧 Manual Mode
+            </Button>
+            <Button
+              onClick={() => {
+                setAutoCostMode('automatic');
+                setShowAutoCostDialog(false);
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white w-32"
+            >
+              ⚡ Auto Calculate
             </Button>
           </DialogFooter>
         </DialogContent>
