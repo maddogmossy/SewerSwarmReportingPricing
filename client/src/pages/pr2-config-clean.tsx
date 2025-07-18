@@ -2270,7 +2270,7 @@ export default function PR2ConfigClean() {
             {/* TP2 Interface with 5 Pricing Options */}
             <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                TP2 - Patching Configuration ({selectedPipeSize})
+                TP2 - Patching Configuration {selectedPipeSize}
               </h3>
               
               {/* Purple Window: 5 Patching Options */}
