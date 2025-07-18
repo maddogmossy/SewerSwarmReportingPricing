@@ -2284,8 +2284,9 @@ export default function PR2ConfigClean() {
                         '156': '225mm', 
                         '157': '300mm'
                       };
-                      return pipeConfigIds[editId as keyof typeof pipeConfigIds] || 'Unknown';
-                    })()} configuration (ID: ${editId})`
+                      const activeConfigId = currentConfigId || parseInt(editId);
+                      return pipeConfigIds[activeConfigId as keyof typeof pipeConfigIds] || 'Unknown';
+                    })()} configuration (ID: ${currentConfigId || editId})`
                   : `Currently only 150mm available for ${formData.categoryName || 'this category'} to prevent configuration conflicts (ID: ${editId})`
                 }
               </p>
