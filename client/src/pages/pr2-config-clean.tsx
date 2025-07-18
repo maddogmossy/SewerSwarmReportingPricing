@@ -2174,8 +2174,8 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* Pipe Size Selection - Show for ALL categories */}
-        {(
+        {/* Pipe Size Selection - Show ONLY for patching category */}
+        {categoryId === 'patching' && (
           <Card className="mb-6">
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center gap-2">
