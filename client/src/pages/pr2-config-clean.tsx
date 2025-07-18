@@ -518,71 +518,8 @@ export default function PR2ConfigClean() {
     }
   }, [allCategoryConfigs, isEditing, categoryId, sector, setLocation]);
 
-  // AUTO-SAVE: Proper debounced auto-save for editing existing configurations
-  const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
-  
-  useEffect(() => {
-    // Clear previous timeout
-    if (autoSaveTimeout) {
-      clearTimeout(autoSaveTimeout);
-    }
-    
-    // Only auto-save when editing existing configurations
-    if (!isEditing || !editId || !formData.categoryName) return;
-    
-    const hasActualValues = 
-      formData.pricingOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
-      formData.quantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
-      formData.minQuantityOptions.some(opt => opt.enabled && opt.value && opt.value.trim() !== '') ||
-      formData.rangeOptions.some(opt => opt.enabled && ((opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')));
-    
-    // Save when editing existing configuration or when there are actual values
-    if (hasActualValues || (isEditing && editId)) {
-      const timeoutId = setTimeout(async () => {
-        try {
-          const payload = {
-            categoryName: formData.categoryName,
-            description: formData.description,
-            categoryColor: formData.categoryColor,
-            sector: sector,
-            categoryId: categoryId,
-            pricingOptions: formData.pricingOptions,
-            quantityOptions: formData.quantityOptions,
-            minQuantityOptions: formData.minQuantityOptions,
-            rangeOptions: formData.rangeOptions,
-            mathOperators: formData.mathOperators,
-            pricingStackOrder: formData.pricingStackOrder,
-            quantityStackOrder: formData.quantityStackOrder,
-            minQuantityStackOrder: formData.minQuantityStackOrder,
-            rangeStackOrder: formData.rangeStackOrder
-          };
-
-          const response = await fetch(`/api/pr2-clean/${editId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          
-          if (response.ok) {
-            const result = await response.json();
-            console.log('✅ Auto-save completed successfully:', result);
-          }
-        } catch (error) {
-          console.error('❌ Auto-save failed:', error);
-        }
-        setAutoSaveTimeout(null);
-      }, 2000);
-      
-      setAutoSaveTimeout(timeoutId);
-    }
-    
-    // Cleanup function
-    return () => {
-      if (autoSaveTimeout) {
-        clearTimeout(autoSaveTimeout);
-      }
-    };
-  }, [isEditing, editId]); // Removed formData dependency to prevent infinite loops
+  // AUTO-SAVE DISABLED to prevent infinite loops and data corruption
+  // const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Dialog states
   const [addPricingDialogOpen, setAddPricingDialogOpen] = useState(false);
@@ -2174,6 +2111,46 @@ export default function PR2ConfigClean() {
                 <span className="text-sm text-gray-600 font-mono">
                   {formData.categoryColor}
                 </span>
+                {isEditing && (
+                  <Button
+                    size="sm"
+                    onClick={async () => {
+                      try {
+                        const payload = {
+                          categoryName: formData.categoryName,
+                          description: formData.description,
+                          categoryColor: formData.categoryColor,
+                          sector: sector,
+                          categoryId: categoryId,
+                          pricingOptions: formData.pricingOptions,
+                          quantityOptions: formData.quantityOptions,
+                          minQuantityOptions: formData.minQuantityOptions,
+                          rangeOptions: formData.rangeOptions,
+                          mathOperators: formData.mathOperators,
+                          pricingStackOrder: formData.pricingStackOrder,
+                          quantityStackOrder: formData.quantityStackOrder,
+                          minQuantityStackOrder: formData.minQuantityStackOrder,
+                          rangeStackOrder: formData.rangeStackOrder
+                        };
+                        
+                        const response = await fetch(`/api/pr2-clean/${editId}`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify(payload)
+                        });
+                        
+                        if (response.ok) {
+                          console.log('✅ Manual save completed successfully');
+                        }
+                      } catch (error) {
+                        console.error('❌ Manual save failed:', error);
+                      }
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Save Color
+                  </Button>
+                )}
               </div>
               <p className="text-xs text-gray-500 mt-2">
                 Create your own custom color using the color picker
