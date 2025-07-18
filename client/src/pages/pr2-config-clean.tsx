@@ -2207,8 +2207,14 @@ export default function PR2ConfigClean() {
                   let targetCategoryId;
                   
                   if (categoryId === 'patching') {
-                    // TP2 Patching - use single unified configuration (ID 153) for all pipe sizes
-                    configId = 153; // Unified TP2 Patching Configuration
+                    // TP2 Patching - use separate configurations for each pipe size
+                    if (pipeSize === '150mm') {
+                      configId = 153; // 150mm TP2 Patching Configuration
+                    } else if (pipeSize === '225mm') {
+                      configId = 156; // 225mm TP2 Patching Configuration
+                    } else if (pipeSize === '300mm') {
+                      configId = 157; // 300mm TP2 Patching Configuration
+                    }
                     targetCategoryId = 'patching';
                   } else {
                     // TP1 CCTV configurations - only 150mm available (ID 152)
@@ -2225,13 +2231,13 @@ export default function PR2ConfigClean() {
                       key={pipeSize}
                       onClick={() => {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
-                        console.log(`🚀 SWITCHING TO: ${pipeSize} section within unified configuration`);
+                        console.log(`🚀 NAVIGATING TO: ${pipeSize} configuration (ID: ${configId})`);
                         
-                        // For unified configuration, just update the selected pipe size state
-                        setSelectedPipeSize(pipeSize);
-                        setCurrentConfigId(configId);
+                        // Navigate to the specific configuration for this pipe size
+                        const newUrl = `/pr2-config-clean?categoryId=${targetCategoryId}&sector=${sector}&edit=${configId}`;
+                        setLocation(newUrl);
                         
-                        console.log(`🔄 Switched to ${pipeSize} view within unified configuration (ID: ${configId})`);
+                        console.log(`🔄 Navigated to ${pipeSize} configuration (ID: ${configId})`);
                       }}
                       className={`px-4 py-2 rounded border hover:bg-gray-50 transition-colors ${isCurrentConfig ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-white border-gray-300"}`}
                     >
@@ -2242,7 +2248,7 @@ export default function PR2ConfigClean() {
               </div>
               <p className="text-sm text-gray-600 mt-2">
                 {categoryId === 'patching' 
-                  ? `Unified patching configuration - All pipe sizes use the same configuration with range-based pricing (ID: ${currentConfigId || editId})`
+                  ? `Separate configurations for each pipe size - 150mm (ID: 153), 225mm (ID: 156), 300mm (ID: 157). Currently editing: ${editId}`
                   : `Currently only 150mm available for ${formData.categoryName || 'this category'} to prevent configuration conflicts (ID: ${editId})`
                 }
               </p>
