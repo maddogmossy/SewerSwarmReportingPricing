@@ -2206,13 +2206,20 @@ export default function PR2ConfigClean() {
                       }}
                       className={isCurrentConfig ? "bg-yellow-500 hover:bg-yellow-600" : ""}
                     >
-                      {pipeSize} (ID: {configId})
+                      {pipeSize}
                     </Button>
                   );
                 })}
               </div>
               <p className="text-sm text-gray-600 mt-2">
-                Select pipe size to edit pricing: Currently editing <strong>{selectedPipeSize}</strong> configuration (ID: {editId})
+                Select pipe size to edit pricing: Currently editing <strong>{(() => {
+                  const pipeConfigIds = {
+                    '153': '150mm',
+                    '156': '225mm', 
+                    '157': '300mm'
+                  };
+                  return pipeConfigIds[editId as keyof typeof pipeConfigIds] || 'Unknown';
+                })()}</strong> configuration (ID: {editId})
               </p>
             </CardContent>
           </Card>
