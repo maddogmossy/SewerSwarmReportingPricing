@@ -2244,7 +2244,7 @@ export default function PR2ConfigClean() {
                       onClick={async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log(`🚀 Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
+                        console.log(`🚀 BUTTON CLICKED: Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
                         
                         // Smooth client-side navigation without white screen
                         const newUrl = `/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`;
