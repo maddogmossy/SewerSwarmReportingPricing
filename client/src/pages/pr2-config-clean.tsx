@@ -2523,7 +2523,7 @@ export default function PR2ConfigClean() {
                               onChange={(e) => {
                                 console.log(`📏 Length input ${index + 1} (${option.label}):`, e.target.value);
                                 const rangeId = formData.rangeOptions?.[index]?.id || `range_length_${index + 1}`;
-                                updateRangeOption(rangeId, 'rangeEnd', e.target.value);
+                                handleRangeValueChange(rangeId, 'rangeEnd', e.target.value);
                               }}
                               className="w-20 h-8 text-sm"
                               disabled={false}

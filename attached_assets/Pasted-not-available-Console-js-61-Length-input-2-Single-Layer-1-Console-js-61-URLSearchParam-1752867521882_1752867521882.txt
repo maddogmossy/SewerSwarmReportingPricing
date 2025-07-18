@@ -1,0 +1,32 @@
+not available
+﻿
+Console.js:61 📏 Length input 2 (Single Layer): 1
+Console.js:61 🔍 URLSearchParams debug: 
+{searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: 
+{location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (ID: 153) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (ID: 156) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (ID: 157) - Current: false
+Console.js:61 🔍 URLSearchParams debug: 
+{searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: 
+{location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (ID: 153) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (ID: 156) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (ID: 157) - Current: false
+Console.js:61 📏 Length input 3 (Double Layer): 1
+Console.js:61 🔍 URLSearchParams debug: 
+{searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: 
+{location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (ID: 153) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (ID: 156) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (ID: 157) - Current: false
+Console.js:61 🔍 URLSearchParams debug: 
+{searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: 
+{location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (ID: 153) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (ID: 156) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (ID: 157) - Current: false
