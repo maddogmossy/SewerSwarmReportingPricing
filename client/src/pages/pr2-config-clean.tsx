@@ -2257,7 +2257,7 @@ export default function PR2ConfigClean() {
 
         {/* Configuration Title */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">TP2 - Patching Configuration</h2>
         </div>
 
         {/* TP2 Unified Configuration - Show pipe size specific interface for patching */}
@@ -2266,7 +2266,7 @@ export default function PR2ConfigClean() {
             {/* TP2 Interface with 5 Pricing Options */}
             <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                TP2 - Patching Configuration {selectedPipeSize}
+                TP2 - Patching Configuration
               </h3>
               
               {/* Purple Window: 5 Patching Options */}
