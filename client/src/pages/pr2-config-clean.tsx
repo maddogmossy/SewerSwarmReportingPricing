@@ -410,6 +410,53 @@ export default function PR2ConfigClean() {
   // State for pipe size switching within unified page
   const [currentConfigId, setCurrentConfigId] = useState<number | null>(editId ? parseInt(editId) : null);
   const [selectedPipeSize, setSelectedPipeSize] = useState<string>('150mm');
+  
+  // Color sync for patching configurations
+  const syncPatchingColors = async () => {
+    if (categoryId === 'patching') {
+      console.log('🎨 Syncing patching configuration colors...');
+      
+      try {
+        // Get all three patching configurations
+        const [config153, config156, config157] = await Promise.all([
+          apiRequest('GET', '/api/pr2-clean/153').then(r => r.json()),
+          apiRequest('GET', '/api/pr2-clean/156').then(r => r.json()),
+          apiRequest('GET', '/api/pr2-clean/157').then(r => r.json())
+        ]);
+        
+        // Use the color from config 153 as the master color
+        const masterColor = config153.categoryColor || '#f5ec00';
+        console.log(`🎨 Master color from config 153: ${masterColor}`);
+        
+        // Update configs 156 and 157 if they have different colors
+        const updatePromises = [];
+        
+        if (config156.categoryColor !== masterColor) {
+          console.log(`🎨 Updating config 156 color from ${config156.categoryColor} to ${masterColor}`);
+          updatePromises.push(
+            apiRequest('PUT', '/api/pr2-clean/156', { ...config156, categoryColor: masterColor })
+          );
+        }
+        
+        if (config157.categoryColor !== masterColor) {
+          console.log(`🎨 Updating config 157 color from ${config157.categoryColor} to ${masterColor}`);
+          updatePromises.push(
+            apiRequest('PUT', '/api/pr2-clean/157', { ...config157, categoryColor: masterColor })
+          );
+        }
+        
+        if (updatePromises.length > 0) {
+          await Promise.all(updatePromises);
+          console.log('✅ Patching configuration colors synced successfully');
+        } else {
+          console.log('✅ All patching configuration colors already in sync');
+        }
+        
+      } catch (error) {
+        console.error('❌ Error syncing patching colors:', error);
+      }
+    }
+  };
 
   // Reset form data when switching between TP1 and TP2
   useEffect(() => {
@@ -1747,6 +1794,13 @@ export default function PR2ConfigClean() {
     const autoDesc = generateAutoDescription();
     setFormData(prev => ({ ...prev, description: autoDesc }));
   }, [formData.pricingOptions, formData.quantityOptions, formData.minQuantityOptions, formData.rangeOptions, formData.mathOperators]);
+  
+  // Sync patching colors when page loads
+  React.useEffect(() => {
+    if (categoryId === 'patching') {
+      syncPatchingColors();
+    }
+  }, [categoryId]);
 
   // Delete configuration functionality
   const handleDeleteConfiguration = async () => {
