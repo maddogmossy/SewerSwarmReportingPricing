@@ -1,0 +1,1010 @@
+No 2 rule check: [object Object]
+ 💰 SECTION 22 [ID: 14920] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 23 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 23
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 23
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 23 [ID: 14919] Using standard rule: £1850 ÷ 30 = £61.67
+ === ITEM 3 REQUIREMENTS CHECK ===
+ Pipe size: 150
+ Total length: 30.24
+ Defects: Settled deposits, fine, 5% cross-sectional area loss at 13.27m, 16.63m, 17.73m. Settled deposits, coarse, 5% cross-sectional area loss at 21.6m. Line deviates left at 29.82m
+ Water level percentage: 0
+ Max allowed percentage (from config): [varies by configuration]
+ Percentage check: depends on PR2 configuration ranges
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 3 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 3
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 3
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 3 [ID: 14901] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 6 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 6
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 6
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 6 [ID: 14904] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 7 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 7
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 7
+ 🔍 ITEM 7 DEBUG - Configuration used: [object Object]
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 7 [ID: 14905] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 8 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 8
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 8
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 8 [ID: 14906] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔍 Item 10 AFTER Filtering: 1 observations remaining
+   Remaining observations: Settled deposits, coarse, 5% cross-sectional area loss at 20.32m.
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 10 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 10
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 10
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 10 [ID: 14908] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔍 Item 13 Filtering observation: "Settled deposits, coarse, 30% cross-sectional area loss at 25.21m."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 13 Filtering observation: "CUW 26.87m (Camera under water) (Loss of vision, camera under water)."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 13 Filtering observation: "SA 27.9m (Due to camera under water) (Survey abandoned)."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 13 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 13
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 13
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 13 [ID: 14911] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔧 Found TP2 patching configuration for 150mm: 153 150mm TP2 - Patching Configuration
+ 🔧 calculateTP2PatchingCost called for section: 13
+ 🔧 TP2 config: [object Object]
+ 🔧 Defect counting: [object Object]
+ 🔧 TP2 calculation inputs: [object Object]
+ 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+ 🔧 TP2 cost calculation: [object Object]
+ ❌ TP2 section below minimum quantity: [object Object]
+ 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 10% cross-sectional area loss at 1.34m."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 5% cross-sectional area loss at 7.91m."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 14 Filtering observation: "CUW 19.09m (Camera under water) (Loss of vision, camera under water)."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 14 Filtering observation: "CPF 21.68m (Finish node, catchpit, reference: SW11)."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 14 Filtering observation: "LR (Line deviates right)."
+   Has line deviation: true
+   Has meaningful defects: false
+   Is ONLY line deviation: true
+   Will KEEP: false
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 14 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 14
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 14
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 14 [ID: 14913] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔍 ITEM 20 DEBUG: [object Object]
+ 🔍 ITEM 20 TP2 MATCHING: [object Object]
+ 🔧 Found TP2 patching configuration for 300mm: 157 300mm TP2 - Patching Configuration
+ 🔧 calculateTP2PatchingCost called for section: 20
+ 🔧 TP2 config: [object Object]
+ 🔧 Defect counting: [object Object]
+ 🔧 TP2 calculation inputs: [object Object]
+ 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+ 🔧 TP2 cost calculation: [object Object]
+ ❌ TP2 section below minimum quantity: [object Object]
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 21 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 21
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 21
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 21 [ID: 14923] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔧 Found TP2 patching configuration for 225mm: 156 225mm TP2 - Patching Configuration
+ 🔧 calculateTP2PatchingCost called for section: 21
+ 🔧 TP2 config: [object Object]
+ 🔧 Defect counting: [object Object]
+ 🔧 TP2 calculation inputs: [object Object]
+ 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+ 🔧 TP2 cost calculation: [object Object]
+ ❌ TP2 section below minimum quantity: [object Object]
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 22 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 22
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 22
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 22 [ID: 14920] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 23 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 23
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 23
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 23 [ID: 14919] Using standard rule: £1850 ÷ 30 = £61.67
+ === ITEM 3 REQUIREMENTS CHECK ===
+ Pipe size: 150
+ Total length: 30.24
+ Defects: Settled deposits, fine, 5% cross-sectional area loss at 13.27m, 16.63m, 17.73m. Settled deposits, coarse, 5% cross-sectional area loss at 21.6m. Line deviates left at 29.82m
+ Water level percentage: 0
+ Max allowed percentage (from config): [varies by configuration]
+ Percentage check: depends on PR2 configuration ranges
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 3 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 3
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 3
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 3 [ID: 14901] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 6 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 6
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 6
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 6 [ID: 14904] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 7 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 7
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 7
+ 🔍 ITEM 7 DEBUG - Configuration used: [object Object]
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 7 [ID: 14905] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 8 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 8
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 8
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 8 [ID: 14906] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔍 Item 10 AFTER Filtering: 1 observations remaining
+   Remaining observations: Settled deposits, coarse, 5% cross-sectional area loss at 20.32m.
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 10 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 10
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 10
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 10 [ID: 14908] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔍 Item 13 Filtering observation: "Settled deposits, coarse, 30% cross-sectional area loss at 25.21m."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 13 Filtering observation: "CUW 26.87m (Camera under water) (Loss of vision, camera under water)."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 13 Filtering observation: "SA 27.9m (Due to camera under water) (Survey abandoned)."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 13 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 13
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 13
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 13 [ID: 14911] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔧 Found TP2 patching configuration for 150mm: 153 150mm TP2 - Patching Configuration
+ 🔧 calculateTP2PatchingCost called for section: 13
+ 🔧 TP2 config: [object Object]
+ 🔧 Defect counting: [object Object]
+ 🔧 TP2 calculation inputs: [object Object]
+ 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+ 🔧 TP2 cost calculation: [object Object]
+ ❌ TP2 section below minimum quantity: [object Object]
+ 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 10% cross-sectional area loss at 1.34m."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 5% cross-sectional area loss at 7.91m."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 14 Filtering observation: "CUW 19.09m (Camera under water) (Loss of vision, camera under water)."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 14 Filtering observation: "CPF 21.68m (Finish node, catchpit, reference: SW11)."
+   Has line deviation: false
+   Has meaningful defects: true
+   Is ONLY line deviation: false
+   Will KEEP: true
+ 🔍 Item 14 Filtering observation: "LR (Line deviates right)."
+   Has line deviation: true
+   Has meaningful defects: false
+   Is ONLY line deviation: true
+   Will KEEP: false
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 14 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 14
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 14
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 14 [ID: 14913] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔍 ITEM 20 DEBUG: [object Object]
+ 🔍 ITEM 20 TP2 MATCHING: [object Object]
+ 🔧 Found TP2 patching configuration for 300mm: 157 300mm TP2 - Patching Configuration
+ 🔧 calculateTP2PatchingCost called for section: 20
+ 🔧 TP2 config: [object Object]
+ 🔧 Defect counting: [object Object]
+ 🔧 TP2 calculation inputs: [object Object]
+ 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+ 🔧 TP2 cost calculation: [object Object]
+ ❌ TP2 section below minimum quantity: [object Object]
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 21 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 21
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 21
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 21 [ID: 14923] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔧 Found TP2 patching configuration for 225mm: 156 225mm TP2 - Patching Configuration
+ 🔧 calculateTP2PatchingCost called for section: 21
+ 🔧 TP2 config: [object Object]
+ 🔧 Defect counting: [object Object]
+ 🔧 TP2 calculation inputs: [object Object]
+ 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+ 🔧 TP2 cost calculation: [object Object]
+ ❌ TP2 section below minimum quantity: [object Object]
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 22 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 22
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 22
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 22 [ID: 14920] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔢 Smart counting result: [object Object]
+ 🎯 Status calculation details: [object Object]
+ 🔍 Section meets basic requirements (blue/green windows): [object Object]
+ 🧹 Item 23 CLEANING config: [object Object]
+ 🎯 Section status color calculation: [object Object]
+ 🎯 Dynamic recommendation using PR2 config: 133 for section: 23
+ ✅ Selected config with valid pricing values: 134
+ 🎯 Using PR2 config: 134 for section: 23
+ 🔍 No "No 2" rule found in configuration
+ 📝 Extracted values: [object Object]
+ 🎯 No 2 rule check: [object Object]
+ 💰 SECTION 23 [ID: 14919] Using standard rule: £1850 ÷ 30 = £61.67
+ 🔍 URLSearchParams debug: [object Object]
+ 🔍 PR2ConfigClean URL params: [object Object]
+workspace_iframe.html:1 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+Console.js:61 === ITEM 3 REQUIREMENTS CHECK ===
+Console.js:61 Pipe size: 150
+Console.js:61 Total length: 30.24
+Console.js:61 Defects: Settled deposits, fine, 5% cross-sectional area loss at 13.27m, 16.63m, 17.73m. Settled deposits, coarse, 5% cross-sectional area loss at 21.6m. Line deviates left at 29.82m
+Console.js:61 Water level percentage: 0
+Console.js:61 Max allowed percentage (from config): [varies by configuration]
+Console.js:61 Percentage check: depends on PR2 configuration ranges
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 3 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 3
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 3
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 3 [ID: 14901] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 6 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 6
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 6
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 6 [ID: 14904] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 7 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 7
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 7
+Console.js:61 🔍 ITEM 7 DEBUG - Configuration used: Object
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 7 [ID: 14905] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 8 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 8
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 8
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 8 [ID: 14906] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔍 Item 10 AFTER Filtering: 1 observations remaining
+Console.js:61   Remaining observations: Array(1)
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 10 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 10
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 10
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 10 [ID: 14908] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔍 Item 13 Filtering observation: "Settled deposits, coarse, 30% cross-sectional area loss at 25.21m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 13 Filtering observation: "CUW 26.87m (Camera under water) (Loss of vision, camera under water)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 13 Filtering observation: "SA 27.9m (Due to camera under water) (Survey abandoned)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 13 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 13
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 13
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 13 [ID: 14911] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔧 Found TP2 patching configuration for 150mm: 153 150mm TP2 - Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 13
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 10% cross-sectional area loss at 1.34m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 5% cross-sectional area loss at 7.91m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "CUW 19.09m (Camera under water) (Loss of vision, camera under water)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "CPF 21.68m (Finish node, catchpit, reference: SW11)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "LR (Line deviates right)."
+Console.js:61   Has line deviation: true
+Console.js:61   Has meaningful defects: false
+Console.js:61   Is ONLY line deviation: true
+Console.js:61   Will KEEP: false
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 14 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 14
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 14
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 14 [ID: 14913] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔍 ITEM 20 DEBUG: Object
+Console.js:61 🔍 ITEM 20 TP2 MATCHING: Object
+Console.js:61 🔧 Found TP2 patching configuration for 300mm: 157 300mm TP2 - Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 20
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 21 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 21
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 21
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 21 [ID: 14923] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔧 Found TP2 patching configuration for 225mm: 156 225mm TP2 - Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 21
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 22 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 22
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 22
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 22 [ID: 14920] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 23 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 23
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 23
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 23 [ID: 14919] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 === ITEM 3 REQUIREMENTS CHECK ===
+Console.js:61 Pipe size: 150
+Console.js:61 Total length: 30.24
+Console.js:61 Defects: Settled deposits, fine, 5% cross-sectional area loss at 13.27m, 16.63m, 17.73m. Settled deposits, coarse, 5% cross-sectional area loss at 21.6m. Line deviates left at 29.82m
+Console.js:61 Water level percentage: 0
+Console.js:61 Max allowed percentage (from config): [varies by configuration]
+Console.js:61 Percentage check: depends on PR2 configuration ranges
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 3 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 3
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 3
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 3 [ID: 14901] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 6 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 6
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 6
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 6 [ID: 14904] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 7 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 7
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 7
+Console.js:61 🔍 ITEM 7 DEBUG - Configuration used: Object
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 7 [ID: 14905] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 8 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 8
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 8
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 8 [ID: 14906] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔍 Item 10 AFTER Filtering: 1 observations remaining
+Console.js:61   Remaining observations: Array(1)
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 10 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 10
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 10
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 10 [ID: 14908] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔍 Item 13 Filtering observation: "Settled deposits, coarse, 30% cross-sectional area loss at 25.21m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 13 Filtering observation: "CUW 26.87m (Camera under water) (Loss of vision, camera under water)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 13 Filtering observation: "SA 27.9m (Due to camera under water) (Survey abandoned)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 13 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 13
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 13
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 13 [ID: 14911] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔧 Found TP2 patching configuration for 150mm: 153 150mm TP2 - Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 13
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 10% cross-sectional area loss at 1.34m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 5% cross-sectional area loss at 7.91m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "CUW 19.09m (Camera under water) (Loss of vision, camera under water)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "CPF 21.68m (Finish node, catchpit, reference: SW11)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "LR (Line deviates right)."
+Console.js:61   Has line deviation: true
+Console.js:61   Has meaningful defects: false
+Console.js:61   Is ONLY line deviation: true
+Console.js:61   Will KEEP: false
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 14 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 14
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 14
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 14 [ID: 14913] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔍 ITEM 20 DEBUG: Object
+Console.js:61 🔍 ITEM 20 TP2 MATCHING: Object
+Console.js:61 🔧 Found TP2 patching configuration for 300mm: 157 300mm TP2 - Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 20
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 21 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 21
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 21
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 21 [ID: 14923] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔧 Found TP2 patching configuration for 225mm: 156 225mm TP2 - Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 21
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 22 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 22
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 22
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 22 [ID: 14920] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 23 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 23
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 23
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 23 [ID: 14919] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 === ITEM 3 REQUIREMENTS CHECK ===
+Console.js:61 Pipe size: 150
+Console.js:61 Total length: 30.24
+Console.js:61 Defects: Settled deposits, fine, 5% cross-sectional area loss at 13.27m, 16.63m, 17.73m. Settled deposits, coarse, 5% cross-sectional area loss at 21.6m. Line deviates left at 29.82m
+Console.js:61 Water level percentage: 0
+Console.js:61 Max allowed percentage (from config): [varies by configuration]
+Console.js:61 Percentage check: depends on PR2 configuration ranges
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 3 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 3
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 3
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 3 [ID: 14901] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 6 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 6
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 6
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 6 [ID: 14904] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 7 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 7
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 7
+Console.js:61 🔍 ITEM 7 DEBUG - Configuration used: Object
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 7 [ID: 14905] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 8 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 8
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 8
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 8 [ID: 14906] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔍 Item 10 AFTER Filtering: 1 observations remaining
+Console.js:61   Remaining observations: Array(1)
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 10 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 10
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 10
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 10 [ID: 14908] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔍 Item 13 Filtering observation: "Settled deposits, coarse, 30% cross-sectional area loss at 25.21m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 13 Filtering observation: "CUW 26.87m (Camera under water) (Loss of vision, camera under water)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 13 Filtering observation: "SA 27.9m (Due to camera under water) (Survey abandoned)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 13 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 13
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 13
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 13 [ID: 14911] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔧 Found TP2 patching configuration for 150mm: 153 150mm TP2 - Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 13
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 10% cross-sectional area loss at 1.34m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 5% cross-sectional area loss at 7.91m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "CUW 19.09m (Camera under water) (Loss of vision, camera under water)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "CPF 21.68m (Finish node, catchpit, reference: SW11)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "LR (Line deviates right)."
+Console.js:61   Has line deviation: true
+Console.js:61   Has meaningful defects: false
+Console.js:61   Is ONLY line deviation: true
+Console.js:61   Will KEEP: false
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 14 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 14
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 14
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 14 [ID: 14913] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔍 ITEM 20 DEBUG: Object
+Console.js:61 🔍 ITEM 20 TP2 MATCHING: Object
+Console.js:61 🔧 Found TP2 patching configuration for 300mm: 157 300mm TP2 - Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 20
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 21 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 21
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 21
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 21 [ID: 14923] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔧 Found TP2 patching configuration for 225mm: 156 225mm TP2 - Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 21
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 22 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 22
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 22
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 22 [ID: 14920] Using standard rule: £1850 ÷ 30 = £61.67
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 23 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 133 for section: 23
+Console.js:61 ✅ Selected config with valid pricing values: 134
+Console.js:61 🎯 Using PR2 config: 134 for section: 23
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 23 [ID: 14919] Using standard rule: £1850 ÷ 30 = £61.67

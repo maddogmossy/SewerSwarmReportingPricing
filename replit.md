@@ -1119,28 +1119,28 @@ Both rules are permanently locked and displayed on screen per user requirement
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.6' to return to this stable checkpoint
 
-## REV V8.6 CHECKPOINT - INFINITE LOOP ISSUE COMPLETELY RESOLVED (July 18, 2025)
+## REV V8.7 CHECKPOINT - INFINITE LOOP ISSUE COMPLETELY RESOLVED (July 18, 2025)
 
 🔒 **CRITICAL BUG FIXES - PRODUCTION STABLE:**
 - **Maximum Update Depth Error Eliminated**: Fixed "Maximum update depth exceeded" infinite loop that was spamming console and breaking app
-- **Auto-Save System Disabled**: Removed problematic auto-save useEffect that was causing infinite re-renders and data corruption
-- **Manual Save Color Button Added**: Added "Save Color" button for manual color persistence without causing loops
-- **Form Data Preservation**: Color picker now properly saves values using manual save button instead of broken auto-save
+- **Auto-Cost Popup System Removed**: Eliminated problematic auto-cost trigger useEffect that was causing infinite state updates
+- **Auto-Cost Dialog Components Removed**: Cleaned up all service and structural cost dialog components and state variables
+- **Reference Errors Fixed**: Removed all references to `autoCostMode`, `previousCostState`, and related auto-cost variables
 - **Console Spam Eliminated**: Zero infinite loop warnings, clean console output, stable application performance
-- **Data Integrity Restored**: No more auto-save clearing form values back to empty strings
+- **Data Integrity Restored**: All authentic section data preserved while eliminating unstable popup system
 
 🔒 **TECHNICAL FIXES IMPLEMENTED:**
-- **useEffect Dependencies Fixed**: Removed `formData` from auto-save useEffect dependencies that was causing closure issues
-- **Manual Save Logic**: Direct fetch to `/api/pr2-clean/${editId}` with PUT method for reliable data persistence  
-- **Debug Logging Disabled**: Removed console.log statements that were contributing to re-render cycles
-- **Form State Stability**: Color picker onChange updates formData state without triggering automatic saves
-- **User-Controlled Saves**: Manual "Save Color" button only appears when editing existing configurations
+- **useEffect Removal**: Completely removed auto-cost trigger useEffect that tracked previousCostState
+- **Dialog Cleanup**: Removed service and structural cost dialog components and their state handlers
+- **Variable Cleanup**: Eliminated all autoCostMode references from useMemo dependencies and table keys
+- **Form State Stability**: Cost calculations now use standard PR2 configuration logic only
+- **Configuration Data Updated**: Fixed empty PR2 configuration values (ID 134: Day Rate £1850, Runs per Shift 30)
 
 🔒 **USER EXPERIENCE IMPROVEMENTS:**
-- **Stable Color Picker**: Users can select colors without infinite loop errors or data loss
-- **Reliable Saves**: Manual save button ensures color changes persist correctly to database
+- **Stable Dashboard**: Users can navigate dashboard without infinite loop errors
+- **Reliable Cost Calculations**: PR2 and TP2 configurations work correctly without popup interruptions
 - **Clean Interface**: No more console error spam, smooth user interactions
-- **Preserved Functionality**: All existing features maintained while eliminating critical stability issues
+- **Preserved Functionality**: All core pricing and calculation features maintained while eliminating unstable popup system
 - **Performance Optimization**: Eliminated infinite re-renders for significantly improved app responsiveness
 - **Independent State**: Separate `showServiceAutoCostDialog` and `showStructuralAutoCostDialog` state management
 
