@@ -2785,6 +2785,12 @@ export default function Dashboard() {
   useEffect(() => {
     if (!sectionData?.length) return;
     
+    console.log('🔍 PR2 Configurations loaded:', {
+      total: pr2Configurations.length,
+      cccvJetVac: pr2Configurations.filter(c => c.categoryId === 'cctv-jet-vac').length,
+      patching: pr2Configurations.filter(c => c.categoryId === 'patching').length
+    });
+    
     let serviceWarnings = 0;
     let structuralWarnings = 0;
     
@@ -2808,6 +2814,19 @@ export default function Dashboard() {
       if (hasWarningTriangle) {
         if (isServiceDefect) serviceWarnings++;
         if (isStructuralDefect) structuralWarnings++;
+        console.log(`⚠️ Section ${section.itemNo} has warning triangle:`, {
+          isServiceDefect,
+          isStructuralDefect,
+          hasServiceConfig: !!hasServiceConfig,
+          hasStructuralConfig: !!hasStructuralConfig
+        });
+      } else {
+        console.log(`✅ Section ${section.itemNo} has calculated cost:`, {
+          isServiceDefect,
+          isStructuralDefect,
+          hasServiceConfig: !!hasServiceConfig,
+          hasStructuralConfig: !!hasStructuralConfig
+        });
       }
     });
     
@@ -2849,7 +2868,7 @@ export default function Dashboard() {
       totalSections
     });
     
-  }, [sectionData, calculateCost, previousCostState, autoCostMode]);
+  }, [sectionData, calculateCost, previousCostState, autoCostMode, pr2Configurations]);
 
   return (
     <div className="min-h-screen bg-slate-50">
