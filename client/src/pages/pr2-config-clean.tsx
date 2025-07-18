@@ -132,8 +132,11 @@ export default function PR2ConfigClean() {
     queryKey: ['/api/pr2-clean', editId],
     queryFn: async () => {
       try {
+        console.log(`🔍 API REQUEST: Fetching configuration ${editId}`);
         const response = await apiRequest('GET', `/api/pr2-clean/${editId}`);
-        return response.json();
+        const data = await response.json();
+        console.log(`✅ API RESPONSE: Configuration ${editId} loaded:`, data);
+        return data;
       } catch (error: any) {
         // If configuration not found (404), redirect to create mode
         if (error.message && error.message.includes('404')) {
@@ -148,6 +151,7 @@ export default function PR2ConfigClean() {
     enabled: isEditing && !!editId,
     staleTime: 0, // Always fetch fresh data
     refetchOnMount: true, // Refetch when component mounts
+    refetchOnWindowFocus: false, // Don't refetch on window focus
     retry: false, // Don't retry on 404 errors
   });
 
@@ -933,8 +937,12 @@ export default function PR2ConfigClean() {
   
   // Clear processedConfigId when editId changes to allow new configuration loading
   useEffect(() => {
-    console.log(`🔄 editId changed to: ${editId}, clearing processedConfigId`);
+    console.log(`🔄 editId changed to: ${editId}, clearing processedConfigId and invalidating cache`);
     setProcessedConfigId(null);
+    // Force invalidate the specific configuration query to trigger fresh fetch
+    if (editId) {
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
+    }
   }, [editId]);
   
   // Single useEffect to handle all configuration loading
