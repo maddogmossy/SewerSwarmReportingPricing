@@ -492,6 +492,9 @@ export default function Dashboard() {
     totalSections: number;
   }>({ serviceWarnings: 0, structuralWarnings: 0, totalSections: 0 });
   
+  // Prevent false triggers on initial dashboard load
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  
   // Filter state
   const [filters, setFilters] = useState({
     severityGrade: '',
@@ -2826,26 +2829,32 @@ export default function Dashboard() {
     // Trigger detection - logging removed for performance
     
     // ONLY trigger when there's an actual completion (warnings → calculations)
-    if (serviceCompleted && autoCostMode === 'manual') {
+    // AND it's not the initial dashboard load
+    if (serviceCompleted && autoCostMode === 'manual' && !isInitialLoad) {
       console.log('🚨 TRIGGERING SERVICE AUTO-COST DIALOG - Last service values calculated!');
       setShowServiceAutoCostDialog(true);
     }
     
-    if (structuralCompleted && autoCostMode === 'manual') {
+    if (structuralCompleted && autoCostMode === 'manual' && !isInitialLoad) {
       console.log('🚨 TRIGGERING STRUCTURAL AUTO-COST DIALOG - Last structural values calculated!');
       setShowStructuralAutoCostDialog(true);
     }
     
     // Test trigger removed - popup system confirmed working
     
-    // Update previous state
+    // Update previous state and mark initial load as complete
     setPreviousCostState({
       serviceWarnings,
       structuralWarnings,
       totalSections
     });
     
-  }, [sectionData, calculateCost, previousCostState, autoCostMode, pr2Configurations]);
+    // Mark initial load as complete after first state update
+    if (isInitialLoad) {
+      setIsInitialLoad(false);
+    }
+    
+  }, [sectionData, calculateCost, previousCostState, autoCostMode, pr2Configurations, isInitialLoad]);
 
   return (
     <div className="min-h-screen bg-slate-50">
