@@ -2917,7 +2917,7 @@ export default function PR2ConfigClean() {
                             <Input
                               placeholder="length"
                               value={formData.rangeOptions?.[index]?.rangeEnd || ""}
-                              onChange={(e) => handleValueChange('rangeOptions', formData.rangeOptions?.[index]?.id, e.target.value)}
+                              onChange={(e) => handleRangeValueChange(formData.rangeOptions?.[index]?.id, 'rangeEnd', e.target.value)}
                               className="w-20 h-8 text-sm"
                             />
                           </div>
