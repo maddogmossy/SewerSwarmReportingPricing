@@ -307,33 +307,14 @@ export default function PR2Pricing() {
       return;
     }
     
-    // If no existing configuration, create new one
-    const mappedCategoryId = categoryMapping[categoryId as keyof typeof categoryMapping] || categoryId;
-    
-    // Generate standard configuration name based on category (no pipe size until set from dashboard)
-    const getCategoryDisplayName = (catId: string) => {
-      const nameMap = {
-        'cctv': 'TP1 - CCTV Configuration',
-        'van-pack': 'TP1 - Van Pack Configuration',
-        'jet-vac': 'TP1 - Jet Vac Configuration',
-        'cctv-van-pack': 'TP1 - CCTV Van Pack Configuration',
-        'cctv-jet-vac': 'TP1 - CCTV Jet Vac Configuration',
-        'directional-water-cutter': 'TP1 - Directional Water Cutter Configuration',
-        'ambient-lining': 'TP1 - Ambient Lining Configuration',
-        'hot-cure-lining': 'TP1 - Hot Cure Lining Configuration',
-        'uv-lining': 'TP1 - UV Lining Configuration',
-        'ims-cutting': 'TP1 - IMS Cutting Configuration',
-        'excavation': 'TP1 - Excavation Configuration',
-        'patching': 'TP2 - Patching Configuration',
-        'tankering': 'TP1 - Tankering Configuration'
-      };
-      return nameMap[catId as keyof typeof nameMap] || 'TP1 - Configuration';
-    };
-    
-    const configName = getCategoryDisplayName(mappedCategoryId);
-    const createURL = `/pr2-config-clean?sector=${sector}&categoryId=${mappedCategoryId}&configName=${encodeURIComponent(configName)}`;
-    console.log('🆕 Creating new config at URL:', createURL);
-    setLocation(createURL);
+    // If no existing configuration, show message instead of auto-creating
+    console.log('❌ No configuration found for category:', categoryId);
+    toast({
+      title: "No Configuration Found",
+      description: "This category needs to be configured from the dashboard when processing a report.",
+      variant: "default"
+    });
+    return;
   };
 
   // Handle navigation to add custom configuration
