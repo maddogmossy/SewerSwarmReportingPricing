@@ -2235,10 +2235,10 @@ export default function PR2ConfigClean() {
                         e.stopPropagation();
                         console.log(`🚀 Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
                         
-                        // Direct navigation to the configuration
+                        // Force browser navigation using window.location
                         const newUrl = `/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`;
-                        console.log(`🔗 Setting location to:`, newUrl);
-                        setLocation(newUrl);
+                        console.log(`🔗 Forcing navigation to:`, newUrl);
+                        window.location.href = newUrl;
                       }}
                       className={isCurrentConfig ? "bg-yellow-500 hover:bg-yellow-600" : ""}
                       disabled={false}
