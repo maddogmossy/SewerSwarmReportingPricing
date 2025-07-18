@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -2174,8 +2174,8 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* TP2 Pipe Size Selection - Only show for patching category */}
-        {categoryId === 'patching' && (
+        {/* Pipe Size Selection - Show for ALL categories */}
+        {(
           <Card className="mb-6">
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center gap-2">
@@ -2258,6 +2258,139 @@ export default function PR2ConfigClean() {
                           value={formData.rangeOptions?.[index]?.rangeEnd || ""}
                           onChange={(e) => updateRangeOption(formData.rangeOptions?.[index]?.id || '', 'rangeEnd', e.target.value)}
                           className="w-20 h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* TP1 Unified Configuration - Show pipe size specific interface for non-patching categories */}
+        {categoryId !== 'patching' && (
+          <div key="unified-tp1-config">
+            {/* TP1 Interface with 5 Windows */}
+            <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                TP1 - {formData.categoryName || 'Configuration'} ({selectedPipeSize})
+              </h3>
+              
+              {/* Blue Window: Pricing Options */}
+              <Card className="bg-blue-50 border-blue-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
+                    <DollarSign className="w-4 h-4" />
+                    Pricing Options - {selectedPipeSize} (ID: {editId})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.pricingOptions?.map((option, index) => (
+                    <div key={option.id} className="flex items-center gap-4">
+                      <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
+                      <Label className="w-32 text-sm font-medium text-gray-700">
+                        {option.label}
+                      </Label>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Label className="text-xs">£</Label>
+                        <Input
+                          placeholder="cost"
+                          value={option.value || ""}
+                          onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
+                          className="w-16 h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Green Window: Quantity Options */}
+              <Card className="bg-green-50 border-green-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-green-700 text-sm flex items-center gap-2">
+                    <Hash className="w-4 h-4" />
+                    Quantity Options - {selectedPipeSize} (ID: {editId})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.quantityOptions?.map((option, index) => (
+                    <div key={option.id} className="flex items-center gap-4">
+                      <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
+                      <Label className="w-32 text-sm font-medium text-gray-700">
+                        {option.label}
+                      </Label>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Input
+                          placeholder="quantity"
+                          value={option.value || ""}
+                          onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                          className="w-16 h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Orange Window: Min Quantity Options */}
+              <Card className="bg-orange-50 border-orange-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4" />
+                    Min Quantity Options - {selectedPipeSize} (ID: {editId})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.minQuantityOptions?.map((option, index) => (
+                    <div key={option.id} className="flex items-center gap-4">
+                      <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
+                      <Label className="w-32 text-sm font-medium text-gray-700">
+                        {option.label}
+                      </Label>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Input
+                          placeholder="min qty"
+                          value={option.value || ""}
+                          onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
+                          className="w-16 h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Purple Window: Range Options */}
+              <Card className="bg-purple-50 border-purple-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4" />
+                    Range Options - {selectedPipeSize} (ID: {editId})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.rangeOptions?.map((option, index) => (
+                    <div key={option.id} className="flex items-center gap-4">
+                      <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
+                      <Label className="w-32 text-sm font-medium text-gray-700">
+                        {option.label}
+                      </Label>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Label className="text-xs">From</Label>
+                        <Input
+                          placeholder="start"
+                          value={option.rangeStart || ""}
+                          onChange={(e) => updateRangeOption(option.id, 'rangeStart', e.target.value)}
+                          className="w-16 h-8 text-sm"
+                        />
+                        <Label className="text-xs">to</Label>
+                        <Input
+                          placeholder="end"
+                          value={option.rangeEnd || ""}
+                          onChange={(e) => updateRangeOption(option.id, 'rangeEnd', e.target.value)}
+                          className="w-16 h-8 text-sm"
                         />
                       </div>
                     </div>
