@@ -2006,11 +2006,7 @@ export default function Dashboard() {
       if (meetsAnyLengthRange && matchedLengthRange) {
         // Section meets requirements - logging removed for performance
       } else {
-        console.log('❌ Section fails length check:', {
-          itemNo: section.itemNo,
-          length: sectionLength,
-          availableRanges: lengthRanges.map(r => `${r.rangeStart}-${r.rangeEnd}`)
-        });
+        // Section fails length check - logging removed
         return false;
       }
     }
