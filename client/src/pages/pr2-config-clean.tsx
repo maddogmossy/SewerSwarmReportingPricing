@@ -2435,10 +2435,11 @@ export default function PR2ConfigClean() {
         <div className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             TP2 - Patching Configuration - {(() => {
-              // Show current pipe size based on configuration ID
-              if (currentConfigId === 153) return '150mm';
-              if (currentConfigId === 156) return '225mm'; 
-              if (currentConfigId === 157) return '300mm';
+              // Show current pipe size based on configuration ID or editId
+              const activeConfigId = currentConfigId || (editId ? parseInt(editId) : null);
+              if (activeConfigId === 153) return '150mm';
+              if (activeConfigId === 156) return '225mm'; 
+              if (activeConfigId === 157) return '300mm';
               return 'Loading...';
             })()}
           </h2>
@@ -2459,10 +2460,11 @@ export default function PR2ConfigClean() {
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
                     <Coins className="w-4 h-4" />
                     Patching Options - {(() => {
-                      // Extract pipe size from current configuration
-                      if (currentConfigId === 153) return '150mm';
-                      if (currentConfigId === 156) return '225mm';
-                      if (currentConfigId === 157) return '300mm';
+                      // Extract pipe size from current configuration or editId
+                      const activeConfigId = currentConfigId || (editId ? parseInt(editId) : null);
+                      if (activeConfigId === 153) return '150mm';
+                      if (activeConfigId === 156) return '225mm';
+                      if (activeConfigId === 157) return '300mm';
                       return selectedPipeSize;
                     })()}
                   </CardTitle>
