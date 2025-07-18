@@ -2799,35 +2799,42 @@ export default function Dashboard() {
 
   // Service Calc button handler - implements smart pricing recalculation
   const handleServiceCalc = (e?: React.MouseEvent) => {
+    console.log('🎯 handleServiceCalc function called');
+    
     try {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
       }
+      
       console.log('🎯 Service Calc button clicked - current state:', isServiceRecalculated);
       
       const newState = !isServiceRecalculated;
+      console.log('🎯 About to toggle state to:', newState);
+      
       setIsServiceRecalculated(newState);
       
-      console.log('🎯 Service recalculation toggled to:', newState);
+      console.log('🎯 Service recalculation state toggled to:', newState);
       
       if (newState) {
-        // When activating service calc, log the calculation
-        const qualifyingSections = sectionData.filter(s => {
-          const sectionHasDefects = s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0;
-          const isServiceDefect = s.defectType === 'service' || requiresCleaning(s.defects || '');
-          return sectionHasDefects && isServiceDefect;
-        });
+        console.log('🎯 Service Calc ACTIVATED - recalculation mode ON');
+        console.log('🎯 Available section data count:', sectionData.length);
         
-        console.log('🎯 SERVICE CALC ACTIVATED:', {
-          qualifyingSections: qualifyingSections.length,
-          sections: qualifyingSections.map(s => s.itemNo),
+        // Simple counting without complex filtering to avoid errors
+        const sectionsWithDefects = sectionData.filter(s => s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0);
+        
+        console.log('🎯 SIMPLE SERVICE CALC:', {
+          totalSections: sectionData.length,
+          sectionsWithDefects: sectionsWithDefects.length,
           dayRate: 1850,
-          costPerSection: (1850 / qualifyingSections.length).toFixed(2)
+          costPerSection: sectionsWithDefects.length > 0 ? (1850 / sectionsWithDefects.length).toFixed(2) : 'N/A'
         });
+      } else {
+        console.log('🎯 Service Calc DEACTIVATED - normal pricing mode');
       }
     } catch (error) {
       console.error('🎯 Error in handleServiceCalc:', error);
+      console.error('🎯 Error details:', error.message, error.stack);
     }
   };
 
