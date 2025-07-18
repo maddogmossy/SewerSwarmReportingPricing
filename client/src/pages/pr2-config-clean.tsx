@@ -376,6 +376,7 @@ export default function PR2ConfigClean() {
   
   // State for pipe size switching within unified page
   const [currentConfigId, setCurrentConfigId] = useState<number | null>(null);
+  const [selectedPipeSize, setSelectedPipeSize] = useState<string>('150mm');
 
   // Reset form data when switching between TP1 and TP2
   useEffect(() => {
@@ -598,15 +599,7 @@ export default function PR2ConfigClean() {
   const [editingQuantity, setEditingQuantity] = useState<PricingOption | null>(null);
   const [editingMinQuantity, setEditingMinQuantity] = useState<PricingOption | null>(null);
   
-  // TP2 Pipe Size Selection State - Dynamic based on editId
-  const selectedPipeSize = (() => {
-    const pipeConfigIds = {
-      '153': '150mm',
-      '156': '225mm', 
-      '157': '300mm'
-    };
-    return pipeConfigIds[editId as keyof typeof pipeConfigIds] || '150mm';
-  })();
+  // TP2 Pipe Size Selection State - Dynamic based on editId - removed const declaration to avoid duplicate
   const [editingRange, setEditingRange] = useState<RangeOption | null>(null);
   
   // Sector selection state
@@ -2230,39 +2223,15 @@ export default function PR2ConfigClean() {
                   return (
                     <button
                       key={pipeSize}
-                      onClick={async () => {
+                      onClick={() => {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
                         console.log(`🚀 SWITCHING TO: ${pipeSize} section within unified configuration`);
                         
-                        // Load the configuration data for this pipe size
-                        try {
-                          const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
-                          const configData = await response.json();
-                          
-                          // Update form data to show the selected pipe size configuration
-                          setFormData({
-                            categoryName: configData.categoryName || `${pipeSize} TP2 - Patching Configuration`,
-                            description: configData.description || '',
-                            categoryColor: configData.categoryColor || '#ffffff',
-                            pricingOptions: configData.pricingOptions || [],
-                            quantityOptions: configData.quantityOptions || [],
-                            minQuantityOptions: configData.minQuantityOptions || [],
-                            rangeOptions: configData.rangeOptions || [],
-                            mathOperators: configData.mathOperators || [],
-                            pricingStackOrder: configData.pricingStackOrder || [],
-                            quantityStackOrder: configData.quantityStackOrder || [],
-                            minQuantityStackOrder: configData.minQuantityStackOrder || [],
-                            rangeStackOrder: configData.rangeStackOrder || [],
-                            sector: configData.sector || sector
-                          });
-                          
-                          // Set the current config ID for state tracking
-                          setCurrentConfigId(configId);
-                          
-                          console.log(`🔄 Switched to ${pipeSize} configuration (ID: ${configId}) with data:`, configData);
-                        } catch (error) {
-                          console.error(`❌ Failed to load ${pipeSize} configuration:`, error);
-                        }
+                        // For unified configuration, just update the selected pipe size state
+                        setSelectedPipeSize(pipeSize);
+                        setCurrentConfigId(configId);
+                        
+                        console.log(`🔄 Switched to ${pipeSize} view within unified configuration (ID: ${configId})`);
                       }}
                       className={`px-4 py-2 rounded border hover:bg-gray-50 transition-colors ${isCurrentConfig ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-white border-gray-300"}`}
                     >
