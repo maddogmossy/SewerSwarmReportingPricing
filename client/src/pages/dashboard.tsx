@@ -2813,9 +2813,9 @@ export default function Dashboard() {
       if (hasWarningTriangle) {
         if (isServiceDefect) serviceWarnings++;
         if (isStructuralDefect) structuralWarnings++;
-        // Section has warning triangle - logging removed
+        console.log(`⚠️ Section ${section.itemNo}: warning triangle (service: ${isServiceDefect}, structural: ${isStructuralDefect})`);
       } else {
-        // Section has calculated cost - logging removed
+        console.log(`✅ Section ${section.itemNo}: calculated cost (service: ${isServiceDefect}, structural: ${isStructuralDefect})`);
       }
     });
     
@@ -2826,7 +2826,17 @@ export default function Dashboard() {
     const serviceCompleted = previousCostState.serviceWarnings > 0 && serviceWarnings === 0;
     const structuralCompleted = previousCostState.structuralWarnings > 0 && structuralWarnings === 0;
     
-    // Trigger detection - logging removed for performance
+    // Debug trigger detection
+    console.log('🔍 Warning Triangle Detection:', {
+      serviceWarnings,
+      structuralWarnings,
+      previousServiceWarnings: previousCostState.serviceWarnings,
+      previousStructuralWarnings: previousCostState.structuralWarnings,
+      serviceCompleted,
+      structuralCompleted,
+      isInitialLoad,
+      autoCostMode
+    });
     
     // ONLY trigger when there's an actual completion (warnings → calculations)
     // AND it's not the initial dashboard load
