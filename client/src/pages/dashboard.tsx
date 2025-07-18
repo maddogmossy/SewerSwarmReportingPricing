@@ -1823,12 +1823,7 @@ export default function Dashboard() {
     }
     
     // Debug: Show specific values being used for calculation
-    console.log('💰 Configuration details for cost calculation:', {
-      configId: pr2Config.id,
-      dayRate: pr2Config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'))?.value,
-      runsPerShift: pr2Config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value,
-      calculation: `${pr2Config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'))?.value || 0} ÷ ${pr2Config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value || 0} = ${(parseFloat(pr2Config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'))?.value || '0') / parseFloat(pr2Config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value || '1')).toFixed(2)}`
-    });
+    // Removed excessive logging for performance
     
     if (!pr2Config || (!pr2Config.pricingOptions && !pr2Config.quantityOptions)) {
       console.log('❌ PR2 config has no pricing or quantity options:', pr2Config);
@@ -1836,11 +1831,7 @@ export default function Dashboard() {
     }
 
     try {
-      console.log('💰 PR2 full structure:', {
-        pricingOptions: pr2Config.pricingOptions,
-        quantityOptions: pr2Config.quantityOptions,
-        pricingValues: pr2Config.pricingValues
-      });
+      // Removed excessive logging for performance
       
       // Extract values from PR2 configuration arrays by matching labels
       const getPricingValueByLabel = (options: any[], label: string) => {
@@ -1945,7 +1936,7 @@ export default function Dashboard() {
 
       // Return calculated cost if we have a valid amount
       if (baseCost > 0) {
-        console.log('✅ PR2 calculation successful:', { baseCost, dayRate, runsPerShift });
+        // Removed excessive logging
         return {
           cost: baseCost,
           currency: '£',
@@ -2721,7 +2712,7 @@ export default function Dashboard() {
   // Cost calculation function for enhanced table - using useMemo to ensure reactivity
   const calculateCost = useMemo(() => {
     return (section: any): string | JSX.Element => {
-      console.log('💰 calculateCost called for section:', section.itemNo, 'autoCostMode:', autoCostMode);
+      // Removed excessive logging
       
       // Check if section actually has defects based on severity grade
       const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
@@ -2731,7 +2722,7 @@ export default function Dashboard() {
       }
       
       // AUTO-COST LOGIC: Check if automatic calculation is active
-      console.log('🎯 Checking auto-cost mode:', autoCostMode, 'pr2Configs:', pr2Configurations?.length);
+      // Removed excessive logging
       if (autoCostMode === 'automatic' && pr2Configurations && pr2Configurations.length > 0) {
       // Get qualifying sections for service defects (exclude structural repairs)
       const qualifyingSections = sectionData.filter(s => {
@@ -2775,7 +2766,7 @@ export default function Dashboard() {
     
     // For defective sections, use PR2 configuration calculations
     const autoCost = calculateAutoCost(section);
-    console.log('💰 autoCost result for section', section.itemNo, ':', autoCost);
+    // Removed excessive logging
     
     if (autoCost && autoCost.cost > 0) {
       console.log('🚨 CALLING checkOrangeMinimumMet for section', section.itemNo);
@@ -2849,15 +2840,7 @@ export default function Dashboard() {
       setShowStructuralAutoCostDialog(true);
     }
     
-    // TEMPORARY TEST: Trigger service popup if we have service defects and no service warnings
-    if (serviceWarnings === 0 && sectionData.some(s => s.defects && s.defects.includes('deposits'))) {
-      // Only trigger once per session
-      if (!sessionStorage.getItem('servicePopupTriggered')) {
-        console.log('🧪 TEST TRIGGER: Service popup for sections with deposits');
-        setShowServiceAutoCostDialog(true);
-        sessionStorage.setItem('servicePopupTriggered', 'true');
-      }
-    }
+    // Test trigger removed - popup system confirmed working
     
     // Update previous state
     setPreviousCostState({
