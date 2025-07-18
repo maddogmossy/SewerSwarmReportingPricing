@@ -1861,8 +1861,11 @@ export default function PR2ConfigClean() {
       pipeSizeNum: number;
     }> = [];
     
-    // Get all configurations for this category
+    // Get all configurations for this specific category only
     allCategoryConfigs.forEach(config => {
+      // Only include configurations that match the current category
+      if (config.categoryId !== categoryId) return;
+      
       const categoryName = config.categoryName || '';
       const pipeMatch = categoryName.match(/(\d+)mm/);
       
@@ -1880,7 +1883,7 @@ export default function PR2ConfigClean() {
     // Sort by pipe size (smallest to largest)
     pipeSizeConfigs.sort((a, b) => a.pipeSizeNum - b.pipeSizeNum);
     
-    console.log(`🔍 getPipeSizeConfigurations found ${pipeSizeConfigs.length} configs:`, 
+    console.log(`🔍 getPipeSizeConfigurations for category ${categoryId} found ${pipeSizeConfigs.length} configs:`, 
                 pipeSizeConfigs.map(p => `${p.pipeSize} (ID: ${p.id})`));
     
     return pipeSizeConfigs;
