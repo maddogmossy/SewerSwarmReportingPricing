@@ -1,0 +1,64 @@
+
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 7, pipeSize: 150, length: 5.64, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 8, pipeSize: 150, length: 31.47, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 9, pipeSize: 150, length: 2.59, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 10, pipeSize: 150, length: 34.31, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 11, pipeSize: 150, length: 58, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 12, pipeSize: 150, length: 18.78, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 13, pipeSize: 150, length: 27.9, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 13, pipeSize: 150, length: 27.9, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 14, pipeSize: 150, length: 21.68, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ❌ Section fails length check: {itemNo: 15, length: NaN, availableRanges: Array(1)}
+Console.js:61 ❌ Section fails length check: {itemNo: 15, length: NaN, availableRanges: Array(1)}
+Console.js:61 ❌ Section fails length check: {itemNo: 15, length: NaN, availableRanges: Array(1)}
+Console.js:61 ❌ Section fails length check: {itemNo: 15, length: NaN, availableRanges: Array(1)}
+Console.js:61 ❌ Section fails length check: {itemNo: 15, length: NaN, availableRanges: Array(1)}
+Console.js:61 ❌ Section fails length check: {itemNo: 15, length: NaN, availableRanges: Array(1)}
+Console.js:61 ❌ Section fails length check: {itemNo: 15, length: NaN, availableRanges: Array(5)}
+Console.js:61 ❌ Section fails length check: {itemNo: 15, length: NaN, availableRanges: Array(2)}
+Console.js:61 ❌ Section fails length check: {itemNo: 15, length: NaN, availableRanges: Array(5)}
+Console.js:61 ❌ Section fails length check: {itemNo: 15, length: NaN, availableRanges: Array(5)}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 16, pipeSize: 150, length: 23.27, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 17, pipeSize: 150, length: 21.69, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 18, pipeSize: 150, length: 13.29, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 19, pipeSize: 150, length: 59.49, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 20, pipeSize: 300, length: 17.58, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 21, pipeSize: 225, length: 22.14, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 21, pipeSize: 225, length: 22.14, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 22, pipeSize: 225, length: 27.74, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 23, pipeSize: 225, length: 23.97, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 24, pipeSize: 150, length: 6.86, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 🚨 Orange minimum result for section 8 : {orangeMinimumMet: false, costColor: 'text-red-600', cost: 0.04}
+Console.js:61 🧹 Section defects unclassified, defaulting to TP1: Line deviates left at 1.87m...
+Console.js:61 🧹 Section has cleaning defects, routing to TP1: Line deviates left at 0.15m. Settled deposits, coarse, 5% cross-sectional area loss at 20.32m...
+Console.js:61 🧹 Section has cleaning defects, routing to TP1: Line deviates left at 0.15m. Settled deposits, coarse, 5% cross-sectional area loss at 20.32m...
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 10, pipeSize: 150, length: 34.31, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 10, pipeSize: 150, length: 34.31, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 10, pipeSize: 150, length: 34.31, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 10, pipeSize: 150, length: 34.31, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 10, pipeSize: 150, length: 34.31, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 10, pipeSize: 150, length: 34.31, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ❌ Section fails length check: {itemNo: 10, length: 34.31, availableRanges: Array(5)}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 10, pipeSize: 150, length: 34.31, pipeSizeRange: 'none', lengthRange: '0-66.99', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 10, pipeSize: 150, length: 34.31, pipeSizeRange: 'none', lengthRange: '0-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 10, pipeSize: 150, length: 34.31, pipeSizeRange: 'none', lengthRange: '0-', …}
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 10
+Console.js:61 🔍 "No 2" rule found: 22, checking section 10
+Console.js:61 📊 SECTION 10 RAW DATABASE VALUES [ID: 14908]: {pipeSize: '"150" (string)', length: '"34.31" (string)', severityGrade: '"3" (string)', adoptable: '"Conditional" (string)', defects: '"Line deviates left at 0.15m. Settled deposits, coarse, 5% cross-sectional area loss at 20.32m"', …}
+Console.js:61 🎯 SECTION 10 [ID: 14908] - No 2 rule: true
+Console.js:61    - Pipe size 150mm: true (actual: 150)
+Console.js:61    - Length > 30m: true (actual: 34.31m)
+Console.js:61    - Rule 2 should apply: true
+Console.js:61 📝 Extracted values: {dayRate: 1, hourlyRate: 0, setupRate: 0, perMeterRate: 0, runsPerShift: 25, …}
+Console.js:61 🎯 No 2 rule check: {useNo2: true, no2Value: 22}
+Console.js:61 💰 Using "No 2" rule for section 10: £1 ÷ 22 = £0.05
+Console.js:61 🚨 CALLING checkOrangeMinimumMet for section 10
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 1, pipeSize: 150, length: 15.56, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 2, pipeSize: 150, length: 19.02, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 3, pipeSize: 150, length: 30.24, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 4, pipeSize: 150, length: 19.93, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 5, pipeSize: 150, length: 21.11, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 6, pipeSize: 150, length: 33.78, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: {itemNo: 7, pipeSize: 150, length: 5.64, pipeSizeRange: 'none', lengthRange: '-', …}
+Console.js:61 ✅ Section meets PR2 requirements: 

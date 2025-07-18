@@ -79,7 +79,7 @@ const requiresStructuralRepair = (defects: string): boolean => {
   // Check for cleaning defects first - these should use TP1
   const hasCleaningDefects = cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
   if (hasCleaningDefects) {
-    console.log(`🧹 Section has cleaning defects, routing to TP1: ${defects.substring(0, 100)}...`);
+    // Section has cleaning defects - logging removed
     return false; // Use TP1 for cleaning
   }
   
@@ -93,7 +93,7 @@ const requiresStructuralRepair = (defects: string): boolean => {
   }
   
   // Default: Use TP1 for any unclassified defects
-  console.log(`🧹 Section defects unclassified, defaulting to TP1: ${defects.substring(0, 100)}...`);
+  // Section defects unclassified - logging removed
   return false;
 };
 
@@ -2004,14 +2004,7 @@ export default function Dashboard() {
       }
       
       if (meetsAnyLengthRange && matchedLengthRange) {
-        console.log('✅ Section meets PR2 requirements:', {
-          itemNo: section.itemNo,
-          pipeSize: sectionPipeSize,
-          length: sectionLength,
-          pipeSizeRange: pipeSizeRange ? `${pipeSizeRange.rangeStart}-${pipeSizeRange.rangeEnd}` : 'none',
-          lengthRange: `${matchedLengthRange.rangeStart}-${matchedLengthRange.rangeEnd}`,
-          percentageRange: percentageRange ? `${percentageRange.rangeStart}-${percentageRange.rangeEnd}` : 'none'
-        });
+        // Section meets requirements - logging removed for performance
       } else {
         console.log('❌ Section fails length check:', {
           itemNo: section.itemNo,
@@ -2769,16 +2762,12 @@ export default function Dashboard() {
     // Removed excessive logging
     
     if (autoCost && autoCost.cost > 0) {
-      console.log('🚨 CALLING checkOrangeMinimumMet for section', section.itemNo);
+      // Orange minimum check - logging removed
       // Check if orange minimum is met to determine cost color
       const orangeMinimumMet = checkOrangeMinimumMet();
       const costColor = orangeMinimumMet ? "text-green-600" : "text-red-600";
       
-      console.log('🚨 Orange minimum result for section', section.itemNo, ':', {
-        orangeMinimumMet,
-        costColor,
-        cost: autoCost.cost
-      });
+      // Orange minimum result - logging removed
       
       // Display calculated cost with appropriate color
       return (
