@@ -1472,11 +1472,30 @@ export default function Dashboard() {
     const pipeSize = extractPipeSize(section.pipeSize || "");
     
     if (Array.isArray(repairPricingData) && repairPricingData.length > 0) {
-      const matchingPricing = repairPricingData.find((pricing: any) => 
-        pricing.pipeSize === `${pipeSize}mm`
+      // First try to find pipe-size specific configuration (categoryName contains pipe size)
+      const pipeSizeSpecificConfig = repairPricingData.find((pricing: any) => 
+        pricing.categoryId === 'patching' && 
+        pricing.categoryName?.includes(`${pipeSize}mm`) &&
+        isConfigurationProperlyConfigured(pricing)
       );
+      
+      // Fallback to general patching config if no pipe-specific exists
+      const generalPatchingConfig = repairPricingData.find((pricing: any) => 
+        pricing.categoryId === 'patching' && 
+        !pricing.categoryName?.includes('mm') &&
+        isConfigurationProperlyConfigured(pricing)
+      );
+      
+      const matchingPricing = pipeSizeSpecificConfig || generalPatchingConfig;
 
       if (matchingPricing) {
+        console.log(`🔧 Found TP2 patching config for ${pipeSize}mm:`, {
+          configId: matchingPricing.id,
+          categoryName: matchingPricing.categoryName,
+          pipeSize: `${pipeSize}mm`,
+          isSpecific: !!pipeSizeSpecificConfig
+        });
+        
         return { 
           hasApproved: true, 
           pricingConfig: matchingPricing,
