@@ -2274,9 +2274,9 @@ export default function PR2ConfigClean() {
                     // Update form data immediately
                     setFormData(prev => ({ ...prev, categoryColor: newColor }));
                     
-                    // For patching category, sync color across all pipe sizes
+                    // For patching category, sync ONLY color across all pipe sizes
                     if (categoryId === 'patching') {
-                      console.log('🎨 Syncing color across all patching configurations...');
+                      console.log('🎨 Syncing ONLY color across all patching configurations...');
                       
                       const patchingConfigIds = [153, 156, 157];
                       const updatePromises = patchingConfigIds.map(async (configId) => {
@@ -2284,20 +2284,25 @@ export default function PR2ConfigClean() {
                           const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
                           const config = await response.json();
                           
-                          // Update the color for this configuration
+                          // Update ONLY the color field, keep all other data independent
                           await apiRequest('PUT', `/api/pr2-clean/${configId}`, {
                             ...config,
-                            categoryColor: newColor
+                            categoryColor: newColor,
+                            // Ensure we keep existing pricing data unchanged
+                            pricingOptions: config.pricingOptions,
+                            quantityOptions: config.quantityOptions,
+                            minQuantityOptions: config.minQuantityOptions,
+                            rangeOptions: config.rangeOptions
                           });
                           
-                          console.log(`✅ Updated color for config ${configId} to ${newColor}`);
+                          console.log(`✅ Updated ONLY color for config ${configId} to ${newColor}`);
                         } catch (error) {
                           console.error(`❌ Failed to update color for config ${configId}:`, error);
                         }
                       });
                       
                       await Promise.all(updatePromises);
-                      console.log('✅ All patching configurations updated with new color');
+                      console.log('✅ All patching configurations updated with new color (data preserved)');
                     } else {
                       // For non-patching categories, just save the current configuration
                       debouncedSave();
