@@ -970,7 +970,7 @@ export default function Dashboard() {
                 <div 
                   className={`text-xs max-w-sm ${statusColor === 'green' && configColor ? '' : backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}
                   style={statusColor === 'green' && configColor ? {
-                    backgroundColor: hexToRgba(configColor, 0.1),
+                    backgroundColor: hexToRgba(configColor, 0.3),
                     borderColor: hexToRgba(configColor, 0.5),
                     borderWidth: '2px'
                   } : {}}
@@ -1041,7 +1041,7 @@ export default function Dashboard() {
                 <div 
                   className={`text-xs max-w-sm ${hasTP2Patching && tp2PatchingConfig.categoryColor ? '' : backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}
                   style={hasTP2Patching && tp2PatchingConfig.categoryColor ? {
-                    backgroundColor: hexToRgba(tp2PatchingConfig.categoryColor, 0.1),
+                    backgroundColor: hexToRgba(tp2PatchingConfig.categoryColor, 0.3),
                     borderColor: hexToRgba(tp2PatchingConfig.categoryColor, 0.5),
                     borderWidth: '2px'
                   } : {}}
