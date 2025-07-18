@@ -2174,8 +2174,8 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* Pipe Size Selection - Show ONLY for patching category */}
-        {categoryId === 'patching' && (
+        {/* Pipe Size Selection - Show for ALL categories */}
+        {(
           <Card className="mb-6">
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center gap-2">
@@ -2201,10 +2201,12 @@ export default function PR2ConfigClean() {
                       key={pipeSize}
                       variant={isCurrentConfig ? "default" : "outline"}
                       onClick={() => {
+                        console.log(`🚀 Navigating to pipe size ${pipeSize} (ID: ${configId})`);
                         // Navigate to the correct configuration ID for this pipe size
                         setLocation(`/pr2-config-clean?sector=${sector}&categoryId=patching&edit=${configId}`);
                       }}
                       className={isCurrentConfig ? "bg-yellow-500 hover:bg-yellow-600" : ""}
+                      disabled={false}
                     >
                       {pipeSize}
                     </Button>
