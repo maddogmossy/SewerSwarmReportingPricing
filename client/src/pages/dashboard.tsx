@@ -989,18 +989,29 @@ export default function Dashboard() {
             const pipeSizeSpecificConfig = repairPricingData?.find(config => 
               config.categoryId === 'patching' && 
               config.sector === currentSector.id &&
-              config.description?.includes(`${pipeSize}mm`) &&
+              config.categoryName?.includes(`${pipeSize}mm`) &&
               isConfigurationProperlyConfigured(config)
             );
             
-            // Fallback to general patching config if no pipe-specific exists
-            const generalPatchingConfig = repairPricingData?.find(config => 
-              config.categoryId === 'patching' && 
-              config.sector === currentSector.id &&
-              isConfigurationProperlyConfigured(config)
-            );
+            // Debug structural repair configuration matching
+            if (section.itemNo === 20 || section.itemNo === 21) {
+              console.log(`🔍 DEBUG ${section.itemNo} STRUCTURAL REPAIR CONFIG MATCHING:`, {
+                pipeSize: pipeSize,
+                searchingFor: `${pipeSize}mm`,
+                configs: repairPricingData?.filter(c => c.categoryId === 'patching').map(c => ({
+                  id: c.id,
+                  categoryName: c.categoryName,
+                  sector: c.sector,
+                  matches: c.categoryName?.includes(`${pipeSize}mm`),
+                  sectorMatch: c.sector === currentSector.id,
+                  isConfigured: isConfigurationProperlyConfigured(c)
+                })),
+                foundConfig: pipeSizeSpecificConfig ? pipeSizeSpecificConfig.id : 'none'
+              });
+            }
             
-            const tp2PatchingConfig = pipeSizeSpecificConfig || generalPatchingConfig;
+            // NO FALLBACK - Only use pipe-size-specific configuration
+            const tp2PatchingConfig = pipeSizeSpecificConfig;
             
             const hasTP2Patching = tp2PatchingConfig !== undefined;
             
@@ -1712,6 +1723,22 @@ export default function Dashboard() {
         config.sector === currentSector.id &&
         config.categoryName?.includes(`${pipeSize}mm`)
       );
+      
+      // Debug pipe size matching
+      if (section.itemNo === 20 || section.itemNo === 21) {
+        console.log(`🔍 DEBUG ${section.itemNo} PIPE SIZE MATCHING:`, {
+          pipeSize: pipeSize,
+          searchingFor: `${pipeSize}mm`,
+          configs: pr2Configurations.filter(c => c.categoryId === 'patching').map(c => ({
+            id: c.id,
+            categoryName: c.categoryName,
+            sector: c.sector,
+            matches: c.categoryName?.includes(`${pipeSize}mm`),
+            sectorMatch: c.sector === currentSector.id
+          })),
+          foundConfig: tp2PatchingConfig ? tp2PatchingConfig.id : 'none'
+        });
+      }
       
       if (tp2PatchingConfig) {
         console.log(`🔧 Found TP2 patching configuration for ${pipeSize}mm:`, tp2PatchingConfig.id, tp2PatchingConfig.categoryName);
