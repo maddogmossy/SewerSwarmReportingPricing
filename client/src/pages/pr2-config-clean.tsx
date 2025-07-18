@@ -2245,12 +2245,18 @@ export default function PR2ConfigClean() {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
                         console.log(`🚀 BUTTON CLICKED: Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
                         
-                        // Direct page navigation - most reliable approach
+                        // Fast client-side navigation
                         const newUrl = `/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`;
-                        console.log(`🔗 Direct navigation to:`, newUrl);
+                        console.log(`🔗 Fast navigation to:`, newUrl);
                         
-                        // Force page reload to new URL
-                        window.location.href = newUrl;
+                        // Update URL without page reload
+                        window.history.pushState({}, '', newUrl);
+                        
+                        // Force re-render by updating location state
+                        setLocation(newUrl);
+                        
+                        // Invalidate queries to reload data
+                        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
                       }}
                       className={`px-4 py-2 rounded border hover:bg-gray-50 transition-colors ${isCurrentConfig ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-white border-gray-300"}`}
                     >
