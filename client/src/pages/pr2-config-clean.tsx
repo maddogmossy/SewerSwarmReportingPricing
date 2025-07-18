@@ -420,6 +420,9 @@ export default function PR2ConfigClean() {
       console.log(`🔧 Updated ${optionType} with ${optionId} = ${value}`);
       return newFormData;
     });
+    
+    // Trigger debounced save after input change
+    debouncedSave();
   }
 
   // Clear values from second purple row
@@ -475,6 +478,9 @@ export default function PR2ConfigClean() {
         return opt;
       })
     }));
+    
+    // Trigger debounced save after range input change
+    debouncedSave();
   };
 
   // Validate .99 format for length ranges
@@ -518,8 +524,54 @@ export default function PR2ConfigClean() {
     }
   }, [allCategoryConfigs, isEditing, categoryId, sector, setLocation]);
 
-  // AUTO-SAVE DISABLED to prevent infinite loops and data corruption
-  // const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  // DEBOUNCED SAVE: Save input values after user stops typing
+  const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  
+  const debouncedSave = () => {
+    if (!isEditing || !editId) return;
+    
+    // Clear previous timeout
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+    
+    // Set new timeout to save after 2 seconds of no changes
+    const timeoutId = setTimeout(async () => {
+      try {
+        const payload = {
+          categoryName: formData.categoryName,
+          description: formData.description,
+          categoryColor: formData.categoryColor,
+          sector: sector,
+          categoryId: categoryId,
+          pricingOptions: formData.pricingOptions,
+          quantityOptions: formData.quantityOptions,
+          minQuantityOptions: formData.minQuantityOptions,
+          rangeOptions: formData.rangeOptions,
+          mathOperators: formData.mathOperators,
+          pricingStackOrder: formData.pricingStackOrder,
+          quantityStackOrder: formData.quantityStackOrder,
+          minQuantityStackOrder: formData.minQuantityStackOrder,
+          rangeStackOrder: formData.rangeStackOrder
+        };
+
+        const response = await fetch(`/api/pr2-clean/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+          console.log('✅ Input values saved successfully');
+        }
+      } catch (error) {
+        console.error('❌ Save failed:', error);
+      }
+      setSaveTimeout(null);
+    }, 2000);
+    
+    setSaveTimeout(timeoutId);
+  };
 
   // Dialog states
   const [addPricingDialogOpen, setAddPricingDialogOpen] = useState(false);
@@ -2105,7 +2157,10 @@ export default function PR2ConfigClean() {
                   id="custom-color"
                   type="color"
                   value={formData.categoryColor}
-                  onChange={(e) => setFormData(prev => ({ ...prev, categoryColor: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, categoryColor: e.target.value }));
+                    debouncedSave();
+                  }}
                   className="w-12 h-8 rounded border border-gray-300 cursor-pointer"
                 />
                 <span className="text-sm text-gray-600 font-mono">
