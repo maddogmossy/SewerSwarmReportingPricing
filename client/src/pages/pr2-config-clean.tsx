@@ -2278,8 +2278,14 @@ export default function PR2ConfigClean() {
                         <Input
                           placeholder="cost"
                           value={option.value || ""}
-                          onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
+                          onChange={(e) => {
+                            console.log(`💰 Typing in ${option.label}:`, e.target.value);
+                            handleValueChange('pricingOptions', option.id, e.target.value);
+                          }}
                           className="w-16 h-8 text-sm"
+                          disabled={false}
+                          readOnly={false}
+                          data-testid={`pricing-input-${option.id}`}
                         />
                       </div>
                       <div className="ml-4 flex items-center gap-2">
@@ -2287,8 +2293,14 @@ export default function PR2ConfigClean() {
                         <Input
                           placeholder="min"
                           value={formData.minQuantityOptions?.[index]?.value || ""}
-                          onChange={(e) => handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[index]?.id, e.target.value)}
+                          onChange={(e) => {
+                            console.log(`📊 Typing in Min Qty ${index + 1}:`, e.target.value);
+                            handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[index]?.id, e.target.value);
+                          }}
                           className="w-12 h-8 text-sm"
+                          disabled={false}
+                          readOnly={false}
+                          data-testid={`minqty-input-${index}`}
                         />
                       </div>
                       <div className="ml-4 flex items-center gap-2">
