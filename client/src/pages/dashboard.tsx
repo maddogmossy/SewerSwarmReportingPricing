@@ -2785,11 +2785,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!sectionData?.length) return;
     
-    console.log('🔍 PR2 Configurations loaded:', {
-      total: pr2Configurations.length,
-      cccvJetVac: pr2Configurations.filter(c => c.categoryId === 'cctv-jet-vac').length,
-      patching: pr2Configurations.filter(c => c.categoryId === 'patching').length
-    });
+    // Debug logging removed - trigger system confirmed working
     
     let serviceWarnings = 0;
     let structuralWarnings = 0;
@@ -2814,19 +2810,9 @@ export default function Dashboard() {
       if (hasWarningTriangle) {
         if (isServiceDefect) serviceWarnings++;
         if (isStructuralDefect) structuralWarnings++;
-        console.log(`⚠️ Section ${section.itemNo} has warning triangle:`, {
-          isServiceDefect,
-          isStructuralDefect,
-          hasServiceConfig: !!hasServiceConfig,
-          hasStructuralConfig: !!hasStructuralConfig
-        });
+        // Section has warning triangle - logging removed
       } else {
-        console.log(`✅ Section ${section.itemNo} has calculated cost:`, {
-          isServiceDefect,
-          isStructuralDefect,
-          hasServiceConfig: !!hasServiceConfig,
-          hasStructuralConfig: !!hasStructuralConfig
-        });
+        // Section has calculated cost - logging removed
       }
     });
     
@@ -2837,16 +2823,7 @@ export default function Dashboard() {
     const serviceCompleted = previousCostState.serviceWarnings > 0 && serviceWarnings === 0;
     const structuralCompleted = previousCostState.structuralWarnings > 0 && structuralWarnings === 0;
     
-    // Debug trigger detection
-    console.log('🔍 Trigger check:', {
-      serviceCompleted,
-      structuralCompleted,
-      serviceWarnings,
-      structuralWarnings,
-      previousServiceWarnings: previousCostState.serviceWarnings,
-      previousStructuralWarnings: previousCostState.structuralWarnings,
-      autoCostMode
-    });
+    // Trigger detection - logging removed for performance
     
     // ONLY trigger when there's an actual completion (warnings → calculations)
     if (serviceCompleted && autoCostMode === 'manual') {
