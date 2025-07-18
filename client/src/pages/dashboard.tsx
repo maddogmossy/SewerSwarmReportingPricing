@@ -989,7 +989,7 @@ export default function Dashboard() {
             const pipeSizeSpecificConfig = repairPricingData?.find(config => 
               config.categoryId === 'patching' && 
               config.sector === currentSector.id &&
-              config.categoryName?.includes(`${pipeSize}mm`) &&
+              config.description?.includes(`${pipeSize}mm`) &&
               isConfigurationProperlyConfigured(config)
             );
             
@@ -1472,17 +1472,17 @@ export default function Dashboard() {
     const pipeSize = extractPipeSize(section.pipeSize || "");
     
     if (Array.isArray(repairPricingData) && repairPricingData.length > 0) {
-      // First try to find pipe-size specific configuration (categoryName contains pipe size)
+      // First try to find pipe-size specific configuration (description contains pipe size)
       const pipeSizeSpecificConfig = repairPricingData.find((pricing: any) => 
         pricing.categoryId === 'patching' && 
-        pricing.categoryName?.includes(`${pipeSize}mm`) &&
+        pricing.description?.includes(`${pipeSize}mm`) &&
         isConfigurationProperlyConfigured(pricing)
       );
       
       // Fallback to general patching config if no pipe-specific exists
       const generalPatchingConfig = repairPricingData.find((pricing: any) => 
         pricing.categoryId === 'patching' && 
-        !pricing.categoryName?.includes('mm') &&
+        !pricing.description?.includes('mm') &&
         isConfigurationProperlyConfigured(pricing)
       );
       
