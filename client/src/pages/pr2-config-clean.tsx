@@ -2228,23 +2228,46 @@ export default function PR2ConfigClean() {
                     targetCategoryId = categoryId; // Keep current category
                   }
                   
-                  const isCurrentConfig = editId === String(configId);
+                  const isCurrentConfig = (currentConfigId === configId) || (currentConfigId === null && editId === String(configId));
                   
                   console.log(`🔍 Rendering button: ${pipeSize} (ID: ${configId}) - Current: ${isCurrentConfig}`);
                   
                   return (
                     <button
                       key={pipeSize}
-                      onClick={() => {
+                      onClick={async () => {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
                         console.log(`🚀 SWITCHING TO: ${pipeSize} section within unified configuration`);
                         
-                        // Switch to the selected pipe size section within the same page
-                        setCurrentConfigId(configId);
-                        
-                        // Update form data to show the selected pipe size configuration
-                        // This should switch the displayed configuration without navigation
-                        console.log(`🔄 Switched to ${pipeSize} configuration (ID: ${configId})`);
+                        // Load the configuration data for this pipe size
+                        try {
+                          const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
+                          const configData = await response.json();
+                          
+                          // Update form data to show the selected pipe size configuration
+                          setFormData({
+                            categoryName: configData.categoryName || `${pipeSize} TP2 - Patching Configuration`,
+                            description: configData.description || '',
+                            categoryColor: configData.categoryColor || '#ffffff',
+                            pricingOptions: configData.pricingOptions || [],
+                            quantityOptions: configData.quantityOptions || [],
+                            minQuantityOptions: configData.minQuantityOptions || [],
+                            rangeOptions: configData.rangeOptions || [],
+                            mathOperators: configData.mathOperators || [],
+                            pricingStackOrder: configData.pricingStackOrder || [],
+                            quantityStackOrder: configData.quantityStackOrder || [],
+                            minQuantityStackOrder: configData.minQuantityStackOrder || [],
+                            rangeStackOrder: configData.rangeStackOrder || [],
+                            sector: configData.sector || sector
+                          });
+                          
+                          // Set the current config ID for state tracking
+                          setCurrentConfigId(configId);
+                          
+                          console.log(`🔄 Switched to ${pipeSize} configuration (ID: ${configId}) with data:`, configData);
+                        } catch (error) {
+                          console.error(`❌ Failed to load ${pipeSize} configuration:`, error);
+                        }
                       }}
                       className={`px-4 py-2 rounded border hover:bg-gray-50 transition-colors ${isCurrentConfig ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-white border-gray-300"}`}
                     >
