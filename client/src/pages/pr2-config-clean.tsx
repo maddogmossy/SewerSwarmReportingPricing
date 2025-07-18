@@ -1091,7 +1091,7 @@ export default function PR2ConfigClean() {
         }));
       }
     }
-  }, [isEditing, existingConfig?.id, editId]); // FIXED: Minimal dependencies to prevent double triggers
+  }, [isEditing, existingConfig, editId]); // FIXED: Watch full existingConfig object to trigger reload
 
 
 
