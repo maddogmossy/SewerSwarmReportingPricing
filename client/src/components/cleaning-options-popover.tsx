@@ -1,8 +1,3 @@
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Settings, Video, Waves } from "lucide-react";
-
 interface CleaningOptionsPopoverProps {
   children: React.ReactNode;
   sectionData: {
@@ -21,84 +16,16 @@ interface CleaningOptionsPopoverProps {
 }
 
 export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
-  // Removed all useState and useQuery to eliminate infinite loops
-  
-  // Fixed equipment list like patching system - CCTV/Jet Vac first
-  const cleansingEquipment = [
-    {
-      id: 'cctv-jet-vac',
-      name: 'CCTV/Jet Vac',
-      description: 'High-pressure cleaning with jet vac system',
-      icon: Waves
-    },
-    {
-      id: 'cctv-van-pack', 
-      name: 'CCTV/Van Pack',
-      description: 'Traditional cleaning with van-mounted equipment',
-      icon: Video
-    }
-  ];
-
-  // Generate dynamic configuration name based on pipe size
-  const getConfigurationName = (): string => {
-    const pipeSize = sectionData.pipeSize;
-    // Normalize pipe size (remove 'mm' if present, then add it back)
-    const normalizedSize = pipeSize.replace(/mm$/i, '');
-    return `${normalizedSize}mm Pipe Configuration Options`;
+  // TEMPORARY FIX: Replace problematic Popover with direct navigation to eliminate infinite loops
+  const handleDirectClick = () => {
+    // Navigate directly to CCTV/Jet Vac configuration (primary option)
+    window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}`;
   };
 
-  // Handle direct navigation to existing configuration or create new
-  const handleDirectNavigation = (equipmentId: string) => {
-    const sector = sectionData.sector;
-    
-    // Simple navigation without complex logic that could cause re-renders
-    window.location.href = `/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}`;
-  };
-
+  // Return simple clickable element instead of complex Popover that causes infinite loops
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        {children}
-      </PopoverTrigger>
-      <PopoverContent className="w-[400px] max-w-[95vw]" align="start">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">Cleanse/Survey Equipment Selection</h3>
-            <p className="text-sm text-muted-foreground">
-              Select equipment for cleansing and survey operations
-            </p>
-            <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
-              {getConfigurationName()}
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            {cleansingEquipment.map((equipment, index) => {
-              const IconComponent = equipment.icon;
-              return (
-                <div 
-                  key={equipment.id} 
-                  className="flex items-center justify-between p-3 border rounded-lg bg-white cursor-pointer hover:bg-blue-50 transition-colors"
-                  onClick={() => handleDirectNavigation(equipment.id)}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-2">
-                      <IconComponent className="h-4 w-4 text-blue-600" />
-                      <span className="font-medium text-sm">{equipment.name}</span>
-                      {index === 0 && (
-                        <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-                          Primary
-                        </Badge>
-                      )}
-                    </div>
-                    <span className="text-xs text-gray-500">{equipment.description}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+    <div onClick={handleDirectClick} style={{ cursor: 'pointer' }}>
+      {children}
+    </div>
   );
 }
