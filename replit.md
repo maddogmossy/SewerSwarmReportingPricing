@@ -1119,23 +1119,28 @@ Both rules are permanently locked and displayed on screen per user requirement
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.6' to return to this stable checkpoint
 
-## REV V8.3 CHECKPOINT - DASHBOARD BUTTONS UI PERFECTED (July 17, 2025)
+## REV V8.4 CHECKPOINT - TP2 TEMPLATE ROW 1 SIMPLIFIED (July 18, 2025)
 
-🔒 **PRODUCTION READY - COMPLETE DASHBOARD BUTTON SYSTEM WITH MSCC5 COMPLIANCE:**
-- **Professional Gradient Buttons**: Implemented sexy gradient buttons with proper sizing and visual appeal
-- **MSCC5 Color Standards**: Green gradients for service defects, red gradients for structural defects
-- **Perfect Text Fitting**: Shortened to "Service Calc" and "Structural Calc" for optimal button width
-- **Enhanced Visual Design**: Added gradients, shadows, hover effects, and smooth transitions
-- **Larger Button Size**: Increased from h-8 to h-12 for better proportions and readability
-- **Modern Styling**: Bold white text, rounded corners, shadow effects for professional appearance
+🔒 **PRODUCTION READY - TP2 TEMPLATE ROW STRUCTURE FINALIZED:**
+- **Row 1 Simplified**: Day Rate shows only cost input field (£1850) - Min Qty and Length (Max) inputs removed
+- **Rows 2-5 Preserved**: Single Layer, Double Layer, Triple Layer, Triple Layer (Extra Cure) maintain complete structure (cost + Min Qty + Length Max)
+- **Conditional Input Display**: Added `{index > 0 && ...}` logic to hide Min Qty and Length inputs for Row 1 only
+- **User Specifications Met**: Row 1 shows only Day Rate cost input as requested, other rows unchanged
+- **Template Integrity**: TP2 patching template maintains functionality with simplified first row
 
-🔒 **BUTTON SPECIFICATIONS:**
-- **Service Calc**: Green gradient (from-green-500 to-green-600) with hover enhancement
-- **Structural Calc**: Red gradient (from-red-500 to-red-600) with hover enhancement
-- **Size**: h-12 with size="lg" for proper proportions
-- **Typography**: White text with font-bold for excellent contrast
-- **Effects**: shadow-lg, hover:shadow-xl, transition-all duration-200ms
-- **Layout**: Full width buttons maintaining perfect table column alignment
+🔒 **TP2 ROW STRUCTURE:**
+- **Row 1**: Day Rate £1850 (cost input only)
+- **Row 2**: Single Layer + Min Qty + Length (Max) inputs
+- **Row 3**: Double Layer £425 + Min Qty + Length (Max) inputs
+- **Row 4**: Triple Layer + Min Qty + Length (Max) inputs
+- **Row 5**: Triple Layer (Extra Cure) + Min Qty + Length (Max) inputs
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **File**: `client/src/pages/pr2-config-clean.tsx` - Modified TP2 pricing options display
+- **Conditional Logic**: `{index > 0 && (<>Min Qty and Length inputs</>)}` hides inputs for Row 1
+- **Preserved Functionality**: Rows 2-5 maintain all original input fields and functionality
+- **Auto-Save**: All input changes continue to trigger auto-save functionality
+- **User Testing**: Successfully verified Row 1 shows only Day Rate, Rows 2-5 unchanged
 
 🔒 **COMPLETE FIVE-WINDOW FUNCTIONALITY MAINTAINED:**
 - **Blue Window**: Pricing options (Day Rate £1850) with 💰 emoji
