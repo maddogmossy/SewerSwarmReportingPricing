@@ -1150,7 +1150,34 @@ Both rules are permanently locked and displayed on screen per user requirement
 - **Trigger Structural Dialog**: Configure structural pricing to trigger orange popup  
 - **Verification**: Console logs will show specific dialog triggers when transitions occur
 
-⚡ **ROLLBACK COMMAND:** Use 'rev v8.5' to return to this stable checkpoint
+⚡ **ROLLBACK COMMAND:** Use 'rev v8.7' to return to this stable checkpoint
+
+## REV V8.8 CHECKPOINT - UNIFIED PIPE SIZE SWITCHING SYSTEM COMPLETE (July 18, 2025)
+
+🔒 **PRODUCTION READY - UNIFIED CONFIGURATION PAGE ARCHITECTURE:**
+- **Single Page Interface**: All pipe size configurations (150mm, 225mm, 300mm) accessible within one unified page
+- **Dynamic Section Switching**: Buttons switch between pipe size configurations without page navigation
+- **Real-Time Data Loading**: Configuration data updates dynamically when switching pipe sizes
+- **State Management**: currentConfigId state tracks active configuration independently from URL
+- **Visual Feedback**: Button highlighting and status text update to reflect current selection
+- **Form Data Synchronization**: Complete form data switching between different pipe size configurations
+
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Unified Interface**: Single pr2-config-clean page handles all pipe size configurations
+- **Dynamic Loading**: onClick handlers fetch and load configuration data via API
+- **State Tracking**: currentConfigId state manages active configuration separate from URL editId
+- **Visual Indicators**: Button styling and status text update based on currentConfigId
+- **Data Persistence**: Each pipe size maintains independent configuration data (ID 153: 150mm, ID 156: 225mm, ID 157: 300mm)
+
+🔒 **USER-CONFIRMED WORKING FEATURES:**
+- **150mm Configuration**: Day Rate £1850, Double Layer £425, loads correctly when selected
+- **225mm Configuration**: Day Rate £1850, Double Layer £550, switches properly via button click
+- **300mm Configuration**: Day Rate £1850, Double Layer £570, displays correct data when activated
+- **Status Text Updates**: "Currently editing" text changes to reflect active pipe size and configuration ID
+- **Button Highlighting**: Yellow highlighting follows current selection accurately
+- **No Page Navigation**: All switching happens within same unified interface
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v8.8' to return to this stable checkpoint
 - **Orange Window**: Min quantity options (Min Runs 25, Qty 2: 25) in paired layout
 - **Purple Window**: Range options (Percentage 0-30, Length 0-33.99, Percentage 2: 0-30, Length 2: 0-66.99) with working inputs
 
