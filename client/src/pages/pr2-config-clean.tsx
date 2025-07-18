@@ -129,6 +129,11 @@ export default function PR2ConfigClean() {
   
   // Determine category name based on categoryId and pipe size for dynamic naming
   const getCategoryName = (categoryId: string) => {
+    // If we have actual configuration data loaded, use its name
+    if (isEditing && existingConfig && existingConfig.categoryName) {
+      return existingConfig.categoryName;
+    }
+    
     // If we have a custom config name from URL (pipe size specific), use it
     if (configName) {
       return decodeURIComponent(configName).replace('TP1 - ', '').replace('TP2 - ', '');
