@@ -2797,35 +2797,7 @@ export default function Dashboard() {
     };
   }, [isServiceRecalculated, pr2Configurations, sectionData]);
 
-  // Service Calc button handler - implements smart pricing recalculation
-  const handleServiceCalc = () => {
-    console.log('🎯 handleServiceCalc function called');
-    console.log('🎯 Current isServiceRecalculated state:', isServiceRecalculated);
-    
-    // Simple state toggle
-    const newState = !isServiceRecalculated;
-    setIsServiceRecalculated(newState);
-    
-    console.log('🎯 Service recalculation toggled to:', newState);
-    
-    if (newState) {
-      console.log('🎯 SERVICE CALC ACTIVATED - Finding qualifying sections...');
-      console.log('🎯 Total sections available:', sectionData?.length || 0);
-      
-      // Count sections with defects (not severity grade 0)
-      const sectionsWithDefects = sectionData?.filter(s => 
-        s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0
-      ) || [];
-      
-      console.log('🎯 SERVICE CALC MATH:', {
-        totalSections: sectionData?.length || 0,
-        sectionsWithDefects: sectionsWithDefects.length,
-        dayRate: 1850,
-        costPerSection: sectionsWithDefects.length > 0 ? (1850 / sectionsWithDefects.length).toFixed(2) : 'N/A',
-        qualifyingSectionNumbers: sectionsWithDefects.map(s => s.itemNo)
-      });
-    }
-  };
+
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -3639,68 +3611,7 @@ export default function Dashboard() {
                     </tbody>
                   </table>
                   
-                  {/* Service buttons aligned with table columns */}
-                  <div className="w-full mt-2">
-                    <table className="w-full text-xs border-collapse" style={{ tableLayout: 'fixed' }}>
-                      <tbody>
-                        <tr>
-                          {columns.map((column) => {
-                            if (hiddenColumns.has(column.key)) return null;
-                            
-                            // Only show buttons for adoptable and cost columns
-                            if (column.key === 'adoptable') {
-                              return (
-                                <td 
-                                  key={column.key}
-                                  className={`${column.width} px-1 py-1 text-center`}
-                                >
-                                  <button
-                                    onClick={() => {
-                                      console.log('🚨 BUTTON CLICKED - Service Calc');
-                                      console.log('🚨 About to call handleServiceCalc');
-                                      try {
-                                        handleServiceCalc();
-                                        console.log('🚨 handleServiceCalc completed');
-                                      } catch (error) {
-                                        console.error('🚨 Error calling handleServiceCalc:', error);
-                                      }
-                                    }}
-                                    type="button"
-                                    className="w-full text-sm h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg cursor-pointer"
-                                  >
-                                    Service Calc
-                                  </button>
-                                </td>
-                              );
-                            } else if (column.key === 'cost') {
-                              return (
-                                <td 
-                                  key={column.key}
-                                  className={`${column.width} px-1 py-1 text-center`}
-                                >
-                                  <Button
-                                    size="lg"
-                                    className="w-full text-sm h-12 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-200 rounded-lg"
-                                  >
-                                    Structural Calc
-                                  </Button>
-                                </td>
-                              );
-                            } else {
-                              // Empty cell for other columns to maintain alignment
-                              return (
-                                <td 
-                                  key={column.key}
-                                  className={`${column.width} px-1 py-1`}
-                                >
-                                </td>
-                              );
-                            }
-                          })}
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+
                   
 
                 </div>
