@@ -2241,7 +2241,8 @@ export default function PR2ConfigClean() {
                     <Button
                       key={pipeSize}
                       variant={isCurrentConfig ? "default" : "outline"}
-                      onClick={async (e) => {
+                      onClick={(e) => {
+                        console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
                         e.preventDefault();
                         e.stopPropagation();
                         console.log(`🚀 BUTTON CLICKED: Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
