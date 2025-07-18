@@ -2318,37 +2318,42 @@ export default function PR2ConfigClean() {
                           data-testid={`pricing-input-${option.id}`}
                         />
                       </div>
-                      <div className="ml-4 flex items-center gap-2">
-                        <Label className="text-xs">Min Qty</Label>
-                        <Input
-                          placeholder="min"
-                          value={formData.minQuantityOptions?.[index]?.value || ""}
-                          onChange={(e) => {
-                            console.log(`📊 Typing in Min Qty ${index + 1}:`, e.target.value);
-                            handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[index]?.id, e.target.value);
-                          }}
-                          className="w-12 h-8 text-sm"
-                          disabled={false}
-                          readOnly={false}
-                          data-testid={`minqty-input-${index}`}
-                        />
-                      </div>
-                      <div className="ml-4 flex items-center gap-2">
-                        <Label className="text-xs">Length (Max)</Label>
-                        <Input
-                          placeholder="length"
-                          value={formData.rangeOptions?.[index]?.rangeEnd || ""}
-                          onChange={(e) => {
-                            console.log(`📏 Length input ${index + 1} (${option.label}):`, e.target.value);
-                            const rangeId = formData.rangeOptions?.[index]?.id || `range_length_${index + 1}`;
-                            updateRangeOption(rangeId, 'rangeEnd', e.target.value);
-                          }}
-                          className="w-20 h-8 text-sm"
-                          disabled={false}
-                          readOnly={false}
-                          data-testid={`length-input-${index}`}
-                        />
-                      </div>
+                      {/* Only show Min Qty and Length Max for rows 2-5 (index > 0) */}
+                      {index > 0 && (
+                        <>
+                          <div className="ml-4 flex items-center gap-2">
+                            <Label className="text-xs">Min Qty</Label>
+                            <Input
+                              placeholder="min"
+                              value={formData.minQuantityOptions?.[index]?.value || ""}
+                              onChange={(e) => {
+                                console.log(`📊 Typing in Min Qty ${index + 1}:`, e.target.value);
+                                handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[index]?.id, e.target.value);
+                              }}
+                              className="w-12 h-8 text-sm"
+                              disabled={false}
+                              readOnly={false}
+                              data-testid={`minqty-input-${index}`}
+                            />
+                          </div>
+                          <div className="ml-4 flex items-center gap-2">
+                            <Label className="text-xs">Length (Max)</Label>
+                            <Input
+                              placeholder="length"
+                              value={formData.rangeOptions?.[index]?.rangeEnd || ""}
+                              onChange={(e) => {
+                                console.log(`📏 Length input ${index + 1} (${option.label}):`, e.target.value);
+                                const rangeId = formData.rangeOptions?.[index]?.id || `range_length_${index + 1}`;
+                                updateRangeOption(rangeId, 'rangeEnd', e.target.value);
+                              }}
+                              className="w-20 h-8 text-sm"
+                              disabled={false}
+                              readOnly={false}
+                              data-testid={`length-input-${index}`}
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
                   ))}
                 </CardContent>
