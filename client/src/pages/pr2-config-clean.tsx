@@ -2408,6 +2408,9 @@ export default function PR2ConfigClean() {
                           // Update current config ID to highlight the correct button
                           setCurrentConfigId(configId);
                           
+                          // Update URL to reflect the configuration change
+                          setLocation(`/pr2-config-clean?categoryId=${targetCategoryId}&sector=${sector}&edit=${configId}`);
+                          
                           console.log(`✅ Form data updated to show ${pipeSize} configuration (ID: ${configId})`);
                           
                         } catch (error) {
