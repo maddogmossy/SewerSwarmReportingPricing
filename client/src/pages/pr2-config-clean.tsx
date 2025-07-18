@@ -408,7 +408,7 @@ export default function PR2ConfigClean() {
   const [formData, setFormData] = useState<CleanFormData>(getDefaultFormData());
   
   // State for pipe size switching within unified page
-  const [currentConfigId, setCurrentConfigId] = useState<number | null>(null);
+  const [currentConfigId, setCurrentConfigId] = useState<number | null>(editId ? parseInt(editId) : null);
   const [selectedPipeSize, setSelectedPipeSize] = useState<string>('150mm');
 
   // Reset form data when switching between TP1 and TP2
@@ -2291,15 +2291,43 @@ export default function PR2ConfigClean() {
                   return (
                     <button
                       key={pipeSize}
-                      onClick={() => {
+                      onClick={async () => {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
-                        console.log(`🚀 NAVIGATING TO: ${pipeSize} configuration (ID: ${configId})`);
+                        console.log(`🚀 LOADING CONFIG: ${pipeSize} configuration (ID: ${configId})`);
                         
-                        // Navigate to the specific configuration for this pipe size
-                        const newUrl = `/pr2-config-clean?categoryId=${targetCategoryId}&sector=${sector}&edit=${configId}`;
-                        setLocation(newUrl);
-                        
-                        console.log(`🔄 Navigated to ${pipeSize} configuration (ID: ${configId})`);
+                        try {
+                          // Load the specific configuration data directly
+                          const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
+                          const configData = await response.json();
+                          
+                          console.log(`✅ Loaded config data for ID ${configId}:`, configData);
+                          
+                          // Update form data with the loaded configuration
+                          setFormData({
+                            categoryId: configData.categoryId,
+                            categoryName: configData.categoryName,
+                            description: configData.description,
+                            sector: configData.sector,
+                            pricingOptions: configData.pricingOptions || [],
+                            quantityOptions: configData.quantityOptions || [],
+                            minQuantityOptions: configData.minQuantityOptions || [],
+                            rangeOptions: configData.rangeOptions || [],
+                            categoryColor: configData.categoryColor || '#ffffff',
+                            mathOperators: configData.mathOperators || 'divide',
+                            pricingStackOrder: configData.pricingStackOrder || [],
+                            quantityStackOrder: configData.quantityStackOrder || [],
+                            minQuantityStackOrder: configData.minQuantityStackOrder || [],
+                            rangeStackOrder: configData.rangeStackOrder || []
+                          });
+                          
+                          // Update current config ID to highlight the correct button
+                          setCurrentConfigId(configId);
+                          
+                          console.log(`✅ Form data updated to show ${pipeSize} configuration (ID: ${configId})`);
+                          
+                        } catch (error) {
+                          console.error(`❌ Failed to load configuration ${configId}:`, error);
+                        }
                       }}
                       className={`px-4 py-2 rounded border hover:bg-gray-50 transition-colors ${isCurrentConfig ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-white border-gray-300"}`}
                     >
