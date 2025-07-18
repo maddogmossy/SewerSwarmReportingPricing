@@ -2824,6 +2824,17 @@ export default function Dashboard() {
       const cost = calculateCost(section);
       const hasWarningTriangle = cost === "⚠️";
       
+      // Enhanced logging for debugging
+      if (section.itemNo <= 5) { // Log first 5 sections for debugging
+        console.log(`🔍 Section ${section.itemNo} analysis:`, {
+          defects: section.defects,
+          isServiceDefect,
+          isStructuralDefect,
+          cost: typeof cost === 'string' ? cost : 'calculated',
+          hasWarningTriangle
+        });
+      }
+      
       if (hasWarningTriangle) {
         if (isServiceDefect) serviceWarnings++;
         if (isStructuralDefect) structuralWarnings++;
