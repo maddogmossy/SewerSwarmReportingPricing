@@ -2794,7 +2794,13 @@ export default function Dashboard() {
       const isStructuralDefect = requiresStructuralRepair(section.defects);
       
       // Check if section has PR2 configuration that would show calculated cost
-      const hasCalculatedCost = canCalculatePR2Cost(section);
+      const hasServiceConfig = isServiceDefect && pr2Configurations.find(config => 
+        config.categoryId === 'cctv-jet-vac' && checkSectionMeetsPR2Requirements(section, config)
+      );
+      const hasStructuralConfig = isStructuralDefect && pr2Configurations.find(config => 
+        config.categoryId === 'patching' && checkSectionMeetsPR2Requirements(section, config)
+      );
+      const hasCalculatedCost = hasServiceConfig || hasStructuralConfig;
       const hasWarningTriangle = !hasCalculatedCost;
       
 
