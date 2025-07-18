@@ -2111,46 +2111,6 @@ export default function PR2ConfigClean() {
                 <span className="text-sm text-gray-600 font-mono">
                   {formData.categoryColor}
                 </span>
-                {isEditing && (
-                  <Button
-                    size="sm"
-                    onClick={async () => {
-                      try {
-                        const payload = {
-                          categoryName: formData.categoryName,
-                          description: formData.description,
-                          categoryColor: formData.categoryColor,
-                          sector: sector,
-                          categoryId: categoryId,
-                          pricingOptions: formData.pricingOptions,
-                          quantityOptions: formData.quantityOptions,
-                          minQuantityOptions: formData.minQuantityOptions,
-                          rangeOptions: formData.rangeOptions,
-                          mathOperators: formData.mathOperators,
-                          pricingStackOrder: formData.pricingStackOrder,
-                          quantityStackOrder: formData.quantityStackOrder,
-                          minQuantityStackOrder: formData.minQuantityStackOrder,
-                          rangeStackOrder: formData.rangeStackOrder
-                        };
-                        
-                        const response = await fetch(`/api/pr2-clean/${editId}`, {
-                          method: 'PUT',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify(payload)
-                        });
-                        
-                        if (response.ok) {
-                          console.log('✅ Manual save completed successfully');
-                        }
-                      } catch (error) {
-                        console.error('❌ Manual save failed:', error);
-                      }
-                    }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    Save Color
-                  </Button>
-                )}
               </div>
               <p className="text-xs text-gray-500 mt-2">
                 Create your own custom color using the color picker
