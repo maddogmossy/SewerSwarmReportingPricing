@@ -477,7 +477,17 @@ export default function Dashboard() {
   const reportId = urlParams.get('reportId');
 
   // Column visibility state with localStorage persistence
-  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
+  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(() => {
+    try {
+      const savedHiddenColumns = localStorage.getItem('dashboard-hidden-columns');
+      if (savedHiddenColumns) {
+        return new Set(JSON.parse(savedHiddenColumns));
+      }
+    } catch (error) {
+      console.error('Error loading hidden columns from localStorage:', error);
+    }
+    return new Set();
+  });
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [showExportWarning, setShowExportWarning] = useState(false);
   const [pendingExport, setPendingExport] = useState(false);
@@ -3135,6 +3145,8 @@ export default function Dashboard() {
                         // Get all hideable columns
                         const hideableColumns = columns.filter(col => col.hideable).map(col => col.key);
                         setHiddenColumns(new Set(hideableColumns));
+                        // Save to localStorage to persist across page refreshes
+                        localStorage.setItem('dashboard-hidden-columns', JSON.stringify(hideableColumns));
                       }}
                       className="text-xs"
                       disabled={columns.filter(col => col.hideable).every(col => hiddenColumns.has(col.key))}
