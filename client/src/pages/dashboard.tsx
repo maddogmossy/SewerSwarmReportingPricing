@@ -2798,43 +2798,32 @@ export default function Dashboard() {
   }, [isServiceRecalculated, pr2Configurations, sectionData]);
 
   // Service Calc button handler - implements smart pricing recalculation
-  const handleServiceCalc = (e?: React.MouseEvent) => {
+  const handleServiceCalc = () => {
     console.log('🎯 handleServiceCalc function called');
+    console.log('🎯 Current isServiceRecalculated state:', isServiceRecalculated);
     
-    try {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
+    // Simple state toggle
+    const newState = !isServiceRecalculated;
+    setIsServiceRecalculated(newState);
+    
+    console.log('🎯 Service recalculation toggled to:', newState);
+    
+    if (newState) {
+      console.log('🎯 SERVICE CALC ACTIVATED - Finding qualifying sections...');
+      console.log('🎯 Total sections available:', sectionData?.length || 0);
       
-      console.log('🎯 Service Calc button clicked - current state:', isServiceRecalculated);
+      // Count sections with defects (not severity grade 0)
+      const sectionsWithDefects = sectionData?.filter(s => 
+        s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0
+      ) || [];
       
-      const newState = !isServiceRecalculated;
-      console.log('🎯 About to toggle state to:', newState);
-      
-      setIsServiceRecalculated(newState);
-      
-      console.log('🎯 Service recalculation state toggled to:', newState);
-      
-      if (newState) {
-        console.log('🎯 Service Calc ACTIVATED - recalculation mode ON');
-        console.log('🎯 Available section data count:', sectionData.length);
-        
-        // Simple counting without complex filtering to avoid errors
-        const sectionsWithDefects = sectionData.filter(s => s.severityGrade && s.severityGrade !== "0" && s.severityGrade !== 0);
-        
-        console.log('🎯 SIMPLE SERVICE CALC:', {
-          totalSections: sectionData.length,
-          sectionsWithDefects: sectionsWithDefects.length,
-          dayRate: 1850,
-          costPerSection: sectionsWithDefects.length > 0 ? (1850 / sectionsWithDefects.length).toFixed(2) : 'N/A'
-        });
-      } else {
-        console.log('🎯 Service Calc DEACTIVATED - normal pricing mode');
-      }
-    } catch (error) {
-      console.error('🎯 Error in handleServiceCalc:', error);
-      console.error('🎯 Error details:', error.message, error.stack);
+      console.log('🎯 SERVICE CALC MATH:', {
+        totalSections: sectionData?.length || 0,
+        sectionsWithDefects: sectionsWithDefects.length,
+        dayRate: 1850,
+        costPerSection: sectionsWithDefects.length > 0 ? (1850 / sectionsWithDefects.length).toFixed(2) : 'N/A',
+        qualifyingSectionNumbers: sectionsWithDefects.map(s => s.itemNo)
+      });
     }
   };
 

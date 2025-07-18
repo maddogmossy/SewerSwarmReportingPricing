@@ -569,7 +569,7 @@ export default function PR2ConfigClean() {
           console.error('❌ Auto-save failed:', error);
         }
         setAutoSaveTimeout(null);
-      }, 300);
+      }, 2000);
       
       setAutoSaveTimeout(timeoutId);
     }
