@@ -600,8 +600,15 @@ export default function PR2ConfigClean() {
   const [editingQuantity, setEditingQuantity] = useState<PricingOption | null>(null);
   const [editingMinQuantity, setEditingMinQuantity] = useState<PricingOption | null>(null);
   
-  // TP2 Pipe Size Selection State
-  const [selectedPipeSize, setSelectedPipeSize] = useState<string>('150mm');
+  // TP2 Pipe Size Selection State - Dynamic based on editId
+  const selectedPipeSize = (() => {
+    const pipeConfigIds = {
+      '153': '150mm',
+      '156': '225mm', 
+      '157': '300mm'
+    };
+    return pipeConfigIds[editId as keyof typeof pipeConfigIds] || '150mm';
+  })();
   const [editingRange, setEditingRange] = useState<RangeOption | null>(null);
   
   // Sector selection state
