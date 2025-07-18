@@ -1717,7 +1717,10 @@ export default function Dashboard() {
       return null;
     }
     
-    // Prioritize configurations with actual pricing values over empty ones
+    // Sort matching configs by ID (descending) to prioritize highest ID first
+    matchingConfigs.sort((a, b) => b.id - a.id);
+    
+    // Prioritize configurations with actual pricing values over empty ones, but prefer higher ID
     let pr2Config = matchingConfigs.find(config => {
       const dayRate = config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'))?.value;
       const runsPerShift = config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value;
@@ -1738,8 +1741,9 @@ export default function Dashboard() {
         return null; // Return null to show warning triangle
       }
       
+      // Use highest ID config even if it has empty values (first in sorted array)
       pr2Config = matchingConfigs[0];
-      console.log('⚠️ Using first matching config despite empty values:', pr2Config.id);
+      console.log('⚠️ Using highest ID config despite empty values:', pr2Config.id);
     } else {
       console.log('✅ Selected config with valid pricing values:', pr2Config.id);
     }
