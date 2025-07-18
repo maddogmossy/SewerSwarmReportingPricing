@@ -484,6 +484,13 @@ export default function Dashboard() {
   const [showAutoCostDialog, setShowAutoCostDialog] = useState(false);
   const [autoCostMode, setAutoCostMode] = useState<'manual' | 'automatic'>('manual');
   
+  // Track previous costs to detect when last value is added
+  const [previousCostState, setPreviousCostState] = useState<{
+    serviceWarnings: number;
+    structuralWarnings: number;
+    totalSections: number;
+  }>({ serviceWarnings: 0, structuralWarnings: 0, totalSections: 0 });
+  
   // Filter state
   const [filters, setFilters] = useState({
     severityGrade: '',
@@ -510,6 +517,60 @@ export default function Dashboard() {
   const [missingSequences, setMissingSequences] = useState<number[]>([]);
   const [warningDismissed, setWarningDismissed] = useState(false);
   const [isDatabaseFile, setIsDatabaseFile] = useState(false);
+
+  // Auto-cost trigger logic - detect when last values are added
+  useEffect(() => {
+    if (!sectionData?.length) return;
+    
+    let serviceWarnings = 0;
+    let structuralWarnings = 0;
+    
+    sectionData.forEach(section => {
+      // Detect service vs structural defects using existing logic
+      const isServiceDefect = requiresCleaning(section.defects);
+      const isStructuralDefect = requiresStructuralRepair(section.defects);
+      
+      // Check if cost column shows warning triangle (⚠️)
+      const cost = calculateCost(section);
+      const hasWarningTriangle = cost === "⚠️";
+      
+      if (hasWarningTriangle) {
+        if (isServiceDefect) serviceWarnings++;
+        if (isStructuralDefect) structuralWarnings++;
+      }
+    });
+    
+    const totalSections = sectionData.length;
+    
+    // Trigger popup when last service or structural value gets calculated
+    const serviceCompleted = previousCostState.serviceWarnings > 0 && serviceWarnings === 0;
+    const structuralCompleted = previousCostState.structuralWarnings > 0 && structuralWarnings === 0;
+    const newReportWithCosts = previousCostState.totalSections === 0 && totalSections > 0 && (serviceWarnings > 0 || structuralWarnings > 0);
+    
+    console.log('🎯 TRIGGER CHECK:', {
+      previousServiceWarnings: previousCostState.serviceWarnings,
+      currentServiceWarnings: serviceWarnings,
+      previousStructuralWarnings: previousCostState.structuralWarnings,
+      currentStructuralWarnings: structuralWarnings,
+      serviceCompleted,
+      structuralCompleted,
+      newReportWithCosts,
+      autoCostMode
+    });
+    
+    if ((serviceCompleted || structuralCompleted || newReportWithCosts) && autoCostMode === 'manual') {
+      console.log('🚨 TRIGGERING AUTO-COST DIALOG');
+      setShowAutoCostDialog(true);
+    }
+    
+    // Update previous state
+    setPreviousCostState({
+      serviceWarnings,
+      structuralWarnings,
+      totalSections
+    });
+    
+  }, [sectionData, calculateCost, previousCostState, autoCostMode]);
 
   // Auto-collapse dropdown when clicking outside
   useEffect(() => {
