@@ -1,0 +1,106 @@
+24VM7 eruda.js:2 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-HIQGUL6L.js?v=9fbe10e7:1927:13
+    at https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=9fbe10e7:113:13
+    at Provider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DAKDTFIW.js?v=9fbe10e7:48:15)
+    at Provider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DAKDTFIW.js?v=9fbe10e7:48:15)
+    at Popper (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-HIQGUL6L.js?v=9fbe10e7:1919:11)
+    at Popover (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=9fbe10e7:62:5)
+    at CleaningOptionsPopover (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/components/cleaning-options-popover.tsx:24:42)
+    at td
+    at tr
+    at tbody
+    at table
+    at div
+    at div
+    at _c9 (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at Dashboard (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/pages/dashboard.tsx:371:3)
+    at Route (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=9fbe10e7:323:16)
+    at Switch (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=9fbe10e7:379:17)
+    at Router (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/App.tsx?v=cMwKa02Sxw480A_lWGkTt:44:42)
+    at Provider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DAKDTFIW.js?v=9fbe10e7:48:15)
+    at TooltipProvider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=9fbe10e7:61:5)
+    at QueryClientProvider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=9fbe10e7:2805:3)
+    at App
+Mt.forEach.n.<computed> @ VM7 eruda.js:2
+printWarning @ VM37 chunk-WERSD76P.js:521
+error @ VM37 chunk-WERSD76P.js:505
+checkForNestedUpdates @ VM37 chunk-WERSD76P.js:19665
+scheduleUpdateOnFiber @ VM37 chunk-WERSD76P.js:18533
+dispatchSetState @ VM37 chunk-WERSD76P.js:12403
+(anonymous) @ VM49 chunk-HIQGUL6L.js:1932
+commitHookEffectListMount @ VM37 chunk-WERSD76P.js:16915
+commitPassiveMountOnFiber @ VM37 chunk-WERSD76P.js:18156
+commitPassiveMountEffects_complete @ VM37 chunk-WERSD76P.js:18129
+commitPassiveMountEffects_begin @ VM37 chunk-WERSD76P.js:18119
+commitPassiveMountEffects @ VM37 chunk-WERSD76P.js:18109
+flushPassiveEffectsImpl @ VM37 chunk-WERSD76P.js:19490
+flushPassiveEffects @ VM37 chunk-WERSD76P.js:19447
+(anonymous) @ VM37 chunk-WERSD76P.js:19328
+workLoop @ VM37 chunk-WERSD76P.js:197
+flushWork @ VM37 chunk-WERSD76P.js:176
+performWorkUntilDeadline @ VM37 chunk-WERSD76P.js:384Understand this error
+workspace_iframe.html:1 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html:1 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html:1 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+24Console.js:61 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-HIQGUL6L.js?v=9fbe10e7:1927:13
+    at https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=9fbe10e7:113:13
+    at Provider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DAKDTFIW.js?v=9fbe10e7:48:15)
+    at Provider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DAKDTFIW.js?v=9fbe10e7:48:15)
+    at Popper (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-HIQGUL6L.js?v=9fbe10e7:1919:11)
+    at Popover (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=9fbe10e7:62:5)
+    at CleaningOptionsPopover (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/components/cleaning-options-popover.tsx:24:42)
+    at td
+    at tr
+    at tbody
+    at table
+    at div
+    at div
+    at _c9 (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at Dashboard (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/pages/dashboard.tsx:371:3)
+    at Route (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=9fbe10e7:323:16)
+    at Switch (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=9fbe10e7:379:17)
+    at Router (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/src/App.tsx?t=1752849280481&v=lFPa3NZ6ZkSn9W6rd_MWl:44:42)
+    at Provider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DAKDTFIW.js?v=9fbe10e7:48:15)
+    at TooltipProvider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=9fbe10e7:61:5)
+    at QueryClientProvider (https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=9fbe10e7:2805:3)
+    at App
+Mt.forEach.n.<computed> @ Console.js:61
+printWarning @ chunk-WERSD76P.js?v=9fbe10e7:521
+error @ chunk-WERSD76P.js?v=9fbe10e7:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=9fbe10e7:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=9fbe10e7:18533
+dispatchSetState @ chunk-WERSD76P.js?v=9fbe10e7:12403
+(anonymous) @ chunk-HIQGUL6L.js?v=9fbe10e7:1932
+commitHookEffectListMount @ chunk-WERSD76P.js?v=9fbe10e7:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=9fbe10e7:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=9fbe10e7:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=9fbe10e7:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=9fbe10e7:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=9fbe10e7:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=9fbe10e7:19447
+(anonymous) @ chunk-WERSD76P.js?v=9fbe10e7:19328
+workLoop @ chunk-WERSD76P.js?v=9fbe10e7:197
+flushWork @ chunk-WERSD76P.js?v=9fbe10e7:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=9fbe10e7:384Understand this error

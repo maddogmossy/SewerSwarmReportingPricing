@@ -30,13 +30,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
   // Fetch existing configurations to check for existing setup
   const { data: pr2Configs = [] } = useQuery({
     queryKey: ['/api/pr2-clean', sectionData.sector],
-    queryFn: async () => {
-      const response = await fetch(`/api/pr2-clean?sector=${sectionData.sector}`);
-      if (!response.ok) throw new Error('Failed to fetch configurations');
-      return response.json();
-    },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    enabled: isOpen // Only fetch when popover is open
+    staleTime: 30 * 60 * 1000, // Cache for 30 minutes to prevent constant refetching
+    enabled: false // Disable automatic fetching to prevent infinite loops
   });
   
   // Fixed equipment list like patching system - CCTV/Jet Vac first

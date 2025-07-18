@@ -530,6 +530,19 @@ export default function PR2ConfigClean() {
   const debouncedSave = () => {
     if (!isEditing || !editId) return;
     
+    // Check if there are actual values to save (not empty strings)
+    const hasValues = 
+      formData.pricingOptions.some(opt => opt.value && opt.value.trim() !== '') ||
+      formData.quantityOptions.some(opt => opt.value && opt.value.trim() !== '') ||
+      formData.minQuantityOptions.some(opt => opt.value && opt.value.trim() !== '') ||
+      formData.rangeOptions.some(opt => opt.rangeEnd && opt.rangeEnd.trim() !== '');
+    
+    // Only save if there are actual values or color changes
+    if (!hasValues && formData.categoryColor === '#ffffff') {
+      console.log('🚫 Skipping save - no meaningful values to persist');
+      return;
+    }
+    
     // Clear previous timeout
     if (saveTimeout) {
       clearTimeout(saveTimeout);
