@@ -1978,12 +1978,7 @@ export default function Dashboard() {
       const minSize = parseInt(pipeSizeRange.rangeStart || '0');
       const maxSize = parseInt(pipeSizeRange.rangeEnd || '999');
       if (sectionPipeSize < minSize || sectionPipeSize > maxSize) {
-        console.log('❌ Section fails pipe size check:', {
-          itemNo: section.itemNo,
-          pipeSize: sectionPipeSize,
-          minSize,
-          maxSize
-        });
+        // Section fails pipe size check - logging removed
         return false;
       }
     }
@@ -2030,13 +2025,7 @@ export default function Dashboard() {
         const maxPercent = parseInt(percentageRange.rangeEnd || '100');
         
         if (maxDefectPercentage < minPercent || maxDefectPercentage > maxPercent) {
-          console.log('❌ Section fails DEFECT percentage check:', {
-            itemNo: section.itemNo,
-            maxDefectPercentage,
-            minPercent,
-            maxPercent,
-            defects: section.defects
-          });
+          // Section fails defect percentage check - logging removed
           return false;
         }
       }
@@ -2077,23 +2066,10 @@ export default function Dashboard() {
         const maxAllowedWaterLevel = getSectorWaterLevelLimit(currentSector.id);
         
         if (maxWaterLevel > maxAllowedWaterLevel) {
-          console.log('❌ Section fails WATER LEVEL check:', {
-            itemNo: section.itemNo,
-            maxWaterLevel,
-            maxAllowedWaterLevel,
-            sector: currentSector.id,
-            standardsApplied: currentSector.id === 'utilities' ? 'MSCC5/WRc' : `${currentSector.name} standards`,
-            defects: section.defects
-          });
+          // Section fails water level check - logging removed
           return false;
         } else {
-          console.log('✅ Section passes WATER LEVEL check:', {
-            itemNo: section.itemNo,
-            maxWaterLevel,
-            maxAllowedWaterLevel,
-            sector: currentSector.id,
-            standardsApplied: currentSector.id === 'utilities' ? 'MSCC5/WRc' : `${currentSector.name} standards`
-          });
+          // Section passes water level check - logging removed
         }
       }
     }
@@ -2329,14 +2305,9 @@ export default function Dashboard() {
     if (rawSectionData && rawSectionData.length > 0) {
       const item10 = rawSectionData.find(s => s.itemNo === 10);
       if (item10) {
-        console.log('🔍 Item 10 Raw Data:', {
-          itemNo: item10.itemNo,
-          defects: item10.defects,
-          id: item10.id,
-          dataExists: !!item10.defects
-        });
+        // Item 10 raw data check - logging removed
       } else {
-        console.log('🔍 Item 10 NOT FOUND in rawSectionData');
+        // Item 10 not found in raw data - logging removed
       }
     }
   }, [rawSectionData]);
@@ -2407,19 +2378,7 @@ export default function Dashboard() {
     return true;
   });
 
-  // DEBUG: Log data processing steps
-  console.log("DEBUG - Data Processing:", {
-    rawSectionDataLength: rawSectionData?.length || 0,
-    individualDefectsLength: individualDefects?.length || 0,
-    expandedSectionDataLength: expandedSectionData?.length || 0,
-    filteredDataLength: filteredData?.length || 0,
-    firstRawSection: rawSectionData?.[0] ? {
-      itemNo: rawSectionData[0].itemNo,
-      startMH: rawSectionData[0].startMH,
-      finishMH: rawSectionData[0].finishMH,
-      defects: rawSectionData[0].defects?.substring(0, 50)
-    } : null
-  });
+  // Debug data processing steps - logging removed to prevent infinite loop
 
   // Sort the filtered data by item number, then by letter suffix to ensure correct ordering
   const sectionData = [...filteredData].sort((a, b) => {
@@ -2813,9 +2772,9 @@ export default function Dashboard() {
       if (hasWarningTriangle) {
         if (isServiceDefect) serviceWarnings++;
         if (isStructuralDefect) structuralWarnings++;
-        console.log(`⚠️ Section ${section.itemNo}: warning triangle (service: ${isServiceDefect}, structural: ${isStructuralDefect})`);
+        // Section has warning triangle - logging removed to prevent infinite loop
       } else {
-        console.log(`✅ Section ${section.itemNo}: calculated cost (service: ${isServiceDefect}, structural: ${isStructuralDefect})`);
+        // Section has calculated cost - logging removed to prevent infinite loop
       }
     });
     
@@ -2826,17 +2785,7 @@ export default function Dashboard() {
     const serviceCompleted = previousCostState.serviceWarnings > 0 && serviceWarnings === 0;
     const structuralCompleted = previousCostState.structuralWarnings > 0 && structuralWarnings === 0;
     
-    // Debug trigger detection
-    console.log('🔍 Warning Triangle Detection:', {
-      serviceWarnings,
-      structuralWarnings,
-      previousServiceWarnings: previousCostState.serviceWarnings,
-      previousStructuralWarnings: previousCostState.structuralWarnings,
-      serviceCompleted,
-      structuralCompleted,
-      isInitialLoad,
-      autoCostMode
-    });
+    // Trigger detection - logging removed to prevent infinite loop
     
     // ONLY trigger when there's an actual completion (warnings → calculations)
     // AND it's not the initial dashboard load
@@ -2864,7 +2813,7 @@ export default function Dashboard() {
       setIsInitialLoad(false);
     }
     
-  }, [sectionData, calculateCost, previousCostState, autoCostMode, pr2Configurations, isInitialLoad]);
+  }, [sectionData, autoCostMode, pr2Configurations]);
 
   return (
     <div className="min-h-screen bg-slate-50">
