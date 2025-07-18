@@ -1722,12 +1722,22 @@ export default function Dashboard() {
       const dayRate = config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'))?.value;
       const runsPerShift = config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value;
       
-      // Return true if both values exist and are not empty strings
-      return dayRate && dayRate.trim() !== '' && runsPerShift && runsPerShift.trim() !== '';
+      // Return true if both values exist and are not empty strings AND dayRate is not "0"
+      return dayRate && dayRate.trim() !== '' && dayRate !== '0' && runsPerShift && runsPerShift.trim() !== '';
     });
     
-    // If no config with values found, fall back to first matching config
+    // If no config with valid values found, check if any config has Day Rate "0" and return null for warning triangle
     if (!pr2Config) {
+      const configWithZeroRate = matchingConfigs.find(config => {
+        const dayRate = config.pricingOptions?.find(opt => opt.label?.toLowerCase().includes('day rate'))?.value;
+        return dayRate === '0';
+      });
+      
+      if (configWithZeroRate) {
+        console.log('⚠️ Configuration has Day Rate £0, showing warning triangle:', configWithZeroRate.id);
+        return null; // Return null to show warning triangle
+      }
+      
       pr2Config = matchingConfigs[0];
       console.log('⚠️ Using first matching config despite empty values:', pr2Config.id);
     } else {
