@@ -2211,10 +2211,15 @@ export default function PR2ConfigClean() {
                     <Button
                       key={pipeSize}
                       variant={isCurrentConfig ? "default" : "outline"}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         console.log(`🚀 Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
-                        // Navigate to the correct configuration ID for this pipe size
-                        setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`);
+                        
+                        // Force immediate navigation without waiting for auto-save
+                        setTimeout(() => {
+                          setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`);
+                        }, 100);
                       }}
                       className={isCurrentConfig ? "bg-yellow-500 hover:bg-yellow-600" : ""}
                       disabled={false}
