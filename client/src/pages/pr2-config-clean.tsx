@@ -2296,8 +2296,8 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {/* Only Day Rate option for TP2 template */}
-                  {formData.pricingOptions?.slice(0, 1).map((option, index) => (
+                  {/* 5 patching options from 150mm template */}
+                  {formData.pricingOptions?.map((option, index) => (
                     <div key={option.id} className="flex items-center gap-4">
                       <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
                       <Label className="w-32 text-sm font-medium text-gray-700">
