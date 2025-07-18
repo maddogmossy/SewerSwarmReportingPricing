@@ -2192,8 +2192,7 @@ export default function PR2ConfigClean() {
         </Card>
 
         {/* Pipe Size Selection - Show for ALL categories */}
-        {(
-          <Card className="mb-6">
+        <Card className="mb-6">
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center gap-2">
                 <Ruler className="w-5 h-5" />
@@ -2283,7 +2282,6 @@ export default function PR2ConfigClean() {
               </p>
             </CardContent>
           </Card>
-        )}
 
         {/* Configuration Title */}
         <div className="mb-6">
