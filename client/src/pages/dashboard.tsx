@@ -1477,26 +1477,7 @@ export default function Dashboard() {
   // Stable condition for showing folder selector - don't depend on loading states that fluctuate
   const shouldShowEmptyState = renderingState === 'empty';
 
-  // Debug logging - enhanced for auto-navigation debugging
-  console.log("Dashboard Debug:", {
-    reportId,
-    reportIdParsed: reportId ? parseInt(reportId) : null,
-    hasCurrentUpload: !!currentUpload,
-    completedUploadsCount: completedUploads.length,
-    uploadsIds: completedUploads.map(u => u.id),
-    uploadsStatuses: uploads.map(u => ({ id: u.id, status: u.status })),
-    allUploadsLength: uploads.length,
-    condition1: completedUploads.length === 0,
-    condition2: !currentUpload,
-    shouldShowFolders: completedUploads.length === 0 || !currentUpload || (!sectionsLoading && !hasAuthenticData && !!currentUpload),
-    shouldShowEmptyState: shouldShowEmptyState,
-    renderingState: renderingState,
-    sectionsLoading: sectionsLoading,
-    hasAuthenticData: hasAuthenticData,
-    foldersCount: folders.length,
-    currentUploadId: currentUpload?.id,
-    filteredUploadsCount: filteredUploads.length
-  });
+  // Debug logging removed to prevent infinite loop
   
   // REMOVED: Aggressive cache clearing that was interfering with data display
   // The automatic cache clearing was preventing section data from being displayed
@@ -1512,11 +1493,10 @@ export default function Dashboard() {
   const { data: repairPricingData = [] } = useQuery({
     queryKey: ['pr2-configs', currentSector.id],
     queryFn: async () => {
-      console.log('🔍 Dashboard fetching PR2 configs for sector:', currentSector.id);
+      // Dashboard PR2 fetching logging removed  
       const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector: currentSector.id });
       const data = await response.json();
-      console.log('📥 Dashboard received PR2 configs:', data.length, 'configurations');
-      console.log('🎨 Configuration colors received:', data.map(c => ({ id: c.id, categoryColor: c.categoryColor, categoryName: c.categoryName })));
+      // Configuration colors logging removed
       return data;
     },
     enabled: !!currentSector?.id,
@@ -1572,8 +1552,8 @@ export default function Dashboard() {
   const pr2Configurations = repairPricingData;
   
   // Debug PR2 data loading
-  console.log('🔧 RepairPricingData from query:', repairPricingData);
-  console.log('🔧 PR2 Configurations assigned:', pr2Configurations);
+  // RepairPricingData logging removed
+  // PR2 configurations logging removed
 
   // Function to count defects in a section for TP2 patching cost calculation
   const countDefects = (defectsText: string): number => {
@@ -2257,23 +2237,11 @@ export default function Dashboard() {
   if (rawSectionData && rawSectionData.length > 0) {
     const section3 = rawSectionData.find(s => s.itemNo === 3);
     if (section3) {
-      console.log("WRc CHECK - Section 3:", {
-        recommendations: section3.recommendations?.substring(0, 100) + '...',
-        hasWRc: section3.recommendations?.includes('WRc')
-      });
+      // WRc check logging removed
     }
   }
 
-  // AUDIT TRAIL: Log data source for verification
-  console.log("AUDIT TRAIL:", {
-    dataSource: hasAuthenticData ? "AUTHENTIC_DATABASE" : "NO_DATA",
-    sectionCount: rawSectionData?.length || 0,
-    uploadId: currentUpload?.id,
-    uploadStatus: currentUpload?.status,
-    hasError: !!sectionsError,
-    errorMessage: sectionsError?.message || null,
-    timestamp: new Date().toISOString()
-  });
+  // Audit trail logging removed to prevent infinite loop
 
   // Fetch individual defects for multiple defects per section
   const { data: individualDefects = [], isLoading: defectsLoading } = useQuery<any[]>({
