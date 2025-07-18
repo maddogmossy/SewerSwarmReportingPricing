@@ -2376,6 +2376,13 @@ export default function PR2ConfigClean() {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
                         console.log(`🚀 LOADING CONFIG: ${pipeSize} configuration (ID: ${configId})`);
                         
+                        // CRITICAL: Cancel any pending debounced saves to prevent contamination
+                        if (saveTimeout) {
+                          clearTimeout(saveTimeout);
+                          setSaveTimeout(null);
+                          console.log('🛑 Cancelled pending debounced save to prevent data contamination');
+                        }
+                        
                         try {
                           // Load the specific configuration data directly
                           const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
@@ -2383,7 +2390,7 @@ export default function PR2ConfigClean() {
                           
                           console.log(`✅ Loaded config data for ID ${configId}:`, configData);
                           
-                          // Update form data with the loaded configuration
+                          // CRITICAL: Clear form state completely before loading new data
                           setFormData({
                             categoryId: configData.categoryId,
                             categoryName: configData.categoryName,
