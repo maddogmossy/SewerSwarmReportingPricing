@@ -1,10 +1,7 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Settings, Video, Waves } from "lucide-react";
-import { useLocation } from "wouter";
 
 interface CleaningOptionsPopoverProps {
   children: React.ReactNode;
@@ -24,15 +21,7 @@ interface CleaningOptionsPopoverProps {
 }
 
 export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [, setLocation] = useLocation();
-  
-  // Fetch existing configurations to check for existing setup
-  const { data: pr2Configs = [] } = useQuery({
-    queryKey: ['/api/pr2-clean', sectionData.sector],
-    staleTime: 30 * 60 * 1000, // Cache for 30 minutes to prevent constant refetching
-    enabled: false // Disable automatic fetching to prevent infinite loops
-  });
+  // Removed all useState and useQuery to eliminate infinite loops
   
   // Fixed equipment list like patching system - CCTV/Jet Vac first
   const cleansingEquipment = [
@@ -60,15 +49,14 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
 
   // Handle direct navigation to existing configuration or create new
   const handleDirectNavigation = (equipmentId: string) => {
-    setIsOpen(false);
     const sector = sectionData.sector;
     
     // Simple navigation without complex logic that could cause re-renders
-    setLocation(`/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}`);
+    window.location.href = `/pr2-config-clean?categoryId=${equipmentId}&sector=${sector}`;
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover>
       <PopoverTrigger asChild>
         {children}
       </PopoverTrigger>
