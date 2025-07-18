@@ -482,20 +482,8 @@ export default function Dashboard() {
   const [showExportWarning, setShowExportWarning] = useState(false);
   const [pendingExport, setPendingExport] = useState(false);
   
-  // Auto-cost calculation popup state
-  const [showServiceAutoCostDialog, setShowServiceAutoCostDialog] = useState(false);
-  const [showStructuralAutoCostDialog, setShowStructuralAutoCostDialog] = useState(false);
-  const [autoCostMode, setAutoCostMode] = useState<'manual' | 'automatic'>('manual');
-  
-  // Track previous costs to detect when last value is added
-  const [previousCostState, setPreviousCostState] = useState<{
-    serviceWarnings: number;
-    structuralWarnings: number;
-    totalSections: number;
-  }>({ serviceWarnings: 0, structuralWarnings: 0, totalSections: 0 });
-  
-  // Prevent false triggers on initial dashboard load
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  // REMOVED: Auto-cost popup system that was causing infinite loops
+  // All cost calculations continue working normally without popup dialogs
   
   // Filter state
   const [filters, setFilters] = useState({
@@ -2653,77 +2641,8 @@ export default function Dashboard() {
     };
   }, [autoCostMode, pr2Configurations, sectionData]);
 
-  // Auto-cost trigger logic - detect when last values are added  
-  useEffect(() => {
-    if (!sectionData?.length) return;
-    
-    // Debug logging removed - trigger system confirmed working
-    
-    let serviceWarnings = 0;
-    let structuralWarnings = 0;
-    
-    sectionData.forEach(section => {
-      // Detect service vs structural defects using existing logic
-      const isServiceDefect = requiresCleaning(section.defects);
-      const isStructuralDefect = requiresStructuralRepair(section.defects);
-      
-      // Check if section has PR2 configuration that would show calculated cost
-      const hasServiceConfig = isServiceDefect && pr2Configurations.find(config => 
-        config.categoryId === 'cctv-jet-vac' && checkSectionMeetsPR2Requirements(section, config)
-      );
-      const hasStructuralConfig = isStructuralDefect && pr2Configurations.find(config => 
-        config.categoryId === 'patching' && checkSectionMeetsPR2Requirements(section, config)
-      );
-      const hasCalculatedCost = hasServiceConfig || hasStructuralConfig;
-      const hasWarningTriangle = !hasCalculatedCost;
-      
-
-      
-      if (hasWarningTriangle) {
-        if (isServiceDefect) serviceWarnings++;
-        if (isStructuralDefect) structuralWarnings++;
-        // Section has warning triangle - logging removed to prevent infinite loop
-      } else {
-        // Section has calculated cost - logging removed to prevent infinite loop
-      }
-    });
-    
-    const totalSections = sectionData.length;
-    
-    // ONLY trigger when there's an actual transition from warnings to calculations
-    // (when user adds pricing data and warning triangles disappear)
-    const serviceCompleted = previousCostState.serviceWarnings > 0 && serviceWarnings === 0;
-    const structuralCompleted = previousCostState.structuralWarnings > 0 && structuralWarnings === 0;
-    
-    // Trigger detection - logging removed to prevent infinite loop
-    
-    // ONLY trigger when there's an actual completion (warnings → calculations)
-    // AND it's not the initial dashboard load
-    if (serviceCompleted && autoCostMode === 'manual' && !isInitialLoad) {
-      console.log('🚨 TRIGGERING SERVICE AUTO-COST DIALOG - Last service values calculated!');
-      setShowServiceAutoCostDialog(true);
-    }
-    
-    if (structuralCompleted && autoCostMode === 'manual' && !isInitialLoad) {
-      console.log('🚨 TRIGGERING STRUCTURAL AUTO-COST DIALOG - Last structural values calculated!');
-      setShowStructuralAutoCostDialog(true);
-    }
-    
-    // Test trigger removed - popup system confirmed working
-    
-    // Update previous state and mark initial load as complete
-    setPreviousCostState({
-      serviceWarnings,
-      structuralWarnings,
-      totalSections
-    });
-    
-    // Mark initial load as complete after first state update
-    if (isInitialLoad) {
-      setIsInitialLoad(false);
-    }
-    
-  }, [sectionData, autoCostMode, pr2Configurations]);
+  // REMOVED: Auto-cost trigger useEffect was causing infinite loops
+  // Cost calculations continue working normally without popup dialogs
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -3719,105 +3638,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Service Cost Dialog */}
-      <Dialog open={showServiceAutoCostDialog} onOpenChange={setShowServiceAutoCostDialog}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-blue-600 text-center">🧹 Service Cost Calculation</DialogTitle>
-            <DialogDescription className="text-center">
-              Would you like to automatically calculate service costs using your approved formula?
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <p className="text-sm text-blue-800 font-medium mb-2">
-                📊 Approved Service Cost Formula:
-              </p>
-              <ul className="text-xs text-blue-700 space-y-1">
-                <li><strong>Service Cost:</strong> Day Rate ÷ Qualifying Sections = Cost per section</li>
-                <li><strong>Qualifying Criteria:</strong> Excludes Grade 0 sections from calculations</li>
-              </ul>
-            </div>
-            
-            <div className="text-center space-y-3">
-              <p className="text-sm text-slate-600">
-                Choose your preferred calculation mode:
-              </p>
-            </div>
-          </div>
-          <DialogFooter className="flex gap-2 justify-center">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setAutoCostMode('manual');
-                setShowServiceAutoCostDialog(false);
-              }}
-              className="w-32"
-            >
-              🔧 Manual Mode
-            </Button>
-            <Button
-              onClick={() => {
-                setAutoCostMode('automatic');
-                setShowServiceAutoCostDialog(false);
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-32"
-            >
-              ⚡ Auto Calculate
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Structural Cost Dialog */}
-      <Dialog open={showStructuralAutoCostDialog} onOpenChange={setShowStructuralAutoCostDialog}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-orange-600 text-center">🔧 Structural Cost Calculation</DialogTitle>
-            <DialogDescription className="text-center">
-              Would you like to automatically calculate structural costs using your approved formula?
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-6">
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
-              <p className="text-sm text-orange-800 font-medium mb-2">
-                📊 Approved Structural Cost Formula:
-              </p>
-              <ul className="text-xs text-orange-700 space-y-1">
-                <li><strong>Structural Cost:</strong> Day Rate ÷ Qualifying Sections = Cost per section</li>
-                <li><strong>Qualifying Criteria:</strong> Excludes Grade 0 sections from calculations</li>
-              </ul>
-            </div>
-            
-            <div className="text-center space-y-3">
-              <p className="text-sm text-slate-600">
-                Choose your preferred calculation mode:
-              </p>
-            </div>
-          </div>
-          <DialogFooter className="flex gap-2 justify-center">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setAutoCostMode('manual');
-                setShowStructuralAutoCostDialog(false);
-              }}
-              className="w-32"
-            >
-              🔧 Manual Mode
-            </Button>
-            <Button
-              onClick={() => {
-                setAutoCostMode('automatic');
-                setShowStructuralAutoCostDialog(false);
-              }}
-              className="bg-orange-600 hover:bg-orange-700 text-white w-32"
-            >
-              ⚡ Auto Calculate
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* REMOVED: Auto-cost popup dialogs that were causing infinite loops */}
     </div>
   );
 }
