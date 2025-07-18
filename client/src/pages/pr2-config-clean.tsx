@@ -2197,7 +2197,7 @@ export default function PR2ConfigClean() {
                 ))}
               </div>
               <p className="text-sm text-gray-600 mt-2">
-                Select pipe size to edit pricing: Currently editing <strong>{selectedPipeSize}</strong> configuration
+                Select pipe size to edit pricing: Currently editing <strong>{selectedPipeSize}</strong> configuration (ID: {editId})
               </p>
             </CardContent>
           </Card>
