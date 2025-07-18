@@ -2235,10 +2235,10 @@ export default function PR2ConfigClean() {
                         e.stopPropagation();
                         console.log(`🚀 Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
                         
-                        // Force immediate navigation without waiting for auto-save
-                        setTimeout(() => {
-                          setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`);
-                        }, 100);
+                        // Direct navigation to the configuration
+                        const newUrl = `/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`;
+                        console.log(`🔗 Setting location to:`, newUrl);
+                        setLocation(newUrl);
                       }}
                       className={isCurrentConfig ? "bg-yellow-500 hover:bg-yellow-600" : ""}
                       disabled={false}
