@@ -129,12 +129,12 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       const sector = req.query.sector as string;
       const categoryId = req.query.categoryId as string;
       
-      console.log(`🔍 API request received for sector: ${sector}, categoryId: ${categoryId}`);
+      // API request logging removed
       
       let configurations;
       if (sector && categoryId) {
         // Filter by userId, sector, and categoryId using single sector field
-        console.log(`🔍 Filtering by userId: "test-user", sector: "${sector}", AND categoryId: "${categoryId}"`);
+        // Filtering logging removed
         try {
           configurations = await db
             .select()
@@ -150,7 +150,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         }
       } else if (categoryId) {
         // Filter by userId and categoryId only
-        console.log(`🔍 Filtering by userId: "test-user" AND categoryId: "${categoryId}"`);
+        // Filtering logging removed
         configurations = await db
           .select()
           .from(pr2Configurations)
@@ -160,7 +160,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           ));
       } else if (sector) {
         // Filter by both userId and sector using single sector field
-        console.log(`🔍 Filtering by userId: "test-user" AND sector: "${sector}"`);
+        // Filtering logging removed
         configurations = await db
           .select()
           .from(pr2Configurations)
@@ -170,17 +170,14 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           ));
       } else {
         // If no sector specified, return all configurations for user
-        console.log(`🔍 Filtering by userId: "test-user" only (no sector filter)`);
+        // Filtering logging removed
         configurations = await db
           .select()
           .from(pr2Configurations)
           .where(eq(pr2Configurations.userId, "test-user"));
       }
       
-      console.log(`✅ Query returned ${configurations.length} configurations`);
-      if (configurations.length > 0) {
-        console.log(`📊 Configuration details:`, configurations.map(c => `ID: ${c.id}, Sector: ${c.sector}`));
-      }
+      // Query result logging removed
       
       res.json(configurations);
     } catch (error) {
@@ -193,7 +190,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
   app.get('/api/pr2-clean/category/:categoryId', async (req, res) => {
     try {
       const categoryId = req.params.categoryId;
-      console.log(`🔍 API request for category: ${categoryId}`);
+      // API request logging removed
       
       const configurations = await db
         .select()
@@ -204,7 +201,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         ))
         .orderBy(desc(pr2Configurations.id)); // Most recent first
       
-      console.log(`✅ Found ${configurations.length} configurations for category ${categoryId}`);
+      // Configuration count logging removed
       res.json(configurations);
     } catch (error) {
       console.error('Error fetching configurations by category:', error);
@@ -216,7 +213,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
   app.get('/api/pr2-clean/:id', async (req, res) => {
     try {
       const configId = parseInt(req.params.id);
-      console.log(`🔍 GET request for configuration ID: ${configId}`);
+      // GET request logging removed
       
       const [configuration] = await db
         .select()
@@ -224,11 +221,11 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         .where(eq(pr2Configurations.id, configId));
       
       if (!configuration) {
-        console.log(`❌ Configuration ${configId} not found`);
+        // Configuration not found logging removed
         return res.status(404).json({ error: 'Configuration not found' });
       }
       
-      console.log(`✅ Loading clean PR2 configuration ${configId} for sector:`, configuration.sector);
+      // Configuration loading logging removed
       
       res.json(configuration);
     } catch (error) {
@@ -240,7 +237,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
   // POST create new clean PR2 configuration
   app.post('/api/pr2-clean', async (req, res) => {
     try {
-      console.log('📝 Clean PR2 POST request body:', req.body);
+      // POST request logging removed
       
       const {
         categoryName,
