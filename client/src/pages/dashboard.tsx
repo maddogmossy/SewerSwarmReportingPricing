@@ -2793,9 +2793,9 @@ export default function Dashboard() {
       const isServiceDefect = requiresCleaning(section.defects);
       const isStructuralDefect = requiresStructuralRepair(section.defects);
       
-      // Check if cost column shows warning triangle (⚠️)
-      const cost = calculateCost(section);
-      const hasWarningTriangle = cost === "⚠️";
+      // Check if section has PR2 configuration that would show calculated cost
+      const hasCalculatedCost = canCalculatePR2Cost(section);
+      const hasWarningTriangle = !hasCalculatedCost;
       
 
       
@@ -2812,7 +2812,16 @@ export default function Dashboard() {
     const serviceCompleted = previousCostState.serviceWarnings > 0 && serviceWarnings === 0;
     const structuralCompleted = previousCostState.structuralWarnings > 0 && structuralWarnings === 0;
     
-    // Removed excessive trigger logging for performance
+    // Debug trigger detection
+    console.log('🔍 Trigger check:', {
+      serviceCompleted,
+      structuralCompleted,
+      serviceWarnings,
+      structuralWarnings,
+      previousServiceWarnings: previousCostState.serviceWarnings,
+      previousStructuralWarnings: previousCostState.structuralWarnings,
+      autoCostMode
+    });
     
     // ONLY trigger when there's an actual completion (warnings → calculations)
     if (serviceCompleted && autoCostMode === 'manual') {
