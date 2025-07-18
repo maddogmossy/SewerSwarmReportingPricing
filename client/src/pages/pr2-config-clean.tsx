@@ -2307,10 +2307,11 @@ export default function PR2ConfigClean() {
                         <Label className="text-xs">Length (Max)</Label>
                         <Input
                           placeholder="length"
-                          value={formData.rangeOptions?.[0]?.rangeEnd || ""}
+                          value={formData.rangeOptions?.[index]?.rangeEnd || ""}
                           onChange={(e) => {
-                            console.log(`📏 Length input ${index + 1}:`, e.target.value);
-                            updateRangeOption(formData.rangeOptions?.[0]?.id || 'range_length', 'rangeEnd', e.target.value);
+                            console.log(`📏 Length input ${index + 1} (${option.label}):`, e.target.value);
+                            const rangeId = formData.rangeOptions?.[index]?.id || `range_length_${index + 1}`;
+                            updateRangeOption(rangeId, 'rangeEnd', e.target.value);
                           }}
                           className="w-20 h-8 text-sm"
                           disabled={false}
