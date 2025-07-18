@@ -544,10 +544,7 @@ export default function PR2ConfigClean() {
       ...prev,
       rangeOptions: prev.rangeOptions.map(opt => {
         if (opt.id === optionId) {
-          // When setting rangeEnd (max value), automatically set rangeStart to "0" for 0-X ranges
-          if (field === 'rangeEnd' && value.trim() !== '') {
-            return { ...opt, rangeStart: '0', rangeEnd: value };
-          }
+          // Simple update without validation for TP2 template
           return { ...opt, [field]: value };
         }
         return opt;
