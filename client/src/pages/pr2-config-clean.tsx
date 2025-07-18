@@ -599,6 +599,9 @@ export default function PR2ConfigClean() {
   const [editingPricing, setEditingPricing] = useState<PricingOption | null>(null);
   const [editingQuantity, setEditingQuantity] = useState<PricingOption | null>(null);
   const [editingMinQuantity, setEditingMinQuantity] = useState<PricingOption | null>(null);
+  
+  // TP2 Pipe Size Selection State
+  const [selectedPipeSize, setSelectedPipeSize] = useState<string>('150mm');
   const [editingRange, setEditingRange] = useState<RangeOption | null>(null);
   
   // Sector selection state
@@ -2171,13 +2174,102 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
+        {/* TP2 Pipe Size Selection - Only show for patching category */}
+        {categoryId === 'patching' && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-gray-900 flex items-center gap-2">
+                <Ruler className="w-5 h-5" />
+                Pipe Size Selection
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-4">
+                {['150mm', '225mm', '300mm'].map((pipeSize) => (
+                  <Button
+                    key={pipeSize}
+                    variant={selectedPipeSize === pipeSize ? "default" : "outline"}
+                    onClick={() => setSelectedPipeSize(pipeSize)}
+                    className={selectedPipeSize === pipeSize ? "bg-yellow-500 hover:bg-yellow-600" : ""}
+                  >
+                    {pipeSize}
+                  </Button>
+                ))}
+              </div>
+              <p className="text-sm text-gray-600 mt-2">
+                Select pipe size to edit pricing: Currently editing <strong>{selectedPipeSize}</strong> configuration
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Configuration Title */}
         <div className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
         </div>
 
-        {/* Dynamic Pipe Size Configuration Panels - Stacked by Size */}
-        {getPipeSizeConfigurations().length > 0 ? (
+        {/* TP2 Unified Configuration - Show pipe size specific interface for patching */}
+        {categoryId === 'patching' && (
+          <div key="unified-tp2-config">
+            {/* TP2 Interface with 5 Pricing Options */}
+            <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                TP2 - Patching Configuration ({selectedPipeSize})
+              </h3>
+              
+              {/* Purple Window: 5 Patching Options */}
+              <Card className="bg-purple-50 border-purple-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
+                    <Coins className="w-4 h-4" />
+                    Patching Options - {selectedPipeSize}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {/* 5 patching options from 150mm template */}
+                  {formData.pricingOptions?.map((option, index) => (
+                    <div key={option.id} className="flex items-center gap-4">
+                      <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
+                      <Label className="w-32 text-sm font-medium text-gray-700">
+                        {option.label}
+                      </Label>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Label className="text-xs">£</Label>
+                        <Input
+                          placeholder="cost"
+                          value={option.value || ""}
+                          onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
+                          className="w-16 h-8 text-sm"
+                        />
+                      </div>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Label className="text-xs">Min Qty</Label>
+                        <Input
+                          placeholder="min"
+                          value={formData.minQuantityOptions?.[index]?.value || ""}
+                          onChange={(e) => handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[index]?.id, e.target.value)}
+                          className="w-12 h-8 text-sm"
+                        />
+                      </div>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Label className="text-xs">Length (Max)</Label>
+                        <Input
+                          placeholder="length"
+                          value={formData.rangeOptions?.[index]?.rangeEnd || ""}
+                          onChange={(e) => updateRangeOption(formData.rangeOptions?.[index]?.id || '', 'rangeEnd', e.target.value)}
+                          className="w-20 h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* Regular configurations for non-patching categories */}
+        {categoryId !== 'patching' && getPipeSizeConfigurations().length > 0 && 
           getPipeSizeConfigurations().map((pipeSizeConfig) => {
             console.log(`🎨 Rendering configuration dropdown for ID: ${pipeSizeConfig.id}, pipeSize: ${pipeSizeConfig.pipeSize}`);
             
@@ -2498,10 +2590,10 @@ export default function PR2ConfigClean() {
           </CollapsibleContent>
         </Collapsible>
           );
-        })
-        ) : (
-          /* General Configuration Interface (for configurations like ID 152 without pipe size) */
-          isEditing && editId && (
+        })}
+
+        {/* General Configuration Interface (for non-pipe-size configurations) */}
+        {categoryId !== 'patching' && getPipeSizeConfigurations().length === 0 && isEditing && editId && (
             <div className="space-y-4">
               {/* Conditional rendering based on template type */}
               {getTemplateType(categoryId) === 'TP2' ? (
@@ -2749,8 +2841,7 @@ export default function PR2ConfigClean() {
                 </div>
               )}
             </div>
-          )
-        )}
+          )})
 
         {/* Note: Configuration panels now handled by Dynamic Pipe Size Configuration Panels above */}
       </div>
