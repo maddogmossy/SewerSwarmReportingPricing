@@ -127,6 +127,30 @@ export default function PR2ConfigClean() {
     enabled: !!categoryId,
   });
   
+  // Load existing configuration for editing (moved up to avoid initialization error)
+  const { data: existingConfig, error: configError } = useQuery({
+    queryKey: ['/api/pr2-clean', editId],
+    queryFn: async () => {
+      try {
+        const response = await apiRequest('GET', `/api/pr2-clean/${editId}`);
+        return response.json();
+      } catch (error: any) {
+        // If configuration not found (404), redirect to create mode
+        if (error.message && error.message.includes('404')) {
+          console.log(`⚠️ Configuration ${editId} not found, redirecting to create mode`);
+          const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}`;
+          setLocation(newUrl);
+          return null;
+        }
+        throw error;
+      }
+    },
+    enabled: isEditing && !!editId,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true, // Refetch when component mounts
+    retry: false, // Don't retry on 404 errors
+  });
+
   // Determine category name based on categoryId and pipe size for dynamic naming
   const getCategoryName = (categoryId: string) => {
     // If we have actual configuration data loaded, use its name
@@ -613,29 +637,7 @@ export default function PR2ConfigClean() {
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
 
-  // Load existing configuration for editing
-  const { data: existingConfig, error: configError } = useQuery({
-    queryKey: ['/api/pr2-clean', editId],
-    queryFn: async () => {
-      try {
-        const response = await apiRequest('GET', `/api/pr2-clean/${editId}`);
-        return response.json();
-      } catch (error: any) {
-        // If configuration not found (404), redirect to create mode
-        if (error.message && error.message.includes('404')) {
-          console.log(`⚠️ Configuration ${editId} not found, redirecting to create mode`);
-          const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}`;
-          setLocation(newUrl);
-          return null;
-        }
-        throw error;
-      }
-    },
-    enabled: isEditing && !!editId,
-    staleTime: 0, // Always fetch fresh data
-    refetchOnMount: true, // Refetch when component mounts
-    retry: false, // Don't retry on 404 errors
-  });
+  // Configuration loading moved above getCategoryName function
 
   // Admin controls
   const { data: adminData } = useQuery({
