@@ -2149,7 +2149,41 @@ export default function PR2ConfigClean() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Custom Color Input Only */}
+            {/* Pastel Color Grid */}
+            <div className="grid grid-cols-6 gap-3 mb-4">
+              {[
+                '#fce7f3', // pale pink
+                '#fdf2f8', // lighter pink
+                '#f3e8ff', // pale purple
+                '#ede9fe', // lavender
+                '#ddd6fe', // light purple
+                '#e0e7ff', // pale blue
+                '#dbeafe', // light blue
+                '#bfdbfe', // sky blue
+                '#bae6fd', // powder blue
+                '#a7f3d0', // mint green
+                '#bbf7d0', // pale green
+                '#d1fae5', // light green
+                '#fef3c7', // pale yellow
+                '#fde68a', // light yellow
+                '#fed7aa', // peach
+                '#ffedd5', // pale orange
+                '#fecaca', // light red
+                '#f3f4f6'  // light gray
+              ].map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setFormData(prev => ({ ...prev, categoryColor: color }))}
+                  className={`w-8 h-8 rounded-full border-2 cursor-pointer transition-all hover:scale-110 ${
+                    formData.categoryColor === color ? 'border-gray-600 ring-2 ring-gray-300' : 'border-gray-200 hover:border-gray-400'
+                  }`}
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+            </div>
+            
+            {/* Custom Color Input */}
             <div className="border-t pt-4">
               <div className="flex items-center gap-3">
                 <Label htmlFor="custom-color" className="text-sm font-medium text-gray-700">
@@ -2166,10 +2200,9 @@ export default function PR2ConfigClean() {
                   {formData.categoryColor}
                 </span>
               </div>
-            </div>
-            
-            <div className="mt-3 text-sm text-gray-600">
-              <p>Select a preset color or create your own custom color using the color picker</p>
+              <p className="text-xs text-gray-500 mt-2">
+                Select a pastel color above or create your own custom color using the color picker
+              </p>
             </div>
           </CardContent>
         </Card>
