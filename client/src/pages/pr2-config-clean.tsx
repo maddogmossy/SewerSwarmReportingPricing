@@ -2246,18 +2246,6 @@ export default function PR2ConfigClean() {
         {/* Configuration Title */}
         <div className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">{formData.categoryName || 'Price Configuration'}</h2>
-          
-          {/* TEST INPUT TO ISOLATE ISSUE */}
-          <div className="mb-4 p-4 border-2 border-red-300 bg-red-50">
-            <h3 className="text-sm font-bold text-red-700 mb-2">🚨 TEST INPUT - Can you type here?</h3>
-            <input
-              type="text"
-              placeholder="Type here to test..."
-              className="border-2 border-blue-500 bg-white p-2 text-black"
-              onChange={(e) => console.log('🧪 TEST INPUT TYPING:', e.target.value)}
-              style={{ zIndex: 9999, position: 'relative' }}
-            />
-          </div>
         </div>
 
         {/* TP2 Unified Configuration - Show pipe size specific interface for patching */}
@@ -2319,9 +2307,15 @@ export default function PR2ConfigClean() {
                         <Label className="text-xs">Length (Max)</Label>
                         <Input
                           placeholder="length"
-                          value={formData.rangeOptions?.[index]?.rangeEnd || ""}
-                          onChange={(e) => updateRangeOption(formData.rangeOptions?.[index]?.id || '', 'rangeEnd', e.target.value)}
+                          value={formData.rangeOptions?.[0]?.rangeEnd || ""}
+                          onChange={(e) => {
+                            console.log(`📏 Length input ${index + 1}:`, e.target.value);
+                            updateRangeOption(formData.rangeOptions?.[0]?.id || 'range_length', 'rangeEnd', e.target.value);
+                          }}
                           className="w-20 h-8 text-sm"
+                          disabled={false}
+                          readOnly={false}
+                          data-testid={`length-input-${index}`}
                         />
                       </div>
                     </div>
