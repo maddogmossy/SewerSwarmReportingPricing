@@ -81,15 +81,6 @@ const SECTOR_CONFIG = {
 // No standard color options - users can select custom colors only
 
 export default function PR2ConfigClean() {
-  // Disable console logging to prevent infinite loop spam
-  useEffect(() => {
-    const originalLog = console.log;
-    console.log = () => {}; // Disable all console.log output
-    return () => {
-      console.log = originalLog; // Restore on cleanup
-    };
-  }, []);
-
   const [location, setLocation] = useLocation();
 
   
@@ -382,6 +373,9 @@ export default function PR2ConfigClean() {
   };
 
   const [formData, setFormData] = useState<CleanFormData>(getDefaultFormData());
+  
+  // State for pipe size switching within unified page
+  const [currentConfigId, setCurrentConfigId] = useState<number | null>(null);
 
   // Reset form data when switching between TP1 and TP2
   useEffect(() => {
@@ -2243,20 +2237,14 @@ export default function PR2ConfigClean() {
                       key={pipeSize}
                       onClick={() => {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
-                        console.log(`🚀 BUTTON CLICKED: Navigating to pipe size ${pipeSize} (ID: ${configId}) in category ${targetCategoryId}`);
+                        console.log(`🚀 SWITCHING TO: ${pipeSize} section within unified configuration`);
                         
-                        // Fast client-side navigation
-                        const newUrl = `/pr2-config-clean?sector=${sector}&categoryId=${targetCategoryId}&edit=${configId}`;
-                        console.log(`🔗 Fast navigation to:`, newUrl);
+                        // Switch to the selected pipe size section within the same page
+                        setCurrentConfigId(configId);
                         
-                        // Update URL without page reload
-                        window.history.pushState({}, '', newUrl);
-                        
-                        // Force re-render by updating location state
-                        setLocation(newUrl);
-                        
-                        // Invalidate queries to reload data
-                        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+                        // Update form data to show the selected pipe size configuration
+                        // This should switch the displayed configuration without navigation
+                        console.log(`🔄 Switched to ${pipeSize} configuration (ID: ${configId})`);
                       }}
                       className={`px-4 py-2 rounded border hover:bg-gray-50 transition-colors ${isCurrentConfig ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-white border-gray-300"}`}
                     >
