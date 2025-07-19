@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 
 import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp } from 'lucide-react';
+import { DevLabel } from '@/utils/DevLabel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -2642,7 +2643,8 @@ export default function PR2ConfigClean() {
               <div className="flex gap-4 p-4 border rounded-lg bg-gray-50 w-full">
                 
                 {/* Blue Window: Day Rate */}
-                <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0">
+                <Card className="relative bg-blue-50 border-blue-200 w-56 flex-shrink-0">
+                  <DevLabel id="blue-window-pricing" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
                       <Coins className="w-3 h-3" />
@@ -2666,7 +2668,8 @@ export default function PR2ConfigClean() {
                 </Card>
 
                 {/* Math Window */}
-                <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
+                <Card className="relative bg-gray-50 border-gray-200 w-20 flex-shrink-0">
+                  <DevLabel id="grey-window-math" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
                       <Calculator className="w-3 h-3 mr-1" />
@@ -2685,7 +2688,8 @@ export default function PR2ConfigClean() {
                 </Card>
 
                 {/* Green Window: Runs per Shift */}
-                <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
+                <Card className="relative bg-green-50 border-green-200 w-60 flex-shrink-0">
+                  <DevLabel id="green-window-quantity" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-green-700 text-xs flex items-center gap-1">
                       <Package className="w-3 h-3" />
@@ -2738,7 +2742,8 @@ export default function PR2ConfigClean() {
                 </Card>
 
                 {/* Orange Window: Min Quantity */}
-                <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
+                <Card className="relative bg-orange-50 border-orange-200 w-52 flex-shrink-0">
+                  <DevLabel id="orange-window-minquantity" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
                       <Target className="w-3 h-3" />
@@ -2791,7 +2796,8 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Purple Window: Ranges */}
-              <Card className="bg-purple-50 border-purple-200 flex-1">
+              <Card className="relative bg-purple-50 border-purple-200 flex-1">
+                <DevLabel id="purple-window-ranges" />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
                     <BarChart3 className="w-3 h-3" />
