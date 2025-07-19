@@ -358,7 +358,7 @@ export default function Upload() {
 
   return (
     <div className="relative container mx-auto p-6 space-y-6">
-      <DevLabel id="p2" />
+      <DevLabel id="p2" position="top-right" />
       {/* Navigation */}
       <div className="flex gap-4 mb-6">
         <Link to="/">
@@ -422,6 +422,15 @@ export default function Upload() {
 
                     const IconComponent = sector.icon;
 
+                    const sectorIdMap = {
+                      'utilities': 8,
+                      'adoption': 9, 
+                      'highways': 10,
+                      'domestic': 11,
+                      'insurance': 12,
+                      'construction': 13
+                    };
+
                     return (
                       <div
                         key={sector.id}
@@ -429,6 +438,7 @@ export default function Upload() {
                         style={{ borderColor: sectorColor }}
                         onClick={() => setSelectedSector(sector.id)}
                       >
+                        <DevLabel id={sectorIdMap[sector.id as keyof typeof sectorIdMap]?.toString() || sector.id} />
                         {/* Title positioned at top center cutting through border */}
                         <div 
                           className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-6 py-2 rounded-lg flex items-center gap-2 font-bold text-sm bg-white border-2 shadow-sm min-w-[200px] justify-center text-black"
