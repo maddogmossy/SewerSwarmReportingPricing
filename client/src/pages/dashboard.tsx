@@ -599,11 +599,21 @@ export default function Dashboard() {
   const columns = useMemo(() => {
     const hiddenCount = hiddenColumns.size;
     
-    // Calculate dynamic widths - only change for "Hide All" case
+    // Calculate dynamic widths - responsive sizing based on hidden columns
     const getColumnWidth = (key: string, baseWidth: string) => {
-      // Only expand content columns when "Hide All" is clicked (8+ columns hidden) 
-      if ((key === 'defects' || key === 'recommendations') && hiddenCount >= 8) {
-        return 'w-[32rem]'; // Extra expanded width for Hide All (even more room)
+      // When "Hide All" is clicked (8+ columns hidden), optimize all columns
+      if (hiddenCount >= 8) {
+        // Content columns get maximum space
+        if (key === 'defects' || key === 'recommendations') {
+          return 'w-[32rem]'; // Maximum width for content
+        }
+        // All other columns become ultra-tight
+        if (key === 'itemNo') return 'w-8';
+        if (key === 'startMH' || key === 'finishMH') return 'w-12';
+        if (key === 'severityGrade' || key === 'srmGrading' || key === 'adoptable') return 'w-12';
+        if (key === 'cost') return 'w-12';
+        // Any remaining columns
+        return 'w-10';
       }
       // For all other cases, use consistent base width
       return baseWidth;
