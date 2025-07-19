@@ -2221,7 +2221,8 @@ export default function PR2ConfigClean() {
           )}
 
         {/* Sector Selection Checkboxes */}
-        <Card className="mb-6">
+        <Card className="mb-6 relative">
+          <DevLabel id="db3" />
           <CardHeader>
             <CardTitle className="text-gray-900 flex items-center gap-2">
               <Building className="w-5 h-5" />
@@ -2341,7 +2342,8 @@ export default function PR2ConfigClean() {
         </Card>
 
         {/* Pipe Size Selection - Show for ALL categories */}
-        <Card className="mb-6">
+        <Card className="mb-6 relative">
+            <DevLabel id="db1" />
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center gap-2">
                 <Ruler className="w-5 h-5" />
@@ -2467,7 +2469,8 @@ export default function PR2ConfigClean() {
           </Card>
 
         {/* Configuration Title */}
-        <div className="mb-6">
+        <div className="mb-6 relative">
+          <DevLabel id="db2" />
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             {(() => {
               // Correct the logic for loading the right template
@@ -3168,7 +3171,8 @@ export default function PR2ConfigClean() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="relative">
+          <DevLabel id="db4" />
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Configuration</AlertDialogTitle>
             <AlertDialogDescription>
