@@ -49,6 +49,7 @@ import {
 } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import type { FileUpload as FileUploadType } from "@shared/schema";
+import { DevLabel } from '@/utils/DevLabel';
 
 // Function to detect if defects require cleaning vs structural repair
 const requiresCleaning = (defects: string): boolean => {
@@ -3155,11 +3156,12 @@ export default function Dashboard() {
         ) : (
           <div className="space-y-8">
             {/* Section Inspection Data Table */}
-            <Card>
+            <Card className="relative">
+              <DevLabel id="dashboard-sections-table" />
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border-2 ${
+                    <div className={`relative flex items-center gap-2 px-3 py-1 rounded-lg border-2 ${
                       currentSector.id === 'utilities' ? 'border-blue-500 bg-blue-50' :
                       currentSector.id === 'adoption' ? 'border-green-500 bg-green-50' :
                       currentSector.id === 'highways' ? 'border-orange-500 bg-orange-50' :
@@ -3167,6 +3169,7 @@ export default function Dashboard() {
                       currentSector.id === 'construction' ? 'border-purple-500 bg-purple-50' :
                       'border-yellow-500 bg-yellow-50'
                     }`}>
+                      <DevLabel id={`dashboard-sector-${currentSector.id}`} />
                       {currentSector.id === 'utilities' && <Building className="h-5 w-5 text-blue-600" />}
                       {currentSector.id === 'adoption' && <CheckCircle className="h-5 w-5 text-green-600" />}
                       {currentSector.id === 'highways' && <Car className="h-5 w-5 text-orange-600" />}

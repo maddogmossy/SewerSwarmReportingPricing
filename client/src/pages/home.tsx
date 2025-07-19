@@ -30,6 +30,7 @@ import { Link } from "wouter";
 import LoginModal from "@/components/login-modal";
 import RegistrationModal from "@/components/registration-modal";
 import PricingModal from "@/components/pricing-modal";
+import { DevLabel } from '@/utils/DevLabel';
 
 export default function Home() {
   const [showLogin, setShowLogin] = useState(false);
@@ -277,7 +278,8 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               <Link to="/upload">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <DevLabel id="home-upload-card" />
                   <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
                       <Upload className="h-6 w-6 text-blue-600" />
@@ -291,7 +293,8 @@ export default function Home() {
               </Link>
 
               <Link to="/dashboard">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <DevLabel id="home-dashboard-card" />
                   <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
                       <BarChart3 className="h-6 w-6 text-emerald-600" />
@@ -305,7 +308,8 @@ export default function Home() {
               </Link>
 
               <Link to="/sector-pricing">
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <DevLabel id="home-pricing-settings-card" />
                   <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
                       <Settings className="h-6 w-6 text-orange-600" />
