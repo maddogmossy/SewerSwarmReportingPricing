@@ -3454,11 +3454,29 @@ export default function Dashboard() {
                               }}
                               style={{
                                 width: column.key === 'projectNo' ? '50px !important' : 
-                                      column.key === 'cost' ? '80px !important' : undefined,
+                                      column.key === 'cost' ? '80px !important' : 
+                                      column.key === 'itemNo' ? '40px !important' :
+                                      column.key === 'pipeSize' ? '50px !important' :
+                                      column.key === 'totalLength' ? '60px !important' :
+                                      column.key === 'severityGrade' ? '50px !important' :
+                                      column.key === 'adoptable' ? '70px !important' :
+                                      (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
                                 maxWidth: column.key === 'projectNo' ? '50px !important' : 
-                                         column.key === 'cost' ? '80px !important' : undefined,
+                                         column.key === 'cost' ? '80px !important' : 
+                                         column.key === 'itemNo' ? '40px !important' :
+                                         column.key === 'pipeSize' ? '50px !important' :
+                                         column.key === 'totalLength' ? '60px !important' :
+                                         column.key === 'severityGrade' ? '50px !important' :
+                                         column.key === 'adoptable' ? '70px !important' :
+                                         (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
                                 minWidth: column.key === 'projectNo' ? '50px !important' : 
-                                         column.key === 'cost' ? '80px !important' : undefined
+                                         column.key === 'cost' ? '80px !important' : 
+                                         column.key === 'itemNo' ? '40px !important' :
+                                         column.key === 'pipeSize' ? '50px !important' :
+                                         column.key === 'totalLength' ? '60px !important' :
+                                         column.key === 'severityGrade' ? '50px !important' :
+                                         column.key === 'adoptable' ? '70px !important' :
+                                         (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important'
                               }}
                               className={`
                                 border border-slate-300 font-semibold text-xs align-middle ${column.width}
@@ -3504,16 +3522,34 @@ export default function Dashboard() {
                                 key={column.key} 
                                 style={{
                                   width: column.key === 'projectNo' ? '50px !important' : 
-                                        column.key === 'cost' ? '80px !important' : undefined,
+                                        column.key === 'cost' ? '80px !important' : 
+                                        column.key === 'itemNo' ? '40px !important' :
+                                        column.key === 'pipeSize' ? '50px !important' :
+                                        column.key === 'totalLength' ? '60px !important' :
+                                        column.key === 'severityGrade' ? '50px !important' :
+                                        column.key === 'adoptable' ? '70px !important' :
+                                        (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
                                   maxWidth: column.key === 'projectNo' ? '50px !important' : 
-                                           column.key === 'cost' ? '80px !important' : undefined,
+                                           column.key === 'cost' ? '80px !important' : 
+                                           column.key === 'itemNo' ? '40px !important' :
+                                           column.key === 'pipeSize' ? '50px !important' :
+                                           column.key === 'totalLength' ? '60px !important' :
+                                           column.key === 'severityGrade' ? '50px !important' :
+                                           column.key === 'adoptable' ? '70px !important' :
+                                           (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
                                   minWidth: column.key === 'projectNo' ? '50px !important' : 
-                                           column.key === 'cost' ? '80px !important' : undefined,
-                                  wordWrap: column.key === 'projectNo' ? 'nowrap' : 'break-word',
-                                  whiteSpace: column.key === 'projectNo' ? 'nowrap' : 'normal',
-                                  wordBreak: column.key === 'projectNo' ? 'normal' : 'break-word',
-                                  overflowWrap: column.key === 'projectNo' ? 'normal' : 'break-word',
-                                  hyphens: column.key === 'projectNo' ? 'none' : 'auto'
+                                           column.key === 'cost' ? '80px !important' : 
+                                           column.key === 'itemNo' ? '40px !important' :
+                                           column.key === 'pipeSize' ? '50px !important' :
+                                           column.key === 'totalLength' ? '60px !important' :
+                                           column.key === 'severityGrade' ? '50px !important' :
+                                           column.key === 'adoptable' ? '70px !important' :
+                                           (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
+                                  wordWrap: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade') ? 'nowrap' : 'break-word',
+                                  whiteSpace: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade') ? 'nowrap' : 'normal',
+                                  wordBreak: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade') ? 'normal' : 'break-word',
+                                  overflowWrap: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade') ? 'normal' : 'break-word',
+                                  hyphens: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade') ? 'none' : 'auto'
                                 }}
                                 className={`
                                   border border-slate-300 text-xs align-top ${column.width}
