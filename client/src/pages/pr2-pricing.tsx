@@ -570,7 +570,7 @@ export default function PR2Pricing() {
                   return (
                     <Card
                       key={category.id}
-                      className={`cursor-pointer transition-all hover:shadow-md border-2 ${
+                      className={`relative cursor-pointer transition-all hover:shadow-md border-2 ${
                         isUserCreated ? 'border-green-200' : 'border-gray-200'
                       }`}
                       style={{
@@ -578,6 +578,7 @@ export default function PR2Pricing() {
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
+                      <DevLabel id={`category-card-${category.id}`} />
                       <CardContent className="p-4 text-center relative">
                         <category.icon className={`h-8 w-8 mx-auto mb-2 ${
                           isUserCreated ? 'text-green-700' : 'text-gray-700'
