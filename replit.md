@@ -1135,7 +1135,8 @@ Both rules are permanently locked and displayed on screen per user requirement
 - **Upload Section**: 14 (Uploaded Reports)
 - **P4 Category Cards**: 15-27 (CCTV, Van Pack, Jet Vac, CCTV/Van Pack, CCTV/Jet Vac, Directional Water Cutter, Ambient Lining, Hot Cure Lining, UV Lining, IMS Cutting, Excavation, Patching, Tankering)
 - **Pipe Size Cards**: 28-29 (Dynamic CCTV/Jet Vac and CCTV/Van Pack pipe configurations)
-- **Page IDs**: p2-p4 (Upload, Dashboard, Pricing Settings - top-right position)
+- **Static Page IDs**: p2-p4 (Upload, Dashboard, Pricing Settings - top-right position)
+- **Dynamic Config Page IDs**: p15-p27 (Category configuration pages - CCTV=p15, Van Pack=p16, etc. - top-right position)
 - **Folder IDs**: f1, f2, f3... (Dynamic folder containers - bottom-right position)
 
 🔒 **TECHNICAL IMPLEMENTATION:**
@@ -1143,6 +1144,8 @@ Both rules are permanently locked and displayed on screen per user requirement
 - **Category ID Mapping**: STANDARD_CATEGORIES enhanced with devId field for numeric ID assignment
 - **Dynamic Folder System**: Folder indexing with letter prefixes for scalable identification
 - **Pipe Size Integration**: Dynamic configuration cards with dedicated IDs 28-29
+- **Dynamic Config Page IDs**: CATEGORY_PAGE_IDS mapping system in pr2-config-clean.tsx assigns page IDs based on categoryId parameter
+- **Page ID Logic**: `dynamicPageId = CATEGORY_PAGE_IDS[categoryId] || 'p-${categoryId}'` with fallback pattern
 - **Import Pattern**: `import { DevLabel } from '@/utils/DevLabel';` standardized across all components
 - **Usage Pattern**: `<DevLabel id="component-specific-identifier" />` with relative positioning on parent containers
 - **Global Access**: `console.log(window.DEV_ID_LIST)` provides complete list of registered debugging IDs

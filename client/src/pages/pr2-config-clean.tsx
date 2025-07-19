@@ -70,6 +70,23 @@ const SECTORS = [
   { id: 'domestic', name: 'Domestic', label: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
+// Category ID to page ID mapping (matching pr2-pricing.tsx devId values)
+const CATEGORY_PAGE_IDS = {
+  'cctv': 'p15',
+  'van-pack': 'p16', 
+  'jet-vac': 'p17',
+  'cctv-van-pack': 'p18',
+  'cctv-jet-vac': 'p19',
+  'directional-water-cutter': 'p20',
+  'ambient-lining': 'p21',
+  'hot-cure-lining': 'p22',
+  'uv-lining': 'p23',
+  'ims-cutting': 'p24',
+  'excavation': 'p25',
+  'patching': 'p26',
+  'tankering': 'p27'
+};
+
 const SECTOR_CONFIG = {
   utilities: { textColor: 'text-blue-600', bgColor: 'bg-blue-50' },
   adoption: { textColor: 'text-teal-600', bgColor: 'bg-teal-50' },
@@ -2123,15 +2140,19 @@ export default function PR2ConfigClean() {
     };
   };
 
+  // Get dynamic page ID based on category
+  const dynamicPageId = categoryId ? CATEGORY_PAGE_IDS[categoryId as keyof typeof CATEGORY_PAGE_IDS] || `p-${categoryId}` : 'p-config';
+
   return (
     <div 
-      className="min-h-screen bg-gray-50 p-6"
+      className="min-h-screen bg-gray-50 p-6 relative"
       data-page="pr2-config-clean"
       data-config-id={editId}
       data-category-id={categoryId}
       data-sector={sector}
       data-is-editing={isEditing}
     >
+      <DevLabel id={dynamicPageId} position="top-right" />
       <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
