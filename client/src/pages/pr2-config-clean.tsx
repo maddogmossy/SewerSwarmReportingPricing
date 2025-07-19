@@ -2978,7 +2978,8 @@ export default function PR2ConfigClean() {
                 >
                   
                   {/* Blue Window */}
-                  <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0">
+                  <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0 relative">
+                    <DevLabel id="db11" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-blue-700 text-xs flex items-center gap-1">
                         💰 Pricing
@@ -3000,7 +3001,8 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Math Window */}
-                  <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0">
+                  <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0 relative">
+                    <DevLabel id="db12" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
                         Math
@@ -3022,7 +3024,8 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Green Window */}
-                  <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0">
+                  <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0 relative">
+                    <DevLabel id="db13" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-green-700 text-xs flex items-center gap-1">
                         📊 Quantity
@@ -3044,7 +3047,8 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Orange Window */}
-                  <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0">
+                  <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0 relative">
+                    <DevLabel id="db14" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
                         🎯 Min Quantity
@@ -3066,7 +3070,8 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Purple Window */}
-                  <Card className="bg-purple-50 border-purple-200 flex-1">
+                  <Card className="bg-purple-50 border-purple-200 flex-1 relative">
+                    <DevLabel id="db15" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
                         📏 Ranges

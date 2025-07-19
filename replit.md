@@ -1137,7 +1137,10 @@ Both rules are permanently locked and displayed on screen per user requirement
 - **Pipe Size Cards**: 28-29 (Dynamic CCTV/Jet Vac and CCTV/Van Pack pipe configurations)
 - **Static Page IDs**: p2-p4 (Upload, Dashboard, Pricing Settings - top-right position)
 - **Dynamic Config Page IDs**: p15-p27 (Category configuration pages - CCTV=p15, Van Pack=p16, etc. - top-right position)
-- **Database UI Components**: db1-db10 (Pipe Size Selection, Configuration Title, Sector Selection, Delete Dialog, Category Color, Blue Window, Grey Window, Green Window, Orange Window, Purple Window)
+- **Database UI Components**: db1-db15 (Complete dual interface coverage)
+  - Core Components: db1-db5 (Pipe Size, Title, Sector, Delete, Color)
+  - Interface 1: db6-db10 (Blue, Grey, Green, Orange, Purple Windows)
+  - Interface 2: db11-db15 (Blue, Grey, Green, Orange, Purple Windows)
 - **Folder IDs**: f1, f2, f3... (Dynamic folder containers - bottom-right position)
 
 🔒 **TECHNICAL IMPLEMENTATION:**
@@ -1147,9 +1150,10 @@ Both rules are permanently locked and displayed on screen per user requirement
 - **Pipe Size Integration**: Dynamic configuration cards with dedicated IDs 28-29
 - **Dynamic Config Page IDs**: CATEGORY_PAGE_IDS mapping system in pr2-config-clean.tsx assigns page IDs based on categoryId parameter
 - **Page ID Logic**: `dynamicPageId = CATEGORY_PAGE_IDS[categoryId] || 'p-${categoryId}'` with fallback pattern
-- **Database UI Components**: db1-db10 systematic numbering:
+- **Database UI Components**: db1-db15 systematic numbering:
   - db1 (Pipe Size Selection), db2 (Configuration Title), db3 (Sector Selection), db4 (Delete Dialog), db5 (Category Color)
-  - db6 (Blue Window - Pricing), db7 (Grey Window - Math), db8 (Green Window - Quantity), db9 (Orange Window - Min Quantity), db10 (Purple Window - Ranges)
+  - db6-db10 (First Interface): Blue/Grey/Green/Orange/Purple Windows (lines 2684-2841)
+  - db11-db15 (Second Interface): Blue/Grey/Green/Orange/Purple Windows (lines 2980-3162)
 - **Import Pattern**: `import { DevLabel } from '@/utils/DevLabel';` standardized across all components
 - **Usage Pattern**: `<DevLabel id="component-specific-identifier" />` with relative positioning on parent containers
 - **Global Access**: `console.log(window.DEV_ID_LIST)` provides complete list of registered debugging IDs
