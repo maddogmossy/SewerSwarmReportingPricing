@@ -3460,6 +3460,8 @@ export default function Dashboard() {
                                       column.key === 'totalLength' ? '60px !important' :
                                       column.key === 'severityGrade' ? '50px !important' :
                                       column.key === 'adoptable' ? '70px !important' :
+                                      column.key === 'startMH' ? '60px !important' :
+                                      column.key === 'endMH' ? '60px !important' :
                                       (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
                                 maxWidth: column.key === 'projectNo' ? '50px !important' : 
                                          column.key === 'cost' ? '80px !important' : 
@@ -3468,6 +3470,8 @@ export default function Dashboard() {
                                          column.key === 'totalLength' ? '60px !important' :
                                          column.key === 'severityGrade' ? '50px !important' :
                                          column.key === 'adoptable' ? '70px !important' :
+                                         column.key === 'startMH' ? '60px !important' :
+                                         column.key === 'endMH' ? '60px !important' :
                                          (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
                                 minWidth: column.key === 'projectNo' ? '50px !important' : 
                                          column.key === 'cost' ? '80px !important' : 
@@ -3476,6 +3480,8 @@ export default function Dashboard() {
                                          column.key === 'totalLength' ? '60px !important' :
                                          column.key === 'severityGrade' ? '50px !important' :
                                          column.key === 'adoptable' ? '70px !important' :
+                                         column.key === 'startMH' ? '60px !important' :
+                                         column.key === 'endMH' ? '60px !important' :
                                          (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important'
                               }}
                               className={`
@@ -3528,6 +3534,8 @@ export default function Dashboard() {
                                         column.key === 'totalLength' ? '60px !important' :
                                         column.key === 'severityGrade' ? '50px !important' :
                                         column.key === 'adoptable' ? '70px !important' :
+                                        column.key === 'startMH' ? '60px !important' :
+                                        column.key === 'endMH' ? '60px !important' :
                                         (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
                                   maxWidth: column.key === 'projectNo' ? '50px !important' : 
                                            column.key === 'cost' ? '80px !important' : 
@@ -3536,6 +3544,8 @@ export default function Dashboard() {
                                            column.key === 'totalLength' ? '60px !important' :
                                            column.key === 'severityGrade' ? '50px !important' :
                                            column.key === 'adoptable' ? '70px !important' :
+                                           column.key === 'startMH' ? '60px !important' :
+                                           column.key === 'endMH' ? '60px !important' :
                                            (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
                                   minWidth: column.key === 'projectNo' ? '50px !important' : 
                                            column.key === 'cost' ? '80px !important' : 
@@ -3544,12 +3554,14 @@ export default function Dashboard() {
                                            column.key === 'totalLength' ? '60px !important' :
                                            column.key === 'severityGrade' ? '50px !important' :
                                            column.key === 'adoptable' ? '70px !important' :
+                                           column.key === 'startMH' ? '60px !important' :
+                                           column.key === 'endMH' ? '60px !important' :
                                            (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
-                                  wordWrap: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade') ? 'nowrap' : 'break-word',
-                                  whiteSpace: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade') ? 'nowrap' : 'normal',
-                                  wordBreak: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade') ? 'normal' : 'break-word',
-                                  overflowWrap: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade') ? 'normal' : 'break-word',
-                                  hyphens: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade') ? 'none' : 'auto'
+                                  wordWrap: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade' || column.key === 'startMH' || column.key === 'adoptable' || column.key === 'cost') ? 'nowrap' : 'break-word',
+                                  whiteSpace: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade' || column.key === 'startMH' || column.key === 'adoptable' || column.key === 'cost') ? 'nowrap' : 'normal',
+                                  wordBreak: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade' || column.key === 'startMH' || column.key === 'adoptable' || column.key === 'cost') ? 'normal' : 'break-word',
+                                  overflowWrap: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade' || column.key === 'startMH' || column.key === 'adoptable' || column.key === 'cost') ? 'normal' : 'break-word',
+                                  hyphens: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade' || column.key === 'startMH' || column.key === 'adoptable' || column.key === 'cost') ? 'none' : 'auto'
                                 }}
                                 className={`
                                   border border-slate-300 text-xs align-top ${column.width}
