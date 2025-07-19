@@ -1828,18 +1828,36 @@ export default function Dashboard() {
           recommendations: `"${dbRecommendations}"`
         });
         
-        // Rule 2: "No 2" rule uses 25 runs per shift for sections 34-66m length
-        // Database facts: Item 6 (33.78m) and Item 10 (34.31m) both qualify for Rule 2
-        // CORRECT criteria: 150mm pipe AND length >= 34m (Rule 2 boundary)
+        // Rule 2: "No 2" rule based on ACTUAL range configuration
+        // Use "Length 2" range if section length falls OUTSIDE "Length" range but INSIDE "Length 2" range
         const sectionLength = parseFloat(section.totalLength) || 0;
-        const useNo2 = section.pipeSize === '150' && sectionLength >= 34;
         
-        if (section.itemNo === 6 || section.itemNo === 10) {
-          console.log(`🎯 SECTION ${section.itemNo} [ID: ${section.id}] - No 2 rule: ${useNo2}`);
-          console.log(`   - Pipe size 150mm: ${section.pipeSize === '150'} (actual: ${section.pipeSize})`);
-          console.log(`   - Length > 30m: ${sectionLength > 30} (actual: ${sectionLength}m)`);
-          console.log(`   - Rule 2 should apply: ${useNo2}`);
+        // Find the length ranges in the configuration
+        const lengthRange = config.rangeOptions?.find(range => 
+          range.label === 'Length' && range.enabled
+        );
+        const lengthRange2 = config.rangeOptions?.find(range => 
+          range.label === 'Length 2' && range.enabled
+        );
+        
+        let useNo2 = false;
+        
+        if (lengthRange && lengthRange2) {
+          const length1Max = parseFloat(lengthRange.rangeEnd) || 0;
+          const length2Max = parseFloat(lengthRange2.rangeEnd) || 0;
+          
+          // Use "No 2" rule if section length is greater than Length 1 max but within Length 2 max
+          useNo2 = sectionLength > length1Max && sectionLength <= length2Max;
+          
+          console.log(`🔍 Length range analysis for section ${section.itemNo} (${sectionLength}m):`);
+          console.log(`   - Length 1 range: 0 to ${length1Max}m`);
+          console.log(`   - Length 2 range: 0 to ${length2Max}m`);
+          console.log(`   - Section exceeds Length 1: ${sectionLength > length1Max}`);
+          console.log(`   - Section within Length 2: ${sectionLength <= length2Max}`);
+          console.log(`   - Should use No 2 rule: ${useNo2}`);
         }
+        
+
         
         return { useNo2, no2Value };
       };
