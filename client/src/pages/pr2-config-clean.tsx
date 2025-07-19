@@ -2266,7 +2266,8 @@ export default function PR2ConfigClean() {
         </Card>
 
         {/* Color Picker Section */}
-        <Card className="mb-6">
+        <Card className="mb-6 relative">
+          <DevLabel id="db5" />
           <CardHeader>
             <CardTitle className="text-gray-900 flex items-center gap-2">
               <div 
