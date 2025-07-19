@@ -167,8 +167,8 @@ export default function PR2ConfigClean() {
       }
     },
     enabled: isEditing && !!editId,
-    staleTime: 0, // Always fetch fresh data
-    refetchOnMount: true, // Refetch when component mounts
+    staleTime: 5000, // Cache data for 5 seconds to prevent rapid refetches
+    refetchOnMount: false, // Don't automatically refetch when component mounts
     refetchOnWindowFocus: false, // Don't refetch on window focus
     retry: false, // Don't retry on 404 errors
   });
@@ -487,6 +487,9 @@ export default function PR2ConfigClean() {
   const handleValueChange = (optionType: string, optionId: string, value: string) => {
     console.log(`🔧 handleValueChange called: ${optionType}, ${optionId}, ${value}`);
     
+    // Mark that user has made changes to prevent automatic form overwrite
+    setHasUserChanges(true);
+    
     setFormData(prev => {
       const newFormData = { ...prev };
       
@@ -637,6 +640,9 @@ export default function PR2ConfigClean() {
     
     // Always save when user makes changes - including clearing fields
     console.log('💾 Saving configuration changes (including cleared fields)...');
+    
+    // Reset hasUserChanges flag after save completes
+    setTimeout(() => setHasUserChanges(false), 3000);
     
     // Clear previous timeout
     if (saveTimeout) {
@@ -1002,6 +1008,9 @@ export default function PR2ConfigClean() {
   // Track processed configurations to prevent double loading
   const [processedConfigId, setProcessedConfigId] = useState<number | null>(null);
   
+  // Track if user has made changes to prevent automatic form overwrite
+  const [hasUserChanges, setHasUserChanges] = useState(false);
+  
   // Clear processedConfigId when editId changes to allow new configuration loading
   useEffect(() => {
     console.log(`🔄 editId changed to: ${editId}, clearing processedConfigId and invalidating cache`);
@@ -1019,12 +1028,12 @@ export default function PR2ConfigClean() {
     console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, editId: ${editId}, configToUse:`, configToUse);
     console.log(`🔍 processedConfigId: ${processedConfigId}, current config ID: ${configToUse?.id}`);
     
-    // FIXED: Force reload when editId changes, even if we processed this config before
-    if (isEditing && configToUse && configToUse.id) {
+    // FIXED: Force reload when editId changes, but only if user hasn't made changes
+    if (isEditing && configToUse && configToUse.id && !hasUserChanges) {
       const configId = parseInt(editId || '0');
-      console.log(`🔍 Force processing config ID: ${configId} (editId: ${editId})`);
+      console.log(`🔍 Force processing config ID: ${configId} (editId: ${editId}) - hasUserChanges: ${hasUserChanges}`);
       
-      // Always process when editId is present, regardless of processedConfigId
+      // Always process when editId is present, but respect user changes
       if (configId > 0) {
         // Get the actual config object (might be wrapped in array)
         const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
