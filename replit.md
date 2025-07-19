@@ -1135,7 +1135,9 @@ Both rules are permanently locked and displayed on screen per user requirement
 - **Global Debug Access**: `window.DEV_ID_LIST` provides console access to all registered DevLabel IDs
 - **Systematic Naming Convention**: `[sector-or-page]-[element-type]-[purpose]` pattern for consistent identification
 - **Category Coverage**: Comprehensive DevLabel implementation across all 13 pricing categories with grid layout
-- **Non-Interfering Design**: Debug labels visible only in development mode with pointer-events-none styling
+- **Enhanced Styling**: Black background with white monospace text, high z-index (9999) for visibility
+- **Universal Access**: Window-based detection without environment restrictions for flexible debugging
+- **Duplicate Prevention**: Smart ID tracking prevents duplicate entries in global debug list
 
 🔒 **TECHNICAL IMPLEMENTATION:**
 - **Database Precision**: Updated range_options JSON to use proper ".99" format for length validation requirements
