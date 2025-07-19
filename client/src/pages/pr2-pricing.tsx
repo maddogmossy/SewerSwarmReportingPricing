@@ -31,6 +31,7 @@ import {
   Pickaxe,
   Edit
 } from 'lucide-react';
+import { DevLabel } from '@/utils/DevLabel';
 
 // Sector definitions matching upload window colors from image
 const SECTORS = [
@@ -334,13 +335,14 @@ export default function PR2Pricing() {
 
   return (
     <div 
-      className="container mx-auto p-6 space-y-6"
+      className="relative container mx-auto p-6 space-y-6"
       data-page="pr2-pricing"
       data-sector={sector}
       data-pipe-size={pipeSize}
       data-config-name={configName}
       data-source-item={sourceItemNo}
     >
+      <DevLabel id="TEST-RED-LABEL" />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
