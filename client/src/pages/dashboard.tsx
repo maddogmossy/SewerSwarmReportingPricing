@@ -692,11 +692,19 @@ export default function Dashboard() {
       case 'time':
         return section.time;
       case 'startMH':
-        return section.startMH;
+        return (
+          <div style={{ width: '50px', maxWidth: '50px', minWidth: '50px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {section.startMH}
+          </div>
+        );
       case 'startMHDepth':
         return section.startMHDepth;
       case 'finishMH':
-        return section.finishMH;
+        return (
+          <div style={{ width: '50px', maxWidth: '50px', minWidth: '50px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {section.finishMH}
+          </div>
+        );
       case 'finishMHDepth':
         return section.finishMHDepth;
       case 'pipeSize':
