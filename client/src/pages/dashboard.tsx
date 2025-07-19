@@ -3428,17 +3428,15 @@ export default function Dashboard() {
                 <div className="overflow-x-auto">
                   <DevLabel id="db34" />
                   <table 
-                    className="w-full text-xs border-collapse border border-slate-300" 
-                    style={{ tableLayout: 'fixed' }}
+                    className="table-auto w-full border border-gray-200" 
                     data-component="sections-table"
                     data-upload-id={currentUpload?.id}
                     data-page="dashboard"
                     data-total-sections={sectionData.length}
                   >
-                    <thead>
+                    <thead className="bg-gray-100 text-xs font-semibold text-left text-gray-700">
                       <DevLabel id="db35" />
                       <tr 
-                        className="bg-slate-100"
                         data-component="table-header"
                       >
                         {columns.map((column) => {
@@ -3453,44 +3451,9 @@ export default function Dashboard() {
                                   toggleColumnVisibility(column.key);
                                 }
                               }}
-                              style={{
-                                width: column.key === 'projectNo' ? '50px !important' : 
-                                      column.key === 'cost' ? '80px !important' : 
-                                      column.key === 'itemNo' ? '40px !important' :
-                                      column.key === 'pipeSize' ? '50px !important' :
-                                      column.key === 'totalLength' ? '60px !important' :
-                                      column.key === 'severityGrade' ? '50px !important' :
-                                      column.key === 'adoptable' ? '70px !important' :
-                                      column.key === 'startMH' ? '50px !important' :
-                                      column.key === 'finishMH' ? '50px !important' :
-                                      column.key === 'observations' ? '400px !important' :
-                                      column.key === 'recommendations' ? '400px !important' : '60px !important',
-                                maxWidth: column.key === 'projectNo' ? '50px !important' : 
-                                         column.key === 'cost' ? '80px !important' : 
-                                         column.key === 'itemNo' ? '40px !important' :
-                                         column.key === 'pipeSize' ? '50px !important' :
-                                         column.key === 'totalLength' ? '60px !important' :
-                                         column.key === 'severityGrade' ? '50px !important' :
-                                         column.key === 'adoptable' ? '70px !important' :
-                                         column.key === 'startMH' ? '50px !important' :
-                                         column.key === 'finishMH' ? '50px !important' :
-                                         column.key === 'observations' ? 'none' :
-                                         column.key === 'recommendations' ? 'none' : '60px !important',
-                                minWidth: column.key === 'projectNo' ? '50px !important' : 
-                                         column.key === 'cost' ? '80px !important' : 
-                                         column.key === 'itemNo' ? '40px !important' :
-                                         column.key === 'pipeSize' ? '50px !important' :
-                                         column.key === 'totalLength' ? '60px !important' :
-                                         column.key === 'severityGrade' ? '50px !important' :
-                                         column.key === 'adoptable' ? '70px !important' :
-                                         column.key === 'startMH' ? '50px !important' :
-                                         column.key === 'finishMH' ? '50px !important' :
-                                         column.key === 'observations' ? '300px !important' :
-                                         column.key === 'recommendations' ? '300px !important' : '60px !important'
-                              }}
                               className={`
-                                border border-slate-300 font-semibold text-xs align-middle ${column.width}
-                                ${column.priority === 'pretty' ? 'px-2 py-2 text-left' : 'px-1 py-1 text-center'}
+                                px-2 py-2 
+                                ${(column.key === 'observations' || column.key === 'recommendations') ? 'w-full' : 'whitespace-nowrap'}
                                 ${showColumnSelector && !canBeHidden 
                                   ? 'bg-slate-200 cursor-not-allowed opacity-60'
                                   : showColumnSelector && canBeHidden
@@ -3530,49 +3493,11 @@ export default function Dashboard() {
                             return (
                               <td 
                                 key={column.key} 
-                                style={{
-                                  width: column.key === 'projectNo' ? '50px !important' : 
-                                        column.key === 'cost' ? '80px !important' : 
-                                        column.key === 'itemNo' ? '40px !important' :
-                                        column.key === 'pipeSize' ? '50px !important' :
-                                        column.key === 'totalLength' ? '60px !important' :
-                                        column.key === 'severityGrade' ? '50px !important' :
-                                        column.key === 'adoptable' ? '70px !important' :
-                                        column.key === 'startMH' ? '50px !important' :
-                                        column.key === 'finishMH' ? '50px !important' :
-                                        column.key === 'observations' ? '400px !important' :
-                                        column.key === 'recommendations' ? '400px !important' : '60px !important',
-                                  maxWidth: column.key === 'projectNo' ? '50px !important' : 
-                                           column.key === 'cost' ? '80px !important' : 
-                                           column.key === 'itemNo' ? '40px !important' :
-                                           column.key === 'pipeSize' ? '50px !important' :
-                                           column.key === 'totalLength' ? '60px !important' :
-                                           column.key === 'severityGrade' ? '50px !important' :
-                                           column.key === 'adoptable' ? '70px !important' :
-                                           column.key === 'startMH' ? '50px !important' :
-                                           column.key === 'finishMH' ? '50px !important' :
-                                           column.key === 'observations' ? 'none' :
-                                           column.key === 'recommendations' ? 'none' : '60px !important',
-                                  minWidth: column.key === 'projectNo' ? '50px !important' : 
-                                           column.key === 'cost' ? '80px !important' : 
-                                           column.key === 'itemNo' ? '40px !important' :
-                                           column.key === 'pipeSize' ? '50px !important' :
-                                           column.key === 'totalLength' ? '60px !important' :
-                                           column.key === 'severityGrade' ? '50px !important' :
-                                           column.key === 'adoptable' ? '70px !important' :
-                                           column.key === 'startMH' ? '50px !important' :
-                                           column.key === 'finishMH' ? '50px !important' :
-                                           column.key === 'observations' ? '300px !important' :
-                                           column.key === 'recommendations' ? '300px !important' : '60px !important',
-                                  wordWrap: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade' || column.key === 'startMH' || column.key === 'finishMH' || column.key === 'adoptable' || column.key === 'cost') ? 'nowrap' : 'break-word',
-                                  whiteSpace: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade' || column.key === 'startMH' || column.key === 'finishMH' || column.key === 'adoptable' || column.key === 'cost') ? 'nowrap' : 'normal',
-                                  wordBreak: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade' || column.key === 'startMH' || column.key === 'finishMH' || column.key === 'adoptable' || column.key === 'cost') ? 'normal' : 'break-word',
-                                  overflowWrap: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade' || column.key === 'startMH' || column.key === 'finishMH' || column.key === 'adoptable' || column.key === 'cost') ? 'normal' : 'break-word',
-                                  hyphens: (column.key === 'projectNo' || column.key === 'itemNo' || column.key === 'pipeSize' || column.key === 'severityGrade' || column.key === 'startMH' || column.key === 'finishMH' || column.key === 'adoptable' || column.key === 'cost') ? 'none' : 'auto'
-                                }}
                                 className={`
-                                  border border-slate-300 text-xs align-top ${column.width}
-                                  ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed text-left' : 'px-1 py-1 text-center'}
+                                  px-2 py-1 text-sm border-t border-gray-200
+                                  ${(column.key === 'observations' || column.key === 'recommendations') 
+                                    ? 'whitespace-normal break-words' 
+                                    : 'whitespace-nowrap'}
                                   ${
                                     // Standard Grade 0 adoptable highlighting only
                                     (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
