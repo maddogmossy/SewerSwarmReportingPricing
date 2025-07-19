@@ -3453,9 +3453,12 @@ export default function Dashboard() {
                                 }
                               }}
                               style={{
-                                width: column.key === 'projectNo' ? '20px !important' : undefined,
-                                maxWidth: column.key === 'projectNo' ? '20px !important' : undefined,
-                                minWidth: column.key === 'projectNo' ? '20px !important' : undefined
+                                width: column.key === 'projectNo' ? '20px !important' : 
+                                      column.key === 'cost' ? '80px !important' : undefined,
+                                maxWidth: column.key === 'projectNo' ? '20px !important' : 
+                                         column.key === 'cost' ? '80px !important' : undefined,
+                                minWidth: column.key === 'projectNo' ? '20px !important' : 
+                                         column.key === 'cost' ? '80px !important' : undefined
                               }}
                               className={`
                                 border border-slate-300 font-semibold text-xs align-middle ${column.width}
@@ -3500,9 +3503,12 @@ export default function Dashboard() {
                               <td 
                                 key={column.key} 
                                 style={{
-                                  width: column.key === 'projectNo' ? '20px !important' : undefined,
-                                  maxWidth: column.key === 'projectNo' ? '20px !important' : undefined,
-                                  minWidth: column.key === 'projectNo' ? '20px !important' : undefined,
+                                  width: column.key === 'projectNo' ? '20px !important' : 
+                                        column.key === 'cost' ? '80px !important' : undefined,
+                                  maxWidth: column.key === 'projectNo' ? '20px !important' : 
+                                           column.key === 'cost' ? '80px !important' : undefined,
+                                  minWidth: column.key === 'projectNo' ? '20px !important' : 
+                                           column.key === 'cost' ? '80px !important' : undefined,
                                   wordWrap: 'break-word',
                                   whiteSpace: 'normal',
                                   wordBreak: 'break-word',
