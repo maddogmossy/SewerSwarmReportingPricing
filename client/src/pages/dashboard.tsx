@@ -2665,7 +2665,8 @@ export default function Dashboard() {
   // Cost calculations continue working normally without popup dialogs
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="relative min-h-screen bg-slate-50">
+      <DevLabel id="p3" />
       {/* Navigation */}
       <div className="bg-white border-b border-slate-200 p-4">
         <div className="flex gap-4 items-center">

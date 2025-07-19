@@ -12,6 +12,7 @@ import { FolderSelector } from "@/components/folder-selector";
 import { FileUpload as FileUploadType } from "@shared/schema";
 import { Download, FileText, Clock, CheckCircle, AlertCircle, AlertTriangle, Home, Trash2, Eye, HardHat, Building, Car, Shield, Banknote, Wrench, House, Settings, Folder, FolderOpen, ChevronRight, ChevronDown, BarChart3 } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { DevLabel } from '@/utils/DevLabel';
 
 const sectors = [
   {
@@ -356,7 +357,8 @@ export default function Upload() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="relative container mx-auto p-6 space-y-6">
+      <DevLabel id="p2" />
       {/* Navigation */}
       <div className="flex gap-4 mb-6">
         <Link to="/">
