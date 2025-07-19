@@ -2428,11 +2428,16 @@ export default function PR2ConfigClean() {
               <p className="text-sm text-gray-600 mt-2">
                 {categoryId === 'patching' 
                   ? `Currently editing: ${(() => {
-                      const activeConfigId = currentConfigId || (editId ? parseInt(editId) : null);
-                      if (activeConfigId === 153) return '150mm (ID: 153)';
-                      if (activeConfigId === 156) return '225mm (ID: 156)';
-                      if (activeConfigId === 157) return '300mm (ID: 157)';
-                      return 'Loading...';
+                      // Use existing configuration data if available
+                      if (existingConfig && existingConfig.categoryName) {
+                        const configId = existingConfig.id;
+                        // Extract pipe size from category name or use current configuration
+                        if (existingConfig.categoryName.includes('150mm')) return `150mm (ID: ${configId})`;
+                        if (existingConfig.categoryName.includes('225mm')) return `225mm (ID: ${configId})`;
+                        if (existingConfig.categoryName.includes('300mm')) return `300mm (ID: ${configId})`;
+                        return `Configuration (ID: ${configId})`;
+                      }
+                      return 'New Configuration';
                     })()}`
                   : `Currently only 150mm available for ${formData.categoryName || 'this category'} to prevent configuration conflicts (ID: ${editId})`
                 }
@@ -2443,13 +2448,18 @@ export default function PR2ConfigClean() {
         {/* Configuration Title */}
         <div className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">
-            TP2 - Patching Configuration - {(() => {
-              // Show current pipe size based on configuration ID or editId
-              const activeConfigId = currentConfigId || (editId ? parseInt(editId) : null);
-              if (activeConfigId === 153) return '150mm';
-              if (activeConfigId === 156) return '225mm'; 
-              if (activeConfigId === 157) return '300mm';
-              return 'Loading...';
+            {(() => {
+              // Correct the logic for loading the right template
+              const templateType = getTemplateType(categoryId || '');
+              const activeCategoryId = templateType === 'TP2' ? 2 : 1; // TP2 = 2, TP1 = 1
+              
+              const templateTitle = activeCategoryId === 1
+                ? "Edit CCTV Jet Vac Configuration"
+                : activeCategoryId === 2
+                  ? "Edit TP2 - Patching Configuration"
+                  : `Edit Template ${activeCategoryId}`;
+              
+              return templateTitle;
             })()}
           </h2>
         </div>
@@ -2469,12 +2479,15 @@ export default function PR2ConfigClean() {
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
                     <Coins className="w-4 h-4" />
                     Patching Options - {(() => {
-                      // Extract pipe size from current configuration or editId
-                      const activeConfigId = currentConfigId || (editId ? parseInt(editId) : null);
-                      if (activeConfigId === 153) return '150mm';
-                      if (activeConfigId === 156) return '225mm';
-                      if (activeConfigId === 157) return '300mm';
-                      return selectedPipeSize;
+                      // Extract pipe size from existing configuration or form data
+                      if (existingConfig && existingConfig.categoryName) {
+                        if (existingConfig.categoryName.includes('150mm')) return '150mm';
+                        if (existingConfig.categoryName.includes('225mm')) return '225mm';
+                        if (existingConfig.categoryName.includes('300mm')) return '300mm';
+                      }
+                      if (pipeSize) return pipeSize;
+                      if (selectedPipeSize) return selectedPipeSize;
+                      return 'All Sizes';
                     })()}
                   </CardTitle>
                 </CardHeader>
