@@ -8,8 +8,8 @@ export function DevLabel({ id }: { id: string }) {
 
   return (
     <span
-      className="text-[10px] text-gray-500 bg-white px-1 rounded absolute bottom-1 right-1 z-[9999] pointer-events-none"
-      style={{ fontFamily: "monospace", opacity: 0.75 }}
+      className="text-[10px] text-gray-700 bg-white px-1 rounded absolute bottom-1 right-1 z-[9999] pointer-events-none font-bold"
+      style={{ fontFamily: "monospace", opacity: 0.9 }}
     >
       (id: {id})
     </span>
