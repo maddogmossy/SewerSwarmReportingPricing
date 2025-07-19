@@ -3428,13 +3428,13 @@ export default function Dashboard() {
                 <div className="overflow-x-auto">
                   <DevLabel id="db34" />
                   <table 
-                    className="table-auto w-full border border-gray-200" 
+                    className="table-auto w-full border border-gray-300" 
                     data-component="sections-table"
                     data-upload-id={currentUpload?.id}
                     data-page="dashboard"
                     data-total-sections={sectionData.length}
                   >
-                    <thead className="bg-gray-100 text-xs font-semibold text-left text-gray-700">
+                    <thead className="bg-gray-100 text-xs font-semibold text-gray-700 border-b border-gray-300">
                       <DevLabel id="db35" />
                       <tr 
                         data-component="table-header"
@@ -3452,8 +3452,11 @@ export default function Dashboard() {
                                 }
                               }}
                               className={`
-                                px-2 py-2 
-                                ${(column.key === 'observations' || column.key === 'recommendations') ? 'w-full' : 'whitespace-nowrap'}
+                                px-2 py-2 border-r border-gray-200
+                                ${(column.key === 'observations' || column.key === 'recommendations') 
+                                  ? 'text-left w-full' 
+                                  : 'text-center whitespace-nowrap'}
+                                ${column.key === 'cost' ? 'border-r-0' : ''}
                                 ${showColumnSelector && !canBeHidden 
                                   ? 'bg-slate-200 cursor-not-allowed opacity-60'
                                   : showColumnSelector && canBeHidden
@@ -3487,17 +3490,18 @@ export default function Dashboard() {
                           (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
                           ? 'bg-green-200 hover:bg-green-300' 
                           : 'hover:bg-slate-50'
-                        }`}>
+                        } border-b border-gray-200`}>
                           {columns.map((column) => {
                             if (hiddenColumns.has(column.key)) return null;
                             return (
                               <td 
                                 key={column.key} 
                                 className={`
-                                  px-2 py-1 text-sm border-t border-gray-200
+                                  px-2 py-1 text-sm border-r border-gray-200
                                   ${(column.key === 'observations' || column.key === 'recommendations') 
-                                    ? 'whitespace-normal break-words' 
-                                    : 'whitespace-nowrap'}
+                                    ? 'text-left whitespace-normal break-words' 
+                                    : 'text-center whitespace-nowrap'}
+                                  ${column.key === 'cost' ? 'border-r-0' : ''}
                                   ${
                                     // Standard Grade 0 adoptable highlighting only
                                     (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 

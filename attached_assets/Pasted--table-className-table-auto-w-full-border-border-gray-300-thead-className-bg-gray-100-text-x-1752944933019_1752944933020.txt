@@ -1,0 +1,50 @@
+<table className="table-auto w-full border border-gray-300">
+  <thead className="bg-gray-100 text-xs font-semibold text-gray-700 border-b border-gray-300">
+    <tr>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Project No</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Item No</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Insp. No</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Date</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Time</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Start MH</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Start MH Depth</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Finish MH</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Finish MH Depth</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Pipe Size</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Pipe Material</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Total Length (m)</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Length Surveyed (m)</th>
+      <th className="px-2 py-2 text-left border-r border-gray-200 w-full">Observations</th>
+      <th className="px-2 py-2 text-left border-r border-gray-200 w-full">Recommendation</th>
+      <th className="px-2 py-2 text-center border-r border-gray-200 whitespace-nowrap">Adoptable</th>
+      <th className="px-2 py-2 text-center whitespace-nowrap">Cost (£)</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {data.map((row, idx) => (
+      <tr key={idx} className="bg-green-100 text-sm border-b border-gray-200">
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.projectNo}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">
+          {row.itemNo}
+          <div className="text-[10px] text-blue-500">ID: {row.id}</div>
+        </td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.inspectionNo}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.date}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.time}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.startMH}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.startDepth}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.finishMH}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.finishDepth}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.pipeSize}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.material}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.totalLength}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.lengthSurveyed}</td>
+        <td className="px-2 py-1 text-left border-r border-gray-200 whitespace-normal break-words">{row.observations}</td>
+        <td className="px-2 py-1 text-left border-r border-gray-200 whitespace-normal break-words">{row.recommendation}</td>
+        <td className="px-2 py-1 text-center border-r border-gray-200 whitespace-nowrap">{row.adoptable}</td>
+        <td className="px-2 py-1 text-center whitespace-nowrap">{row.cost}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
