@@ -2382,21 +2382,21 @@ export default function PR2ConfigClean() {
                     }
                     targetCategoryId = 'patching';
                   } else {
-                    // TP1 CCTV configurations - only 150mm available (ID 152)
+                    // TP1 CCTV configurations - only 150mm available (Pricing Window db11)
                     configId = 152; // CCTV Jet Vac Configuration
                     targetCategoryId = categoryId; // Keep current category
                   }
                   
                   const isCurrentConfig = (currentConfigId === configId) || (currentConfigId === null && editId === String(configId));
                   
-                  console.log(`🔍 Rendering button: ${pipeSize} (ID: ${configId}) - Current: ${isCurrentConfig}`);
+                  console.log(`🔍 Rendering button: ${pipeSize} (Pricing Window db11) - Current: ${isCurrentConfig}`);
                   
                   return (
                     <button
                       key={pipeSize}
                       onClick={async () => {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
-                        console.log(`🚀 LOADING CONFIG: ${pipeSize} configuration (ID: ${configId})`);
+                        console.log(`🚀 LOADING CONFIG: ${pipeSize} configuration (Pricing Window db11)`);
                         
                         // CRITICAL: Cancel any pending debounced saves to prevent contamination
                         if (saveTimeout) {
@@ -2436,7 +2436,7 @@ export default function PR2ConfigClean() {
                           // Update URL to reflect the configuration change
                           setLocation(`/pr2-config-clean?categoryId=${targetCategoryId}&sector=${sector}&edit=${configId}`);
                           
-                          console.log(`✅ Form data updated to show ${pipeSize} configuration (ID: ${configId})`);
+                          console.log(`✅ Form data updated to show ${pipeSize} configuration (Pricing Window db11)`);
                           
                         } catch (error) {
                           console.error(`❌ Failed to load configuration ${configId}:`, error);
@@ -2454,16 +2454,15 @@ export default function PR2ConfigClean() {
                   ? `Currently editing: ${(() => {
                       // Use existing configuration data if available
                       if (existingConfig && existingConfig.categoryName) {
-                        const configId = existingConfig.id;
                         // Extract pipe size from category name or use current configuration
-                        if (existingConfig.categoryName.includes('150mm')) return `150mm (ID: ${configId})`;
-                        if (existingConfig.categoryName.includes('225mm')) return `225mm (ID: ${configId})`;
-                        if (existingConfig.categoryName.includes('300mm')) return `300mm (ID: ${configId})`;
-                        return `Configuration (ID: ${configId})`;
+                        if (existingConfig.categoryName.includes('150mm')) return `150mm Pricing Window (db11)`;
+                        if (existingConfig.categoryName.includes('225mm')) return `225mm Pricing Window (db11)`;
+                        if (existingConfig.categoryName.includes('300mm')) return `300mm Pricing Window (db11)`;
+                        return `Pricing Window (db11)`;
                       }
                       return 'New Configuration';
                     })()}`
-                  : `Currently only 150mm available for ${formData.categoryName || 'this category'} to prevent configuration conflicts (ID: ${editId})`
+                  : `Currently editing 150mm Pricing Window (db11) for ${formData.categoryName || 'this category'}`
                 }
               </p>
             </CardContent>
