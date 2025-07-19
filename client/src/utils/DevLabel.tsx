@@ -1,5 +1,5 @@
 export function DevLabel({ id }: { id: string }) {
-  if (typeof window !== "undefined" && import.meta.env.DEV) {
+  if (typeof window !== "undefined") {
     if (!window.DEV_ID_LIST) window.DEV_ID_LIST = [];
     if (!window.DEV_ID_LIST.includes(id)) {
       window.DEV_ID_LIST.push(id);
