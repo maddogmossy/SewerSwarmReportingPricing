@@ -14,8 +14,8 @@ export function DevLabel({ id }: { id: string }) {
   }
   
   return (
-    <span className="text-[10px] text-white bg-black px-1 rounded absolute bottom-1 right-1 z-50 pointer-events-none">
-      [id: {id}]
+    <span className="text-[10px] text-gray-500 bg-white px-1 rounded border border-gray-300 absolute bottom-1 right-1 z-50 pointer-events-none">
+      ID: {id}
     </span>
   );
 }
