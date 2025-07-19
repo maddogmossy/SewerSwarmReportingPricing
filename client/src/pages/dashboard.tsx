@@ -3453,6 +3453,11 @@ export default function Dashboard() {
                                   toggleColumnVisibility(column.key);
                                 }
                               }}
+                              style={{
+                                width: column.key === 'projectNo' ? '20px' : undefined,
+                                maxWidth: column.key === 'projectNo' ? '20px' : undefined,
+                                minWidth: column.key === 'projectNo' ? '20px' : undefined
+                              }}
                               className={`
                                 border border-slate-300 font-semibold text-xs align-middle ${column.width}
                                 ${column.priority === 'pretty' ? 'px-2 py-2 text-left' : 'px-1 py-1 text-center'}
@@ -3495,6 +3500,11 @@ export default function Dashboard() {
                             return (
                               <td 
                                 key={column.key} 
+                                style={{
+                                  width: column.key === 'projectNo' ? '20px' : undefined,
+                                  maxWidth: column.key === 'projectNo' ? '20px' : undefined,
+                                  minWidth: column.key === 'projectNo' ? '20px' : undefined
+                                }}
                                 className={`
                                   border border-slate-300 text-xs align-top ${column.width}
                                   ${column.priority === 'pretty' ? 'px-2 py-2 leading-relaxed text-left' : 'px-1 py-1 text-center'}
