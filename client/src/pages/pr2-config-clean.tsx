@@ -2751,7 +2751,7 @@ export default function PR2ConfigClean() {
               <div className="flex gap-4 p-4 border rounded-lg bg-gray-50 w-full">
                 
                 {/* Blue Window: Day Rate */}
-                <Card className="relative bg-blue-50 border-blue-200 w-56 flex-shrink-0">
+<Card className="relative bg-blue-50 border-blue-200 flex-1 min-w-56">
                   <DevLabel id="db6" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
@@ -2800,7 +2800,7 @@ export default function PR2ConfigClean() {
                 </Card>
 
                 {/* Green Window: Runs per Shift */}
-                <Card className="relative bg-green-50 border-green-200 w-60 flex-shrink-0">
+                <Card className="relative bg-green-50 border-green-200 flex-1 min-w-60">
                   <DevLabel id="db8" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-green-700 text-xs flex items-center gap-1">
@@ -2854,7 +2854,7 @@ export default function PR2ConfigClean() {
                 </Card>
 
                 {/* Orange Window: Min Quantity */}
-                <Card className="relative bg-orange-50 border-orange-200 w-52 flex-shrink-0">
+                <Card className="relative bg-orange-50 border-orange-200 flex-1 min-w-52">
                   <DevLabel id="db9" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
@@ -3121,7 +3121,7 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Orange Window */}
-                  <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0 relative">
+                  <Card className="bg-orange-50 border-orange-200 flex-1 min-w-52 relative">
                     <DevLabel id="db14" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
