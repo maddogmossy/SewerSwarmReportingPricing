@@ -620,7 +620,7 @@ export default function Dashboard() {
     };
 
     return [
-      { key: 'projectNo', label: 'Project<br/>No', hideable: true, width: getColumnWidth('projectNo', 'w-8'), priority: 'tight' },
+      { key: 'projectNo', label: 'Project<br/>No', hideable: true, width: getColumnWidth('projectNo', 'w-4'), priority: 'tight' },
       { key: 'itemNo', label: 'Item<br/>No', hideable: false, width: getColumnWidth('itemNo', 'w-8'), priority: 'tight' },
       { key: 'inspectionNo', label: 'Inspec.<br/>No', hideable: true, width: getColumnWidth('inspectionNo', 'w-8'), priority: 'tight' },
       { key: 'date', label: 'Date', hideable: true, width: getColumnWidth('date', 'w-10'), priority: 'tight' },
