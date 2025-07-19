@@ -976,7 +976,7 @@ export default function Dashboard() {
                     borderWidth: '2px'
                   } : {}}
                 >
-                  <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? `${pr2Config.categoryName} (ID: ${pr2Config.id})` : 'CLEANSE/SURVEY'}</div>
+                  <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? `${pr2Config.categoryName} (Pricing Window db11)` : 'CLEANSE/SURVEY'}</div>
                   <div className="text-black">{generateDynamicRecommendationWithPR2(section, repairPricingData)}</div>
                   <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
@@ -1043,7 +1043,7 @@ export default function Dashboard() {
                     borderWidth: '2px'
                   } : {}}
                 >
-                  <div className="font-bold text-black mb-1">🔧 {hasTP2Patching ? `${titleText} (ID: ${tp2PatchingConfig.id})` : titleText}</div>
+                  <div className="font-bold text-black mb-1">🔧 {hasTP2Patching ? `${titleText} (Pricing Window db11)` : titleText}</div>
                   <div className="text-black">{generateDynamicRecommendationWithPR2(section, repairPricingData)}</div>
                   <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
