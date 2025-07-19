@@ -2714,7 +2714,11 @@ export default function PR2ConfigClean() {
                         placeholder="£"
                         maxLength={10}
                         value={formData.pricingOptions?.[0]?.value || ""}
-                        onChange={(e) => handleValueChange('pricingOptions', 'price_dayrate', e.target.value)}
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          console.log(`🎯 RAW INPUT VALUE: "${inputValue}" (length: ${inputValue.length})`);
+                          handleValueChange('pricingOptions', 'price_dayrate', inputValue);
+                        }}
                         className="bg-white border-blue-300 h-6 text-xs w-20"
                       />
                     </div>
