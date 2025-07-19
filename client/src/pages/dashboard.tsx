@@ -2672,71 +2672,83 @@ export default function Dashboard() {
         <DevLabel id="db16" />
         <div className="flex gap-4 items-center">
           <Link to="/">
-            <Button variant="outline" size="sm">
-              <DevLabel id="db17" />
-              <DevLabel id="b1" />
-              <HomeIcon className="h-4 w-4 mr-2" />
-              Home
-            </Button>
+            <div className="flex flex-col items-center">
+              <Button variant="outline" size="sm">
+                <DevLabel id="db17" />
+                <HomeIcon className="h-4 w-4 mr-2" />
+                Home
+              </Button>
+              <DevLabel id="b1" position="underneath" />
+            </div>
           </Link>
           <Link to="/upload">
-            <Button variant="outline" size="sm">
-              <DevLabel id="db18" />
-              <DevLabel id="b2" />
-              <Upload className="h-4 w-4 mr-2 text-blue-600" />
-              Upload Report
-            </Button>
+            <div className="flex flex-col items-center">
+              <Button variant="outline" size="sm">
+                <DevLabel id="db18" />
+                <Upload className="h-4 w-4 mr-2 text-blue-600" />
+                Upload Report
+              </Button>
+              <DevLabel id="b2" position="underneath" />
+            </div>
           </Link>
           <Link to="/pr2-pricing?sector=utilities">
-            <Button variant="outline" size="sm">
-              <DevLabel id="db19" />
-              <DevLabel id="b3" />
-              <Settings className="h-4 w-4 mr-2 text-orange-600" />
-              Pricing
-            </Button>
+            <div className="flex flex-col items-center">
+              <Button variant="outline" size="sm">
+                <DevLabel id="db19" />
+                <Settings className="h-4 w-4 mr-2 text-orange-600" />
+                Pricing
+              </Button>
+              <DevLabel id="b3" position="underneath" />
+            </div>
           </Link>
 
 
           <div className="ml-auto flex gap-2">
 
             {currentUpload && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (currentUpload?.id) {
-                    reprocessMutation.mutate(currentUpload.id);
-                  }
-                }}
-                disabled={reprocessMutation.isPending}
-              >
-                <DevLabel id="db20" />
-                <DevLabel id="b4" />
-                <RefreshCw className="h-4 w-4 mr-2" />
-                {reprocessMutation.isPending ? "Reprocessing..." : "Re-Process Report"}
-              </Button>
+              <div className="flex flex-col items-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (currentUpload?.id) {
+                      reprocessMutation.mutate(currentUpload.id);
+                    }
+                  }}
+                  disabled={reprocessMutation.isPending}
+                >
+                  <DevLabel id="db20" />
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  {reprocessMutation.isPending ? "Reprocessing..." : "Re-Process Report"}
+                </Button>
+                <DevLabel id="b4" position="underneath" />
+              </div>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={exportToExcel}
-            >
-              <DevLabel id="db21" />
-              <DevLabel id="b5" />
-              <Download className="h-4 w-4 mr-2" />
-              Export to Excel
-            </Button>
-            <Link href="/pdf-reader">
+            <div className="flex flex-col items-center">
               <Button
                 variant="outline"
                 size="sm"
-                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                onClick={exportToExcel}
               >
-                <DevLabel id="db22" />
-                <DevLabel id="b6" />
-                <FileText className="h-4 w-4 mr-2" />
-                PDF Reader
+                <DevLabel id="db21" />
+                <Download className="h-4 w-4 mr-2" />
+                Export to Excel
               </Button>
+              <DevLabel id="b5" position="underneath" />
+            </div>
+            <Link href="/pdf-reader">
+              <div className="flex flex-col items-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                >
+                  <DevLabel id="db22" />
+                  <FileText className="h-4 w-4 mr-2" />
+                  PDF Reader
+                </Button>
+                <DevLabel id="b6" position="underneath" />
+              </div>
             </Link>
             {/* Clear button removed to prevent accidental data loss */}
           </div>
@@ -3201,47 +3213,53 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center gap-2">
 
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowColumnSelector(!showColumnSelector)}
-                      className="text-xs"
-                    >
-                      <DevLabel id="db28" />
-                      <DevLabel id="b7" />
-                      {showColumnSelector ? 'Done Selecting' : 'Hide Columns'}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        // Get all hideable columns
-                        const hideableColumns = columns.filter(col => col.hideable).map(col => col.key);
-                        setHiddenColumns(new Set(hideableColumns));
-                        // Save to localStorage to persist across page refreshes
-                        localStorage.setItem('dashboard-hidden-columns', JSON.stringify(hideableColumns));
-                      }}
-                      className="text-xs"
-                      disabled={columns.filter(col => col.hideable).every(col => hiddenColumns.has(col.key))}
-                    >
-                      <DevLabel id="db29" />
-                      <DevLabel id="b8" />
-                      Hide All
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setHiddenColumns(new Set());
-                        localStorage.removeItem('dashboard-hidden-columns');
-                      }}
-                      className="text-xs"
-                      disabled={hiddenColumns.size === 0}
-                    >
-                      <DevLabel id="db30" />
-                      <DevLabel id="b9" />
-                      Unhide All
-                    </Button>
+                    <div className="flex flex-col items-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowColumnSelector(!showColumnSelector)}
+                        className="text-xs"
+                      >
+                        <DevLabel id="db28" />
+                        {showColumnSelector ? 'Done Selecting' : 'Hide Columns'}
+                      </Button>
+                      <DevLabel id="b7" position="underneath" />
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          // Get all hideable columns
+                          const hideableColumns = columns.filter(col => col.hideable).map(col => col.key);
+                          setHiddenColumns(new Set(hideableColumns));
+                          // Save to localStorage to persist across page refreshes
+                          localStorage.setItem('dashboard-hidden-columns', JSON.stringify(hideableColumns));
+                        }}
+                        className="text-xs"
+                        disabled={columns.filter(col => col.hideable).every(col => hiddenColumns.has(col.key))}
+                      >
+                        <DevLabel id="db29" />
+                        Hide All
+                      </Button>
+                      <DevLabel id="b8" position="underneath" />
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setHiddenColumns(new Set());
+                          localStorage.removeItem('dashboard-hidden-columns');
+                        }}
+                        className="text-xs"
+                        disabled={hiddenColumns.size === 0}
+                      >
+                        <DevLabel id="db30" />
+                        Unhide All
+                      </Button>
+                      <DevLabel id="b9" position="underneath" />
+                    </div>
                     
                     <Button
                       variant="outline"
