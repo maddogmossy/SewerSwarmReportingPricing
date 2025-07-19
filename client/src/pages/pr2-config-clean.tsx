@@ -2471,14 +2471,14 @@ export default function PR2ConfigClean() {
                       // Use existing configuration data if available
                       if (existingConfig && existingConfig.categoryName) {
                         // Extract pipe size from category name or use current configuration
-                        if (existingConfig.categoryName.includes('150mm')) return `150mm Pricing Window (db11)`;
-                        if (existingConfig.categoryName.includes('225mm')) return `225mm Pricing Window (db11)`;
-                        if (existingConfig.categoryName.includes('300mm')) return `300mm Pricing Window (db11)`;
-                        return `Pricing Window (db11)`;
+                        if (existingConfig.categoryName.includes('150mm')) return `150mm Pricing Window (db11) - (id${editId})`;
+                        if (existingConfig.categoryName.includes('225mm')) return `225mm Pricing Window (db11) - (id${editId})`;
+                        if (existingConfig.categoryName.includes('300mm')) return `300mm Pricing Window (db11) - (id${editId})`;
+                        return `Pricing Window (db11) - (id${editId})`;
                       }
                       return 'New Configuration';
                     })()}`
-                  : `Currently editing 150mm Pricing Window (db11) for ${formData.categoryName || 'this category'}`
+                  : `Currently editing 150mm Pricing Window (db11) - (id${editId}) for ${formData.categoryName || 'this category'}`
                 }
               </p>
             </CardContent>
