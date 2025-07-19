@@ -2216,7 +2216,7 @@ export default function PR2ConfigClean() {
 
   return (
     <div 
-      className="min-h-screen bg-gray-50 p-2 relative"
+      className="min-h-screen bg-gray-50 p-6 relative"
       data-page="pr2-config-clean"
       data-config-id={editId}
       data-category-id={categoryId}
@@ -2224,9 +2224,9 @@ export default function PR2ConfigClean() {
       data-is-editing={isEditing}
     >
       <DevLabel id={dynamicPageId} position="top-right" />
-      <div className="w-screen">
+      <div className="mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6 px-4">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h1 
                 className="text-2xl font-bold text-gray-900"
@@ -2563,7 +2563,7 @@ export default function PR2ConfigClean() {
         {categoryId === 'patching' && (
           <div key="unified-tp2-config">
             {/* TP2 Interface with 5 Pricing Options */}
-            <div className="space-y-4 p-4 mx-2 border rounded-lg bg-gray-50">
+            <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 TP2 - Patching Configuration
               </h3>
@@ -2695,7 +2695,7 @@ export default function PR2ConfigClean() {
             <CollapsibleContent className="mb-6">
             {/* Conditional rendering based on template type */}
             {getTemplateType(categoryId) === 'TP2' ? (
-              <div className="space-y-4 p-4 mx-2 border rounded-lg bg-gray-50">
+              <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">TP2 Patching Configuration</h3>
                 
                 {/* Purple Window: 4 Patching Options */}
@@ -2748,10 +2748,10 @@ export default function PR2ConfigClean() {
                 </Card>
               </div>
             ) : (
-              <div className="flex gap-4 p-4 mx-2 border rounded-lg bg-gray-50">
+              <div className="flex gap-4 p-4 border rounded-lg bg-gray-50">
                 
                 {/* Blue Window: Day Rate */}
-<Card className="relative bg-blue-50 border-blue-200 flex-1 min-w-56">
+<Card className="relative bg-blue-50 border-blue-200 w-56 flex-shrink-0">
                   <DevLabel id="db6" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
@@ -2800,7 +2800,7 @@ export default function PR2ConfigClean() {
                 </Card>
 
                 {/* Green Window: Runs per Shift */}
-                <Card className="relative bg-green-50 border-green-200 flex-1 min-w-60">
+                <Card className="relative bg-green-50 border-green-200 w-60 flex-shrink-0">
                   <DevLabel id="db8" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-green-700 text-xs flex items-center gap-1">
@@ -2854,7 +2854,7 @@ export default function PR2ConfigClean() {
                 </Card>
 
                 {/* Orange Window: Min Quantity */}
-                <Card className="relative bg-orange-50 border-orange-200 flex-1 min-w-52">
+                <Card className="relative bg-orange-50 border-orange-200 w-52 flex-shrink-0">
                   <DevLabel id="db9" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
@@ -2993,7 +2993,7 @@ export default function PR2ConfigClean() {
             <div className="space-y-4">
               {/* Conditional rendering based on template type */}
               {getTemplateType(categoryId) === 'TP2' ? (
-                <div className="space-y-4 p-4 mx-2 border rounded-lg bg-gray-50">
+                <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">TP2 Patching Configuration</h3>
                   
                   {/* Purple Window: 4 Patching Options */}
@@ -3052,7 +3052,7 @@ export default function PR2ConfigClean() {
                 >
                   
                   {/* Blue Window */}
-                  <Card className="bg-blue-50 border-blue-200 flex-1 min-w-56 relative">
+                  <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0 relative">
                     <DevLabel id="db11" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-blue-700 text-xs flex items-center gap-1">
@@ -3098,7 +3098,7 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Green Window */}
-                  <Card className="bg-green-50 border-green-200 flex-1 min-w-60 relative">
+                  <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0 relative">
                     <DevLabel id="db13" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-green-700 text-xs flex items-center gap-1">
@@ -3121,7 +3121,7 @@ export default function PR2ConfigClean() {
                   </Card>
 
                   {/* Orange Window */}
-                  <Card className="bg-orange-50 border-orange-200 flex-1 min-w-52 relative">
+                  <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0 relative">
                     <DevLabel id="db14" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
