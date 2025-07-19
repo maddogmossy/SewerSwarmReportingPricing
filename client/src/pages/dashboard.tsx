@@ -2674,6 +2674,7 @@ export default function Dashboard() {
           <Link to="/">
             <Button variant="outline" size="sm">
               <DevLabel id="db17" />
+              <DevLabel id="b1" />
               <HomeIcon className="h-4 w-4 mr-2" />
               Home
             </Button>
@@ -2681,6 +2682,7 @@ export default function Dashboard() {
           <Link to="/upload">
             <Button variant="outline" size="sm">
               <DevLabel id="db18" />
+              <DevLabel id="b2" />
               <Upload className="h-4 w-4 mr-2 text-blue-600" />
               Upload Report
             </Button>
@@ -2688,6 +2690,7 @@ export default function Dashboard() {
           <Link to="/pr2-pricing?sector=utilities">
             <Button variant="outline" size="sm">
               <DevLabel id="db19" />
+              <DevLabel id="b3" />
               <Settings className="h-4 w-4 mr-2 text-orange-600" />
               Pricing
             </Button>
@@ -2708,6 +2711,7 @@ export default function Dashboard() {
                 disabled={reprocessMutation.isPending}
               >
                 <DevLabel id="db20" />
+                <DevLabel id="b4" />
                 <RefreshCw className="h-4 w-4 mr-2" />
                 {reprocessMutation.isPending ? "Reprocessing..." : "Re-Process Report"}
               </Button>
@@ -2718,6 +2722,7 @@ export default function Dashboard() {
               onClick={exportToExcel}
             >
               <DevLabel id="db21" />
+              <DevLabel id="b5" />
               <Download className="h-4 w-4 mr-2" />
               Export to Excel
             </Button>
@@ -2728,6 +2733,7 @@ export default function Dashboard() {
                 className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
               >
                 <DevLabel id="db22" />
+                <DevLabel id="b6" />
                 <FileText className="h-4 w-4 mr-2" />
                 PDF Reader
               </Button>
@@ -3202,6 +3208,7 @@ export default function Dashboard() {
                       className="text-xs"
                     >
                       <DevLabel id="db28" />
+                      <DevLabel id="b7" />
                       {showColumnSelector ? 'Done Selecting' : 'Hide Columns'}
                     </Button>
                     <Button
@@ -3218,6 +3225,7 @@ export default function Dashboard() {
                       disabled={columns.filter(col => col.hideable).every(col => hiddenColumns.has(col.key))}
                     >
                       <DevLabel id="db29" />
+                      <DevLabel id="b8" />
                       Hide All
                     </Button>
                     <Button
@@ -3231,6 +3239,7 @@ export default function Dashboard() {
                       disabled={hiddenColumns.size === 0}
                     >
                       <DevLabel id="db30" />
+                      <DevLabel id="b9" />
                       Unhide All
                     </Button>
                     
@@ -3241,6 +3250,7 @@ export default function Dashboard() {
                       className="text-xs"
                     >
                       <DevLabel id="db31" />
+                      <DevLabel id="b10" />
                       <Filter className="h-4 w-4 mr-1" />
                       {showFilters ? 'Hide Filters' : 'Filter Data'}
                     </Button>
@@ -3396,6 +3406,7 @@ export default function Dashboard() {
                         className="text-xs"
                       >
                         <DevLabel id="db33" />
+                        <DevLabel id="b11" />
                         Clear All Filters
                       </Button>
                       <span className="text-sm text-slate-600">
@@ -3591,6 +3602,7 @@ export default function Dashboard() {
               variant="outline"
               onClick={() => setShowExportWarning(false)}
             >
+              <DevLabel id="b12" />
               Cancel
             </Button>
             <Button
@@ -3600,6 +3612,7 @@ export default function Dashboard() {
               }}
               className="bg-amber-600 hover:bg-amber-700"
             >
+              <DevLabel id="b13" />
               Export Anyway
             </Button>
           </DialogFooter>

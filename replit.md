@@ -1145,6 +1145,10 @@ Both rules are permanently locked and displayed on screen per user requirement
   - Data Table System: db34-db36 (Table container, header, body components)
   - Summary Statistics: db37-db42 (Statistics grid and individual cards)
   - Dialog Components: db43-db45 (Export warning dialogs and controls)
+- **Button IDs**: b1-b13+ (Systematic button identification across all interactive elements)
+  - Navigation Buttons: b1-b6 (Home, upload, pricing, reprocess, export, PDF reader)
+  - Table Control Buttons: b7-b11 (Hide columns, hide all, unhide all, filter, clear filters)
+  - Dialog Action Buttons: b12-b13+ (Cancel, confirm, and other dialog actions)
 - **Folder IDs**: f1, f2, f3... (Dynamic folder containers - bottom-right position)
 
 🔒 **TECHNICAL IMPLEMENTATION:**
