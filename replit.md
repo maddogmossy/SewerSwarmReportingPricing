@@ -1119,27 +1119,29 @@ Both rules are permanently locked and displayed on screen per user requirement
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.6' to return to this stable checkpoint
 
-## REV V8.7 CHECKPOINT - INFINITE LOOP ISSUE COMPLETELY RESOLVED (July 18, 2025)
+## REV V8.8 CHECKPOINT - RANGE-BASED CALCULATION SYSTEM COMPLETE (July 18, 2025)
 
-🔒 **CRITICAL BUG FIXES - PRODUCTION STABLE:**
-- **Maximum Update Depth Error Eliminated**: Fixed "Maximum update depth exceeded" infinite loop that was spamming console and breaking app
-- **Auto-Cost Popup System Removed**: Eliminated problematic auto-cost trigger useEffect that was causing infinite state updates
-- **Auto-Cost Dialog Components Removed**: Cleaned up all service and structural cost dialog components and state variables
-- **Reference Errors Fixed**: Removed all references to `autoCostMode`, `previousCostState`, and related auto-cost variables
-- **Console Spam Eliminated**: Zero infinite loop warnings, clean console output, stable application performance
-- **Data Integrity Restored**: All authentic section data preserved while eliminating unstable popup system
+🔒 **PRODUCTION READY - DUAL RANGE CALCULATION SYSTEM:**
+- **Critical Database Fixes**: Corrected "Percentage 2" from corrupted value "3" to proper "30" and "Length 2" from "45.9" to "45.99" precision format
+- **Range-Based "No 2" Rule**: Completely redesigned calculation logic to use actual configuration ranges instead of hardcoded pipe size and length values
+- **Dynamic Range Detection**: System now analyzes "Length" (0-25.99m) vs "Length 2" (0-45.99m) ranges to determine which calculation rule applies
+- **Smart Calculation Logic**: Sections exceeding Length 1 max but within Length 2 max automatically use "No 2" rule (22 runs per shift)
+- **Console Verification**: Detailed range analysis logging shows exact decision process for each section's calculation method
+- **DevLabel Utility**: Created development debugging component for element ID identification in development mode only
 
-🔒 **TECHNICAL FIXES IMPLEMENTED:**
-- **useEffect Removal**: Completely removed auto-cost trigger useEffect that tracked previousCostState
-- **Dialog Cleanup**: Removed service and structural cost dialog components and their state handlers
-- **Variable Cleanup**: Eliminated all autoCostMode references from useMemo dependencies and table keys
-- **Form State Stability**: Cost calculations now use standard PR2 configuration logic only
-- **Configuration Data Updated**: Fixed empty PR2 configuration values (ID 134: Day Rate £1850, Runs per Shift 30)
+🔒 **TECHNICAL IMPLEMENTATION:**
+- **Database Precision**: Updated range_options JSON to use proper ".99" format for length validation requirements
+- **Range Logic**: Modified checkNo2Rule() function to read actual lengthRange and lengthRange2 configuration values
+- **Calculation Rules**: Length ≤ 25.99m uses standard rule (£1850 ÷ 25), Length > 25.99m but ≤ 45.99m uses "No 2" rule (£1850 ÷ 22)
+- **Real-time Analysis**: Console logs show "Length range analysis" with precise range boundaries and rule application logic
+- **Cross-Pipe-Size Support**: Removed hardcoded 150mm pipe size restriction, now works with any pipe size based on length ranges
 
-🔒 **USER EXPERIENCE IMPROVEMENTS:**
-- **Stable Dashboard**: Users can navigate dashboard without infinite loop errors
-- **Reliable Cost Calculations**: PR2 and TP2 configurations work correctly without popup interruptions
-- **Clean Interface**: No more console error spam, smooth user interactions
+🔒 **USER-CONFIRMED WORKING RESULTS:**
+- **Section 22 (27.74m)**: Correctly uses "No 2" rule → £1850 ÷ 22 = £84.09 (was £74.00)
+- **Section 23 (23.97m)**: Correctly uses standard rule → £1850 ÷ 25 = £74.00 (no change)
+- **Range Validation**: System properly detects sections exceeding Length 1 range and applies appropriate calculation rule
+- **Console Logs**: "🔍 Length range analysis" and "💰 Using 'No 2' rule" confirmations visible in dashboard
+- **Configuration Persistence**: All range changes properly saved and reflected in dashboard calculations immediately
 - **Preserved Functionality**: All core pricing and calculation features maintained while eliminating unstable popup system
 - **Performance Optimization**: Eliminated infinite re-renders for significantly improved app responsiveness
 - **Independent State**: Separate `showServiceAutoCostDialog` and `showStructuralAutoCostDialog` state management
