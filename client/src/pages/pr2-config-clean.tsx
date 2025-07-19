@@ -2224,7 +2224,7 @@ export default function PR2ConfigClean() {
       data-is-editing={isEditing}
     >
       <DevLabel id={dynamicPageId} position="top-right" />
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
