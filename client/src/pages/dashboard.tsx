@@ -3460,8 +3460,8 @@ export default function Dashboard() {
                                       column.key === 'totalLength' ? '60px !important' :
                                       column.key === 'severityGrade' ? '50px !important' :
                                       column.key === 'adoptable' ? '70px !important' :
-                                      column.key === 'startMH' ? '50px !important' :
-                                      column.key === 'finishMH' ? '50px !important' :
+                                      column.key === 'startMH' ? '45px !important' :
+                                      column.key === 'finishMH' ? '45px !important' :
                                       (column.key === 'observations' || column.key === 'recommendations') ? undefined : '60px !important',
                                 maxWidth: column.key === 'projectNo' ? '50px !important' : 
                                          column.key === 'cost' ? '80px !important' : 
