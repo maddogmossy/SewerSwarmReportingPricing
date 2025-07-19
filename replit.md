@@ -1183,6 +1183,41 @@ Both rules are permanently locked and displayed on screen per user requirement
 - **Real-time Analysis**: Console logs show "Length range analysis" with precise range boundaries and rule application logic
 - **Cross-Pipe-Size Support**: Removed hardcoded 150mm pipe size restriction, now works with any pipe size based on length ranges
 
+⚡ **ROLLBACK COMMAND:** Use 'rev v8.10' to return to this stable checkpoint
+
+## REV V8.11 CHECKPOINT - DUAL ID DISPLAY & FIELD PERSISTENCE SYSTEM LOCKED (July 19, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE FIELD PERSISTENCE & DEBUGGING SYSTEM:**
+- **Dual ID Display System**: Shows both DevLabel (db11) and database ID (id152) in format "Currently editing 150mm Pricing Window (db11) - (id152) for CCTV Jet Vac Configuration"
+- **Field Persistence Fixed**: Day Rate field (db11) now properly saves cleared values and empty strings instead of reverting to original values
+- **Enhanced User Input Logging**: RAW INPUT VALUE tracking shows exact character-by-character input for debugging
+- **Critical Bug Resolution**: Eliminated the "1850 reversion" issue - cleared fields now stay cleared after navigation
+- **Complete DevLabel System**: Systematic debugging labels across entire application with professional styling
+- **Comprehensive ID Numbering**: Complete application coverage with numeric IDs for all UI elements
+
+🔒 **TECHNICAL IMPLEMENTATION COMPLETE:**
+- **Input Field Enhancement**: Added RAW INPUT VALUE console logging to track exact user input values
+- **handleValueChange Function**: Enhanced with dual ID logging showing both DevLabel and database references
+- **Auto-Save Integration**: Cleared values properly persist through debounced save system
+- **Navigation Persistence**: Values maintain state when navigating away and returning to configuration
+- **Database Integration**: Empty strings and cleared values correctly saved to PostgreSQL database
+
+🔒 **DUAL ID DISPLAY FORMAT:**
+- **Pattern**: "Currently editing 150mm Pricing Window (db11) - (id152) for Configuration Name"
+- **DevLabel Reference**: db11 = Day Rate pricing input field (UI element identifier)
+- **Database Reference**: id152 = PostgreSQL record ID (database configuration record)
+- **Enhanced Clarity**: Both technical debugging ID and user-facing database ID visible simultaneously
+- **Developer Benefits**: Instant identification of both UI component and database record being modified
+
+🔒 **FIELD PERSISTENCE VERIFICATION:**
+- **Day Rate Field (db11)**: Successfully clears and maintains empty state through navigation ✅
+- **Auto-Save System**: Properly saves empty strings and cleared values to database ✅
+- **Load System**: Correctly loads cleared values from database without reverting to defaults ✅
+- **Console Verification**: Enhanced logging confirms exact input values and save operations ✅
+- **User Workflow**: Clear field → auto-save → navigate away → return → field stays cleared ✅
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v8.11' to return to this stable checkpoint
+
 🔒 **USER-CONFIRMED WORKING RESULTS:**
 - **Section 22 (27.74m)**: Correctly uses "No 2" rule → £1850 ÷ 22 = £84.09 (was £74.00)
 - **Section 23 (23.97m)**: Correctly uses standard rule → £1850 ÷ 25 = £74.00 (no change)
