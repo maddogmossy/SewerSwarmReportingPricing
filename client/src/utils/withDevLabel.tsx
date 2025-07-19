@@ -1,5 +1,8 @@
 import { ReactNode } from "react";
-import { DevLabel } from "./DevLabel";
+import { DevLabel, DEV_ID_LIST } from "./DevLabel";
+
+// Export for debugging access
+export { DEV_ID_LIST };
 
 /**
  * Wraps content with a DevLabel for debugging in development mode.
