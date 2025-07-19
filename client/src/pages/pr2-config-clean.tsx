@@ -2224,7 +2224,7 @@ export default function PR2ConfigClean() {
       data-is-editing={isEditing}
     >
       <DevLabel id={dynamicPageId} position="top-right" />
-      <div className="mx-auto">
+      <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -2748,7 +2748,7 @@ export default function PR2ConfigClean() {
                 </Card>
               </div>
             ) : (
-              <div className="flex gap-4 p-4 border rounded-lg bg-gray-50">
+              <div className="flex flex-wrap gap-4 p-4 border rounded-lg bg-gray-50">
                 
                 {/* Blue Window: Day Rate */}
 <Card className="relative bg-blue-50 border-blue-200 w-56 flex-shrink-0">
@@ -3046,10 +3046,7 @@ export default function PR2ConfigClean() {
                 </div>
               ) : (
                 /* Standard TP1 Configuration Layout - Blue/Green/Orange/Purple Windows */
-                <div 
-                  className="flex gap-4 overflow-x-auto pb-4"
-                  style={{ minWidth: 'fit-content' }}
-                >
+                <div className="flex flex-wrap gap-4">
                   
                   {/* Blue Window */}
                   <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0 relative">
