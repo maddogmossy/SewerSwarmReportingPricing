@@ -644,7 +644,7 @@ export default function PR2ConfigClean() {
     
     // Always save when user makes changes - including clearing fields
     console.log('💾 Saving configuration changes (including cleared fields)...');
-    console.log('💾 Current formData being saved:', formData);
+    console.log('💾 Current formData being saved:', JSON.stringify(formData, null, 2));
     
     // Clear previous timeout
     if (saveTimeout) {
