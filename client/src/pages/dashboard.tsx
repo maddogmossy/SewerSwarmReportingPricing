@@ -620,25 +620,25 @@ export default function Dashboard() {
     };
 
     return [
-      { key: 'projectNo', label: 'Project<br/>No', hideable: true, width: getColumnWidth('projectNo', 'w-16'), priority: 'tight' },
-      { key: 'itemNo', label: 'Item<br/>No', hideable: false, width: getColumnWidth('itemNo', 'w-12'), priority: 'tight' },
-      { key: 'inspectionNo', label: 'Inspec.<br/>No', hideable: true, width: getColumnWidth('inspectionNo', 'w-16'), priority: 'tight' },
-      { key: 'date', label: 'Date', hideable: true, width: getColumnWidth('date', 'w-20'), priority: 'tight' },
-      { key: 'time', label: 'Time', hideable: true, width: getColumnWidth('time', 'w-16'), priority: 'tight' },
-      { key: 'startMH', label: 'Start<br/>MH', hideable: false, width: getColumnWidth('startMH', 'w-16'), priority: 'tight' },
-      { key: 'startMHDepth', label: 'Start MH<br/>Depth', hideable: true, width: getColumnWidth('startMHDepth', 'w-20'), priority: 'tight' },
-      { key: 'finishMH', label: 'Finish<br/>MH', hideable: false, width: getColumnWidth('finishMH', 'w-16'), priority: 'tight' },
-      { key: 'finishMHDepth', label: 'Finish MH<br/>Depth', hideable: true, width: getColumnWidth('finishMHDepth', 'w-20'), priority: 'tight' },
-      { key: 'pipeSize', label: 'Pipe<br/>Size', hideable: true, width: getColumnWidth('pipeSize', 'w-16'), priority: 'tight' },
-      { key: 'pipeMaterial', label: 'Pipe<br/>Material', hideable: true, width: getColumnWidth('pipeMaterial', 'w-20'), priority: 'tight' },
-      { key: 'totalLength', label: 'Total<br/>Length (m)', hideable: true, width: getColumnWidth('totalLength', 'w-20'), priority: 'tight' },
-      { key: 'lengthSurveyed', label: 'Length<br/>Surveyed (m)', hideable: true, width: getColumnWidth('lengthSurveyed', 'w-20'), priority: 'tight' },
-      { key: 'defects', label: 'Observations', hideable: false, width: getColumnWidth('defects', 'w-96'), priority: 'pretty' },
-      { key: 'severityGrade', label: 'Severity<br/>Grade', hideable: false, width: getColumnWidth('severityGrade', 'w-16'), priority: 'tight' },
-      { key: 'srmGrading', label: 'SRM<br/>Grading', hideable: false, width: getColumnWidth('srmGrading', 'w-16'), priority: 'tight' },
-      { key: 'recommendations', label: 'Recommendations', hideable: false, width: getColumnWidth('recommendations', 'w-96'), priority: 'pretty' },
-      { key: 'adoptable', label: 'Adoptable', hideable: false, width: getColumnWidth('adoptable', 'w-16'), priority: 'tight' },
-      { key: 'cost', label: 'Cost<br/>(£)', hideable: false, width: getColumnWidth('cost', 'w-16'), priority: 'tight' }
+      { key: 'projectNo', label: 'Project<br/>No', hideable: true, width: getColumnWidth('projectNo', 'w-12'), priority: 'tight' },
+      { key: 'itemNo', label: 'Item<br/>No', hideable: false, width: getColumnWidth('itemNo', 'w-10'), priority: 'tight' },
+      { key: 'inspectionNo', label: 'Inspec.<br/>No', hideable: true, width: getColumnWidth('inspectionNo', 'w-12'), priority: 'tight' },
+      { key: 'date', label: 'Date', hideable: true, width: getColumnWidth('date', 'w-12'), priority: 'tight' },
+      { key: 'time', label: 'Time', hideable: true, width: getColumnWidth('time', 'w-12'), priority: 'tight' },
+      { key: 'startMH', label: 'Start<br/>MH', hideable: false, width: getColumnWidth('startMH', 'w-12'), priority: 'tight' },
+      { key: 'startMHDepth', label: 'Start MH<br/>Depth', hideable: true, width: getColumnWidth('startMHDepth', 'w-14'), priority: 'tight' },
+      { key: 'finishMH', label: 'Finish<br/>MH', hideable: false, width: getColumnWidth('finishMH', 'w-12'), priority: 'tight' },
+      { key: 'finishMHDepth', label: 'Finish MH<br/>Depth', hideable: true, width: getColumnWidth('finishMHDepth', 'w-14'), priority: 'tight' },
+      { key: 'pipeSize', label: 'Pipe<br/>Size', hideable: true, width: getColumnWidth('pipeSize', 'w-12'), priority: 'tight' },
+      { key: 'pipeMaterial', label: 'Pipe<br/>Material', hideable: true, width: getColumnWidth('pipeMaterial', 'w-12'), priority: 'tight' },
+      { key: 'totalLength', label: 'Total<br/>Length (m)', hideable: true, width: getColumnWidth('totalLength', 'w-14'), priority: 'tight' },
+      { key: 'lengthSurveyed', label: 'Length<br/>Surveyed (m)', hideable: true, width: getColumnWidth('lengthSurveyed', 'w-14'), priority: 'tight' },
+      { key: 'defects', label: 'Observations', hideable: false, width: getColumnWidth('defects', 'w-[28rem]'), priority: 'pretty' },
+      { key: 'severityGrade', label: 'Severity<br/>Grade', hideable: false, width: getColumnWidth('severityGrade', 'w-12'), priority: 'tight' },
+      { key: 'srmGrading', label: 'SRM<br/>Grading', hideable: false, width: getColumnWidth('srmGrading', 'w-14'), priority: 'tight' },
+      { key: 'recommendations', label: 'Recommendations', hideable: false, width: getColumnWidth('recommendations', 'w-[28rem]'), priority: 'pretty' },
+      { key: 'adoptable', label: 'Adoptable', hideable: false, width: getColumnWidth('adoptable', 'w-12'), priority: 'tight' },
+      { key: 'cost', label: 'Cost<br/>(£)', hideable: false, width: getColumnWidth('cost', 'w-14'), priority: 'tight' }
     ];
   }, [hiddenColumns]);
 
