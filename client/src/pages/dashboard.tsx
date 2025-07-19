@@ -599,45 +599,23 @@ export default function Dashboard() {
   const columns = useMemo(() => {
     const hiddenCount = hiddenColumns.size;
     
-    // DEBUG: Log dynamic column wrapping state
-    console.log('🔧 DYNAMIC COLUMN WRAPPING DEBUG:', {
-      hiddenColumnsCount: hiddenCount,
-      hideAllModeActive: hiddenCount >= 8,
-      hiddenColumnsSet: Array.from(hiddenColumns)
-    });
-    
     // Calculate dynamic widths - responsive sizing based on hidden columns
     const getColumnWidth = (key: string, baseWidth: string) => {
       // When "Hide All" is clicked (8+ columns hidden), optimize all columns
       if (hiddenCount >= 8) {
         // Content columns get maximum space
         if (key === 'defects' || key === 'recommendations') {
-          console.log(`📏 ${key} column width: w-[32rem] (Hide All mode)`);
           return 'w-[32rem]'; // Maximum width for content
         }
         // All other columns become ultra-tight
-        if (key === 'itemNo') {
-          console.log(`📏 ${key} column width: w-8 (Hide All mode)`);
-          return 'w-8';
-        }
-        if (key === 'startMH' || key === 'finishMH') {
-          console.log(`📏 ${key} column width: w-12 (Hide All mode)`);
-          return 'w-12';
-        }
-        if (key === 'severityGrade' || key === 'srmGrading' || key === 'adoptable') {
-          console.log(`📏 ${key} column width: w-12 (Hide All mode)`);
-          return 'w-12';
-        }
-        if (key === 'cost') {
-          console.log(`📏 ${key} column width: w-12 (Hide All mode)`);
-          return 'w-12';
-        }
+        if (key === 'itemNo') return 'w-8';
+        if (key === 'startMH' || key === 'finishMH') return 'w-12';
+        if (key === 'severityGrade' || key === 'srmGrading' || key === 'adoptable') return 'w-12';
+        if (key === 'cost') return 'w-12';
         // Any remaining columns
-        console.log(`📏 ${key} column width: w-10 (Hide All mode - other)`);
         return 'w-10';
       }
       // For all other cases, use consistent base width
-      console.log(`📏 ${key} column width: ${baseWidth} (normal mode)`);
       return baseWidth;
     };
 
