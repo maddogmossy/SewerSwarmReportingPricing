@@ -585,7 +585,7 @@ export default function Upload() {
               </div>
             ) : (
               <div className="space-y-4">
-                {Object.entries(groupUploadsByFolder()).map(([folderKey, folderUploads]) => {
+                {Object.entries(groupUploadsByFolder()).map(([folderKey, folderUploads], folderIndex) => {
                   const folder = folders.find(f => f.id === parseInt(folderKey));
                   const isExpanded = expandedFolders.has(parseInt(folderKey));
                   
@@ -643,7 +643,8 @@ export default function Upload() {
                   }
 
                   return (
-                    <div key={folderKey} className="border-2 rounded-lg border-blue-200 bg-blue-50/30">
+                    <div key={folderKey} className="relative border-2 rounded-lg border-blue-200 bg-blue-50/30">
+                      <DevLabel id={`f${folderIndex + 1}`} />
                       {/* Folder Header - Enhanced styling */}
                       <div 
                         className="flex items-center justify-between p-4 bg-blue-100/50 cursor-pointer hover:bg-blue-200/50 transition-colors rounded-t-lg border-b-2 border-blue-200"
