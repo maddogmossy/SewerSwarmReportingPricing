@@ -1119,27 +1119,41 @@ Both rules are permanently locked and displayed on screen per user requirement
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.6' to return to this stable checkpoint
 
-## REV V8.8 CHECKPOINT - RANGE-BASED CALCULATION SYSTEM COMPLETE (July 18, 2025)
+## REV V8.9 CHECKPOINT - COMPLETE DEVLABEL DEBUGGING SYSTEM LOCKED (July 19, 2025)
 
-🔒 **PRODUCTION READY - DUAL RANGE CALCULATION SYSTEM:**
-- **Critical Database Fixes**: Corrected "Percentage 2" from corrupted value "3" to proper "30" and "Length 2" from "45.9" to "45.99" precision format
-- **Range-Based "No 2" Rule**: Completely redesigned calculation logic to use actual configuration ranges instead of hardcoded pipe size and length values
-- **Dynamic Range Detection**: System now analyzes "Length" (0-25.99m) vs "Length 2" (0-45.99m) ranges to determine which calculation rule applies
-- **Smart Calculation Logic**: Sections exceeding Length 1 max but within Length 2 max automatically use "No 2" rule (22 runs per shift)
-- **Console Verification**: Detailed range analysis logging shows exact decision process for each section's calculation method
-- **DevLabel Debugging System**: Complete development debugging infrastructure with systematic element tracking
+🔒 **PRODUCTION READY - COMPREHENSIVE DEVELOPMENT DEBUGGING INFRASTRUCTURE:**
+- **DevLabel System Complete**: Systematic debugging labels implemented across entire application with subtle gray styling
+- **Range-Based Calculation System**: Dual range calculation logic operational with authentic database values
+- **Template Logic Fixed**: Dynamic template type detection using `getTemplateType(categoryId)` eliminates hardcoded configuration ID issues
+- **Professional Debug Interface**: Subtle gray labels with 75% opacity replace bright red boxes for non-intrusive debugging
+- **Global Debug Access**: `window.DEV_ID_LIST` provides complete console access to all registered DevLabel IDs
+- **Systematic ID Convention**: `[page/component]-[element-type]-[specific-purpose]` pattern for consistent identification
 
-🔒 **DEVELOPMENT DEBUGGING INFRASTRUCTURE COMPLETE:**
-- **DevLabel Component**: Direct element labeling with unique ID tracking and global window access
-- **withDevLabel Utility**: Component wrapper for existing elements with systematic naming convention validation
-- **Global Debug Access**: `window.DEV_ID_LIST` provides console access to all registered DevLabel IDs
-- **Systematic Naming Convention**: `[sector-or-page]-[element-type]-[purpose]` pattern for consistent identification
-- **Category Coverage**: Comprehensive DevLabel implementation across all 13 pricing categories with grid layout
-- **Enhanced Styling**: Black background with white monospace text, high z-index (9999) for visibility
-- **Universal Access**: Window-based detection without environment restrictions for flexible debugging
-- **Duplicate Prevention**: Smart ID tracking prevents duplicate entries in global debug list
+🔒 **DEVLABEL IMPLEMENTATION COMPLETE:**
+- **Configuration Windows**: `blue-window-pricing`, `grey-window-math`, `green-window-quantity`, `orange-window-minquantity`, `purple-window-ranges`
+- **Category Cards**: `category-card-{category.id}` for all pricing categories with dynamic ID assignment  
+- **Dashboard Components**: `dashboard-sections-table`, `dashboard-sector-{currentSector.id}` for table and sector identification
+- **Home Page Cards**: `home-upload-card`, `home-dashboard-card`, `home-pricing-settings-card` for navigation components
+- **Grid Layout Pattern**: Demonstrates systematic DevLabel application across component grids and card structures
+- **Professional Styling**: Subtle gray text on white background with monospace font and high z-index positioning
 
 🔒 **TECHNICAL IMPLEMENTATION:**
+- **DevLabel Component**: `client/src/utils/DevLabel.tsx` with global ID tracking and automatic duplicate prevention
+- **Import Pattern**: `import { DevLabel } from '@/utils/DevLabel';` standardized across all components
+- **Usage Pattern**: `<DevLabel id="component-specific-identifier" />` with relative positioning on parent containers
+- **Global Access**: `console.log(window.DEV_ID_LIST)` provides complete list of registered debugging IDs
+- **Template Detection**: Fixed loading issues by using `getTemplateType(selectedCategory)` instead of hardcoded configuration IDs
+
+🔒 **GRID LAYOUT EXAMPLE PROVIDED:**
+- **User Example**: Demonstrates systematic DevLabel application across grid components
+- **Pattern**: `<div className="relative">` + `<DevLabel id="home-upload-report" />` for each grid item
+- **Naming Convention**: `home-upload-report`, `home-dashboard`, `home-pricing-settings`, `home-upgrade-plan` 
+- **Span Support**: Works with `col-span-2` and other grid utilities while maintaining proper positioning
+- **Professional Implementation**: Subtle gray styling with consistent placement across all component types
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v8.9' to return to this stable checkpoint
+
+🔒 **RANGE-BASED CALCULATION FEATURES MAINTAINED:**
 - **Database Precision**: Updated range_options JSON to use proper ".99" format for length validation requirements
 - **Range Logic**: Modified checkNo2Rule() function to read actual lengthRange and lengthRange2 configuration values
 - **Calculation Rules**: Length ≤ 25.99m uses standard rule (£1850 ÷ 25), Length > 25.99m but ≤ 45.99m uses "No 2" rule (£1850 ÷ 22)
