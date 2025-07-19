@@ -486,6 +486,7 @@ export default function PR2ConfigClean() {
   // Handle value changes for input fields
   const handleValueChange = (optionType: string, optionId: string, value: string) => {
     console.log(`🔧 handleValueChange called: ${optionType}, ${optionId}, ${value}`);
+    console.log(`🔧 CRITICAL - FIELD db11 VALUE CHANGE: "${value}" for option ${optionId} in configuration id${editId}`);
     
     // Mark that user has made changes to prevent automatic form overwrite
     console.log(`🔧 USER CHANGED VALUE: ${optionType}, ${optionId}, ${value} - setting hasUserChanges = true`);
