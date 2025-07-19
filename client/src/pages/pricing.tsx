@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Settings, Wrench, Building2, Scissors, Droplets, Hammer, Layers, Truck, Home, ChevronRight, BarChart3, Plus, Edit, Trash2, Save, X } from "lucide-react";
 import { Link } from "wouter";
+import { DevLabel } from "@/utils/DevLabel";
 
 // MSCC5 Defect Codes
 const MSCC5_CODES = {
@@ -406,10 +407,12 @@ export default function Pricing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+    <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+      <DevLabel id="pricing-main-container" />
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Navigation */}
-        <div className="flex justify-start gap-4">
+        <div className="relative flex justify-start gap-4">
+          <DevLabel id="pricing-navigation-bar" />
           <Link href="/">
             <Button variant="outline" className="flex items-center gap-2">
               <Home className="h-4 w-4" />
@@ -426,7 +429,8 @@ export default function Pricing() {
         </div>
         
         {/* Header */}
-        <div className="text-center space-y-4">
+        <div className="relative text-center space-y-4">
+          <DevLabel id="pricing-header-section" />
           <div className="flex items-center justify-center gap-3">
             <Settings className="h-8 w-8 text-blue-600" />
             <h1 className="text-4xl font-bold text-gray-900">
@@ -441,7 +445,8 @@ export default function Pricing() {
 
         {/* Category Selection */}
         <div className="flex justify-center">
-          <div className="flex gap-2 bg-white p-2 rounded-lg shadow-sm">
+          <div className="relative flex gap-2 bg-white p-2 rounded-lg shadow-sm">
+            <DevLabel id="pricing-category-selector" />
             {workCategories.filter(cat => cat.implemented).map((category) => {
               const IconComponent = category.icon;
               return (
@@ -463,17 +468,21 @@ export default function Pricing() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Rules Section */}
           <div className="space-y-6">
-            <Card>
+            <Card className="relative">
+              <DevLabel id="pricing-rules-section" />
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Settings className="h-5 w-5" />
                     Rules Section - {selectedCategoryData?.name}
                   </CardTitle>
-                  <Button onClick={() => setShowAddRule(true)} className="flex items-center gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add Rule
-                  </Button>
+                  <div className="relative">
+                    <DevLabel id="pricing-add-rule-button" />
+                    <Button onClick={() => setShowAddRule(true)} className="flex items-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Rule
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -484,7 +493,8 @@ export default function Pricing() {
                 ) : (
                   <div className="space-y-4">
                     {pricingRules.map((rule: PricingRule) => (
-                      <div key={rule.id} className="border rounded-lg p-4 space-y-3">
+                      <div key={rule.id} className="relative border rounded-lg p-4 space-y-3">
+                        <DevLabel id={`pricing-rule-card-${rule.id}`} />
                         <div className="flex items-start justify-between">
                           <div className="space-y-1">
                             <h4 className="font-medium text-sm">{rule.recommendationType}</h4>
@@ -516,17 +526,21 @@ export default function Pricing() {
 
           {/* Right Column - Equipment Specifications */}
           <div className="space-y-6">
-            <Card>
+            <Card className="relative">
+              <DevLabel id="pricing-equipment-section" />
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Wrench className="h-5 w-5" />
                     Current Assets/Vehicles - {selectedCategoryData?.name}
                   </CardTitle>
-                  <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add Asset
-                  </Button>
+                  <div className="relative">
+                    <DevLabel id="pricing-add-equipment-button" />
+                    <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Asset
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -540,7 +554,8 @@ export default function Pricing() {
                       const pricing = userPricing.find((p: UserPricing) => p.equipmentTypeId === equipment.id);
                       
                       return (
-                        <div key={equipment.id} className="border rounded-lg p-4 space-y-3 bg-white">
+                        <div key={equipment.id} className="relative border rounded-lg p-4 space-y-3 bg-white">
+                          <DevLabel id={`pricing-asset-card-${equipment.id}`} />
                           <div className="flex items-start justify-between">
                             <div className="space-y-2 flex-1">
                               <h4 className="font-medium text-base text-gray-900">{equipment.name}</h4>
@@ -612,7 +627,8 @@ export default function Pricing() {
       {/* Add Rule Dialog */}
       {showAddRule && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DevLabel id="pricing-add-rule-dialog" />
             <h3 className="text-lg font-semibold mb-4">Add New Pricing Rule</h3>
             <div className="space-y-4">
               <div>
@@ -846,7 +862,8 @@ export default function Pricing() {
       {/* Add Equipment Dialog */}
       {showAddEquipment && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DevLabel id="pricing-add-equipment-dialog" />
             <h3 className="text-lg font-semibold mb-4">Add New Equipment</h3>
             <div className="space-y-4">
               <div>
@@ -999,7 +1016,8 @@ export default function Pricing() {
       {/* Add Equipment Dialog */}
       {showAddEquipment && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <DevLabel id="pricing-equipment-form-dialog" />
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold">
                 {editingEquipment ? 'Edit Equipment' : 'Add New Equipment'}
@@ -1067,7 +1085,8 @@ export default function Pricing() {
               </div>
 
               {/* Right Column - Standard Equipment Templates */}
-              <div className="space-y-4">
+              <div className="relative space-y-4">
+                <DevLabel id="pricing-equipment-templates" />
                 <h3 className="font-medium text-gray-900">Standard Survey Equipment</h3>
                 <p className="text-sm text-gray-600">Click any template to pre-fill the form</p>
                 
@@ -1075,9 +1094,10 @@ export default function Pricing() {
                   {STANDARD_SURVEY_EQUIPMENT.map((equipment, index) => (
                     <div 
                       key={index}
-                      className="border rounded-lg p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                      className="relative border rounded-lg p-3 cursor-pointer hover:bg-gray-50 transition-colors"
                       onClick={() => handleAddStandardEquipment(equipment)}
                     >
+                      <DevLabel id={`pricing-template-${index}`} />
                       <div className="font-medium text-sm text-gray-900">{equipment.name}</div>
                       <div className="text-xs text-gray-600 mt-1">{equipment.description}</div>
                       <div className="text-xs text-blue-600 mt-1">
