@@ -1119,26 +1119,30 @@ Both rules are permanently locked and displayed on screen per user requirement
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.9.6' to return to this stable checkpoint
 
-## REV V8.9 CHECKPOINT - COMPLETE DEVLABEL DEBUGGING SYSTEM LOCKED (July 19, 2025)
+## REV V8.10 CHECKPOINT - COMPLETE DEVLABEL SYSTEM WITH P4 CATEGORIES LOCKED (July 19, 2025)
 
 🔒 **PRODUCTION READY - COMPREHENSIVE DEVELOPMENT DEBUGGING INFRASTRUCTURE:**
 - **DevLabel System Complete**: Systematic debugging labels implemented across entire application with bold gray styling
-- **Range-Based Calculation System**: Dual range calculation logic operational with authentic database values
+- **P4 Category IDs Implemented**: All 13 standard categories on pricing page converted from title-based to numeric IDs (15-27)
+- **Folder System Complete**: Dynamic folder IDs (f1, f2, f3...) implemented with letter prefixes for clear distinction
 - **Template Logic Fixed**: Dynamic template type detection using `getTemplateType(categoryId)` eliminates hardcoded configuration ID issues
 - **Professional Debug Interface**: Bold gray labels with 90% opacity for high visibility and consistent formatting
 - **Global Debug Access**: `window.DEV_ID_LIST` provides complete console access to all registered DevLabel IDs
-- **Systematic ID Convention**: `[page/component]-[element-type]-[specific-purpose]` pattern for consistent identification
 
-🔒 **DEVLABEL IMPLEMENTATION COMPLETE:**
-- **Configuration Windows**: `blue-window-pricing`, `grey-window-math`, `green-window-quantity`, `orange-window-minquantity`, `purple-window-ranges`
-- **Category Cards**: `category-card-{category.id}` for all pricing categories with dynamic ID assignment  
-- **Dashboard Components**: `dashboard-sections-table`, `dashboard-sector-{currentSector.id}` for table and sector identification
-- **Home Page Cards**: `home-upload-card`, `home-dashboard-card`, `home-pricing-settings-card` for navigation components
-- **Grid Layout Pattern**: Demonstrates systematic DevLabel application across component grids and card structures
-- **Professional Styling**: Subtle gray text on white background with monospace font and high z-index positioning
+🔒 **COMPLETE ID NUMBERING SYSTEM:**
+- **Home Cards**: 1-7 (Welcome, Upload, Dashboard, Pricing Settings, Upgrade, Sectors, Formats)
+- **Sector Cards**: 8-13 (Utilities, Adoption, Highways, Domestic, Insurance, Construction)
+- **Upload Section**: 14 (Uploaded Reports)
+- **P4 Category Cards**: 15-27 (CCTV, Van Pack, Jet Vac, CCTV/Van Pack, CCTV/Jet Vac, Directional Water Cutter, Ambient Lining, Hot Cure Lining, UV Lining, IMS Cutting, Excavation, Patching, Tankering)
+- **Pipe Size Cards**: 28-29 (Dynamic CCTV/Jet Vac and CCTV/Van Pack pipe configurations)
+- **Page IDs**: p2-p4 (Upload, Dashboard, Pricing Settings - top-right position)
+- **Folder IDs**: f1, f2, f3... (Dynamic folder containers - bottom-right position)
 
 🔒 **TECHNICAL IMPLEMENTATION:**
 - **DevLabel Component**: `client/src/utils/DevLabel.tsx` with global ID tracking and automatic duplicate prevention
+- **Category ID Mapping**: STANDARD_CATEGORIES enhanced with devId field for numeric ID assignment
+- **Dynamic Folder System**: Folder indexing with letter prefixes for scalable identification
+- **Pipe Size Integration**: Dynamic configuration cards with dedicated IDs 28-29
 - **Import Pattern**: `import { DevLabel } from '@/utils/DevLabel';` standardized across all components
 - **Usage Pattern**: `<DevLabel id="component-specific-identifier" />` with relative positioning on parent containers
 - **Global Access**: `console.log(window.DEV_ID_LIST)` provides complete list of registered debugging IDs

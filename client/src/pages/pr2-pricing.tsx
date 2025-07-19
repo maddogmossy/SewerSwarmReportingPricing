@@ -45,19 +45,19 @@ const SECTORS = [
 
 // Standard category options with no colors, just symbols
 const STANDARD_CATEGORIES = [
-  { id: 'cctv', name: 'CCTV', description: 'Closed-circuit television inspection services', icon: Video },
-  { id: 'van-pack', name: 'Van Pack', description: 'Mobile van-based equipment package', icon: Truck },
-  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
-  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection with van pack equipment', icon: Monitor },
-  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
-  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precision directional cutting services', icon: Waves },
-  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient temperature pipe lining installation', icon: PaintBucket },
-  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure pipe lining installation', icon: Flame },
-  { id: 'uv-lining', name: 'UV Lining', description: 'Ultraviolet cured pipe lining installation', icon: Sun },
-  { id: 'ims-cutting', name: 'IMS Cutting', description: 'Integrated Management System cutting services', icon: Scissors },
-  { id: 'excavation', name: 'Excavation', description: 'Traditional excavation and repair services', icon: Pickaxe },
-  { id: 'patching', name: 'Patching', description: 'Localized pipe repair and patching services according to WRc Drain Repair Book standards', icon: Edit },
-  { id: 'tankering', name: 'Tankering', description: 'Waste removal and tankering services', icon: Truck }
+  { id: 'cctv', name: 'CCTV', description: 'Closed-circuit television inspection services', icon: Video, devId: 15 },
+  { id: 'van-pack', name: 'Van Pack', description: 'Mobile van-based equipment package', icon: Truck, devId: 16 },
+  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves, devId: 17 },
+  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection with van pack equipment', icon: Monitor, devId: 18 },
+  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video, devId: 19 },
+  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precision directional cutting services', icon: Waves, devId: 20 },
+  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient temperature pipe lining installation', icon: PaintBucket, devId: 21 },
+  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure pipe lining installation', icon: Flame, devId: 22 },
+  { id: 'uv-lining', name: 'UV Lining', description: 'Ultraviolet cured pipe lining installation', icon: Sun, devId: 23 },
+  { id: 'ims-cutting', name: 'IMS Cutting', description: 'Integrated Management System cutting services', icon: Scissors, devId: 24 },
+  { id: 'excavation', name: 'Excavation', description: 'Traditional excavation and repair services', icon: Pickaxe, devId: 25 },
+  { id: 'patching', name: 'Patching', description: 'Localized pipe repair and patching services according to WRc Drain Repair Book standards', icon: Edit, devId: 26 },
+  { id: 'tankering', name: 'Tankering', description: 'Waste removal and tankering services', icon: Truck, devId: 27 }
 ];
 
 export default function PR2Pricing() {
@@ -447,7 +447,7 @@ export default function PR2Pricing() {
 
                     return (
                       <Card
-                        className="cursor-pointer transition-all hover:shadow-md border-2 border-blue-200"
+                        className="relative cursor-pointer transition-all hover:shadow-md border-2 border-blue-200"
                         style={{
                           backgroundColor: configToUse?.categoryColor 
                             ? hexToRgba(configToUse.categoryColor, 0.3)
@@ -461,6 +461,7 @@ export default function PR2Pricing() {
                           }
                         }}
                       >
+                        <DevLabel id="28" />
                         <CardContent className="p-4 text-center relative">
                           <Waves className="h-8 w-8 mx-auto mb-2 text-blue-600" />
                           <h3 className="font-medium text-sm mb-1">
@@ -497,7 +498,7 @@ export default function PR2Pricing() {
 
                     return (
                       <Card
-                        className="cursor-pointer transition-all hover:shadow-md border-2 border-blue-200"
+                        className="relative cursor-pointer transition-all hover:shadow-md border-2 border-blue-200"
                         style={{
                           backgroundColor: configToUse?.categoryColor 
                             ? hexToRgba(configToUse.categoryColor, 0.3)
@@ -511,6 +512,7 @@ export default function PR2Pricing() {
                           }
                         }}
                       >
+                        <DevLabel id="29" />
                         <CardContent className="p-4 text-center relative">
                           <Monitor className="h-8 w-8 mx-auto mb-2 text-blue-600" />
                           <h3 className="font-medium text-sm mb-1">
@@ -579,7 +581,7 @@ export default function PR2Pricing() {
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
-                      <DevLabel id={`category-card-${category.id}`} />
+                      <DevLabel id={category.devId?.toString() || `category-card-${category.id}`} />
                       <CardContent className="p-4 text-center relative">
                         <category.icon className={`h-8 w-8 mx-auto mb-2 ${
                           isUserCreated ? 'text-green-700' : 'text-gray-700'
