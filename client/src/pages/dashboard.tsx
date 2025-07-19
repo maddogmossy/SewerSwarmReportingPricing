@@ -601,9 +601,9 @@ export default function Dashboard() {
     
     // Calculate dynamic widths - only change for "Hide All" case
     const getColumnWidth = (key: string, baseWidth: string) => {
-      // Only expand content columns when "Hide All" is clicked (8+ columns hidden)
+      // Only expand content columns when "Hide All" is clicked (8+ columns hidden) 
       if ((key === 'defects' || key === 'recommendations') && hiddenCount >= 8) {
-        return 'w-96'; // Expanded width only for Hide All
+        return 'w-[32rem]'; // Extra expanded width for Hide All (even more room)
       }
       // For all other cases, use consistent base width
       return baseWidth;
@@ -623,10 +623,10 @@ export default function Dashboard() {
       { key: 'pipeMaterial', label: 'Pipe Material', hideable: true, width: getColumnWidth('pipeMaterial', 'w-32'), priority: 'tight' },
       { key: 'totalLength', label: 'Total Length (m)', hideable: true, width: getColumnWidth('totalLength', 'w-28'), priority: 'tight' },
       { key: 'lengthSurveyed', label: 'Length Surveyed (m)', hideable: true, width: getColumnWidth('lengthSurveyed', 'w-32'), priority: 'tight' },
-      { key: 'defects', label: 'Observations', hideable: false, width: getColumnWidth('defects', 'w-80'), priority: 'pretty' },
+      { key: 'defects', label: 'Observations', hideable: false, width: getColumnWidth('defects', 'w-96'), priority: 'pretty' },
       { key: 'severityGrade', label: 'Severity Grade', hideable: false, width: getColumnWidth('severityGrade', 'w-24'), priority: 'tight' },
       { key: 'srmGrading', label: 'SRM Grading', hideable: false, width: getColumnWidth('srmGrading', 'w-24'), priority: 'tight' },
-      { key: 'recommendations', label: 'Recommendations', hideable: false, width: getColumnWidth('recommendations', 'w-80'), priority: 'pretty' },
+      { key: 'recommendations', label: 'Recommendations', hideable: false, width: getColumnWidth('recommendations', 'w-96'), priority: 'pretty' },
       { key: 'adoptable', label: 'Adoptable', hideable: false, width: getColumnWidth('adoptable', 'w-24'), priority: 'tight' },
       { key: 'cost', label: 'Cost (£)', hideable: false, width: getColumnWidth('cost', 'w-24'), priority: 'tight' }
     ];
