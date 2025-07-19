@@ -609,7 +609,7 @@ export default function Dashboard() {
         }
         // All other columns become ultra-tight
         if (key === 'itemNo') return 'w-8';
-        if (key === 'startMH' || key === 'finishMH') return 'w-12';
+        if (key === 'startMH' || key === 'finishMH') return '';
         if (key === 'severityGrade' || key === 'srmGrading' || key === 'adoptable') return 'w-12';
         if (key === 'cost') return 'w-12';
         // Any remaining columns
@@ -625,9 +625,9 @@ export default function Dashboard() {
       { key: 'inspectionNo', label: 'Inspec.<br/>No', hideable: true, width: getColumnWidth('inspectionNo', 'w-8'), priority: 'tight' },
       { key: 'date', label: 'Date', hideable: true, width: getColumnWidth('date', 'w-10'), priority: 'tight' },
       { key: 'time', label: 'Time', hideable: true, width: getColumnWidth('time', 'w-10'), priority: 'tight' },
-      { key: 'startMH', label: 'Start<br/>MH', hideable: false, width: getColumnWidth('startMH', 'w-12'), priority: 'tight' },
+      { key: 'startMH', label: 'Start<br/>MH', hideable: false, width: getColumnWidth('startMH', ''), priority: 'tight' },
       { key: 'startMHDepth', label: 'Start MH<br/>Depth', hideable: true, width: getColumnWidth('startMHDepth', 'w-12'), priority: 'tight' },
-      { key: 'finishMH', label: 'Finish<br/>MH', hideable: false, width: getColumnWidth('finishMH', 'w-12'), priority: 'tight' },
+      { key: 'finishMH', label: 'Finish<br/>MH', hideable: false, width: getColumnWidth('finishMH', ''), priority: 'tight' },
       { key: 'finishMHDepth', label: 'Finish MH<br/>Depth', hideable: true, width: getColumnWidth('finishMHDepth', 'w-12'), priority: 'tight' },
       { key: 'pipeSize', label: 'Pipe<br/>Size', hideable: true, width: getColumnWidth('pipeSize', 'w-8'), priority: 'tight' },
       { key: 'pipeMaterial', label: 'Pipe<br/>Material', hideable: true, width: getColumnWidth('pipeMaterial', 'w-10'), priority: 'tight' },
