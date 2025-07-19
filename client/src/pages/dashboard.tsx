@@ -3429,7 +3429,6 @@ export default function Dashboard() {
                   <DevLabel id="db34" />
                   <table 
                     className="w-full text-xs border-collapse border border-slate-300" 
-                    style={{ tableLayout: 'fixed' }}
                     data-component="sections-table"
                     data-upload-id={currentUpload?.id}
                     data-page="dashboard"
@@ -3454,9 +3453,9 @@ export default function Dashboard() {
                                 }
                               }}
                               style={{
-                                width: column.key === 'projectNo' ? '20px' : undefined,
-                                maxWidth: column.key === 'projectNo' ? '20px' : undefined,
-                                minWidth: column.key === 'projectNo' ? '20px' : undefined
+                                width: column.key === 'projectNo' ? '20px !important' : undefined,
+                                maxWidth: column.key === 'projectNo' ? '20px !important' : undefined,
+                                minWidth: column.key === 'projectNo' ? '20px !important' : undefined
                               }}
                               className={`
                                 border border-slate-300 font-semibold text-xs align-middle ${column.width}
@@ -3501,9 +3500,14 @@ export default function Dashboard() {
                               <td 
                                 key={column.key} 
                                 style={{
-                                  width: column.key === 'projectNo' ? '20px' : undefined,
-                                  maxWidth: column.key === 'projectNo' ? '20px' : undefined,
-                                  minWidth: column.key === 'projectNo' ? '20px' : undefined
+                                  width: column.key === 'projectNo' ? '20px !important' : undefined,
+                                  maxWidth: column.key === 'projectNo' ? '20px !important' : undefined,
+                                  minWidth: column.key === 'projectNo' ? '20px !important' : undefined,
+                                  wordWrap: 'break-word',
+                                  whiteSpace: 'normal',
+                                  wordBreak: 'break-word',
+                                  overflowWrap: 'break-word',
+                                  hyphens: 'auto'
                                 }}
                                 className={`
                                   border border-slate-300 text-xs align-top ${column.width}
@@ -3515,13 +3519,6 @@ export default function Dashboard() {
                                     : ''
                                   }
                                 `}
-                                style={{ 
-                                  wordWrap: 'break-word',
-                                  whiteSpace: 'normal',
-                                  wordBreak: 'break-word',
-                                  overflowWrap: 'break-word',
-                                  hyphens: 'auto'
-                                }}
                               >
                                 {renderCellContent(column.key, section)}
                               </td>
