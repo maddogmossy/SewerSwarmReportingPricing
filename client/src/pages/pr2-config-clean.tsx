@@ -561,6 +561,9 @@ export default function PR2ConfigClean() {
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
     console.log(`🔧 handleRangeValueChange called: ${optionId}, ${field}, ${value}`);
     
+    // Mark that user has made changes to prevent automatic form overwrite
+    setHasUserChanges(true);
+    
     setFormData(prev => ({
       ...prev,
       rangeOptions: prev.rangeOptions.map(opt => {
@@ -640,9 +643,7 @@ export default function PR2ConfigClean() {
     
     // Always save when user makes changes - including clearing fields
     console.log('💾 Saving configuration changes (including cleared fields)...');
-    
-    // Reset hasUserChanges flag after save completes
-    setTimeout(() => setHasUserChanges(false), 3000);
+    console.log('💾 Current formData being saved:', formData);
     
     // Clear previous timeout
     if (saveTimeout) {
@@ -1011,10 +1012,16 @@ export default function PR2ConfigClean() {
   // Track if user has made changes to prevent automatic form overwrite
   const [hasUserChanges, setHasUserChanges] = useState(false);
   
+  // Track if we've done the initial load to allow first configuration load
+  const [hasInitialLoad, setHasInitialLoad] = useState(false);
+  
   // Clear processedConfigId when editId changes to allow new configuration loading
   useEffect(() => {
     console.log(`🔄 editId changed to: ${editId}, clearing processedConfigId and invalidating cache`);
     setProcessedConfigId(null);
+    // Reset flags when switching to different config
+    setHasUserChanges(false);
+    setHasInitialLoad(false);
     // Force invalidate the specific configuration query to trigger fresh fetch
     if (editId) {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
@@ -1028,12 +1035,12 @@ export default function PR2ConfigClean() {
     console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, editId: ${editId}, configToUse:`, configToUse);
     console.log(`🔍 processedConfigId: ${processedConfigId}, current config ID: ${configToUse?.id}`);
     
-    // FIXED: Force reload when editId changes, but only if user hasn't made changes
-    if (isEditing && configToUse && configToUse.id && !hasUserChanges) {
+    // FIXED: Force reload when editId changes, but only if user hasn't made changes OR this is initial load
+    if (isEditing && configToUse && configToUse.id && (!hasUserChanges || !hasInitialLoad)) {
       const configId = parseInt(editId || '0');
-      console.log(`🔍 Force processing config ID: ${configId} (editId: ${editId}) - hasUserChanges: ${hasUserChanges}`);
+      console.log(`🔍 Force processing config ID: ${configId} (editId: ${editId}) - hasUserChanges: ${hasUserChanges}, hasInitialLoad: ${hasInitialLoad}`);
       
-      // Always process when editId is present, but respect user changes
+      // Always process when editId is present, but respect user changes after initial load
       if (configId > 0) {
         // Get the actual config object (might be wrapped in array)
         const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
@@ -1102,6 +1109,9 @@ export default function PR2ConfigClean() {
 
         // Set the form data directly without reset (fixes display issue)
         setFormData(newFormData);
+        
+        // Mark that initial load is complete
+        setHasInitialLoad(true);
         
         // Set single sector information
         const configSector = config.sector || sector;
