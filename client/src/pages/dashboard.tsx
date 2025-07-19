@@ -3453,11 +3453,11 @@ export default function Dashboard() {
                                 }
                               }}
                               style={{
-                                width: column.key === 'projectNo' ? '20px !important' : 
+                                width: column.key === 'projectNo' ? '50px !important' : 
                                       column.key === 'cost' ? '80px !important' : undefined,
-                                maxWidth: column.key === 'projectNo' ? '20px !important' : 
+                                maxWidth: column.key === 'projectNo' ? '50px !important' : 
                                          column.key === 'cost' ? '80px !important' : undefined,
-                                minWidth: column.key === 'projectNo' ? '20px !important' : 
+                                minWidth: column.key === 'projectNo' ? '50px !important' : 
                                          column.key === 'cost' ? '80px !important' : undefined
                               }}
                               className={`
@@ -3503,17 +3503,17 @@ export default function Dashboard() {
                               <td 
                                 key={column.key} 
                                 style={{
-                                  width: column.key === 'projectNo' ? '20px !important' : 
+                                  width: column.key === 'projectNo' ? '50px !important' : 
                                         column.key === 'cost' ? '80px !important' : undefined,
-                                  maxWidth: column.key === 'projectNo' ? '20px !important' : 
+                                  maxWidth: column.key === 'projectNo' ? '50px !important' : 
                                            column.key === 'cost' ? '80px !important' : undefined,
-                                  minWidth: column.key === 'projectNo' ? '20px !important' : 
+                                  minWidth: column.key === 'projectNo' ? '50px !important' : 
                                            column.key === 'cost' ? '80px !important' : undefined,
-                                  wordWrap: 'break-word',
-                                  whiteSpace: 'normal',
-                                  wordBreak: 'break-word',
-                                  overflowWrap: 'break-word',
-                                  hyphens: 'auto'
+                                  wordWrap: column.key === 'projectNo' ? 'nowrap' : 'break-word',
+                                  whiteSpace: column.key === 'projectNo' ? 'nowrap' : 'normal',
+                                  wordBreak: column.key === 'projectNo' ? 'normal' : 'break-word',
+                                  overflowWrap: column.key === 'projectNo' ? 'normal' : 'break-word',
+                                  hyphens: column.key === 'projectNo' ? 'none' : 'auto'
                                 }}
                                 className={`
                                   border border-slate-300 text-xs align-top ${column.width}
