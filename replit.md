@@ -1137,10 +1137,14 @@ Both rules are permanently locked and displayed on screen per user requirement
 - **Pipe Size Cards**: 28-29 (Dynamic CCTV/Jet Vac and CCTV/Van Pack pipe configurations)
 - **Static Page IDs**: p2-p4 (Upload, Dashboard, Pricing Settings - top-right position)
 - **Dynamic Config Page IDs**: p15-p27 (Category configuration pages - CCTV=p15, Van Pack=p16, etc. - top-right position)
-- **Database UI Components**: db1-db15 (Complete dual interface coverage)
+- **Database UI Components**: db1-db45 (Complete application-wide coverage)
   - Core Components: db1-db5 (Pipe Size, Title, Sector, Delete, Color)
-  - Interface 1: db6-db10 (Blue, Grey, Green, Orange, Purple Windows)
-  - Interface 2: db11-db15 (Blue, Grey, Green, Orange, Purple Windows)
+  - Configuration Windows: db6-db15 (TP1/TP2 pricing, quantity, range windows)
+  - Dashboard Navigation: db16-db22 (Home, upload, pricing, reprocess, export buttons)
+  - Dashboard Controls: db23-db33 (Header, folder, table controls, filters)
+  - Data Table System: db34-db36 (Table container, header, body components)
+  - Summary Statistics: db37-db42 (Statistics grid and individual cards)
+  - Dialog Components: db43-db45 (Export warning dialogs and controls)
 - **Folder IDs**: f1, f2, f3... (Dynamic folder containers - bottom-right position)
 
 🔒 **TECHNICAL IMPLEMENTATION:**

@@ -2669,21 +2669,25 @@ export default function Dashboard() {
       <DevLabel id="p3" position="top-right" />
       {/* Navigation */}
       <div className="bg-white border-b border-slate-200 p-4">
+        <DevLabel id="db16" />
         <div className="flex gap-4 items-center">
           <Link to="/">
             <Button variant="outline" size="sm">
+              <DevLabel id="db17" />
               <HomeIcon className="h-4 w-4 mr-2" />
               Home
             </Button>
           </Link>
           <Link to="/upload">
             <Button variant="outline" size="sm">
+              <DevLabel id="db18" />
               <Upload className="h-4 w-4 mr-2 text-blue-600" />
               Upload Report
             </Button>
           </Link>
           <Link to="/pr2-pricing?sector=utilities">
             <Button variant="outline" size="sm">
+              <DevLabel id="db19" />
               <Settings className="h-4 w-4 mr-2 text-orange-600" />
               Pricing
             </Button>
@@ -2703,6 +2707,7 @@ export default function Dashboard() {
                 }}
                 disabled={reprocessMutation.isPending}
               >
+                <DevLabel id="db20" />
                 <RefreshCw className="h-4 w-4 mr-2" />
                 {reprocessMutation.isPending ? "Reprocessing..." : "Re-Process Report"}
               </Button>
@@ -2712,6 +2717,7 @@ export default function Dashboard() {
               size="sm"
               onClick={exportToExcel}
             >
+              <DevLabel id="db21" />
               <Download className="h-4 w-4 mr-2" />
               Export to Excel
             </Button>
@@ -2721,6 +2727,7 @@ export default function Dashboard() {
                 size="sm"
                 className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
               >
+                <DevLabel id="db22" />
                 <FileText className="h-4 w-4 mr-2" />
                 PDF Reader
               </Button>
@@ -2734,6 +2741,7 @@ export default function Dashboard() {
         <div className="mb-6">
           {/* Dashboard Header */}
           <div className="flex items-center gap-3 mb-6">
+            <DevLabel id="db23" />
             <div className="p-3 bg-green-100 rounded-lg">
               <BarChart3 className="h-8 w-8 text-green-600" />
             </div>
@@ -2748,6 +2756,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-4">
                 <label className="text-sm font-medium text-slate-700">Project Folders:</label>
                 <div className="relative" id="folder-dropdown">
+                  <DevLabel id="db24" />
                   {/* Compact Folder Selector */}
                   <button
                     onClick={() => setShowFolderDropdown(!showFolderDropdown)}
@@ -2779,6 +2788,7 @@ export default function Dashboard() {
                   {/* Dropdown Menu */}
                   {showFolderDropdown && (
                     <div className="absolute top-full left-0 mt-1 bg-white border border-slate-300 rounded-md shadow-lg z-20 min-w-[400px] max-h-96 overflow-y-auto">
+                      <DevLabel id="db25" />
                       {/* All Folders Option */}
                       <div
                         onClick={() => {
@@ -2788,6 +2798,7 @@ export default function Dashboard() {
                         }}
                         className="flex items-center justify-between p-3 hover:bg-slate-50 cursor-pointer border-b"
                       >
+                        <DevLabel id="db26" />
                         <div className="flex items-center gap-2">
                           <Folder className="h-4 w-4 text-blue-600" />
                           <span className="font-medium text-sm">All Folders</span>
@@ -2835,6 +2846,7 @@ export default function Dashboard() {
                             <div key={folderKey}>
                               {/* Unfoldered Reports Header */}
                               <div className="flex items-center justify-between p-3 hover:bg-blue-50 border-b bg-slate-50">
+                                <DevLabel id="db27" />
                                 <div className="flex items-center gap-2">
                                   <FileText className="h-4 w-4 text-slate-600" />
                                   <span className="font-medium text-sm">Unorganized Reports</span>
@@ -3189,6 +3201,7 @@ export default function Dashboard() {
                       onClick={() => setShowColumnSelector(!showColumnSelector)}
                       className="text-xs"
                     >
+                      <DevLabel id="db28" />
                       {showColumnSelector ? 'Done Selecting' : 'Hide Columns'}
                     </Button>
                     <Button
@@ -3204,6 +3217,7 @@ export default function Dashboard() {
                       className="text-xs"
                       disabled={columns.filter(col => col.hideable).every(col => hiddenColumns.has(col.key))}
                     >
+                      <DevLabel id="db29" />
                       Hide All
                     </Button>
                     <Button
@@ -3216,6 +3230,7 @@ export default function Dashboard() {
                       className="text-xs"
                       disabled={hiddenColumns.size === 0}
                     >
+                      <DevLabel id="db30" />
                       Unhide All
                     </Button>
                     
@@ -3225,6 +3240,7 @@ export default function Dashboard() {
                       onClick={() => setShowFilters(!showFilters)}
                       className="text-xs"
                     >
+                      <DevLabel id="db31" />
                       <Filter className="h-4 w-4 mr-1" />
                       {showFilters ? 'Hide Filters' : 'Filter Data'}
                     </Button>
@@ -3287,6 +3303,7 @@ export default function Dashboard() {
                 {/* Filter Controls */}
                 {showFilters && (
                   <div className="mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <DevLabel id="db32" />
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">Severity Grade</label>
@@ -3378,6 +3395,7 @@ export default function Dashboard() {
                         onClick={() => setFilters({severityGrade: '', adoptable: [], pipeSize: '', pipeMaterial: '', projectNumber: ''})}
                         className="text-xs"
                       >
+                        <DevLabel id="db33" />
                         Clear All Filters
                       </Button>
                       <span className="text-sm text-slate-600">
@@ -3387,6 +3405,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 <div className="overflow-x-auto">
+                  <DevLabel id="db34" />
                   <table 
                     className="w-full text-xs border-collapse border border-slate-300" 
                     style={{ tableLayout: 'fixed' }}
@@ -3396,6 +3415,7 @@ export default function Dashboard() {
                     data-total-sections={sectionData.length}
                   >
                     <thead>
+                      <DevLabel id="db35" />
                       <tr 
                         className="bg-slate-100"
                         data-component="table-header"
@@ -3431,6 +3451,7 @@ export default function Dashboard() {
                       </tr>
                     </thead>
                     <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
+                      <DevLabel id="db36" />
                       {sectionData.map((section, index) => {
                         // Check for approved repair pricing
                         const repairStatus = hasApprovedRepairPricing(section);
@@ -3490,7 +3511,9 @@ export default function Dashboard() {
 
             {/* Summary Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <DevLabel id="db37" />
               <Card>
+                <DevLabel id="db38" />
                 <CardContent className="p-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-slate-900">{sectionData.length}</div>
@@ -3499,6 +3522,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
               <Card>
+                <DevLabel id="db39" />
                 <CardContent className="p-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-emerald-600">
@@ -3509,6 +3533,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
               <Card>
+                <DevLabel id="db40" />
                 <CardContent className="p-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-amber-600">
@@ -3519,6 +3544,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
               <Card>
+                <DevLabel id="db41" />
                 <CardContent className="p-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-red-600">
@@ -3533,14 +3559,19 @@ export default function Dashboard() {
             <Separator className="my-8" />
 
             {/* Analysis Standards Applied - Dynamic Component */}
-            <SectorStandardsDisplay sector={currentSector.id} sectorName={currentSector.name} />
+            <div>
+              <DevLabel id="db42" />
+              <SectorStandardsDisplay sector={currentSector.id} sectorName={currentSector.name} />
+            </div>
           </div>
         )}
       </div>
 
       {/* Export Warning Dialog */}
       <Dialog open={showExportWarning} onOpenChange={setShowExportWarning}>
+        <DevLabel id="db43" />
         <DialogContent className="sm:max-w-md">
+          <DevLabel id="db44" />
           <DialogHeader>
             <DialogTitle>Hidden Columns Warning</DialogTitle>
             <DialogDescription>
@@ -3555,6 +3586,7 @@ export default function Dashboard() {
             </div>
           </div>
           <DialogFooter className="flex gap-2">
+            <DevLabel id="db45" />
             <Button
               variant="outline"
               onClick={() => setShowExportWarning(false)}
