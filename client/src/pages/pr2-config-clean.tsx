@@ -483,6 +483,54 @@ export default function PR2ConfigClean() {
     }
   }, [categoryId]);
 
+  // Immediate save function for critical fields like Day Rate (db11)
+  const immediateSave = async (optionType: string, optionId: string, value: string) => {
+    if (!isEditing || !editId) return;
+    
+    console.log(`🚨 IMMEDIATE SAVE for ${optionId}: ${value}`);
+    
+    try {
+      // Get current formData and update the specific field
+      const currentFormData = { ...formData };
+      if (optionType === 'pricingOptions') {
+        currentFormData.pricingOptions = formData.pricingOptions.map(opt =>
+          opt.id === optionId ? { ...opt, value } : opt
+        );
+      }
+      
+      const payload = {
+        categoryName: currentFormData.categoryName,
+        description: currentFormData.description,
+        categoryColor: currentFormData.categoryColor,
+        sector: sector,
+        categoryId: categoryId,
+        pricingOptions: currentFormData.pricingOptions,
+        quantityOptions: currentFormData.quantityOptions,
+        minQuantityOptions: currentFormData.minQuantityOptions,
+        rangeOptions: currentFormData.rangeOptions,
+        mathOperators: currentFormData.mathOperators,
+        pricingStackOrder: currentFormData.pricingStackOrder,
+        quantityStackOrder: currentFormData.quantityStackOrder,
+        minQuantityStackOrder: currentFormData.minQuantityStackOrder,
+        rangeStackOrder: currentFormData.rangeStackOrder
+      };
+
+      const response = await fetch(`/api/pr2-clean/${editId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (response.ok) {
+        console.log(`✅ DB11 IMMEDIATE SAVE SUCCESS: ${value}`);
+      } else {
+        console.error(`❌ DB11 IMMEDIATE SAVE FAILED: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('❌ Immediate save error:', error);
+    }
+  };
+
   // Handle value changes for input fields
   const handleValueChange = (optionType: string, optionId: string, value: string) => {
     console.log(`🔧 handleValueChange called: ${optionType}, ${optionId}, ${value}`);
@@ -519,8 +567,14 @@ export default function PR2ConfigClean() {
       return newFormData;
     });
     
-    // Trigger debounced save after input change
-    debouncedSave();
+    // For Day Rate field (db11), save immediately to prevent data loss
+    if (optionType === 'pricingOptions' && optionId === 'price_dayrate') {
+      console.log(`🚨 DB11 TRIGGERING IMMEDIATE SAVE: ${value}`);
+      immediateSave(optionType, optionId, value);
+    } else {
+      // Trigger debounced save for other fields
+      debouncedSave();
+    }
   }
 
   // Clear values from second purple row
@@ -2716,7 +2770,7 @@ export default function PR2ConfigClean() {
                         value={formData.pricingOptions?.[0]?.value || ""}
                         onChange={(e) => {
                           const inputValue = e.target.value;
-                          console.log(`🎯 RAW INPUT VALUE: "${inputValue}" (length: ${inputValue.length})`);
+                          console.log(`🎯 DB11 RAW INPUT: "${inputValue}" (length: ${inputValue.length}) - IMMEDIATE SAVE TRIGGERED`);
                           handleValueChange('pricingOptions', 'price_dayrate', inputValue);
                         }}
                         className="bg-white border-blue-300 h-6 text-xs w-20"
