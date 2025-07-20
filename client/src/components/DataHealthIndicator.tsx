@@ -267,7 +267,7 @@ export function DataHealthIndicator({ sectionData, isLoading }: DataHealthIndica
                   <div>
                     <div className="text-sm text-gray-600">{currentDisplay.label}</div>
                     <div className={`text-2xl font-bold ${currentDisplay.color}`}>
-                      {currentDisplay.value}
+                      <span id={`p3-id-${currentMetric + 2}`}>{currentDisplay.value}</span>
                       <span className="text-sm text-gray-500 ml-1">
                         / {currentDisplay.total}
                       </span>
@@ -356,8 +356,7 @@ export function DataHealthIndicator({ sectionData, isLoading }: DataHealthIndica
               className="font-bold text-gray-800"
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 0.3 }}
-              data-component="total-sections"
-              data-section-count={metrics.totalSections}
+              id="p3-id-1"
             >
               {metrics.totalSections}
             </motion.span>
