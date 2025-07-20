@@ -830,20 +830,32 @@ export default function Dashboard() {
           </div>
         );
       case 'severityGrade':
-        // Helper function to determine STR badge color based on severity
+        // Enhanced STR badge color function with distinct colors for each grade
         const getStrBadgeColor = (grade: number | null) => {
           if (grade === null || grade === undefined) return "bg-gray-400";
-          if (grade === 0 || grade === 1) return "bg-green-500";
-          if (grade === 2 || grade === 3) return "bg-yellow-500";
-          return "bg-red-500";
+          switch (grade) {
+            case 0: return 'bg-green-600';
+            case 1: return 'bg-yellow-400';
+            case 2: return 'bg-orange-500';
+            case 3: return 'bg-red-600';
+            case 4: return 'bg-rose-700';
+            case 5: return 'bg-black';
+            default: return 'bg-gray-400';
+          }
         };
         
-        // Helper function to determine SER badge color based on severity
+        // Enhanced SER badge color function with distinct colors for each grade
         const getSerBadgeColor = (grade: number | null) => {
-          if (grade === null || grade === undefined) return "bg-gray-400";
-          if (grade === 0 || grade === 1) return "bg-green-500";
-          if (grade === 2 || grade === 3) return "bg-yellow-500";
-          return "bg-red-500";
+          if (grade === null || grade === undefined) return "bg-gray-300";
+          switch (grade) {
+            case 0: return 'bg-green-500';
+            case 1: return 'bg-yellow-300';
+            case 2: return 'bg-orange-400';
+            case 3: return 'bg-red-500';
+            case 4: return 'bg-red-700';
+            case 5: return 'bg-black';
+            default: return 'bg-gray-300';
+          }
         };
         
         return (
