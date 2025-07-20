@@ -855,7 +855,7 @@ export default function Dashboard() {
       case 'serviceGradeDescription':
         return (
           <div className="text-sm">
-            {section.severityGrades?.service === null
+            {!section.severityGrades || section.severityGrades?.service === null || section.severityGrades?.service === undefined
               ? "Unknown"
               : section.severityGrades?.service === 0
               ? "No service issues"
