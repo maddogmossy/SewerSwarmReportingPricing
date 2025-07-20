@@ -2392,8 +2392,8 @@ export default function PR2ConfigClean() {
                 Select Pastel Color:
               </Label>
               
-              {/* Pastel Color Grid */}
-              <div className="grid grid-cols-8 gap-2 mb-4">
+              {/* Pastel Color Row */}
+              <div className="flex gap-2 mb-4 flex-wrap">
                 {[
                   '#FFE4E1', // Misty Rose
                   '#E6E6FA', // Lavender  
@@ -2401,23 +2401,14 @@ export default function PR2ConfigClean() {
                   '#F5FFFA', // Mint Cream
                   '#FFFACD', // Lemon Chiffon
                   '#FFE4B5', // Moccasin
-                  '#FFEFD5', // Papaya Whip
-                  '#F5F5DC', // Beige
                   '#FFF0F5', // Lavender Blush
                   '#E0E6FF', // Light Steel Blue
                   '#F0FFF0', // Honeydew
-                  '#F5F5F5', // White Smoke
-                  '#FDF5E6', // Old Lace
-                  '#FAF0E6', // Linen
-                  '#FFF8DC', // Cornsilk
-                  '#F8F8FF', // Ghost White
                   '#FFB6C1', // Light Pink
                   '#DDA0DD', // Plum
                   '#87CEEB', // Sky Blue
                   '#98FB98', // Pale Green
                   '#F0E68C', // Khaki
-                  '#DEB887', // Burlywood
-                  '#F5DEB3', // Wheat
                   '#D3D3D3'  // Light Gray
                 ].map((color) => (
                   <button
