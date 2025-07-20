@@ -552,7 +552,6 @@ export default function Upload() {
 
         {/* Uploaded Reports */}
         <Card className="relative">
-          <DevLabel id="14" />
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>

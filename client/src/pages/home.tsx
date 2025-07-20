@@ -24,7 +24,8 @@ import {
   Waves,
   TestTube,
   BarChart3,
-  Settings
+  Settings,
+  FileText
 } from "lucide-react";
 import { Link } from "wouter";
 import LoginModal from "@/components/login-modal";
@@ -277,7 +278,7 @@ export default function Home() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Link to="/upload">
                 <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
                   <DevLabel id="2" />
@@ -323,9 +324,24 @@ export default function Home() {
                 </Card>
               </Link>
 
-              <Link to="/checkout">
+              <Link to="/reports">
                 <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
                   <DevLabel id="5" />
+                  <CardHeader className="text-center">
+                    <div className="mx-auto w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                      <FileText className="h-6 w-6 text-green-600" />
+                    </div>
+                    <CardTitle className="text-lg">Uploaded Reports</CardTitle>
+                    <CardDescription>
+                      Manage your inspection reports and organize project folders
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              <Link to="/checkout">
+                <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <DevLabel id="6" />
                   <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                       <Gift className="h-6 w-6 text-purple-600" />
@@ -341,7 +357,7 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="relative">
-                <DevLabel id="6" />
+                <DevLabel id="7" />
                 <CardHeader>
                   <CardTitle className="text-lg">Supported Sectors</CardTitle>
                 </CardHeader>
