@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Upload from "@/pages/upload";
-import PDFReader from "@/pages/pdf-reader";
+
 import Pricing from "@/pages/pricing";
 import SectorPricing from "@/pages/sector-pricing";
 
@@ -70,7 +70,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/upload" component={Upload} />
-          <Route path="/pdf-reader" component={PDFReader} />
+
 
           <Route path="/pricing/surveys" component={SurveyPricing} />
           <Route path="/pricing/cleansing" component={CleansingPricing} />
