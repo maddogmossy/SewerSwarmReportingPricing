@@ -456,6 +456,14 @@ const getSrmBadge = (grade: number | null) => {
   return { label: 'N/A', className: 'bg-gray-100 text-gray-600' };
 };
 
+// Adoptable status color function - coordinated pastel colors
+function getAdoptableColor(status: string) {
+  if (status === 'Yes') return 'bg-green-100 text-green-700';
+  if (status === 'Conditional') return 'bg-yellow-100 text-yellow-800';
+  if (status === 'No') return 'bg-red-100 text-red-700';
+  return 'bg-gray-100 text-gray-600';
+}
+
 // Column definitions for the enhanced table
 const tableColumns = [
   { key: 'itemNo', label: 'Item No', hideable: false },
@@ -1135,11 +1143,7 @@ export default function Dashboard() {
         }
       case 'adoptable':
         return (
-          <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
-            section.adoptable === "Yes" ? 'bg-green-100 text-green-800' :
-            section.adoptable === "No" ? 'bg-red-100 text-red-800' :
-            'bg-yellow-100 text-yellow-800'
-          }`}>
+          <span className={`px-1 py-0.5 rounded text-xs font-semibold ${getAdoptableColor(section.adoptable)}`}>
             {section.adoptable}
           </span>
         );
