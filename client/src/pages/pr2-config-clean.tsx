@@ -653,7 +653,7 @@ export default function PR2ConfigClean() {
 
   // Debug logging disabled to prevent infinite loops
 
-  // Route to existing configuration when navigating from dashboard
+  // Route to existing configuration or auto-create new pipe size configurations
   useEffect(() => {
     // Only run when we have categoryId and sector but not already editing
     if (!isEditing && categoryId && sector && allCategoryConfigs) {
@@ -670,6 +670,25 @@ export default function PR2ConfigClean() {
         if (pipeSizeConfig) {
           console.log(`✅ Found pipe size-specific configuration ID: ${pipeSizeConfig.id}, redirecting to edit mode`);
           setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${pipeSizeConfig.id}`);
+          return;
+        } else {
+          // AUTO-CREATE: No pipe-size-specific config exists, create one immediately
+          console.log(`🔧 No ${pipeSize}mm configuration found, auto-creating and redirecting to edit mode...`);
+          const autoCreateAndRedirect = async () => {
+            const normalizedPipeSize = pipeSize.replace(/mm$/i, '');
+            const configName = `TP2 - ${normalizedPipeSize}mm ${categoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Configuration`;
+            
+            const newConfigId = await createPipeSizeConfiguration(categoryId, sector, pipeSize, configName);
+            
+            if (newConfigId) {
+              console.log(`✅ Auto-created configuration ID: ${newConfigId}, redirecting to edit mode`);
+              setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${newConfigId}`);
+            } else {
+              console.error('❌ Failed to auto-create configuration, staying on current page');
+            }
+          };
+          
+          autoCreateAndRedirect();
           return;
         }
       }
