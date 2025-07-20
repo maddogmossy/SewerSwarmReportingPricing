@@ -661,10 +661,11 @@ export default function PR2ConfigClean() {
       
       // If we have a pipe size, look for pipe-size-specific configuration first
       if (pipeSize) {
+        const normalizedPipeSize = pipeSize.replace(/mm$/i, '');
         const pipeSizeConfig = allCategoryConfigs.find(config => 
           config.categoryId === categoryId && 
           config.sector === sector &&
-          config.description && config.description.includes(`${pipeSize}mm`)
+          config.categoryName && config.categoryName.includes(`${normalizedPipeSize}mm`)
         );
         
         if (pipeSizeConfig) {
