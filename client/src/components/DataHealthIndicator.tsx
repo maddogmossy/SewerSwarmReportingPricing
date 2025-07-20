@@ -131,33 +131,37 @@ export function DataHealthIndicator({ sectionData, isLoading }: DataHealthIndica
       label: 'Grade 0 (Good)',
       value: metrics.grade0,
       total: metrics.totalSections,
-      color: 'text-green-600',
+      color: 'text-green-700',
       bgColor: 'bg-green-100',
-      icon: CheckCircle
+      icon: CheckCircle,
+      id: 'grade-0-indicator'
     },
     {
       label: 'Grade 2 (Minor)',
       value: metrics.grade2,
       total: metrics.totalSections,
-      color: 'text-yellow-600',
+      color: 'text-yellow-800',
       bgColor: 'bg-yellow-100',
-      icon: Target
+      icon: Target,
+      id: 'grade-2-indicator'
     },
     {
       label: 'Grade 3+ (Action)',
       value: metrics.grade3,
       total: metrics.totalSections,
-      color: 'text-orange-600',
+      color: 'text-orange-700',
       bgColor: 'bg-orange-100',
-      icon: AlertTriangle
+      icon: AlertTriangle,
+      id: 'grade-3-indicator'
     },
     {
       label: 'Grade 4+ (Critical)',
       value: metrics.grade4,
       total: metrics.totalSections,
-      color: 'text-red-600',
+      color: 'text-red-700',
       bgColor: 'bg-red-100',
-      icon: XCircle
+      icon: XCircle,
+      id: 'grade-4-indicator'
     }
   ];
 
@@ -186,6 +190,9 @@ export function DataHealthIndicator({ sectionData, isLoading }: DataHealthIndica
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      data-component="data-health-indicator"
+      data-total-sections={metrics.totalSections}
+      data-current-metric={currentMetric}
     >
       {/* Header with overall health status */}
       <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 border-b border-gray-200">
@@ -250,6 +257,10 @@ export function DataHealthIndicator({ sectionData, isLoading }: DataHealthIndica
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
                 className={`${currentDisplay.bgColor} rounded-lg p-4`}
+                data-component="metric-display"
+                data-metric-id={currentDisplay.id}
+                data-metric-value={currentDisplay.value}
+                data-metric-total={currentDisplay.total}
               >
                 <div className="flex items-center space-x-3">
                   <currentDisplay.icon className={`w-5 h-5 ${currentDisplay.color}`} />
@@ -345,6 +356,8 @@ export function DataHealthIndicator({ sectionData, isLoading }: DataHealthIndica
               className="font-bold text-gray-800"
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 0.3 }}
+              data-component="total-sections"
+              data-section-count={metrics.totalSections}
             >
               {metrics.totalSections}
             </motion.span>
