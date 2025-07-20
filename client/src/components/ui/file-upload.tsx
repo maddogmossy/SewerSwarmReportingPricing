@@ -146,6 +146,9 @@ export default function FileUpload({
             <p className="text-sm text-slate-500 mb-4">
               Supports: DB, DB3, meta.DB3, and PDF files (Max {Math.round(maxSize / (1024 * 1024))}MB)
             </p>
+            <p className="text-xs text-slate-400 mb-4">
+              Note: Database files require both .db3 and _Meta.db3 files to be uploaded
+            </p>
             <Button type="button" className="bg-primary hover:bg-primary/90">
               Choose File
             </Button>

@@ -254,11 +254,39 @@ export async function registerRoutes(app: Express) {
 
       // Check file type and process accordingly
       if (req.file.originalname.endsWith('.db') || req.file.originalname.endsWith('.db3') || req.file.originalname.endsWith('meta.db3')) {
-        // Process database files
+        // Process database files with validation
         try {
           const filePath = req.file.path;
+          const uploadDirectory = path.dirname(filePath);
           
           console.log("Processing Wincan database file with authentic data extraction...");
+          
+          // Import validation function
+          const { validateGenericDb3Files } = await import('./db3-validator');
+          
+          // Validate that both .db3 and _Meta.db3 files are present
+          const validation = validateGenericDb3Files(uploadDirectory);
+          
+          if (!validation.valid) {
+            // Update status to failed due to missing files
+            await db.update(fileUploads)
+              .set({ 
+                status: "failed",
+                extractedData: JSON.stringify({
+                  error: validation.message,
+                  extractionType: "wincan_database_validation_failed"
+                })
+              })
+              .where(eq(fileUploads.id, fileUpload.id));
+            
+            return res.status(400).json({ 
+              error: validation.message,
+              uploadId: fileUpload.id,
+              status: "failed"
+            });
+          }
+          
+          console.log(validation.message);
           
           // Clear any existing sections for this file upload to prevent duplicates
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
@@ -266,8 +294,11 @@ export async function registerRoutes(app: Express) {
           // Import and use Wincan database reader
           const { readWincanDatabase, storeWincanSections } = await import('./wincan-db-reader');
           
+          // Use the main database file for processing
+          const mainDbPath = validation.files?.main || filePath;
+          
           // Extract authentic data from database
-          const sections = await readWincanDatabase(filePath, req.body.sector || 'utilities');
+          const sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
           
           console.log(`Extracted ${sections.length} authentic sections from database`);
           
@@ -283,7 +314,8 @@ export async function registerRoutes(app: Express) {
               status: "completed",
               extractedData: JSON.stringify({
                 sectionsCount: sections.length,
-                extractionType: "wincan_database"
+                extractionType: "wincan_database",
+                validationMessage: validation.message
               })
             })
             .where(eq(fileUploads.id, fileUpload.id));
@@ -292,7 +324,8 @@ export async function registerRoutes(app: Express) {
             message: "Database file processed successfully",
             uploadId: fileUpload.id,
             sectionsExtracted: sections.length,
-            status: "completed"
+            status: "completed",
+            validation: validation.message
           });
           
         } catch (dbError) {
