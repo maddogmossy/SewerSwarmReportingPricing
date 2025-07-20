@@ -159,6 +159,27 @@ async function fetchLogoFromWebsite(websiteUrl: string): Promise<string | null> 
   }
 }
 
+// Handler function following the pattern you provided
+async function validateDb3Handler(req: Request, res: Response) {
+  try {
+    const directory = req.body.directory || req.query.directory || '/mnt/data';
+    const { validateDb3Files } = await import('./db3-validator');
+    
+    const validation = validateDb3Files(directory as string);
+
+    if (!validation.valid) {
+      return res.status(400).json({ error: validation.message });
+    }
+
+    // Proceed to read both .db3 and _Meta.db3 files using sqlite3 or better-sqlite3
+    // TODO: extract grading, observations, node refs, etc
+    res.status(200).json({ message: validation.message });
+  } catch (error) {
+    console.error('Database validation error:', error);
+    res.status(500).json({ error: 'Internal server error during validation' });
+  }
+}
+
 export async function registerRoutes(app: Express) {
   const server = createServer(app);
 
@@ -610,6 +631,10 @@ export async function registerRoutes(app: Express) {
       res.status(500).json({ error: "Failed to fetch logo from website" });
     }
   });
+
+  // Database validation endpoint
+  app.post("/api/validate-db3", validateDb3Handler);
+  app.get("/api/validate-db3", validateDb3Handler);
 
   // Serve static files for uploaded logos
   app.use('/uploads', express.static('uploads'));

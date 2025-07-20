@@ -740,6 +740,8 @@ This prevents data contamination and ensures authentic extraction integrity.
   - PDF files: Independent processing workflow (placeholder implementation ready for expansion)
 - **File Support**: Supports .db, .db3, meta.db3, and .pdf files with appropriate validation
 - **Database File Validation**: Ensures both .db3 and _Meta.db3 files are present for complete processing
+- **API Endpoint Pattern**: Added /api/validate-db3 endpoint following the handler pattern for validation
+- **Utility Functions**: Created loadDb3Files.ts utilities for client-side and server-side validation
 - **Visual Consistency**: Maintained 4px border design with 0.3 opacity and pure color palette
 
 ## User Preferences (Updated July 20, 2025)
