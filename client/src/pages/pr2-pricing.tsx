@@ -447,9 +447,11 @@ export default function PR2Pricing() {
 
                     return (
                       <Card
-                        className="relative cursor-pointer transition-all hover:shadow-md border-2"
+                        className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: configToUse?.categoryColor || '#e5e7eb',
+                          borderColor: configToUse?.categoryColor 
+                            ? hexToRgba(configToUse.categoryColor, 0.3)
+                            : '#e5e7eb',
                           backgroundColor: 'white'
                         }}
                         onClick={() => {
@@ -497,9 +499,11 @@ export default function PR2Pricing() {
 
                     return (
                       <Card
-                        className="relative cursor-pointer transition-all hover:shadow-md border-2"
+                        className="relative cursor-pointer transition-all hover:shadow-md border-4"
                         style={{
-                          borderColor: configToUse?.categoryColor || '#e5e7eb',
+                          borderColor: configToUse?.categoryColor 
+                            ? hexToRgba(configToUse.categoryColor, 0.3)
+                            : '#e5e7eb',
                           backgroundColor: 'white'
                         }}
                         onClick={() => {
@@ -571,9 +575,11 @@ export default function PR2Pricing() {
                   return (
                     <Card
                       key={category.id}
-                      className="relative cursor-pointer transition-all hover:shadow-md border-2"
+                      className="relative cursor-pointer transition-all hover:shadow-md border-4"
                       style={{
-                        borderColor: existingConfiguration?.categoryColor || (isUserCreated ? '#bbf7d0' : '#e5e7eb'),
+                        borderColor: existingConfiguration?.categoryColor 
+                          ? hexToRgba(existingConfiguration.categoryColor, 0.3)
+                          : (isUserCreated ? '#bbf7d0' : '#e5e7eb'),
                         backgroundColor: 'white'
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
