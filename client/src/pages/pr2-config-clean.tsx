@@ -2386,65 +2386,107 @@ export default function PR2ConfigClean() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Custom Color Input Only */}
+            {/* Pastel Color Palette */}
             <div className="border-t pt-4">
-              <div className="flex items-center gap-3">
-                <Label htmlFor="custom-color" className="text-sm font-medium text-gray-700">
-                  Custom Color:
-                </Label>
-                <input
-                  id="custom-color"
-                  type="color"
-                  value={formData.categoryColor}
-                  onChange={async (e) => {
-                    const newColor = e.target.value;
-                    console.log(`🎨 Color changed to: ${newColor}`);
-                    
-                    // Update form data immediately
-                    setFormData(prev => ({ ...prev, categoryColor: newColor }));
-                    
-                    // For patching category, sync ONLY color across all pipe sizes
-                    if (categoryId === 'patching') {
-                      console.log('🎨 Syncing ONLY color across all patching configurations...');
+              <Label className="text-sm font-medium text-gray-700 mb-3 block">
+                Select Pastel Color:
+              </Label>
+              
+              {/* Pastel Color Grid */}
+              <div className="grid grid-cols-8 gap-2 mb-4">
+                {[
+                  '#FFE4E1', // Misty Rose
+                  '#E6E6FA', // Lavender  
+                  '#F0F8FF', // Alice Blue
+                  '#F5FFFA', // Mint Cream
+                  '#FFFACD', // Lemon Chiffon
+                  '#FFE4B5', // Moccasin
+                  '#FFEFD5', // Papaya Whip
+                  '#F5F5DC', // Beige
+                  '#FFF0F5', // Lavender Blush
+                  '#E0E6FF', // Light Steel Blue
+                  '#F0FFF0', // Honeydew
+                  '#F5F5F5', // White Smoke
+                  '#FDF5E6', // Old Lace
+                  '#FAF0E6', // Linen
+                  '#FFF8DC', // Cornsilk
+                  '#F8F8FF', // Ghost White
+                  '#FFB6C1', // Light Pink
+                  '#DDA0DD', // Plum
+                  '#87CEEB', // Sky Blue
+                  '#98FB98', // Pale Green
+                  '#F0E68C', // Khaki
+                  '#DEB887', // Burlywood
+                  '#F5DEB3', // Wheat
+                  '#D3D3D3'  // Light Gray
+                ].map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={async () => {
+                      console.log(`🎨 Pastel color selected: ${color}`);
                       
-                      const patchingConfigIds = [153, 156, 157];
-                      const updatePromises = patchingConfigIds.map(async (configId) => {
-                        try {
-                          const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
-                          const config = await response.json();
-                          
-                          // Update ONLY the color field, keep all other data independent
-                          await apiRequest('PUT', `/api/pr2-clean/${configId}`, {
-                            ...config,
-                            categoryColor: newColor,
-                            // Ensure we keep existing pricing data unchanged
-                            pricingOptions: config.pricingOptions,
-                            quantityOptions: config.quantityOptions,
-                            minQuantityOptions: config.minQuantityOptions,
-                            rangeOptions: config.rangeOptions
-                          });
-                          
-                          console.log(`✅ Updated ONLY color for config ${configId} to ${newColor}`);
-                        } catch (error) {
-                          console.error(`❌ Failed to update color for config ${configId}:`, error);
-                        }
-                      });
+                      // Update form data immediately
+                      setFormData(prev => ({ ...prev, categoryColor: color }));
                       
-                      await Promise.all(updatePromises);
-                      console.log('✅ All patching configurations updated with new color (data preserved)');
-                    } else {
-                      // For non-patching categories, just save the current configuration
-                      debouncedSave();
-                    }
-                  }}
-                  className="w-12 h-8 rounded border border-gray-300 cursor-pointer"
+                      // For patching category, sync ONLY color across all pipe sizes
+                      if (categoryId === 'patching') {
+                        console.log('🎨 Syncing ONLY color across all patching configurations...');
+                        
+                        const patchingConfigIds = [153, 156, 157];
+                        const updatePromises = patchingConfigIds.map(async (configId) => {
+                          try {
+                            const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
+                            const config = await response.json();
+                            
+                            // Update ONLY the color field, keep all other data independent
+                            await apiRequest('PUT', `/api/pr2-clean/${configId}`, {
+                              ...config,
+                              categoryColor: color,
+                              // Ensure we keep existing pricing data unchanged
+                              pricingOptions: config.pricingOptions,
+                              quantityOptions: config.quantityOptions,
+                              minQuantityOptions: config.minQuantityOptions,
+                              rangeOptions: config.rangeOptions
+                            });
+                            
+                            console.log(`✅ Updated ONLY color for config ${configId} to ${color}`);
+                          } catch (error) {
+                            console.error(`❌ Failed to update color for config ${configId}:`, error);
+                          }
+                        });
+                        
+                        await Promise.all(updatePromises);
+                        console.log('✅ All patching configurations updated with new color (data preserved)');
+                      } else {
+                        // For non-patching categories, just save the current configuration
+                        debouncedSave();
+                      }
+                    }}
+                    className={`w-8 h-8 rounded border-2 hover:scale-110 transition-transform ${
+                      formData.categoryColor === color 
+                        ? 'border-gray-800 ring-2 ring-gray-400' 
+                        : 'border-gray-300 hover:border-gray-500'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    title={color}
+                  />
+                ))}
+              </div>
+              
+              <div className="flex items-center gap-3 mt-4">
+                <span className="text-sm text-gray-600">Selected:</span>
+                <div 
+                  className="w-6 h-6 rounded border-2 border-gray-300" 
+                  style={{ backgroundColor: formData.categoryColor }}
                 />
                 <span className="text-sm text-gray-600 font-mono">
                   {formData.categoryColor}
                 </span>
               </div>
+              
               <p className="text-xs text-gray-500 mt-2">
-                Create your own custom color using the color picker
+                Choose from our curated selection of pastel colors
               </p>
             </div>
           </CardContent>
