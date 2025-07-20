@@ -2747,20 +2747,15 @@ export default function Dashboard() {
       <DevLabel id="p3" position="top-right" />
       {/* Navigation */}
       <div className="bg-white border-b border-slate-200 p-4">
-        <DevLabel id="db16" />
         <div className="flex gap-4 items-center">
           <Link to="/">
             <Button variant="outline" size="sm">
-              <DevLabel id="db17" />
-              <DevLabel id="b1" />
               <HomeIcon className="h-4 w-4 mr-2" />
               Home
             </Button>
           </Link>
           <Link to="/upload">
             <Button variant="outline" size="sm">
-              <DevLabel id="db18" />
-              <DevLabel id="b2" />
               <Upload className="h-4 w-4 mr-2 text-blue-600" />
               Upload Report
             </Button>
@@ -2773,8 +2768,6 @@ export default function Dashboard() {
           </Link>
           <Link to="/pr2-pricing?sector=utilities">
             <Button variant="outline" size="sm">
-              <DevLabel id="db19" />
-              <DevLabel id="b3" />
               <Settings className="h-4 w-4 mr-2 text-orange-600" />
               Pricing
             </Button>
@@ -2794,8 +2787,6 @@ export default function Dashboard() {
                 }}
                 disabled={reprocessMutation.isPending}
               >
-                <DevLabel id="db20" />
-                <DevLabel id="b4" />
                 <RefreshCw className="h-4 w-4 mr-2" />
                 {reprocessMutation.isPending ? "Reprocessing..." : "Re-Process Report"}
               </Button>
