@@ -3395,43 +3395,7 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            <Separator className="my-8" />
 
-            {/* Analysis Standards Applied - Using Upload Page Data */}
-            <div id="8">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-blue-50">
-                      <Wrench className="h-5 w-5 text-blue-600" />
-                    </div>
-                    Analysis Standards Applied - Utilities Sector
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <h4 className="font-medium text-sm mb-3 flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      Standards Documentation
-                    </h4>
-                    <div className="space-y-2">
-                      {[
-                        'WRc Sewerage Rehabilitation Manual (SRM)',
-                        'Water Industry Act 1991',
-                        'Building Act 1984 Section 21 Notice',
-                        'BS EN 752:2017 - Drain and sewer systems',
-                        'Network Rail standards (where applicable)'
-                      ].map((standard, index) => (
-                        <div key={index} className="flex items-start gap-2 p-3 bg-slate-50 rounded-lg border">
-                          <span className="font-bold text-blue-600 mt-0.5">•</span>
-                          <span className="text-sm text-gray-700">{standard}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         )}
       </div>
