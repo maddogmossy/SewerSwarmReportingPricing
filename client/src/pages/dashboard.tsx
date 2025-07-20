@@ -463,6 +463,7 @@ const tableColumns = [
   { key: 'lengthSurveyed', label: 'Length Surveyed', hideable: false },
   { key: 'defects', label: 'Observations', hideable: false },
   { key: 'severityGrade', label: 'Grade', hideable: false },
+  { key: 'serviceGradeDescription', label: 'Service Grade', hideable: false },
   { key: 'sectorType', label: 'Sector', hideable: false },
   { key: 'recommendations', label: 'Recommendations', hideable: false },
   { key: 'adoptable', label: 'Adoptable', hideable: false },
@@ -849,6 +850,18 @@ export default function Dashboard() {
                 SER: {section.severityGrades?.service ?? '-'}
               </span>
             </div>
+          </div>
+        );
+      case 'serviceGradeDescription':
+        return (
+          <div className="text-sm">
+            {section.severityGrades?.service === null
+              ? "Unknown"
+              : section.severityGrades?.service === 0
+              ? "No service issues"
+              : section.severityGrades?.service >= 4
+              ? "Major service grade"
+              : "Minor service issues"}
           </div>
         );
       case 'srmGrading':
