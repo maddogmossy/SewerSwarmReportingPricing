@@ -548,7 +548,254 @@ export default function Upload() {
           </CardContent>
         </Card>
 
+
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Uploaded Reports</CardTitle>
+                <CardDescription>Manage your inspection reports and view analysis results</CardDescription>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refreshMutation.mutate()}
+                disabled={refreshMutation.isPending}
+              >
+                {refreshMutation.isPending ? "Refreshing..." : "Refresh Reports"}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {uploads.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No reports uploaded yet. Upload your first inspection report above.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {Object.entries(groupUploadsByFolder()).map(([folderKey, folderUploads], folderIndex) => {
+                  const folder = folders.find(f => f.id === parseInt(folderKey));
+                  const isExpanded = expandedFolders.has(parseInt(folderKey));
+                  
+                  if (folderKey === 'no-folder') {
+                    // Display uploads without folders directly
+                    return folderUploads.map((upload) => (
+                      <div key={upload.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          {getStatusIcon(upload.status || 'pending')}
+                          <div>
+                            <div className="font-medium">{upload.fileName}</div>
+                            <div className="text-sm text-muted-foreground">
+                              Uploaded: {new Date(upload.createdAt || new Date()).toLocaleString()}
+                              {upload.sector && ` • Sector: ${sectors.find(s => s.id === upload.sector)?.name}`}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Badge className={getStatusColor(upload.status || 'pending')}>
+                            {upload.status || 'pending'}
+                          </Badge>
+                          {upload.status === 'completed' && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleViewReport(upload.id)}
+                              title="View Report in Dashboard"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {upload.reportUrl && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(upload.reportUrl || '#', '_blank')}
+                              title="Download Report"
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteMutation.mutate(upload.id)}
+                            disabled={deleteMutation.isPending}
+                            title="Delete Report"
+                            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ));
+                  }
+
+                  return (
+                    <div key={folderKey} className="relative border-2 rounded-lg border-blue-200 bg-blue-50/30">
+                      <DevLabel id={`f${folderIndex + 1}`} />
+                      {/* Folder Header - Enhanced styling */}
+                      <div 
+                        className="flex items-center justify-between p-4 bg-blue-100/50 cursor-pointer hover:bg-blue-200/50 transition-colors rounded-t-lg border-b-2 border-blue-200"
+                        onClick={() => toggleFolder(parseInt(folderKey))}
+                      >
+                        <div className="flex items-center gap-3">
+                          {isExpanded ? <FolderOpen className="h-6 w-6 text-blue-700" /> : <Folder className="h-6 w-6 text-blue-700" />}
+                          <div>
+                            <div className="font-bold text-blue-900 text-lg">
+                              📁 {folder?.projectAddress || `Folder ${folderKey}`}
+                            </div>
+                            <div className="text-sm text-blue-700">
+                              {folder?.projectNumber && `Project: ${folder.projectNumber} • `}
+                              {folderUploads.length} report{folderUploads.length !== 1 ? 's' : ''} • Click to {isExpanded ? 'collapse' : 'expand'}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="default" className="bg-blue-600 text-white">{folderUploads.length}</Badge>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (folder) {
+                                setSelectedFolderToDelete({
+                                  id: folder.id,
+                                  name: folder.projectAddress || folder.folderName,
+                                  reportCount: folderUploads.length
+                                });
+                                setShowDeleteFolderDialog(true);
+                              }
+                            }}
+                            className="text-red-600 hover:text-red-800 hover:bg-red-50 p-1"
+                            title="Delete Project Folder"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                          {isExpanded ? <ChevronDown className="h-5 w-5 text-blue-700" /> : <ChevronRight className="h-5 w-5 text-blue-700" />}
+                        </div>
+                      </div>
+
+                      {/* Folder Contents - Only show when expanded */}
+                      {isExpanded && (
+                        <div className="bg-white rounded-b-lg">
+                          {folderUploads.map((upload, index) => (
+                            <div key={upload.id} className={`flex items-center justify-between p-4 ml-6 border-l-4 border-blue-300 ${index !== folderUploads.length - 1 ? 'border-b border-gray-200' : ''}`}>
+                              <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                {getStatusIcon(upload.status || 'pending')}
+                                <div>
+                                  <div className="font-medium">{upload.fileName}</div>
+                                  <div className="text-sm text-muted-foreground">
+                                    Uploaded: {new Date(upload.createdAt || new Date()).toLocaleString()}
+                                    {upload.sector && ` • Sector: ${sectors.find(s => s.id === upload.sector)?.name}`}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Badge className={getStatusColor(upload.status || 'pending')}>
+                                  {upload.status || 'pending'}
+                                </Badge>
+                                {upload.status === 'completed' && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleViewReport(upload.id)}
+                                    title="View Report in Dashboard"
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                                )}
+                                {upload.reportUrl && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => window.open(upload.reportUrl || '#', '_blank')}
+                                    title="Download Report"
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                )}
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => deleteMutation.mutate(upload.id)}
+                                  disabled={deleteMutation.isPending}
+                                  title="Delete Report"
+                                  className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Delete Folder Dialog */}
+      <Dialog open={showDeleteFolderDialog} onOpenChange={setShowDeleteFolderDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
+              Delete Project Folder
+            </DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete the project folder and all associated reports.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedFolderToDelete && (
+            <div className="space-y-4">
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <div className="font-medium text-slate-900">{selectedFolderToDelete.name}</div>
+                <div className="text-sm text-slate-600 mt-1">
+                  Contains {selectedFolderToDelete.reportCount} report{selectedFolderToDelete.reportCount !== 1 ? 's' : ''}
+                </div>
+              </div>
+              
+              <div className="text-sm text-slate-600 space-y-2">
+                <p>Deleting this folder will permanently remove:</p>
+                <ul className="list-disc list-inside ml-2 space-y-1">
+                  <li>The project folder: "{selectedFolderToDelete.name}"</li>
+                  <li>All {selectedFolderToDelete.reportCount} inspection report{selectedFolderToDelete.reportCount !== 1 ? 's' : ''}</li>
+                  <li>All associated analysis data, defect classifications, and section inspections</li>
+                  <li>All uploaded PDF files and processed content</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowDeleteFolderDialog(false);
+                setSelectedFolderToDelete(null);
+              }}
+              disabled={deleteFolderMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={() => {
+                if (selectedFolderToDelete) {
+                  deleteFolderMutation.mutate(selectedFolderToDelete.id);
+                }
+              }}
+              disabled={deleteFolderMutation.isPending}
+            >
+              {deleteFolderMutation.isPending ? "Deleting..." : "Delete Project Folder"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
