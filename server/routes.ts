@@ -635,6 +635,9 @@ export async function registerRoutes(app: Express) {
   // Database validation endpoint
   app.post("/api/validate-db3", validateDb3Handler);
   app.get("/api/validate-db3", validateDb3Handler);
+  
+  // Load survey endpoint using the validation pattern
+  app.get("/api/load-survey", validateDb3Handler);
 
   // Serve static files for uploaded logos
   app.use('/uploads', express.static('uploads'));
