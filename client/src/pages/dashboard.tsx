@@ -3327,47 +3327,75 @@ export default function Dashboard() {
             </Card>
 
             {/* Summary Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
               <DevLabel id="db37" />
               <Card>
-                <DevLabel id="db38" />
                 <CardContent className="p-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-900">{sectionData.length}</div>
+                    <div className="text-2xl font-bold text-slate-900" id="p3-id-1">
+                      {sectionData.filter(s => !s.letterSuffix).length}
+                    </div>
                     <div className="text-sm text-slate-600">Total Sections</div>
                   </div>
                 </CardContent>
               </Card>
               <Card>
-                <DevLabel id="db39" />
                 <CardContent className="p-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-emerald-600">
-                      {sectionData.filter(s => s.severityGrade === 1).length}
+                    <div className="text-2xl font-bold text-emerald-600" id="p3-id-2">
+                      {sectionData.filter(s => s.severityGrade === 0 || s.severityGrade === '0').length}
                     </div>
-                    <div className="text-sm text-slate-600">Grade 1 (Good)</div>
+                    <div className="text-sm text-slate-600">Grade 0 (Good)</div>
                   </div>
                 </CardContent>
               </Card>
               <Card>
-                <DevLabel id="db40" />
                 <CardContent className="p-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-amber-600">
-                      {sectionData.filter(s => s.severityGrade === 2).length}
+                    <div className="text-2xl font-bold text-amber-600" id="p3-id-3">
+                      {sectionData.filter(s => s.severityGrade === 2 || s.severityGrade === '2').length}
                     </div>
                     <div className="text-sm text-slate-600">Grade 2 (Minor)</div>
                   </div>
                 </CardContent>
               </Card>
               <Card>
-                <DevLabel id="db41" />
                 <CardContent className="p-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-red-600">
-                      {sectionData.filter(s => s.severityGrade === 3).length}
+                    <div className="text-2xl font-bold text-red-600" id="p3-id-4">
+                      {sectionData.filter(s => s.severityGrade === 3 || s.severityGrade === '3').length}
                     </div>
                     <div className="text-sm text-slate-600">Grade 3+ (Action)</div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600" id="p3-id-5">
+                      {sectionData.filter(s => s.severityGrade === 1 || s.severityGrade === '1').length}
+                    </div>
+                    <div className="text-sm text-slate-600">Grade 1</div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-red-800" id="p3-id-6">
+                      {sectionData.filter(s => s.severityGrade === 4 || s.severityGrade === '4').length}
+                    </div>
+                    <div className="text-sm text-slate-600">Grade 4+</div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600" id="p3-id-7">
+                      {sectionData.filter(s => s.severityGrade === 5 || s.severityGrade === '5').length}
+                    </div>
+                    <div className="text-sm text-slate-600">Grade 5</div>
                   </div>
                 </CardContent>
               </Card>
