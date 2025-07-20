@@ -27,6 +27,7 @@ import { db } from "./db";
 import { sectionInspections } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { getSeverityGradesBySection, extractSeverityGradesFromSecstat } from "./utils/extractSeverityGrades";
+import { parseDb3File, ParsedSection } from "./parseDb3File";
 
 // Multi-defect splitting enabled - sections with both service and structural defects will be split
 
