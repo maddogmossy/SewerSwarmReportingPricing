@@ -6,6 +6,7 @@ interface SurveyData {
   valid: boolean;
   error?: string;
   warning?: string;
+  hasMetaDb?: boolean;
 }
 
 export function useSurveyLoader(directory: string = "/mnt/data") {

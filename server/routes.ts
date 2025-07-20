@@ -163,17 +163,24 @@ async function fetchLogoFromWebsite(websiteUrl: string): Promise<string | null> 
 async function validateDb3Handler(req: Request, res: Response) {
   try {
     const directory = req.body.directory || req.query.directory || '/mnt/data';
-    const { validateDb3Files } = await import('./db3-validator');
+    const { validateGenericDb3Files } = await import('./db3-validator');
     
-    const validation = validateDb3Files(directory as string);
+    const validation = validateGenericDb3Files(directory as string);
 
     if (!validation.valid) {
       return res.status(400).json({ error: validation.message });
     }
 
+    // Check if meta file is present
+    const hasMetaDb = !!validation.files?.meta;
+
     // Proceed to read both .db3 and _Meta.db3 files using sqlite3 or better-sqlite3
     // TODO: extract grading, observations, node refs, etc
-    res.status(200).json({ message: validation.message });
+    res.status(200).json({ 
+      message: validation.message,
+      warning: validation.warning,
+      hasMetaDb
+    });
   } catch (error) {
     console.error('Database validation error:', error);
     res.status(500).json({ error: 'Internal server error during validation' });
@@ -352,7 +359,8 @@ export async function registerRoutes(app: Express) {
             sectionsExtracted: sections.length,
             status: "completed",
             validation: validation.message,
-            warning: validation.warning
+            warning: validation.warning,
+            hasMetaDb: !!validation.files?.meta
           });
           
         } catch (dbError) {

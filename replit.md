@@ -744,6 +744,8 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Utility Functions**: Created loadDb3Files.ts utilities for client-side and server-side validation
 - **Frontend Integration**: Created SurveyLoader component and useSurveyLoader hook with toast notifications
 - **Toast System**: Integrated success/error notifications for database validation feedback
+- **Meta File Status**: Added MetaFileStatus and DatabaseStatus components for visual feedback
+- **Partial Processing UI**: Frontend components display warnings when meta.db3 files are missing
 - **Visual Consistency**: Maintained 4px border design with 0.3 opacity and pure color palette
 
 ## User Preferences (Updated July 20, 2025)
