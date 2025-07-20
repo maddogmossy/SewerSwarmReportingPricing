@@ -2820,7 +2820,6 @@ export default function Dashboard() {
         <div className="mb-6">
           {/* Dashboard Header */}
           <div className="flex items-center gap-3 mb-6">
-            <DevLabel id="db23" />
             <div className="p-3 bg-green-100 rounded-lg">
               <BarChart3 className="h-8 w-8 text-green-600" />
             </div>
