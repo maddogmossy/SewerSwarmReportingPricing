@@ -20,6 +20,15 @@ export default function SurveyLoader({ directory = "/mnt/data", onLoad }: Survey
             variant: "destructive"
           });
         } else {
+          // Show warning if meta file is missing but processing continues
+          if (data.warning) {
+            toast({
+              title: "Partial Processing",
+              description: data.warning,
+              variant: "default"
+            });
+          }
+          
           toast({
             title: "Success",
             description: data.message

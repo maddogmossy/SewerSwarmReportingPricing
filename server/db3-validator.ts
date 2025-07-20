@@ -18,22 +18,18 @@ export function validateDb3Files(directory: string): { valid: boolean; message: 
   return { valid: true, message: "✅ Both database files loaded successfully." };
 }
 
-export function validateGenericDb3Files(directory: string, baseName?: string): { valid: boolean; message: string; files?: { main: string; meta: string } } {
+export function validateGenericDb3Files(directory: string, baseName?: string): { valid: boolean; message: string; files?: { main: string; meta?: string }; warning?: string } {
   try {
     const files = fs.readdirSync(directory);
     const db3Files = files.filter(file => file.endsWith('.db3') && !file.includes('_Meta'));
     const metaFiles = files.filter(file => file.endsWith('_Meta.db3'));
 
     if (db3Files.length === 0 && metaFiles.length === 0) {
-      return { valid: false, message: "❌ No .db3 files found. Please upload both inspection and metadata files." };
+      return { valid: false, message: "❌ No .db3 files found. Please upload inspection database files." };
     }
 
     if (db3Files.length === 0) {
       return { valid: false, message: "⚠️ Missing main .db3 file. Please upload the inspection file." };
-    }
-
-    if (metaFiles.length === 0) {
-      return { valid: false, message: "⚠️ Missing _Meta.db3 file. Please upload the metadata file." };
     }
 
     // Try to find matching pairs
@@ -51,6 +47,20 @@ export function validateGenericDb3Files(directory: string, baseName?: string): {
           }
         };
       }
+    }
+
+    // If no meta file found, allow processing with warning
+    if (metaFiles.length === 0) {
+      console.warn("⚠️ Meta.db3 missing — grading will be partial.");
+      
+      return { 
+        valid: true, 
+        message: "✅ Main database file loaded successfully.",
+        warning: "⚠️ Meta.db3 missing — grading will be partial.",
+        files: {
+          main: path.join(directory, db3Files[0])
+        }
+      };
     }
 
     return { valid: false, message: "⚠️ No matching .db3 and _Meta.db3 file pairs found. Please ensure files have matching names." };

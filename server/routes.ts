@@ -309,6 +309,11 @@ export async function registerRoutes(app: Express) {
           
           console.log(validation.message);
           
+          // Log warning if meta file is missing
+          if (validation.warning) {
+            console.warn(validation.warning);
+          }
+          
           // Clear any existing sections for this file upload to prevent duplicates
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
           
@@ -346,7 +351,8 @@ export async function registerRoutes(app: Express) {
             uploadId: fileUpload.id,
             sectionsExtracted: sections.length,
             status: "completed",
-            validation: validation.message
+            validation: validation.message,
+            warning: validation.warning
           });
           
         } catch (dbError) {

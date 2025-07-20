@@ -5,6 +5,7 @@ interface SurveyData {
   message: string;
   valid: boolean;
   error?: string;
+  warning?: string;
 }
 
 export function useSurveyLoader(directory: string = "/mnt/data") {
@@ -31,6 +32,15 @@ export function useSurveyLoader(directory: string = "/mnt/data") {
           variant: "destructive"
         });
       } else {
+        // Show warning if meta file is missing but processing continues
+        if (result.warning) {
+          toast({
+            title: "Partial Processing",
+            description: result.warning,
+            variant: "default"
+          });
+        }
+        
         toast({
           title: "Success",
           description: result.message

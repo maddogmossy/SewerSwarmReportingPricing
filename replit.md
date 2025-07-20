@@ -739,7 +739,7 @@ This prevents data contamination and ensures authentic extraction integrity.
   - Database files: Use authentic Wincan database extraction with MSCC5 classification
   - PDF files: Independent processing workflow (placeholder implementation ready for expansion)
 - **File Support**: Supports .db, .db3, meta.db3, and .pdf files with appropriate validation
-- **Database File Validation**: Ensures both .db3 and _Meta.db3 files are present for complete processing
+- **Database File Validation**: Validates .db3 files are present, allows processing without meta files with partial grading warning
 - **API Endpoint Pattern**: Added /api/validate-db3 and /api/load-survey endpoints following the handler pattern for validation
 - **Utility Functions**: Created loadDb3Files.ts utilities for client-side and server-side validation
 - **Frontend Integration**: Created SurveyLoader component and useSurveyLoader hook with toast notifications
