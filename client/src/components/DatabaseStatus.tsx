@@ -36,7 +36,7 @@ export default function DatabaseStatus({ directory = "/mnt/data", className = ""
       <div className="text-green-600 text-sm">
         ✅ {data.message}
       </div>
-      <MetaFileStatus hasMetaDb={data.hasMetaDb || false} />
+      <MetaFileStatus hasMetaDb={data.hasMetaDb || false} variant="alert" />
     </div>
   );
 }
