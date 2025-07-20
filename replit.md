@@ -722,6 +722,23 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated July 20, 2025)
 
+### Dual Severity Grade System Complete ✅
+- **Date**: July 20, 2025
+- **Status**: Successfully implemented dual STR/SER severity grade display system
+- **Changes Made**:
+  - Added `severityGrades` JSONB column to database schema with proper migration
+  - Enhanced dashboard with dual grade display: STR (structural) / SER (service)
+  - Implemented improved color scheme: green (0-1), yellow (2-3), red (4+)
+  - Added service grade description column with human-readable text
+  - Updated existing data to populate dual severity grades from SECSTAT authentic data
+  - Fixed database query issues - all reports now display correctly
+- **Technical Implementation**: 
+  - Database schema update with `severityGrades: jsonb("severity_grades")` field
+  - Enhanced `gradeColor` function with simplified color groupings
+  - Service grade descriptions: "Unknown", "No service issues", "Minor service issues", "Major service grade"
+- **User Benefits**: Dashboard now shows both technical grades and descriptive service level text
+- **Result**: Complete dual severity grade system operational with authentic SECSTAT data
+
 ### Section Count Fix Locked ✅
 - **Date**: July 20, 2025
 - **Status**: Fixed section count to exclude multi-defect split records
