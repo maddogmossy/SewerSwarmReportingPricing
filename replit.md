@@ -720,12 +720,13 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.3' to return to this stable checkpoint
 
-## User Preferences (Updated July 17, 2025)
+## User Preferences (Updated July 20, 2025)
 - **Stability Priority**: User prioritizes app stability over advanced features - avoid breaking working functionality
 - **Screen Flashing Issue**: Complex helper functions cause screen flashing - prefer simple implementations
 - **Performance Focus**: Remove complex useCallback functions that recreate on every render
 - **Validation Preferences**: Use visual red triangle warnings in browser interface instead of browser alert popups
 - **Dashboard Button Policy**: Dashboard button should handle save functionality with validation - never add separate save buttons without explicit user request
+- **Category Card Design**: Use colored borders instead of background fills - colors should appear as borders, not full card backgrounds
 - **UI Design**: 
   - TP1 (cleanse/survey) and TP2 (repair) popups should have identical styling and layout
   - Use category card icons instead of generic icons (Edit for patching, PaintBucket for lining, Pickaxe for excavation)

@@ -447,11 +447,10 @@ export default function PR2Pricing() {
 
                     return (
                       <Card
-                        className="relative cursor-pointer transition-all hover:shadow-md border-2 border-blue-200"
+                        className="relative cursor-pointer transition-all hover:shadow-md border-2"
                         style={{
-                          backgroundColor: configToUse?.categoryColor 
-                            ? hexToRgba(configToUse.categoryColor, 0.4)
-                            : 'white'
+                          borderColor: configToUse?.categoryColor || '#e5e7eb',
+                          backgroundColor: 'white'
                         }}
                         onClick={() => {
                           if (existingConfig) {
@@ -498,11 +497,10 @@ export default function PR2Pricing() {
 
                     return (
                       <Card
-                        className="relative cursor-pointer transition-all hover:shadow-md border-2 border-blue-200"
+                        className="relative cursor-pointer transition-all hover:shadow-md border-2"
                         style={{
-                          backgroundColor: configToUse?.categoryColor 
-                            ? hexToRgba(configToUse.categoryColor, 0.3)
-                            : 'white'
+                          borderColor: configToUse?.categoryColor || '#e5e7eb',
+                          backgroundColor: 'white'
                         }}
                         onClick={() => {
                           if (existingConfig) {
@@ -573,13 +571,10 @@ export default function PR2Pricing() {
                   return (
                     <Card
                       key={category.id}
-                      className={`relative cursor-pointer transition-all hover:shadow-md border-2 ${
-                        isUserCreated ? 'border-green-200' : 'border-gray-200'
-                      }`}
+                      className="relative cursor-pointer transition-all hover:shadow-md border-2"
                       style={{
-                        backgroundColor: existingConfiguration?.categoryColor 
-                          ? hexToRgba(existingConfiguration.categoryColor, 0.4)
-                          : 'white'
+                        borderColor: existingConfiguration?.categoryColor || (isUserCreated ? '#bbf7d0' : '#e5e7eb'),
+                        backgroundColor: 'white'
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
