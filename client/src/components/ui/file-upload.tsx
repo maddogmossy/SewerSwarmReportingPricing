@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { Button } from "./button";
 import { Card, CardContent } from "./card";
 import { Upload, X, FileText, Database } from "lucide-react";
+import { checkMetaPairing } from "@/utils/loadDb3Files";
 
 interface FileUploadProps {
   onFileSelect: (file: File | null) => void;
@@ -47,6 +48,11 @@ export default function FileUpload({
     const file = files[0];
     
     if (file && validateFile(file)) {
+      // Check for meta file pairing if it's a database file
+      if (file.name.endsWith('.db3')) {
+        checkMetaPairing([file]);
+      }
+      
       // Check if sector is required but not selected
       if (requiresSector && !selectedSector) {
         if (onFileSelectedWithoutSector) {
@@ -62,6 +68,11 @@ export default function FileUpload({
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && validateFile(file)) {
+      // Check for meta file pairing if it's a database file
+      if (file.name.endsWith('.db3')) {
+        checkMetaPairing([file]);
+      }
+      
       // Check if sector is required but not selected
       if (requiresSector && !selectedSector) {
         if (onFileSelectedWithoutSector) {
