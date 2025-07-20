@@ -726,15 +726,20 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Date**: July 20, 2025
 - **Status**: Successfully completed comprehensive PDF functionality removal
 - **Changes Made**:
-  - Eliminated all PDF processing components and functions
+  - Eliminated all PDF processing components and functions from backend routes
   - Updated multer configuration to accept only database files (.db, .db3, meta.db3)
   - Streamlined upload endpoint for database file processing only
   - Removed PDF-related imports and dependencies
   - Cleaned corrupted routes file and created streamlined database-only version
+  - **Removed PDF Reader button** from dashboard interface
+  - Updated file upload component to only accept database files (.db, .db3)
+  - Updated all text references from "PDF or DB3" to "Database files only"
+  - Changed file validation to reject PDF files and only accept database files
   - Application now exclusively processes Wincan database files
 - **Visual Consistency**: Maintained 4px border design with 0.3 opacity and pure color palette
 - **Database Processing**: Enhanced to use authentic Wincan database extraction with MSCC5 classification
 - **File Corruption**: Resolved file corruption issues that occurred during cleanup process
+- **UI Updates**: File upload interface now shows "Upload Database File" and "Wincan database file" terminology
 
 ## User Preferences (Updated July 20, 2025)
 - **Stability Priority**: User prioritizes app stability over advanced features - avoid breaking working functionality

@@ -524,7 +524,7 @@ export default function Upload() {
                   <FileUpload
                     onFileSelect={setSelectedFile}
                     selectedFile={selectedFile}
-                    accept=".pdf,.db3"
+                    accept=".db,.db3"
                     maxSize={50 * 1024 * 1024} // 50MB
                     requiresSector={false}
                   />
@@ -539,7 +539,7 @@ export default function Upload() {
                           onChange={(e) => setPauseForReview(e.target.checked)}
                           className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
-                        <span>Pause workflow after PDF extraction for review</span>
+                        <span>Pause workflow after database processing for review</span>
                       </label>
 
                       <Button 

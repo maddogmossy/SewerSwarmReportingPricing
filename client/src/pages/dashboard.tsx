@@ -2736,18 +2736,7 @@ export default function Dashboard() {
               <Download className="h-4 w-4 mr-2" />
               Export to Excel
             </Button>
-            <Link href="/pdf-reader">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-              >
-                <DevLabel id="db22" />
-                <DevLabel id="b6" />
-                <FileText className="h-4 w-4 mr-2" />
-                PDF Reader
-              </Button>
-            </Link>
+
             {/* Clear button removed to prevent accidental data loss */}
           </div>
         </div>
