@@ -2233,6 +2233,23 @@ export default function PR2ConfigClean() {
   // Get dynamic page ID based on category
   const dynamicPageId = categoryId ? CATEGORY_PAGE_IDS[categoryId as keyof typeof CATEGORY_PAGE_IDS] || `p-${categoryId}` : 'p-config';
 
+  // Show loading state during auto-creation to eliminate "Create" page appearance
+  const isAutoCreating = !isEditing && pipeSize && categoryId && allCategoryConfigs;
+  
+  // Show loading screen during auto-creation process
+  if (isAutoCreating) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6 relative flex items-center justify-center">
+        <DevLabel id={dynamicPageId} position="top-right" />
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-900">Loading Configuration...</h2>
+          <p className="text-gray-600 mt-2">Setting up {pipeSize}mm {categoryId.replace('-', ' ')} configuration</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div 
       className="min-h-screen bg-gray-50 p-6 relative"
@@ -2251,7 +2268,7 @@ export default function PR2ConfigClean() {
                 className="text-2xl font-bold text-gray-900"
                 data-component="page-title"
               >
-                {isEditing ? 'Edit' : 'Create'} {formData.categoryName || 'Configuration'}
+                Edit {formData.categoryName || 'Configuration'}
               </h1>
               <p className="text-gray-600 mt-1">
                 Sector: <span className="font-medium text-blue-600">{sector}</span>
