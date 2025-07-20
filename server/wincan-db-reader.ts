@@ -26,6 +26,7 @@ import fs from 'fs';
 import { db } from "./db";
 import { sectionInspections } from "@shared/schema";
 import { eq } from "drizzle-orm";
+import { getSeverityGradesBySection, extractSeverityGradesFromSecstat } from "./utils/extractSeverityGrades";
 
 // Multi-defect splitting enabled - sections with both service and structural defects will be split
 
@@ -562,6 +563,15 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       console.log("⚠️ Could not load observation data:", error);
     }
 
+    // Extract authentic severity grades from SECSTAT table
+    let severityGrades: Record<number, { structural: number | null, service: number | null }> = {};
+    try {
+      severityGrades = await getSeverityGradesBySection(database);
+      console.log(`📊 Extracted authentic severity grades for ${Object.keys(severityGrades).length} sections from SECSTAT table`);
+    } catch (error) {
+      console.log("⚠️ Could not load SECSTAT severity grades:", error);
+    }
+
     // Look for SECTION table (main inspection data)
     let sectionData: WincanSectionData[] = [];
     const sectionTable = tables.find(t => t.name.toUpperCase() === 'SECTION');
@@ -575,7 +585,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
       if (sectionRecords.length > 0) {
         console.log(`📄 Sample SECTION data:`, sectionRecords[0]);
         console.log(`🔍 SECTION table fields:`, Object.keys(sectionRecords[0]));
-        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector);
+        sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades);
       }
     }
     
@@ -619,7 +629,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
 }
 
 // Process authentic SECTION data with manhole name mapping - ZERO SYNTHETIC DATA
-async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>, observationMap: Map<string, string[]>, sector: string = 'utilities'): Promise<WincanSectionData[]> {
+async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>, observationMap: Map<string, string[]>, sector: string = 'utilities', severityGrades: Record<number, { structural: number | null, service: number | null }> = {}): Promise<WincanSectionData[]> {
   console.log(`🔒 LOCKDOWN: Processing authentic SECTION data only`);
   
   if (!sectionRecords || sectionRecords.length === 0) {
@@ -766,9 +776,27 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         
         console.log(`🔍 Split observations - Service: ${serviceObservations.length}, Structural: ${structuralObservations.length}`);
         
-        // Create service defect section (original item number)
+        // Create service defect section (original item number) - Use authentic SECSTAT grades
         const serviceDefectText = serviceObservations.length > 0 ? await formatObservationText(serviceObservations, sector) : 'No service defects found';
-        const serviceClassification = classifyWincanObservations(serviceDefectText, sector);
+        
+        // Check for authentic service grade from SECSTAT
+        const authenticServiceGrades = severityGrades[authenticItemNo];
+        let serviceClassification;
+        if (authenticServiceGrades && authenticServiceGrades.service !== null) {
+          console.log(`✅ Using authentic SECSTAT service grade for Item ${authenticItemNo}: ${authenticServiceGrades.service}`);
+          serviceClassification = {
+            severityGrade: authenticServiceGrades.service,
+            defectType: 'service' as const,
+            recommendations: authenticServiceGrades.service === 0 ? 
+              'No action required this pipe section is at an adoptable condition' :
+              'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required',
+            adoptable: authenticServiceGrades.service === 0 ? 'Yes' : 'Conditional',
+            srmGrading: getSRMGrading(authenticServiceGrades.service, 'service')
+          };
+        } else {
+          console.log(`⚠️ No authentic SECSTAT service grade found for Item ${authenticItemNo}, using MSCC5 classification`);
+          serviceClassification = classifyWincanObservations(serviceDefectText, sector);
+        }
         
         const serviceSection: WincanSectionData = {
           itemNo: authenticItemNo,
@@ -788,9 +816,26 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           defectType: serviceClassification.defectType
         };
         
-        // Create structural defect section (with 'a' suffix)
+        // Create structural defect section (with 'a' suffix) - Use authentic SECSTAT grades
         const structuralDefectText = structuralObservations.length > 0 ? await formatObservationText(structuralObservations, sector) : 'No structural defects found';
-        const structuralClassification = classifyWincanObservations(structuralDefectText, sector);
+        
+        // Check for authentic structural grade from SECSTAT
+        let structuralClassification;
+        if (authenticServiceGrades && authenticServiceGrades.structural !== null) {
+          console.log(`✅ Using authentic SECSTAT structural grade for Item ${authenticItemNo}a: ${authenticServiceGrades.structural}`);
+          structuralClassification = {
+            severityGrade: authenticServiceGrades.structural,
+            defectType: 'structural' as const,
+            recommendations: authenticServiceGrades.structural === 0 ? 
+              'No action required this pipe section is at an adoptable condition' :
+              'WRc Drain Repair Book: Structural repair or relining required',
+            adoptable: authenticServiceGrades.structural === 0 ? 'Yes' : 'Conditional',
+            srmGrading: getSRMGrading(authenticServiceGrades.structural, 'structural')
+          };
+        } else {
+          console.log(`⚠️ No authentic SECSTAT structural grade found for Item ${authenticItemNo}a, using MSCC5 classification`);
+          structuralClassification = classifyWincanObservations(structuralDefectText, sector);
+        }
         
         const structuralSection: WincanSectionData = {
           itemNo: authenticItemNo,
@@ -826,14 +871,53 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       console.log(`📝 Formatted defect text: "${defectText.substring(0, 80)}..."`);
       console.log(`📊 About to add section with itemNo: ${authenticSections.length + 1}`);
       
-      // Apply MSCC5 classification for defect analysis
+      // Apply AUTHENTIC severity grades from SECSTAT table first, fallback to MSCC5 classification
       let severityGrade = 0;
       let recommendations = 'No action required this pipe section is at an adoptable condition';
       let adoptable = 'Yes';
       let srmGrading = getSRMGrading(0, 'service');
       let defectType = 'service';
       
-      if (observations.length > 0) {
+      // Check for authentic severity grades from SECSTAT table
+      const authenticGrades = severityGrades[authenticItemNo];
+      if (authenticGrades) {
+        console.log(`🎯 Found authentic SECSTAT grades for Item ${authenticItemNo}:`, authenticGrades);
+        
+        // Use structural grade if available, otherwise use service grade
+        const authenticSeverity = authenticGrades.structural !== null ? authenticGrades.structural : authenticGrades.service;
+        if (authenticSeverity !== null) {
+          severityGrade = authenticSeverity;
+          defectType = authenticGrades.structural !== null ? 'structural' : 'service';
+          console.log(`✅ Using authentic SECSTAT severity grade: ${severityGrade} (${defectType})`);
+          
+          // Generate recommendations based on authentic grade
+          if (severityGrade === 0) {
+            recommendations = 'No action required this pipe section is at an adoptable condition';
+            adoptable = 'Yes';
+          } else if (severityGrade <= 2) {
+            recommendations = defectType === 'structural' ? 
+              'WRc Drain Repair Book: Local patch lining recommended for minor structural issues' :
+              'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
+            adoptable = 'Conditional';
+          } else if (severityGrade <= 3) {
+            recommendations = defectType === 'structural' ? 
+              'WRc Drain Repair Book: Structural repair or relining required' :
+              'WRc Sewer Cleaning Manual: High-pressure jetting and cleaning required';
+            adoptable = 'Conditional';
+          } else {
+            recommendations = defectType === 'structural' ? 
+              'WRc Drain Repair Book: Immediate excavation and replacement required' :
+              'Critical service intervention required';
+            adoptable = 'No';
+          }
+          
+          srmGrading = getSRMGrading(severityGrade, defectType);
+        }
+      }
+      
+      // Fallback to MSCC5 classification if no authentic grades found
+      if (severityGrade === 0 && observations.length > 0) {
+        console.log(`⚠️ No authentic SECSTAT grades found for Item ${authenticItemNo}, falling back to MSCC5 classification`);
         console.log(`🎯 Applying MSCC5 classification to: "${defectText.substring(0, 100)}..."`);
         const classification = classifyWincanObservations(defectText, 'utilities');
         severityGrade = classification.severityGrade;
@@ -842,9 +926,11 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         srmGrading = classification.srmGrading;
         defectType = classification.defectType;
         
-        console.log(`📊 MSCC5 Classification Result: Grade ${severityGrade}, ${adoptable}, SRM: ${srmGrading.description}, Recommendations: ${recommendations.substring(0, 80)}...`);
+        console.log(`📊 MSCC5 Fallback Classification Result: Grade ${severityGrade}, ${adoptable}, SRM: ${srmGrading.description}`);
+      } else if (authenticGrades) {
+        console.log(`📊 AUTHENTIC SECSTAT Result: Grade ${severityGrade}, ${adoptable}, Type: ${defectType}`);
       } else {
-        console.log(`📊 No observations found, using default Grade 0`);
+        console.log(`📊 No observations or grades found, using default Grade 0`);
       }
       
       // Item number already calculated above for multi-defect logic
