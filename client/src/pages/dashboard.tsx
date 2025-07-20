@@ -889,7 +889,7 @@ export default function Dashboard() {
         return (
           <div className="text-sm text-center space-y-1">
             {/* Structural Grade */}
-            {section.severityGrades?.structural !== null && section.severityGrades?.structural !== undefined && (
+            {section.severityGrades && typeof section.severityGrades.structural === 'number' && (
               <div className="flex items-center justify-center gap-1">
                 <span className="text-xs text-gray-500">STR</span>
                 <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-gray-800 ${getStrBadgeColor(section.severityGrades.structural)} rounded-full`}>
@@ -899,7 +899,7 @@ export default function Dashboard() {
             )}
 
             {/* Service Grade */}
-            {section.severityGrades?.service !== null && (
+            {section.severityGrades && typeof section.severityGrades.service === 'number' && (
               <div className="flex items-center justify-center gap-1">
                 <span className="text-xs text-gray-500">SER</span>
                 <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-gray-800 ${getSerBadgeColor(section.severityGrades.service)} rounded-full`}>
