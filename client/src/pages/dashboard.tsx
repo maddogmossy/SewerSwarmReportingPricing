@@ -2805,7 +2805,6 @@ export default function Dashboard() {
               size="sm"
               onClick={exportToExcel}
             >
-              <DevLabel id="db21" />
               <Download className="h-4 w-4 mr-2" />
               Export to Excel
             </Button>
@@ -3416,7 +3415,7 @@ export default function Dashboard() {
                     <div className="p-2 rounded-lg bg-blue-50">
                       <Wrench className="h-5 w-5 text-blue-600" />
                     </div>
-                    Analysis Standards Applied - {currentSector.name} Sector
+                    Analysis Standards Applied - Utilities Sector
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -3450,7 +3449,6 @@ export default function Dashboard() {
       {/* Export Warning Dialog */}
       <Dialog open={showExportWarning} onOpenChange={setShowExportWarning}>
         <DialogContent className="sm:max-w-md">
-          <DevLabel id="db50" />
           <DialogHeader>
             <DialogTitle>Hidden Columns Warning</DialogTitle>
             <DialogDescription>
@@ -3465,12 +3463,10 @@ export default function Dashboard() {
             </div>
           </div>
           <DialogFooter className="flex gap-2">
-            <DevLabel id="db51" />
             <Button
               variant="outline"
               onClick={() => setShowExportWarning(false)}
             >
-              <DevLabel id="b12" />
               Cancel
             </Button>
             <Button
@@ -3480,7 +3476,6 @@ export default function Dashboard() {
               }}
               className="bg-amber-600 hover:bg-amber-700"
             >
-              <DevLabel id="b13" />
               Export Anyway
             </Button>
           </DialogFooter>
