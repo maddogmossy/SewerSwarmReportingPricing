@@ -105,6 +105,7 @@ export const sectionInspections = pgTable("section_inspections", {
   defects: text("defects"),
   defectType: varchar("defect_type"), // 'service', 'structural', or null for mixed/clean sections
   severityGrade: varchar("severity_grade"),
+  severityGrades: jsonb("severity_grades"), // {structural: number | null, service: number | null}
   recommendations: text("recommendations"),
   adoptable: varchar("adoptable"),
   cost: varchar("cost"),

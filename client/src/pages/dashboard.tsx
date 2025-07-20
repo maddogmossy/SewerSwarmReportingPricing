@@ -829,17 +829,33 @@ export default function Dashboard() {
           </div>
         );
       case 'severityGrade':
+        // Helper function to determine grade color based on severity
+        const gradeColor = (grade: number | null) => {
+          if (grade === null || grade === undefined) return 'text-gray-400';
+          switch (grade) {
+            case 0: return 'text-green-600';
+            case 1: return 'text-emerald-600'; 
+            case 2: return 'text-amber-600';
+            case 3: return 'text-red-600';
+            case 4: return 'text-red-700';
+            case 5: return 'text-red-800';
+            default: return 'text-gray-600';
+          }
+        };
+        
         return (
-          <span className={`px-1 py-0.5 rounded text-xs font-semibold ${
-            section.severityGrade === "0" && section.adoptable === "Yes" ? 'bg-green-100 text-green-800' :
-            section.severityGrade === "0" && (section.adoptable === "No" || section.adoptable === "Conditional") ? 'bg-gray-100 text-gray-800' :
-            section.severityGrade === "1" ? 'bg-emerald-100 text-emerald-800' :
-            section.severityGrade === "2" ? 'bg-amber-100 text-amber-800' :
-            section.severityGrade === "3" ? 'bg-red-100 text-red-800' :
-            'bg-red-100 text-red-800'
-          }`}>
-            {section.severityGrade}
-          </span>
+          <div className="text-sm text-center">
+            <div>
+              <span className={`font-bold ${gradeColor(section.severityGrades?.structural)}`}>
+                STR: {section.severityGrades?.structural ?? '-'}
+              </span>
+            </div>
+            <div>
+              <span className={`font-bold ${gradeColor(section.severityGrades?.service)}`}>
+                SER: {section.severityGrades?.service ?? '-'}
+              </span>
+            </div>
+          </div>
         );
       case 'srmGrading':
         return (

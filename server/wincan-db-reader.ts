@@ -811,6 +811,10 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           defects: serviceDefectText,
           recommendations: serviceClassification.recommendations,
           severityGrade: serviceClassification.severityGrade,
+          severityGrades: {
+            structural: authenticServiceGrades?.structural ?? null,
+            service: authenticServiceGrades?.service ?? null
+          },
           adoptable: serviceClassification.adoptable,
           inspectionDate: inspectionDate,
           inspectionTime: inspectionTime,
@@ -851,6 +855,10 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           defects: structuralDefectText,
           recommendations: structuralClassification.recommendations,
           severityGrade: structuralClassification.severityGrade,
+          severityGrades: {
+            structural: authenticServiceGrades?.structural ?? null,
+            service: authenticServiceGrades?.service ?? null
+          },
           adoptable: structuralClassification.adoptable,
           inspectionDate: inspectionDate,
           inspectionTime: inspectionTime,
@@ -948,6 +956,10 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         defects: defectText,
         recommendations: recommendations,
         severityGrade: severityGrade,
+        severityGrades: authenticGrades ? {
+          structural: authenticGrades.structural,
+          service: authenticGrades.service
+        } : null,
         adoptable: adoptable,
         inspectionDate: inspectionDate,
         inspectionTime: inspectionTime,
@@ -1033,6 +1045,7 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         defectType: section.defectType,
         recommendations: section.recommendations,
         severityGrade: section.severityGrade,
+        severityGrades: section.severityGrades,
         adoptable: section.adoptable,
         startMHDepth: 'No data',
         finishMHDepth: 'No data'
