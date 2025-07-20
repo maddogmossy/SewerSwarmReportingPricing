@@ -447,30 +447,13 @@ const getStatusColor = (status: string) => {
 // If no authentic data exists, display error message requesting user upload
 
 // SRM Grading function - combines structural and service grades into risk assessment
-const getSrmGrading = (structuralGrade: number | null, serviceGrade: number | null) => {
-  // Default for null/undefined grades
-  if (structuralGrade === null || serviceGrade === null) {
-    return { label: 'UNKNOWN', className: 'bg-gray-100 text-gray-600' };
-  }
-
-  // Calculate combined risk score
-  const maxGrade = Math.max(structuralGrade, serviceGrade);
-  const combinedScore = structuralGrade + serviceGrade;
-
-  // SRM Risk Categories based on combined assessment
-  if (maxGrade === 0 && combinedScore === 0) {
-    return { label: 'MINIMAL', className: 'bg-green-100 text-green-800' };
-  } else if (maxGrade <= 1 && combinedScore <= 2) {
-    return { label: 'LOW', className: 'bg-green-200 text-green-800' };
-  } else if (maxGrade <= 2 && combinedScore <= 4) {
-    return { label: 'MODERATE', className: 'bg-yellow-200 text-yellow-800' };
-  } else if (maxGrade <= 3 && combinedScore <= 6) {
-    return { label: 'HIGH', className: 'bg-orange-200 text-orange-800' };
-  } else if (maxGrade <= 4 || combinedScore <= 8) {
-    return { label: 'CRITICAL', className: 'bg-red-200 text-red-800' };
-  } else {
-    return { label: 'EMERGENCY', className: 'bg-red-300 text-red-900' };
-  }
+const getSrmBadge = (grade: number | null) => {
+  if (grade === 0) return { label: 'MINIMAL', className: 'bg-green-100 text-green-700' };
+  if (grade === 1) return { label: 'MINOR', className: 'bg-yellow-100 text-yellow-800' };
+  if (grade === 2) return { label: 'NOTICEABLE', className: 'bg-orange-100 text-orange-700' };
+  if (grade === 3) return { label: 'MAJOR', className: 'bg-red-100 text-red-700' };
+  if (grade >= 4) return { label: 'CRITICAL', className: 'bg-neutral-900 text-white' };
+  return { label: 'N/A', className: 'bg-gray-100 text-gray-600' };
 };
 
 // Column definitions for the enhanced table
@@ -922,7 +905,9 @@ export default function Dashboard() {
           </div>
         );
       case 'srmGrading':
-        const srm = getSrmGrading(section.severityGrades?.structural, section.severityGrades?.service);
+        // Use the higher of structural or service grade for SRM assessment
+        const maxGrade = Math.max(section.severityGrades?.structural || 0, section.severityGrades?.service || 0);
+        const srm = getSrmBadge(maxGrade);
         return (
           <div className="text-sm text-center">
             <span className={`px-2 py-1 rounded text-xs font-semibold ${srm.className}`}>
