@@ -45,8 +45,31 @@ export default function FileUpload({
     setIsDragOver(false);
     
     const files = Array.from(e.dataTransfer.files);
-    const file = files[0];
     
+    if (files.length === 0) return;
+    
+    // If multiple files dropped, check for pairing
+    if (files.length > 1) {
+      const validFiles = files.filter(file => validateFile(file));
+      if (validFiles.length > 0) {
+        // Check for meta file pairing
+        checkMetaPairing(validFiles);
+        
+        // For now, just select the first valid file
+        const firstFile = validFiles[0];
+        if (requiresSector && !selectedSector) {
+          if (onFileSelectedWithoutSector) {
+            onFileSelectedWithoutSector(firstFile);
+          }
+          return;
+        }
+        onFileSelect(firstFile);
+      }
+      return;
+    }
+    
+    // Single file handling
+    const file = files[0];
     if (file && validateFile(file)) {
       // Check for meta file pairing if it's a database file
       if (file.name.endsWith('.db3')) {
@@ -66,7 +89,32 @@ export default function FileUpload({
   }, [onFileSelect, maxSize, requiresSector, selectedSector, onFileSelectedWithoutSector]);
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const files = Array.from(e.target.files || []);
+    
+    if (files.length === 0) return;
+    
+    // If multiple files selected, check for pairing
+    if (files.length > 1) {
+      const validFiles = files.filter(file => validateFile(file));
+      if (validFiles.length > 0) {
+        // Check for meta file pairing
+        checkMetaPairing(validFiles);
+        
+        // For now, just select the first valid file
+        const firstFile = validFiles[0];
+        if (requiresSector && !selectedSector) {
+          if (onFileSelectedWithoutSector) {
+            onFileSelectedWithoutSector(firstFile);
+          }
+          return;
+        }
+        onFileSelect(firstFile);
+      }
+      return;
+    }
+    
+    // Single file handling
+    const file = files[0];
     if (file && validateFile(file)) {
       // Check for meta file pairing if it's a database file
       if (file.name.endsWith('.db3')) {
@@ -168,6 +216,7 @@ export default function FileUpload({
               type="file"
               className="hidden"
               accept={accept}
+              multiple
               onChange={handleFileInputChange}
             />
           </CardContent>
