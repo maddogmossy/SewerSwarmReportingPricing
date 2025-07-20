@@ -174,11 +174,10 @@ export default function Upload() {
   // Keep folders collapsed by default - users can click to expand
 
   const uploadMutation = useMutation({
-    mutationFn: async ({ file, sector, folderId, pauseForReview }: { file: File; sector: string; folderId: number | null; pauseForReview: boolean }) => {
+    mutationFn: async ({ file, sector, folderId }: { file: File; sector: string; folderId: number | null }) => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('sector', sector);
-      formData.append('pauseForReview', pauseForReview.toString());
       if (folderId !== null) {
         formData.append('folderId', folderId.toString());
       }
@@ -232,7 +231,7 @@ export default function Upload() {
       });
       return;
     }
-    uploadMutation.mutate({ file: selectedFile, sector: selectedSector, folderId: selectedFolderId, pauseForReview });
+    uploadMutation.mutate({ file: selectedFile, sector: selectedSector, folderId: selectedFolderId });
   };
 
   const refreshMutation = useMutation({
