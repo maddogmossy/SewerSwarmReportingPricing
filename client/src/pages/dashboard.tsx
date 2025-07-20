@@ -2744,7 +2744,6 @@ export default function Dashboard() {
 
   return (
     <div className="relative min-h-screen bg-slate-50">
-      <DevLabel id="p3" position="top-right" />
       {/* Navigation */}
       <div className="bg-white border-b border-slate-200 p-4">
         <div className="flex gap-4 items-center">
