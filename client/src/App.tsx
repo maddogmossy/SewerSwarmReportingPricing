@@ -9,6 +9,7 @@ import AppWrapper from "@/components/AppWrapper";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Upload from "@/pages/upload";
+import Reports from "@/pages/reports";
 
 import Pricing from "@/pages/pricing";
 import SectorPricing from "@/pages/sector-pricing";
@@ -71,6 +72,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/upload" component={Upload} />
+          <Route path="/reports" component={Reports} />
 
 
           <Route path="/pricing/surveys" component={SurveyPricing} />

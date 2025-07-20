@@ -754,6 +754,8 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **File Upload Validation Integration**: Added checkMetaPairing calls to file upload component for real-time meta file validation warnings
 - **Multiple File Selection Support**: Enhanced file upload component to support multiple file selection for database file pairing
 - **File Dialog Persistence**: Fixed file selection dialog to stay open when meta file warnings are displayed, preventing premature dialog closure
+- **Reports Page Creation**: Created dedicated /reports page for managing uploaded reports with complete folder management functionality
+- **Dashboard Cleanup**: Removed "Uploaded Reports" section from dashboard and added navigation button to dedicated Reports page
 
 ## User Preferences (Updated July 20, 2025)
 - **Stability Priority**: User prioritizes app stability over advanced features - avoid breaking working functionality
