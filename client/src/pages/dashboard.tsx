@@ -933,22 +933,22 @@ export default function Dashboard() {
                 case 'green':
                   if (configColor) {
                     // Use custom color from configuration
-                    backgroundClass = `border-2 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`;
+                    backgroundClass = `border-4 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`;
                   } else {
-                    backgroundClass = 'bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400';
+                    backgroundClass = 'bg-green-50 hover:bg-green-100 border-4 border-green-200 hover:border-green-400';
                   }
                   statusMessage = '✅ Meets all PR2 requirements';
                   break;
                 case 'red':
-                  backgroundClass = 'bg-red-50 hover:bg-red-100 border-2 border-red-200 hover:border-red-400';
+                  backgroundClass = 'bg-red-50 hover:bg-red-100 border-4 border-red-200 hover:border-red-400';
                   statusMessage = '⚠️ Below minimum quantities';
                   break;
                 case 'purple':
-                  backgroundClass = 'bg-purple-50 hover:bg-purple-100 border-2 border-purple-200 hover:border-purple-400';
+                  backgroundClass = 'bg-purple-50 hover:bg-purple-100 border-4 border-purple-200 hover:border-purple-400';
                   statusMessage = '🔄 Over minimum threshold';
                   break;
                 default:
-                  backgroundClass = 'bg-red-50 hover:bg-red-100 border-2 border-red-200 hover:border-red-400';
+                  backgroundClass = 'bg-red-50 hover:bg-red-100 border-4 border-red-200 hover:border-red-400';
                   statusMessage = '🚫 Outside PR2 configuration ranges';
               }
             }
@@ -979,11 +979,11 @@ export default function Dashboard() {
                 data-sector={currentSector.id}
               >
                 <div 
-                  className={`text-xs max-w-sm ${statusColor === 'green' && configColor ? '' : backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}
+                  className={`text-xs max-w-sm ${statusColor === 'green' && configColor ? 'border-4 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer' : backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}
                   style={statusColor === 'green' && configColor ? {
-                    backgroundColor: hexToRgba(configColor, 0.3),
-                    borderColor: hexToRgba(configColor, 0.5),
-                    borderWidth: '2px'
+                    backgroundColor: 'white',
+                    borderColor: hexToRgba(configColor, 0.3),
+                    borderWidth: '4px'
                   } : {}}
                 >
                   <div className="font-bold text-black mb-1">💧 {hasLinkedPR2 ? `${pr2Config.categoryName} (Pricing Window db11)` : 'CLEANSE/SURVEY'}</div>
@@ -1046,11 +1046,11 @@ export default function Dashboard() {
                 }}
               >
                 <div 
-                  className={`text-xs max-w-sm ${hasTP2Patching && tp2PatchingConfig.categoryColor ? '' : backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}
+                  className={`text-xs max-w-sm ${hasTP2Patching && tp2PatchingConfig.categoryColor ? 'border-4 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer' : backgroundClass} p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer`}
                   style={hasTP2Patching && tp2PatchingConfig.categoryColor ? {
-                    backgroundColor: hexToRgba(tp2PatchingConfig.categoryColor, 0.3),
-                    borderColor: hexToRgba(tp2PatchingConfig.categoryColor, 0.5),
-                    borderWidth: '2px'
+                    backgroundColor: 'white',
+                    borderColor: hexToRgba(tp2PatchingConfig.categoryColor, 0.3),
+                    borderWidth: '4px'
                   } : {}}
                 >
                   <div className="font-bold text-black mb-1">🔧 {hasTP2Patching ? `${titleText} (Pricing Window db11)` : titleText}</div>
