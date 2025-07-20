@@ -831,16 +831,10 @@ export default function Dashboard() {
       case 'severityGrade':
         // Helper function to determine grade color based on severity
         const gradeColor = (grade: number | null) => {
-          if (grade === null || grade === undefined) return 'text-gray-400';
-          switch (grade) {
-            case 0: return 'text-green-600';
-            case 1: return 'text-emerald-600'; 
-            case 2: return 'text-amber-600';
-            case 3: return 'text-red-600';
-            case 4: return 'text-red-700';
-            case 5: return 'text-red-800';
-            default: return 'text-gray-600';
-          }
+          if (grade === null || grade === undefined) return "text-gray-400";
+          if (grade === 0 || grade === 1) return "text-green-600";
+          if (grade === 2 || grade === 3) return "text-yellow-600";
+          return "text-red-600";
         };
         
         return (
