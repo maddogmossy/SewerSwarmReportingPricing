@@ -2450,8 +2450,20 @@ export default function PR2ConfigClean() {
                         await Promise.all(updatePromises);
                         console.log('✅ All patching configurations updated with new color (data preserved)');
                       } else {
-                        // For non-patching categories, just save the current configuration
-                        debouncedSave();
+                        // For non-patching categories, save immediately with new color
+                        console.log('💾 Saving configuration changes (including cleared fields)...');
+                        
+                        // Create updated form data with new color
+                        const updatedFormData = { ...formData, categoryColor: color };
+                        console.log('💾 Current formData being saved:', JSON.stringify(updatedFormData, null, 2));
+                        
+                        // Save immediately instead of using debounced save
+                        try {
+                          const response = await apiRequest('PUT', `/api/pr2-clean/${editId}`, updatedFormData);
+                          console.log('✅ Input values saved successfully');
+                        } catch (error) {
+                          console.error('❌ Save failed:', error);
+                        }
                       }
                     }}
                     className={`w-8 h-8 rounded border-2 hover:scale-110 transition-transform ${
