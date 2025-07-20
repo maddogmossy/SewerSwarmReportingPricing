@@ -749,6 +749,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Visual Consistency**: Maintained 4px border design with 0.3 opacity and pure color palette
 - **UI Cleanup**: Removed legacy "Pause workflow after file processing for review" checkbox from upload interface
 - **Client-Side Validation**: Added checkMetaPairing function with custom event dispatching for file validation warnings
+- **Global Warning System**: Created AppWrapper component to handle SHOW_WARNING custom events with toast notifications
 
 ## User Preferences (Updated July 20, 2025)
 - **Stability Priority**: User prioritizes app stability over advanced features - avoid breaking working functionality

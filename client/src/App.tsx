@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
+import AppWrapper from "@/components/AppWrapper";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Upload from "@/pages/upload";
@@ -110,8 +111,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Router />
+        <AppWrapper>
+          <Toaster />
+          <Router />
+        </AppWrapper>
       </TooltipProvider>
     </QueryClientProvider>
   );
