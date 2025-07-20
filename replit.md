@@ -722,22 +722,28 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated July 20, 2025)
 
-### Dual Severity Grade System Complete ✅
+### Enhanced Severity Grade & SRM Risk Assessment System Complete ✅
 - **Date**: July 20, 2025
-- **Status**: Successfully implemented dual STR/SER severity grade display system
+- **Status**: Successfully implemented comprehensive dual STR/SER severity grade system with SRM risk assessment
 - **Changes Made**:
   - Added `severityGrades` JSONB column to database schema with proper migration
   - Enhanced dashboard with dual grade display: STR (structural) / SER (service)
-  - Implemented improved color scheme: green (0-1), yellow (2-3), red (4+)
+  - Implemented refined color scheme with distinct colors for each grade (0-5)
   - Added service grade description column with human-readable text
+  - **NEW**: SRM Risk Assessment column combining structural and service grades
   - Updated existing data to populate dual severity grades from SECSTAT authentic data
   - Fixed database query issues - all reports now display correctly
 - **Technical Implementation**: 
   - Database schema update with `severityGrades: jsonb("severity_grades")` field
-  - Enhanced `gradeColor` function with simplified color groupings
+  - Enhanced badge-style display with distinct STR/SER color functions
+  - **NEW**: `getSrmGrading()` function calculating combined risk scores
   - Service grade descriptions: "Unknown", "No service issues", "Minor service issues", "Major service grade"
-- **User Benefits**: Dashboard now shows both technical grades and descriptive service level text
-- **Result**: Complete dual severity grade system operational with authentic SECSTAT data
+  - **SRM Risk Categories**: MINIMAL, LOW, MODERATE, HIGH, CRITICAL, EMERGENCY based on combined assessment
+- **Enhanced Color Scheme**:
+  - **STR Badges**: green-600(0) → yellow-400(1) → orange-500(2) → red-600(3) → rose-700(4) → black(5)
+  - **SER Badges**: green-500(0) → yellow-300(1) → orange-400(2) → red-500(3) → red-700(4) → black(5)
+- **User Benefits**: Dashboard now shows technical grades, descriptive service text, AND combined risk assessment
+- **Result**: Complete dual severity grade system with SRM risk assessment operational using authentic SECSTAT data
 
 ### Section Count Fix Locked ✅
 - **Date**: July 20, 2025

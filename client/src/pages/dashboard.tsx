@@ -446,6 +446,33 @@ const getStatusColor = (status: string) => {
 // ZERO TOLERANCE POLICY: Only authentic data from user-uploaded PDFs allowed
 // If no authentic data exists, display error message requesting user upload
 
+// SRM Grading function - combines structural and service grades into risk assessment
+const getSrmGrading = (structuralGrade: number | null, serviceGrade: number | null) => {
+  // Default for null/undefined grades
+  if (structuralGrade === null || serviceGrade === null) {
+    return { label: 'UNKNOWN', className: 'bg-gray-100 text-gray-600' };
+  }
+
+  // Calculate combined risk score
+  const maxGrade = Math.max(structuralGrade, serviceGrade);
+  const combinedScore = structuralGrade + serviceGrade;
+
+  // SRM Risk Categories based on combined assessment
+  if (maxGrade === 0 && combinedScore === 0) {
+    return { label: 'MINIMAL', className: 'bg-green-100 text-green-800' };
+  } else if (maxGrade <= 1 && combinedScore <= 2) {
+    return { label: 'LOW', className: 'bg-green-200 text-green-800' };
+  } else if (maxGrade <= 2 && combinedScore <= 4) {
+    return { label: 'MODERATE', className: 'bg-yellow-200 text-yellow-800' };
+  } else if (maxGrade <= 3 && combinedScore <= 6) {
+    return { label: 'HIGH', className: 'bg-orange-200 text-orange-800' };
+  } else if (maxGrade <= 4 || combinedScore <= 8) {
+    return { label: 'CRITICAL', className: 'bg-red-200 text-red-800' };
+  } else {
+    return { label: 'EMERGENCY', className: 'bg-red-300 text-red-900' };
+  }
+};
+
 // Column definitions for the enhanced table
 const tableColumns = [
   { key: 'itemNo', label: 'Item No', hideable: false },
@@ -464,6 +491,7 @@ const tableColumns = [
   { key: 'defects', label: 'Observations', hideable: false },
   { key: 'severityGrade', label: 'Grade', hideable: false },
   { key: 'serviceGradeDescription', label: 'Service Grade', hideable: false },
+  { key: 'srmGrading', label: 'SRM Risk', hideable: false },
   { key: 'sectorType', label: 'Sector', hideable: false },
   { key: 'recommendations', label: 'Recommendations', hideable: false },
   { key: 'adoptable', label: 'Adoptable', hideable: false },
@@ -894,14 +922,12 @@ export default function Dashboard() {
           </div>
         );
       case 'srmGrading':
+        const srm = getSrmGrading(section.severityGrades?.structural, section.severityGrades?.service);
         return (
-          <div className="text-xs">
-            {section.srmGrading?.description || 
-             (section.severityGrade === "0" ? "No service issues" :
-              section.severityGrade === "1" ? "Minor service impacts" :
-              section.severityGrade === "2" ? "Moderate service defects" :
-              section.severityGrade === "3" ? "Major service defects" :
-              "Blocked or non-functional")}
+          <div className="text-sm text-center">
+            <span className={`px-2 py-1 rounded text-xs font-semibold ${srm.className}`}>
+              {srm.label}
+            </span>
           </div>
         );
       case 'recommendations':
