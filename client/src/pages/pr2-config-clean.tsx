@@ -2395,21 +2395,21 @@ export default function PR2ConfigClean() {
               {/* Pastel Color Row */}
               <div className="flex gap-2 mb-4 flex-wrap">
                 {[
-                  '#FFB3BA', // Pastel Red
-                  '#FFDFBA', // Pastel Orange
-                  '#FFFFBA', // Pastel Yellow
-                  '#BAFFC9', // Pastel Green
-                  '#BAE1FF', // Pastel Blue
-                  '#D4BAFF', // Pastel Purple
-                  '#FFBAFF', // Pastel Pink
-                  '#FFE4E1', // Pastel Rose
-                  '#E6F3FF', // Pastel Cyan
-                  '#F0E68C', // Pastel Gold
-                  '#DDA0DD', // Pastel Plum
-                  '#BFFFBF', // Pastel Mint
-                  '#FFE4B5', // Pastel Peach
-                  '#E0E0E0', // Pastel Gray
-                  '#F5F5DC'  // Pastel Beige
+                  '#FF6B6B', // Pure Red
+                  '#FF8E53', // Pure Orange  
+                  '#FFD93D', // Pure Yellow
+                  '#6BCF7F', // Pure Green
+                  '#4ECDC4', // Pure Teal
+                  '#45B7D1', // Pure Blue
+                  '#9B59B6', // Pure Purple
+                  '#FF6B9D', // Pure Pink
+                  '#E17055', // Pure Coral
+                  '#F39C12', // Pure Amber
+                  '#1ABC9C', // Pure Emerald
+                  '#3498DB', // Pure Sky Blue
+                  '#E74C3C', // Pure Crimson
+                  '#95A5A6', // Pure Gray
+                  '#F1C40F'  // Pure Gold
                 ].map((color) => (
                   <button
                     key={color}

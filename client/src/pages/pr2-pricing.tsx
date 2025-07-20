@@ -450,7 +450,7 @@ export default function PR2Pricing() {
                         className="relative cursor-pointer transition-all hover:shadow-md border-2 border-blue-200"
                         style={{
                           backgroundColor: configToUse?.categoryColor 
-                            ? hexToRgba(configToUse.categoryColor, 0.6)
+                            ? hexToRgba(configToUse.categoryColor, 0.4)
                             : 'white'
                         }}
                         onClick={() => {
@@ -578,7 +578,7 @@ export default function PR2Pricing() {
                       }`}
                       style={{
                         backgroundColor: existingConfiguration?.categoryColor 
-                          ? hexToRgba(existingConfiguration.categoryColor, 0.6)
+                          ? hexToRgba(existingConfiguration.categoryColor, 0.4)
                           : 'white'
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
