@@ -47,14 +47,17 @@ export function DataHealthIndicator({ sectionData, isLoading }: DataHealthIndica
       };
     }
 
-    const totalSections = sectionData.length;
-    const grade0 = sectionData.filter(s => s.severityGrade === 0 || s.severityGrade === '0').length;
-    const grade2 = sectionData.filter(s => s.severityGrade === 2 || s.severityGrade === '2').length;
-    const grade3 = sectionData.filter(s => s.severityGrade === 3 || s.severityGrade === '3').length;
-    const grade4 = sectionData.filter(s => s.severityGrade === 4 || s.severityGrade === '4').length;
+    // Filter out split records (13a, 21a, etc.) - only count base sections
+    const baseSections = sectionData.filter(s => !s.letterSuffix);
+    
+    const totalSections = baseSections.length;
+    const grade0 = baseSections.filter(s => s.severityGrade === 0 || s.severityGrade === '0').length;
+    const grade2 = baseSections.filter(s => s.severityGrade === 2 || s.severityGrade === '2').length;
+    const grade3 = baseSections.filter(s => s.severityGrade === 3 || s.severityGrade === '3').length;
+    const grade4 = baseSections.filter(s => s.severityGrade === 4 || s.severityGrade === '4').length;
 
-    // Calculate data completeness based on required fields
-    const completeRecords = sectionData.filter(s => 
+    // Calculate data completeness based on required fields (using base sections only)
+    const completeRecords = baseSections.filter(s => 
       s.startMH && s.finishMH && s.pipeSize && s.pipeMaterial && s.totalLength
     ).length;
     const dataCompleteness = Math.round((completeRecords / totalSections) * 100);
