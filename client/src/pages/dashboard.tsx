@@ -889,7 +889,7 @@ export default function Dashboard() {
         return (
           <div className="text-sm text-center space-y-1">
             {/* Structural Grade */}
-            {section.severityGrades?.structural !== null && (
+            {section.severityGrades?.structural !== null && section.severityGrades?.structural !== undefined && (
               <div className="flex items-center justify-center gap-1">
                 <span className="text-xs text-gray-500">STR</span>
                 <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-gray-800 ${getStrBadgeColor(section.severityGrades.structural)} rounded-full`}>
