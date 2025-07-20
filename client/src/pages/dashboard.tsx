@@ -3421,7 +3421,6 @@ export default function Dashboard() {
 
       {/* Export Warning Dialog */}
       <Dialog open={showExportWarning} onOpenChange={setShowExportWarning}>
-        <DevLabel id="db49" />
         <DialogContent className="sm:max-w-md">
           <DevLabel id="db50" />
           <DialogHeader>
