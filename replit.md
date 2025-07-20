@@ -747,6 +747,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Meta File Status**: Added MetaFileStatus and DatabaseStatus components for visual feedback
 - **Partial Processing UI**: Frontend components display warnings when meta.db3 files are missing
 - **Visual Consistency**: Maintained 4px border design with 0.3 opacity and pure color palette
+- **UI Cleanup**: Removed legacy "Pause workflow after file processing for review" checkbox from upload interface
 
 ## User Preferences (Updated July 20, 2025)
 - **Stability Priority**: User prioritizes app stability over advanced features - avoid breaking working functionality

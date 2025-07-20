@@ -112,7 +112,7 @@ export default function Upload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedSector, setSelectedSector] = useState<string>("");
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
-  const [pauseForReview, setPauseForReview] = useState<boolean>(false);
+
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
   const [showDeleteFolderDialog, setShowDeleteFolderDialog] = useState(false);
   const [selectedFolderToDelete, setSelectedFolderToDelete] = useState<{ id: number; name: string; reportCount: number } | null>(null);
@@ -532,15 +532,7 @@ export default function Upload() {
                   {selectedFile && (
                     <div className="space-y-3">
                       {/* Pause for Review Checkbox */}
-                      <label className="flex items-center space-x-2 text-sm">
-                        <input
-                          type="checkbox"
-                          checked={pauseForReview}
-                          onChange={(e) => setPauseForReview(e.target.checked)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span>Pause workflow after file processing for review</span>
-                      </label>
+
 
                       <Button 
                         onClick={handleUpload}
