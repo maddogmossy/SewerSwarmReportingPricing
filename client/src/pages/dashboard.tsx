@@ -3329,7 +3329,6 @@ export default function Dashboard() {
 
             {/* Summary Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
-              <DevLabel id="db37" />
               <Card className="relative">
                 <DevLabel id="db38" />
                 <CardContent className="p-4">
