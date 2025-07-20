@@ -2806,7 +2806,6 @@ export default function Dashboard() {
               onClick={exportToExcel}
             >
               <DevLabel id="db21" />
-              <DevLabel id="b5" />
               <Download className="h-4 w-4 mr-2" />
               Export to Excel
             </Button>
