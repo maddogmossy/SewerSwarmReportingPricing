@@ -128,35 +128,35 @@ export function DataHealthIndicator({ sectionData, isLoading }: DataHealthIndica
 
   const metricDisplays = [
     {
-      label: 'Healthy Sections',
+      label: 'Grade 0 (Good)',
       value: metrics.grade0,
       total: metrics.totalSections,
-      color: 'text-green-500',
-      bgColor: 'bg-green-50',
+      color: 'text-green-600',
+      bgColor: 'bg-green-100',
       icon: CheckCircle
     },
     {
-      label: 'Minor Issues',
+      label: 'Grade 2 (Minor)',
       value: metrics.grade2,
       total: metrics.totalSections,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-50',
+      color: 'text-yellow-600',
+      bgColor: 'bg-yellow-100',
       icon: Target
     },
     {
-      label: 'Moderate Issues',
+      label: 'Grade 3+ (Action)',
       value: metrics.grade3,
       total: metrics.totalSections,
-      color: 'text-yellow-500',
-      bgColor: 'bg-yellow-50',
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-100',
       icon: AlertTriangle
     },
     {
-      label: 'Critical Issues',
+      label: 'Grade 4+ (Critical)',
       value: metrics.grade4,
       total: metrics.totalSections,
-      color: 'text-red-500',
-      bgColor: 'bg-red-50',
+      color: 'text-red-600',
+      bgColor: 'bg-red-100',
       icon: XCircle
     }
   ];
