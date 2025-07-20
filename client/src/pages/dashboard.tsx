@@ -830,26 +830,43 @@ export default function Dashboard() {
           </div>
         );
       case 'severityGrade':
-        // Helper function to determine grade color based on severity
-        const gradeColor = (grade: number | null) => {
-          if (grade === null || grade === undefined) return "text-gray-400";
-          if (grade === 0 || grade === 1) return "text-green-600";
-          if (grade === 2 || grade === 3) return "text-yellow-600";
-          return "text-red-600";
+        // Helper function to determine STR badge color based on severity
+        const getStrBadgeColor = (grade: number | null) => {
+          if (grade === null || grade === undefined) return "bg-gray-400";
+          if (grade === 0 || grade === 1) return "bg-green-500";
+          if (grade === 2 || grade === 3) return "bg-yellow-500";
+          return "bg-red-500";
+        };
+        
+        // Helper function to determine SER badge color based on severity
+        const getSerBadgeColor = (grade: number | null) => {
+          if (grade === null || grade === undefined) return "bg-gray-400";
+          if (grade === 0 || grade === 1) return "bg-green-500";
+          if (grade === 2 || grade === 3) return "bg-yellow-500";
+          return "bg-red-500";
         };
         
         return (
-          <div className="text-sm text-center">
-            <div>
-              <span className={`font-bold ${gradeColor(section.severityGrades?.structural)}`}>
-                STR: {section.severityGrades?.structural ?? '-'}
-              </span>
-            </div>
-            <div>
-              <span className={`font-bold ${gradeColor(section.severityGrades?.service)}`}>
-                SER: {section.severityGrades?.service ?? '-'}
-              </span>
-            </div>
+          <div className="text-sm text-center space-y-1">
+            {/* Structural Grade */}
+            {section.severityGrades?.structural !== null && (
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-xs text-gray-500">STR</span>
+                <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-white ${getStrBadgeColor(section.severityGrades.structural)} rounded-full`}>
+                  {section.severityGrades.structural}
+                </span>
+              </div>
+            )}
+
+            {/* Service Grade */}
+            {section.severityGrades?.service !== null && (
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-xs text-gray-500">SER</span>
+                <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-white ${getSerBadgeColor(section.severityGrades.service)} rounded-full`}>
+                  {section.severityGrades.service}
+                </span>
+              </div>
+            )}
           </div>
         );
       case 'serviceGradeDescription':
