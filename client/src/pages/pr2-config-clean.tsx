@@ -2465,18 +2465,7 @@ export default function PR2ConfigClean() {
                 ))}
               </div>
               
-              <div className="flex items-center gap-3 mt-4">
-                <span className="text-sm text-gray-600">Selected:</span>
-                <div 
-                  className="w-6 h-6 rounded border-2 border-gray-300" 
-                  style={{ backgroundColor: formData.categoryColor }}
-                />
-                <span className="text-sm text-gray-600 font-mono">
-                  {formData.categoryColor}
-                </span>
-              </div>
-              
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-500 mt-4">
                 Choose from our curated selection of pastel colors
               </p>
             </div>
