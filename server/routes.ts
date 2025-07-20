@@ -34,12 +34,12 @@ const upload = multer({
     fileSize: 50 * 1024 * 1024, // 50MB limit
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ['.db', '.db3'];
+    const allowedTypes = ['.db', '.db3', '.pdf'];
     const ext = path.extname(file.originalname).toLowerCase();
     if (allowedTypes.includes(ext) || file.originalname.endsWith('meta.db3')) {
       cb(null, true);
     } else {
-      cb(new Error('Only database files (.db, .db3, meta.db3) are allowed'));
+      cb(new Error('Only database files (.db, .db3, meta.db3) and PDF files are allowed'));
     }
   }
 });
@@ -252,8 +252,9 @@ export async function registerRoutes(app: Express) {
 
       console.log("Processing database file:", req.file.originalname);
 
-      // Check file type - only process database files
+      // Check file type and process accordingly
       if (req.file.originalname.endsWith('.db') || req.file.originalname.endsWith('.db3') || req.file.originalname.endsWith('meta.db3')) {
+        // Process database files
         try {
           const filePath = req.file.path;
           
@@ -303,6 +304,49 @@ export async function registerRoutes(app: Express) {
           
           throw new Error(`Database processing failed: ${dbError.message}`);
         }
+      } else if (req.file.originalname.toLowerCase().endsWith('.pdf')) {
+        // Process PDF files
+        try {
+          console.log("Processing PDF file...");
+          
+          // Clear any existing sections for this file upload to prevent duplicates
+          await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
+          
+          // Import PDF processing functionality
+          const { processPDF } = await import('./pdf-processor');
+          
+          // Process PDF and extract sections
+          const sections = await processPDF(req.file.path, fileUpload.id, req.body.sector || 'utilities');
+          
+          console.log(`Extracted ${sections.length} sections from PDF`);
+          
+          // Update file upload status to completed
+          await db.update(fileUploads)
+            .set({ 
+              status: "completed",
+              extractedData: JSON.stringify({
+                sectionsCount: sections.length,
+                extractionType: "pdf"
+              })
+            })
+            .where(eq(fileUploads.id, fileUpload.id));
+          
+          res.json({
+            message: "PDF file processed successfully",
+            uploadId: fileUpload.id,
+            sectionsExtracted: sections.length,
+            status: "completed"
+          });
+          
+        } catch (pdfError) {
+          console.error("PDF processing error:", pdfError);
+          // Update status to failed since we couldn't extract sections
+          await db.update(fileUploads)
+            .set({ status: "failed" })
+            .where(eq(fileUploads.id, fileUpload.id));
+          
+          throw new Error(`PDF processing failed: ${pdfError.message}`);
+        }
       } else {
         // Unsupported file type
         await db.update(fileUploads)
@@ -310,7 +354,7 @@ export async function registerRoutes(app: Express) {
           .where(eq(fileUploads.id, fileUpload.id));
         
         return res.status(400).json({ 
-          error: "Unsupported file type. Only database files (.db, .db3, meta.db3) are supported." 
+          error: "Unsupported file type. Only database files (.db, .db3, meta.db3) and PDF files are supported." 
         });
       }
     } catch (error) {
