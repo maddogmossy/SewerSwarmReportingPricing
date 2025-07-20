@@ -858,21 +858,21 @@ export default function Dashboard() {
           </div>
         );
       case 'severityGrade':
-        // Pastel STR badge colors to match SRM/adoption/cost color scheme
+        // STR badge colors - more visible with distinct shades
         const getStrBadgeColor = (grade: number | null) => {
-          if (grade === null || grade === undefined) return "bg-gray-200";
+          if (grade === null || grade === undefined) return "bg-gray-300";
           switch (grade) {
-            case 0: return 'bg-green-200';     // Pastel green - matches MINIMAL SRM
-            case 1: return 'bg-green-300';     // Light green - matches LOW SRM
-            case 2: return 'bg-yellow-200';    // Pastel yellow - matches MODERATE SRM
-            case 3: return 'bg-orange-200';    // Pastel orange - matches HIGH SRM
-            case 4: return 'bg-red-200';       // Pastel red - matches CRITICAL SRM
-            case 5: return 'bg-red-300';       // Stronger red - matches EMERGENCY SRM
-            default: return 'bg-gray-200';
+            case 0: return 'bg-green-300';     // Medium green - clearly visible
+            case 1: return 'bg-green-400';     // Stronger green - matches LOW SRM
+            case 2: return 'bg-yellow-300';    // Medium yellow - matches MODERATE SRM
+            case 3: return 'bg-orange-300';    // Medium orange - matches HIGH SRM
+            case 4: return 'bg-red-300';       // Medium red - matches CRITICAL SRM
+            case 5: return 'bg-red-400';       // Stronger red - matches EMERGENCY SRM
+            default: return 'bg-gray-300';
           }
         };
         
-        // Pastel SER badge colors coordinated with STR scheme
+        // SER badge colors - lighter than STR for visual hierarchy
         const getSerBadgeColor = (grade: number | null) => {
           if (grade === null || grade === undefined) return "bg-gray-100";
           switch (grade) {
@@ -881,7 +881,7 @@ export default function Dashboard() {
             case 2: return 'bg-yellow-100';    // Very light yellow
             case 3: return 'bg-orange-100';    // Light orange
             case 4: return 'bg-red-100';       // Light red
-            case 5: return 'bg-red-200';       // Pastel red
+            case 5: return 'bg-red-200';       // Light red
             default: return 'bg-gray-100';
           }
         };
