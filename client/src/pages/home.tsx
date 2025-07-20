@@ -328,8 +328,8 @@ export default function Home() {
                 <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
                   <DevLabel id="5" />
                   <CardHeader className="text-center">
-                    <div className="mx-auto w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                      <FileText className="h-6 w-6 text-green-600" />
+                    <div className="mx-auto w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4">
+                      <FileText className="h-6 w-6 text-cyan-600" />
                     </div>
                     <CardTitle className="text-lg">Uploaded Reports</CardTitle>
                     <CardDescription>
