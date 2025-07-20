@@ -3410,9 +3410,8 @@ export default function Dashboard() {
 
             <Separator className="my-8" />
 
-            {/* Analysis Standards Applied - Dynamic Component */}
-            <div>
-              <DevLabel id="db48" />
+            {/* Analysis Standards Applied - Using Upload Page Data */}
+            <div id="8">
               <SectorStandardsDisplay sector={currentSector.id} sectorName={currentSector.name} />
             </div>
           </div>
