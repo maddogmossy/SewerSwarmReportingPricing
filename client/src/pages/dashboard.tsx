@@ -3330,7 +3330,7 @@ export default function Dashboard() {
             {/* Summary Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
               <DevLabel id="db37" />
-              <Card>
+              <Card className="relative">
                 <DevLabel id="db38" />
                 <CardContent className="p-4">
                   <div className="text-center">
@@ -3341,7 +3341,7 @@ export default function Dashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="relative">
                 <DevLabel id="db39" />
                 <CardContent className="p-4">
                   <div className="text-center">
@@ -3352,7 +3352,7 @@ export default function Dashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="relative">
                 <DevLabel id="db40" />
                 <CardContent className="p-4">
                   <div className="text-center">
@@ -3363,7 +3363,7 @@ export default function Dashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="relative">
                 <DevLabel id="db41" />
                 <CardContent className="p-4">
                   <div className="text-center">
@@ -3374,7 +3374,7 @@ export default function Dashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="relative">
                 <DevLabel id="db45" />
                 <CardContent className="p-4">
                   <div className="text-center">
@@ -3385,7 +3385,7 @@ export default function Dashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="relative">
                 <DevLabel id="db46" />
                 <CardContent className="p-4">
                   <div className="text-center">
@@ -3396,7 +3396,7 @@ export default function Dashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="relative">
                 <DevLabel id="db47" />
                 <CardContent className="p-4">
                   <div className="text-center">
