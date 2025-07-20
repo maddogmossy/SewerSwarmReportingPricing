@@ -3330,6 +3330,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
               <DevLabel id="db37" />
               <Card>
+                <DevLabel id="db38" />
                 <CardContent className="p-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-slate-900" id="p3-id-1">
@@ -3340,6 +3341,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
               <Card>
+                <DevLabel id="db39" />
                 <CardContent className="p-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-emerald-600" id="p3-id-2">
@@ -3350,29 +3352,10 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
               <Card>
+                <DevLabel id="db40" />
                 <CardContent className="p-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-amber-600" id="p3-id-3">
-                      {sectionData.filter(s => s.severityGrade === 2 || s.severityGrade === '2').length}
-                    </div>
-                    <div className="text-sm text-slate-600">Grade 2 (Minor)</div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-red-600" id="p3-id-4">
-                      {sectionData.filter(s => s.severityGrade === 3 || s.severityGrade === '3').length}
-                    </div>
-                    <div className="text-sm text-slate-600">Grade 3+ (Action)</div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600" id="p3-id-5">
+                    <div className="text-2xl font-bold text-blue-600" id="p3-id-3">
                       {sectionData.filter(s => s.severityGrade === 1 || s.severityGrade === '1').length}
                     </div>
                     <div className="text-sm text-slate-600">Grade 1</div>
@@ -3380,6 +3363,29 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
               <Card>
+                <DevLabel id="db41" />
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-amber-600" id="p3-id-4">
+                      {sectionData.filter(s => s.severityGrade === 2 || s.severityGrade === '2').length}
+                    </div>
+                    <div className="text-sm text-slate-600">Grade 2 (Minor)</div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <DevLabel id="db45" />
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-red-600" id="p3-id-5">
+                      {sectionData.filter(s => s.severityGrade === 3 || s.severityGrade === '3').length}
+                    </div>
+                    <div className="text-sm text-slate-600">Grade 3+ (Action)</div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <DevLabel id="db46" />
                 <CardContent className="p-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-red-800" id="p3-id-6">
@@ -3390,6 +3396,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
               <Card>
+                <DevLabel id="db47" />
                 <CardContent className="p-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-purple-600" id="p3-id-7">
@@ -3405,7 +3412,7 @@ export default function Dashboard() {
 
             {/* Analysis Standards Applied - Dynamic Component */}
             <div>
-              <DevLabel id="db42" />
+              <DevLabel id="db48" />
               <SectorStandardsDisplay sector={currentSector.id} sectorName={currentSector.name} />
             </div>
           </div>
@@ -3414,9 +3421,9 @@ export default function Dashboard() {
 
       {/* Export Warning Dialog */}
       <Dialog open={showExportWarning} onOpenChange={setShowExportWarning}>
-        <DevLabel id="db43" />
+        <DevLabel id="db49" />
         <DialogContent className="sm:max-w-md">
-          <DevLabel id="db44" />
+          <DevLabel id="db50" />
           <DialogHeader>
             <DialogTitle>Hidden Columns Warning</DialogTitle>
             <DialogDescription>
@@ -3431,7 +3438,7 @@ export default function Dashboard() {
             </div>
           </div>
           <DialogFooter className="flex gap-2">
-            <DevLabel id="db45" />
+            <DevLabel id="db51" />
             <Button
               variant="outline"
               onClick={() => setShowExportWarning(false)}
