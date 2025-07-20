@@ -858,31 +858,31 @@ export default function Dashboard() {
           </div>
         );
       case 'severityGrade':
-        // Enhanced STR badge color function with distinct colors for each grade
+        // Pastel STR badge colors to match SRM/adoption/cost color scheme
         const getStrBadgeColor = (grade: number | null) => {
-          if (grade === null || grade === undefined) return "bg-gray-400";
+          if (grade === null || grade === undefined) return "bg-gray-200";
           switch (grade) {
-            case 0: return 'bg-green-600';
-            case 1: return 'bg-yellow-400';
-            case 2: return 'bg-orange-500';
-            case 3: return 'bg-red-600';
-            case 4: return 'bg-rose-700';
-            case 5: return 'bg-black';
-            default: return 'bg-gray-400';
+            case 0: return 'bg-green-200';     // Pastel green - matches MINIMAL SRM
+            case 1: return 'bg-green-300';     // Light green - matches LOW SRM
+            case 2: return 'bg-yellow-200';    // Pastel yellow - matches MODERATE SRM
+            case 3: return 'bg-orange-200';    // Pastel orange - matches HIGH SRM
+            case 4: return 'bg-red-200';       // Pastel red - matches CRITICAL SRM
+            case 5: return 'bg-red-300';       // Stronger red - matches EMERGENCY SRM
+            default: return 'bg-gray-200';
           }
         };
         
-        // Enhanced SER badge color function with distinct colors for each grade
+        // Pastel SER badge colors coordinated with STR scheme
         const getSerBadgeColor = (grade: number | null) => {
-          if (grade === null || grade === undefined) return "bg-gray-300";
+          if (grade === null || grade === undefined) return "bg-gray-100";
           switch (grade) {
-            case 0: return 'bg-green-500';
-            case 1: return 'bg-yellow-300';
-            case 2: return 'bg-orange-400';
-            case 3: return 'bg-red-500';
-            case 4: return 'bg-red-700';
-            case 5: return 'bg-black';
-            default: return 'bg-gray-300';
+            case 0: return 'bg-green-100';     // Very light green
+            case 1: return 'bg-green-200';     // Light green
+            case 2: return 'bg-yellow-100';    // Very light yellow
+            case 3: return 'bg-orange-100';    // Light orange
+            case 4: return 'bg-red-100';       // Light red
+            case 5: return 'bg-red-200';       // Pastel red
+            default: return 'bg-gray-100';
           }
         };
         
@@ -892,7 +892,7 @@ export default function Dashboard() {
             {section.severityGrades?.structural !== null && (
               <div className="flex items-center justify-center gap-1">
                 <span className="text-xs text-gray-500">STR</span>
-                <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-white ${getStrBadgeColor(section.severityGrades.structural)} rounded-full`}>
+                <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-gray-800 ${getStrBadgeColor(section.severityGrades.structural)} rounded-full`}>
                   {section.severityGrades.structural}
                 </span>
               </div>
@@ -902,7 +902,7 @@ export default function Dashboard() {
             {section.severityGrades?.service !== null && (
               <div className="flex items-center justify-center gap-1">
                 <span className="text-xs text-gray-500">SER</span>
-                <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-white ${getSerBadgeColor(section.severityGrades.service)} rounded-full`}>
+                <span className={`inline-flex items-center justify-center w-6 h-6 text-sm font-semibold text-gray-800 ${getSerBadgeColor(section.severityGrades.service)} rounded-full`}>
                   {section.severityGrades.service}
                 </span>
               </div>
