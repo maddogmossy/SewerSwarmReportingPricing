@@ -73,7 +73,11 @@ export default function FileUpload({
     if (file && validateFile(file)) {
       // Check for meta file pairing if it's a database file
       if (file.name.endsWith('.db3')) {
-        checkMetaPairing([file]);
+        const pairing = checkMetaPairing([file]);
+        // If it's a single .db3 file without meta, don't select it - just show warning
+        if (!pairing.hasMeta) {
+          return; // Stop here - warning shown, dialog stays open
+        }
       }
       
       // Check if sector is required but not selected
@@ -118,7 +122,11 @@ export default function FileUpload({
     if (file && validateFile(file)) {
       // Check for meta file pairing if it's a database file
       if (file.name.endsWith('.db3')) {
-        checkMetaPairing([file]);
+        const pairing = checkMetaPairing([file]);
+        // If it's a single .db3 file without meta, don't select it - just show warning
+        if (!pairing.hasMeta) {
+          return; // Stop here - warning shown, dialog stays open
+        }
       }
       
       // Check if sector is required but not selected
