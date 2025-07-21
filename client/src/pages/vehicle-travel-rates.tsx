@@ -47,8 +47,14 @@ export default function VehicleTravelRates() {
 
   // Fetch category cards
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
-    queryKey: ['/api/pr2-clean'],
+    queryKey: ['/api/pr2-configurations'],
   });
+
+  // Debug categories loading
+  useEffect(() => {
+    console.log('Categories data:', categories);
+    console.log('Categories loading:', categoriesLoading);
+  }, [categories, categoriesLoading]);
 
   const form = useForm<VehicleTravelRateForm>({
     resolver: zodResolver(vehicleTravelRateSchema),
@@ -213,13 +219,17 @@ export default function VehicleTravelRates() {
   };
 
   const onSubmit = (data: VehicleTravelRateForm) => {
-    const submitData = {
-      ...data,
+    const submitData: any = {
+      userId: "test-user", // Default user for testing
+      vehicleType: data.vehicleType,
       categoryId: data.categoryId ? parseInt(data.categoryId) : undefined,
-      fuelConsumptionMpg: parseFloat(data.fuelConsumptionMpg.toString()),
-      fuelCostPerLitre: parseFloat(data.fuelCostPerLitre.toString()),
-      driverWagePerHour: parseFloat(data.driverWagePerHour.toString()),
-      vehicleRunningCostPerMile: parseFloat(data.vehicleRunningCostPerMile.toString()),
+      fuelConsumptionMpg: data.fuelConsumptionMpg.toString(),
+      fuelCostPerLitre: data.fuelCostPerLitre.toString(),
+      driverWagePerHour: data.driverWagePerHour.toString(),
+      vehicleRunningCostPerMile: data.vehicleRunningCostPerMile.toString(),
+      assistantWagePerHour: data.assistantWagePerHour?.toString() || "0",
+      hasAssistant: data.hasAssistant || false,
+      autoUpdateFuelPrice: data.autoUpdateFuelPrice || true,
     };
     
     if (editingRate) {
