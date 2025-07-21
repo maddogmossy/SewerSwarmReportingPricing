@@ -288,10 +288,14 @@ export default function VehicleTravelRates() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {/* DEBUG: Show categories loading state */}
-                <div className="p-4 bg-yellow-100 border-2 border-yellow-500 rounded-lg text-lg font-bold text-black">
-                  🚨 DEBUG: Loading={categoriesLoading ? 'YES' : 'NO'}, Categories={Array.isArray(categories) ? categories.length : 0}
+                <div className="p-4 bg-red-100 border-4 border-red-500 rounded-lg text-xl font-bold text-black">
+                  🚨 CATEGORIES DEBUG: Loading={categoriesLoading ? 'YES' : 'NO'} | Count={Array.isArray(categories) ? categories.length : 'NOT_ARRAY'}
                   <br/>
-                  Raw Data: {JSON.stringify(categories)}
+                  📋 CATEGORY NAMES: {Array.isArray(categories) ? categories.map(c => c.name).join(', ') : 'NO CATEGORIES'}
+                </div>
+                
+                <div className="p-4 bg-green-100 border-4 border-green-500 rounded-lg text-xl font-bold text-black">
+                  ✅ SERVICE CATEGORY DROPDOWN SHOULD BE RIGHT BELOW THIS BOX
                 </div>
                 
                 <FormField
