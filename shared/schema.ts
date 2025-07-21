@@ -525,6 +525,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
 export const insertProjectFolderSchema = createInsertSchema(projectFolders).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
 });
 
 export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({
