@@ -695,14 +695,9 @@ function CustomerSettingsContent() {
   const onVehicleSubmit = (data: VehicleTravelRateForm) => {
     const vehicleData = {
       vehicleType: data.vehicleType,
-      fuelConsumptionMpg: data.fuelConsumptionMpg.toString(),
-      fuelCostPerLitre: data.fuelCostPerLitre.toString(),
-      driverWagePerHour: data.driverWagePerHour.toString(),
-      vehicleRunningCostPerMile: data.vehicleRunningCostPerMile.toString(),
-      hasAssistant: data.hasAssistant || false,
-      assistantWagePerHour: data.assistantWagePerHour?.toString() || '0',
-      hoursTraveAllowed: data.hoursTraveAllowed?.toString() || '2',
-      autoUpdateFuelPrice: data.autoUpdateFuelPrice || false,
+      additionalTravelRatePerHour: data.additionalTravelRatePerHour?.toString() || '0',
+      hoursTraveAllowed: data.hoursTraveAllowed?.toString() || '10',
+      categoryId: data.categoryId && data.categoryId !== 'none' ? data.categoryId : null,
       userId: user?.id || '',
     };
 
@@ -713,33 +708,36 @@ function CustomerSettingsContent() {
     }
   };
 
-  const calculateTotalCostPerMile = (rate: VehicleTravelRate) => {
-    if (!rate) return '0.00';
-    
-    const fuelCostPerLitre = parseFloat(rate.fuelCostPerLitre?.toString() || '0');
-    const fuelConsumptionMpg = parseFloat(rate.fuelConsumptionMpg?.toString() || '1');
-    const vehicleRunningCost = parseFloat(rate.vehicleRunningCostPerMile?.toString() || '0');
-    
-    const fuelCostPerMile = (fuelCostPerLitre / 4.546) / fuelConsumptionMpg; // Convert litres to gallons
-    return (fuelCostPerMile + vehicleRunningCost).toFixed(2);
+  const handleSaveAndAddAnother = () => {
+    vehicleForm.handleSubmit((data) => {
+      const vehicleData = {
+        vehicleType: data.vehicleType,
+        additionalTravelRatePerHour: data.additionalTravelRatePerHour?.toString() || '0',
+        hoursTraveAllowed: data.hoursTraveAllowed?.toString() || '10',
+        categoryId: data.categoryId && data.categoryId !== 'none' ? data.categoryId : null,
+        userId: user?.id || '',
+      };
+
+      createVehicleRateMutation.mutate(vehicleData, {
+        onSuccess: () => {
+          // Keep the dialog open and reset form but preserve category
+          const currentCategory = data.categoryId;
+          vehicleForm.reset({
+            categoryId: currentCategory,
+            vehicleType: "",
+            additionalTravelRatePerHour: 0,
+            hoursTraveAllowed: 10,
+          });
+          toast({
+            title: "Vehicle saved successfully",
+            description: "You can now add another vehicle for this category.",
+          });
+        }
+      });
+    })();
   };
 
-  const calculateTotalCostPerHour = (rate: VehicleTravelRate) => {
-    if (!rate) return '0.00';
-    
-    const fuelCostPerLitre = parseFloat(rate.fuelCostPerLitre?.toString() || '0');
-    const fuelConsumptionMpg = parseFloat(rate.fuelConsumptionMpg?.toString() || '1');
-    const driverWage = parseFloat(rate.driverWagePerHour?.toString() || '0');
-    const assistantWage = ((rate as any).hasAssistant ? parseFloat((rate as any).assistantWagePerHour?.toString() || '0') : 0);
-    
-    // Calculate fuel cost per hour (assuming 30 mph average speed)
-    const fuelCostPerHour = (fuelCostPerLitre * 4.54609 / fuelConsumptionMpg) * 30;
-    
-    // Total cost per hour = fuel cost/hour + driver wage + assistant wage
-    const totalCostPerHour = fuelCostPerHour + driverWage + assistantWage;
-    
-    return totalCostPerHour.toFixed(2);
-  };
+  // Simplified vehicle rates - no complex calculations needed
 
   // Update payment method mutation
   const updatePaymentMethodMutation = useMutation({
@@ -1792,6 +1790,17 @@ function CustomerSettingsContent() {
                               >
                                 Cancel
                               </Button>
+                              {!editingVehicleRate && (
+                                <Button 
+                                  type="button" 
+                                  variant="outline"
+                                  onClick={handleSaveAndAddAnother}
+                                  disabled={createVehicleRateMutation.isPending}
+                                  className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300"
+                                >
+                                  Save & Add Another
+                                </Button>
+                              )}
                               <Button
                                 type="submit"
                                 disabled={createVehicleRateMutation.isPending || updateVehicleRateMutation.isPending}
