@@ -1785,18 +1785,80 @@ export default function Dashboard() {
       });
 
       if (issueItems.length > 0) {
+        // Calculate total day rate adjustment needed
+        const dayRateAdjustmentPerItem = 50;
+        const totalAdjustmentNeeded = issueItems.length * dayRateAdjustmentPerItem;
+        
         const costDistributionIssue = {
           id: `tp2-cost-distribution-${Date.now()}`,
-          title: "TP2 Cost Distribution Mismatch", 
-          type: "error" as const,
-          description: `Day rate distribution not matching expected values:\n${issueItems.join('\n')}`,
+          title: "TP2 Day Rate Distribution Needed", 
+          type: "warning" as const,
+          description: `Day rate distribution required for TP2 sections:\n${issueItems.join('\n')}\n\nTotal day rate adjustment needed: £${totalAdjustmentNeeded} (£${dayRateAdjustmentPerItem} × ${issueItems.length} items)`,
           action: {
-            label: "Review TP2 Costs",
-            onClick: () => window.location.href = "/dashboard?reportId=83#tp2-sections"
+            label: "Add £50 Per Item",
+            onClick: () => {
+              // Apply day rate adjustments to TP2 sections
+              handleApplyDayRateAdjustment(tp2Sections, dayRateAdjustmentPerItem);
+            }
           }
         };
         validationWarnings.showWarnings([costDistributionIssue]);
       }
+    }
+  };
+
+  // Handler for applying day rate adjustments to TP2 sections
+  const handleApplyDayRateAdjustment = async (tp2Sections: any[], adjustmentPerItem: number) => {
+    try {
+      // Get the current TP2 patching configuration
+      const tp2Config = pr2Configurations.find(config => config.categoryId === 'patching');
+      if (!tp2Config) {
+        toast({
+          title: "Error",
+          description: "TP2 patching configuration not found",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Apply £50 adjustment to each pricing option
+      const updatedPricingOptions = tp2Config.pricingOptions?.map((option: any) => ({
+        ...option,
+        value: (parseFloat(option.value || '0') + adjustmentPerItem).toString()
+      })) || [];
+
+      // Update the configuration with day rate adjustments
+      const response = await fetch(`/api/pr2-clean/${tp2Config.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...tp2Config,
+          pricingOptions: updatedPricingOptions
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: `Applied £${adjustmentPerItem} day rate adjustment to TP2 pricing options`,
+        });
+        // Refresh the configurations and validation
+        await queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+        validationWarnings.dismissAll();
+        // Trigger re-calculation of costs
+        window.location.reload();
+      } else {
+        throw new Error('Failed to update TP2 configuration');
+      }
+    } catch (error) {
+      console.error('Error applying day rate adjustment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to apply day rate adjustment",
+        variant: "destructive",
+      });
     }
   };
 
