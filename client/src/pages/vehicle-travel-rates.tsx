@@ -307,7 +307,7 @@ export default function VehicleTravelRates() {
                           <SelectItem value="">-- None Selected --</SelectItem>
                           {(categories as any[]).map((category: any) => (
                             <SelectItem key={category.id} value={category.id.toString()}>
-                              {category.categoryName} (ID: {category.id})
+                              {category.name} (ID: {category.id})
                             </SelectItem>
                           ))}
                         </SelectContent>
