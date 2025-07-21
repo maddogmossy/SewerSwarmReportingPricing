@@ -50,12 +50,14 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
 
 interface PaymentMethod {
   id: string;
-  card: {
+  type: 'card' | 'apple_pay' | 'paypal';
+  card?: {
     brand: string;
     last4: string;
     exp_month: number;
     exp_year: number;
   };
+  isDefault?: boolean;
 }
 
 interface CompanySettings {
@@ -123,11 +125,12 @@ interface TeamMember {
 function AddPaymentMethodDialog({ onSuccess }: { onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentType, setPaymentType] = useState<'card' | 'apple_pay' | 'paypal'>('card');
   const { toast } = useToast();
   const stripe = useStripe();
   const elements = useElements();
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleCardSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     
     if (!stripe || !elements) {
@@ -160,6 +163,7 @@ function AddPaymentMethodDialog({ onSuccess }: { onSuccess: () => void }) {
       // Save payment method to backend
       const response = await apiRequest('POST', '/api/payment-methods', {
         paymentMethodId: paymentMethod.id,
+        type: 'card'
       });
 
       if (!response.ok) {
@@ -168,7 +172,7 @@ function AddPaymentMethodDialog({ onSuccess }: { onSuccess: () => void }) {
 
       toast({
         title: "Success",
-        description: "Payment method added successfully!",
+        description: "Card added successfully!",
       });
 
       setOpen(false);
@@ -184,6 +188,84 @@ function AddPaymentMethodDialog({ onSuccess }: { onSuccess: () => void }) {
     }
   };
 
+  const handleApplePaySetup = async () => {
+    if (!stripe) {
+      toast({
+        title: "Payment system not ready",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      // Check if Apple Pay is available
+      if (!window.ApplePaySession || !ApplePaySession.canMakePayments()) {
+        throw new Error('Apple Pay is not available on this device');
+      }
+
+      // Save Apple Pay capability to backend
+      const response = await apiRequest('POST', '/api/payment-methods', {
+        type: 'apple_pay',
+        enabled: true
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to enable Apple Pay');
+      }
+
+      toast({
+        title: "Success",
+        description: "Apple Pay enabled successfully!",
+      });
+
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to setup Apple Pay",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePayPalSetup = async () => {
+    setIsProcessing(true);
+
+    try {
+      // Save PayPal setup to backend
+      const response = await apiRequest('POST', '/api/payment-methods', {
+        type: 'paypal',
+        enabled: true
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to setup PayPal');
+      }
+
+      toast({
+        title: "Success",
+        description: "PayPal enabled successfully!",
+      });
+
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to setup PayPal",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -192,41 +274,120 @@ function AddPaymentMethodDialog({ onSuccess }: { onSuccess: () => void }) {
           <span>Add Payment Method</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Add Payment Method</DialogTitle>
           <DialogDescription>
-            Add a new credit or debit card to your account
+            Choose your preferred payment method
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Card Details</Label>
-            <div className="p-3 border rounded-md">
-              <CardElement 
-                options={{
-                  style: {
-                    base: {
-                      fontSize: '16px',
-                      color: '#424770',
-                      '::placeholder': {
-                        color: '#aab7c4',
+        
+        <div className="space-y-4">
+          {/* Payment Type Selection */}
+          <div className="grid grid-cols-3 gap-3">
+            <Button
+              type="button"
+              variant={paymentType === 'card' ? 'default' : 'outline'}
+              onClick={() => setPaymentType('card')}
+              className="flex flex-col items-center p-4 h-auto"
+            >
+              <CreditCard className="h-6 w-6 mb-2" />
+              <span className="text-sm">Credit Card</span>
+            </Button>
+            
+            <Button
+              type="button"
+              variant={paymentType === 'apple_pay' ? 'default' : 'outline'}
+              onClick={() => setPaymentType('apple_pay')}
+              className="flex flex-col items-center p-4 h-auto"
+            >
+              <div className="h-6 w-6 mb-2 bg-black rounded text-white flex items-center justify-center text-xs font-bold">
+                
+              </div>
+              <span className="text-sm">Apple Pay</span>
+            </Button>
+            
+            <Button
+              type="button"
+              variant={paymentType === 'paypal' ? 'default' : 'outline'}
+              onClick={() => setPaymentType('paypal')}
+              className="flex flex-col items-center p-4 h-auto"
+            >
+              <div className="h-6 w-6 mb-2 bg-blue-600 rounded text-white flex items-center justify-center text-xs font-bold">
+                PP
+              </div>
+              <span className="text-sm">PayPal</span>
+            </Button>
+          </div>
+
+          {/* Payment Method Forms */}
+          {paymentType === 'card' && (
+            <form onSubmit={handleCardSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label>Card Details</Label>
+                <div className="p-3 border rounded-md">
+                  <CardElement 
+                    options={{
+                      style: {
+                        base: {
+                          fontSize: '16px',
+                          color: '#424770',
+                          '::placeholder': {
+                            color: '#aab7c4',
+                          },
+                        },
                       },
-                    },
-                  },
-                }}
-              />
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2">
+                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={!stripe || isProcessing}>
+                  {isProcessing ? "Processing..." : "Add Card"}
+                </Button>
+              </div>
+            </form>
+          )}
+
+          {paymentType === 'apple_pay' && (
+            <div className="space-y-4">
+              <div className="text-center py-4">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Apple Pay allows you to make secure payments using Touch ID, Face ID, or your device passcode.
+                </p>
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleApplePaySetup} disabled={isProcessing}>
+                    {isProcessing ? "Setting up..." : "Enable Apple Pay"}
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={!stripe || isProcessing}>
-              {isProcessing ? "Processing..." : "Add Payment Method"}
-            </Button>
-          </div>
-        </form>
+          )}
+
+          {paymentType === 'paypal' && (
+            <div className="space-y-4">
+              <div className="text-center py-4">
+                <p className="text-sm text-muted-foreground mb-4">
+                  PayPal allows you to pay securely using your PayPal account balance, bank account, or linked cards.
+                </p>
+                <div className="flex justify-end space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handlePayPalSetup} disabled={isProcessing}>
+                    {isProcessing ? "Setting up..." : "Connect PayPal"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -903,25 +1064,58 @@ function CustomerSettingsContent() {
                           className="flex items-center justify-between p-3 border rounded-lg"
                         >
                           <div className="flex items-center space-x-3">
-                            <CreditCard className="h-5 w-5 text-gray-400" />
+                            {method.type === 'card' && <CreditCard className="h-5 w-5 text-gray-400" />}
+                            {method.type === 'apple_pay' && (
+                              <div className="h-5 w-5 bg-black rounded text-white flex items-center justify-center text-xs font-bold">
+                                
+                              </div>
+                            )}
+                            {method.type === 'paypal' && (
+                              <div className="h-5 w-5 bg-blue-600 rounded text-white flex items-center justify-center text-xs font-bold">
+                                PP
+                              </div>
+                            )}
                             <div>
-                              <p className="font-medium">
-                                {method.card.brand.toUpperCase()} •••• {method.card.last4}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                Expires {method.card.exp_month}/{method.card.exp_year}
-                              </p>
+                              {method.type === 'card' && method.card && (
+                                <>
+                                  <p className="font-medium">
+                                    {method.card.brand.toUpperCase()} •••• {method.card.last4}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    Expires {method.card.exp_month}/{method.card.exp_year}
+                                  </p>
+                                </>
+                              )}
+                              {method.type === 'apple_pay' && (
+                                <>
+                                  <p className="font-medium">Apple Pay</p>
+                                  <p className="text-sm text-gray-500">Touch ID, Face ID, or Passcode</p>
+                                </>
+                              )}
+                              {method.type === 'paypal' && (
+                                <>
+                                  <p className="font-medium">PayPal</p>
+                                  <p className="text-sm text-gray-500">Connected PayPal Account</p>
+                                </>
+                              )}
+                              {method.isDefault && (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 mt-1">
+                                  Default
+                                </span>
+                              )}
                             </div>
                           </div>
                           <div className="flex space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => updatePaymentMethodMutation.mutate(method.id)}
-                              disabled={updatePaymentMethodMutation.isPending}
-                            >
-                              Set as Default
-                            </Button>
+                            {!method.isDefault && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => updatePaymentMethodMutation.mutate(method.id)}
+                                disabled={updatePaymentMethodMutation.isPending}
+                              >
+                                Set as Default
+                              </Button>
+                            )}
                             <Button
                               variant="outline"
                               size="sm"

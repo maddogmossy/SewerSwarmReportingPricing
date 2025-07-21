@@ -18,6 +18,7 @@ import { searchUKAddresses } from "./address-autocomplete.js";
 import Stripe from "stripe";
 import { setupAuth } from "./replitAuth";
 import fetch from "node-fetch";
+import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -889,15 +890,40 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Stripe payment endpoints
+  // Payment methods endpoints
   app.get('/api/payment-methods', async (req, res) => {
     try {
       if (!req.user) {
         return res.status(401).json({ error: 'Not authenticated' });
       }
 
-      // This would get customer's payment methods from Stripe
-      // For now returning empty array as customer needs to be created first
+      // This would get customer's payment methods from Stripe/PayPal
+      // For demo purposes, returning sample data showing all three types
+      const sampleMethods = [
+        {
+          id: 'card_1',
+          type: 'card',
+          card: {
+            brand: 'visa',
+            last4: '4242',
+            exp_month: 12,
+            exp_year: 2026
+          },
+          isDefault: true
+        },
+        {
+          id: 'applepay_1',
+          type: 'apple_pay',
+          isDefault: false
+        },
+        {
+          id: 'paypal_1', 
+          type: 'paypal',
+          isDefault: false
+        }
+      ];
+
+      // For now return empty array - user can add methods
       res.json([]);
     } catch (error: any) {
       console.error('Error fetching payment methods:', error);
@@ -911,11 +937,35 @@ export async function registerRoutes(app: Express) {
         return res.status(401).json({ error: 'Not authenticated' });
       }
 
-      const { paymentMethodId } = req.body;
+      const { paymentMethodId, type, enabled } = req.body;
 
-      // This would attach payment method to customer in Stripe
-      // Implementation needed based on Stripe setup
-      res.json({ success: true, paymentMethodId });
+      console.log(`Adding payment method: ${type}`, { paymentMethodId, enabled });
+
+      // Handle different payment method types
+      switch (type) {
+        case 'card':
+          // This would attach Stripe payment method to customer
+          console.log('Adding Stripe card:', paymentMethodId);
+          break;
+        case 'apple_pay':
+          // This would enable Apple Pay for the customer
+          console.log('Enabling Apple Pay for customer');
+          break;
+        case 'paypal':
+          // This would connect PayPal account
+          console.log('Connecting PayPal account');
+          break;
+        default:
+          return res.status(400).json({ error: 'Invalid payment method type' });
+      }
+
+      // Return success with mock ID
+      res.json({ 
+        success: true, 
+        id: `${type}_${Date.now()}`,
+        type,
+        paymentMethodId 
+      });
     } catch (error: any) {
       console.error('Error adding payment method:', error);
       res.status(500).json({ error: 'Failed to add payment method' });
@@ -930,8 +980,10 @@ export async function registerRoutes(app: Express) {
 
       const { paymentMethodId } = req.body;
 
-      // This would update default payment method in Stripe
-      // Implementation needed based on Stripe setup
+      console.log(`Setting default payment method: ${paymentMethodId}`);
+
+      // This would update default payment method across all payment providers
+      // Stripe, Apple Pay, or PayPal depending on the method type
       res.json({ success: true });
     } catch (error: any) {
       console.error('Error updating default payment method:', error);
@@ -947,13 +999,31 @@ export async function registerRoutes(app: Express) {
 
       const { paymentMethodId } = req.params;
 
-      // This would detach payment method from customer in Stripe
-      // Implementation needed based on Stripe setup
+      console.log(`Removing payment method: ${paymentMethodId}`);
+
+      // This would handle removal based on method type:
+      // - Stripe: detach payment method
+      // - Apple Pay: disable for customer
+      // - PayPal: disconnect account
       res.json({ success: true });
     } catch (error: any) {
       console.error('Error deleting payment method:', error);
       res.status(500).json({ error: 'Failed to delete payment method' });
     }
+  });
+
+  // PayPal payment routes
+  app.get("/paypal/setup", async (req, res) => {
+      await loadPaypalDefault(req, res);
+  });
+
+  app.post("/paypal/order", async (req, res) => {
+    // Request body should contain: { intent, amount, currency }
+    await createPaypalOrder(req, res);
+  });
+
+  app.post("/paypal/order/:orderID/capture", async (req, res) => {
+    await capturePaypalOrder(req, res);
   });
 
   return server;
