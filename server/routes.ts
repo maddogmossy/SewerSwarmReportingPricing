@@ -18,6 +18,8 @@ import { searchUKAddresses } from "./address-autocomplete.js";
 import Stripe from "stripe";
 import { setupAuth } from "./replitAuth";
 import fetch from "node-fetch";
+import { handleVehicleDefaults } from "./vehicle-defaults";
+import { initializeFuelPriceMonitoring, FuelPriceMonitor } from "./fuel-price-monitor";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -1054,6 +1056,49 @@ export async function registerRoutes(app: Express) {
     } catch (error) {
       console.error("Error fetching work categories:", error);
       res.status(500).json({ error: "Failed to fetch work categories" });
+    }
+  });
+
+  // Vehicle defaults endpoint - returns MPG averages and default values for vehicle types
+  app.get('/api/vehicle-defaults/:vehicleType', handleVehicleDefaults);
+
+  // Fuel price monitoring endpoints
+  app.get('/api/fuel-prices/latest', async (req: Request, res: Response) => {
+    try {
+      const monitor = FuelPriceMonitor.getInstance();
+      const latestPrices = await monitor.getLatestFuelPrices();
+      
+      if (!latestPrices) {
+        // Return default prices if no data in database yet
+        res.json({
+          diesel: 1.4291, // £1.4291 per litre (current UK average)
+          petrol: 1.3550, // £1.3550 per litre
+          source: 'Default UK Average',
+          lastUpdated: new Date().toISOString()
+        });
+      } else {
+        res.json({
+          diesel: latestPrices.diesel,
+          petrol: latestPrices.petrol,
+          source: 'Database',
+          lastUpdated: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      console.error('Error getting latest fuel prices:', error);
+      res.status(500).json({ error: 'Failed to get fuel prices' });
+    }
+  });
+
+  // Manual fuel price update trigger (for testing)
+  app.post('/api/fuel-prices/update', async (req: Request, res: Response) => {
+    try {
+      const monitor = FuelPriceMonitor.getInstance();
+      await monitor.triggerUpdate();
+      res.json({ message: 'Fuel price update triggered successfully' });
+    } catch (error) {
+      console.error('Error triggering fuel price update:', error);
+      res.status(500).json({ error: 'Failed to trigger fuel price update' });
     }
   });
 

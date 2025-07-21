@@ -463,13 +463,13 @@ function CustomerSettingsContent() {
       categoryId: "",
       vehicleType: "",
       fuelConsumptionMpg: 0,
-      fuelCostPerLitre: 0,
+      fuelCostPerLitre: 1.429, // Current UK diesel average £1.429/L
       driverWagePerHour: 0,
       vehicleRunningCostPerMile: 0,
       hasAssistant: false,
       assistantWagePerHour: 0,
       hoursTraveAllowed: 2,
-      autoUpdateFuelPrice: false,
+      autoUpdateFuelPrice: true, // Enable auto-updates by default
     },
   });
 
@@ -560,20 +560,110 @@ function CustomerSettingsContent() {
   // Vehicle Travel Rate helper functions
   const fetchVehicleDefaults = async (vehicleType: string) => {
     console.log('Fetching vehicle defaults for:', vehicleType);
-    try {
-      const response = await fetch(`/api/vehicle-defaults/${encodeURIComponent(vehicleType)}`);
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Vehicle defaults response:', data);
-        return data;
-      } else {
-        console.error('API request failed:', response.status, response.statusText);
-        return null;
+    
+    // UK Commercial Vehicle Industry Standard Defaults
+    const vehicleDefaults = {
+      '3.5t': { 
+        fuelConsumptionMpg: '30.0', 
+        fuelCostPerLitre: '1.429', // Current UK diesel average
+        driverWagePerHour: '12.50', 
+        vehicleRunningCostPerMile: '0.25', 
+        hasAssistant: false, 
+        assistantWagePerHour: '0.00',
+        hoursTraveAllowed: '2.00',
+        autoUpdateFuelPrice: true,
+        workCategory: 'Small van/light commercial',
+        assistantReason: 'single operator typical for this vehicle class'
+      },
+      '5.0t': { 
+        fuelConsumptionMpg: '22.0', 
+        fuelCostPerLitre: '1.429',
+        driverWagePerHour: '13.00', 
+        vehicleRunningCostPerMile: '0.30', 
+        hasAssistant: false, 
+        assistantWagePerHour: '0.00',
+        hoursTraveAllowed: '2.00',
+        autoUpdateFuelPrice: true,
+        workCategory: 'Medium van',
+        assistantReason: 'single operator typical for this vehicle class'
+      },
+      '7.5t': { 
+        fuelConsumptionMpg: '13.5', 
+        fuelCostPerLitre: '1.429',
+        driverWagePerHour: '14.50', 
+        vehicleRunningCostPerMile: '0.40', 
+        hasAssistant: false, 
+        assistantWagePerHour: '0.00',
+        hoursTraveAllowed: '2.00',
+        autoUpdateFuelPrice: true,
+        workCategory: 'Light truck/large van',
+        assistantReason: 'single operator typical for this vehicle class'
+      },
+      '10t': { 
+        fuelConsumptionMpg: '11.0', 
+        fuelCostPerLitre: '1.429',
+        driverWagePerHour: '15.50', 
+        vehicleRunningCostPerMile: '0.50', 
+        hasAssistant: false, 
+        assistantWagePerHour: '0.00',
+        hoursTraveAllowed: '2.00',
+        autoUpdateFuelPrice: true,
+        workCategory: '4-wheel rigid truck',
+        assistantReason: 'single operator typical for this vehicle class'
+      },
+      '12t': { 
+        fuelConsumptionMpg: '10.0', 
+        fuelCostPerLitre: '1.429',
+        driverWagePerHour: '16.00', 
+        vehicleRunningCostPerMile: '0.60', 
+        hasAssistant: false, 
+        assistantWagePerHour: '0.00',
+        hoursTraveAllowed: '2.00',
+        autoUpdateFuelPrice: true,
+        workCategory: '6-wheel rigid truck',
+        assistantReason: 'single operator typical for this vehicle class'
+      },
+      '18t': { 
+        fuelConsumptionMpg: '9.0', 
+        fuelCostPerLitre: '1.429',
+        driverWagePerHour: '17.50', 
+        vehicleRunningCostPerMile: '0.75', 
+        hasAssistant: true, 
+        assistantWagePerHour: '14.00',
+        hoursTraveAllowed: '2.00',
+        autoUpdateFuelPrice: true,
+        workCategory: 'Heavy rigid truck',
+        assistantReason: 'assistant typically required for 18t+ vehicles for safety and efficiency'
+      },
+      '26t': { 
+        fuelConsumptionMpg: '8.5', 
+        fuelCostPerLitre: '1.429',
+        driverWagePerHour: '18.50', 
+        vehicleRunningCostPerMile: '0.85', 
+        hasAssistant: true, 
+        assistantWagePerHour: '14.80',
+        hoursTraveAllowed: '2.00',
+        autoUpdateFuelPrice: true,
+        workCategory: 'Articulated truck',
+        assistantReason: 'assistant required for heavy articulated vehicles and complex equipment operation'
+      },
+      '32t': { 
+        fuelConsumptionMpg: '9.0', 
+        fuelCostPerLitre: '1.429',
+        driverWagePerHour: '19.00', 
+        vehicleRunningCostPerMile: '0.95', 
+        hasAssistant: true, 
+        assistantWagePerHour: '15.20',
+        hoursTraveAllowed: '2.00',
+        autoUpdateFuelPrice: true,
+        workCategory: 'Maximum weight articulated truck',
+        assistantReason: 'assistant required for maximum weight vehicles and specialized equipment'
       }
-    } catch (error) {
-      console.error('Error fetching vehicle defaults:', error);
-      return null;
-    }
+    };
+
+    const defaults = vehicleDefaults[vehicleType as keyof typeof vehicleDefaults];
+    console.log('Vehicle defaults response:', defaults);
+    return defaults || null;
   };
 
   const handleVehicleTypeChange = async (vehicleType: string) => {
