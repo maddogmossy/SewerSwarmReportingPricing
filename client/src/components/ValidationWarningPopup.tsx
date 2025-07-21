@@ -15,20 +15,26 @@ interface ValidationIssue {
 }
 
 interface ValidationWarningPopupProps {
-  issue: ValidationIssue;
-  onDismiss: () => void;
-  onNext: () => void;
+  issue: ValidationIssue | null;
   currentIndex: number;
   totalCount: number;
+  onNext: () => void;
+  onDismissAll: () => void;
+  isVisible: boolean;
 }
 
 export function ValidationWarningPopup({
   issue,
-  onDismiss,
-  onNext,
   currentIndex,
-  totalCount
+  totalCount,
+  onNext,
+  onDismissAll,
+  isVisible
 }: ValidationWarningPopupProps) {
+  if (!isVisible || !issue) {
+    return null;
+  }
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-md mx-auto">
@@ -41,7 +47,7 @@ export function ValidationWarningPopup({
             <Button
               variant="ghost"
               size="sm"
-              onClick={onDismiss}
+              onClick={onDismissAll}
               className="h-6 w-6 p-0"
             >
               <X className="h-4 w-4" />
@@ -72,7 +78,7 @@ export function ValidationWarningPopup({
             </div>
             <div className="space-x-2">
               <Button
-                onClick={onDismiss}
+                onClick={onDismissAll}
                 variant="ghost"
                 size="sm"
               >
@@ -87,7 +93,7 @@ export function ValidationWarningPopup({
                 </Button>
               ) : (
                 <Button
-                  onClick={onDismiss}
+                  onClick={onDismissAll}
                   size="sm"
                 >
                   Done
