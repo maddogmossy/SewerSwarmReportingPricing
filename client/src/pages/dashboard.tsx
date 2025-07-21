@@ -1668,6 +1668,14 @@ export default function Dashboard() {
   // Validation effect - runs after sections are loaded
   useEffect(() => {
     if (hasAuthenticData && rawSectionData.length > 0 && pr2Configurations.length >= 0) {
+      console.log('🔍 Running validation with data:', {
+        sectionsCount: rawSectionData.length,
+        hasTravelInfo: !!travelInfo,
+        pr2ConfigsCount: pr2Configurations?.length || 0,
+        workCategoriesCount: workCategories?.length || 0,
+        vehicleRatesCount: vehicleTravelRates?.length || 0
+      });
+      
       // Transform section data to match validation interface
       const reportSections: ReportSection[] = rawSectionData.map(section => ({
         id: section.id,
@@ -1689,6 +1697,14 @@ export default function Dashboard() {
         workCategories,
         vehicleTravelRates
       );
+      
+      console.log('📋 Validation result calculated:', {
+        isReady: result.isReady,
+        issuesCount: result.issues.length,
+        summary: result.summary,
+        issues: result.issues
+      });
+      
       setValidationResult(result);
     }
   }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo, workCategories, vehicleTravelRates]);
