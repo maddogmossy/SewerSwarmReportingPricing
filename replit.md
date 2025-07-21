@@ -722,6 +722,29 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 21, 2025)
 
+### Vehicle Defaults & Fuel Tracking System Complete ✅
+- **Date**: January 21, 2025
+- **Status**: Successfully implemented complete UK industry standard vehicle defaults with fuel tracking
+- **Changes Made**:
+  - **Hardcoded UK MPG Standards**: All 8 vehicle types now auto-populate with industry standard fuel consumption (3.5t: 30 MPG, 32t: 9 MPG, etc.)
+  - **Current UK Fuel Prices**: Auto-populated £1.429/L diesel price (current UK average) when vehicle type selected
+  - **Driver Wage Removal**: Removed auto-population of driver wages - now user input only per user request
+  - **Assistant Logic**: 18t+ vehicles automatically configure assistant requirements with appropriate wages
+  - **Vehicle Running Costs**: Industry standard running costs per mile based on vehicle class (£0.25-£0.95)
+  - **Enhanced UI**: Changed "Create Rate" button to "Save", improved user feedback with vehicle category descriptions
+  - **Fuel Price Monitoring**: Backend system ready for weekly UK government fuel price updates
+- **Technical Implementation**: 
+  - Created `server/vehicle-defaults.ts` with comprehensive UK commercial vehicle standards
+  - Created `server/fuel-price-monitor.ts` for automatic fuel price tracking system
+  - Updated form defaults to start empty until vehicle selected (no pre-filled fuel costs)
+  - Enhanced toast notifications with assistant reasoning and vehicle category information
+- **User Benefits**: 
+  - Accurate UK commercial vehicle data auto-population
+  - No more manual research needed for fuel consumption rates
+  - Clear guidance on assistant requirements for different vehicle classes
+  - Simplified form with "Save" button instead of confusing "Create Rate"
+- **Result**: Professional vehicle travel rate system with authentic UK industry standards
+
 ### Vehicle Travel Rate System Update - Complete ✅
 - **Date**: January 21, 2025
 - **Status**: Successfully updated vehicle travel rate options system-wide

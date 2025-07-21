@@ -463,13 +463,13 @@ function CustomerSettingsContent() {
       categoryId: "",
       vehicleType: "",
       fuelConsumptionMpg: 0,
-      fuelCostPerLitre: 1.429, // Current UK diesel average £1.429/L
-      driverWagePerHour: 0,
+      fuelCostPerLitre: 0, // Empty until vehicle type selected
+      driverWagePerHour: 0, // User input only
       vehicleRunningCostPerMile: 0,
       hasAssistant: false,
       assistantWagePerHour: 0,
       hoursTraveAllowed: 2,
-      autoUpdateFuelPrice: true, // Enable auto-updates by default
+      autoUpdateFuelPrice: true,
     },
   });
 
@@ -682,7 +682,7 @@ function CustomerSettingsContent() {
         try {
           vehicleForm.setValue('fuelConsumptionMpg', defaults.fuelConsumptionMpg);
           vehicleForm.setValue('fuelCostPerLitre', defaults.fuelCostPerLitre);
-          vehicleForm.setValue('driverWagePerHour', defaults.driverWagePerHour);
+          // Skip driverWagePerHour - let user input this
           vehicleForm.setValue('vehicleRunningCostPerMile', defaults.vehicleRunningCostPerMile);
           
           if (defaults.hasAssistant) {
@@ -705,7 +705,7 @@ function CustomerSettingsContent() {
             
           toast({
             title: "Auto-populated",
-            description: `${defaults.workCategory} vehicle configured. ${assistantInfo}`,
+            description: `${defaults.workCategory} vehicle configured. ${assistantInfo}. Please enter driver wage.`,
           });
         } catch (error) {
           console.error('Error setting form values:', error);
@@ -2022,9 +2022,7 @@ function CustomerSettingsContent() {
                               >
                                 {createVehicleRateMutation.isPending || updateVehicleRateMutation.isPending
                                   ? "Saving..."
-                                  : editingVehicleRate
-                                  ? "Update Rate"
-                                  : "Create Rate"}
+                                  : "Save"}
                               </Button>
                             </div>
                           </form>
