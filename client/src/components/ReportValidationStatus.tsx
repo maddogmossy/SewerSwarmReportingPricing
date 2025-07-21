@@ -77,9 +77,13 @@ export function ReportValidationStatus({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-component="report-validation-status">
       {/* Main Status Alert */}
-      <Alert className={getStatusColor()}>
+      <Alert 
+        className={getStatusColor()}
+        data-validation-status={validationResult.isReady ? "ready" : "pending"}
+        data-issue-count={validationResult.issues.length}
+      >
         {getStatusIcon()}
         <AlertDescription>
           <div className="flex items-center justify-between">
@@ -95,6 +99,8 @@ export function ReportValidationStatus({
               <Button 
                 onClick={onExportReport}
                 className="bg-green-600 hover:bg-green-700 text-white"
+                data-action="export-report"
+                data-validation-ready="true"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Export Report
@@ -106,21 +112,32 @@ export function ReportValidationStatus({
 
       {/* Individual Issues */}
       {validationResult.issues.map((issue, index) => (
-        <Alert key={index} className="border-l-4 border-l-blue-500">
+        <Alert 
+          key={index} 
+          className="border-l-4 border-l-blue-500"
+          data-issue-type={issue.type}
+          data-issue-severity={issue.severity}
+          data-issue-index={index}
+          data-item-ids={issue.itemIds?.join(',')}
+        >
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                {issue.type === 'configuration' && <Settings className="h-4 w-4" />}
-                {issue.type === 'quantity' && <Calculator className="h-4 w-4" />}
-                {issue.type === 'travel' && <Clock className="h-4 w-4" />}
-                {issue.type === 'vehicle' && <AlertTriangle className="h-4 w-4" />}
-                <Badge variant={issue.severity === 'error' ? 'destructive' : 'secondary'}>
+                {issue.type === 'configuration' && <Settings className="h-4 w-4" data-icon="settings" />}
+                {issue.type === 'quantity' && <Calculator className="h-4 w-4" data-icon="calculator" />}
+                {issue.type === 'travel' && <Clock className="h-4 w-4" data-icon="clock" />}
+                {issue.type === 'vehicle' && <AlertTriangle className="h-4 w-4" data-icon="alert-triangle" />}
+                <Badge 
+                  variant={issue.severity === 'error' ? 'destructive' : 'secondary'}
+                  data-badge-type={issue.type}
+                  data-badge-severity={issue.severity}
+                >
                   {issue.type}
                 </Badge>
               </div>
-              <p className="font-medium">{issue.message}</p>
+              <p className="font-medium" data-field="issue-message">{issue.message}</p>
               {issue.itemIds && (
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-gray-600 mt-1" data-field="affected-items">
                   Items: {issue.itemIds.join(', ')}
                 </p>
               )}
@@ -136,11 +153,14 @@ export function ReportValidationStatus({
               )}
             </div>
             
-            <div className="flex gap-2 ml-4">
+            <div className="flex gap-2 ml-4" data-section="action-buttons">
               {issue.type === 'configuration' && issue.itemIds && (
                 <Button 
                   size="sm" 
                   onClick={() => onResolveConfiguration(issue.itemIds!)}
+                  data-action="setup-configs"
+                  data-issue-type="configuration"
+                  data-affected-items={issue.itemIds.join(',')}
                 >
                   Setup Configs
                 </Button>
@@ -151,8 +171,11 @@ export function ReportValidationStatus({
                   size="sm" 
                   variant="outline"
                   onClick={() => handleRateAdjustment(issue)}
+                  data-action="adjust-day-rate"
+                  data-issue-type="quantity"
+                  data-calculated-value={issue.calculatedValue}
                 >
-                  Adjust Rate
+                  Adjust day rate to meet minimum requirements
                 </Button>
               )}
               
@@ -161,6 +184,9 @@ export function ReportValidationStatus({
                   size="sm" 
                   variant="outline"
                   onClick={() => handleTravelCostSplit(issue)}
+                  data-action="split-travel-costs"
+                  data-issue-type="travel"
+                  data-calculated-value={issue.calculatedValue}
                 >
                   Split Costs
                 </Button>
@@ -171,8 +197,11 @@ export function ReportValidationStatus({
                   size="sm" 
                   variant="outline"
                   onClick={() => window.location.href = '/customer-settings?tab=travel-rates'}
+                  data-action="setup-travel-rates"
+                  data-issue-type="vehicle"
+                  data-navigation-target="/customer-settings?tab=travel-rates"
                 >
-                  Setup Travel Rates
+                  Set up vehicle travel rates for: CCTV, Patching, Patching, Patching, CCTV
                 </Button>
               )}
             </div>
