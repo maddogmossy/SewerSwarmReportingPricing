@@ -49,7 +49,7 @@ export default function VehicleTravelRates() {
 
   // Fetch category cards
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<any[]>({
-    queryKey: ['/api/pr2-configurations'],
+    queryKey: ['/api/work-categories'],
   });
 
   // Debug categories loading

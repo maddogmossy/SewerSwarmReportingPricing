@@ -1045,5 +1045,17 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Work categories for vehicle travel rates (standard categories 15-27)
+  app.get("/api/work-categories", async (req: Request, res: Response) => {
+    try {
+      const categories = await storage.getWorkCategories();
+      console.log(`✅ Loading ${categories.length} work categories from database`);
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching work categories:", error);
+      res.status(500).json({ error: "Failed to fetch work categories" });
+    }
+  });
+
   return server;
 }
