@@ -523,23 +523,16 @@ export type InsertPr2Configuration = typeof pr2Configurations.$inferInsert;
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
 });
 
 export const insertProjectFolderSchema = createInsertSchema(projectFolders).omit({
   id: true,
-  userId: true,
   createdAt: true,
 });
 
 export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({
   id: true,
-  userId: true,
-  filePath: true,
-  status: true,
-  projectNumber: true,
-  reportUrl: true,
-  siteAddress: true,
-  sitePostcode: true,
   createdAt: true,
 });
 

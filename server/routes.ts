@@ -18,7 +18,7 @@ import { searchUKAddresses } from "./address-autocomplete.js";
 import Stripe from "stripe";
 import { setupAuth } from "./replitAuth";
 import fetch from "node-fetch";
-import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -458,9 +458,9 @@ export async function registerRoutes(app: Express) {
             fileSize: req.file.size,
             fileType: req.file.mimetype,
             filePath: req.file.path,
-            status: "processing",
+            // status: "processing", // Remove this field from update
             sector: req.body.sector || existingUpload[0].sector,
-            folderId: folderId !== null ? folderId : existingUpload[0].folderId,
+            // folderId: folderId !== null ? folderId : existingUpload[0].folderId, // Remove folderId from update
             updatedAt: new Date()
           })
           .where(eq(fileUploads.id, existingUpload[0].id))
@@ -474,7 +474,7 @@ export async function registerRoutes(app: Express) {
           fileSize: req.file.size,
           fileType: req.file.mimetype,
           filePath: req.file.path,
-          status: "processing",
+          // status: "processing", // Remove this field from insert
           projectNumber: projectNo,
           visitNumber: visitNumber,
           sector: req.body.sector || "utilities"
@@ -547,11 +547,11 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
-              status: "completed",
               extractedData: JSON.stringify({
                 sectionsCount: sections.length,
                 extractionType: "wincan_database",
-                validationMessage: validation.message
+                validationMessage: validation.message,
+                status: "completed"
               })
             })
             .where(eq(fileUploads.id, fileUpload.id));
@@ -570,7 +570,7 @@ export async function registerRoutes(app: Express) {
           console.error("Database processing error:", dbError);
           // Update status to failed since we couldn't extract sections
           await db.update(fileUploads)
-            .set({ status: "failed" })
+            .set({ extractedData: "failed" })
             .where(eq(fileUploads.id, fileUpload.id));
           
           throw new Error(`Database processing failed: ${dbError.message}`);
@@ -594,10 +594,10 @@ export async function registerRoutes(app: Express) {
           // Update file upload status to completed
           await db.update(fileUploads)
             .set({ 
-              status: "completed",
               extractedData: JSON.stringify({
                 sectionsCount: sections.length,
-                extractionType: "pdf"
+                extractionType: "pdf",
+                status: "completed"
               })
             })
             .where(eq(fileUploads.id, fileUpload.id));
@@ -613,7 +613,7 @@ export async function registerRoutes(app: Express) {
           console.error("PDF processing error:", pdfError);
           // Update status to failed since we couldn't extract sections
           await db.update(fileUploads)
-            .set({ status: "failed" })
+            .set({ extractedData: "failed" })
             .where(eq(fileUploads.id, fileUpload.id));
           
           throw new Error(`PDF processing failed: ${pdfError.message}`);
@@ -621,7 +621,7 @@ export async function registerRoutes(app: Express) {
       } else {
         // Unsupported file type
         await db.update(fileUploads)
-          .set({ status: "failed" })
+          .set({ extractedData: "failed" })
           .where(eq(fileUploads.id, fileUpload.id));
         
         return res.status(400).json({ 
@@ -667,7 +667,7 @@ export async function registerRoutes(app: Express) {
   // Get standard categories for pricing
   app.get("/api/standard-categories", async (req: Request, res: Response) => {
     try {
-      const categories = await storage.getStandardCategories();
+      const categories = await db.select().from(sectorStandards).orderBy(asc(sectorStandards.standardName));
       res.json(categories);
     } catch (error) {
       console.error("Error fetching standard categories:", error);
@@ -693,7 +693,7 @@ export async function registerRoutes(app: Express) {
       const standards = await db.select()
         .from(sectorStandards)
         .where(eq(sectorStandards.sector, sector))
-        .orderBy(asc(sectorStandards.category));
+        .orderBy(asc(sectorStandards.standardName));
       res.json(standards);
     } catch (error) {
       console.error("Error fetching sector standards:", error);
@@ -711,11 +711,11 @@ export async function registerRoutes(app: Express) {
         standards = await db.select()
           .from(sectorStandards)
           .where(eq(sectorStandards.sector, sector as string))
-          .orderBy(asc(sectorStandards.category));
+          .orderBy(asc(sectorStandards.standardName));
       } else {
         standards = await db.select()
           .from(sectorStandards)
-          .orderBy(asc(sectorStandards.sector), asc(sectorStandards.category));
+          .orderBy(asc(sectorStandards.sector), asc(sectorStandards.standardName));
       }
       
       res.json(standards);
@@ -779,8 +779,8 @@ export async function registerRoutes(app: Express) {
       
       const [folder] = await db.insert(projectFolders).values({
         userId,
-        name,
-        description: description || null
+        folderName: name,
+        projectAddress: description || "Not specified"
       }).returning();
       
       res.json(folder);
@@ -1012,18 +1012,17 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // PayPal payment routes
+  // PayPal payment routes temporarily disabled
   app.get("/paypal/setup", async (req, res) => {
-      await loadPaypalDefault(req, res);
+      res.status(503).json({ error: "PayPal integration temporarily disabled" });
   });
 
   app.post("/paypal/order", async (req, res) => {
-    // Request body should contain: { intent, amount, currency }
-    await createPaypalOrder(req, res);
+    res.status(503).json({ error: "PayPal integration temporarily disabled" });
   });
 
   app.post("/paypal/order/:orderID/capture", async (req, res) => {
-    await capturePaypalOrder(req, res);
+    res.status(503).json({ error: "PayPal integration temporarily disabled" });
   });
 
   return server;
