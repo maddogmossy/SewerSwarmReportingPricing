@@ -396,6 +396,7 @@ function AddPaymentMethodDialog({ onSuccess }: { onSuccess: () => void }) {
 
 // Vehicle Travel Rate Schema and Types
 const vehicleTravelRateSchema = z.object({
+  categoryId: z.string().optional(),
   vehicleType: z.string().min(1, "Vehicle type is required"),
   fuelConsumptionMpg: z.number().min(0.1, "Fuel consumption must be greater than 0"),
   fuelCostPerLitre: z.number().min(0.01, "Fuel cost must be greater than 0"),
@@ -459,6 +460,7 @@ function CustomerSettingsContent() {
   const vehicleForm = useForm<VehicleTravelRateForm>({
     resolver: zodResolver(vehicleTravelRateSchema),
     defaultValues: {
+      categoryId: "",
       vehicleType: "",
       fuelConsumptionMpg: 0,
       fuelCostPerLitre: 0,
@@ -474,6 +476,12 @@ function CustomerSettingsContent() {
   // Fetch vehicle travel rates
   const { data: vehicleRates = [], isLoading: vehicleRatesLoading } = useQuery<VehicleTravelRate[]>({
     queryKey: ['/api/vehicle-travel-rates'],
+    enabled: isOpen && !!user,
+  });
+
+  // Fetch work categories for Service Category dropdown
+  const { data: workCategories = [], isLoading: categoriesLoading } = useQuery<any[]>({
+    queryKey: ['/api/work-categories'],
     enabled: isOpen && !!user,
   });
 
@@ -1663,6 +1671,32 @@ function CustomerSettingsContent() {
                         </DialogHeader>
                         <Form {...vehicleForm}>
                           <form onSubmit={vehicleForm.handleSubmit(onVehicleSubmit)} className="space-y-4">
+                            <FormField
+                              control={vehicleForm.control}
+                              name="categoryId"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Service Category (Optional)</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select a service category" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="">-- None Selected --</SelectItem>
+                                      {workCategories.map((category: any) => (
+                                        <SelectItem key={category.id} value={category.id.toString()}>
+                                          {category.name} (ID: {category.id})
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
                             <FormField
                               control={vehicleForm.control}
                               name="vehicleType"
