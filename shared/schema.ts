@@ -375,17 +375,10 @@ export const travelCalculations = pgTable("travel_calculations", {
 export const vehicleTravelRates = pgTable("vehicle_travel_rates", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  categoryId: integer("category_id"), // Optional reference to pr2_configurations
+  categoryId: integer("category_id"), // Optional reference to work categories
   vehicleType: varchar("vehicle_type").notNull(), // "3.5t", "5t", "7.5t", "18t", "26t", "32t"
-  fuelConsumptionMpg: decimal("fuel_consumption_mpg", { precision: 5, scale: 2 }).notNull(), // Miles per gallon
-  fuelCostPerLitre: decimal("fuel_cost_per_litre", { precision: 5, scale: 2 }).notNull(), // Cost per litre
-  driverWagePerHour: decimal("driver_wage_per_hour", { precision: 8, scale: 2 }).notNull(), // Driver wage per hour
-  assistantWagePerHour: decimal("assistant_wage_per_hour", { precision: 8, scale: 2 }).default("0.00"), // Assistant wage per hour (optional)
-  hasAssistant: boolean("has_assistant").default(false), // Whether this vehicle type typically has an assistant
-  vehicleRunningCostPerMile: decimal("vehicle_running_cost_per_mile", { precision: 8, scale: 2 }).notNull(), // Additional running costs
-  hoursTraveAllowed: decimal("hours_travel_allowed", { precision: 5, scale: 2 }).default("2.00"), // Maximum hours of travel allowed per day
-  autoUpdateFuelPrice: boolean("auto_update_fuel_price").default(true), // Whether to auto-update fuel prices
-  lastFuelPriceUpdate: timestamp("last_fuel_price_update").defaultNow(), // When fuel price was last updated
+  additionalTravelRatePerHour: decimal("additional_travel_rate_per_hour", { precision: 8, scale: 2 }).notNull(), // Rate for travel over 10 hours
+  hoursTraveAllowed: decimal("hours_travel_allowed", { precision: 5, scale: 2 }).default("10.00"), // Maximum hours allowed (default 10)
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

@@ -398,14 +398,8 @@ function AddPaymentMethodDialog({ onSuccess }: { onSuccess: () => void }) {
 const vehicleTravelRateSchema = z.object({
   categoryId: z.string().optional(),
   vehicleType: z.string().min(1, "Vehicle type is required"),
-  fuelConsumptionMpg: z.number().min(0.1, "Fuel consumption must be greater than 0"),
-  fuelCostPerLitre: z.number().min(0.01, "Fuel cost must be greater than 0"),
-  driverWagePerHour: z.number().min(0.01, "Driver wage must be greater than 0"),
-  vehicleRunningCostPerMile: z.number().min(0.01, "Vehicle running cost must be greater than 0"),
-  hasAssistant: z.boolean().optional(),
-  assistantWagePerHour: z.number().min(0).optional(),
-  hoursTraveAllowed: z.number().min(0.1, "Hours travel allowed must be greater than 0").default(2),
-  autoUpdateFuelPrice: z.boolean().optional(),
+  additionalTravelRatePerHour: z.number().min(0.01, "Additional travel rate must be greater than 0"),
+  hoursTraveAllowed: z.number().min(1, "Hours allowed must be at least 1").default(10),
 });
 
 type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
@@ -462,14 +456,8 @@ function CustomerSettingsContent() {
     defaultValues: {
       categoryId: "",
       vehicleType: "",
-      fuelConsumptionMpg: 0,
-      fuelCostPerLitre: 0, // Empty until vehicle type selected
-      driverWagePerHour: 0, // User input only
-      vehicleRunningCostPerMile: 0,
-      hasAssistant: false,
-      assistantWagePerHour: 0,
-      hoursTraveAllowed: 2,
-      autoUpdateFuelPrice: true,
+      additionalTravelRatePerHour: 0,
+      hoursTraveAllowed: 10,
     },
   });
 
@@ -666,56 +654,9 @@ function CustomerSettingsContent() {
     return defaults || null;
   };
 
-  const handleVehicleTypeChange = async (vehicleType: string) => {
+  const handleVehicleTypeChange = (vehicleType: string) => {
     console.log('Vehicle type selected:', vehicleType);
-    console.log('editingVehicleRate state:', editingVehicleRate);
     vehicleForm.setValue('vehicleType', vehicleType);
-    
-    // Only auto-populate if we're adding a new vehicle (not editing)
-    if (!editingVehicleRate) {
-      console.log('Auto-populating defaults for new vehicle type:', vehicleType);
-      const defaults = await fetchVehicleDefaults(vehicleType);
-      console.log('Received defaults:', defaults);
-      
-      if (defaults) {
-        console.log('Setting form values with defaults...');
-        try {
-          vehicleForm.setValue('fuelConsumptionMpg', defaults.fuelConsumptionMpg);
-          vehicleForm.setValue('fuelCostPerLitre', defaults.fuelCostPerLitre);
-          // Skip driverWagePerHour - let user input this
-          vehicleForm.setValue('vehicleRunningCostPerMile', defaults.vehicleRunningCostPerMile);
-          
-          if (defaults.hasAssistant) {
-            vehicleForm.setValue('assistantWagePerHour', defaults.assistantWagePerHour || 0);
-            vehicleForm.setValue('hasAssistant', true);
-          } else {
-            vehicleForm.setValue('hasAssistant', false);
-            vehicleForm.setValue('assistantWagePerHour', 0);
-          }
-          
-          vehicleForm.setValue('hoursTraveAllowed', defaults.hoursTraveAllowed || 2);
-          vehicleForm.setValue('autoUpdateFuelPrice', defaults.autoUpdateFuelPrice || false);
-          
-          console.log('All form values set successfully');
-          
-          // Show enhanced toast with work category and assistant reasoning
-          const assistantInfo = defaults.hasAssistant 
-            ? `Assistant required: ${defaults.assistantReason}`
-            : `Single operator: ${defaults.assistantReason}`;
-            
-          toast({
-            title: "Auto-populated",
-            description: `${defaults.workCategory} vehicle configured. ${assistantInfo}. Please enter driver wage.`,
-          });
-        } catch (error) {
-          console.error('Error setting form values:', error);
-        }
-      } else {
-        console.log('No defaults received from API');
-      }
-    } else {
-      console.log('Skipping auto-population because editing existing vehicle');
-    }
   };
 
   const handleAddNewVehicle = () => {
@@ -727,15 +668,10 @@ function CustomerSettingsContent() {
   const handleEditVehicle = (rate: VehicleTravelRate) => {
     setEditingVehicleRate(rate);
     vehicleForm.reset({
+      categoryId: rate.categoryId?.toString() || "",
       vehicleType: rate.vehicleType,
-      fuelConsumptionMpg: parseFloat(rate.fuelConsumptionMpg.toString()),
-      fuelCostPerLitre: parseFloat(rate.fuelCostPerLitre.toString()),
-      driverWagePerHour: parseFloat(rate.driverWagePerHour.toString()),
-      vehicleRunningCostPerMile: parseFloat(rate.vehicleRunningCostPerMile.toString()),
-      hasAssistant: (rate as any).hasAssistant || false,
-      assistantWagePerHour: parseFloat((rate as any).assistantWagePerHour?.toString() || '0'),
-      hoursTraveAllowed: parseFloat((rate as any).hoursTraveAllowed?.toString() || '2'),
-      autoUpdateFuelPrice: (rate as any).autoUpdateFuelPrice || false,
+      additionalTravelRatePerHour: parseFloat(rate.additionalTravelRatePerHour?.toString() || '0'),
+      hoursTraveAllowed: parseFloat(rate.hoursTraveAllowed?.toString() || '10'),
     });
     setIsVehicleDialogOpen(true);
   };
@@ -1657,7 +1593,7 @@ function CustomerSettingsContent() {
                   <CardHeader>
                     <CardTitle>Vehicle Travel Rates</CardTitle>
                     <CardDescription>
-                      Configure fuel costs, wages, and running costs for different vehicle types to calculate accurate travel expenses.
+                      Configure additional travel rates for vehicle types when travel exceeds 10 hours from company address to site.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -1693,36 +1629,18 @@ function CustomerSettingsContent() {
                                 <Car className="h-4 w-4 text-blue-600" />
                                 <span className="font-medium">{rate.vehicleType}</span>
                                 <span className="text-sm text-muted-foreground">
-                                  (£{calculateTotalCostPerMile(rate)}/mile)
+                                  ({rate.categoryId ? 
+                                    (workCategories.find(cat => cat.id === parseInt(rate.categoryId?.toString() || '0'))?.name || 'General') 
+                                    : 'General'
+                                  })
                                 </span>
                               </div>
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-muted-foreground">
+                              <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
                                 <div>
-                                  <span className="font-medium">Fuel:</span> {rate.fuelConsumptionMpg} MPG @ £{rate.fuelCostPerLitre}/L
+                                  <span className="font-medium">Additional Rate:</span> £{rate.additionalTravelRatePerHour || '0'}/hr
                                 </div>
                                 <div>
-                                  <span className="font-medium">Driver:</span> £{rate.driverWagePerHour}/hr
-                                </div>
-                                <div>
-                                  <span className="font-medium">Assistant:</span> {(rate as any).hasAssistant ? `£${(rate as any).assistantWagePerHour || '0'}/hr` : 'No'}
-                                </div>
-                                <div>
-                                  <span className="font-medium">Running:</span> £{rate.vehicleRunningCostPerMile}/mile
-                                </div>
-                                <div>
-                                  <span className="font-medium">Travel Hrs:</span> {(rate as any).hoursTraveAllowed || 2}hrs max
-                                </div>
-                                <div>
-                                  <span className="font-medium">Fuel Rate/Hr:</span> £{(parseFloat(rate.fuelCostPerLitre?.toString() || '0') * 4.54609 / parseFloat(rate.fuelConsumptionMpg?.toString() || '1') * 30).toFixed(2)}/hr
-                                </div>
-                                <div>
-                                  <span className="font-medium">Labor Rate/Hr:</span> £{(parseFloat(rate.driverWagePerHour?.toString() || '0') + (((rate as any).hasAssistant ? parseFloat((rate as any).assistantWagePerHour?.toString() || '0') : 0))).toFixed(2)}/hr
-                                </div>
-                                <div>
-                                  <span className="font-medium">Total Cost/Hr:</span> £{calculateTotalCostPerHour(rate)}/hr
-                                </div>
-                                <div>
-                                  <span className="font-medium">Total/Mile:</span> £{calculateTotalCostPerMile(rate)}/mile
+                                  <span className="font-medium">Hours Allowed:</span> {rate.hoursTraveAllowed || '10'} hours
                                 </div>
                               </div>
                             </div>
@@ -1756,7 +1674,7 @@ function CustomerSettingsContent() {
                             {editingVehicleRate ? 'Edit Vehicle Travel Rate' : 'Add Vehicle Travel Rate'}
                           </DialogTitle>
                           <DialogDescription>
-                            Configure fuel consumption, costs, and wages for this vehicle type.
+                            Configure additional travel rate for this vehicle type.
                           </DialogDescription>
                         </DialogHeader>
                         <Form {...vehicleForm}>
@@ -1814,101 +1732,31 @@ function CustomerSettingsContent() {
                               )}
                             />
 
-                            <div className="grid grid-cols-2 gap-4">
-                              <FormField
-                                control={vehicleForm.control}
-                                name="fuelConsumptionMpg"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Fuel Consumption (MPG)</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        type="number"
-                                        step="0.1"
-                                        {...field}
-                                        value={field.value || ''}
-                                        onChange={(e) => {
-                                          const value = e.target.value;
-                                          field.onChange(value === '' ? 0 : parseFloat(value) || 0);
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-
-                              <FormField
-                                control={vehicleForm.control}
-                                name="fuelCostPerLitre"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Fuel Cost per Litre (£)</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        type="number"
-                                        step="0.01"
-                                        {...field}
-                                        value={field.value || ''}
-                                        onChange={(e) => {
-                                          const value = e.target.value;
-                                          field.onChange(value === '' ? 0 : parseFloat(value) || 0);
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                              <FormField
-                                control={vehicleForm.control}
-                                name="driverWagePerHour"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Driver Wage per Hour (£)</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        type="number"
-                                        step="0.01"
-                                        {...field}
-                                        value={field.value || ''}
-                                        onChange={(e) => {
-                                          const value = e.target.value;
-                                          field.onChange(value === '' ? 0 : parseFloat(value) || 0);
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-
-                              <FormField
-                                control={vehicleForm.control}
-                                name="vehicleRunningCostPerMile"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Running Cost per Mile (£)</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        type="number"
-                                        step="0.01"
-                                        {...field}
-                                        value={field.value || ''}
-                                        onChange={(e) => {
-                                          const value = e.target.value;
-                                          field.onChange(value === '' ? 0 : parseFloat(value) || 0);
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
+                            <FormField
+                              control={vehicleForm.control}
+                              name="additionalTravelRatePerHour"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Additional Travel Rate per Hour (£)</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      {...field}
+                                      value={field.value || ''}
+                                      onChange={(e) => {
+                                        const value = e.target.value;
+                                        field.onChange(value === '' ? 0 : parseFloat(value) || 0);
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormDescription>
+                                    Rate charged for travel hours over 10 hours from company address to site
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
                             <FormField
                               control={vehicleForm.control}
@@ -1924,89 +1772,17 @@ function CustomerSettingsContent() {
                                       value={field.value || ''}
                                       onChange={(e) => {
                                         const value = e.target.value;
-                                        field.onChange(value === '' ? 2 : parseFloat(value) || 2);
+                                        field.onChange(value === '' ? 10 : parseFloat(value) || 10);
                                       }}
                                     />
                                   </FormControl>
                                   <FormDescription>
-                                    Maximum hours of travel allowed per day (default: 2 hours)
+                                    Maximum hours of travel allowed per day (default: 10 hours)
                                   </FormDescription>
                                   <FormMessage />
                                 </FormItem>
                               )}
                             />
-
-                            <div className="space-y-4">
-                              <FormField
-                                control={vehicleForm.control}
-                                name="hasAssistant"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                    <div className="space-y-1 leading-none">
-                                      <FormLabel>Requires Assistant</FormLabel>
-                                      <FormDescription>
-                                        Check if this vehicle type requires an assistant for operations
-                                      </FormDescription>
-                                    </div>
-                                  </FormItem>
-                                )}
-                              />
-
-                              {vehicleForm.watch('hasAssistant') && (
-                                <FormField
-                                  control={vehicleForm.control}
-                                  name="assistantWagePerHour"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Assistant Wage per Hour (£)</FormLabel>
-                                      <FormControl>
-                                        <Input
-                                          type="number"
-                                          step="0.01"
-                                          {...field}
-                                          value={field.value || ''}
-                                          onChange={(e) => {
-                                            const value = e.target.value;
-                                            field.onChange(value === '' ? 0 : parseFloat(value) || 0);
-                                          }}
-                                        />
-                                      </FormControl>
-                                      <FormDescription>
-                                        Hourly wage for the assistant when required
-                                      </FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              )}
-
-                              <FormField
-                                control={vehicleForm.control}
-                                name="autoUpdateFuelPrice"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                    <div className="space-y-1 leading-none">
-                                      <FormLabel>Auto-Update Fuel Prices</FormLabel>
-                                      <FormDescription>
-                                        Automatically update fuel prices from UK market data
-                                      </FormDescription>
-                                    </div>
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
 
                             <div className="flex justify-end space-x-2">
                               <Button
