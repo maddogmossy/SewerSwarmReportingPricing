@@ -13,6 +13,7 @@ import { RepairOptionsPopover } from "@/components/repair-options-popover";
 import { CleaningOptionsPopover } from "@/components/cleaning-options-popover";
 import { SectorStandardsDisplay } from "@/components/sector-standards-display";
 import { ReportValidationStatus } from "@/components/ReportValidationStatus";
+import { PatchRepairPricingDialog } from "@/components/PatchRepairPricingDialog";
 import { validateReportExportReadiness, ValidationResult, ReportSection, TravelInfo } from "@shared/report-validation";
 import * as XLSX from 'xlsx';
 
@@ -553,6 +554,34 @@ export default function Dashboard() {
   const [missingSequences, setMissingSequences] = useState<number[]>([]);
   const [warningDismissed, setWarningDismissed] = useState(false);
   const [isDatabaseFile, setIsDatabaseFile] = useState(false);
+  
+  // Patch repair pricing dialog state
+  const [showPatchPricingDialog, setShowPatchPricingDialog] = useState(false);
+  const [selectedPatchSection, setSelectedPatchSection] = useState<any>(null);
+  const [selectedPatchCalculation, setSelectedPatchCalculation] = useState<any>(null);
+
+  // Handler for opening patch pricing dialog
+  const handlePatchPricingClick = (section: any, costCalculation: any) => {
+    setSelectedPatchSection(section);
+    setSelectedPatchCalculation(costCalculation);
+    setShowPatchPricingDialog(true);
+  };
+
+  // Handler for updating patch repair prices
+  const handlePatchPriceUpdate = (newPrices: { [key: string]: number }) => {
+    // For now, we'll show a toast notification
+    // In the future, this could update the backend configuration
+    console.log('Patch prices updated:', newPrices);
+    toast({
+      title: "Patch Prices Updated",
+      description: `Updated pricing for ${Object.keys(newPrices).length} repairs`,
+    });
+    
+    // Close the dialog
+    setShowPatchPricingDialog(false);
+    setSelectedPatchSection(null);
+    setSelectedPatchCalculation(null);
+  };
 
 
 
@@ -1188,12 +1217,35 @@ export default function Dashboard() {
           // Check for TP2 below minimum quantity case - show RED COST instead of triangle
           if (costCalculation && costCalculation.showRedTriangle) {
             const calculatedCost = costCalculation.defectCount * costCalculation.costPerUnit || 0;
+            
+            // Extract day rate from PR2 configuration for dialog
+            let dayRate = 1850; // Default fallback
+            if (pr2Configurations && pr2Configurations.length > 0) {
+              const matchingConfig = pr2Configurations.find(config => 
+                config.categoryId === 'patching' && 
+                config.sector === currentSector.id
+              );
+              if (matchingConfig && matchingConfig.pricingOptions) {
+                const dayRateOption = matchingConfig.pricingOptions.find((opt: any) => 
+                  opt.label?.toLowerCase().includes('day rate')
+                );
+                if (dayRateOption && dayRateOption.value) {
+                  dayRate = parseFloat(dayRateOption.value) || 1850;
+                }
+              }
+            }
+            
             return (
               <div 
-                className="flex items-center justify-center p-1 rounded" 
-                title={`${costCalculation.triangleMessage}\nTP2 patching: ${costCalculation.defectCount} defects × £${costCalculation.costPerUnit} = £${calculatedCost.toFixed(2)}\nRequires minimum ${costCalculation.minRequired} patches`}
+                className="flex items-center justify-center p-1 rounded cursor-pointer hover:bg-red-50 transition-colors" 
+                title={`${costCalculation.triangleMessage}\nTP2 patching: ${costCalculation.defectCount} defects × £${costCalculation.costPerUnit} = £${calculatedCost.toFixed(2)}\nRequires minimum ${costCalculation.minRequired} patches\n\nClick to adjust pricing`}
+                onClick={() => handlePatchPricingClick(section, {
+                  ...costCalculation,
+                  currentCost: calculatedCost,
+                  dayRate: dayRate
+                })}
               >
-                <span className="text-xs font-semibold text-red-600">
+                <span className="text-xs font-semibold text-red-600 hover:text-red-700">
                   £{calculatedCost.toFixed(2)}
                 </span>
               </div>
@@ -3693,6 +3745,24 @@ export default function Dashboard() {
       </Dialog>
 
       {/* REMOVED: Auto-cost popup dialogs that were causing infinite loops */}
+
+      {/* Patch Repair Pricing Dialog */}
+      {selectedPatchSection && selectedPatchCalculation && (
+        <PatchRepairPricingDialog
+          isOpen={showPatchPricingDialog}
+          onClose={() => {
+            setShowPatchPricingDialog(false);
+            setSelectedPatchSection(null);
+            setSelectedPatchCalculation(null);
+          }}
+          section={selectedPatchSection}
+          currentCost={selectedPatchCalculation.currentCost || 0}
+          dayRate={selectedPatchCalculation.dayRate || 1850}
+          defectCount={selectedPatchCalculation.defectCount || 1}
+          costPerUnit={selectedPatchCalculation.costPerUnit || 350}
+          onPriceUpdate={handlePatchPriceUpdate}
+        />
+      )}
     </div>
   );
 }
