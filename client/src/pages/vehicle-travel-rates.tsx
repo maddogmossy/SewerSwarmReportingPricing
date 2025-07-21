@@ -33,7 +33,7 @@ const vehicleTravelRateSchema = z.object({
 type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
 
 export default function VehicleTravelRates() {
-  console.log('🚀 VehicleTravelRates component rendering...');
+  console.log('🚀 VehicleTravelRates component rendering... VERSION 1.2.3');
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -48,7 +48,7 @@ export default function VehicleTravelRates() {
   }, []);
 
   // Fetch category cards
-  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery<any[]>({
     queryKey: ['/api/pr2-configurations'],
   });
 
@@ -57,7 +57,7 @@ export default function VehicleTravelRates() {
     console.log('🔍 Categories data:', categories);
     console.log('🔍 Categories loading:', categoriesLoading);
     console.log('🔍 Categories type:', typeof categories);
-    console.log('🔍 Categories length:', categories?.length);
+    console.log('🔍 Categories length:', Array.isArray(categories) ? categories.length : 0);
   }, [categories, categoriesLoading]);
 
   const form = useForm<VehicleTravelRateForm>({
@@ -276,17 +276,18 @@ export default function VehicleTravelRates() {
               Add Vehicle Rate
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg min-h-[500px]">
             <DialogHeader>
               <DialogTitle>
-                {editingRate ? "Edit Vehicle Travel Rate" : "Add New Vehicle Travel Rate"}
+                {editingRate ? "Edit Vehicle Travel Rate" : "🚨 DEBUG MODE - Add New Vehicle Travel Rate"}
               </DialogTitle>
+              <div className="text-red-600 font-bold">COMPONENT VERSION: 2025-01-21-DEBUG</div>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {/* DEBUG: Show categories loading state */}
                 <div className="p-4 bg-yellow-100 border-2 border-yellow-500 rounded-lg text-lg font-bold text-black">
-                  🚨 DEBUG: Loading={categoriesLoading ? 'YES' : 'NO'}, Categories={categories?.length || 0}
+                  🚨 DEBUG: Loading={categoriesLoading ? 'YES' : 'NO'}, Categories={Array.isArray(categories) ? categories.length : 0}
                   <br/>
                   Raw Data: {JSON.stringify(categories)}
                 </div>
