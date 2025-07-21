@@ -38,6 +38,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Settings, CreditCard, User, Users, Building, MapPin, Calculator, Car, Clock, Plus, Edit2, Trash2, Truck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { DevLabel } from "@/utils/DevLabel";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { VehicleTravelRate, InsertVehicleTravelRate } from "@shared/schema";
@@ -686,7 +687,8 @@ export function CustomerSettings() {
           </TabsList>
 
           <TabsContent value="account" className="space-y-4">
-            <Card>
+            <Card className="relative">
+              <DevLabel id="8" />
               <CardHeader>
                 <CardTitle>Profile Information</CardTitle>
                 <CardDescription>
@@ -721,7 +723,8 @@ export function CustomerSettings() {
           </TabsContent>
 
           <TabsContent value="payment" className="space-y-4">
-            <Card>
+            <Card className="relative">
+              <DevLabel id="9" />
               <CardHeader>
                 <CardTitle>Payment Methods</CardTitle>
                 <CardDescription>
@@ -776,7 +779,8 @@ export function CustomerSettings() {
           {user.role === 'admin' && (
             <>
               <TabsContent value="company" className="space-y-4">
-                <Card>
+                <Card className="relative">
+                  <DevLabel id="10" />
                   <CardHeader>
                     <CardTitle>Company Settings</CardTitle>
                     <CardDescription>
@@ -1002,7 +1006,8 @@ export function CustomerSettings() {
               </TabsContent>
 
               <TabsContent value="depot" className="space-y-4">
-                <Card>
+                <Card className="relative">
+                  <DevLabel id="11" />
                   <CardHeader>
                     <CardTitle>Depot Settings</CardTitle>
                     <CardDescription>
@@ -1212,7 +1217,8 @@ export function CustomerSettings() {
                 </Card>
 
                 {/* Vehicle Travel Rates Section */}
-                <Card>
+                <Card className="relative">
+                  <DevLabel id="12" />
                   <CardHeader>
                     <CardTitle>Vehicle Travel Rates</CardTitle>
                     <CardDescription>
@@ -1567,7 +1573,8 @@ export function CustomerSettings() {
               </TabsContent>
 
               <TabsContent value="team" className="space-y-4">
-                <Card>
+                <Card className="relative">
+                  <DevLabel id="13" />
                   <CardHeader>
                     <CardTitle>Team Members</CardTitle>
                     <CardDescription>
