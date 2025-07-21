@@ -814,7 +814,11 @@ export function CustomerSettings() {
                                   src={`/${companySettings.companyLogo}`}
                                   alt="Company Logo"
                                   className="h-16 w-16 object-contain bg-white border rounded"
+                                  onLoad={() => {
+                                    console.log("Logo loaded successfully:", companySettings.companyLogo);
+                                  }}
                                   onError={(e) => {
+                                    console.error("Logo failed to load:", companySettings.companyLogo, e);
                                     const target = e.currentTarget as HTMLImageElement;
                                     target.style.display = 'none';
                                     const fallback = target.nextElementSibling as HTMLElement;
