@@ -195,14 +195,22 @@ export default function VehicleTravelRates() {
   });
 
   const handleAddNew = () => {
-    console.log('🚨 Opening add dialog...');
+    console.log('🚨🚨🚨 DIALOG OPENING - ADD VEHICLE BUTTON CLICKED!');
     console.log('🔍 Categories data:', categories);
     console.log('🔍 Categories loading:', categoriesLoading);
     console.log('🔍 Categories length:', Array.isArray(categories) ? categories.length : 'NOT ARRAY');
     console.log('🔍 Raw categories:', JSON.stringify(categories));
+    console.log('🔍 Categories type:', typeof categories);
     setEditingRate(null);
     form.reset();
     setIsDialogOpen(true);
+    
+    // Force a manual fetch to test
+    console.log('🔥 FORCING CATEGORIES FETCH TEST...');
+    fetch('/api/work-categories')
+      .then(r => r.json())
+      .then(data => console.log('🔥 MANUAL FETCH RESULT:', data))
+      .catch(err => console.error('🔥 MANUAL FETCH ERROR:', err));
   };
 
   const handleEdit = (rate: VehicleTravelRate) => {
