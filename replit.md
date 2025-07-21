@@ -758,7 +758,29 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Technical Implementation**: Synchronized vehicle type definitions across multiple components
 - **Result**: All vehicle dropdowns now show consistent tonnage-based options
 
-## Recent Changes (Updated July 20, 2025)
+## Recent Changes (Updated January 21, 2025)
+
+### Complete Travel Time Calculation Workflow - LOCKED ✅
+- **Date**: January 21, 2025
+- **Status**: Travel time calculation workflow documented and confirmed operational
+- **System Overview**: Complete end-to-end workflow for calculating additional travel costs when projects exceed 2-hour radius
+- **Workflow Steps**:
+  1. **Address Validation**: UK postcode format validation and address component checking
+  2. **Distance Calculation**: Depot to project site distance using postcode matching (production: Google Maps API)
+  3. **Work Type Allowances**: Category-specific travel limits (CCTV: 50mi, Jetting: 40mi, Patching: 30mi, etc.)
+  4. **Additional Travel Rate Integration**: Vehicle-specific hourly rates for travel over 2 hours
+  5. **Dashboard Alerts**: Green (within allowance) and orange/red (exceeds limits) with cost calculations
+  6. **Vehicle Selection Impact**: Category-specific vehicle types with different travel rates
+- **Travel Allowances by Work Type**:
+  - CCTV: 50 miles max, £1.80/mile over
+  - Jetting: 40 miles max, £2.20/mile over  
+  - Directional Water Cutting: 35 miles max, £2.80/mile over
+  - Patching: 30 miles max, £2.50/mile over (requires NIN +£45)
+  - Tankering: 25 miles max, £3.00/mile over
+- **Additional Travel Rate Logic**: `excessHours × additionalTravelRatePerHour` for travel over 120 minutes
+- **Dashboard Integration**: Real-time cost calculations showing both distance overages and time overages
+- **User Confirmation**: "lock this in" - workflow explanation complete and approved
+- **Result**: Complete understanding of travel cost calculation system operational
 
 ### Dashboard UI Cleanup - Standards Card Removal Complete ✅
 - **Date**: July 20, 2025
