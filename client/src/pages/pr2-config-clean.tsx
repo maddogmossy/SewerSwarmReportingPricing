@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -31,6 +31,13 @@ interface RangeOption {
   rangeEnd: string;
 }
 
+interface VehicleTravelRate {
+  id: string;
+  vehicleType: string;
+  hourlyRate: string;
+  enabled: boolean;
+}
+
 interface CleanFormData {
   categoryName: string;
   description: string;
@@ -48,6 +55,9 @@ interface CleanFormData {
   // Purple Window - Range Options
   rangeOptions: RangeOption[];
   
+  // Teal Window - Vehicle Travel Rates
+  vehicleTravelRates: VehicleTravelRate[];
+  
   // Math Operations
   mathOperators: string[];
   
@@ -56,6 +66,7 @@ interface CleanFormData {
   quantityStackOrder: string[];
   minQuantityStackOrder: string[];
   rangeStackOrder: string[];
+  vehicleTravelRatesStackOrder: string[];
   
   sector: string;
 }
@@ -300,11 +311,16 @@ export default function PR2ConfigClean() {
         rangeOptions: [
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
         ],
+        vehicleTravelRates: [
+          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', enabled: true },
+          { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', enabled: true }
+        ],
         mathOperators: [], // No math window for TP2
         pricingStackOrder: ['price_dayrate', 'single_layer_cost', 'double_layer_cost', 'triple_layer_cost', 'triple_extra_cure_cost'],
         quantityStackOrder: [],
         minQuantityStackOrder: ['minquantity_runs', 'patch_min_qty_1', 'patch_min_qty_2', 'patch_min_qty_3', 'patch_min_qty_4'],
         rangeStackOrder: ['range_length'],
+        vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_7_5t'],
         sector
       };
     } else {
@@ -326,11 +342,16 @@ export default function PR2ConfigClean() {
           { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
         ],
+        vehicleTravelRates: [
+          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', enabled: true },
+          { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', enabled: true }
+        ],
         mathOperators: ['N/A'],
         pricingStackOrder: ['price_dayrate'],
         quantityStackOrder: ['quantity_runs'],
         minQuantityStackOrder: ['minquantity_runs'],
         rangeStackOrder: ['range_percentage', 'range_length'],
+        vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_7_5t'],
         sector
       };
     }
@@ -423,7 +444,20 @@ export default function PR2ConfigClean() {
     }
   };
 
-  const [formData, setFormData] = useState<CleanFormData>(getDefaultFormData());
+  const [formData, setFormData] = useState<CleanFormData>(() => {
+    const defaultData = getDefaultFormData();
+    // Ensure vehicleTravelRates is initialized if missing
+    if (!defaultData.vehicleTravelRates) {
+      defaultData.vehicleTravelRates = [
+        { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', enabled: true },
+        { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', enabled: true }
+      ];
+    }
+    if (!defaultData.vehicleTravelRatesStackOrder) {
+      defaultData.vehicleTravelRatesStackOrder = ['vehicle_3_5t', 'vehicle_7_5t'];
+    }
+    return defaultData;
+  });
   
   // State for pipe size switching within unified page
   const [currentConfigId, setCurrentConfigId] = useState<number | null>(editId ? parseInt(editId) : null);
@@ -784,6 +818,13 @@ export default function PR2ConfigClean() {
   
   // TP2 Pipe Size Selection State - Dynamic based on editId - removed const declaration to avoid duplicate
   const [editingRange, setEditingRange] = useState<RangeOption | null>(null);
+  
+  // Vehicle Travel Rate dialog states
+  const [addVehicleDialogOpen, setAddVehicleDialogOpen] = useState(false);
+  const [editVehicleDialogOpen, setEditVehicleDialogOpen] = useState(false);
+  const [newVehicleType, setNewVehicleType] = useState('');
+  const [newHourlyRate, setNewHourlyRate] = useState('');
+  const [editingVehicle, setEditingVehicle] = useState<VehicleTravelRate | null>(null);
   
   // Sector selection state
   const [selectedSectors, setSelectedSectors] = useState<string[]>([sector]);
@@ -1620,6 +1661,56 @@ export default function PR2ConfigClean() {
       ...prev,
       rangeOptions: prev.rangeOptions.filter(opt => opt.id !== optionId),
       rangeStackOrder: prev.rangeStackOrder.filter(id => id !== optionId)
+    }));
+  };
+
+  // Vehicle Travel Rate functions
+  const addVehicleTravelRate = () => {
+    if (!newVehicleType.trim() || !newHourlyRate.trim()) return;
+    
+    const newVehicle: VehicleTravelRate = {
+      id: `vehicle_${Date.now()}`,
+      vehicleType: newVehicleType.trim(),
+      hourlyRate: newHourlyRate.trim(),
+      enabled: true
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      vehicleTravelRates: [...prev.vehicleTravelRates, newVehicle],
+      vehicleTravelRatesStackOrder: [...prev.vehicleTravelRatesStackOrder, newVehicle.id]
+    }));
+    
+    setNewVehicleType('');
+    setNewHourlyRate('');
+    setAddVehicleDialogOpen(false);
+  };
+
+  const editVehicleTravelRate = (vehicle: VehicleTravelRate) => {
+    setEditingVehicle(vehicle);
+    setNewVehicleType(vehicle.vehicleType);
+    setNewHourlyRate(vehicle.hourlyRate);
+    setEditVehicleDialogOpen(true);
+  };
+
+  const updateVehicleTravelRate = (updatedVehicle: VehicleTravelRate) => {
+    setFormData(prev => ({
+      ...prev,
+      vehicleTravelRates: prev.vehicleTravelRates.map(vehicle => 
+        vehicle.id === updatedVehicle.id ? updatedVehicle : vehicle
+      )
+    }));
+    setEditingVehicle(null);
+    setNewVehicleType('');
+    setNewHourlyRate('');
+    setEditVehicleDialogOpen(false);
+  };
+
+  const deleteVehicleTravelRate = (vehicleId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      vehicleTravelRates: prev.vehicleTravelRates.filter(vehicle => vehicle.id !== vehicleId),
+      vehicleTravelRatesStackOrder: prev.vehicleTravelRatesStackOrder.filter(id => id !== vehicleId)
     }));
   };
 
@@ -3052,6 +3143,66 @@ export default function PR2ConfigClean() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Teal/Cyan Window: Vehicle Travel Rates */}
+              <Card className="relative bg-cyan-50 border-cyan-200 w-64 flex-shrink-0">
+                <DevLabel id="db11" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-cyan-700 text-xs flex items-center gap-1">
+                    <Truck className="w-3 h-3" />
+                    Vehicle Travel Rates
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="py-1">
+                  <div className="space-y-1">
+                    {formData.vehicleTravelRates && 
+                      formData.vehicleTravelRates.map((vehicle, index) => (
+                        <div key={vehicle.id} className="flex gap-2 items-center">
+                          <div className="flex items-center gap-1">
+                            <Label className="text-xs font-medium text-cyan-700 flex-shrink-0">
+                              {vehicle.vehicleType}
+                            </Label>
+                            <span className="text-xs text-cyan-600">£</span>
+                            <Input
+                              placeholder="rate"
+                              maxLength={6}
+                              value={vehicle.hourlyRate || ""}
+                              onChange={(e) => {
+                                const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
+                                updateVehicleTravelRate(updatedVehicle);
+                              }}
+                              className="bg-white border-cyan-300 h-6 text-xs w-16 flex items-center"
+                              data-field="hourly-rate"
+                              data-window="vehicle"
+                              data-option-id={vehicle.id}
+                            />
+                            <span className="text-xs text-cyan-600">/hr</span>
+                          </div>
+                          {index === 0 && (
+                            <Button
+                              variant="outline"
+                              onClick={() => setAddVehicleDialogOpen(true)}
+                              className="h-6 text-xs border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                            >
+                              <Plus className="w-3 h-3 mr-1" />
+                              Add
+                            </Button>
+                          )}
+                          {index > 0 && (
+                            <Button
+                              variant="outline"
+                              onClick={() => deleteVehicleTravelRate(vehicle.id)}
+                              className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          )}
+                        </div>
+                      ))
+                    }
+                  </div>
+                </CardContent>
+              </Card>
             </div>
             )}
           </CollapsibleContent>
@@ -3363,6 +3514,112 @@ export default function PR2ConfigClean() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Add Vehicle Travel Rate Dialog */}
+      <Dialog open={addVehicleDialogOpen} onOpenChange={setAddVehicleDialogOpen}>
+        <DialogContent className="bg-cyan-50 border-cyan-200">
+          <DialogHeader>
+            <DialogTitle className="text-cyan-700 flex items-center gap-2">
+              <Truck className="w-4 h-4" />
+              Add Vehicle Travel Rate
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="vehicle-type" className="text-cyan-700">Vehicle Type</Label>
+              <Input
+                id="vehicle-type"
+                placeholder="e.g., 3.5t, 7.5t, 18t"
+                value={newVehicleType}
+                onChange={(e) => setNewVehicleType(e.target.value)}
+                className="border-cyan-300"
+              />
+            </div>
+            <div>
+              <Label htmlFor="hourly-rate" className="text-cyan-700">Hourly Rate (£)</Label>
+              <Input
+                id="hourly-rate"
+                placeholder="e.g., 45.00"
+                value={newHourlyRate}
+                onChange={(e) => setNewHourlyRate(e.target.value)}
+                className="border-cyan-300"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={addVehicleTravelRate}
+                className="bg-cyan-600 hover:bg-cyan-700 text-white"
+              >
+                Add Vehicle Rate
+              </Button>
+              <Button
+                onClick={() => setAddVehicleDialogOpen(false)}
+                variant="outline"
+                className="border-cyan-300 text-cyan-700"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Vehicle Travel Rate Dialog */}
+      <Dialog open={editVehicleDialogOpen} onOpenChange={setEditVehicleDialogOpen}>
+        <DialogContent className="bg-cyan-50 border-cyan-200">
+          <DialogHeader>
+            <DialogTitle className="text-cyan-700 flex items-center gap-2">
+              <Truck className="w-4 h-4" />
+              Edit Vehicle Travel Rate
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-vehicle-type" className="text-cyan-700">Vehicle Type</Label>
+              <Input
+                id="edit-vehicle-type"
+                placeholder="e.g., 3.5t, 7.5t, 18t"
+                value={newVehicleType}
+                onChange={(e) => setNewVehicleType(e.target.value)}
+                className="border-cyan-300"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-hourly-rate" className="text-cyan-700">Hourly Rate (£)</Label>
+              <Input
+                id="edit-hourly-rate"
+                placeholder="e.g., 45.00"
+                value={newHourlyRate}
+                onChange={(e) => setNewHourlyRate(e.target.value)}
+                className="border-cyan-300"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => {
+                  if (editingVehicle) {
+                    updateVehicleTravelRate({
+                      ...editingVehicle,
+                      vehicleType: newVehicleType,
+                      hourlyRate: newHourlyRate
+                    });
+                  }
+                }}
+                className="bg-cyan-600 hover:bg-cyan-700 text-white"
+              >
+                Update Vehicle Rate
+              </Button>
+              <Button
+                onClick={() => setEditVehicleDialogOpen(false)}
+                variant="outline"
+                className="border-cyan-300 text-cyan-700"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
