@@ -222,10 +222,38 @@ export async function registerRoutes(app: Express) {
       const userId = "test-user"; // Default user for testing
       let updates = req.body;
       
+      // Get current settings to check for existing logo file
+      const currentSettings = await storage.getCompanySettings(userId);
+      const currentLogoPath = currentSettings?.companyLogo;
+      
       // Handle logo upload if present
       if (req.file) {
         updates.companyLogo = req.file.path;
         console.log("Logo uploaded to:", req.file.path);
+        
+        // Delete old logo file if it exists and we're replacing it
+        if (currentLogoPath && fs.existsSync(currentLogoPath)) {
+          try {
+            fs.unlinkSync(currentLogoPath);
+            console.log("✅ Deleted old logo file:", currentLogoPath);
+          } catch (error) {
+            console.warn("⚠️ Could not delete old logo file:", error);
+          }
+        }
+      }
+      
+      // Handle logo deletion (when companyLogo is explicitly set to empty string)
+      if (updates.companyLogo === '' && currentLogoPath) {
+        // Delete the physical file
+        if (fs.existsSync(currentLogoPath)) {
+          try {
+            fs.unlinkSync(currentLogoPath);
+            console.log("✅ Deleted logo file on removal:", currentLogoPath);
+          } catch (error) {
+            console.warn("⚠️ Could not delete logo file:", error);
+          }
+        }
+        updates.companyLogo = null; // Set to null in database
       }
       
       const updatedSettings = await storage.updateCompanySettings(userId, updates);

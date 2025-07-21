@@ -805,6 +805,26 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Reports Page Creation**: Created dedicated /reports page for managing uploaded reports with complete folder management functionality
 - **Dashboard Cleanup**: Removed "Uploaded Reports" section from dashboard and added navigation button to dedicated Reports page
 
+### Company Logo System Complete ✅
+- **Date**: July 21, 2025
+- **Status**: Fixed complete logo file cleanup system with proper physical file deletion
+- **Changes Made**:
+  - **API Endpoint Solution**: Created `/api/logo/:filename` endpoint to serve logos through Express API instead of static files
+  - **Vite Proxy Issue Resolved**: Fixed mixed content HTTPS/HTTP issues in Replit environment using API-based image serving
+  - **Physical File Cleanup**: Enhanced company settings PUT endpoint to delete physical logo files when logos are removed
+  - **Proper Content Type**: Set correct `image/png` content type and cache headers for optimal performance
+  - **Frontend Fix**: Updated Remove button to send empty string (`''`) instead of `null` to trigger file deletion
+- **Technical Implementation**:
+  - Server routes now handle logo upload replacement (deletes old file when new uploaded)
+  - Server routes handle logo deletion (deletes physical file when `companyLogo: ''` sent)
+  - Logo API endpoint with proper error handling and file existence checks
+  - Enhanced toast notification: "Company logo and file have been deleted successfully"
+- **Logo Display Locations**:
+  - **Customer Settings Component**: Main logo preview with upload/delete functionality
+  - **Future Integration Points**: Dashboard headers, report headers, invoice templates (not yet implemented)
+- **File Management**: Deleted logos now remove both database reference AND physical file to prevent storage bloat
+- **Result**: Complete logo management system with proper file cleanup and HTTPS-compatible serving
+
 ## User Preferences (Updated July 20, 2025)
 - **Stability Priority**: User prioritizes app stability over advanced features - avoid breaking working functionality
 - **Screen Flashing Issue**: Complex helper functions cause screen flashing - prefer simple implementations

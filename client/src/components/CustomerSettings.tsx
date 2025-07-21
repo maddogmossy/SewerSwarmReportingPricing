@@ -841,11 +841,11 @@ export function CustomerSettings() {
                                   size="sm"
                                   onClick={async () => {
                                     try {
-                                      await apiRequest('PUT', '/api/company-settings', { companyLogo: null });
+                                      await apiRequest('PUT', '/api/company-settings', { companyLogo: '' });
                                       queryClient.invalidateQueries({ queryKey: ['/api/company-settings'] });
                                       toast({
                                         title: "Logo removed",
-                                        description: "Company logo has been removed successfully.",
+                                        description: "Company logo and file have been deleted successfully.",
                                       });
                                     } catch (error) {
                                       toast({
