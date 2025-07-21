@@ -720,6 +720,21 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.3' to return to this stable checkpoint
 
+## Recent Changes (Updated January 21, 2025)
+
+### Vehicle Travel Rate System Update - Complete ✅
+- **Date**: January 21, 2025
+- **Status**: Successfully updated vehicle travel rate options system-wide
+- **Changes Made**:
+  - Updated `client/src/pages/vehicle-travel-rates.tsx` vehicle types array with tonnage-based categories
+  - Updated `client/src/components/CustomerSettings.tsx` vehicle types array to match
+  - Replaced specific vehicle names with standardized tonnage options: 3.5t, 5.0t, 7.5t, 10t, 12t, 18t, 26t, 32t
+  - Ensured consistency across all vehicle dropdown interfaces
+- **Issue Resolved**: Two separate vehicle type arrays were causing inconsistent dropdown options
+- **User Benefits**: Simplified, standardized vehicle selection based on tonnage categories
+- **Technical Implementation**: Synchronized vehicle type definitions across multiple components
+- **Result**: All vehicle dropdowns now show consistent tonnage-based options
+
 ## Recent Changes (Updated July 20, 2025)
 
 ### Dashboard UI Cleanup - Standards Card Removal Complete ✅

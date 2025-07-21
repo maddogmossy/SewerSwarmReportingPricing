@@ -409,33 +409,14 @@ const vehicleTravelRateSchema = z.object({
 type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
 
 const vehicleTypes = [
-  // CCTV Vehicles
-  "Van Pack",
-  "CCTV Survey Vehicle",
-  "CCTV Unit",
-  
-  // Jetting Vehicles  
-  "Jet Vac Vehicle",
-  "High Pressure Jetter",
-  "Industrial Jetter",
-  
-  // Patching Vehicles
-  "Patch Repair Vehicle",
-  "Patching Unit", 
-  "UV Patching Vehicle",
-  
-  // Combination Vehicles
-  "Combination Unit",
-  "Multi-Service Vehicle",
-  "Combi Cleaner",
-  
-  // Standard Vehicles
-  "Van",
-  "Small Truck", 
-  "Medium Truck",
-  "Large Truck",
-  "HGV",
-  "Articulated Vehicle"
+  "3.5t",
+  "5.0t",
+  "7.5t",
+  "10t",
+  "12t",
+  "18t",
+  "26t",
+  "32t"
 ];
 
 // Main component wrapped with Stripe Elements
