@@ -10,7 +10,7 @@ export function DevLabel({ id, position = "bottom-right" }: { id: string; positi
 
   return (
     <span
-      className={`text-[10px] text-gray-700 bg-white px-1 rounded absolute ${positionClass} z-[9999] pointer-events-none font-bold`}
+      className={`text-[10px] text-gray-700 bg-white px-1 rounded absolute ${positionClass} z-10 pointer-events-none font-bold`}
       style={{ fontFamily: "monospace", opacity: 0.9 }}
     >
       (id: {id})
