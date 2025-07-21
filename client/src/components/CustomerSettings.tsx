@@ -1673,6 +1673,34 @@ function CustomerSettingsContent() {
                           <form onSubmit={vehicleForm.handleSubmit(onVehicleSubmit)} className="space-y-4">
                             <FormField
                               control={vehicleForm.control}
+                              name="categoryId"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Service Category (Optional)</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select a service category" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="none">-- None Selected --</SelectItem>
+                                      {workCategories
+                                        .sort((a: any, b: any) => a.id - b.id)
+                                        .map((category: any) => (
+                                        <SelectItem key={category.id} value={category.id.toString()}>
+                                          {category.name} (ID: {category.id})
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={vehicleForm.control}
                               name="vehicleType"
                               render={({ field }) => (
                                 <FormItem>
@@ -1687,32 +1715,6 @@ function CustomerSettingsContent() {
                                       {VEHICLE_TYPES.map((type) => (
                                         <SelectItem key={type} value={type}>
                                           {type}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={vehicleForm.control}
-                              name="categoryId"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Service Category (Optional)</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select a service category" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="none">-- None Selected --</SelectItem>
-                                      {workCategories.map((category: any) => (
-                                        <SelectItem key={category.id} value={category.id.toString()}>
-                                          {category.name} (ID: {category.id})
                                         </SelectItem>
                                       ))}
                                     </SelectContent>
