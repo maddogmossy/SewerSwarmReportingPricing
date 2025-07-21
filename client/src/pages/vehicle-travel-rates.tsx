@@ -16,6 +16,7 @@ import { Plus, Edit2, Trash2, ArrowLeft, Truck } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import type { VehicleTravelRate, InsertVehicleTravelRate } from "@shared/schema";
+import { VEHICLE_TYPES } from "@shared/constants";
 
 const vehicleTravelRateSchema = z.object({
   vehicleType: z.string().min(1, "Vehicle type is required"),
@@ -29,17 +30,6 @@ const vehicleTravelRateSchema = z.object({
 });
 
 type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
-
-const vehicleTypes = [
-  "3.5t",
-  "5.0t",
-  "7.5t",
-  "10t",
-  "12t",
-  "18t",
-  "26t",
-  "32t"
-];
 
 export default function VehicleTravelRates() {
   const { toast } = useToast();
@@ -274,7 +264,7 @@ export default function VehicleTravelRates() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {vehicleTypes.map((type) => (
+                          {VEHICLE_TYPES.map((type) => (
                             <SelectItem key={type} value={type}>
                               {type}
                             </SelectItem>

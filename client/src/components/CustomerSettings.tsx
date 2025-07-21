@@ -42,6 +42,7 @@ import { DevLabel } from "@/utils/DevLabel";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { VehicleTravelRate, InsertVehicleTravelRate } from "@shared/schema";
+import { VEHICLE_TYPES } from "@shared/constants";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
@@ -408,16 +409,7 @@ const vehicleTravelRateSchema = z.object({
 
 type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
 
-const vehicleTypes = [
-  "3.5t",
-  "5.0t",
-  "7.5t",
-  "10t",
-  "12t",
-  "18t",
-  "26t",
-  "32t"
-];
+
 
 // Main component wrapped with Stripe Elements
 function CustomerSettingsContent() {
@@ -1684,7 +1676,7 @@ function CustomerSettingsContent() {
                                       </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                      {vehicleTypes.map((type) => (
+                                      {VEHICLE_TYPES.map((type) => (
                                         <SelectItem key={type} value={type}>
                                           {type}
                                         </SelectItem>
