@@ -47,18 +47,18 @@ const SECTORS = [
 const STANDARD_CATEGORIES = [
   { id: 'cctv', name: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video, devId: 1 },
   { id: 'van-pack', name: 'Van Pack', description: 'High-pressure water jetting and debris removal', icon: Truck, devId: 2 },
-  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves, devId: 3 },
-  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection and cleansing operations', icon: Monitor, devId: 4 },
-  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video, devId: 5 },
-  { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings, devId: 6 },
-  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves, devId: 7 },
-  { id: 'patching', name: 'Patching', description: 'Point repairs and structural patching', icon: Edit, devId: 8 },
-  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket, devId: 9 },
-  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame, devId: 10 },
-  { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun, devId: 11 },
-  { id: 'robotic-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations', icon: Settings, devId: 12 },
-  { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe, devId: 13 },
-  { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck, devId: 14 }
+  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves, devId: 15 },
+  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection and cleansing operations', icon: Monitor, devId: 10 },
+  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video, devId: 16 },
+  { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings, devId: 14 },
+  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves, devId: 5 },
+  { id: 'patching', name: 'Patching', description: 'Point repairs and structural patching', icon: Edit, devId: 6 },
+  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket, devId: 11 },
+  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame, devId: 12 },
+  { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun, devId: 13 },
+  { id: 'robotic-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations', icon: Settings, devId: 4 },
+  { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe, devId: 8 },
+  { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck, devId: 9 }
 ];
 
 export default function PR2Pricing() {
