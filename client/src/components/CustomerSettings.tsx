@@ -811,14 +811,14 @@ export function CustomerSettings() {
                             <div className="mt-3 p-4 border rounded-lg bg-gray-50">
                               <div className="flex items-center space-x-4">
                                 <img 
-                                  src={`/${companySettings.companyLogo}`}
+                                  src={`/api/logo/${companySettings.companyLogo.split('/').pop()}`}
                                   alt="Company Logo"
                                   className="h-16 w-16 object-contain bg-white border rounded"
                                   onLoad={() => {
-                                    console.log("✅ Logo loaded successfully:", companySettings.companyLogo);
+                                    console.log("✅ Logo loaded successfully via API endpoint");
                                   }}
                                   onError={(e) => {
-                                    console.error("❌ Logo failed to load:", companySettings.companyLogo, "Error:", e.type);
+                                    console.error("❌ Logo API endpoint failed, URL:", e.currentTarget.src);
                                     const target = e.currentTarget as HTMLImageElement;
                                     target.style.display = 'none';
                                     const fallback = target.nextElementSibling as HTMLElement;

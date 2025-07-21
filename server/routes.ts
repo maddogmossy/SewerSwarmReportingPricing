@@ -829,7 +829,37 @@ export async function registerRoutes(app: Express) {
   // Load survey endpoint using the validation pattern
   app.get("/api/load-survey", validateDb3Handler);
 
-  // Serve static files for uploaded logos (moved to main server setup)
+  // Serve logo files through API endpoint - MOVED TO TOP OF registerRoutes function
+  app.get('/api/logo/:filename', (req, res) => {
+    console.log('Logo API endpoint hit:', req.params.filename);
+    const filename = req.params.filename;
+    const logoPath = path.join(process.cwd(), 'uploads', 'logos', filename);
+    
+    console.log('Logo path:', logoPath);
+    console.log('File exists:', fs.existsSync(logoPath));
+    
+    if (fs.existsSync(logoPath)) {
+      // Set proper content type for PNG images
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=31536000');
+      
+      // Use absolute path and proper method
+      const absolutePath = path.resolve(logoPath);
+      console.log('Sending file:', absolutePath);
+      
+      res.sendFile(absolutePath, (err) => {
+        if (err) {
+          console.error('Error sending file:', err);
+          res.status(500).json({ error: 'Failed to send logo file' });
+        } else {
+          console.log('✅ Logo file sent successfully');
+        }
+      });
+    } else {
+      console.log('❌ Logo file not found');
+      res.status(404).json({ error: 'Logo not found' });
+    }
+  });
 
   return server;
 }
