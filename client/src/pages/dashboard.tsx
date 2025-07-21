@@ -562,6 +562,15 @@ export default function Dashboard() {
 
   // Handler for opening patch pricing dialog
   const handlePatchPricingClick = (section: any, costCalculation: any) => {
+    console.log('🔧 Patch pricing click handler called:', {
+      sectionId: section?.id,
+      itemNo: section?.itemNo,
+      defectCount: costCalculation?.defectCount,
+      costPerUnit: costCalculation?.costPerUnit,
+      currentCost: costCalculation?.currentCost,
+      dayRate: costCalculation?.dayRate
+    });
+    
     setSelectedPatchSection(section);
     setSelectedPatchCalculation(costCalculation);
     setShowPatchPricingDialog(true);
