@@ -1684,7 +1684,7 @@ function CustomerSettingsContent() {
                                       </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                      <SelectItem value="">-- None Selected --</SelectItem>
+                                      <SelectItem value="none">-- None Selected --</SelectItem>
                                       {workCategories.map((category: any) => (
                                         <SelectItem key={category.id} value={category.id.toString()}>
                                           {category.name} (ID: {category.id})
