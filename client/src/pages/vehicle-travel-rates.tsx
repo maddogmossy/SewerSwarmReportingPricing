@@ -33,6 +33,8 @@ const vehicleTravelRateSchema = z.object({
 type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
 
 export default function VehicleTravelRates() {
+  console.log('🚀 VehicleTravelRates component rendering...');
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -52,8 +54,10 @@ export default function VehicleTravelRates() {
 
   // Debug categories loading
   useEffect(() => {
-    console.log('Categories data:', categories);
-    console.log('Categories loading:', categoriesLoading);
+    console.log('🔍 Categories data:', categories);
+    console.log('🔍 Categories loading:', categoriesLoading);
+    console.log('🔍 Categories type:', typeof categories);
+    console.log('🔍 Categories length:', categories?.length);
   }, [categories, categoriesLoading]);
 
   const form = useForm<VehicleTravelRateForm>({
@@ -191,6 +195,9 @@ export default function VehicleTravelRates() {
   });
 
   const handleAddNew = () => {
+    console.log('Opening add dialog...');
+    console.log('Categories data:', categories);
+    console.log('Categories loading:', categoriesLoading);
     setEditingRate(null);
     form.reset();
     setIsDialogOpen(true);
@@ -277,6 +284,12 @@ export default function VehicleTravelRates() {
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {/* DEBUG: Show categories loading state */}
+                <div className="p-4 bg-yellow-100 border-2 border-yellow-500 rounded-lg text-lg font-bold text-black">
+                  🚨 DEBUG: Loading={categoriesLoading ? 'YES' : 'NO'}, Categories={categories?.length || 0}
+                  <br/>
+                  Raw Data: {JSON.stringify(categories)}
+                </div>
                 <FormField
                   control={form.control}
                   name="categoryId"
