@@ -1686,7 +1686,7 @@ function CustomerSettingsContent() {
                                     <SelectContent>
                                       <SelectItem value="none">-- None Selected --</SelectItem>
                                       {workCategories
-                                        .sort((a: any, b: any) => a.id - b.id)
+                                        .sort((a: any, b: any) => a.sort_order - b.sort_order)
                                         .map((category: any) => (
                                         <SelectItem key={category.id} value={category.id.toString()}>
                                           {category.name} (ID: {category.id})
