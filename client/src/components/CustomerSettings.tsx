@@ -1673,6 +1673,31 @@ function CustomerSettingsContent() {
                           <form onSubmit={vehicleForm.handleSubmit(onVehicleSubmit)} className="space-y-4">
                             <FormField
                               control={vehicleForm.control}
+                              name="vehicleType"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Vehicle Type</FormLabel>
+                                  <Select onValueChange={handleVehicleTypeChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select vehicle type" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {VEHICLE_TYPES.map((type) => (
+                                        <SelectItem key={type} value={type}>
+                                          {type}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={vehicleForm.control}
                               name="categoryId"
                               render={({ field }) => (
                                 <FormItem>
@@ -1688,31 +1713,6 @@ function CustomerSettingsContent() {
                                       {workCategories.map((category: any) => (
                                         <SelectItem key={category.id} value={category.id.toString()}>
                                           {category.name} (ID: {category.id})
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={vehicleForm.control}
-                              name="vehicleType"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Vehicle Type</FormLabel>
-                                  <Select onValueChange={handleVehicleTypeChange} value={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select vehicle type" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      {VEHICLE_TYPES.map((type) => (
-                                        <SelectItem key={type} value={type}>
-                                          {type}
                                         </SelectItem>
                                       ))}
                                     </SelectContent>
