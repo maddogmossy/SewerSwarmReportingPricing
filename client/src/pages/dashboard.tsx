@@ -1225,9 +1225,12 @@ export default function Dashboard() {
           
           // Check for TP2 below minimum quantity case - show RED COST instead of triangle
           if (costCalculation && 'showRedTriangle' in costCalculation && costCalculation.showRedTriangle) {
-            const calculatedCost = ('defectCount' in costCalculation && 'costPerUnit' in costCalculation) 
-              ? costCalculation.defectCount * costCalculation.costPerUnit || 0 
-              : 0;
+            // Use totalCost (with day rate adjustment) if available, otherwise calculate base cost
+            const calculatedCost = ('totalCost' in costCalculation && costCalculation.totalCost) 
+              ? costCalculation.totalCost 
+              : ('defectCount' in costCalculation && 'costPerUnit' in costCalculation) 
+                ? costCalculation.defectCount * costCalculation.costPerUnit || 0 
+                : 0;
             
             // Extract day rate from PR2 configuration for dialog
             let dayRate = 1850; // Default fallback
@@ -1249,7 +1252,7 @@ export default function Dashboard() {
             return (
               <div 
                 className="flex items-center justify-center p-1 rounded cursor-pointer hover:bg-red-50 transition-colors" 
-                title={`${('triangleMessage' in costCalculation) ? costCalculation.triangleMessage : ''}\nTP2 patching: ${('defectCount' in costCalculation) ? costCalculation.defectCount : 0} defects × £${('costPerUnit' in costCalculation) ? costCalculation.costPerUnit : 0} = £${calculatedCost.toFixed(2)}\nRequires minimum ${('minRequired' in costCalculation) ? costCalculation.minRequired : 0} patches\n\nClick to adjust pricing`}
+                title={`${('triangleMessage' in costCalculation) ? costCalculation.triangleMessage : ''}\nTP2 patching: ${('defectCount' in costCalculation) ? costCalculation.defectCount : 0} defects × £${('costPerUnit' in costCalculation) ? costCalculation.costPerUnit : 0} = £${('baseCost' in costCalculation && costCalculation.baseCost) ? costCalculation.baseCost.toFixed(2) : '0.00'}\nDay rate adjustment: +£${('dayRateAdjustment' in costCalculation && costCalculation.dayRateAdjustment) ? costCalculation.dayRateAdjustment.toFixed(2) : '0.00'}\nTotal with day rate: £${calculatedCost.toFixed(2)}\nRequires minimum ${('minRequired' in costCalculation) ? costCalculation.minRequired : 0} patches\n\nClick to adjust pricing`}
                 onClick={() => handlePatchPricingClick(section, {
                   ...costCalculation,
                   currentCost: calculatedCost,
@@ -1844,7 +1847,7 @@ export default function Dashboard() {
     return defectCount;
   };
 
-  // Function to calculate TP2 patching cost for repair sections
+  // Function to calculate TP2 patching cost for repair sections with day rate distribution
   const calculateTP2PatchingCost = (section: any, tp2Config: any) => {
     console.log('🔧 calculateTP2PatchingCost called for section:', section.itemNo);
     console.log('🔧 TP2 config:', tp2Config);
@@ -1863,6 +1866,12 @@ export default function Dashboard() {
       defectCount: defectCount,
       defectsText: defectsText
     });
+    
+    // Get day rate from TP2 configuration (defaults to £1650 if not set)
+    const dayRateOption = tp2Config.pricingOptions?.find((opt: any) => 
+      opt.label?.toLowerCase().includes('day rate')
+    );
+    const dayRate = dayRateOption && dayRateOption.value ? parseFloat(dayRateOption.value) : 1650;
     
     // Determine which patching option to use based on recommendations or default
     let selectedPatchingOption = null;
@@ -1923,8 +1932,25 @@ export default function Dashboard() {
     
     const minQuantity = minQuantityOption ? parseFloat(minQuantityOption.value) || 0 : 0;
     
-    // Calculate total cost: cost per unit × defect count
-    const totalCost = costPerUnit * defectCount;
+    // Calculate base cost: cost per unit × defect count
+    const baseCost = costPerUnit * defectCount;
+    
+    // CALCULATE DAY RATE DISTRIBUTION
+    // Get all TP2 structural sections to distribute day rate difference across
+    const allTP2Sections = rawSectionData.filter(s => requiresStructuralRepair(s.defects || ''));
+    const totalTP2Sections = allTP2Sections.length;
+    
+    // Calculate total patches cost vs day rate difference
+    const totalPatchesCost = allTP2Sections.reduce((sum, s) => {
+      const sDefectCount = countDefects(s.defects || '');
+      return sum + (costPerUnit * sDefectCount);
+    }, 0);
+    
+    const dayRateDifference = Math.max(0, dayRate - totalPatchesCost);
+    const dayRateAdjustmentPerSection = totalTP2Sections > 0 ? dayRateDifference / totalTP2Sections : 0;
+    
+    // Apply day rate adjustment to get final cost
+    const totalCost = baseCost + dayRateAdjustmentPerSection;
     
     // CHECK MINIMUM QUANTITY REQUIREMENT
     const meetsMinimumQuantity = defectCount >= minQuantity;
@@ -1934,8 +1960,14 @@ export default function Dashboard() {
       costPerUnit: costPerUnit,
       minQuantity: minQuantity,
       defectCount: defectCount,
+      baseCost: baseCost,
+      dayRate: dayRate,
+      totalPatchesCost: totalPatchesCost,
+      dayRateDifference: dayRateDifference,
+      dayRateAdjustmentPerSection: dayRateAdjustmentPerSection,
       totalCost: totalCost,
-      meetsMinimumQuantity: meetsMinimumQuantity
+      meetsMinimumQuantity: meetsMinimumQuantity,
+      totalTP2Sections: totalTP2Sections
     });
     
     // If doesn't meet minimum quantity, return red triangle indicator
@@ -1953,17 +1985,23 @@ export default function Dashboard() {
         triangleMessage: `Below minimum quantities: ${defectCount}/${minQuantity} patches required`,
         defectCount: defectCount,
         minRequired: minQuantity,
-        costPerUnit: costPerUnit, // Add costPerUnit for red cost display
+        costPerUnit: costPerUnit,
+        baseCost: baseCost,
+        dayRateAdjustment: dayRateAdjustmentPerSection,
+        totalCost: totalCost, // Include total cost with day rate adjustment for red display
         status: 'below_minimum'
       };
     }
     
-    // Update recommendation to include pipe size and length
-    const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${selectedPatchingOption.label.toLowerCase()} patching`;
+    // Update recommendation to include pipe size and length with day rate info
+    const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${selectedPatchingOption.label.toLowerCase()} patching (includes £${dayRateAdjustmentPerSection.toFixed(2)} day rate adjustment)`;
     
     return {
       cost: totalCost,
       costPerUnit: costPerUnit,
+      baseCost: baseCost,
+      dayRateAdjustment: dayRateAdjustmentPerSection,
+      dayRate: dayRate,
       defectCount: defectCount,
       minQuantity: minQuantity,
       patchingType: selectedPatchingOption.label,
