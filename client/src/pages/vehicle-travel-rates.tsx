@@ -31,12 +31,14 @@ const vehicleTravelRateSchema = z.object({
 type VehicleTravelRateForm = z.infer<typeof vehicleTravelRateSchema>;
 
 const vehicleTypes = [
-  "3.5t Van",
-  "5t Van", 
-  "7.5t Truck",
-  "18t Truck",
-  "26t Truck",
-  "32t Truck"
+  "3.5t",
+  "5.0t",
+  "7.5t",
+  "10t",
+  "12t",
+  "18t",
+  "26t",
+  "32t"
 ];
 
 export default function VehicleTravelRates() {
