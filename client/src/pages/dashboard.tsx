@@ -1224,8 +1224,10 @@ export default function Dashboard() {
           const costCalculation = calculateAutoCost(section);
           
           // Check for TP2 below minimum quantity case - show RED COST instead of triangle
-          if (costCalculation && costCalculation.showRedTriangle) {
-            const calculatedCost = costCalculation.defectCount * costCalculation.costPerUnit || 0;
+          if (costCalculation && 'showRedTriangle' in costCalculation && costCalculation.showRedTriangle) {
+            const calculatedCost = ('defectCount' in costCalculation && 'costPerUnit' in costCalculation) 
+              ? costCalculation.defectCount * costCalculation.costPerUnit || 0 
+              : 0;
             
             // Extract day rate from PR2 configuration for dialog
             let dayRate = 1850; // Default fallback
@@ -1247,7 +1249,7 @@ export default function Dashboard() {
             return (
               <div 
                 className="flex items-center justify-center p-1 rounded cursor-pointer hover:bg-red-50 transition-colors" 
-                title={`${costCalculation.triangleMessage}\nTP2 patching: ${costCalculation.defectCount} defects × £${costCalculation.costPerUnit} = £${calculatedCost.toFixed(2)}\nRequires minimum ${costCalculation.minRequired} patches\n\nClick to adjust pricing`}
+                title={`${('triangleMessage' in costCalculation) ? costCalculation.triangleMessage : ''}\nTP2 patching: ${('defectCount' in costCalculation) ? costCalculation.defectCount : 0} defects × £${('costPerUnit' in costCalculation) ? costCalculation.costPerUnit : 0} = £${calculatedCost.toFixed(2)}\nRequires minimum ${('minRequired' in costCalculation) ? costCalculation.minRequired : 0} patches\n\nClick to adjust pricing`}
                 onClick={() => handlePatchPricingClick(section, {
                   ...costCalculation,
                   currentCost: calculatedCost,
@@ -1261,17 +1263,17 @@ export default function Dashboard() {
             );
           }
           
-          if (costCalculation && costCalculation.cost > 0) {
+          if (costCalculation && 'cost' in costCalculation && costCalculation.cost > 0) {
             // Check if orange minimum is met to determine cost color
             const orangeMinimumMet = checkOrangeMinimumMet();
             const costColor = orangeMinimumMet ? "text-green-700" : "text-red-600";
             
             // For TP2 patching, show cost with patching type info
-            if (costCalculation.patchingType) {
+            if ('patchingType' in costCalculation && costCalculation.patchingType) {
               return (
                 <div 
                   className="flex items-center justify-center p-1 rounded" 
-                  title={`TP2 ${costCalculation.patchingType}: £${costCalculation.cost.toFixed(2)}\n${costCalculation.defectCount} defects × £${costCalculation.costPerUnit} per unit\nRecommendation: ${costCalculation.recommendation}`}
+                  title={`TP2 ${costCalculation.patchingType}: £${costCalculation.cost.toFixed(2)}\n${('defectCount' in costCalculation) ? costCalculation.defectCount : 0} defects × £${('costPerUnit' in costCalculation) ? costCalculation.costPerUnit : 0} per unit\nRecommendation: ${('recommendation' in costCalculation) ? costCalculation.recommendation : ''}`}
                 >
                   <span className={`text-xs font-semibold ${costColor}`}>
                     £{costCalculation.cost.toFixed(2)}
@@ -1283,10 +1285,10 @@ export default function Dashboard() {
               return (
                 <div 
                   className="flex items-center justify-center p-1 rounded" 
-                  title={`${costCalculation.method}: ${costCalculation.currency}${costCalculation.cost.toFixed(2)}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
+                  title={`${('method' in costCalculation) ? costCalculation.method : 'PR2'}: ${('currency' in costCalculation) ? costCalculation.currency : '£'}${costCalculation.cost.toFixed(2)}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
                 >
                   <span className={`text-xs font-semibold ${costColor}`}>
-                    {costCalculation.currency}{costCalculation.cost.toFixed(2)}
+                    {('currency' in costCalculation) ? costCalculation.currency : '£'}{costCalculation.cost.toFixed(2)}
                   </span>
                 </div>
               );
@@ -1734,7 +1736,7 @@ export default function Dashboard() {
   // Helper function to check if section meets minimum quantities
   const meetsMinimumQuantities = (section: any): boolean => {
     const costCalculation = calculateAutoCost(section);
-    return costCalculation ? !costCalculation.showRedTriangle : true;
+    return costCalculation ? !('showRedTriangle' in costCalculation && costCalculation.showRedTriangle) : true;
   };
 
   // Handler functions for resolving validation issues
@@ -2948,7 +2950,7 @@ export default function Dashboard() {
     const autoCost = calculateAutoCost(section);
     // Removed excessive logging
     
-    if (autoCost && autoCost.cost > 0) {
+    if (autoCost && 'cost' in autoCost && autoCost.cost > 0) {
       // Orange minimum check - logging removed
       // Check if orange minimum is met to determine cost color
       const orangeMinimumMet = checkOrangeMinimumMet();
@@ -2960,7 +2962,7 @@ export default function Dashboard() {
       return (
         <span 
           className={`${costColor} font-medium cursor-help`}
-          title={`Cost calculated using ${autoCost.method || 'PR2 Configuration'}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
+          title={`Cost calculated using ${('method' in autoCost) ? autoCost.method || 'PR2 Configuration' : 'PR2 Configuration'}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
         >
           £{autoCost.cost.toFixed(2)}
         </span>

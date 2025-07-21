@@ -1,0 +1,879 @@
+🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 === ITEM 3 REQUIREMENTS CHECK ===
+Console.js:61 Pipe size: 150
+Console.js:61 Total length: 30.24
+Console.js:61 Defects: Settled deposits, fine, 5% cross-sectional area loss at 13.27m, 16.63m, 17.73m. Settled deposits, coarse, 5% cross-sectional area loss at 21.6m. Line deviates left at 29.82m
+Console.js:61 Water level percentage: 0
+Console.js:61 Max allowed percentage (from config): [varies by configuration]
+Console.js:61 Percentage check: depends on PR2 configuration ranges
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 3 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 3
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 3
+Console.js:61 🔍 "No 2" rule found: 22, checking section 3
+Console.js:61 📊 SECTION 3 RAW DATABASE VALUES [ID: 14980]: Object
+Console.js:61 🔍 Length range analysis for section 3 (30.24m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 3: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 6 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 6
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 6
+Console.js:61 🔍 "No 2" rule found: 22, checking section 6
+Console.js:61 📊 SECTION 6 RAW DATABASE VALUES [ID: 14983]: Object
+Console.js:61 🔍 Length range analysis for section 6 (33.78m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 6: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 7 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 7
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 7
+Console.js:61 🔍 ITEM 7 DEBUG - Configuration used: Object
+Console.js:61 🔍 "No 2" rule found: 22, checking section 7
+Console.js:61 📊 SECTION 7 RAW DATABASE VALUES [ID: 14984]: Object
+Console.js:61 🔍 Length range analysis for section 7 (5.64m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 7 [ID: 14984] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 8 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 8
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 8
+Console.js:61 🔍 "No 2" rule found: 22, checking section 8
+Console.js:61 📊 SECTION 8 RAW DATABASE VALUES [ID: 14985]: Object
+Console.js:61 🔍 Length range analysis for section 8 (31.47m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 8: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔍 Item 10 AFTER Filtering: 1 observations remaining
+Console.js:61   Remaining observations: Array(1)
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 10 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 10
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 10
+Console.js:61 🔍 "No 2" rule found: 22, checking section 10
+Console.js:61 📊 SECTION 10 RAW DATABASE VALUES [ID: 14987]: Object
+Console.js:61 🔍 Length range analysis for section 10 (34.31m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 10: £1850 ÷ 22 = £84.09
+Console.js:61 🔍 Item 13 Filtering observation: "Settled deposits, coarse, 30% cross-sectional area loss at 25.21m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 13 Filtering observation: "CUW 26.87m (Camera under water) (Loss of vision, camera under water)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 13 Filtering observation: "SA 27.9m (Due to camera under water) (Survey abandoned)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 13 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 13
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 13
+Console.js:61 🔍 "No 2" rule found: 22, checking section 13
+Console.js:61 📊 SECTION 13 RAW DATABASE VALUES [ID: 14990]: Object
+Console.js:61 🔍 Length range analysis for section 13 (27.9m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 13: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔧 Found TP2 patching configuration for 150mm: 153 TP2 - 150mm Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 13
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 10% cross-sectional area loss at 1.34m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 5% cross-sectional area loss at 7.91m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "CUW 19.09m (Camera under water) (Loss of vision, camera under water)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "CPF 21.68m (Finish node, catchpit, reference: SW11)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "LR (Line deviates right)."
+Console.js:61   Has line deviation: true
+Console.js:61   Has meaningful defects: false
+Console.js:61   Is ONLY line deviation: true
+Console.js:61   Will KEEP: false
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 14 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 14
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 14
+Console.js:61 🔍 "No 2" rule found: 22, checking section 14
+Console.js:61 📊 SECTION 14 RAW DATABASE VALUES [ID: 14992]: Object
+Console.js:61 🔍 Length range analysis for section 14 (21.68m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 14 [ID: 14992] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 🔧 Found TP2 patching config for 300mm: Object
+Console.js:61 🔧 Found TP2 patching config for 300mm: Object
+Console.js:61 🔍 ITEM 20 DEBUG: Object
+Console.js:61 🔍 ITEM 20 TP2 MATCHING: Object
+Console.js:61 🔧 Found TP2 patching configuration for 300mm: 157 TP2 - 300mm Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 20
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 21 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 21
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 21
+Console.js:61 🔍 "No 2" rule found: 22, checking section 21
+Console.js:61 📊 SECTION 21 RAW DATABASE VALUES [ID: 15002]: Object
+Console.js:61 🔍 Length range analysis for section 21 (22.14m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 21 [ID: 15002] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔧 Found TP2 patching configuration for 225mm: 156 TP2 - 225mm Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 21
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 22 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 22
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 22
+Console.js:61 🔍 "No 2" rule found: 22, checking section 22
+Console.js:61 📊 SECTION 22 RAW DATABASE VALUES [ID: 14999]: Object
+Console.js:61 🔍 Length range analysis for section 22 (27.74m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 22: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 23 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 23
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 23
+Console.js:61 🔍 "No 2" rule found: 22, checking section 23
+Console.js:61 📊 SECTION 23 RAW DATABASE VALUES [ID: 14998]: Object
+Console.js:61 🔍 Length range analysis for section 23 (23.97m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 23 [ID: 14998] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 🔍 Running validation with data: Object
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 1
+Console.js:61 🔍 "No 2" rule found: 22, checking section 1
+Console.js:61 📊 SECTION 1 RAW DATABASE VALUES [ID: 14978]: Object
+Console.js:61 🔍 Length range analysis for section 1 (15.56m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 1 [ID: 14978] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 2
+Console.js:61 🔍 "No 2" rule found: 22, checking section 2
+Console.js:61 📊 SECTION 2 RAW DATABASE VALUES [ID: 14979]: Object
+Console.js:61 🔍 Length range analysis for section 2 (19.02m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 2 [ID: 14979] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 3
+Console.js:61 🔍 "No 2" rule found: 22, checking section 3
+Console.js:61 📊 SECTION 3 RAW DATABASE VALUES [ID: 14980]: Object
+Console.js:61 🔍 Length range analysis for section 3 (30.24m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 3: £1850 ÷ 22 = £84.09
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 4
+Console.js:61 🔍 "No 2" rule found: 22, checking section 4
+Console.js:61 📊 SECTION 4 RAW DATABASE VALUES [ID: 14981]: Object
+Console.js:61 🔍 Length range analysis for section 4 (19.93m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 4 [ID: 14981] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 5
+Console.js:61 🔍 "No 2" rule found: 22, checking section 5
+Console.js:61 📊 SECTION 5 RAW DATABASE VALUES [ID: 14982]: Object
+Console.js:61 🔍 Length range analysis for section 5 (21.11m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 5 [ID: 14982] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 6
+Console.js:61 🔍 "No 2" rule found: 22, checking section 6
+Console.js:61 📊 SECTION 6 RAW DATABASE VALUES [ID: 14983]: Object
+Console.js:61 🔍 Length range analysis for section 6 (33.78m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 6: £1850 ÷ 22 = £84.09
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 7
+Console.js:61 🔍 ITEM 7 DEBUG - Configuration used: Object
+Console.js:61 🔍 "No 2" rule found: 22, checking section 7
+Console.js:61 📊 SECTION 7 RAW DATABASE VALUES [ID: 14984]: Object
+Console.js:61 🔍 Length range analysis for section 7 (5.64m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 7 [ID: 14984] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 8
+Console.js:61 🔍 "No 2" rule found: 22, checking section 8
+Console.js:61 📊 SECTION 8 RAW DATABASE VALUES [ID: 14985]: Object
+Console.js:61 🔍 Length range analysis for section 8 (31.47m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 8: £1850 ÷ 22 = £84.09
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 9
+Console.js:61 🔍 "No 2" rule found: 22, checking section 9
+Console.js:61 📊 SECTION 9 RAW DATABASE VALUES [ID: 14986]: Object
+Console.js:61 🔍 Length range analysis for section 9 (2.59m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 9 [ID: 14986] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 10
+Console.js:61 🔍 "No 2" rule found: 22, checking section 10
+Console.js:61 📊 SECTION 10 RAW DATABASE VALUES [ID: 14987]: Object
+Console.js:61 🔍 Length range analysis for section 10 (34.31m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 10: £1850 ÷ 22 = £84.09
+Console.js:61 ⚠️ Using highest ID config despite empty values: 161
+Console.js:61 🎯 Using PR2 config: 161 for section: 11
+Console.js:61 🔍 No "No 2" rule found in configuration
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 ❌ PR2 calculation failed - no valid cost calculated
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 12
+Console.js:61 🔍 "No 2" rule found: 22, checking section 12
+Console.js:61 📊 SECTION 12 RAW DATABASE VALUES [ID: 14989]: Object
+Console.js:61 🔍 Length range analysis for section 12 (18.78m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 12 [ID: 14989] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 13
+Console.js:61 🔍 "No 2" rule found: 22, checking section 13
+Console.js:61 📊 SECTION 13 RAW DATABASE VALUES [ID: 14990]: Object
+Console.js:61 🔍 Length range analysis for section 13 (27.9m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 13: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching configuration for 150mm: 153 TP2 - 150mm Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 13
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 14
+Console.js:61 🔍 "No 2" rule found: 22, checking section 14
+Console.js:61 📊 SECTION 14 RAW DATABASE VALUES [ID: 14992]: Object
+Console.js:61 🔍 Length range analysis for section 14 (21.68m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 14 [ID: 14992] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ❌ Section does not meet any PR2 configuration requirements
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 16
+Console.js:61 🔍 "No 2" rule found: 22, checking section 16
+Console.js:61 📊 SECTION 16 RAW DATABASE VALUES [ID: 14997]: Object
+Console.js:61 🔍 Length range analysis for section 16 (23.27m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 16 [ID: 14997] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 17
+Console.js:61 🔍 "No 2" rule found: 22, checking section 17
+Console.js:61 📊 SECTION 17 RAW DATABASE VALUES [ID: 14996]: Object
+Console.js:61 🔍 Length range analysis for section 17 (21.69m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 17 [ID: 14996] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 18
+Console.js:61 🔍 "No 2" rule found: 22, checking section 18
+Console.js:61 📊 SECTION 18 RAW DATABASE VALUES [ID: 14995]: Object
+Console.js:61 🔍 Length range analysis for section 18 (13.29m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 18 [ID: 14995] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 🔧 Found TP2 patching configuration for 150mm: 153 TP2 - 150mm Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 19
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 🔍 ITEM 20 DEBUG: Object
+Console.js:61 🔍 ITEM 20 TP2 MATCHING: Object
+Console.js:61 🔧 Found TP2 patching configuration for 300mm: 157 TP2 - 300mm Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 20
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔧 Found TP2 patching configuration for 225mm: 156 TP2 - 225mm Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 21
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 21
+Console.js:61 🔍 "No 2" rule found: 22, checking section 21
+Console.js:61 📊 SECTION 21 RAW DATABASE VALUES [ID: 15002]: Object
+Console.js:61 🔍 Length range analysis for section 21 (22.14m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 21 [ID: 15002] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 22
+Console.js:61 🔍 "No 2" rule found: 22, checking section 22
+Console.js:61 📊 SECTION 22 RAW DATABASE VALUES [ID: 14999]: Object
+Console.js:61 🔍 Length range analysis for section 22 (27.74m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 22: £1850 ÷ 22 = £84.09
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 23
+Console.js:61 🔍 "No 2" rule found: 22, checking section 23
+Console.js:61 📊 SECTION 23 RAW DATABASE VALUES [ID: 14998]: Object
+Console.js:61 🔍 Length range analysis for section 23 (23.97m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 23 [ID: 14998] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 24
+Console.js:61 🔍 "No 2" rule found: 22, checking section 24
+Console.js:61 📊 SECTION 24 RAW DATABASE VALUES [ID: 15000]: Object
+Console.js:61 🔍 Length range analysis for section 24 (6.86m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 24 [ID: 15000] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 📋 Validation result calculated: Object
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 === ITEM 3 REQUIREMENTS CHECK ===
+Console.js:61 Pipe size: 150
+Console.js:61 Total length: 30.24
+Console.js:61 Defects: Settled deposits, fine, 5% cross-sectional area loss at 13.27m, 16.63m, 17.73m. Settled deposits, coarse, 5% cross-sectional area loss at 21.6m. Line deviates left at 29.82m
+Console.js:61 Water level percentage: 0
+Console.js:61 Max allowed percentage (from config): [varies by configuration]
+Console.js:61 Percentage check: depends on PR2 configuration ranges
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 3 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 3
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 3
+Console.js:61 🔍 "No 2" rule found: 22, checking section 3
+Console.js:61 📊 SECTION 3 RAW DATABASE VALUES [ID: 14980]: Object
+Console.js:61 🔍 Length range analysis for section 3 (30.24m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 3: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 6 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 6
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 6
+Console.js:61 🔍 "No 2" rule found: 22, checking section 6
+Console.js:61 📊 SECTION 6 RAW DATABASE VALUES [ID: 14983]: Object
+Console.js:61 🔍 Length range analysis for section 6 (33.78m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 6: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 7 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 7
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 7
+Console.js:61 🔍 ITEM 7 DEBUG - Configuration used: Object
+Console.js:61 🔍 "No 2" rule found: 22, checking section 7
+Console.js:61 📊 SECTION 7 RAW DATABASE VALUES [ID: 14984]: Object
+Console.js:61 🔍 Length range analysis for section 7 (5.64m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 7 [ID: 14984] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 8 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 8
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 8
+Console.js:61 🔍 "No 2" rule found: 22, checking section 8
+Console.js:61 📊 SECTION 8 RAW DATABASE VALUES [ID: 14985]: Object
+Console.js:61 🔍 Length range analysis for section 8 (31.47m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 8: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔍 Item 10 AFTER Filtering: 1 observations remaining
+Console.js:61   Remaining observations: Array(1)
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 10 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 10
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 10
+Console.js:61 🔍 "No 2" rule found: 22, checking section 10
+Console.js:61 📊 SECTION 10 RAW DATABASE VALUES [ID: 14987]: Object
+Console.js:61 🔍 Length range analysis for section 10 (34.31m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 10: £1850 ÷ 22 = £84.09
+Console.js:61 🔍 Item 13 Filtering observation: "Settled deposits, coarse, 30% cross-sectional area loss at 25.21m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 13 Filtering observation: "CUW 26.87m (Camera under water) (Loss of vision, camera under water)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 13 Filtering observation: "SA 27.9m (Due to camera under water) (Survey abandoned)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 13 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 13
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 13
+Console.js:61 🔍 "No 2" rule found: 22, checking section 13
+Console.js:61 📊 SECTION 13 RAW DATABASE VALUES [ID: 14990]: Object
+Console.js:61 🔍 Length range analysis for section 13 (27.9m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 13: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔧 Found TP2 patching config for 150mm: Object
+Console.js:61 🔧 Found TP2 patching configuration for 150mm: 153 TP2 - 150mm Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 13
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 10% cross-sectional area loss at 1.34m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "Settled deposits, coarse, 5% cross-sectional area loss at 7.91m."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "CUW 19.09m (Camera under water) (Loss of vision, camera under water)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "CPF 21.68m (Finish node, catchpit, reference: SW11)."
+Console.js:61   Has line deviation: false
+Console.js:61   Has meaningful defects: true
+Console.js:61   Is ONLY line deviation: false
+Console.js:61   Will KEEP: true
+Console.js:61 🔍 Item 14 Filtering observation: "LR (Line deviates right)."
+Console.js:61   Has line deviation: true
+Console.js:61   Has meaningful defects: false
+Console.js:61   Is ONLY line deviation: true
+Console.js:61   Will KEEP: false
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 14 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 14
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 14
+Console.js:61 🔍 "No 2" rule found: 22, checking section 14
+Console.js:61 📊 SECTION 14 RAW DATABASE VALUES [ID: 14992]: Object
+Console.js:61 🔍 Length range analysis for section 14 (21.68m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 14 [ID: 14992] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 🔧 Found TP2 patching config for 300mm: Object
+Console.js:61 🔧 Found TP2 patching config for 300mm: Object
+Console.js:61 🔍 ITEM 20 DEBUG: Object
+Console.js:61 🔍 ITEM 20 TP2 MATCHING: Object
+Console.js:61 🔧 Found TP2 patching configuration for 300mm: 157 TP2 - 300mm Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 20
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 21 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 21
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 21
+Console.js:61 🔍 "No 2" rule found: 22, checking section 21
+Console.js:61 📊 SECTION 21 RAW DATABASE VALUES [ID: 15002]: Object
+Console.js:61 🔍 Length range analysis for section 21 (22.14m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 21 [ID: 15002] Using standard rule: £1850 ÷ 25 = £74.00
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔧 Found TP2 patching configuration for 225mm: 156 TP2 - 225mm Patching Configuration
+Console.js:61 🔧 calculateTP2PatchingCost called for section: 21
+Console.js:61 🔧 TP2 config: Object
+Console.js:61 🔧 Defect counting: Object
+Console.js:61 🔧 TP2 calculation inputs: Object
+Console.js:61 🔧 Using Double Layer as default (no depth recorded or specific recommendation)
+Console.js:61 🔧 TP2 cost calculation: Object
+Console.js:61 ❌ TP2 section below minimum quantity: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 22 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 22
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 22
+Console.js:61 🔍 "No 2" rule found: 22, checking section 22
+Console.js:61 📊 SECTION 22 RAW DATABASE VALUES [ID: 14999]: Object
+Console.js:61 🔍 Length range analysis for section 22 (27.74m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: true
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: true
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 Using "No 2" rule for section 22: £1850 ÷ 22 = £84.09
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔧 Found TP2 patching config for 225mm: Object
+Console.js:61 🔢 Smart counting result: Object
+Console.js:61 🎯 Status calculation details: Object
+Console.js:61 🔍 Section meets basic requirements (blue/green windows): Object
+Console.js:61 🧹 Item 23 CLEANING config: Object
+Console.js:61 🎯 Section status color calculation: Object
+Console.js:61 🎯 Dynamic recommendation using PR2 config: 152 for section: 23
+Console.js:61 ✅ Selected config with valid pricing values: 152
+Console.js:61 🎯 Using PR2 config: 152 for section: 23
+Console.js:61 🔍 "No 2" rule found: 22, checking section 23
+Console.js:61 📊 SECTION 23 RAW DATABASE VALUES [ID: 14998]: Object
+Console.js:61 🔍 Length range analysis for section 23 (23.97m):
+Console.js:61    - Length 1 range: 0 to 25.99m
+Console.js:61    - Length 2 range: 0 to 45.99m
+Console.js:61    - Section exceeds Length 1: false
+Console.js:61    - Section within Length 2: true
+Console.js:61    - Should use No 2 rule: false
+Console.js:61 📝 Extracted values: Object
+Console.js:61 🎯 No 2 rule check: Object
+Console.js:61 💰 SECTION 23 [ID: 14998] Using standard rule: £1850 ÷ 25 = £74.00
