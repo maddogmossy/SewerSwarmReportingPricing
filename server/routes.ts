@@ -889,5 +889,72 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Stripe payment endpoints
+  app.get('/api/payment-methods', async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      // This would get customer's payment methods from Stripe
+      // For now returning empty array as customer needs to be created first
+      res.json([]);
+    } catch (error: any) {
+      console.error('Error fetching payment methods:', error);
+      res.status(500).json({ error: 'Failed to fetch payment methods' });
+    }
+  });
+
+  app.post('/api/payment-methods', async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const { paymentMethodId } = req.body;
+
+      // This would attach payment method to customer in Stripe
+      // Implementation needed based on Stripe setup
+      res.json({ success: true, paymentMethodId });
+    } catch (error: any) {
+      console.error('Error adding payment method:', error);
+      res.status(500).json({ error: 'Failed to add payment method' });
+    }
+  });
+
+  app.post('/api/update-default-payment-method', async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const { paymentMethodId } = req.body;
+
+      // This would update default payment method in Stripe
+      // Implementation needed based on Stripe setup
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Error updating default payment method:', error);
+      res.status(500).json({ error: 'Failed to update default payment method' });
+    }
+  });
+
+  app.delete('/api/payment-methods/:paymentMethodId', async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const { paymentMethodId } = req.params;
+
+      // This would detach payment method from customer in Stripe
+      // Implementation needed based on Stripe setup
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Error deleting payment method:', error);
+      res.status(500).json({ error: 'Failed to delete payment method' });
+    }
+  });
+
   return server;
 }

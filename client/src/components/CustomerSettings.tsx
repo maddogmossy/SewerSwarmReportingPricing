@@ -42,6 +42,11 @@ import { DevLabel } from "@/utils/DevLabel";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { VehicleTravelRate, InsertVehicleTravelRate } from "@shared/schema";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+// Initialize Stripe
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
 
 interface PaymentMethod {
   id: string;
@@ -114,6 +119,119 @@ interface TeamMember {
   createdAt: string;
 }
 
+// Payment Method Dialog Component
+function AddPaymentMethodDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { toast } = useToast();
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    
+    if (!stripe || !elements) {
+      toast({
+        title: "Payment system not ready",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const cardElement = elements.getElement(CardElement);
+      if (!cardElement) {
+        throw new Error("Card element not found");
+      }
+
+      // Create payment method
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      // Save payment method to backend
+      const response = await apiRequest('POST', '/api/payment-methods', {
+        paymentMethodId: paymentMethod.id,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save payment method');
+      }
+
+      toast({
+        title: "Success",
+        description: "Payment method added successfully!",
+      });
+
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add payment method",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="flex items-center space-x-2">
+          <Plus className="h-4 w-4" />
+          <span>Add Payment Method</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add Payment Method</DialogTitle>
+          <DialogDescription>
+            Add a new credit or debit card to your account
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label>Card Details</Label>
+            <div className="p-3 border rounded-md">
+              <CardElement 
+                options={{
+                  style: {
+                    base: {
+                      fontSize: '16px',
+                      color: '#424770',
+                      '::placeholder': {
+                        color: '#aab7c4',
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end space-x-2">
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={!stripe || isProcessing}>
+              {isProcessing ? "Processing..." : "Add Payment Method"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 // Vehicle Travel Rate Schema and Types
 const vehicleTravelRateSchema = z.object({
   vehicleType: z.string().min(1, "Vehicle type is required"),
@@ -159,7 +277,8 @@ const vehicleTypes = [
   "Articulated Vehicle"
 ];
 
-export function CustomerSettings() {
+// Main component wrapped with Stripe Elements
+function CustomerSettingsContent() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -456,23 +575,52 @@ export function CustomerSettings() {
 
   // Update payment method mutation
   const updatePaymentMethodMutation = useMutation({
-    mutationFn: (paymentMethodId: string) =>
-      apiRequest('POST', '/api/update-payment-method', { paymentMethodId }),
-    onSuccess: () => {
-      toast({
-        title: "Payment method updated",
-        description: "Your default payment method has been updated successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/payment-methods'] });
+    mutationFn: async (paymentMethodId: string) => {
+      const response = await apiRequest('POST', '/api/update-default-payment-method', { paymentMethodId });
+      return response.json();
     },
-    onError: () => {
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/payment-methods'] });
       toast({
-        title: "Error",
-        description: "Failed to update payment method. Please try again.",
+        title: "Payment Method Updated",
+        description: "Default payment method has been updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update payment method.",
         variant: "destructive",
       });
     },
   });
+
+  const deletePaymentMethodMutation = useMutation({
+    mutationFn: async (paymentMethodId: string) => {
+      const response = await apiRequest('DELETE', `/api/payment-methods/${paymentMethodId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/payment-methods'] });
+      toast({
+        title: "Payment Method Deleted",
+        description: "Payment method has been removed successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Delete Failed",
+        description: error.message || "Failed to delete payment method.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeletePaymentMethod = (paymentMethodId: string) => {
+    if (confirm("Are you sure you want to delete this payment method?")) {
+      deletePaymentMethodMutation.mutate(paymentMethodId);
+    }
+  };
 
   // Update company settings mutation
   const updateCompanyMutation = useMutation({
@@ -738,38 +886,60 @@ export function CustomerSettings() {
                   <div className="text-center py-8">
                     <CreditCard className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                     <p className="text-gray-600">No payment methods on file</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      Payment methods will be added when you make your first purchase.
+                    <p className="text-sm text-gray-500 mt-2 mb-6">
+                      Add a payment method to enable automatic billing for reports and subscriptions.
                     </p>
+                    <AddPaymentMethodDialog onSuccess={() => {
+                      queryClient.invalidateQueries({ queryKey: ['/api/payment-methods'] });
+                      toast({ title: "Payment method added successfully" });
+                    }} />
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {(paymentMethods as PaymentMethod[]).map((method: PaymentMethod) => (
-                      <div
-                        key={method.id}
-                        className="flex items-center justify-between p-3 border rounded-lg"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <CreditCard className="h-5 w-5 text-gray-400" />
-                          <div>
-                            <p className="font-medium">
-                              {method.card.brand.toUpperCase()} •••• {method.card.last4}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Expires {method.card.exp_month}/{method.card.exp_year}
-                            </p>
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      {(paymentMethods as PaymentMethod[]).map((method: PaymentMethod) => (
+                        <div
+                          key={method.id}
+                          className="flex items-center justify-between p-3 border rounded-lg"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <CreditCard className="h-5 w-5 text-gray-400" />
+                            <div>
+                              <p className="font-medium">
+                                {method.card.brand.toUpperCase()} •••• {method.card.last4}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Expires {method.card.exp_month}/{method.card.exp_year}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => updatePaymentMethodMutation.mutate(method.id)}
+                              disabled={updatePaymentMethodMutation.isPending}
+                            >
+                              Set as Default
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeletePaymentMethod(method.id)}
+                              disabled={deletePaymentMethodMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => updatePaymentMethodMutation.mutate(method.id)}
-                          disabled={updatePaymentMethodMutation.isPending}
-                        >
-                          Set as Default
-                        </Button>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                    <div className="flex justify-center pt-4">
+                      <AddPaymentMethodDialog onSuccess={() => {
+                        queryClient.invalidateQueries({ queryKey: ['/api/payment-methods'] });
+                        toast({ title: "Payment method added successfully" });
+                      }} />
+                    </div>
                   </div>
                 )}
               </CardContent>
@@ -1668,5 +1838,14 @@ export function CustomerSettings() {
         </AlertDialogContent>
       </AlertDialog>
     </Dialog>
+  );
+}
+
+// Export the main component wrapped with Stripe Elements
+export function CustomerSettings() {
+  return (
+    <Elements stripe={stripePromise}>
+      <CustomerSettingsContent />
+    </Elements>
   );
 }
