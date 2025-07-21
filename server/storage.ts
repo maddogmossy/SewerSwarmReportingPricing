@@ -10,6 +10,8 @@ import {
   userPricing,
   pricingRules,
   companySettings,
+  depotSettings,
+  vehicleTravelRates,
   teamInvitations,
   teamBillingRecords,
   projectFolders,
@@ -33,6 +35,10 @@ import {
   type InsertPricingRule,
   type CompanySettings,
   type InsertCompanySettings,
+  type DepotSettings,
+  type InsertDepotSettings,
+  type VehicleTravelRate,
+  type InsertVehicleTravelRate,
   type TeamInvitation,
   type InsertTeamInvitation,
   type TeamBillingRecord,
@@ -593,6 +599,55 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return created;
     }
+  }
+
+  // Depot settings implementation
+  async getDepotSettings(userId: string): Promise<DepotSettings[]> {
+    return await db.select()
+      .from(depotSettings)
+      .where(eq(depotSettings.adminUserId, userId));
+  }
+
+  async createDepotSettings(settings: InsertDepotSettings): Promise<DepotSettings> {
+    const [created] = await db.insert(depotSettings)
+      .values(settings)
+      .returning();
+    return created;
+  }
+
+  async updateDepotSettings(id: number, updates: Partial<DepotSettings>): Promise<DepotSettings> {
+    const [updated] = await db.update(depotSettings)
+      .set(updates)
+      .where(eq(depotSettings.id, id))
+      .returning();
+    return updated;
+  }
+
+  // Vehicle travel rates implementation  
+  async getVehicleTravelRates(userId: string): Promise<VehicleTravelRate[]> {
+    return await db.select()
+      .from(vehicleTravelRates)
+      .where(eq(vehicleTravelRates.userId, userId));
+  }
+
+  async createVehicleTravelRate(rate: InsertVehicleTravelRate): Promise<VehicleTravelRate> {
+    const [created] = await db.insert(vehicleTravelRates)
+      .values(rate)
+      .returning();
+    return created;
+  }
+
+  async updateVehicleTravelRate(id: number, updates: Partial<VehicleTravelRate>): Promise<VehicleTravelRate> {
+    const [updated] = await db.update(vehicleTravelRates)
+      .set(updates)
+      .where(eq(vehicleTravelRates.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteVehicleTravelRate(id: number): Promise<void> {
+    await db.delete(vehicleTravelRates)
+      .where(eq(vehicleTravelRates.id, id));
   }
 
   // Team management implementation

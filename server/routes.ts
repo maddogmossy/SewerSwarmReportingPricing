@@ -205,6 +205,180 @@ export async function registerRoutes(app: Express) {
     });
   });
 
+  // Company Settings API endpoints - positioned early to avoid route conflicts
+  app.get("/api/company-settings", async (req: Request, res: Response) => {
+    try {
+      const userId = "test-user"; // Default user for testing
+      const companySettings = await storage.getCompanySettings(userId);
+      res.json(companySettings || {});
+    } catch (error) {
+      console.error("Error fetching company settings:", error);
+      res.status(500).json({ error: "Failed to fetch company settings" });
+    }
+  });
+
+  app.put("/api/company-settings", async (req: Request, res: Response) => {
+    try {
+      const userId = "test-user"; // Default user for testing
+      const updates = req.body;
+      
+      // Handle logo upload if present
+      if (req.body.companyLogo && typeof req.body.companyLogo === 'object') {
+        // This would be handled by a separate multipart upload
+        delete updates.companyLogo;
+      }
+      
+      const updatedSettings = await storage.updateCompanySettings(userId, updates);
+      res.json(updatedSettings);
+    } catch (error) {
+      console.error("Error updating company settings:", error);
+      res.status(500).json({ error: "Failed to update company settings" });
+    }
+  });
+
+  // Depot Settings API endpoints
+  app.get("/api/depot-settings", async (req: Request, res: Response) => {
+    try {
+      const userId = "test-user"; // Default user for testing
+      const depotSettings = await storage.getDepotSettings(userId);
+      res.json(depotSettings || []);
+    } catch (error) {
+      console.error("Error fetching depot settings:", error);
+      res.status(500).json({ error: "Failed to fetch depot settings" });
+    }
+  });
+
+  app.post("/api/depot-settings", async (req: Request, res: Response) => {
+    try {
+      const userId = "test-user"; // Default user for testing
+      const depotData = { ...req.body, adminUserId: userId };
+      const newDepot = await storage.createDepotSettings(depotData);
+      res.json(newDepot);
+    } catch (error) {
+      console.error("Error creating depot settings:", error);
+      res.status(500).json({ error: "Failed to create depot settings" });
+    }
+  });
+
+  app.put("/api/depot-settings/:id", async (req: Request, res: Response) => {
+    try {
+      const depotId = parseInt(req.params.id);
+      const updates = req.body;
+      const updatedDepot = await storage.updateDepotSettings(depotId, updates);
+      res.json(updatedDepot);
+    } catch (error) {
+      console.error("Error updating depot settings:", error);
+      res.status(500).json({ error: "Failed to update depot settings" });
+    }
+  });
+
+  // Team Members API endpoints
+  app.get("/api/team-members", async (req: Request, res: Response) => {
+    try {
+      const userId = "test-user"; // Default user for testing
+      const teamMembers = await storage.getTeamMembers(userId);
+      res.json(teamMembers || []);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+      res.status(500).json({ error: "Failed to fetch team members" });
+    }
+  });
+
+  app.post("/api/invite-team-member", async (req: Request, res: Response) => {
+    try {
+      const userId = "test-user"; // Default user for testing
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+      
+      // Create invitation
+      const invitation = {
+        adminUserId: userId,
+        email,
+        token: Math.random().toString(36).substring(2, 15),
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        status: 'pending' as const
+      };
+      
+      const createdInvitation = await storage.createTeamInvitation(invitation);
+      res.json({ message: "Invitation sent successfully", invitation: createdInvitation });
+    } catch (error) {
+      console.error("Error inviting team member:", error);
+      res.status(500).json({ error: "Failed to send invitation" });
+    }
+  });
+
+  // Payment Methods API endpoints (placeholder for Stripe integration)
+  app.get("/api/payment-methods", async (req: Request, res: Response) => {
+    try {
+      // Placeholder response for payment methods
+      res.json([]);
+    } catch (error) {
+      console.error("Error fetching payment methods:", error);
+      res.status(500).json({ error: "Failed to fetch payment methods" });
+    }
+  });
+
+  app.post("/api/update-payment-method", async (req: Request, res: Response) => {
+    try {
+      const { paymentMethodId } = req.body;
+      // Placeholder for payment method update
+      res.json({ message: "Payment method updated successfully" });
+    } catch (error) {
+      console.error("Error updating payment method:", error);
+      res.status(500).json({ error: "Failed to update payment method" });
+    }
+  });
+
+  // Vehicle Travel Rates API endpoints
+  app.get("/api/vehicle-travel-rates", async (req: Request, res: Response) => {
+    try {
+      const userId = "test-user"; // Default user for testing
+      const vehicleRates = await storage.getVehicleTravelRates(userId);
+      res.json(vehicleRates || []);
+    } catch (error) {
+      console.error("Error fetching vehicle travel rates:", error);
+      res.status(500).json({ error: "Failed to fetch vehicle travel rates" });
+    }
+  });
+
+  app.post("/api/vehicle-travel-rates", async (req: Request, res: Response) => {
+    try {
+      const userId = "test-user"; // Default user for testing
+      const rateData = { ...req.body, userId };
+      const newRate = await storage.createVehicleTravelRate(rateData);
+      res.json(newRate);
+    } catch (error) {
+      console.error("Error creating vehicle travel rate:", error);
+      res.status(500).json({ error: "Failed to create vehicle travel rate" });
+    }
+  });
+
+  app.put("/api/vehicle-travel-rates/:id", async (req: Request, res: Response) => {
+    try {
+      const rateId = parseInt(req.params.id);
+      const updates = req.body;
+      const updatedRate = await storage.updateVehicleTravelRate(rateId, updates);
+      res.json(updatedRate);
+    } catch (error) {
+      console.error("Error updating vehicle travel rate:", error);
+      res.status(500).json({ error: "Failed to update vehicle travel rate" });
+    }
+  });
+
+  app.delete("/api/vehicle-travel-rates/:id", async (req: Request, res: Response) => {
+    try {
+      const rateId = parseInt(req.params.id);
+      await storage.deleteVehicleTravelRate(rateId);
+      res.json({ message: "Vehicle travel rate deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting vehicle travel rate:", error);
+      res.status(500).json({ error: "Failed to delete vehicle travel rate" });
+    }
+  });
+
   // File upload endpoint for database files only
   app.post("/api/upload", upload.single("file"), async (req: Request, res: Response) => {
     try {
@@ -645,6 +819,8 @@ export async function registerRoutes(app: Express) {
       res.status(500).json({ error: "Failed to fetch logo from website" });
     }
   });
+
+
 
   // Database validation endpoint
   app.post("/api/validate-db3", validateDb3Handler);
