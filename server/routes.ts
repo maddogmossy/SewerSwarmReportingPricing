@@ -829,8 +829,7 @@ export async function registerRoutes(app: Express) {
   // Load survey endpoint using the validation pattern
   app.get("/api/load-survey", validateDb3Handler);
 
-  // Serve static files for uploaded logos
-  app.use('/uploads', express.static('uploads'));
+  // Serve static files for uploaded logos (moved to main server setup)
 
   return server;
 }

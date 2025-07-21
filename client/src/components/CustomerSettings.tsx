@@ -815,10 +815,10 @@ export function CustomerSettings() {
                                   alt="Company Logo"
                                   className="h-16 w-16 object-contain bg-white border rounded"
                                   onLoad={() => {
-                                    console.log("Logo loaded successfully:", companySettings.companyLogo);
+                                    console.log("✅ Logo loaded successfully:", companySettings.companyLogo);
                                   }}
                                   onError={(e) => {
-                                    console.error("Logo failed to load:", companySettings.companyLogo, e);
+                                    console.error("❌ Logo failed to load:", companySettings.companyLogo, "Error:", e.type);
                                     const target = e.currentTarget as HTMLImageElement;
                                     target.style.display = 'none';
                                     const fallback = target.nextElementSibling as HTMLElement;
@@ -835,6 +835,31 @@ export function CustomerSettings() {
                                   </p>
                                   <p className="text-xs text-gray-400 mt-1">{companySettings.companyLogo}</p>
                                 </div>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={async () => {
+                                    try {
+                                      await apiRequest('PUT', '/api/company-settings', { companyLogo: null });
+                                      queryClient.invalidateQueries({ queryKey: ['/api/company-settings'] });
+                                      toast({
+                                        title: "Logo removed",
+                                        description: "Company logo has been removed successfully.",
+                                      });
+                                    } catch (error) {
+                                      toast({
+                                        title: "Error",
+                                        description: "Failed to remove logo. Please try again.",
+                                        variant: "destructive",
+                                      });
+                                    }
+                                  }}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Remove
+                                </Button>
                               </div>
                             </div>
                           )}

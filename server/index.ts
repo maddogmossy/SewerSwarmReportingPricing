@@ -43,6 +43,9 @@ app.use((req, res, next) => {
   // Register clean PR2 routes
   await registerCleanPR2Routes(app);
 
+  // Serve static files for uploaded logos BEFORE Vite setup to prevent catch-all interference
+  app.use('/uploads', express.static('uploads'));
+
   // Fuel price monitoring disabled temporarily to resolve connection issues
   // try {
   //   const { setupFuelPriceMonitoring } = await import('./fuel-price-monitor');
