@@ -195,9 +195,11 @@ export default function VehicleTravelRates() {
   });
 
   const handleAddNew = () => {
-    console.log('Opening add dialog...');
-    console.log('Categories data:', categories);
-    console.log('Categories loading:', categoriesLoading);
+    console.log('🚨 Opening add dialog...');
+    console.log('🔍 Categories data:', categories);
+    console.log('🔍 Categories loading:', categoriesLoading);
+    console.log('🔍 Categories length:', Array.isArray(categories) ? categories.length : 'NOT ARRAY');
+    console.log('🔍 Raw categories:', JSON.stringify(categories));
     setEditingRate(null);
     form.reset();
     setIsDialogOpen(true);
@@ -292,8 +294,7 @@ export default function VehicleTravelRates() {
                   Raw Data: {JSON.stringify(categories)}
                 </div>
                 
-                {!categoriesLoading && (
-                  <FormField
+                <FormField
                     control={form.control}
                     name="categoryId"
                     render={({ field }) => (
@@ -318,7 +319,6 @@ export default function VehicleTravelRates() {
                       </FormItem>
                     )}
                   />
-                )}
 
                 <FormField
                   control={form.control}
