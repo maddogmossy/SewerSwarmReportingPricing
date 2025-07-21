@@ -375,6 +375,7 @@ export const travelCalculations = pgTable("travel_calculations", {
 export const vehicleTravelRates = pgTable("vehicle_travel_rates", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  categoryId: integer("category_id"), // Optional reference to pr2_configurations
   vehicleType: varchar("vehicle_type").notNull(), // "3.5t", "5t", "7.5t", "18t", "26t", "32t"
   fuelConsumptionMpg: decimal("fuel_consumption_mpg", { precision: 5, scale: 2 }).notNull(), // Miles per gallon
   fuelCostPerLitre: decimal("fuel_cost_per_litre", { precision: 5, scale: 2 }).notNull(), // Cost per litre

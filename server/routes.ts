@@ -1025,5 +1025,25 @@ export async function registerRoutes(app: Express) {
     res.status(503).json({ error: "PayPal integration temporarily disabled" });
   });
 
+  // Categories for vehicle travel rates dropdown
+  app.get("/api/pr2-configurations", async (req: Request, res: Response) => {
+    try {
+      const userId = "test-user"; // Default user for testing
+      // Import pr2Configurations here to avoid circular imports
+      const { pr2Configurations } = await import("@shared/schema");
+      const configs = await db.select({
+        id: pr2Configurations.id,
+        categoryName: pr2Configurations.categoryName,
+        sector: pr2Configurations.sector,
+      }).from(pr2Configurations)
+        .where(eq(pr2Configurations.userId, userId));
+      
+      res.json(configs);
+    } catch (error) {
+      console.error("Error fetching PR2 configurations:", error);
+      res.status(500).json({ error: "Failed to fetch categories" });
+    }
+  });
+
   return server;
 }

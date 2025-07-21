@@ -19,6 +19,7 @@ import type { VehicleTravelRate, InsertVehicleTravelRate } from "@shared/schema"
 import { VEHICLE_TYPES } from "@shared/constants";
 
 const vehicleTravelRateSchema = z.object({
+  categoryId: z.string().optional(),
   vehicleType: z.string().min(1, "Vehicle type is required"),
   fuelConsumptionMpg: z.number().min(0.1, "Fuel consumption must be greater than 0"),
   fuelCostPerLitre: z.number().min(0.01, "Fuel cost must be greater than 0"),
@@ -44,9 +45,15 @@ export default function VehicleTravelRates() {
     console.log('VehicleTravelRates component fully loaded and useEffect triggered');
   }, []);
 
+  // Fetch category cards
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ['/api/pr2-clean'],
+  });
+
   const form = useForm<VehicleTravelRateForm>({
     resolver: zodResolver(vehicleTravelRateSchema),
     defaultValues: {
+      categoryId: "",
       vehicleType: "",
       fuelConsumptionMpg: 0,
       fuelCostPerLitre: 0,
@@ -186,11 +193,15 @@ export default function VehicleTravelRates() {
   const handleEdit = (rate: VehicleTravelRate) => {
     setEditingRate(rate);
     form.reset({
+      categoryId: rate.categoryId?.toString() || "",
       vehicleType: rate.vehicleType,
-      fuelConsumptionMpg: rate.fuelConsumptionMpg,
-      fuelCostPerLitre: rate.fuelCostPerLitre,
-      driverWagePerHour: rate.driverWagePerHour,
-      vehicleRunningCostPerMile: rate.vehicleRunningCostPerMile,
+      fuelConsumptionMpg: parseFloat(rate.fuelConsumptionMpg.toString()),
+      fuelCostPerLitre: parseFloat(rate.fuelCostPerLitre.toString()),
+      driverWagePerHour: parseFloat(rate.driverWagePerHour.toString()),
+      assistantWagePerHour: parseFloat(rate.assistantWagePerHour?.toString() || "0"),
+      hasAssistant: rate.hasAssistant || false,
+      vehicleRunningCostPerMile: parseFloat(rate.vehicleRunningCostPerMile.toString()),
+      autoUpdateFuelPrice: rate.autoUpdateFuelPrice || true,
     });
     setIsDialogOpen(true);
   };
@@ -202,16 +213,28 @@ export default function VehicleTravelRates() {
   };
 
   const onSubmit = (data: VehicleTravelRateForm) => {
+    const submitData = {
+      ...data,
+      categoryId: data.categoryId ? parseInt(data.categoryId) : undefined,
+      fuelConsumptionMpg: parseFloat(data.fuelConsumptionMpg.toString()),
+      fuelCostPerLitre: parseFloat(data.fuelCostPerLitre.toString()),
+      driverWagePerHour: parseFloat(data.driverWagePerHour.toString()),
+      vehicleRunningCostPerMile: parseFloat(data.vehicleRunningCostPerMile.toString()),
+    };
+    
     if (editingRate) {
-      updateMutation.mutate({ id: editingRate.id, data });
+      updateMutation.mutate({ id: editingRate.id, data: submitData });
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(submitData);
     }
   };
 
   const calculateTotalCostPerMile = (rate: VehicleTravelRate) => {
-    const fuelCostPerMile = (rate.fuelCostPerLitre / 4.546) / rate.fuelConsumptionMpg; // Convert litres to gallons
-    return (fuelCostPerMile + rate.vehicleRunningCostPerMile).toFixed(2);
+    const fuelConsumption = parseFloat(rate.fuelConsumptionMpg.toString());
+    const fuelCost = parseFloat(rate.fuelCostPerLitre.toString());
+    const runningCost = parseFloat(rate.vehicleRunningCostPerMile.toString());
+    const fuelCostPerMile = (fuelCost / 4.546) / fuelConsumption; // Convert litres to gallons
+    return (fuelCostPerMile + runningCost).toFixed(2);
   };
 
   return (
@@ -244,6 +267,32 @@ export default function VehicleTravelRates() {
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="categoryId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Service Category (Optional)</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a service category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="">-- None Selected --</SelectItem>
+                          {(categories as any[]).map((category: any) => (
+                            <SelectItem key={category.id} value={category.id.toString()}>
+                              {category.categoryName} (ID: {category.id})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="vehicleType"
