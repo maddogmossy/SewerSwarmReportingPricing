@@ -217,15 +217,15 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  app.put("/api/company-settings", async (req: Request, res: Response) => {
+  app.put("/api/company-settings", logoUpload.single("companyLogo"), async (req: Request, res: Response) => {
     try {
       const userId = "test-user"; // Default user for testing
-      const updates = req.body;
+      let updates = req.body;
       
       // Handle logo upload if present
-      if (req.body.companyLogo && typeof req.body.companyLogo === 'object') {
-        // This would be handled by a separate multipart upload
-        delete updates.companyLogo;
+      if (req.file) {
+        updates.companyLogo = req.file.path;
+        console.log("Logo uploaded to:", req.file.path);
       }
       
       const updatedSettings = await storage.updateCompanySettings(userId, updates);
