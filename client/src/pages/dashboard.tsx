@@ -12,6 +12,8 @@ import { DataIntegrityWarning } from "@/components/data-integrity-warning";
 import { RepairOptionsPopover } from "@/components/repair-options-popover";
 import { CleaningOptionsPopover } from "@/components/cleaning-options-popover";
 import { SectorStandardsDisplay } from "@/components/sector-standards-display";
+import { ReportValidationStatus } from "@/components/ReportValidationStatus";
+import { validateReportExportReadiness, ValidationResult, ReportSection, TravelInfo } from "@shared/report-validation";
 import * as XLSX from 'xlsx';
 
 import { 
@@ -517,6 +519,14 @@ export default function Dashboard() {
   // REMOVED: Auto-cost popup system that was causing infinite loops
   // All cost calculations continue working normally without popup dialogs
   
+  // Report validation state
+  const [validationResult, setValidationResult] = useState<ValidationResult>({
+    isReady: false,
+    issues: [],
+    summary: 'Checking report readiness...'
+  });
+  const [travelInfo, setTravelInfo] = useState<TravelInfo | null>(null);
+
   // Filter state
   const [filters, setFilters] = useState({
     severityGrade: '',
@@ -1585,6 +1595,137 @@ export default function Dashboard() {
   // Use PR2 configurations for cost calculations
   const pr2Configurations = repairPricingData;
   
+  // Validation effect - runs after sections are loaded
+  useEffect(() => {
+    if (hasAuthenticData && rawSectionData.length > 0 && pr2Configurations.length >= 0) {
+      // Transform section data to match validation interface
+      const reportSections: ReportSection[] = rawSectionData.map(section => ({
+        id: section.id,
+        itemNo: section.itemNo,
+        defectType: section.defectType || null,
+        recommendations: section.recommendations || '',
+        cost: section.cost || '',
+        pipeSize: section.pipeSize || '',
+        totalLength: section.totalLength || '',
+        hasConfiguration: hasConfiguration(section),
+        meetsMinimum: meetsMinimumQuantities(section)
+      }));
+
+      // Run validation
+      const result = validateReportExportReadiness(reportSections, travelInfo, pr2Configurations);
+      setValidationResult(result);
+    }
+  }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo]);
+
+  // Helper function to check if section has pricing configuration
+  const hasConfiguration = (section: any): boolean => {
+    const needsCleaning = requiresCleaning(section.defects || '');
+    const needsStructural = requiresStructuralRepair(section.defects || '');
+    
+    if (needsCleaning) {
+      // Check for cleaning configuration
+      return pr2Configurations.some(config => 
+        config.categoryId?.includes('cctv') && isConfigurationProperlyConfigured(config)
+      );
+    }
+    
+    if (needsStructural) {
+      // Check for patching configuration
+      return pr2Configurations.some(config => 
+        config.categoryId === 'patching' && isConfigurationProperlyConfigured(config)
+      );
+    }
+    
+    return true; // No defects = no configuration needed
+  };
+
+  // Helper function to check if section meets minimum quantities
+  const meetsMinimumQuantities = (section: any): boolean => {
+    const costCalculation = calculateAutoCost(section);
+    return costCalculation ? !costCalculation.showRedTriangle : true;
+  };
+
+  // Handler functions for resolving validation issues
+  const handleResolveConfiguration = useCallback((itemIds: number[]) => {
+    // Navigate to pricing configuration for the first item
+    const firstSection = rawSectionData.find(s => s.itemNo === itemIds[0]);
+    if (firstSection) {
+      const needsCleaning = requiresCleaning(firstSection.defects || '');
+      const needsStructural = requiresStructuralRepair(firstSection.defects || '');
+      
+      if (needsCleaning) {
+        // Navigate to cleaning configuration
+        const pipeSize = firstSection.pipeSize?.match(/\d+/)?.[0] || '150';
+        window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}&pipeSize=${pipeSize}`;
+      } else if (needsStructural) {
+        // Navigate to patching configuration
+        window.location.href = `/pr2-config-clean?categoryId=patching&sector=${currentSector.id}`;
+      }
+    }
+  }, [rawSectionData, currentSector]);
+
+  const handleAdjustRates = useCallback(async (defectType: 'service' | 'structural', newRate: number) => {
+    try {
+      // Find the relevant configuration
+      const configId = defectType === 'service' 
+        ? pr2Configurations.find(c => c.categoryId?.includes('cctv'))?.id
+        : pr2Configurations.find(c => c.categoryId === 'patching')?.id;
+
+      if (configId) {
+        // Update the configuration with the new rate
+        const config = pr2Configurations.find(c => c.id === configId);
+        const updatedPricingOptions = config.pricingOptions?.map((opt: any) => 
+          opt.label?.toLowerCase().includes('rate') ? { ...opt, value: newRate.toString() } : opt
+        );
+
+        await apiRequest('PUT', `/api/pr2-clean/${configId}`, {
+          ...config,
+          pricingOptions: updatedPricingOptions
+        });
+
+        // Refresh data
+        await queryClient.invalidateQueries({ queryKey: ['pr2-configs'] });
+        await refetchSections();
+        
+        toast({
+          title: "Rate Adjusted",
+          description: `${defectType} day rate updated to £${newRate.toFixed(2)}`
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to adjust rate",
+        variant: "destructive"
+      });
+    }
+  }, [pr2Configurations, queryClient, refetchSections, toast]);
+
+  const handleSplitTravelCosts = useCallback((defectType: 'service' | 'structural', costPerItem: number) => {
+    // Update travel info state to reflect cost distribution
+    setTravelInfo(prev => prev ? {
+      ...prev,
+      additionalCost: prev.additionalCost - (costPerItem * (defectType === 'service' ? 
+        rawSectionData.filter(s => s.defectType === 'service').length :
+        rawSectionData.filter(s => s.defectType === 'structural').length))
+    } : null);
+    
+    toast({
+      title: "Travel Costs Split",
+      description: `£${costPerItem.toFixed(2)} per ${defectType} item allocated`
+    });
+  }, [rawSectionData]);
+
+  const handleExportReport = useCallback(() => {
+    // Export functionality - trigger Excel export
+    exportToExcel();
+    
+    toast({
+      title: "Report Exported",
+      description: "Report has been exported successfully"
+    });
+  }, []);
+
   // Debug PR2 data loading
   // RepairPricingData logging removed
   // PR2 configurations logging removed
@@ -2971,6 +3112,17 @@ export default function Dashboard() {
           )
         ) : (
           <div className="space-y-8">
+            {/* Report Validation Status */}
+            {hasAuthenticData && sectionData.length > 0 && (
+              <ReportValidationStatus
+                validationResult={validationResult}
+                onResolveConfiguration={handleResolveConfiguration}
+                onAdjustRates={handleAdjustRates}
+                onSplitTravelCosts={handleSplitTravelCosts}
+                onExportReport={handleExportReport}
+              />
+            )}
+            
             {/* Section Inspection Data Table */}
             <Card className="relative">
               <DevLabel id="dashboard-sections-table" />
