@@ -14,6 +14,8 @@ import { CleaningOptionsPopover } from "@/components/cleaning-options-popover";
 import { SectorStandardsDisplay } from "@/components/sector-standards-display";
 import { ReportValidationStatus } from "@/components/ReportValidationStatus";
 import { PatchRepairPricingDialog } from "@/components/PatchRepairPricingDialog";
+import { ValidationWarningPopup } from "@/components/ValidationWarningPopup";
+import { useValidationWarnings } from "@/hooks/useValidationWarnings";
 import { validateReportExportReadiness, ValidationResult, ReportSection, TravelInfo } from "@shared/report-validation";
 import * as XLSX from 'xlsx';
 
@@ -559,6 +561,9 @@ export default function Dashboard() {
   const [showPatchPricingDialog, setShowPatchPricingDialog] = useState(false);
   const [selectedPatchSection, setSelectedPatchSection] = useState<any>(null);
   const [selectedPatchCalculation, setSelectedPatchCalculation] = useState<any>(null);
+
+  // Validation warning popup system
+  const validationWarnings = useValidationWarnings();
 
   // Handler for opening patch pricing dialog
   const handlePatchPricingClick = (section: any, costCalculation: any) => {
@@ -1711,8 +1716,89 @@ export default function Dashboard() {
       });
       
       setValidationResult(result);
+
+      // Check for TP2 configuration issues and trigger warning popups
+      checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
     }
   }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo, workCategories, vehicleTravelRates]);
+
+  // Function to detect TP2 configuration issues and trigger validation warnings
+  const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
+    const tp2Config = configurations.find(config => config.categoryId === 'patching');
+    if (!tp2Config) return; // No TP2 configuration found
+
+    // Check for day rate distribution issues
+    const dayRate = tp2Config.pricingOptions?.[0]?.value ? parseFloat(tp2Config.pricingOptions[0].value) : 0;
+    const doubleLayerCost = tp2Config.pricingOptions?.[1]?.value ? parseFloat(tp2Config.pricingOptions[1].value) : 0;
+
+    if (dayRate > 0 && doubleLayerCost > 0) {
+      // Expected day rate adjustment: (£1650 - £1500) ÷ 3 = £50 per item
+      const expectedAdjustment = 50;
+      const baseCost = doubleLayerCost - expectedAdjustment; // Should be base cost without day rate adjustment
+      const expectedBaseCost = 350; // Expected base cost for Double Layer
+
+      // Check if day rate adjustment is properly configured
+      if (Math.abs(baseCost - expectedBaseCost) > 5) { // Allow small rounding differences
+        const dayRateIssue = {
+          id: `tp2-day-rate-${tp2Config.id}`,
+          title: "TP2 Day Rate Configuration Issue",
+          type: "warning" as const,
+          description: `TP2 patching configuration requires day rate adjustment. Double Layer cost should be £${expectedBaseCost + expectedAdjustment} (£${expectedBaseCost} base + £${expectedAdjustment} day rate adjustment). Currently: £${doubleLayerCost}`,
+          action: {
+            label: "Configure TP2 Pricing",
+            onClick: () => window.location.href = `/pr2-config-clean?categoryId=patching&sector=utilities&edit=${tp2Config.id}`
+          }
+        };
+        validationWarnings.showWarnings([dayRateIssue]);
+      }
+    }
+
+    // Check for sections needing TP2 pricing with cost distribution issues
+    const tp2Sections = sections.filter(section => 
+      requiresStructuralRepair(section.defects || '')
+    );
+
+    if (tp2Sections.length > 0) {
+      // Find sections with incorrect cost distribution
+      const issueItems = [];
+      
+      tp2Sections.forEach(section => {
+        if (section.itemNo === 13 && section.letterSuffix === 'a') { // Item 13a
+          const expectedCost = 475; // £425 base + £50 day rate adjustment
+          const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
+          if (Math.abs(actualCost - expectedCost) > 5) {
+            issueItems.push(`Item 13a: Expected £${expectedCost}, showing £${actualCost}`);
+          }
+        } else if (section.itemNo === 20) { // Item 20
+          const expectedCost = 600; // £550 base + £50 day rate adjustment
+          const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
+          if (Math.abs(actualCost - expectedCost) > 5) {
+            issueItems.push(`Item 20: Expected £${expectedCost}, showing £${actualCost}`);
+          }
+        } else if (section.itemNo === 21 && section.letterSuffix === 'a') { // Item 21a
+          const expectedCost = 570; // £520 base + £50 day rate adjustment
+          const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
+          if (Math.abs(actualCost - expectedCost) > 5) {
+            issueItems.push(`Item 21a: Expected £${expectedCost}, showing £${actualCost}`);
+          }
+        }
+      });
+
+      if (issueItems.length > 0) {
+        const costDistributionIssue = {
+          id: `tp2-cost-distribution-${Date.now()}`,
+          title: "TP2 Cost Distribution Mismatch", 
+          type: "error" as const,
+          description: `Day rate distribution not matching expected values:\n${issueItems.join('\n')}`,
+          action: {
+            label: "Review TP2 Costs",
+            onClick: () => window.location.href = "/dashboard?reportId=83#tp2-sections"
+          }
+        };
+        validationWarnings.showWarnings([costDistributionIssue]);
+      }
+    }
+  };
 
   // Helper function to check if section has pricing configuration
   const hasConfiguration = (section: any): boolean => {
@@ -3017,6 +3103,16 @@ export default function Dashboard() {
 
   return (
     <div className="relative min-h-screen bg-slate-50">
+      {/* Validation Warning Popup */}
+      <ValidationWarningPopup
+        issue={validationWarnings.currentIssue}
+        currentIndex={validationWarnings.currentIndex}
+        totalCount={validationWarnings.totalCount}
+        onNext={validationWarnings.nextIssue}
+        onDismissAll={validationWarnings.dismissAll}
+        isVisible={validationWarnings.isVisible}
+      />
+      
       {/* Navigation */}
       <div className="bg-white border-b border-slate-200 p-4">
         <div className="flex gap-4 items-center">
