@@ -113,6 +113,7 @@ export function ReportValidationStatus({
                 {issue.type === 'configuration' && <Settings className="h-4 w-4" />}
                 {issue.type === 'quantity' && <Calculator className="h-4 w-4" />}
                 {issue.type === 'travel' && <Clock className="h-4 w-4" />}
+                {issue.type === 'vehicle' && <AlertTriangle className="h-4 w-4" />}
                 <Badge variant={issue.severity === 'error' ? 'destructive' : 'secondary'}>
                   {issue.type}
                 </Badge>
@@ -162,6 +163,16 @@ export function ReportValidationStatus({
                   onClick={() => handleTravelCostSplit(issue)}
                 >
                   Split Costs
+                </Button>
+              )}
+              
+              {issue.type === 'vehicle' && (
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => window.location.href = '/customer-settings?tab=travel-rates'}
+                >
+                  Setup Travel Rates
                 </Button>
               )}
             </div>

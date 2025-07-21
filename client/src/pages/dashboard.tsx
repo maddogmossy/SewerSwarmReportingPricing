@@ -1595,6 +1595,15 @@ export default function Dashboard() {
   // Use PR2 configurations for cost calculations
   const pr2Configurations = repairPricingData;
   
+  // Fetch work categories and vehicle travel rates for validation
+  const { data: workCategories = [] } = useQuery<any[]>({
+    queryKey: ["/api/work-categories"],
+  });
+
+  const { data: vehicleTravelRates = [] } = useQuery<any[]>({
+    queryKey: ["/api/vehicle-travel-rates"],
+  });
+
   // Validation effect - runs after sections are loaded
   useEffect(() => {
     if (hasAuthenticData && rawSectionData.length > 0 && pr2Configurations.length >= 0) {
@@ -1611,11 +1620,17 @@ export default function Dashboard() {
         meetsMinimum: meetsMinimumQuantities(section)
       }));
 
-      // Run validation
-      const result = validateReportExportReadiness(reportSections, travelInfo, pr2Configurations);
+      // Run validation with work categories and vehicle travel rates
+      const result = validateReportExportReadiness(
+        reportSections, 
+        travelInfo, 
+        pr2Configurations,
+        workCategories,
+        vehicleTravelRates
+      );
       setValidationResult(result);
     }
-  }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo]);
+  }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo, workCategories, vehicleTravelRates]);
 
   // Helper function to check if section has pricing configuration
   const hasConfiguration = (section: any): boolean => {

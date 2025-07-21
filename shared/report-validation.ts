@@ -7,7 +7,7 @@ export interface ValidationResult {
 }
 
 export interface ValidationIssue {
-  type: 'configuration' | 'quantity' | 'travel';
+  type: 'configuration' | 'quantity' | 'travel' | 'vehicle';
   severity: 'error' | 'warning';
   message: string;
   itemIds?: number[];
@@ -40,7 +40,9 @@ export interface TravelInfo {
 export function validateReportExportReadiness(
   sections: ReportSection[],
   travelInfo: TravelInfo | null,
-  configurations: any[]
+  configurations: any[],
+  workCategories?: any[],
+  vehicleTravelRates?: any[]
 ): ValidationResult {
   const issues: ValidationIssue[] = [];
 
@@ -56,6 +58,12 @@ export function validateReportExportReadiness(
   if (travelInfo) {
     const travelIssues = validateTravelDistance(travelInfo, sections);
     issues.push(...travelIssues);
+  }
+
+  // Phase 4: Vehicle Travel Rates Check
+  if (workCategories && vehicleTravelRates !== undefined) {
+    const vehicleIssues = validateVehicleTravelRates(workCategories, vehicleTravelRates, configurations);
+    issues.push(...vehicleIssues);
   }
 
   // Determine readiness
@@ -171,6 +179,55 @@ function validateTravelDistance(travelInfo: TravelInfo, sections: ReportSection[
         calculatedValue: costPerStructuralItem
       });
     }
+  }
+
+  return issues;
+}
+
+/**
+ * Validate vehicle travel rates for configured work categories
+ */
+function validateVehicleTravelRates(
+  workCategories: any[],
+  vehicleTravelRates: any[],
+  configurations: any[]
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+
+  // Get work categories that have pricing configurations
+  const configuredCategories = configurations
+    .map(config => config.categoryName || config.categoryId)
+    .filter(Boolean);
+
+  // Check if any configured categories are missing vehicle travel rates
+  const categoriesWithoutRates: string[] = [];
+
+  configuredCategories.forEach(categoryName => {
+    // Find matching work category
+    const workCategory = workCategories.find(cat => 
+      cat.name?.toLowerCase().includes(categoryName.toLowerCase()) ||
+      categoryName.toLowerCase().includes(cat.name?.toLowerCase())
+    );
+
+    if (workCategory) {
+      // Check if this category has vehicle travel rates
+      const hasRates = vehicleTravelRates.some(rate => 
+        rate.workCategoryId === workCategory.id
+      );
+
+      if (!hasRates) {
+        categoriesWithoutRates.push(workCategory.name);
+      }
+    }
+  });
+
+  if (categoriesWithoutRates.length > 0) {
+    issues.push({
+      type: 'vehicle',
+      severity: 'warning',
+      message: `${categoriesWithoutRates.length} configured work categories missing vehicle travel rates`,
+      suggestedAction: `Set up vehicle travel rates for: ${categoriesWithoutRates.join(', ')}`
+    });
   }
 
   return issues;
