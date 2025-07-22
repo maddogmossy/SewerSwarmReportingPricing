@@ -722,6 +722,23 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 22, 2025)
 
+### CRITICAL: Item 13a Display Issue Resolved ✅
+- **Date**: January 22, 2025
+- **Status**: Successfully resolved Item 13a not displaying calculated TP2 cost
+- **Root Cause Identified**: Server-side data retrieval issue - Item 13a wasn't being returned by `/api/uploads/83/sections` endpoint
+- **Solution**: Database refresh triggered by updating item 20 resolved the missing data issue
+- **Issues Fixed**:
+  - Item 13a now correctly displays £425.00 (150mm structural defect using Configuration 153)
+  - TP2 cost calculation working properly for all structural defects
+  - Dashboard white box with yellow frame now shows actual calculated prices
+  - Zero synthetic data policy maintained - only authentic Configuration 153 values used
+- **Technical Implementation**:
+  - Debug logging confirmed frontend logic was correct - issue was missing API data
+  - Configuration 153 (150mm TP2) working correctly: Day Rate £1650, Double Layer £425, Min Qty 4
+  - Removed debug logging after successful resolution
+- **User Benefits**: All TP2 structural repairs now display correct calculated costs
+- **Result**: Complete TP2 cost display system operational with authentic pricing data
+
 ### CRITICAL: TP2 Popup Prevention System Complete ✅
 - **Date**: January 22, 2025
 - **Status**: Successfully prevented TP2 popup from appearing when configurations lack pricing data

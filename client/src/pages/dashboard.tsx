@@ -1216,15 +1216,6 @@ export default function Dashboard() {
         // No synthetic pricing calculations - show warning symbols for unconfigured pricing
         
         // Calculate costs for defective sections using PR2 configurations
-        console.log('🔍 Section Processing Check:', {
-          itemNo: section.itemNo,
-          letterSuffix: section.letterSuffix,
-          severityGrade: section.severityGrade,
-          defectType: section.defectType,
-          pipeSize: section.pipeSize,
-          willEnterCostCalculation: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0
-        });
-        
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
           // DEBUG: Removed console logging to prevent infinite loops
           
@@ -1235,16 +1226,6 @@ export default function Dashboard() {
           // Try to calculate cost using PR2 configuration (includes TP2 patching)
           const costCalculation = calculateAutoCost(section);
           
-          console.log('💰 Cost Calculation Debug:', {
-            sectionItemNo: section.itemNo,
-            pipeSize: section.pipeSize,
-            defectType: section.defectType,
-            severityGrade: section.severityGrade,
-            costCalculationResult: costCalculation,
-            hasShowRedTriangle: costCalculation && 'showRedTriangle' in costCalculation,
-            showRedTriangleValue: costCalculation && 'showRedTriangle' in costCalculation ? costCalculation.showRedTriangle : null
-          });
-          
           // Check for TP2 below minimum quantity case - show RED COST instead of triangle
           if (costCalculation && 'showRedTriangle' in costCalculation && costCalculation.showRedTriangle) {
             
@@ -1254,16 +1235,7 @@ export default function Dashboard() {
               config.sector === currentSector.id
             );
             
-            console.log('🔧 TP2 Config Debug:', {
-              sectionItemNo: section.itemNo,
-              tp2ConfigFound: !!tp2Config,
-              tp2ConfigId: tp2Config?.id,
-              isProperlyConfigured: tp2Config ? isConfigurationProperlyConfigured(tp2Config) : false,
-              pricingOptionsCount: tp2Config?.pricingOptions?.length || 0,
-              hasValidValues: tp2Config?.pricingOptions?.some((opt: any) => 
-                opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
-              ) || false
-            });
+
             
             // If configuration doesn't have valid pricing values, don't show clickable cost
             if (!isConfigurationProperlyConfigured(tp2Config)) {
