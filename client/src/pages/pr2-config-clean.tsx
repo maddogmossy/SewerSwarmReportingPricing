@@ -2789,9 +2789,10 @@ export default function PR2ConfigClean() {
                           value={option.value || ""}
                           onChange={(e) => {
                             console.log(`💰 Typing in ${option.label}:`, e.target.value);
+                            console.log(`💰 DETAILED VALUE DEBUG - Option: ${option.label}, ID: ${option.id}, Value: "${e.target.value}", Length: ${e.target.value.length}`);
                             handleValueChange('pricingOptions', option.id, e.target.value);
                           }}
-                          className="w-16 h-8 text-sm"
+                          className="w-20 h-8 text-sm"
                           disabled={false}
                           readOnly={false}
                           data-testid={`pricing-input-${option.id}`}
@@ -2908,7 +2909,7 @@ export default function PR2ConfigClean() {
                             placeholder="cost"
                             value={option.value || ""}
                             onChange={(e) => updatePipeSizeConfig(pipeSizeConfig.id, 'pricingOptions', option.id, e.target.value)}
-                            className="w-16 h-8 text-sm"
+                            className="w-20 h-8 text-sm"
                           />
                         </div>
                         <div className="ml-4 flex items-center gap-2">
