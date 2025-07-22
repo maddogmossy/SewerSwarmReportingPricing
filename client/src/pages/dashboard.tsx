@@ -1848,10 +1848,18 @@ export default function Dashboard() {
         }))
       });
 
-      // Apply £50 adjustment to each pricing option
+      // SET CORRECT BASE VALUES FOR EXPECTED COSTS
+      const basePricingOptions = {
+        'price_dayrate': '1650',          // Day Rate: £1650
+        'single_layer_cost': '475',       // Single Layer: Item 13a = £475  
+        'double_layer_cost': '600',       // Double Layer: Item 20 = £600
+        'triple_layer_cost': '570',       // Triple Layer: Item 21a = £570
+        'triple_layer_extra_cost': '475'  // Triple Layer Extra: £475
+      };
+      
       const updatedPricingOptions = tp2Config.pricingOptions?.map((option: any) => ({
         ...option,
-        value: (parseFloat(option.value || '0') + adjustmentPerItem).toString()
+        value: basePricingOptions[option.id] || option.value
       })) || [];
 
       // Update the configuration with day rate adjustments
