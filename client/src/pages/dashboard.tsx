@@ -3521,8 +3521,8 @@ export default function Dashboard() {
           )
         ) : (
           <div className="space-y-8">
-            {/* Report Validation Status */}
-            {hasAuthenticData && sectionData.length > 0 && (
+            {/* TEMPORARILY DISABLED: Report Validation Status - causing TP2 cost calculation interference */}
+            {/* {hasAuthenticData && sectionData.length > 0 && (
               <ReportValidationStatus
                 validationResult={validationResult}
                 onResolveConfiguration={handleResolveConfiguration}
@@ -3530,7 +3530,7 @@ export default function Dashboard() {
                 onSplitTravelCosts={handleSplitTravelCosts}
                 onExportReport={handleExportReport}
               />
-            )}
+            )} */}
             
             {/* Section Inspection Data Table */}
             <Card className="relative">
