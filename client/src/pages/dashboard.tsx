@@ -1226,6 +1226,16 @@ export default function Dashboard() {
           // Try to calculate cost using PR2 configuration (includes TP2 patching)
           const costCalculation = calculateAutoCost(section);
           
+          console.log('💰 Cost Calculation Debug:', {
+            sectionItemNo: section.itemNo,
+            pipeSize: section.pipeSize,
+            defectType: section.defectType,
+            severityGrade: section.severityGrade,
+            costCalculationResult: costCalculation,
+            hasShowRedTriangle: costCalculation && 'showRedTriangle' in costCalculation,
+            showRedTriangleValue: costCalculation && 'showRedTriangle' in costCalculation ? costCalculation.showRedTriangle : null
+          });
+          
           // Check for TP2 below minimum quantity case - show RED COST instead of triangle
           if (costCalculation && 'showRedTriangle' in costCalculation && costCalculation.showRedTriangle) {
             
