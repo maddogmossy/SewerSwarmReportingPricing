@@ -2915,9 +2915,12 @@ export default function Dashboard() {
     if ((section.itemNo === 13 && section.letterSuffix === 'a') || section.itemNo === 20 || (section.itemNo === 21 && section.letterSuffix === 'a')) {
       console.log(`📋 SECTION EXISTENCE CHECK - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
         severityGrade: section.severityGrade,
+        severityGrades: section.severityGrades,
+        severityGradesStructural: section.severityGrades?.structural,
         defectType: section.defectType,
         defects: section.defects?.substring(0, 150) + '...',
         hasDefectsCheck: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0,
+        hasStructuralDefects: section.severityGrades?.structural && section.severityGrades.structural > 0,
         recommendations: section.recommendations?.substring(0, 100) + '...'
       });
     }
