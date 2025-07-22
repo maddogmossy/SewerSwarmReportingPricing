@@ -601,9 +601,9 @@ export default function PR2ConfigClean() {
       return newFormData;
     });
     
-    // For Day Rate field (db11), save immediately to prevent data loss
-    if (optionType === 'pricingOptions' && optionId === 'price_dayrate') {
-      console.log(`🚨 DB11 TRIGGERING IMMEDIATE SAVE: ${value}`);
+    // For critical TP2 fields, save immediately to prevent data loss
+    if (optionType === 'pricingOptions' && (optionId === 'price_dayrate' || optionId === 'double_layer_cost')) {
+      console.log(`🚨 CRITICAL FIELD TRIGGERING IMMEDIATE SAVE: ${optionId} = ${value}`);
       immediateSave(optionType, optionId, value);
     } else {
       // Trigger debounced save for other fields
