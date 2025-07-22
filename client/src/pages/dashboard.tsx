@@ -1235,6 +1235,17 @@ export default function Dashboard() {
               config.sector === currentSector.id
             );
             
+            console.log('🔧 TP2 Config Debug:', {
+              sectionItemNo: section.itemNo,
+              tp2ConfigFound: !!tp2Config,
+              tp2ConfigId: tp2Config?.id,
+              isProperlyConfigured: tp2Config ? isConfigurationProperlyConfigured(tp2Config) : false,
+              pricingOptionsCount: tp2Config?.pricingOptions?.length || 0,
+              hasValidValues: tp2Config?.pricingOptions?.some((opt: any) => 
+                opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
+              ) || false
+            });
+            
             // If configuration doesn't have valid pricing values, don't show clickable cost
             if (!isConfigurationProperlyConfigured(tp2Config)) {
               return (
