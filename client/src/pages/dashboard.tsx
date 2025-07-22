@@ -2831,6 +2831,21 @@ export default function Dashboard() {
   // USE ALL SECTIONS: Allow duplicate item numbers for letter suffix functionality
   const rawFilteredData = rawSectionData; // No deduplication - we want all sections for letter suffixes
   
+  // DEBUG: Check if TP2 sections exist in raw database data
+  if (rawSectionData && rawSectionData.length > 0) {
+    const tp2Sections = rawSectionData.filter(s => 
+      (s.itemNo === 13 && s.letterSuffix === 'a') || 
+      s.itemNo === 20 || 
+      (s.itemNo === 21 && s.letterSuffix === 'a')
+    );
+    console.log(`🔍 TP2 SECTIONS IN RAW DATA:`, {
+      totalRawSections: rawSectionData.length,
+      tp2SectionsFound: tp2Sections.length,
+      tp2Items: tp2Sections.map(s => `Item ${s.itemNo}${s.letterSuffix || ''}`),
+      allItemNumbers: rawSectionData.map(s => `${s.itemNo}${s.letterSuffix || ''}`).sort()
+    });
+  }
+  
   // Debug logging for Section 2 data duplication
   const section2Data = rawSectionData.filter(s => s.itemNo === 2);
   if (section2Data.length > 0) {
@@ -2928,6 +2943,25 @@ export default function Dashboard() {
 
   // Apply filters to expanded section data
   const filteredData = expandedSectionData.filter(section => {
+    // DEBUG: Check if TP2 sections are being filtered out
+    const isTP2Section = (section.itemNo === 13 && section.letterSuffix === 'a') || 
+                        section.itemNo === 20 || 
+                        (section.itemNo === 21 && section.letterSuffix === 'a');
+    
+    if (isTP2Section) {
+      console.log(`🔍 TP2 FILTER CHECK - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
+        severityGradeFilter: filters.severityGrade,
+        sectionSeverityGrade: section.severityGrade,
+        severityGradeMatch: !filters.severityGrade || section.severityGrade === filters.severityGrade,
+        adoptableFilter: filters.adoptable,
+        sectionAdoptable: section.adoptable,
+        adoptableMatch: filters.adoptable.length === 0 || filters.adoptable.includes(section.adoptable),
+        willPassFilter: (!filters.severityGrade || section.severityGrade === filters.severityGrade) &&
+                       (filters.adoptable.length === 0 || filters.adoptable.includes(section.adoptable)) &&
+                       (!filters.pipeSize || section.pipeSize === filters.pipeSize)
+      });
+    }
+    
     if (filters.severityGrade && section.severityGrade !== filters.severityGrade) return false;
     if (filters.adoptable.length > 0 && !filters.adoptable.includes(section.adoptable)) return false;
     if (filters.pipeSize && section.pipeSize !== filters.pipeSize) return false;
@@ -3224,13 +3258,18 @@ export default function Dashboard() {
       // DEBUG: Track ALL sections entering cost calculation to see which TP2 sections are missing
       if (section.itemNo >= 13 && section.itemNo <= 21) {
         console.log(`💰 COST CALCULATION - Item ${section.itemNo}${section.letterSuffix || ''} entering calculateCost:`, {
+          id: section.id,
           severityGrade: section.severityGrade,
+          severityGradeType: typeof section.severityGrade,
+          severityGrades: section.severityGrades,
           severityGradesStructural: section.severityGrades?.structural,
           severityGradesService: section.severityGrades?.service,
           defects: section.defects?.substring(0, 100) + '...',
           hasDefectsOld: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0,
           defectType: section.defectType,
-          needsStructuralRepair: requiresStructuralRepair(section.defects || '')
+          needsStructuralRepair: requiresStructuralRepair(section.defects || ''),
+          rowId: section.rowId,
+          itemNoLetterSuffix: `${section.itemNo}${section.letterSuffix || ''}`
         });
       }
       
@@ -3244,7 +3283,32 @@ export default function Dashboard() {
           )
         : (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0);
       
-      if (!hasDefects) {
+      // CRITICAL FIX: Check both old and new severity grade formats for TP2 sections
+      // TP2 sections use new severityGrades JSONB format with structural: 2
+      const hasTP2StructuralDefects = needsStructuralRepair && (
+        (section.severityGrades?.structural && section.severityGrades.structural > 0) ||
+        (section.defectType === 'structural' && section.severityGrade && section.severityGrade !== "0")
+      );
+      
+      // ADDITIONAL DEBUG: Log why TP2 sections might be failing hasDefects check
+      if (section.itemNo >= 13 && section.itemNo <= 21) {
+        console.log(`🔍 TP2 DEFECTS CHECK - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
+          needsStructuralRepair,
+          hasDefects,
+          hasTP2StructuralDefects,
+          severityGrade: section.severityGrade,
+          severityGradesStructural: section.severityGrades?.structural,
+          defectType: section.defectType,
+          willReturnZero: !hasDefects,
+          willReturnZeroAfterFix: !hasDefects && !hasTP2StructuralDefects
+        });
+      }
+      
+      // Use TP2 structural check for structural defects, original logic for service defects
+      if (!hasDefects && !hasTP2StructuralDefects) {
+        if (section.itemNo >= 13 && section.itemNo <= 21) {
+          console.log(`❌ TP2 SECTION FILTERED OUT - Item ${section.itemNo}${section.letterSuffix || ''}: No defects detected`);
+        }
         return "£0.00";
       }
       
