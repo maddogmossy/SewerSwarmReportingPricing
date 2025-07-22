@@ -3222,14 +3222,20 @@ export default function Dashboard() {
       if (section.itemNo >= 13 && section.itemNo <= 21) {
         console.log(`💰 COST CALCULATION - Item ${section.itemNo}${section.letterSuffix || ''} entering calculateCost:`, {
           severityGrade: section.severityGrade,
+          severityGradesStructural: section.severityGrades?.structural,
+          severityGradesService: section.severityGrades?.service,
           defects: section.defects?.substring(0, 100) + '...',
-          hasDefects: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0,
-          defectType: section.defectType
+          hasDefectsOld: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0,
+          defectType: section.defectType,
+          needsStructuralRepair: requiresStructuralRepair(section.defects || '')
         });
       }
       
-      // Check if section actually has defects based on severity grade
-      const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
+      // Check if section actually has defects - for structural defects, check STR grade
+      const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
+      const hasDefects = needsStructuralRepair 
+        ? (section.severityGrades?.structural && section.severityGrades.structural > 0)
+        : (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0);
       
       if (!hasDefects) {
         return "£0.00";
