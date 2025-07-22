@@ -1744,24 +1744,71 @@ export default function Dashboard() {
 
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
+    console.log('🔍 TP2 VALIDATION CHECK START:', {
+      sectionsCount: sections.length,
+      configurationsCount: configurations.length,
+      devId: 'tp2-validation-checkpoint-1'
+    });
+    
     const tp2Config = configurations.find(config => config.categoryId === 'patching');
+    console.log('🔍 TP2 Configuration Found:', {
+      configExists: !!tp2Config,
+      configId: tp2Config?.id,
+      categoryId: tp2Config?.categoryId,
+      pricingOptionsCount: tp2Config?.pricingOptions?.length || 0,
+      devId: 'tp2-validation-checkpoint-2'
+    });
+    
     if (!tp2Config) return; // No TP2 configuration found
     
     // CRITICAL: Only run validation if configuration has valid pricing values
-    if (!isConfigurationProperlyConfigured(tp2Config)) {
+    const isProperlyConfigured = isConfigurationProperlyConfigured(tp2Config);
+    console.log('🔍 TP2 Configuration Validation:', {
+      isProperlyConfigured,
+      pricingOptions: tp2Config.pricingOptions?.map((opt: any) => ({
+        id: opt.id,
+        label: opt.label,
+        value: opt.value,
+        enabled: opt.enabled
+      })),
+      devId: 'tp2-validation-checkpoint-3'
+    });
+    
+    if (!isProperlyConfigured) {
       console.log('⚠️ TP2 configuration not properly configured, skipping validation');
       return; // Skip validation for empty configurations
     }
 
     // Check for day rate distribution issues
-    const dayRate = tp2Config.pricingOptions?.[0]?.value ? parseFloat(tp2Config.pricingOptions[0].value) : 0;
-    const doubleLayerCost = tp2Config.pricingOptions?.[1]?.value ? parseFloat(tp2Config.pricingOptions[1].value) : 0;
+    const dayRateOption = tp2Config.pricingOptions?.find((opt: any) => opt.label?.toLowerCase().includes('day rate'));
+    const doubleLayerOption = tp2Config.pricingOptions?.find((opt: any) => opt.label?.toLowerCase().includes('double layer'));
+    
+    const dayRate = dayRateOption?.value ? parseFloat(dayRateOption.value) : 0;
+    const doubleLayerCost = doubleLayerOption?.value ? parseFloat(doubleLayerOption.value) : 0;
+
+    console.log('🔍 TP2 Day Rate Validation Check:', {
+      dayRateOption: dayRateOption ? { label: dayRateOption.label, value: dayRateOption.value } : null,
+      doubleLayerOption: doubleLayerOption ? { label: doubleLayerOption.label, value: doubleLayerOption.value } : null,
+      dayRate,
+      doubleLayerCost,
+      hasBothValues: dayRate > 0 && doubleLayerCost > 0,
+      devId: 'tp2-validation-checkpoint-4'
+    });
 
     if (dayRate > 0 && doubleLayerCost > 0) {
       // Expected day rate adjustment: (£1650 - £1500) ÷ 3 = £50 per item
       const expectedAdjustment = 50;
       const baseCost = doubleLayerCost - expectedAdjustment; // Should be base cost without day rate adjustment
       const expectedBaseCost = 350; // Expected base cost for Double Layer
+
+      console.log('🔍 TP2 Day Rate Calculation Check:', {
+        expectedAdjustment,
+        baseCost,
+        expectedBaseCost,
+        difference: Math.abs(baseCost - expectedBaseCost),
+        willTriggerWarning: Math.abs(baseCost - expectedBaseCost) > 5,
+        devId: 'tp2-validation-checkpoint-5'
+      });
 
       // Check if day rate adjustment is properly configured
       if (Math.abs(baseCost - expectedBaseCost) > 5) { // Allow small rounding differences
