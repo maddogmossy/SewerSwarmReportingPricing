@@ -1763,21 +1763,32 @@ export default function Dashboard() {
       const issueItems = [];
       
       tp2Sections.forEach(section => {
+        console.log('🔍 Checking TP2 section for cost validation:', {
+          itemNo: section.itemNo,
+          letterSuffix: section.letterSuffix,
+          currentCost: section.cost,
+          defects: section.defects?.substring(0, 100) + '...',
+          hasStructuralDefects: requiresStructuralRepair(section.defects || '')
+        });
+        
         if (section.itemNo === 13 && section.letterSuffix === 'a') { // Item 13a
           const expectedCost = 475; // £425 base + £50 day rate adjustment
           const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
+          console.log('💰 Item 13a cost check:', { expected: expectedCost, actual: actualCost, difference: Math.abs(actualCost - expectedCost) });
           if (Math.abs(actualCost - expectedCost) > 5) {
             issueItems.push(`Item 13a: £${expectedCost}`);
           }
         } else if (section.itemNo === 20) { // Item 20
           const expectedCost = 600; // £550 base + £50 day rate adjustment
           const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
+          console.log('💰 Item 20 cost check:', { expected: expectedCost, actual: actualCost, difference: Math.abs(actualCost - expectedCost) });
           if (Math.abs(actualCost - expectedCost) > 5) {
             issueItems.push(`Item 20: £${expectedCost}`);
           }
         } else if (section.itemNo === 21 && section.letterSuffix === 'a') { // Item 21a
           const expectedCost = 570; // £520 base + £50 day rate adjustment
           const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
+          console.log('💰 Item 21a cost check:', { expected: expectedCost, actual: actualCost, difference: Math.abs(actualCost - expectedCost) });
           if (Math.abs(actualCost - expectedCost) > 5) {
             issueItems.push(`Item 21a: £${expectedCost}`);
           }
@@ -2194,15 +2205,39 @@ export default function Dashboard() {
     // Check for TP2 patching configurations first (for structural repairs)
     const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
     
-    // DEBUG: Item 20 specific logging
-    if (section.itemNo === 20) {
-      console.log(`🔍 ITEM 20 DEBUG:`, {
+    // DEBUG: TP2 sections (13a, 20, 21a) specific logging
+    if (section.itemNo === 13 && section.letterSuffix === 'a') {
+      console.log(`🔍 ITEM 13a TP2 DEBUG:`, {
         itemNo: section.itemNo,
+        letterSuffix: section.letterSuffix,
         pipeSize: section.pipeSize,
-        defects: section.defects,
+        defects: section.defects?.substring(0, 100) + '...',
         needsStructuralRepair: needsStructuralRepair,
         defectType: section.defectType,
-        recommendations: section.recommendations
+        recommendations: section.recommendations?.substring(0, 100) + '...'
+      });
+    }
+    
+    if (section.itemNo === 20) {
+      console.log(`🔍 ITEM 20 TP2 DEBUG:`, {
+        itemNo: section.itemNo,
+        pipeSize: section.pipeSize,
+        defects: section.defects?.substring(0, 100) + '...',
+        needsStructuralRepair: needsStructuralRepair,
+        defectType: section.defectType,
+        recommendations: section.recommendations?.substring(0, 100) + '...'
+      });
+    }
+    
+    if (section.itemNo === 21 && section.letterSuffix === 'a') {
+      console.log(`🔍 ITEM 21a TP2 DEBUG:`, {
+        itemNo: section.itemNo,
+        letterSuffix: section.letterSuffix,
+        pipeSize: section.pipeSize,
+        defects: section.defects?.substring(0, 100) + '...',
+        needsStructuralRepair: needsStructuralRepair,
+        defectType: section.defectType,
+        recommendations: section.recommendations?.substring(0, 100) + '...'
       });
     }
     
@@ -2210,18 +2245,23 @@ export default function Dashboard() {
       // Get pipe size for matching configuration
       const pipeSize = section.pipeSize || '150';
       
-      // DEBUG: Item 20 TP2 matching logic
-      if (section.itemNo === 20) {
-        console.log(`🔍 ITEM 20 TP2 MATCHING:`, {
+      // DEBUG: TP2 sections (13a, 20, 21a) matching logic
+      if ((section.itemNo === 13 && section.letterSuffix === 'a') || section.itemNo === 20 || (section.itemNo === 21 && section.letterSuffix === 'a')) {
+        console.log(`🔍 ITEM ${section.itemNo}${section.letterSuffix || ''} TP2 MATCHING:`, {
           pipeSize: pipeSize,
-          searchingForCategoryId: `patching-${pipeSize}mm`,
+          searchingForCategory: 'patching',
+          searchingForPipeSize: `${pipeSize}mm`,
           currentSector: currentSector.id,
+          totalConfigs: pr2Configurations.length,
           allConfigs: pr2Configurations.map(c => ({
             id: c.id,
             categoryId: c.categoryId,
             categoryName: c.categoryName,
             sector: c.sector,
-            matches: c.categoryId === `patching-${pipeSize}mm` && c.sector === currentSector.id
+            matchesCategoryId: c.categoryId === 'patching',
+            matchesSector: c.sector === currentSector.id,
+            matchesPipeSize: c.categoryName?.includes(`${pipeSize}mm`),
+            overallMatch: c.categoryId === 'patching' && c.sector === currentSector.id && c.categoryName?.includes(`${pipeSize}mm`)
           }))
         });
       }
@@ -3144,7 +3184,14 @@ export default function Dashboard() {
   // Cost calculation function for enhanced table - using useMemo to ensure reactivity
   const calculateCost = useMemo(() => {
     return (section: any): string | JSX.Element => {
-      // Removed excessive logging
+      // DEBUG: Track TP2 sections entering cost calculation
+      if ((section.itemNo === 13 && section.letterSuffix === 'a') || section.itemNo === 20 || (section.itemNo === 21 && section.letterSuffix === 'a')) {
+        console.log(`💰 COST CALCULATION - Item ${section.itemNo}${section.letterSuffix || ''} entering calculateCost:`, {
+          severityGrade: section.severityGrade,
+          defects: section.defects?.substring(0, 100) + '...',
+          hasDefects: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0
+        });
+      }
       
       // Check if section actually has defects based on severity grade
       const hasDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
