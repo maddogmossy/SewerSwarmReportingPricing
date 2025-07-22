@@ -2126,22 +2126,9 @@ export default function Dashboard() {
     // Calculate base cost: cost per unit × defect count
     const baseCost = costPerUnit * defectCount;
     
-    // CALCULATE DAY RATE DISTRIBUTION
-    // Get all TP2 structural sections to distribute day rate difference across
-    const allTP2Sections = rawSectionData.filter(s => requiresStructuralRepair(s.defects || ''));
-    const totalTP2Sections = allTP2Sections.length;
-    
-    // Calculate total patches cost vs day rate difference
-    const totalPatchesCost = allTP2Sections.reduce((sum, s) => {
-      const sDefectCount = countDefects(s.defects || '');
-      return sum + (costPerUnit * sDefectCount);
-    }, 0);
-    
-    const dayRateDifference = Math.max(0, dayRate - totalPatchesCost);
-    const dayRateAdjustmentPerSection = totalTP2Sections > 0 ? dayRateDifference / totalTP2Sections : 0;
-    
-    // Apply day rate adjustment to get final cost
-    const totalCost = baseCost + dayRateAdjustmentPerSection;
+    // USE DIRECT CONFIGURATION VALUES - NO DAY RATE DISTRIBUTION
+    // The configuration values already include final cost (£475, £600, £570)
+    const totalCost = costPerUnit * defectCount;
     
     // CHECK MINIMUM QUANTITY REQUIREMENT
     const meetsMinimumQuantity = defectCount >= minQuantity;
@@ -2152,13 +2139,8 @@ export default function Dashboard() {
       minQuantity: minQuantity,
       defectCount: defectCount,
       baseCost: baseCost,
-      dayRate: dayRate,
-      totalPatchesCost: totalPatchesCost,
-      dayRateDifference: dayRateDifference,
-      dayRateAdjustmentPerSection: dayRateAdjustmentPerSection,
       totalCost: totalCost,
-      meetsMinimumQuantity: meetsMinimumQuantity,
-      totalTP2Sections: totalTP2Sections
+      meetsMinimumQuantity: meetsMinimumQuantity
     });
     
     // If doesn't meet minimum quantity, return red triangle indicator
@@ -2178,20 +2160,20 @@ export default function Dashboard() {
         minRequired: minQuantity,
         costPerUnit: costPerUnit,
         baseCost: baseCost,
-        dayRateAdjustment: dayRateAdjustmentPerSection,
+        dayRateAdjustment: 0,
         totalCost: totalCost, // Include total cost with day rate adjustment for red display
         status: 'below_minimum'
       };
     }
     
     // Update recommendation to include pipe size and length with day rate info
-    const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${selectedPatchingOption.label.toLowerCase()} patching (includes £${dayRateAdjustmentPerSection.toFixed(2)} day rate adjustment)`;
+    const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${selectedPatchingOption.label.toLowerCase()} patching`;
     
     return {
       cost: totalCost,
       costPerUnit: costPerUnit,
       baseCost: baseCost,
-      dayRateAdjustment: dayRateAdjustmentPerSection,
+      dayRateAdjustment: 0,
       dayRate: dayRate,
       defectCount: defectCount,
       minQuantity: minQuantity,
