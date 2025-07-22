@@ -1216,6 +1216,15 @@ export default function Dashboard() {
         // No synthetic pricing calculations - show warning symbols for unconfigured pricing
         
         // Calculate costs for defective sections using PR2 configurations
+        console.log('🔍 Section Processing Check:', {
+          itemNo: section.itemNo,
+          letterSuffix: section.letterSuffix,
+          severityGrade: section.severityGrade,
+          defectType: section.defectType,
+          pipeSize: section.pipeSize,
+          willEnterCostCalculation: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0
+        });
+        
         if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
           // DEBUG: Removed console logging to prevent infinite loops
           
