@@ -1744,6 +1744,12 @@ export default function Dashboard() {
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
     const tp2Config = configurations.find(config => config.categoryId === 'patching');
     if (!tp2Config) return; // No TP2 configuration found
+    
+    // CRITICAL: Only run validation if configuration has valid pricing values
+    if (!isConfigurationProperlyConfigured(tp2Config)) {
+      console.log('⚠️ TP2 configuration not properly configured, skipping validation');
+      return; // Skip validation for empty configurations
+    }
 
     // Check for day rate distribution issues
     const dayRate = tp2Config.pricingOptions?.[0]?.value ? parseFloat(tp2Config.pricingOptions[0].value) : 0;
