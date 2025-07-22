@@ -2211,10 +2211,17 @@ export default function Dashboard() {
         itemNo: section.itemNo,
         letterSuffix: section.letterSuffix,
         pipeSize: section.pipeSize,
-        defects: section.defects?.substring(0, 100) + '...',
+        defects: section.defects?.substring(0, 200) + '...',
         needsStructuralRepair: needsStructuralRepair,
         defectType: section.defectType,
-        recommendations: section.recommendations?.substring(0, 100) + '...'
+        recommendations: section.recommendations?.substring(0, 200) + '...',
+        // Check what requiresStructuralRepair logic finds
+        hasCleaningCodes: ['deposits', 'settled', 'debris', 'water level', 'blockage', 'grease', 'DEG', 'DES', 'DEC', 'DER'].some(code => 
+          section.defects?.toUpperCase().includes(code.toUpperCase())
+        ),
+        hasStructuralCodes: ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'deformation'].some(code => 
+          section.defects?.toUpperCase().includes(code.toUpperCase())
+        )
       });
     }
     
@@ -2222,10 +2229,17 @@ export default function Dashboard() {
       console.log(`🔍 ITEM 20 TP2 DEBUG:`, {
         itemNo: section.itemNo,
         pipeSize: section.pipeSize,
-        defects: section.defects?.substring(0, 100) + '...',
+        defects: section.defects?.substring(0, 200) + '...',
         needsStructuralRepair: needsStructuralRepair,
         defectType: section.defectType,
-        recommendations: section.recommendations?.substring(0, 100) + '...'
+        recommendations: section.recommendations?.substring(0, 200) + '...',
+        // Check what requiresStructuralRepair logic finds
+        hasCleaningCodes: ['deposits', 'settled', 'debris', 'water level', 'blockage', 'grease', 'DEG', 'DES', 'DEC', 'DER'].some(code => 
+          section.defects?.toUpperCase().includes(code.toUpperCase())
+        ),
+        hasStructuralCodes: ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'deformation'].some(code => 
+          section.defects?.toUpperCase().includes(code.toUpperCase())
+        )
       });
     }
     
@@ -2234,10 +2248,17 @@ export default function Dashboard() {
         itemNo: section.itemNo,
         letterSuffix: section.letterSuffix,
         pipeSize: section.pipeSize,
-        defects: section.defects?.substring(0, 100) + '...',
+        defects: section.defects?.substring(0, 200) + '...',
         needsStructuralRepair: needsStructuralRepair,
         defectType: section.defectType,
-        recommendations: section.recommendations?.substring(0, 100) + '...'
+        recommendations: section.recommendations?.substring(0, 200) + '...',
+        // Check what requiresStructuralRepair logic finds
+        hasCleaningCodes: ['deposits', 'settled', 'debris', 'water level', 'blockage', 'grease', 'DEG', 'DES', 'DEC', 'DER'].some(code => 
+          section.defects?.toUpperCase().includes(code.toUpperCase())
+        ),
+        hasStructuralCodes: ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'deformation'].some(code => 
+          section.defects?.toUpperCase().includes(code.toUpperCase())
+        )
       });
     }
     
@@ -2889,6 +2910,19 @@ export default function Dashboard() {
     return acc;
   }, []);
 
+  // DEBUG: Check which TP2 sections exist and their severity grades
+  expandedSectionData.forEach(section => {
+    if ((section.itemNo === 13 && section.letterSuffix === 'a') || section.itemNo === 20 || (section.itemNo === 21 && section.letterSuffix === 'a')) {
+      console.log(`📋 SECTION EXISTENCE CHECK - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
+        severityGrade: section.severityGrade,
+        defectType: section.defectType,
+        defects: section.defects?.substring(0, 150) + '...',
+        hasDefectsCheck: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0,
+        recommendations: section.recommendations?.substring(0, 100) + '...'
+      });
+    }
+  });
+
   // Apply filters to expanded section data
   const filteredData = expandedSectionData.filter(section => {
     if (filters.severityGrade && section.severityGrade !== filters.severityGrade) return false;
@@ -3184,12 +3218,13 @@ export default function Dashboard() {
   // Cost calculation function for enhanced table - using useMemo to ensure reactivity
   const calculateCost = useMemo(() => {
     return (section: any): string | JSX.Element => {
-      // DEBUG: Track TP2 sections entering cost calculation
-      if ((section.itemNo === 13 && section.letterSuffix === 'a') || section.itemNo === 20 || (section.itemNo === 21 && section.letterSuffix === 'a')) {
+      // DEBUG: Track ALL sections entering cost calculation to see which TP2 sections are missing
+      if (section.itemNo >= 13 && section.itemNo <= 21) {
         console.log(`💰 COST CALCULATION - Item ${section.itemNo}${section.letterSuffix || ''} entering calculateCost:`, {
           severityGrade: section.severityGrade,
           defects: section.defects?.substring(0, 100) + '...',
-          hasDefects: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0
+          hasDefects: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0,
+          defectType: section.defectType
         });
       }
       
