@@ -61,7 +61,33 @@ export function ValidationWarningPopup({
         </CardHeader>
         <CardContent className="space-y-4">
           <CardDescription className="text-sm">
-            {issue.description}
+            {issue.description.includes('Item ') ? (
+              <div>
+                {issue.description.split('\n\n').map((section, index) => {
+                  if (section.includes('Item ')) {
+                    // Format as list for TP2 items
+                    const lines = section.split('\n');
+                    const title = lines[0];
+                    const items = lines.slice(1);
+                    return (
+                      <div key={index} className="mb-3">
+                        <div className="mb-2">{title}</div>
+                        <ul className="list-disc list-inside space-y-1 ml-4">
+                          {items.map((item, itemIndex) => (
+                            <li key={itemIndex} className="text-sm">{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  } else {
+                    // Regular paragraph
+                    return <div key={index} className="mb-2">{section}</div>;
+                  }
+                })}
+              </div>
+            ) : (
+              issue.description
+            )}
           </CardDescription>
           
           <div className="flex justify-between space-x-2">
