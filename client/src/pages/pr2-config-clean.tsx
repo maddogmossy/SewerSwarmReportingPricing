@@ -1108,6 +1108,16 @@ export default function PR2ConfigClean() {
       // Invalidate all queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
       
+      // CRITICAL: Also invalidate dashboard queries so costs update immediately
+      console.log('🔄 Invalidating dashboard queries for immediate cost refresh...');
+      queryClient.invalidateQueries({ queryKey: ['/api/uploads'] });
+      queryClient.invalidateQueries({ predicate: (query) => {
+        return query.queryKey[0]?.toString().includes('/api/uploads/') && 
+               (query.queryKey[0]?.toString().includes('/sections') || 
+                query.queryKey[0]?.toString().includes('/defects'));
+      }});
+      console.log('✅ Dashboard queries invalidated - costs will refresh on navigation');
+      
       console.log(`✅ Save complete! Configuration available in sectors: ${selectedSectors.join(', ')}`);
       
     } catch (error) {
@@ -2307,6 +2317,22 @@ export default function PR2ConfigClean() {
             });
             console.log('✅ Configuration saved successfully');
           }
+          
+          // CRITICAL: Invalidate dashboard queries so costs update immediately
+          console.log('🔄 Invalidating dashboard queries to refresh cost calculations...');
+          queryClient.invalidateQueries({ queryKey: ['/api/uploads'] });
+          queryClient.invalidateQueries({ queryKey: ['/api/uploads'] });
+          // Invalidate all upload sections (can't predict exact uploadId)
+          queryClient.invalidateQueries({ predicate: (query) => {
+            return query.queryKey[0]?.toString().includes('/api/uploads/') && 
+                   query.queryKey[0]?.toString().includes('/sections');
+          }});
+          queryClient.invalidateQueries({ predicate: (query) => {
+            return query.queryKey[0]?.toString().includes('/api/uploads/') && 
+                   query.queryKey[0]?.toString().includes('/defects');
+          }});
+          console.log('✅ Dashboard queries invalidated - cost calculations will refresh');
+          
         } catch (error) {
           console.error('❌ Auto-save failed:', error);
           // Continue with navigation even if save fails
