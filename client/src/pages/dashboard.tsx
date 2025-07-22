@@ -1795,7 +1795,7 @@ export default function Dashboard() {
           type: "warning" as const,
           description: `Day rate distribution required for TP2 sections:\n${issueItems.join('\n')}\n\nTotal day rate adjustment needed: £${totalAdjustmentNeeded} (£${dayRateAdjustmentPerItem} × ${issueItems.length} items)`,
           action: {
-            label: "Add £50 Per Item",
+            label: "Re-calculate",
             onClick: () => {
               // Apply day rate adjustments to TP2 sections
               handleApplyDayRateAdjustment(tp2Sections, dayRateAdjustmentPerItem);

@@ -95,8 +95,9 @@ export function ValidationWarningPopup({
               {issue.action && (
                 <Button
                   onClick={issue.action.onClick}
-                  variant="outline"
+                  variant={issue.action.label === "Re-calculate" ? "default" : "outline"}
                   size="sm"
+                  className={issue.action.label === "Re-calculate" ? "bg-green-600 hover:bg-green-700 text-white" : ""}
                 >
                   {issue.action.label}
                 </Button>
