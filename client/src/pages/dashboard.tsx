@@ -3234,10 +3234,14 @@ export default function Dashboard() {
         });
       }
       
-      // Check if section actually has defects - for structural defects, check STR grade
+      // Check if section actually has defects - support both old and new severity grade systems
       const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
       const hasDefects = needsStructuralRepair 
-        ? (section.severityGrades?.structural && section.severityGrades.structural > 0)
+        ? (
+            // For structural defects, check STR grade first, fallback to old severityGrade
+            (section.severityGrades?.structural && section.severityGrades.structural > 0) ||
+            (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0)
+          )
         : (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0);
       
       if (!hasDefects) {
