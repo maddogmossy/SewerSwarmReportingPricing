@@ -1767,19 +1767,19 @@ export default function Dashboard() {
           const expectedCost = 475; // £425 base + £50 day rate adjustment
           const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
           if (Math.abs(actualCost - expectedCost) > 5) {
-            issueItems.push(`Item 13a: Expected £${expectedCost}, showing £${actualCost}`);
+            issueItems.push(`Item 13a: £${expectedCost}`);
           }
         } else if (section.itemNo === 20) { // Item 20
           const expectedCost = 600; // £550 base + £50 day rate adjustment
           const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
           if (Math.abs(actualCost - expectedCost) > 5) {
-            issueItems.push(`Item 20: Expected £${expectedCost}, showing £${actualCost}`);
+            issueItems.push(`Item 20: £${expectedCost}`);
           }
         } else if (section.itemNo === 21 && section.letterSuffix === 'a') { // Item 21a
           const expectedCost = 570; // £520 base + £50 day rate adjustment
           const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
           if (Math.abs(actualCost - expectedCost) > 5) {
-            issueItems.push(`Item 21a: Expected £${expectedCost}, showing £${actualCost}`);
+            issueItems.push(`Item 21a: £${expectedCost}`);
           }
         }
       });
