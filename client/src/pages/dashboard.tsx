@@ -1088,8 +1088,7 @@ export default function Dashboard() {
                   itemNo: section.itemNo,
                   pipeMaterial: section.pipeMaterial,
                   pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth),
-                  totalLength: section.totalLength,
-                  defectType: section.defectType // Pass defect type for proper classification
+                  totalLength: section.totalLength
                 }}
                 onPricingNeeded={(method, pipeSize, sector) => {
                   // Category creation is now handled within the CleaningOptionsPopover
@@ -1162,8 +1161,7 @@ export default function Dashboard() {
                   defects: section.defects,
                   itemNo: section.itemNo,
                   pipeMaterial: section.pipeMaterial,
-                  pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth),
-                  defectType: section.defectType // Pass defect type for proper classification
+                  pipeDepth: calculateDepthRangeFromMHDepths(section.startMHDepth, section.finishMHDepth)
                 }}
                 onPricingNeeded={(method, pipeSize, sector) => {
                   // Repair category creation can be implemented here if needed
@@ -1230,6 +1228,26 @@ export default function Dashboard() {
           
           // Check for TP2 below minimum quantity case - show RED COST instead of triangle
           if (costCalculation && 'showRedTriangle' in costCalculation && costCalculation.showRedTriangle) {
+            
+            // CRITICAL: Check if TP2 configuration has valid pricing data before showing popup
+            const tp2Config = pr2Configurations.find(config => 
+              config.categoryId === 'patching' && 
+              config.sector === currentSector.id
+            );
+            
+            // If configuration doesn't have valid pricing values, don't show clickable cost
+            if (!isConfigurationProperlyConfigured(tp2Config)) {
+              return (
+                <div 
+                  className="flex items-center justify-center p-1 rounded" 
+                  title="TP2 patching configuration requires pricing values before cost calculation"
+                >
+                  <span className="text-xs font-semibold text-gray-400">
+                    Configure TP2
+                  </span>
+                </div>
+              );
+            }
             // Use totalCost (with day rate adjustment) if available, otherwise calculate base cost
             const calculatedCost = ('totalCost' in costCalculation && costCalculation.totalCost) 
               ? costCalculation.totalCost 
@@ -1502,7 +1520,7 @@ export default function Dashboard() {
       }
       toast({
         title: "Report Reprocessed",
-        description: `${data.message} - SC codes have been filtered out.`,
+        description: `Report reprocessed - SC codes have been filtered out.`,
       });
       // Force page reload to ensure fresh data
       setTimeout(() => window.location.reload(), 1000);
@@ -2458,27 +2476,27 @@ export default function Dashboard() {
       
       if (no2Rule.useNo2 && dayRate && dayRate > 0 && no2Rule.no2Value > 0) {
         // Use "No 2" rule for calculation
-        baseCost = parseFloat(dayRate) / parseFloat(no2Rule.no2Value);
+        baseCost = parseFloat(dayRate.toString()) / parseFloat(no2Rule.no2Value.toString());
         calculationMethod = `"No 2" rule: £${dayRate} ÷ ${no2Rule.no2Value} = £${baseCost.toFixed(2)}`;
         console.log(`💰 Using "No 2" rule for section ${section.itemNo}: £${dayRate} ÷ ${no2Rule.no2Value} = £${baseCost.toFixed(2)}`);
       } else if (dayRate && dayRate > 0 && runsPerShift && runsPerShift > 0) {
         // Use standard "Runs per Shift" calculation
-        baseCost = parseFloat(dayRate) / parseFloat(runsPerShift);
+        baseCost = parseFloat(dayRate.toString()) / parseFloat(runsPerShift.toString());
         calculationMethod = `Standard: £${dayRate} ÷ ${runsPerShift} runs = £${baseCost.toFixed(2)}`;
         console.log(`💰 SECTION ${section.itemNo} [ID: ${section.id}] Using standard rule: £${dayRate} ÷ ${runsPerShift} = £${baseCost.toFixed(2)}`);
       } else if (hourlyRate && hourlyRate > 0) {
         // Assume 8 hour day if using hourly rate
         const divisor = no2Rule.useNo2 ? no2Rule.no2Value : (runsPerShift || 1);
-        baseCost = parseFloat(hourlyRate) * 8 / parseFloat(divisor);
+        baseCost = parseFloat(hourlyRate.toString()) * 8 / parseFloat(divisor.toString());
         calculationMethod = `Hourly: £${hourlyRate} × 8h ÷ ${divisor} = £${baseCost.toFixed(2)}`;
       } else if (perMeterRate && perMeterRate > 0 && section.totalLength) {
-        baseCost = parseFloat(perMeterRate) * parseFloat(section.totalLength || 0);
+        baseCost = parseFloat(perMeterRate.toString()) * parseFloat(section.totalLength || 0);
         calculationMethod = `Per meter: £${perMeterRate} × ${section.totalLength}m = £${baseCost.toFixed(2)}`;
       }
 
       // Add setup costs if configured
       if (setupRate && setupRate > 0) {
-        baseCost += parseFloat(setupRate);
+        baseCost += parseFloat(setupRate.toString());
       }
 
       // Return calculated cost if we have a valid amount
