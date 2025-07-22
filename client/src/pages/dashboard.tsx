@@ -1809,10 +1809,17 @@ export default function Dashboard() {
 
   // Handler for applying day rate adjustments to TP2 sections
   const handleApplyDayRateAdjustment = async (tp2Sections: any[], adjustmentPerItem: number) => {
+    console.log('🔄 Re-calculate button clicked!', {
+      tp2SectionsCount: tp2Sections.length,
+      adjustmentPerItem: adjustmentPerItem,
+      availableConfigs: pr2Configurations.map(c => ({ id: c.id, categoryId: c.categoryId }))
+    });
+    
     try {
       // Get the current TP2 patching configuration
       const tp2Config = pr2Configurations.find(config => config.categoryId === 'patching');
       if (!tp2Config) {
+        console.error('❌ TP2 patching configuration not found in configs:', pr2Configurations);
         toast({
           title: "Error",
           description: "TP2 patching configuration not found",
@@ -1820,6 +1827,15 @@ export default function Dashboard() {
         });
         return;
       }
+      
+      console.log('✅ Found TP2 config:', {
+        id: tp2Config.id,
+        categoryId: tp2Config.categoryId,
+        currentPricingOptions: tp2Config.pricingOptions?.map(opt => ({
+          label: opt.label,
+          value: opt.value
+        }))
+      });
 
       // Apply £50 adjustment to each pricing option
       const updatedPricingOptions = tp2Config.pricingOptions?.map((option: any) => ({
@@ -1840,15 +1856,23 @@ export default function Dashboard() {
       });
 
       if (response.ok) {
-        toast({
-          title: "Success",
-          description: `Applied £${adjustmentPerItem} day rate adjustment to TP2 pricing options`,
-        });
-        // Refresh the configurations and validation
+        // First invalidate all relevant queries
         await queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/uploads'] });
+        
+        // Dismiss validation warnings
         validationWarnings.dismissAll();
-        // Trigger re-calculation of costs
-        window.location.reload();
+        
+        // Show success message
+        toast({
+          title: "Success", 
+          description: `Applied £${adjustmentPerItem} day rate adjustment to TP2 sections. Items 13a, 20, 21a should now show updated costs.`,
+        });
+        
+        // Force complete data refetch and recalculation
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000); // Small delay to ensure queries are invalidated
       } else {
         throw new Error('Failed to update TP2 configuration');
       }
