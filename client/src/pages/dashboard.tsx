@@ -1795,100 +1795,26 @@ export default function Dashboard() {
       devId: 'tp2-validation-checkpoint-4'
     });
 
-    if (dayRate > 0 && doubleLayerCost > 0) {
-      // Expected day rate adjustment: (£1650 - £1500) ÷ 3 = £50 per item
-      const expectedAdjustment = 50;
-      const baseCost = doubleLayerCost - expectedAdjustment; // Should be base cost without day rate adjustment
-      const expectedBaseCost = 350; // Expected base cost for Double Layer
+    // DISABLED: Hardcoded day rate validation logic removed
+    // This validation was expecting specific day rate adjustments (£50) and base costs (£350)
+    // that don't match authentic Configuration 153 values (Day Rate £1650, Double Layer £425)
+    console.log('🔍 TP2 Day Rate values found:', {
+      dayRateOption: dayRateOption ? { label: dayRateOption.label, value: dayRateOption.value } : null,
+      doubleLayerOption: doubleLayerOption ? { label: doubleLayerOption.label, value: doubleLayerOption.value } : null,
+      dayRate,
+      doubleLayerCost,
+      note: 'Validation disabled - using authentic values from Configuration 153',
+      devId: 'tp2-validation-disabled'
+    });
 
-      console.log('🔍 TP2 Day Rate Calculation Check:', {
-        expectedAdjustment,
-        baseCost,
-        expectedBaseCost,
-        difference: Math.abs(baseCost - expectedBaseCost),
-        willTriggerWarning: Math.abs(baseCost - expectedBaseCost) > 5,
-        devId: 'tp2-validation-checkpoint-5'
-      });
-
-      // Check if day rate adjustment is properly configured
-      if (Math.abs(baseCost - expectedBaseCost) > 5) { // Allow small rounding differences
-        const dayRateIssue = {
-          id: `tp2-day-rate-${tp2Config.id}`,
-          title: "TP2 Day Rate Configuration Issue",
-          type: "warning" as const,
-          description: `TP2 patching configuration requires day rate adjustment. Double Layer cost should be £${expectedBaseCost + expectedAdjustment} (£${expectedBaseCost} base + £${expectedAdjustment} day rate adjustment). Currently: £${doubleLayerCost}`,
-          action: {
-            label: "Configure TP2 Pricing",
-            onClick: () => window.location.href = `/pr2-config-clean?categoryId=patching&sector=utilities&edit=${tp2Config.id}`
-          }
-        };
-        validationWarnings.showWarnings([dayRateIssue]);
-      }
-    }
-
-    // Check for sections needing TP2 pricing with cost distribution issues
-    const tp2Sections = sections.filter(section => 
-      requiresStructuralRepair(section.defects || '')
-    );
-
-    if (tp2Sections.length > 0) {
-      // Find sections with incorrect cost distribution
-      const issueItems = [];
-      
-      tp2Sections.forEach(section => {
-        console.log('🔍 Checking TP2 section for cost validation:', {
-          itemNo: section.itemNo,
-          letterSuffix: section.letterSuffix,
-          currentCost: section.cost,
-          defects: section.defects?.substring(0, 100) + '...',
-          hasStructuralDefects: requiresStructuralRepair(section.defects || '')
-        });
-        
-        if (section.itemNo === 13 && section.letterSuffix === 'a') { // Item 13a
-          const expectedCost = 475; // £425 base + £50 day rate adjustment
-          const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
-          console.log('💰 Item 13a cost check:', { expected: expectedCost, actual: actualCost, difference: Math.abs(actualCost - expectedCost) });
-          if (Math.abs(actualCost - expectedCost) > 5) {
-            issueItems.push(`Item 13a: £${expectedCost}`);
-          }
-        } else if (section.itemNo === 20) { // Item 20
-          const expectedCost = 600; // £550 base + £50 day rate adjustment
-          const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
-          console.log('💰 Item 20 cost check:', { expected: expectedCost, actual: actualCost, difference: Math.abs(actualCost - expectedCost) });
-          if (Math.abs(actualCost - expectedCost) > 5) {
-            issueItems.push(`Item 20: £${expectedCost}`);
-          }
-        } else if (section.itemNo === 21 && section.letterSuffix === 'a') { // Item 21a
-          const expectedCost = 570; // £520 base + £50 day rate adjustment
-          const actualCost = parseFloat(section.cost?.replace(/[£,]/g, '') || '0');
-          console.log('💰 Item 21a cost check:', { expected: expectedCost, actual: actualCost, difference: Math.abs(actualCost - expectedCost) });
-          if (Math.abs(actualCost - expectedCost) > 5) {
-            issueItems.push(`Item 21a: £${expectedCost}`);
-          }
-        }
-      });
-
-      if (issueItems.length > 0) {
-        // Calculate total day rate adjustment needed
-        const dayRateAdjustmentPerItem = 50;
-        const totalAdjustmentNeeded = issueItems.length * dayRateAdjustmentPerItem;
-        
-        const costDistributionIssue = {
-          id: `tp2-cost-distribution-${Date.now()}`,
-          title: "TP2 Day Rate Distribution Needed", 
-          type: "warning" as const,
-          description: `Day rate distribution required for TP2 sections:\n${issueItems.join('\n')}\n\nTotal day rate adjustment needed: £${totalAdjustmentNeeded} (£${dayRateAdjustmentPerItem} × ${issueItems.length} items)`,
-          action: {
-            label: "Re-calculate",
-            onClick: () => {
-              // Apply day rate adjustments to TP2 sections
-              handleApplyDayRateAdjustment(tp2Sections, dayRateAdjustmentPerItem);
-            }
-          }
-        };
-        validationWarnings.showWarnings([costDistributionIssue]);
-      }
-    }
+    // DISABLED: Hardcoded validation system removed to prevent conflicts with authentic Configuration 153 values
+    // This validation was using hardcoded expected costs (£475, £600, £570) that don't match authentic user data
+    // Configuration 153 has authentic values: Day Rate £1650, Double Layer £425
+    // Removing this entire validation block to eliminate "TP2 Day Rate Distribution Needed" popup
+    console.log('⚠️ TP2 cost distribution validation disabled - using authentic Configuration 153 values only');
+    
+    // Note: TP2 cost validation now handled by cost calculation level (line 1241) which properly uses 
+    // authentic configuration values instead of hardcoded expectations
   };
 
   // Handler for applying day rate adjustments to TP2 sections
