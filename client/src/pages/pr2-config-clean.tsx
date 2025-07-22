@@ -530,6 +530,10 @@ export default function PR2ConfigClean() {
         currentFormData.pricingOptions = formData.pricingOptions.map(opt =>
           opt.id === optionId ? { ...opt, value } : opt
         );
+      } else if (optionType === 'minQuantityOptions') {
+        currentFormData.minQuantityOptions = formData.minQuantityOptions.map(opt =>
+          opt.id === optionId ? { ...opt, value } : opt
+        );
       }
       
       const payload = {
@@ -602,8 +606,12 @@ export default function PR2ConfigClean() {
     });
     
     // For critical TP2 fields, save immediately to prevent data loss
-    if (optionType === 'pricingOptions' && (optionId === 'price_dayrate' || optionId === 'double_layer_cost')) {
-      console.log(`🚨 CRITICAL FIELD TRIGGERING IMMEDIATE SAVE: ${optionId} = ${value}`);
+    const criticalPricingFields = ['price_dayrate', 'double_layer_cost', 'single_layer_cost', 'triple_layer_cost', 'triple_layer_extra_cost'];
+    const criticalMinQuantityFields = ['patch_min_qty_1', 'patch_min_qty_2', 'patch_min_qty_3', 'patch_min_qty_4'];
+    
+    if ((optionType === 'pricingOptions' && criticalPricingFields.includes(optionId)) ||
+        (optionType === 'minQuantityOptions' && criticalMinQuantityFields.includes(optionId))) {
+      console.log(`🚨 CRITICAL FIELD TRIGGERING IMMEDIATE SAVE: ${optionType}.${optionId} = ${value}`);
       immediateSave(optionType, optionId, value);
     } else {
       // Trigger debounced save for other fields
