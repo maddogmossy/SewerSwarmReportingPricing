@@ -3643,7 +3643,7 @@ export default function PR2ConfigClean() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {/* Group range options by pairs (Percentage + Length) */}
+                      {/* Display range options as separate vertical rows */}
                       {formData.rangeOptions && (() => {
                         const percentageOptions = formData.rangeOptions.filter(opt => opt.label.includes("Percentage"));
                         const lengthOptions = formData.rangeOptions.filter(opt => opt.label.includes("Length"));
@@ -3655,9 +3655,10 @@ export default function PR2ConfigClean() {
                           const isFirstRow = index === 0;
                           
                           return (
-                            <div key={`row-${index}`} className="flex items-center gap-4 text-xs">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">% (Max)</span>
+                            <div key={`row-${index}`} className="space-y-1">
+                              {/* Percentage row */}
+                              <div className="flex items-center gap-2 text-xs">
+                                <span className="font-medium min-w-0 w-20">% (Max)</span>
                                 <Input
                                   placeholder=""
                                   value={percentageOption?.rangeEnd || ""}
@@ -3665,8 +3666,9 @@ export default function PR2ConfigClean() {
                                   className="bg-white border-purple-300 h-6 text-xs w-16"
                                 />
                               </div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">Length (Max)</span>
+                              {/* Length row */}
+                              <div className="flex items-center gap-2 text-xs">
+                                <span className="font-medium min-w-0 w-20">Length (Max)</span>
                                 <Input
                                   placeholder=""
                                   value={lengthOption?.rangeEnd || ""}
@@ -3677,50 +3679,20 @@ export default function PR2ConfigClean() {
                                   <Button
                                     size="sm"
                                     onClick={addNewInputsToAllWindows}
-                                    className="h-8 w-20 text-sm bg-green-600 text-white hover:bg-green-700 border-0"
+                                    className="h-6 w-16 text-xs bg-green-600 text-white hover:bg-green-700 border-0 ml-2"
                                   >
-                                    <Plus className="w-4 h-4 mr-2" />
+                                    <Plus className="w-3 h-3 mr-1" />
                                     Add
                                   </Button>
                                 )}
                                 {!isFirstRow && (
                                   <Button
                                     size="sm"
-                                    onClick={() => {
-                                      // Delete from all windows (green, orange, purple)
-                                      const setNumber = index + 1; // index is 0-based, setNumber is 1-based
-                                      
-                                      // Find corresponding green quantity option
-                                      const quantityToDelete = formData.quantityOptions.find(opt => 
-                                        opt.label.includes(`No ${setNumber}`) || opt.label.includes(`${setNumber}`)
-                                      );
-                                      
-                                      // Find corresponding orange min quantity option  
-                                      const minQuantityToDelete = formData.minQuantityOptions.find(opt => 
-                                        opt.label.includes(`Qty ${setNumber}`) || opt.label.includes(`${setNumber}`)
-                                      );
-                                      
-                                      // Remove from all windows
-                                      setFormData(prev => ({
-                                        ...prev,
-                                        quantityOptions: prev.quantityOptions.filter(opt => opt.id !== quantityToDelete?.id),
-                                        quantityStackOrder: prev.quantityStackOrder.filter(id => id !== quantityToDelete?.id),
-                                        minQuantityOptions: prev.minQuantityOptions.filter(opt => opt.id !== minQuantityToDelete?.id),
-                                        minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => id !== minQuantityToDelete?.id),
-                                        rangeOptions: prev.rangeOptions.filter(opt => 
-                                          opt.id !== percentageOption?.id && opt.id !== lengthOption?.id
-                                        ),
-                                        rangeStackOrder: prev.rangeStackOrder.filter(id => 
-                                          id !== percentageOption?.id && id !== lengthOption?.id
-                                        )
-                                      }));
-                                      
-                                      console.log(`🗑️ Deleted row ${setNumber} from all windows`);
-                                    }}
-                                    className="h-8 w-20 text-sm bg-red-600 text-white hover:bg-red-700 border-0"
+                                    onClick={() => deleteInputsFromAllWindows(index - 1)}
+                                    className="h-6 w-16 text-xs bg-red-600 text-white hover:bg-red-700 border-0 ml-2"
                                   >
-                                    <Trash2 className="w-4 h-4 mr-2" />
-                                    Delete
+                                    <Trash2 className="w-3 h-3 mr-1" />
+                                    Del
                                   </Button>
                                 )}
                               </div>
