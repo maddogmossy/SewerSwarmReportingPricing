@@ -1176,7 +1176,7 @@ export default function Dashboard() {
                     borderWidth: '4px'
                   } : {}}
                 >
-                  <div className="font-bold text-black mb-1">🔧 {hasTP2Patching ? `${titleText} (Pricing Window db11)` : titleText}</div>
+                  <div className="font-bold text-black mb-1">🔧 {titleText}</div>
                   <div className="text-black">{generateDynamicRecommendationWithPR2(section, repairPricingData)}</div>
                   <div className="text-xs text-black mt-1 font-medium">→ {statusMessage}</div>
                 </div>
