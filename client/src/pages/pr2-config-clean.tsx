@@ -168,10 +168,11 @@ export default function PR2ConfigClean() {
 
   // Local state for P26 day rate input to prevent API calls on every keystroke
   const [p26DayRate, setP26DayRate] = useState("");
+  const [p26Initialized, setP26Initialized] = useState(false);
 
-  // Initialize P26 day rate when data loads
+  // Initialize P26 day rate when data loads (only once)
   useEffect(() => {
-    if (pr2Configurations && p26DayRate === "") {
+    if (pr2Configurations && !p26Initialized) {
       const p26Config = pr2Configurations.find(config => config.categoryId === 'P26');
       const dayRateOption = p26Config?.pricingOptions?.find(option => 
         option.id === 'central_day_rate' || option.id === 'price_dayrate'
@@ -180,8 +181,9 @@ export default function PR2ConfigClean() {
       if (dayRateOption?.value && dayRateOption.value !== "") {
         setP26DayRate(dayRateOption.value);
       }
+      setP26Initialized(true);
     }
-  }, [pr2Configurations, p26DayRate]);
+  }, [pr2Configurations, p26Initialized]);
 
   // Load existing configuration for editing (moved up to avoid initialization error)
   const { data: existingConfig, error: configError } = useQuery({
