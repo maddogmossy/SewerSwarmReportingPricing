@@ -2702,6 +2702,40 @@ export default function PR2ConfigClean() {
                           console.log('🛑 Cancelled pending debounced save to prevent data contamination');
                         }
                         
+                        // AUTO-SAVE: Save current configuration before switching if we're editing
+                        if (isEditing && editId && formData) {
+                          console.log(`💾 AUTO-SAVE: Saving current configuration ${editId} before switching to ${pipeSize}`);
+                          try {
+                            const autoSavePayload = {
+                              categoryName: formData.categoryName,
+                              description: formData.description,
+                              categoryColor: formData.categoryColor,
+                              sector: sector,
+                              categoryId: categoryId,
+                              pricingOptions: formData.pricingOptions,
+                              quantityOptions: formData.quantityOptions,
+                              minQuantityOptions: formData.minQuantityOptions,
+                              rangeOptions: formData.rangeOptions,
+                              mathOperators: formData.mathOperators,
+                              pricingStackOrder: formData.pricingStackOrder,
+                              quantityStackOrder: formData.quantityStackOrder,
+                              minQuantityStackOrder: formData.minQuantityStackOrder,
+                              rangeStackOrder: formData.rangeStackOrder
+                            };
+
+                            await fetch(`/api/pr2-clean/${editId}`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify(autoSavePayload)
+                            });
+                            
+                            console.log(`✅ AUTO-SAVE: Successfully saved configuration ${editId} before switching`);
+                          } catch (autoSaveError) {
+                            console.error(`❌ AUTO-SAVE: Failed to save configuration ${editId}:`, autoSaveError);
+                            // Continue with switching even if auto-save fails
+                          }
+                        }
+                        
                         try {
                           // Load the specific configuration data directly
                           const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);

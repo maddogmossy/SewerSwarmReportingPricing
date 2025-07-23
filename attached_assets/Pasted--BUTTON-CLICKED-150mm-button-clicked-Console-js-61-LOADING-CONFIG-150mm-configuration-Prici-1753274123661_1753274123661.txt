@@ -1,0 +1,1258 @@
+🚀 BUTTON CLICKED: 150mm button clicked!
+Console.js:61 🚀 LOADING CONFIG: 150mm configuration (Pricing Window db11)
+Console.js:61 ✅ Loaded config data for ID 153: {id: 153, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - 150mm Patching Configuration', description: 'Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 100 ', …}
+Console.js:61 ✅ Form data updated to show 150mm configuration (Pricing Window db11)
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 API REQUEST: Fetching configuration 153
+Console.js:61 🔄 editId changed to: 153, clearing processedConfigId and invalidating cache
+Console.js:61 🔄 Resetting flags: hasUserChanges = false
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 153, configToUse: undefined
+Console.js:61 🔍 processedConfigId: 157, current config ID: undefined
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 ✅ API RESPONSE: Configuration 153 loaded: {id: 153, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - 150mm Patching Configuration', description: 'Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 100 ', …}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 153, configToUse: {id: 153, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - 150mm Patching Configuration', description: 'Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 100 ', …}
+Console.js:61 🔍 processedConfigId: null, current config ID: 153
+Console.js:61 🔍 Force processing config ID: 153 (editId: 153) - hasUserChanges: false
+Console.js:61 🔍 Processing config: {id: 153, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - 150mm Patching Configuration', description: 'Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 100 ', …}
+Console.js:61 🔧 Loading configuration data: {id: 153, userId: 'test-user', categoryId: 'patching', categoryName: 'TP2 - 150mm Patching Configuration', description: 'Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 100 ', …}
+Console.js:61 🔧 Initialized form data with options: {pricingCount: 4, quantityCount: 1, minQuantityCount: 5, rangeCount: 5}
+Console.js:61 🔧 Setting form data for config 153: {quantityValue: '', rangeLength: undefined}
+Console.js:61 🔍 Detected existing config in sector: utilities
+Console.js:61 🔍 Setting sectorsWithConfig to: [utilities]
+Console.js:61 🔍 Setting selectedSectors to: [utilities]
+Console.js:61 ✅ Configuration 153 processed and marked as loaded
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 📏 Length input 2 (Double Layer): 100
+Console.js:61 🔧 handleRangeValueChange called: length_max_2, rangeEnd, 100
+Console.js:61 🔍 DEBUGGING: Full value length: 3, characters: "100"
+Console.js:61 💾 Saving configuration changes (including cleared fields)...
+Console.js:61 💾 Current formData being saved: {
+  "categoryName": "TP2 - 150mm Patching Configuration",
+  "description": "Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 100 ",
+  "categoryColor": "#FFD93D",
+  "pricingOptions": [
+    {
+      "id": "single_layer_cost",
+      "label": "Single Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "double_layer_cost",
+      "label": "Double Layer",
+      "value": "425",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_cost",
+      "label": "Triple Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_extra_cost",
+      "label": "Triple Layer (with Extra Cure Time)",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "quantityOptions": [
+    {
+      "id": "quantity_runs",
+      "label": "Runs per Shift",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "minQuantityOptions": [
+    {
+      "id": "minquantity_runs",
+      "label": "Min Runs per Shift",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_1",
+      "label": "Single Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_2",
+      "label": "Double Layer Min Qty",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_3",
+      "label": "Triple Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_4",
+      "label": "Triple Layer (Extra) Min Qty",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "rangeOptions": [
+    {
+      "id": "length_max_1",
+      "label": "Length Max 1",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_2",
+      "label": "Length Max 2",
+      "enabled": true,
+      "rangeEnd": "100 ",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_3",
+      "label": "Length Max 3",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_4",
+      "label": "Length Max 4",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_5",
+      "label": "Length Max 5",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    }
+  ],
+  "mathOperators": [
+    "N/A"
+  ],
+  "pricingStackOrder": [
+    "single_layer_cost",
+    "double_layer_cost",
+    "triple_layer_cost",
+    "triple_layer_extra_cost"
+  ],
+  "quantityStackOrder": [
+    "quantity_runs"
+  ],
+  "minQuantityStackOrder": [
+    "minquantity_runs",
+    "patch_min_qty_1",
+    "patch_min_qty_2",
+    "patch_min_qty_3",
+    "patch_min_qty_4"
+  ],
+  "rangeStackOrder": [
+    "length_max_1",
+    "length_max_2",
+    "length_max_3",
+    "length_max_4",
+    "length_max_5"
+  ],
+  "sector": "utilities"
+}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 DEBUGGING: Updated option: {id: 'length_max_2', label: 'Length Max 2', enabled: true, rangeEnd: '100', rangeStart: ''}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 📏 Length input 2 (Double Layer): 10
+Console.js:61 🔧 handleRangeValueChange called: length_max_2, rangeEnd, 10
+Console.js:61 🔍 DEBUGGING: Full value length: 2, characters: "10"
+Console.js:61 🔍 DEBUGGING: Updated option: {id: 'length_max_2', label: 'Length Max 2', enabled: true, rangeEnd: '10', rangeStart: ''}
+Console.js:61 💾 Saving configuration changes (including cleared fields)...
+Console.js:61 💾 Current formData being saved: {
+  "categoryName": "TP2 - 150mm Patching Configuration",
+  "description": "Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 100",
+  "categoryColor": "#FFD93D",
+  "pricingOptions": [
+    {
+      "id": "single_layer_cost",
+      "label": "Single Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "double_layer_cost",
+      "label": "Double Layer",
+      "value": "425",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_cost",
+      "label": "Triple Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_extra_cost",
+      "label": "Triple Layer (with Extra Cure Time)",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "quantityOptions": [
+    {
+      "id": "quantity_runs",
+      "label": "Runs per Shift",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "minQuantityOptions": [
+    {
+      "id": "minquantity_runs",
+      "label": "Min Runs per Shift",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_1",
+      "label": "Single Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_2",
+      "label": "Double Layer Min Qty",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_3",
+      "label": "Triple Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_4",
+      "label": "Triple Layer (Extra) Min Qty",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "rangeOptions": [
+    {
+      "id": "length_max_1",
+      "label": "Length Max 1",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_2",
+      "label": "Length Max 2",
+      "enabled": true,
+      "rangeEnd": "100",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_3",
+      "label": "Length Max 3",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_4",
+      "label": "Length Max 4",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_5",
+      "label": "Length Max 5",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    }
+  ],
+  "mathOperators": [
+    "N/A"
+  ],
+  "pricingStackOrder": [
+    "single_layer_cost",
+    "double_layer_cost",
+    "triple_layer_cost",
+    "triple_layer_extra_cost"
+  ],
+  "quantityStackOrder": [
+    "quantity_runs"
+  ],
+  "minQuantityStackOrder": [
+    "minquantity_runs",
+    "patch_min_qty_1",
+    "patch_min_qty_2",
+    "patch_min_qty_3",
+    "patch_min_qty_4"
+  ],
+  "rangeStackOrder": [
+    "length_max_1",
+    "length_max_2",
+    "length_max_3",
+    "length_max_4",
+    "length_max_5"
+  ],
+  "sector": "utilities"
+}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 📏 Length input 2 (Double Layer): 1
+Console.js:61 🔧 handleRangeValueChange called: length_max_2, rangeEnd, 1
+Console.js:61 🔍 DEBUGGING: Full value length: 1, characters: "1"
+Console.js:61 🔍 DEBUGGING: Updated option: {id: 'length_max_2', label: 'Length Max 2', enabled: true, rangeEnd: '1', rangeStart: ''}
+Console.js:61 💾 Saving configuration changes (including cleared fields)...
+Console.js:61 💾 Current formData being saved: {
+  "categoryName": "TP2 - 150mm Patching Configuration",
+  "description": "Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 10",
+  "categoryColor": "#FFD93D",
+  "pricingOptions": [
+    {
+      "id": "single_layer_cost",
+      "label": "Single Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "double_layer_cost",
+      "label": "Double Layer",
+      "value": "425",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_cost",
+      "label": "Triple Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_extra_cost",
+      "label": "Triple Layer (with Extra Cure Time)",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "quantityOptions": [
+    {
+      "id": "quantity_runs",
+      "label": "Runs per Shift",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "minQuantityOptions": [
+    {
+      "id": "minquantity_runs",
+      "label": "Min Runs per Shift",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_1",
+      "label": "Single Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_2",
+      "label": "Double Layer Min Qty",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_3",
+      "label": "Triple Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_4",
+      "label": "Triple Layer (Extra) Min Qty",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "rangeOptions": [
+    {
+      "id": "length_max_1",
+      "label": "Length Max 1",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_2",
+      "label": "Length Max 2",
+      "enabled": true,
+      "rangeEnd": "10",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_3",
+      "label": "Length Max 3",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_4",
+      "label": "Length Max 4",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_5",
+      "label": "Length Max 5",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    }
+  ],
+  "mathOperators": [
+    "N/A"
+  ],
+  "pricingStackOrder": [
+    "single_layer_cost",
+    "double_layer_cost",
+    "triple_layer_cost",
+    "triple_layer_extra_cost"
+  ],
+  "quantityStackOrder": [
+    "quantity_runs"
+  ],
+  "minQuantityStackOrder": [
+    "minquantity_runs",
+    "patch_min_qty_1",
+    "patch_min_qty_2",
+    "patch_min_qty_3",
+    "patch_min_qty_4"
+  ],
+  "rangeStackOrder": [
+    "length_max_1",
+    "length_max_2",
+    "length_max_3",
+    "length_max_4",
+    "length_max_5"
+  ],
+  "sector": "utilities"
+}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 📏 Length input 2 (Double Layer): 
+Console.js:61 🔧 handleRangeValueChange called: length_max_2, rangeEnd, 
+Console.js:61 🔍 DEBUGGING: Full value length: 0, characters: ""
+Console.js:61 🔍 DEBUGGING: Updated option: {id: 'length_max_2', label: 'Length Max 2', enabled: true, rangeEnd: '', rangeStart: ''}
+Console.js:61 💾 Saving configuration changes (including cleared fields)...
+Console.js:61 💾 Current formData being saved: {
+  "categoryName": "TP2 - 150mm Patching Configuration",
+  "description": "Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 1",
+  "categoryColor": "#FFD93D",
+  "pricingOptions": [
+    {
+      "id": "single_layer_cost",
+      "label": "Single Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "double_layer_cost",
+      "label": "Double Layer",
+      "value": "425",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_cost",
+      "label": "Triple Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_extra_cost",
+      "label": "Triple Layer (with Extra Cure Time)",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "quantityOptions": [
+    {
+      "id": "quantity_runs",
+      "label": "Runs per Shift",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "minQuantityOptions": [
+    {
+      "id": "minquantity_runs",
+      "label": "Min Runs per Shift",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_1",
+      "label": "Single Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_2",
+      "label": "Double Layer Min Qty",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_3",
+      "label": "Triple Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_4",
+      "label": "Triple Layer (Extra) Min Qty",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "rangeOptions": [
+    {
+      "id": "length_max_1",
+      "label": "Length Max 1",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_2",
+      "label": "Length Max 2",
+      "enabled": true,
+      "rangeEnd": "1",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_3",
+      "label": "Length Max 3",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_4",
+      "label": "Length Max 4",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_5",
+      "label": "Length Max 5",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    }
+  ],
+  "mathOperators": [
+    "N/A"
+  ],
+  "pricingStackOrder": [
+    "single_layer_cost",
+    "double_layer_cost",
+    "triple_layer_cost",
+    "triple_layer_extra_cost"
+  ],
+  "quantityStackOrder": [
+    "quantity_runs"
+  ],
+  "minQuantityStackOrder": [
+    "minquantity_runs",
+    "patch_min_qty_1",
+    "patch_min_qty_2",
+    "patch_min_qty_3",
+    "patch_min_qty_4"
+  ],
+  "rangeStackOrder": [
+    "length_max_1",
+    "length_max_2",
+    "length_max_3",
+    "length_max_4",
+    "length_max_5"
+  ],
+  "sector": "utilities"
+}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 ✅ Input values saved successfully
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 📏 Length input 2 (Double Layer): 1
+Console.js:61 🔧 handleRangeValueChange called: length_max_2, rangeEnd, 1
+Console.js:61 🔍 DEBUGGING: Full value length: 1, characters: "1"
+Console.js:61 🔍 DEBUGGING: Updated option: {id: 'length_max_2', label: 'Length Max 2', enabled: true, rangeEnd: '1', rangeStart: ''}
+Console.js:61 💾 Saving configuration changes (including cleared fields)...
+Console.js:61 💾 Current formData being saved: {
+  "categoryName": "TP2 - 150mm Patching Configuration",
+  "description": "Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4",
+  "categoryColor": "#FFD93D",
+  "pricingOptions": [
+    {
+      "id": "single_layer_cost",
+      "label": "Single Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "double_layer_cost",
+      "label": "Double Layer",
+      "value": "425",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_cost",
+      "label": "Triple Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_extra_cost",
+      "label": "Triple Layer (with Extra Cure Time)",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "quantityOptions": [
+    {
+      "id": "quantity_runs",
+      "label": "Runs per Shift",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "minQuantityOptions": [
+    {
+      "id": "minquantity_runs",
+      "label": "Min Runs per Shift",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_1",
+      "label": "Single Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_2",
+      "label": "Double Layer Min Qty",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_3",
+      "label": "Triple Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_4",
+      "label": "Triple Layer (Extra) Min Qty",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "rangeOptions": [
+    {
+      "id": "length_max_1",
+      "label": "Length Max 1",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_2",
+      "label": "Length Max 2",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_3",
+      "label": "Length Max 3",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_4",
+      "label": "Length Max 4",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_5",
+      "label": "Length Max 5",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    }
+  ],
+  "mathOperators": [
+    "N/A"
+  ],
+  "pricingStackOrder": [
+    "single_layer_cost",
+    "double_layer_cost",
+    "triple_layer_cost",
+    "triple_layer_extra_cost"
+  ],
+  "quantityStackOrder": [
+    "quantity_runs"
+  ],
+  "minQuantityStackOrder": [
+    "minquantity_runs",
+    "patch_min_qty_1",
+    "patch_min_qty_2",
+    "patch_min_qty_3",
+    "patch_min_qty_4"
+  ],
+  "rangeStackOrder": [
+    "length_max_1",
+    "length_max_2",
+    "length_max_3",
+    "length_max_4",
+    "length_max_5"
+  ],
+  "sector": "utilities"
+}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 📏 Length input 2 (Double Layer): 10
+Console.js:61 🔧 handleRangeValueChange called: length_max_2, rangeEnd, 10
+Console.js:61 🔍 DEBUGGING: Full value length: 2, characters: "10"
+Console.js:61 🔍 DEBUGGING: Updated option: {id: 'length_max_2', label: 'Length Max 2', enabled: true, rangeEnd: '10', rangeStart: ''}
+Console.js:61 💾 Saving configuration changes (including cleared fields)...
+Console.js:61 💾 Current formData being saved: {
+  "categoryName": "TP2 - 150mm Patching Configuration",
+  "description": "Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 1",
+  "categoryColor": "#FFD93D",
+  "pricingOptions": [
+    {
+      "id": "single_layer_cost",
+      "label": "Single Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "double_layer_cost",
+      "label": "Double Layer",
+      "value": "425",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_cost",
+      "label": "Triple Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_extra_cost",
+      "label": "Triple Layer (with Extra Cure Time)",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "quantityOptions": [
+    {
+      "id": "quantity_runs",
+      "label": "Runs per Shift",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "minQuantityOptions": [
+    {
+      "id": "minquantity_runs",
+      "label": "Min Runs per Shift",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_1",
+      "label": "Single Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_2",
+      "label": "Double Layer Min Qty",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_3",
+      "label": "Triple Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_4",
+      "label": "Triple Layer (Extra) Min Qty",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "rangeOptions": [
+    {
+      "id": "length_max_1",
+      "label": "Length Max 1",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_2",
+      "label": "Length Max 2",
+      "enabled": true,
+      "rangeEnd": "1",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_3",
+      "label": "Length Max 3",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_4",
+      "label": "Length Max 4",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_5",
+      "label": "Length Max 5",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    }
+  ],
+  "mathOperators": [
+    "N/A"
+  ],
+  "pricingStackOrder": [
+    "single_layer_cost",
+    "double_layer_cost",
+    "triple_layer_cost",
+    "triple_layer_extra_cost"
+  ],
+  "quantityStackOrder": [
+    "quantity_runs"
+  ],
+  "minQuantityStackOrder": [
+    "minquantity_runs",
+    "patch_min_qty_1",
+    "patch_min_qty_2",
+    "patch_min_qty_3",
+    "patch_min_qty_4"
+  ],
+  "rangeStackOrder": [
+    "length_max_1",
+    "length_max_2",
+    "length_max_3",
+    "length_max_4",
+    "length_max_5"
+  ],
+  "sector": "utilities"
+}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 📏 Length input 2 (Double Layer): 100
+Console.js:61 🔧 handleRangeValueChange called: length_max_2, rangeEnd, 100
+Console.js:61 🔍 DEBUGGING: Full value length: 3, characters: "100"
+Console.js:61 🔍 DEBUGGING: Updated option: {id: 'length_max_2', label: 'Length Max 2', enabled: true, rangeEnd: '100', rangeStart: ''}
+Console.js:61 💾 Saving configuration changes (including cleared fields)...
+Console.js:61 💾 Current formData being saved: {
+  "categoryName": "TP2 - 150mm Patching Configuration",
+  "description": "Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 10",
+  "categoryColor": "#FFD93D",
+  "pricingOptions": [
+    {
+      "id": "single_layer_cost",
+      "label": "Single Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "double_layer_cost",
+      "label": "Double Layer",
+      "value": "425",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_cost",
+      "label": "Triple Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_extra_cost",
+      "label": "Triple Layer (with Extra Cure Time)",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "quantityOptions": [
+    {
+      "id": "quantity_runs",
+      "label": "Runs per Shift",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "minQuantityOptions": [
+    {
+      "id": "minquantity_runs",
+      "label": "Min Runs per Shift",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_1",
+      "label": "Single Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_2",
+      "label": "Double Layer Min Qty",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_3",
+      "label": "Triple Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_4",
+      "label": "Triple Layer (Extra) Min Qty",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "rangeOptions": [
+    {
+      "id": "length_max_1",
+      "label": "Length Max 1",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_2",
+      "label": "Length Max 2",
+      "enabled": true,
+      "rangeEnd": "10",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_3",
+      "label": "Length Max 3",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_4",
+      "label": "Length Max 4",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_5",
+      "label": "Length Max 5",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    }
+  ],
+  "mathOperators": [
+    "N/A"
+  ],
+  "pricingStackOrder": [
+    "single_layer_cost",
+    "double_layer_cost",
+    "triple_layer_cost",
+    "triple_layer_extra_cost"
+  ],
+  "quantityStackOrder": [
+    "quantity_runs"
+  ],
+  "minQuantityStackOrder": [
+    "minquantity_runs",
+    "patch_min_qty_1",
+    "patch_min_qty_2",
+    "patch_min_qty_3",
+    "patch_min_qty_4"
+  ],
+  "rangeStackOrder": [
+    "length_max_1",
+    "length_max_2",
+    "length_max_3",
+    "length_max_4",
+    "length_max_5"
+  ],
+  "sector": "utilities"
+}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 📏 Length input 2 (Double Layer): 1000
+Console.js:61 🔧 handleRangeValueChange called: length_max_2, rangeEnd, 1000
+Console.js:61 🔍 DEBUGGING: Full value length: 4, characters: "1000"
+Console.js:61 🔍 DEBUGGING: Updated option: {id: 'length_max_2', label: 'Length Max 2', enabled: true, rangeEnd: '1000', rangeStart: ''}
+Console.js:61 💾 Saving configuration changes (including cleared fields)...
+Console.js:61 💾 Current formData being saved: {
+  "categoryName": "TP2 - 150mm Patching Configuration",
+  "description": "Double Layer = £425. Min Runs per Shift = 4. Double Layer Min Qty = 4. Length Max 2 = R1 to 100",
+  "categoryColor": "#FFD93D",
+  "pricingOptions": [
+    {
+      "id": "single_layer_cost",
+      "label": "Single Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "double_layer_cost",
+      "label": "Double Layer",
+      "value": "425",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_cost",
+      "label": "Triple Layer",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "triple_layer_extra_cost",
+      "label": "Triple Layer (with Extra Cure Time)",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "quantityOptions": [
+    {
+      "id": "quantity_runs",
+      "label": "Runs per Shift",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "minQuantityOptions": [
+    {
+      "id": "minquantity_runs",
+      "label": "Min Runs per Shift",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_1",
+      "label": "Single Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_2",
+      "label": "Double Layer Min Qty",
+      "value": "4",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_3",
+      "label": "Triple Layer Min Qty",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "id": "patch_min_qty_4",
+      "label": "Triple Layer (Extra) Min Qty",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "rangeOptions": [
+    {
+      "id": "length_max_1",
+      "label": "Length Max 1",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_2",
+      "label": "Length Max 2",
+      "enabled": true,
+      "rangeEnd": "100",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_3",
+      "label": "Length Max 3",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_4",
+      "label": "Length Max 4",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    },
+    {
+      "id": "length_max_5",
+      "label": "Length Max 5",
+      "enabled": true,
+      "rangeEnd": "",
+      "rangeStart": ""
+    }
+  ],
+  "mathOperators": [
+    "N/A"
+  ],
+  "pricingStackOrder": [
+    "single_layer_cost",
+    "double_layer_cost",
+    "triple_layer_cost",
+    "triple_layer_extra_cost"
+  ],
+  "quantityStackOrder": [
+    "quantity_runs"
+  ],
+  "minQuantityStackOrder": [
+    "minquantity_runs",
+    "patch_min_qty_1",
+    "patch_min_qty_2",
+    "patch_min_qty_3",
+    "patch_min_qty_4"
+  ],
+  "rangeStackOrder": [
+    "length_max_1",
+    "length_max_2",
+    "length_max_3",
+    "length_max_4",
+    "length_max_5"
+  ],
+  "sector": "utilities"
+}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
+Console.js:61 ✅ Input values saved successfully
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?categoryId=patching&sector=utilities&edit=153', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…ean?categoryId=patching&sector=utilities&edit=153', search: '?categoryId=patching&sector=utilities&edit=153', sector: 'utilities', categoryId: 'patching', …}
+Console.js:61 🔍 Rendering button: 150mm (Pricing Window db11) - Current: true
+Console.js:61 🔍 Rendering button: 225mm (Pricing Window db11) - Current: false
+Console.js:61 🔍 Rendering button: 300mm (Pricing Window db11) - Current: false
