@@ -722,6 +722,22 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 23, 2025)
 
+### CRITICAL: Database Save Bug Fix Complete - Delete Operations Now Persist ✅
+- **Date**: January 23, 2025
+- **Status**: Successfully fixed delete functionality to save changes to database, not just frontend state
+- **Root Cause Identified**: Delete functions were only calling `setFormData` but missing `debouncedSave()` calls to persist to database
+- **Issues Fixed**:
+  - **Database Persistence**: All delete functions now trigger `debouncedSave()` to persist changes to database
+  - **Meterage Rules Issue Resolved**: User's deleted "Length 2" range will now actually be removed from database
+  - **Consistent Save Behavior**: Delete operations now match the save behavior of other functions like `updateRangeInput`
+  - **Cross-Window Deletion**: Previously fixed cross-window deletion logic now properly saves to database
+- **Technical Implementation**:
+  - Added `debouncedSave()` calls to: `deletePricingOption`, `deleteQuantityOption`, `deleteMinQuantityOption`, `deleteRangeOption`, `deleteRangePair`
+  - Fixed the root cause of why meterage rules weren't being applied (deleted ranges still existed in database)
+  - Maintained existing indexing and layout fixes from previous session
+- **User Benefit**: Delete operations now persist to database, resolving the issue where deleted ranges were still visible in API responses
+- **Result**: Complete delete functionality with proper database persistence operational
+
 ### CRITICAL: Delete Function Bug Fix Complete - Cross-Window Deletion Operational ✅
 - **Date**: January 23, 2025
 - **Status**: Successfully fixed delete functionality to remove from all three windows (green/orange/purple)

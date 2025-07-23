@@ -1421,6 +1421,8 @@ export default function PR2ConfigClean() {
       pricingOptions: prev.pricingOptions.filter(opt => opt.id !== optionId),
       pricingStackOrder: prev.pricingStackOrder.filter(id => id !== optionId)
     }));
+    // CRITICAL FIX: Trigger database save after deletion
+    debouncedSave();
   };
 
   const updatePricingOption = (optionId: string, field: 'enabled' | 'value', value: any) => {
@@ -1605,6 +1607,8 @@ export default function PR2ConfigClean() {
   // Wrapper function for deleting range pairs from purple window
   const deleteRangePair = (pairIndex: number) => {
     deleteInputsFromAllWindows(pairIndex);
+    // CRITICAL FIX: Trigger database save after deletion
+    debouncedSave();
   };
 
   const deleteQuantityOption = (optionId: string) => {
@@ -1613,6 +1617,8 @@ export default function PR2ConfigClean() {
       quantityOptions: prev.quantityOptions.filter(opt => opt.id !== optionId),
       quantityStackOrder: prev.quantityStackOrder.filter(id => id !== optionId)
     }));
+    // CRITICAL FIX: Trigger database save after deletion
+    debouncedSave();
   };
 
   const updateQuantityOption = (optionId: string, field: 'enabled' | 'value', value: any) => {
@@ -1674,6 +1680,8 @@ export default function PR2ConfigClean() {
       minQuantityOptions: prev.minQuantityOptions.filter(opt => opt.id !== optionId),
       minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => id !== optionId)
     }));
+    // CRITICAL FIX: Trigger database save after deletion
+    debouncedSave();
   };
 
   const updateMinQuantityOption = (optionId: string, field: 'enabled' | 'value', value: any) => {
@@ -1736,6 +1744,8 @@ export default function PR2ConfigClean() {
       rangeOptions: prev.rangeOptions.filter(opt => opt.id !== optionId),
       rangeStackOrder: prev.rangeStackOrder.filter(id => id !== optionId)
     }));
+    // CRITICAL FIX: Trigger database save after deletion
+    debouncedSave();
   };
 
   // Vehicle Travel Rate functions
