@@ -3782,6 +3782,15 @@ export default function PR2ConfigClean() {
                 className="border-cyan-300"
               />
             </div>
+            <div>
+              <Label htmlFor="number-of-hours" className="text-cyan-700">Number of Hours</Label>
+              <Input
+                id="number-of-hours"
+                placeholder="2"
+                defaultValue="2"
+                className="border-cyan-300"
+              />
+            </div>
             <div className="flex gap-2">
               <Button
                 onClick={addVehicleTravelRate}
@@ -3828,6 +3837,15 @@ export default function PR2ConfigClean() {
                 placeholder="e.g., 45.00"
                 value={newHourlyRate}
                 onChange={(e) => setNewHourlyRate(e.target.value)}
+                className="border-cyan-300"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-number-of-hours" className="text-cyan-700">Number of Hours</Label>
+              <Input
+                id="edit-number-of-hours"
+                placeholder="2"
+                defaultValue="2"
                 className="border-cyan-300"
               />
             </div>
