@@ -684,6 +684,7 @@ export default function PR2ConfigClean() {
   // Handle range value changes for purple window
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
     console.log(`🔧 handleRangeValueChange called: ${optionId}, ${field}, ${value}`);
+    console.log(`🔍 DEBUGGING: Full value length: ${value.length}, characters: "${value}"`);
     
     // Mark that user has made changes to prevent automatic form overwrite
     setHasUserChanges(true);
@@ -693,7 +694,9 @@ export default function PR2ConfigClean() {
       rangeOptions: prev.rangeOptions.map(opt => {
         if (opt.id === optionId) {
           // Simple update without validation for TP2 template
-          return { ...opt, [field]: value };
+          const updatedOpt = { ...opt, [field]: value };
+          console.log(`🔍 DEBUGGING: Updated option:`, updatedOpt);
+          return updatedOpt;
         }
         return opt;
       })

@@ -293,6 +293,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
     try {
       const configId = parseInt(req.params.id);
       console.log('📝 Clean PR2 PUT request body:', req.body);
+      console.log('🔍 DEBUGGING: Range options in PUT:', JSON.stringify(req.body.rangeOptions, null, 2));
       
       const {
         categoryName,
