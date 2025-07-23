@@ -171,12 +171,13 @@ export default function PR2ConfigClean() {
 
   // Initialize P26 day rate when data loads
   useEffect(() => {
-    if (pr2Configurations && !p26DayRate) {
+    if (pr2Configurations && p26DayRate === "") {
       const p26Config = pr2Configurations.find(config => config.categoryId === 'P26');
       const dayRateOption = p26Config?.pricingOptions?.find(option => 
         option.id === 'central_day_rate' || option.id === 'price_dayrate'
       );
-      if (dayRateOption?.value) {
+      // Only set if there's actually a value, allow empty state
+      if (dayRateOption?.value && dayRateOption.value !== "") {
         setP26DayRate(dayRateOption.value);
       }
     }
@@ -2874,14 +2875,7 @@ export default function PR2ConfigClean() {
                       <Label className="text-xs">£</Label>
                       <Input
                         placeholder="1650"
-                        value={p26DayRate || (() => {
-                          // Find P26 configuration and extract day rate
-                          const p26Config = pr2Configurations?.find(config => config.categoryId === 'P26');
-                          const dayRateOption = p26Config?.pricingOptions?.find(option => 
-                            option.id === 'central_day_rate' || option.id === 'price_dayrate'
-                          );
-                          return dayRateOption?.value || "1650";
-                        })()}
+                        value={p26DayRate}
                         onChange={(e) => {
                           // Update local state immediately for responsive typing
                           setP26DayRate(e.target.value);
