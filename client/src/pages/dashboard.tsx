@@ -2404,9 +2404,12 @@ export default function Dashboard() {
       
       // NEW: Check if section meets "No 2" rule criteria
       const checkNo2Rule = (section: any, config: any) => {
-        // Find "No 2" option in quantity options
+        // Find "No 2" or "Runs 2" option in quantity options
         const no2Option = config.quantityOptions?.find(opt => 
-          opt.label && opt.label.toLowerCase().includes('no 2') && opt.value && opt.value.trim() !== ''
+          opt.label && (
+            opt.label.toLowerCase().includes('no 2') || 
+            opt.label.toLowerCase().includes('runs 2')
+          ) && opt.value && opt.value.trim() !== ''
         );
         
         if (!no2Option) {

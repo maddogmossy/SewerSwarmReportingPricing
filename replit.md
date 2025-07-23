@@ -722,6 +722,22 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 23, 2025)
 
+### CRITICAL: Meterage Rule Detection Bug Fix Complete - Label Matching Fixed ✅
+- **Date**: January 23, 2025  
+- **Status**: Successfully fixed meterage rule detection logic to handle both "No 2" and "Runs 2" label patterns
+- **Root Cause Identified**: Dashboard `checkNo2Rule` function was only looking for `'no 2'` in labels, but configuration ID 161 has `'Runs 2'`
+- **Issues Fixed**:
+  - **Label Pattern Detection**: Updated logic to detect both `'no 2'` and `'runs 2'` patterns in quantity option labels
+  - **Meterage Rule Application**: Configuration ID 161 will now properly apply "No 2" rule for sections exceeding Length 1 but within Length 2 range
+  - **Auto-Save Speed**: Shortened auto-save delay from 2000ms to 500ms for faster database persistence
+  - **Debug Console Output**: Should now show "No 2 rule found" and "Length range analysis" messages for applicable sections
+- **Technical Implementation**:
+  - Modified `checkNo2Rule` function in dashboard.tsx to use: `opt.label.toLowerCase().includes('no 2') || opt.label.toLowerCase().includes('runs 2')`
+  - Maintained existing range validation logic (Length: 0-25.99m, Length 2: 0-60.9m)
+  - Item 22 (27.74m) should now trigger "No 2" rule since 27.74 > 25.99 and 27.74 ≤ 60.9
+- **Expected Result**: Sections like Item 22 should now use "Runs 2" value instead of standard "Runs per Shift" value
+- **User Benefit**: Meterage rules will now properly apply based on authentic configuration ranges instead of falling back to standard calculations
+
 ### CRITICAL: Database Save Bug Fix Complete - Delete Operations Now Persist ✅
 - **Date**: January 23, 2025
 - **Status**: Successfully fixed delete functionality to save changes to database, not just frontend state
