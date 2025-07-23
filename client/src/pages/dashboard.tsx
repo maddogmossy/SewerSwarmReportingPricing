@@ -2115,12 +2115,38 @@ export default function Dashboard() {
     // Get the cost per unit and minimum quantity
     const costPerUnit = parseFloat(selectedPatchingOption.value) || 0;
     
-    // Find the minimum quantity option
-    const minQuantityOption = tp2Config.minQuantityOptions?.find((option: any) => 
-      option.enabled && option.value && option.value.trim() !== ''
-    );
+    // FIXED: Match the specific patching option to its corresponding minimum quantity field
+    let minQuantityOption = null;
+    let minQuantity = 0;
     
-    const minQuantity = minQuantityOption ? parseFloat(minQuantityOption.value) || 0 : 0;
+    // Map patching options to their corresponding minimum quantity fields
+    if (selectedPatchingOption.label?.toLowerCase().includes('single layer')) {
+      minQuantityOption = tp2Config.minQuantityOptions?.find((option: any) => 
+        option.id === 'patch_min_qty_1' && option.value && option.value.trim() !== ''
+      );
+    } else if (selectedPatchingOption.label?.toLowerCase().includes('double layer')) {
+      minQuantityOption = tp2Config.minQuantityOptions?.find((option: any) => 
+        option.id === 'patch_min_qty_2' && option.value && option.value.trim() !== ''
+      );
+    } else if (selectedPatchingOption.label?.toLowerCase().includes('triple layer (with extra cure time)') || 
+               selectedPatchingOption.label?.toLowerCase().includes('triple layer (extra)')) {
+      minQuantityOption = tp2Config.minQuantityOptions?.find((option: any) => 
+        option.id === 'patch_min_qty_4' && option.value && option.value.trim() !== ''
+      );
+    } else if (selectedPatchingOption.label?.toLowerCase().includes('triple layer')) {
+      minQuantityOption = tp2Config.minQuantityOptions?.find((option: any) => 
+        option.id === 'patch_min_qty_3' && option.value && option.value.trim() !== ''
+      );
+    }
+    
+    minQuantity = minQuantityOption ? parseFloat(minQuantityOption.value) || 0 : 0;
+    
+    console.log('🔧 TP2 Minimum Quantity Mapping:', {
+      selectedPatchingOption: selectedPatchingOption.label,
+      expectedMinQtyField: selectedPatchingOption.label?.toLowerCase().includes('double layer') ? 'patch_min_qty_2' : 'other',
+      minQuantityOption: minQuantityOption ? { id: minQuantityOption.id, label: minQuantityOption.label, value: minQuantityOption.value } : null,
+      minQuantity: minQuantity
+    });
     
     // Calculate base cost: cost per unit × defect count
     const baseCost = costPerUnit * defectCount;
