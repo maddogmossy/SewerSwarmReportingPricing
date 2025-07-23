@@ -3597,12 +3597,12 @@ export default function PR2ConfigClean() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-1">
-                      <div className="flex flex-col gap-1 w-full">
+                      <div className="grid grid-cols-1 gap-1">
                         {formData.quantityOptions?.map((option, index) => {
                           const isLastOption = index === formData.quantityOptions.length - 1;
                           
                           return (
-                            <div key={option.id} className="flex items-center gap-2 text-xs w-full flex-shrink-0">
+                            <div key={option.id} className="flex items-center gap-2 text-xs w-full">
                               <span className="font-medium w-20 flex-shrink-0">Runs</span>
                               <Input
                                 placeholder=""
@@ -3635,12 +3635,12 @@ export default function PR2ConfigClean() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-1">
-                      <div className="flex flex-col gap-1 w-full">
+                      <div className="grid grid-cols-1 gap-1">
                         {formData.minQuantityOptions?.map((option, index) => {
                           const isLastOption = index === formData.minQuantityOptions.length - 1;
                           
                           return (
-                            <div key={option.id} className="flex items-center gap-2 text-xs w-full flex-shrink-0">
+                            <div key={option.id} className="flex items-center gap-2 text-xs w-full">
                               <span className="font-medium w-16 flex-shrink-0">Min</span>
                               <Input
                                 placeholder=""
