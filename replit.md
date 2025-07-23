@@ -722,6 +722,23 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 23, 2025)
 
+### CRITICAL: Save Payload Bug Fix Complete - Vehicle Travel Rates Missing from Save ✅
+- **Date**: January 23, 2025  
+- **Status**: Successfully fixed critical bug where Vehicle Travel Rates and delete operations weren't persisting to database
+- **Root Cause Identified**: `debouncedSave()` payload was missing `vehicleTravelRates` and `vehicleTravelRatesStackOrder` fields
+- **Issues Fixed**:
+  - **Save Payload Completeness**: Added missing `vehicleTravelRates` and `vehicleTravelRatesStackOrder` to save payload
+  - **Delete Persistence**: Row deletions now properly persist because complete payload is sent to backend
+  - **Vehicle Travel Rate Saving**: Vehicle travel rate configurations now save to database correctly
+  - **Data Integrity**: All configuration changes (add/edit/delete) now include complete data structure
+- **Technical Implementation**:
+  - Updated `debouncedSave()` payload in pr2-config-clean.tsx lines 820-835
+  - Added `vehicleTravelRates: formData.vehicleTravelRates || []` to payload
+  - Added `vehicleTravelRatesStackOrder: formData.vehicleTravelRatesStackOrder || []` to payload
+  - Maintained existing 500ms auto-save functionality with complete data persistence
+- **User Benefit**: All configuration changes now persist correctly including delete operations and vehicle settings
+- **Result**: Complete save functionality operational for all windows (blue/green/orange/purple/teal)
+
 ### CRITICAL: Delete Row Two Bug Fix Complete - Index Calculation Fixed ✅
 - **Date**: January 23, 2025  
 - **Status**: Successfully fixed delete functionality for row two (ID db10) in purple window

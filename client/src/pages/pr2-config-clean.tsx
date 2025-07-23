@@ -827,6 +827,8 @@ export default function PR2ConfigClean() {
           quantityOptions: formData.quantityOptions,
           minQuantityOptions: formData.minQuantityOptions,
           rangeOptions: formData.rangeOptions,
+          vehicleTravelRates: formData.vehicleTravelRates || [],
+          vehicleTravelRatesStackOrder: formData.vehicleTravelRatesStackOrder || [],
           mathOperators: formData.mathOperators,
           pricingStackOrder: formData.pricingStackOrder,
           quantityStackOrder: formData.quantityStackOrder,
