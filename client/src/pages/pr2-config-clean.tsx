@@ -1991,6 +1991,9 @@ export default function PR2ConfigClean() {
 
   // Auto-generate description based on enabled options with values
   const generateAutoDescription = () => {
+    console.log(`📝 DESCRIPTION DEBUG - Generating auto description...`);
+    console.log(`📝 Current formData.rangeOptions:`, formData.rangeOptions);
+    
     const parts = [];
     
     // Add pricing options with values
@@ -2020,12 +2023,23 @@ export default function PR2ConfigClean() {
       }
     });
     
-    // Add range options with values
-    formData.rangeOptions.forEach(opt => {
+    // Add range options with values - CRITICAL DEBUG
+    formData.rangeOptions.forEach((opt, index) => {
+      console.log(`📝 RANGE OPTION ${index}:`, {
+        id: opt.id,
+        label: opt.label,
+        rangeStart: opt.rangeStart,
+        rangeEnd: opt.rangeEnd,
+        rangeStartLength: opt.rangeStart?.length,
+        rangeEndLength: opt.rangeEnd?.length
+      });
+      
       if ((opt.rangeStart && opt.rangeStart.trim() !== '') || (opt.rangeEnd && opt.rangeEnd.trim() !== '')) {
         const rangeStart = opt.rangeStart || 'R1';
         const rangeEnd = opt.rangeEnd || 'R2';
-        parts.push(`${opt.label} = ${rangeStart} to ${rangeEnd}`);
+        const rangePart = `${opt.label} = ${rangeStart} to ${rangeEnd}`;
+        console.log(`📝 ADDING RANGE PART: "${rangePart}"`);
+        parts.push(rangePart);
       }
     });
     
@@ -2033,7 +2047,9 @@ export default function PR2ConfigClean() {
       return 'CCTV price configuration';
     }
     
-    return parts.join('. ');
+    const finalDescription = parts.join('. ');
+    console.log(`📝 FINAL DESCRIPTION: "${finalDescription}"`);
+    return finalDescription;
   };
 
   // TEMPORARILY DISABLED: Auto-description generation was causing data truncation issues
