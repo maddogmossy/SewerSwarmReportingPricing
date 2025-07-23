@@ -3347,7 +3347,7 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Teal/Cyan Window: Vehicle Travel Rates */}
-              <Card className="relative bg-cyan-50 border-cyan-200 w-64 flex-shrink-0">
+              <Card className="relative bg-cyan-50 border-cyan-200 w-80 flex-shrink-0">
                 <DevLabel id="db11" />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-cyan-700 text-xs flex items-center gap-1">
