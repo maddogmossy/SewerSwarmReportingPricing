@@ -33,7 +33,7 @@ export interface TP2PatchingRules {
  */
 export const TP2_PATCHING_RULES: TP2PatchingRules = {
   templateSystem: 'TP2_ONLY',
-  configurationId: 100, // Current TP2 configuration ID
+  configurationId: 162, // P26 Central Day Rate configuration ID
   sector: 'utilities',
   
   // Repair counting methodology
@@ -42,8 +42,8 @@ export const TP2_PATCHING_RULES: TP2PatchingRules = {
   
   // Cost calculation formula
   costCalculation: 'UNIT_COST_X_REPAIR_COUNT',
-  unitCost: 350, // £350 for Double Layer patching
-  minQuantity: 4, // Minimum quantity from Min Qty 2 field
+  unitCost: 0, // Will be fetched from pipe-specific TP2 configs
+  minQuantity: 0, // Will be fetched from pipe-specific TP2 configs (153:4, 156:3, 157:3)
   
   // Structural defect detection codes
   structuralDefectCodes: [
@@ -122,33 +122,61 @@ export function requiresStructuralRepair(defects: string): boolean {
 }
 
 /**
- * TP2 COST CALCULATION FORMULA
+ * TP2 COST CALCULATION FORMULA (UPDATED)
  * 
  * Total Cost = Unit Cost × Repair Count
+ * Day Rate = P26 Central Configuration (£1650)
  * 
  * Where:
- * - Unit Cost comes from active patching option (e.g., Double Layer = £350)
+ * - Unit Cost comes from pipe-specific patching option (153: £425, 156: £520, 157: £550)
  * - Repair Count comes from extractRepairCount() function
+ * - Day Rate comes from P26 central configuration (ID: 162)
+ * - Min Quantity comes from pipe-specific config (153:4, 156:3, 157:3)
  * 
  * Example:
- * - Section has 3 repairs needed
- * - Double Layer cost = £350
- * - Total cost = £350 × 3 = £1050
+ * - Section has 1 repair needed (300mm pipe)
+ * - Config 157 Double Layer cost = £550
+ * - Total cost = £550 × 1 = £550
+ * - Min Quantity = 3 patches required for day rate
  */
-export function calculateTP2Cost(section: any, tp2Config: any): number | null {
+export function calculateTP2Cost(section: any, tp2Config: any, p26Config?: any): {
+  cost: number | null;
+  dayRate: number;
+  minQuantity: number;
+  unitCost: number;
+} {
   const repairCount = extractRepairCount(section);
   
-  // Find active patching option
+  // Find active patching option (usually Double Layer)
   const activePatchingOption = tp2Config.pricingOptions?.find((option: any) => 
+    option.enabled && option.value && option.value.trim() !== '' &&
+    option.id === 'double_layer_cost' // Prioritize Double Layer
+  ) || tp2Config.pricingOptions?.find((option: any) => 
     option.enabled && option.value && option.value.trim() !== ''
   );
   
   if (!activePatchingOption) {
-    return null;
+    return { cost: null, dayRate: 1650, minQuantity: 3, unitCost: 0 };
   }
   
   const unitCost = parseFloat(activePatchingOption.value) || 0;
-  return unitCost * repairCount;
+  
+  // Get minimum quantity from patch_min_qty_2 (Double Layer Min Qty)
+  const minQuantityOption = tp2Config.minQuantityOptions?.find((option: any) => 
+    option.id === 'patch_min_qty_2' && option.value && option.value.trim() !== ''
+  );
+  const minQuantity = minQuantityOption ? parseInt(minQuantityOption.value) : 3;
+  
+  // Get day rate from P26 config or default
+  const dayRate = p26Config?.pricingOptions?.[0]?.value ? 
+    parseFloat(p26Config.pricingOptions[0].value) : 1650;
+  
+  return {
+    cost: unitCost * repairCount,
+    dayRate,
+    minQuantity,
+    unitCost
+  };
 }
 
 /**

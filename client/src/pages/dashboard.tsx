@@ -2037,7 +2037,7 @@ export default function Dashboard() {
     return defectCount;
   };
 
-  // Function to calculate TP2 patching cost for repair sections with day rate distribution
+  // Function to calculate TP2 patching cost using P26 Central Day Rate System
   const calculateTP2PatchingCost = (section: any, tp2Config: any) => {
     console.log('🔧 calculateTP2PatchingCost called for section:', section.itemNo);
     console.log('🔧 TP2 config:', tp2Config);
@@ -2057,11 +2057,20 @@ export default function Dashboard() {
       defectsText: defectsText
     });
     
-    // Get day rate from TP2 configuration (defaults to £1650 if not set)
-    const dayRateOption = tp2Config.pricingOptions?.find((opt: any) => 
-      opt.label?.toLowerCase().includes('day rate')
+    // UPDATED: Get day rate from P26 Central Configuration (ID: 162)
+    // No longer looks for day rate in individual TP2 configurations
+    const p26Config = pr2Configurations.find(config => 
+      config.categoryId === 'P26' && config.sector === currentSector.id
     );
-    const dayRate = dayRateOption && dayRateOption.value ? parseFloat(dayRateOption.value) : 1650;
+    const dayRate = p26Config?.pricingOptions?.[0]?.value ? 
+      parseFloat(p26Config.pricingOptions[0].value) : 1650;
+    
+    console.log('🔧 P26 Central Day Rate:', {
+      p26ConfigFound: !!p26Config,
+      p26ConfigId: p26Config?.id,
+      dayRate: dayRate,
+      source: p26Config ? 'P26 Configuration' : 'Default fallback'
+    });
     
     // Determine which patching option to use based on recommendations or default
     let selectedPatchingOption = null;
@@ -2191,7 +2200,7 @@ export default function Dashboard() {
       };
     }
     
-    // Update recommendation to include pipe size and length with day rate info
+    // Update recommendation to include pipe size and length with P26 day rate info
     const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${selectedPatchingOption.label.toLowerCase()} patching`;
     
     return {
@@ -2199,7 +2208,7 @@ export default function Dashboard() {
       costPerUnit: costPerUnit,
       baseCost: baseCost,
       dayRateAdjustment: 0,
-      dayRate: dayRate,
+      dayRate: dayRate, // Now from P26 Central Configuration
       defectCount: defectCount,
       minQuantity: minQuantity,
       patchingType: selectedPatchingOption.label,
