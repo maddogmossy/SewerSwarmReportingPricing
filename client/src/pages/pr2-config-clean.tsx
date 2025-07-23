@@ -3596,22 +3596,37 @@ export default function PR2ConfigClean() {
                         📊 Quantity
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2">
-                      {formData.quantityOptions?.map((option) => (
-                        <div key={option.id} className="flex items-center gap-2 text-xs">
-                          <span className="font-medium min-w-0 flex-1 truncate">Runs per Shift</span>
-                          <Input
-                            placeholder=""
-                            value={option.value || ""}
-                            onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                            className="bg-white border-green-300 h-6 text-xs w-16"
-                          />
-                        </div>
-                      ))}
+                    <CardContent className="space-y-1">
+                      <div className="grid grid-cols-1 gap-1">
+                        {formData.quantityOptions?.map((option, index) => {
+                          const isLastOption = index === formData.quantityOptions.length - 1;
+                          
+                          return (
+                            <div key={option.id} className="flex items-center gap-2 text-xs w-full">
+                              <span className="font-medium w-20 flex-shrink-0">Runs</span>
+                              <Input
+                                placeholder=""
+                                value={option.value || ""}
+                                onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                                className="bg-white border-green-300 h-6 text-xs w-16 flex-shrink-0"
+                              />
+                              {isLastOption && (
+                                <Button
+                                  size="sm"
+                                  onClick={addNewInputsToAllWindows}
+                                  className="h-6 w-12 text-xs bg-green-600 text-white hover:bg-green-700 border-0 flex-shrink-0"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </CardContent>
                   </Card>
 
-                  {/* Orange Window */}
+                  {/* Orange Window */}  
                   <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0 relative">
                     <DevLabel id="db14" />
                     <CardHeader className="pb-2">
@@ -3619,18 +3634,33 @@ export default function PR2ConfigClean() {
                         🎯 Min Quantity
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2">
-                      {formData.minQuantityOptions?.map((option) => (
-                        <div key={option.id} className="flex items-center gap-2 text-xs">
-                          <span className="font-medium min-w-0 flex-1 truncate">Qty</span>
-                          <Input
-                            placeholder=""
-                            value={option.value || ""}
-                            onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
-                            className="bg-white border-orange-300 h-6 text-xs w-16"
-                          />
-                        </div>
-                      ))}
+                    <CardContent className="space-y-1">
+                      <div className="grid grid-cols-1 gap-1">
+                        {formData.minQuantityOptions?.map((option, index) => {
+                          const isLastOption = index === formData.minQuantityOptions.length - 1;
+                          
+                          return (
+                            <div key={option.id} className="flex items-center gap-2 text-xs w-full">
+                              <span className="font-medium w-16 flex-shrink-0">Min</span>
+                              <Input
+                                placeholder=""
+                                value={option.value || ""}
+                                onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
+                                className="bg-white border-orange-300 h-6 text-xs w-16 flex-shrink-0"
+                              />
+                              {isLastOption && (
+                                <Button
+                                  size="sm"
+                                  onClick={addNewInputsToAllWindows}
+                                  className="h-6 w-12 text-xs bg-green-600 text-white hover:bg-green-700 border-0 flex-shrink-0"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </CardContent>
                   </Card>
 
