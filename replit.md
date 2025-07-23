@@ -722,6 +722,23 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 23, 2025)
 
+### CRITICAL: Delete Function Bug Fix Complete - Cross-Window Deletion Operational ✅
+- **Date**: January 23, 2025
+- **Status**: Successfully fixed delete functionality to remove from all three windows (green/orange/purple)
+- **Root Cause Identified**: `deleteInputsFromAllWindows` function was using incorrect indexing logic after layout changes
+- **Issues Fixed**:
+  - **Index Mismatch**: Fixed index calculation between purple window pairs and green/orange single items
+  - **Correct Mapping**: Delete now properly removes corresponding items from all three windows
+  - **Debug Logging**: Added comprehensive logging to track which items are being deleted
+  - **Parameter Alignment**: Fixed pairIndex to match actual array positions in each window
+- **Technical Implementation**:
+  - Updated `deleteInputsFromAllWindows` function with correct indexing: `formData.quantityOptions[pairIndex]` instead of `formData.quantityOptions[setIndex + 1]`
+  - Enhanced debug logging to show exact items being deleted from each window
+  - Maintained existing `deleteRangePair` wrapper function for compatibility
+  - Fixed indexing to match the vertical single mapping layout established in previous fix
+- **User Benefit**: Delete buttons now correctly remove corresponding rows from all three windows as expected
+- **Result**: Complete cross-window deletion system operational with proper item synchronization
+
 ### CRITICAL: Layout Bug Fix Complete - Vertical Window Display Locked ✅
 - **Date**: January 23, 2025
 - **Status**: Successfully resolved horizontal/vertical layout inconsistency in green and orange windows

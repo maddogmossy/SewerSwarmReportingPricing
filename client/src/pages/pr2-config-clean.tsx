@@ -1560,24 +1560,27 @@ export default function PR2ConfigClean() {
   };
 
   // Fixed delete function that removes corresponding inputs from all three windows
-  const deleteInputsFromAllWindows = (setIndex: number) => {
-    // For each purple row deleted, delete the corresponding green and orange entries
-    // setIndex 0 = delete row 1 entries (but skip the base "Runs per Shift" entries)
-    // setIndex 1 = delete row 2 entries
+  const deleteInputsFromAllWindows = (pairIndex: number) => {
+    // pairIndex represents which purple row is being deleted (1 = second row, 2 = third row, etc.)
+    // We need to delete the corresponding items from green and orange windows
     
-    const rangePercentageIndex = setIndex * 2; // Range pairs: 0,1 then 2,3 then 4,5
-    const rangeLengthIndex = setIndex * 2 + 1;
+    const rangePercentageIndex = pairIndex * 2; // Range pairs: 0,1 then 2,3 then 4,5
+    const rangeLengthIndex = pairIndex * 2 + 1;
     
-    // Get the range IDs to delete
+    // Get the range IDs to delete from purple window
     const percentageIdToDelete = formData.rangeOptions[rangePercentageIndex]?.id;
     const lengthIdToDelete = formData.rangeOptions[rangeLengthIndex]?.id;
     
-    // Calculate which entries to delete - both green and orange now use simple indexing
-    const quantityIndexToDelete = setIndex + 1; // Skip the first "Runs per Shift" entry
-    const minQuantityIndexToDelete = setIndex + 1; // Skip the first "Min Runs per Shift" entry
+    // For green and orange windows, we need to delete the item at the same index as pairIndex
+    // Since all windows were created together, the nth item in each corresponds to the nth pair
+    const quantityIdToDelete = formData.quantityOptions[pairIndex]?.id;
+    const minQuantityIdToDelete = formData.minQuantityOptions[pairIndex]?.id;
     
-    const quantityIdToDelete = formData.quantityOptions[quantityIndexToDelete]?.id;
-    const minQuantityIdToDelete = formData.minQuantityOptions[minQuantityIndexToDelete]?.id;
+    console.log(`🗑️ DELETE DEBUG: Deleting pair ${pairIndex}:`);
+    console.log(`  - Green item (index ${pairIndex}): ${quantityIdToDelete}`);
+    console.log(`  - Orange item (index ${pairIndex}): ${minQuantityIdToDelete}`);
+    console.log(`  - Purple percentage (index ${rangePercentageIndex}): ${percentageIdToDelete}`);
+    console.log(`  - Purple length (index ${rangeLengthIndex}): ${lengthIdToDelete}`);
     
     setFormData(prev => ({
       ...prev,
@@ -1596,7 +1599,7 @@ export default function PR2ConfigClean() {
       )
     }));
     
-    console.log(`🗑️ FIXED DELETE: Removed row ${setIndex + 1} from all windows - quantity: ${quantityIdToDelete}, min quantity: ${minQuantityIdToDelete}, range: ${percentageIdToDelete} & ${lengthIdToDelete}`);
+    console.log(`🗑️ FIXED DELETE: Removed row ${pairIndex + 1} from all windows`);
   };
 
   // Wrapper function for deleting range pairs from purple window
