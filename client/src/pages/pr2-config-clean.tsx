@@ -1509,6 +1509,9 @@ export default function PR2ConfigClean() {
   const addNewInputsToAllWindows = () => {
     const timestamp = Date.now();
     
+    console.log(`🔧 DB10 ADD BUTTON CLICKED - Adding new input windows to db8, db9, db10`);
+    console.log(`🔧 Current state: ${formData.quantityOptions.length} quantity, ${formData.minQuantityOptions.length} min quantity, ${formData.rangeOptions.length} range options`);
+    
     // Add new quantity input (green window) - empty default value
     const newQuantityOption: PricingOption = {
       id: `quantity_${timestamp}`,
