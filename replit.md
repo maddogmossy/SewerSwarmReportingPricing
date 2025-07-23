@@ -734,6 +734,7 @@ This prevents data contamination and ensures authentic extraction integrity.
   - **Complete Day Rate Field Removal**: Permanently removed Day Rate field from TP2 patching configurations (153, 156, 157) in database instead of just hiding
   - **P26 User Input Field Added**: Replaced hardcoded P26 information with editable input field allowing users to modify central day rate
   - **UI Display Fixed**: TP2 configurations now show proper numbering (1-4) with all three input windows (£, Min Qty, Length Max) visible
+  - **P26 UI Styling Updated**: Changed to money bag icon (Banknote), simplified title to "Day Rate", black text styling, and removed explanatory text
 - **Technical Implementation**:
   - Modified `calculateTP2PatchingCost` function to query `pr2Configurations` for P26 config
   - Added debug logging to track P26 configuration detection and day rate source

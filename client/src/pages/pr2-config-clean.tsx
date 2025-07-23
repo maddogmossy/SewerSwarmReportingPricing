@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -2778,13 +2778,13 @@ export default function PR2ConfigClean() {
               <Card className="bg-green-50 border-green-200 mb-4">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                    <DollarSign className="w-4 h-4" />
-                    P26 Central Day Rate
+                    <Banknote className="w-4 h-4" />
+                    Day Rate
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center gap-4">
-                    <Label className="w-32 text-sm font-medium text-green-700">
+                    <Label className="w-32 text-sm font-medium text-black">
                       Central Day Rate
                     </Label>
                     <div className="flex items-center gap-2">
@@ -2834,10 +2834,6 @@ export default function PR2ConfigClean() {
                         className="w-20 h-8 text-sm bg-white border-green-300"
                       />
                     </div>
-                  </div>
-                  <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200">
-                    <strong>Centralized System:</strong> All TP2 patching calculations use this single day rate.
-                    Changes here automatically apply to all patch sizes (150mm, 225mm, 300mm).
                   </div>
                 </CardContent>
               </Card>
