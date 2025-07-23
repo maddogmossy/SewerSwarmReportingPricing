@@ -35,6 +35,7 @@ interface VehicleTravelRate {
   id: string;
   vehicleType: string;
   hourlyRate: string;
+  numberOfHours: string;
   enabled: boolean;
 }
 
@@ -1735,6 +1736,7 @@ export default function PR2ConfigClean() {
       id: `vehicle_${Date.now()}`,
       vehicleType: newVehicleType.trim(),
       hourlyRate: newHourlyRate.trim(),
+      numberOfHours: "2",
       enabled: true
     };
     
@@ -3378,6 +3380,22 @@ export default function PR2ConfigClean() {
                             />
                             <span className="text-xs text-cyan-600">/hr</span>
                           </div>
+                          <div className="flex items-center gap-1">
+                            <Input
+                              placeholder="2"
+                              maxLength={3}
+                              value={vehicle.numberOfHours || "2"}
+                              onChange={(e) => {
+                                const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
+                                updateVehicleTravelRate(updatedVehicle);
+                              }}
+                              className="bg-white border-cyan-300 h-6 text-xs w-10 flex items-center"
+                              data-field="number-of-hours"
+                              data-window="vehicle"
+                              data-option-id={vehicle.id}
+                            />
+                            <span className="text-xs text-cyan-600">hours</span>
+                          </div>
                           {index === 0 && (
                             <Button
                               variant="outline"
@@ -3820,7 +3838,8 @@ export default function PR2ConfigClean() {
                     updateVehicleTravelRate({
                       ...editingVehicle,
                       vehicleType: newVehicleType,
-                      hourlyRate: newHourlyRate
+                      hourlyRate: newHourlyRate,
+                      numberOfHours: editingVehicle?.numberOfHours || "2"
                     });
                   }
                 }}
