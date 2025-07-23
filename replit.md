@@ -720,6 +720,25 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.3' to return to this stable checkpoint
 
+## Recent Changes (Updated January 23, 2025)
+
+### CRITICAL: Layout Bug Fix Complete - Vertical Window Display Locked ✅
+- **Date**: January 23, 2025
+- **Status**: Successfully resolved horizontal/vertical layout inconsistency in green and orange windows
+- **Root Cause Identified**: Two different sets of windows in codebase (db8/db9 using pairing logic, db13/db14 using single mapping)
+- **Issues Fixed**:
+  - **db8 Green Window**: Removed horizontal pairing logic `Array.from({ length: Math.ceil(.../2) })` → Changed to vertical single mapping `formData.quantityOptions?.map()`
+  - **db9 Orange Window**: Removed horizontal pairing logic `Array.from({ length: Math.ceil(.../2) })` → Changed to vertical single mapping `formData.minQuantityOptions?.map()`
+  - **Removed Extra Add Buttons**: Eliminated individual Add buttons from green/orange windows per user requirement
+  - **Single Control System**: Only purple window Add button controls all three windows (1 green + 1 orange + 2 purple inputs)
+- **Technical Implementation**:
+  - Changed container structure from `flex flex-col` to `grid grid-cols-1` matching working purple window
+  - Removed `isLastOption` logic and individual Add buttons from green/orange windows
+  - Maintained original `addNewInputsToAllWindows` function functionality
+  - Fixed pairing display logic that was causing horizontal layout on first Add click
+- **User Confirmation**: "Finally lock it in" - layout bug completely resolved with vertical display
+- **Result**: All three windows (green/orange/purple) now display new inputs vertically when purple Add button clicked
+
 ## Recent Changes (Updated January 22, 2025)
 
 ### CRITICAL: P26 Central Day Rate System Integration Complete ✅
