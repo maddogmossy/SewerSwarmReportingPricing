@@ -3158,10 +3158,26 @@ export default function PR2ConfigClean() {
                   </CardHeader>
                   <CardContent className="py-1">
                     <div className="flex items-center justify-center">
-                      <Select disabled>
+                      <Select 
+                        value={formData.mathOperators?.[0] || "÷"} 
+                        onValueChange={(value) => {
+                          console.log(`🧮 DB7 Math operator changed to: ${value}`);
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            mathOperators: [value] 
+                          }));
+                          handleValueChange('mathOperators', 'operator', value);
+                        }}
+                      >
                         <SelectTrigger className="bg-white border-gray-300 h-8 text-sm w-12">
                           <SelectValue placeholder="÷" />
                         </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="÷">÷</SelectItem>
+                          <SelectItem value="+">+</SelectItem>
+                          <SelectItem value="-">-</SelectItem>
+                          <SelectItem value="×">×</SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
                   </CardContent>
