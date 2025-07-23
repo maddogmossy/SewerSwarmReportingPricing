@@ -683,26 +683,39 @@ export default function PR2ConfigClean() {
 
   // Handle range value changes for purple window
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
-    console.log(`🔧 handleRangeValueChange called: ${optionId}, ${field}, ${value}`);
-    console.log(`🔍 DEBUGGING: Full value length: ${value.length}, characters: "${value}"`);
+    console.log(`🔧 CRITICAL - handleRangeValueChange called:`);
+    console.log(`🔧 optionId: ${optionId}`);
+    console.log(`🔧 field: ${field}`);
+    console.log(`🔧 value: "${value}"`);
+    console.log(`🔧 value length: ${value.length}`);
+    console.log(`🔧 character codes:`, value.split('').map(c => c.charCodeAt(0)));
     
     // Mark that user has made changes to prevent automatic form overwrite
     setHasUserChanges(true);
     
-    setFormData(prev => ({
-      ...prev,
-      rangeOptions: prev.rangeOptions.map(opt => {
-        if (opt.id === optionId) {
-          // Simple update without validation for TP2 template
-          const updatedOpt = { ...opt, [field]: value };
-          console.log(`🔍 DEBUGGING: Updated option:`, updatedOpt);
-          return updatedOpt;
-        }
-        return opt;
-      })
-    }));
+    setFormData(prev => {
+      console.log(`🔧 BEFORE UPDATE - Current formData.rangeOptions:`, prev.rangeOptions);
+      
+      const updatedFormData = {
+        ...prev,
+        rangeOptions: prev.rangeOptions.map(opt => {
+          if (opt.id === optionId) {
+            // CRITICAL: No processing, just store the exact value
+            const updatedOpt = { ...opt, [field]: value };
+            console.log(`🔧 UPDATED OPTION:`, updatedOpt);
+            console.log(`🔧 NEW ${field} VALUE: "${updatedOpt[field]}" (length: ${updatedOpt[field].length})`);
+            return updatedOpt;
+          }
+          return opt;
+        })
+      };
+      
+      console.log(`🔧 AFTER UPDATE - New formData.rangeOptions:`, updatedFormData.rangeOptions);
+      return updatedFormData;
+    });
     
     // Trigger debounced save after range input change
+    console.log(`🔧 Triggering debouncedSave...`);
     debouncedSave();
   };
 
@@ -2961,9 +2974,19 @@ export default function PR2ConfigClean() {
                             maxLength={6}
                             value={formData.rangeOptions?.[index]?.rangeEnd || ""}
                             onChange={(e) => {
-                              console.log(`📏 Length input ${index + 1} (${option.label}):`, e.target.value);
+                              const inputValue = e.target.value;
+                              console.log(`📏 CRITICAL DEBUG - Length input ${index + 1} (${option.label}):`);
+                              console.log(`📏 RAW INPUT: "${inputValue}" (length: ${inputValue.length})`);
+                              console.log(`📏 Character codes:`, inputValue.split('').map(c => c.charCodeAt(0)));
+                              
                               const rangeId = formData.rangeOptions?.[index]?.id || `range_length_${index + 1}`;
-                              handleRangeValueChange(rangeId, 'rangeEnd', e.target.value);
+                              console.log(`📏 About to call handleRangeValueChange with:`, {
+                                rangeId,
+                                field: 'rangeEnd',
+                                value: inputValue,
+                                valueLength: inputValue.length
+                              });
+                              handleRangeValueChange(rangeId, 'rangeEnd', inputValue);
                             }}
                             className="w-20 h-8 text-sm"
                             disabled={false}
