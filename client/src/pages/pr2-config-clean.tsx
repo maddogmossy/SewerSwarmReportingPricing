@@ -3274,7 +3274,83 @@ export default function PR2ConfigClean() {
                   </CardContent>
               </Card>
 
-
+              {/* Purple Window: Ranges */}
+              <Card className="relative bg-purple-50 border-purple-200 flex-1">
+                <DevLabel id="db10" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
+                    <BarChart3 className="w-3 h-3" />
+                    Range Options
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="py-1">
+                  <div className="space-y-1">
+                    {formData.rangeOptions && 
+                      Array.from({ length: Math.ceil(formData.rangeOptions.length / 2) }, (_, pairIndex) => {
+                        const percentageOption = formData.rangeOptions[pairIndex * 2];
+                        const lengthOption = formData.rangeOptions[pairIndex * 2 + 1];
+                        
+                        return (
+                          <div key={`pair-${pairIndex}`} className="flex gap-2">
+                            {percentageOption && (
+                              <div className="flex items-center gap-1">
+                                <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                                  % (Max)
+                                </Label>
+                                <Input
+                                  placeholder="0"
+                                  maxLength={6}
+                                  value={percentageOption.rangeEnd || ""}
+                                  onChange={(e) => handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
+                                  disabled={!percentageOption.enabled}
+                                  className="bg-white border-purple-300 h-6 text-xs w-16 flex items-center"
+                                />
+                              </div>
+                            )}
+                            {lengthOption && (
+                              <div className="flex items-center gap-1">
+                                <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
+                                  Length (Max)
+                                </Label>
+                                <Input
+                                  placeholder="0"
+                                  maxLength={6}
+                                  value={lengthOption.rangeEnd || ""}
+                                  onChange={(e) => handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
+                                  disabled={!lengthOption.enabled}
+                                  className="bg-white border-purple-300 h-6 text-xs w-16 flex items-center"
+                                />
+                              </div>
+                            )}
+                            {pairIndex === 0 && (
+                              <Button
+                                variant="outline"
+                                onClick={addNewInputsToAllWindows}
+                                className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
+                              >
+                                <Plus className="w-3 h-3 mr-1" />
+                                Add
+                              </Button>
+                            )}
+                            {pairIndex > 0 && (
+                              <Button
+                                variant="outline"
+                                onClick={() => {
+                                  console.log(`🗑️ OLD SYSTEM DELETE: pairIndex=${pairIndex}`);
+                                  deleteRangePair(pairIndex);
+                                }}
+                                className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })
+                    }
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Teal/Cyan Window: Vehicle Travel Rates */}
               <Card className="relative bg-cyan-50 border-cyan-200 w-80 flex-shrink-0">
@@ -3575,61 +3651,7 @@ export default function PR2ConfigClean() {
                     </CardContent>
                   </Card>
 
-                  {/* Purple Window */}
-                  <Card className="bg-purple-50 border-purple-200 flex-1 relative">
-                    <DevLabel id="db15" />
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
-                        📏 Ranges
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-1">
-                      {/* Display each range option individually in vertical list */}
-                      <div className="grid grid-cols-1 gap-1">
-                        {formData.rangeOptions?.map((option, index) => {
-                          const isFirstOption = index === 0;
-                          const isLastOption = index === formData.rangeOptions.length - 1;
-                          
-                          return (
-                            <div key={option.id} className="flex items-center gap-2 text-xs w-full">
-                              <span className="font-medium w-20 flex-shrink-0">
-                                {option.label.includes("Percentage") ? "% (Max)" : "Length (Max)"}
-                              </span>
-                              <Input
-                                placeholder=""
-                                value={option.rangeEnd || ""}
-                                onChange={(e) => handleRangeValueChange(option.id, 'rangeEnd', e.target.value)}
-                                className="bg-white border-purple-300 h-6 text-xs w-16 flex-shrink-0"
-                              />
-                              {isLastOption && (
-                                <Button
-                                  size="sm"
-                                  onClick={addNewInputsToAllWindows}
-                                  className="h-6 w-12 text-xs bg-green-600 text-white hover:bg-green-700 border-0 flex-shrink-0"
-                                >
-                                  <Plus className="w-3 h-3" />
-                                </Button>
-                              )}
-                              {!isFirstOption && !isLastOption && (
-                                <Button
-                                  size="sm"
-                                  onClick={() => {
-                                    console.log(`🗑️ DELETE BUTTON CLICKED: index=${index}, option=${option.id}, label=${option.label}`);
-                                    console.log(`🗑️ Button logic: !isFirstOption(${!isFirstOption}) && !isLastOption(${!isLastOption})`);
-                                    console.log(`🗑️ Calling deleteInputsFromAllWindows with pairIndex: ${Math.floor(index / 2)}`);
-                                    deleteInputsFromAllWindows(Math.floor(index / 2));
-                                  }}
-                                  className="h-6 w-12 text-xs bg-red-600 text-white hover:bg-red-700 border-0 flex-shrink-0"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </CardContent>
-                  </Card>
+
                 </div>
               )}
             </div>
