@@ -3421,8 +3421,16 @@ export default function PR2ConfigClean() {
                           )}
                         </div>
                       )) : (
-                        <div className="text-xs text-cyan-600 p-2">
-                          No vehicle travel rates configured
+                        <div className="text-xs text-cyan-600 p-2 flex items-center justify-between">
+                          <span>No vehicle travel rates configured</span>
+                          <Button
+                            variant="outline"
+                            onClick={() => setAddVehicleDialogOpen(true)}
+                            className="h-6 text-xs border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                          >
+                            <Plus className="w-3 h-3 mr-1" />
+                            Add
+                          </Button>
                         </div>
                       )
                     }
