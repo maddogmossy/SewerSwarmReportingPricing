@@ -3196,46 +3196,31 @@ export default function PR2ConfigClean() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="py-1">
-                    <div className="space-y-1">
-                      {formData.quantityOptions && 
-                        Array.from({ length: Math.ceil(formData.quantityOptions.length / 2) }, (_, pairIndex) => {
-                          const firstOption = formData.quantityOptions[pairIndex * 2];
-                          const secondOption = formData.quantityOptions[pairIndex * 2 + 1];
-                          
-                          return (
-                            <div key={`pair-${pairIndex}`} className="flex gap-2">
-                              {firstOption && (
-                                <div className="flex items-center gap-1">
-                                  <Label className="text-xs font-medium text-green-700 flex-shrink-0">
-                                    {firstOption.label.split(' ')[0]}
-                                  </Label>
-                                  <Input
-                                    placeholder="qty"
-                                    maxLength={4}
-                                    value={firstOption.value || ""}
-                                    onChange={(e) => handleValueChange('quantityOptions', firstOption.id, e.target.value)}
-                                    className="bg-white border-green-300 h-6 text-xs w-16 flex items-center"
-                                  />
-                                </div>
-                              )}
-                              {secondOption && (
-                                <div className="flex items-center gap-1">
-                                  <Label className="text-xs font-medium text-green-700 flex-shrink-0">
-                                    {secondOption.label.split(' ')[0]}
-                                  </Label>
-                                  <Input
-                                    placeholder="qty"
-                                    maxLength={4}
-                                    value={secondOption.value || ""}
-                                    onChange={(e) => handleValueChange('quantityOptions', secondOption.id, e.target.value)}
-                                    className="bg-white border-green-300 h-6 text-xs w-16 flex items-center"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })
-                      }
+                    <div className="grid grid-cols-1 gap-1">
+                      {formData.quantityOptions?.map((option, index) => {
+                        const isLastOption = index === formData.quantityOptions.length - 1;
+                        
+                        return (
+                          <div key={option.id} className="flex items-center gap-2 text-xs w-full">
+                            <span className="font-medium w-20 flex-shrink-0">Runs</span>
+                            <Input
+                              placeholder=""
+                              value={option.value || ""}
+                              onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                              className="bg-white border-green-300 h-6 text-xs w-16 flex-shrink-0"
+                            />
+                            {isLastOption && (
+                              <Button
+                                size="sm"
+                                onClick={addNewInputsToAllWindows}
+                                className="h-6 w-12 text-xs bg-green-600 text-white hover:bg-green-700 border-0 flex-shrink-0"
+                              >
+                                <Plus className="w-3 h-3" />
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </CardContent>
                 </Card>
@@ -3250,46 +3235,31 @@ export default function PR2ConfigClean() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="py-1">
-                    <div className="space-y-1">
-                      {formData.minQuantityOptions && 
-                        Array.from({ length: Math.ceil(formData.minQuantityOptions.length / 2) }, (_, pairIndex) => {
-                          const firstOption = formData.minQuantityOptions[pairIndex * 2];
-                          const secondOption = formData.minQuantityOptions[pairIndex * 2 + 1];
-                          
-                          return (
-                            <div key={`pair-${pairIndex}`} className="flex gap-2">
-                              {firstOption && (
-                                <div className="flex items-center gap-1">
-                                  <Label className="text-xs font-medium text-orange-700 flex-shrink-0">
-                                    {firstOption.label.split(' ')[0]}
-                                  </Label>
-                                  <Input
-                                    placeholder="min"
-                                    maxLength={4}
-                                    value={firstOption.value || ""}
-                                    onChange={(e) => handleValueChange('minQuantityOptions', firstOption.id, e.target.value)}
-                                    className="bg-white border-orange-300 h-6 text-xs w-16 flex items-center"
-                                  />
-                                </div>
-                              )}
-                              {secondOption && (
-                                <div className="flex items-center gap-1">
-                                  <Label className="text-xs font-medium text-orange-700 flex-shrink-0">
-                                    {secondOption.label.split(' ')[0]}
-                                  </Label>
-                                  <Input
-                                    placeholder="min"
-                                    maxLength={4}
-                                    value={secondOption.value || ""}
-                                    onChange={(e) => handleValueChange('minQuantityOptions', secondOption.id, e.target.value)}
-                                    className="bg-white border-orange-300 h-6 text-xs w-16 flex items-center"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })
-                      }
+                    <div className="grid grid-cols-1 gap-1">
+                      {formData.minQuantityOptions?.map((option, index) => {
+                        const isLastOption = index === formData.minQuantityOptions.length - 1;
+                        
+                        return (
+                          <div key={option.id} className="flex items-center gap-2 text-xs w-full">
+                            <span className="font-medium w-16 flex-shrink-0">Min</span>
+                            <Input
+                              placeholder=""
+                              value={option.value || ""}
+                              onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
+                              className="bg-white border-orange-300 h-6 text-xs w-16 flex-shrink-0"
+                            />
+                            {isLastOption && (
+                              <Button
+                                size="sm"
+                                onClick={addNewInputsToAllWindows}
+                                className="h-6 w-12 text-xs bg-green-600 text-white hover:bg-green-700 border-0 flex-shrink-0"
+                              >
+                                <Plus className="w-3 h-3" />
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </CardContent>
               </Card>
