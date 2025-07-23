@@ -2764,7 +2764,26 @@ export default function PR2ConfigClean() {
                 TP2 - Patching Configuration
               </h3>
               
-              {/* Purple Window: 5 Patching Options */}
+              {/* P26 Central Day Rate Window */}
+              <Card className="bg-green-50 border-green-200 mb-4">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-green-700 text-sm flex items-center gap-2">
+                    <DollarSign className="w-4 h-4" />
+                    P26 Central Day Rate (£1650)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200">
+                    <strong>Centralized System:</strong> All TP2 patching calculations use the single P26 day rate of £1650.
+                    Individual day rates are no longer needed in TP2 configurations.
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    Navigate to P26 configuration to modify the central day rate used by all TP2 patches.
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Purple Window: 4 Patching Options (excluding Day Rate) */}
               <Card className="bg-purple-50 border-purple-200">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
@@ -2783,8 +2802,8 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {/* 5 patching options from 150mm template */}
-                  {formData.pricingOptions?.map((option, index) => (
+                  {/* Filter out Day Rate field from TP2 patching options */}
+                  {formData.pricingOptions?.filter(option => option.id !== 'price_dayrate').map((option, index) => (
                     <div key={option.id} className="flex items-center gap-4">
                       <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
                       <Label className="w-32 text-sm font-medium text-gray-700">
