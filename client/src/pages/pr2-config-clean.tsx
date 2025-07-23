@@ -2885,6 +2885,7 @@ export default function PR2ConfigClean() {
                         <Label className="text-xs">£</Label>
                         <Input
                           placeholder="cost"
+                          maxLength={6}
                           value={option.value || ""}
                           onChange={(e) => {
                             console.log(`💰 Typing in ${option.label}:`, e.target.value);
@@ -2903,6 +2904,7 @@ export default function PR2ConfigClean() {
                           <Label className="text-xs">Min Qty</Label>
                           <Input
                             placeholder="min"
+                            maxLength={4}
                             value={formData.minQuantityOptions?.[index + 1]?.value || ""}
                             onChange={(e) => {
                               console.log(`📊 Typing in Min Qty ${index + 1}:`, e.target.value);
@@ -2918,6 +2920,7 @@ export default function PR2ConfigClean() {
                           <Label className="text-xs">Length (Max)</Label>
                           <Input
                             placeholder="length"
+                            maxLength={6}
                             value={formData.rangeOptions?.[index + 2]?.rangeEnd || ""}
                             onChange={(e) => {
                               console.log(`📏 Length input ${index + 1} (${option.label}):`, e.target.value);
@@ -3218,7 +3221,7 @@ export default function PR2ConfigClean() {
                                 </Label>
                                 <Input
                                   placeholder="0"
-                                  maxLength={3}
+                                  maxLength={6}
                                   value={percentageOption.rangeEnd || ""}
                                   onChange={(e) => handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
                                   disabled={!percentageOption.enabled}
