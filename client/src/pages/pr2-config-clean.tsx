@@ -1512,17 +1512,10 @@ export default function PR2ConfigClean() {
     console.log(`🔧 DB10 ADD BUTTON CLICKED - Adding new input windows to db8, db9, db10`);
     console.log(`🔧 Current state: ${formData.quantityOptions.length} quantity, ${formData.minQuantityOptions.length} min quantity, ${formData.rangeOptions.length} range options`);
     
-    // Add TWO new quantity inputs (green window) to maintain pairing - empty default values
-    const newQuantityOption1: PricingOption = {
+    // Add ONE new quantity input (green window) - only runs, no pairing needed
+    const newQuantityOption: PricingOption = {
       id: `quantity_${timestamp}`,
-      label: `Runs ${Math.floor(formData.quantityOptions.length / 2) + 1}`,
-      enabled: true,
-      value: ''
-    };
-    
-    const newQuantityOption2: PricingOption = {
-      id: `quantity_${timestamp + 1}`,
-      label: `No ${Math.floor(formData.quantityOptions.length / 2) + 1}`,
+      label: `Runs ${formData.quantityOptions.length + 1}`,
       enabled: true,
       value: ''
     };
@@ -1562,15 +1555,15 @@ export default function PR2ConfigClean() {
     
     setFormData(prev => ({
       ...prev,
-      quantityOptions: [...prev.quantityOptions, newQuantityOption1, newQuantityOption2],
-      quantityStackOrder: [...prev.quantityStackOrder, newQuantityOption1.id, newQuantityOption2.id],
+      quantityOptions: [...prev.quantityOptions, newQuantityOption],
+      quantityStackOrder: [...prev.quantityStackOrder, newQuantityOption.id],
       minQuantityOptions: [...prev.minQuantityOptions, newMinQuantityOption1, newMinQuantityOption2],
       minQuantityStackOrder: [...prev.minQuantityStackOrder, newMinQuantityOption1.id, newMinQuantityOption2.id],
       rangeOptions: [...prev.rangeOptions, newPercentageOption, newLengthOption],
       rangeStackOrder: [...prev.rangeStackOrder, newPercentageOption.id, newLengthOption.id]
     }));
     
-    console.log(`🔧 Added new paired inputs to all windows: ${newQuantityOption1.label}+${newQuantityOption2.label}, ${newMinQuantityOption1.label}+${newMinQuantityOption2.label}, ${newPercentageOption.label}+${newLengthOption.label}`);
+    console.log(`🔧 Added new inputs to all windows: ${newQuantityOption.label}, ${newMinQuantityOption1.label}+${newMinQuantityOption2.label}, ${newPercentageOption.label}+${newLengthOption.label}`);
   };
 
   // Fixed delete function that removes corresponding inputs from all three windows
@@ -1586,21 +1579,26 @@ export default function PR2ConfigClean() {
     const percentageIdToDelete = formData.rangeOptions[rangePercentageIndex]?.id;
     const lengthIdToDelete = formData.rangeOptions[rangeLengthIndex]?.id;
     
-    // Calculate which green/orange entries to delete (skip index 0 which are the base entries)
+    // Calculate which entries to delete - green window (quantity) uses simple indexing, orange (min quantity) uses pairing
     const quantityIndexToDelete = setIndex + 1; // Skip the first "Runs per Shift" entry
-    const minQuantityIndexToDelete = setIndex + 1; // Skip the first "Min Runs per Shift" entry
+    const minQuantityIndexToDelete = (setIndex * 2) + 1; // Skip base entry, then pairs: 1,2 then 3,4
     
     const quantityIdToDelete = formData.quantityOptions[quantityIndexToDelete]?.id;
-    const minQuantityIdToDelete = formData.minQuantityOptions[minQuantityIndexToDelete]?.id;
+    const minQuantityIdToDelete1 = formData.minQuantityOptions[minQuantityIndexToDelete]?.id;
+    const minQuantityIdToDelete2 = formData.minQuantityOptions[minQuantityIndexToDelete + 1]?.id;
     
     setFormData(prev => ({
       ...prev,
-      // Remove from quantity options (skip base entry)
+      // Remove from quantity options (single entry)
       quantityOptions: prev.quantityOptions.filter(option => option.id !== quantityIdToDelete),
       quantityStackOrder: prev.quantityStackOrder.filter(id => id !== quantityIdToDelete),
-      // Remove from min quantity options (skip base entry)
-      minQuantityOptions: prev.minQuantityOptions.filter(option => option.id !== minQuantityIdToDelete),
-      minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => id !== minQuantityIdToDelete),
+      // Remove from min quantity options (paired entries)
+      minQuantityOptions: prev.minQuantityOptions.filter(option => 
+        option.id !== minQuantityIdToDelete1 && option.id !== minQuantityIdToDelete2
+      ),
+      minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => 
+        id !== minQuantityIdToDelete1 && id !== minQuantityIdToDelete2
+      ),
       // Remove from range options (both percentage and length)
       rangeOptions: prev.rangeOptions.filter(option => 
         option.id !== percentageIdToDelete && option.id !== lengthIdToDelete
@@ -1610,7 +1608,7 @@ export default function PR2ConfigClean() {
       )
     }));
     
-    console.log(`🗑️ FIXED DELETE: Removed row ${setIndex + 1} from all windows - quantity: ${quantityIdToDelete}, min quantity: ${minQuantityIdToDelete}, range: ${percentageIdToDelete} & ${lengthIdToDelete}`);
+    console.log(`🗑️ FIXED DELETE: Removed row ${setIndex + 1} from all windows - quantity: ${quantityIdToDelete}, min quantity: ${minQuantityIdToDelete1} & ${minQuantityIdToDelete2}, range: ${percentageIdToDelete} & ${lengthIdToDelete}`);
   };
 
   // Wrapper function for deleting range pairs from purple window
