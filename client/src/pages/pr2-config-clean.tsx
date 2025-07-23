@@ -1267,6 +1267,8 @@ export default function PR2ConfigClean() {
           quantityOptions: quantityOptions,
           minQuantityOptions: minQuantityOptions,
           rangeOptions: rangeOptions,
+          vehicleTravelRates: config.vehicleTravelRates || [],
+          vehicleTravelRatesStackOrder: config.vehicleTravelRatesStackOrder || [],
           mathOperators: config.mathOperators || ['N/A'],
           pricingStackOrder: pricingOptions.map((opt: any) => opt.id),
           quantityStackOrder: quantityOptions.map((opt: any) => opt.id),
@@ -1279,7 +1281,9 @@ export default function PR2ConfigClean() {
           pricingCount: pricingOptions.length,
           quantityCount: quantityOptions.length,
           minQuantityCount: minQuantityOptions.length,
-          rangeCount: rangeOptions.length
+          rangeCount: rangeOptions.length,
+          vehicleCount: config.vehicleTravelRates?.length || 0,
+          vehicleData: config.vehicleTravelRates
         });
 
         console.log(`🔧 Setting form data for config ${config.id}:`, {
@@ -3357,7 +3361,7 @@ export default function PR2ConfigClean() {
                 </CardHeader>
                 <CardContent className="py-1">
                   <div className="space-y-1">
-                    {formData.vehicleTravelRates && 
+                    {formData.vehicleTravelRates && formData.vehicleTravelRates.length > 0 ? 
                       formData.vehicleTravelRates.map((vehicle, index) => (
                         <div key={vehicle.id} className="flex gap-2 items-center">
                           <div className="flex items-center gap-1">
@@ -3416,7 +3420,11 @@ export default function PR2ConfigClean() {
                             </Button>
                           )}
                         </div>
-                      ))
+                      )) : (
+                        <div className="text-xs text-cyan-600 p-2">
+                          No vehicle travel rates configured
+                        </div>
+                      )
                     }
                   </div>
                 </CardContent>
