@@ -3198,8 +3198,6 @@ export default function PR2ConfigClean() {
                   <CardContent className="py-1">
                     <div className="grid grid-cols-1 gap-1">
                       {formData.quantityOptions?.map((option, index) => {
-                        const isLastOption = index === formData.quantityOptions.length - 1;
-                        
                         return (
                           <div key={option.id} className="flex items-center gap-2 text-xs w-full">
                             <span className="font-medium w-20 flex-shrink-0">Runs</span>
@@ -3209,15 +3207,6 @@ export default function PR2ConfigClean() {
                               onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
                               className="bg-white border-green-300 h-6 text-xs w-16 flex-shrink-0"
                             />
-                            {isLastOption && (
-                              <Button
-                                size="sm"
-                                onClick={addNewInputsToAllWindows}
-                                className="h-6 w-12 text-xs bg-green-600 text-white hover:bg-green-700 border-0 flex-shrink-0"
-                              >
-                                <Plus className="w-3 h-3" />
-                              </Button>
-                            )}
                           </div>
                         );
                       })}
@@ -3237,8 +3226,6 @@ export default function PR2ConfigClean() {
                   <CardContent className="py-1">
                     <div className="grid grid-cols-1 gap-1">
                       {formData.minQuantityOptions?.map((option, index) => {
-                        const isLastOption = index === formData.minQuantityOptions.length - 1;
-                        
                         return (
                           <div key={option.id} className="flex items-center gap-2 text-xs w-full">
                             <span className="font-medium w-16 flex-shrink-0">Min</span>
@@ -3248,15 +3235,6 @@ export default function PR2ConfigClean() {
                               onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
                               className="bg-white border-orange-300 h-6 text-xs w-16 flex-shrink-0"
                             />
-                            {isLastOption && (
-                              <Button
-                                size="sm"
-                                onClick={addNewInputsToAllWindows}
-                                className="h-6 w-12 text-xs bg-green-600 text-white hover:bg-green-700 border-0 flex-shrink-0"
-                              >
-                                <Plus className="w-3 h-3" />
-                              </Button>
-                            )}
                           </div>
                         );
                       })}
