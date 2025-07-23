@@ -1512,18 +1512,32 @@ export default function PR2ConfigClean() {
     console.log(`🔧 DB10 ADD BUTTON CLICKED - Adding new input windows to db8, db9, db10`);
     console.log(`🔧 Current state: ${formData.quantityOptions.length} quantity, ${formData.minQuantityOptions.length} min quantity, ${formData.rangeOptions.length} range options`);
     
-    // Add new quantity input (green window) - empty default value
-    const newQuantityOption: PricingOption = {
+    // Add TWO new quantity inputs (green window) to maintain pairing - empty default values
+    const newQuantityOption1: PricingOption = {
       id: `quantity_${timestamp}`,
-      label: `No ${formData.quantityOptions.length + 1}`,
+      label: `No ${Math.floor(formData.quantityOptions.length / 2) + 1}`,
       enabled: true,
       value: ''
     };
     
-    // Add new min quantity input (orange window) - empty default value
-    const newMinQuantityOption: PricingOption = {
-      id: `minquantity_${timestamp + 1}`,
-      label: `Qty ${formData.minQuantityOptions.length + 1}`,
+    const newQuantityOption2: PricingOption = {
+      id: `quantity_${timestamp + 1}`,
+      label: `Qty ${Math.floor(formData.quantityOptions.length / 2) + 1}`,
+      enabled: true,
+      value: ''
+    };
+    
+    // Add TWO new min quantity inputs (orange window) to maintain pairing - empty default values
+    const newMinQuantityOption1: PricingOption = {
+      id: `minquantity_${timestamp + 2}`,
+      label: `Min ${Math.floor(formData.minQuantityOptions.length / 2) + 1}`,
+      enabled: true,
+      value: ''
+    };
+    
+    const newMinQuantityOption2: PricingOption = {
+      id: `minquantity_${timestamp + 3}`,
+      label: `Qty ${Math.floor(formData.minQuantityOptions.length / 2) + 1}`,
       enabled: true,
       value: ''
     };
@@ -1531,7 +1545,7 @@ export default function PR2ConfigClean() {
     // Add new range inputs (purple window - percentage and length pair)
     const setNumber = Math.floor(formData.rangeOptions.length / 2) + 1;
     const newPercentageOption: RangeOption = {
-      id: `range_percentage_${timestamp + 2}`,
+      id: `range_percentage_${timestamp + 4}`,
       label: `Percentage ${setNumber}`,
       enabled: true,
       rangeStart: '',
@@ -1539,7 +1553,7 @@ export default function PR2ConfigClean() {
     };
     
     const newLengthOption: RangeOption = {
-      id: `range_length_${timestamp + 3}`,
+      id: `range_length_${timestamp + 5}`,
       label: `Length ${setNumber}`,
       enabled: true,
       rangeStart: '',
@@ -1548,15 +1562,15 @@ export default function PR2ConfigClean() {
     
     setFormData(prev => ({
       ...prev,
-      quantityOptions: [...prev.quantityOptions, newQuantityOption],
-      quantityStackOrder: [...prev.quantityStackOrder, newQuantityOption.id],
-      minQuantityOptions: [...prev.minQuantityOptions, newMinQuantityOption],
-      minQuantityStackOrder: [...prev.minQuantityStackOrder, newMinQuantityOption.id],
+      quantityOptions: [...prev.quantityOptions, newQuantityOption1, newQuantityOption2],
+      quantityStackOrder: [...prev.quantityStackOrder, newQuantityOption1.id, newQuantityOption2.id],
+      minQuantityOptions: [...prev.minQuantityOptions, newMinQuantityOption1, newMinQuantityOption2],
+      minQuantityStackOrder: [...prev.minQuantityStackOrder, newMinQuantityOption1.id, newMinQuantityOption2.id],
       rangeOptions: [...prev.rangeOptions, newPercentageOption, newLengthOption],
       rangeStackOrder: [...prev.rangeStackOrder, newPercentageOption.id, newLengthOption.id]
     }));
     
-    console.log(`🔧 Added new inputs to all windows: ${newQuantityOption.label}, ${newMinQuantityOption.label}, ${newPercentageOption.label} & ${newLengthOption.label}`);
+    console.log(`🔧 Added new paired inputs to all windows: ${newQuantityOption1.label}+${newQuantityOption2.label}, ${newMinQuantityOption1.label}+${newMinQuantityOption2.label}, ${newPercentageOption.label}+${newLengthOption.label}`);
   };
 
   // Fixed delete function that removes corresponding inputs from all three windows
