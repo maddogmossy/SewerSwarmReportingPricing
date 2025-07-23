@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -165,6 +165,22 @@ export default function PR2ConfigClean() {
     },
     enabled: !!sector,
   });
+
+  // Local state for P26 day rate input to prevent API calls on every keystroke
+  const [p26DayRate, setP26DayRate] = useState("");
+
+  // Initialize P26 day rate when data loads
+  useEffect(() => {
+    if (pr2Configurations && !p26DayRate) {
+      const p26Config = pr2Configurations.find(config => config.categoryId === 'P26');
+      const dayRateOption = p26Config?.pricingOptions?.find(option => 
+        option.id === 'central_day_rate' || option.id === 'price_dayrate'
+      );
+      if (dayRateOption?.value) {
+        setP26DayRate(dayRateOption.value);
+      }
+    }
+  }, [pr2Configurations, p26DayRate]);
 
   // Load existing configuration for editing (moved up to avoid initialization error)
   const { data: existingConfig, error: configError } = useQuery({
@@ -2791,7 +2807,7 @@ export default function PR2ConfigClean() {
                       <Label className="text-xs">£</Label>
                       <Input
                         placeholder="1650"
-                        value={(() => {
+                        value={p26DayRate || (() => {
                           // Find P26 configuration and extract day rate
                           const p26Config = pr2Configurations?.find(config => config.categoryId === 'P26');
                           const dayRateOption = p26Config?.pricingOptions?.find(option => 
@@ -2799,14 +2815,17 @@ export default function PR2ConfigClean() {
                           );
                           return dayRateOption?.value || "1650";
                         })()}
-                        onChange={async (e) => {
-                          console.log(`💰 Updating P26 central day rate:`, e.target.value);
+                        onChange={(e) => {
+                          // Update local state immediately for responsive typing
+                          setP26DayRate(e.target.value);
+                        }}
+                        onBlur={async (e) => {
+                          // Save to database when user finishes typing (on blur)
+                          console.log(`💰 Saving P26 central day rate:`, e.target.value);
                           
-                          // Find or create P26 configuration
                           let p26Config = pr2Configurations?.find(config => config.categoryId === 'P26');
                           
                           if (p26Config) {
-                            // Update existing P26 configuration
                             const updatedPricingOptions = p26Config.pricingOptions?.map(option => 
                               (option.id === 'central_day_rate' || option.id === 'price_dayrate')
                                 ? { ...option, value: e.target.value }
@@ -2820,15 +2839,13 @@ export default function PR2ConfigClean() {
                             
                             try {
                               await apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updateData);
-                              console.log(`✅ Updated P26 configuration ${p26Config.id} with day rate: £${e.target.value}`);
+                              console.log(`✅ Saved P26 configuration ${p26Config.id} with day rate: £${e.target.value}`);
                               
                               // Invalidate cache to refresh data
                               queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', sector] });
                             } catch (error) {
-                              console.error('❌ Failed to update P26 configuration:', error);
+                              console.error('❌ Failed to save P26 configuration:', error);
                             }
-                          } else {
-                            console.log('⚠️ P26 configuration not found - would need to create one');
                           }
                         }}
                         className="w-20 h-8 text-sm bg-white border-green-300"
