@@ -731,7 +731,7 @@ This prevents data contamination and ensures authentic extraction integrity.
   - **Logging Enhanced**: Added comprehensive logging to track P26 configuration usage and day rate source
   - **Database Consistency**: All TP2 calculations now use single P26 source (Configuration ID: 162) with £1650 day rate
   - **Authentic Values Preserved**: Individual TP2 configurations maintain authentic unit costs (Config 153: £425, 156: £520, 157: £550)
-  - **UI Day Rate Filtering**: Hidden "Day Rate" fields from TP2 patching configurations (153, 156, 157) and standard TP1 configurations
+  - **UI Day Rate Filtering**: Hidden "Day Rate" fields from TP2 patching configurations (153, 156, 157) only - standard TP1 configurations retain Day Rate field
   - **P26 Information Window**: Added dedicated P26 day rate information window in TP2 configuration interface explaining centralized system
 - **Technical Implementation**:
   - Modified `calculateTP2PatchingCost` function to query `pr2Configurations` for P26 config

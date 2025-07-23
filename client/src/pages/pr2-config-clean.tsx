@@ -3333,8 +3333,7 @@ export default function PR2ConfigClean() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {/* Filter out Day Rate field from standard TP1 configurations */}
-                      {formData.pricingOptions?.filter(option => option.id !== 'price_dayrate').map((option) => (
+                      {formData.pricingOptions?.map((option) => (
                         <div key={option.id} className="flex items-center gap-2 text-xs">
                           <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
                           <Input
