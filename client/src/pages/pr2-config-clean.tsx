@@ -156,6 +156,16 @@ export default function PR2ConfigClean() {
     enabled: !!categoryId,
   });
   
+  // Query all configurations for current sector (to access P26 configuration)
+  const { data: pr2Configurations } = useQuery({
+    queryKey: ['/api/pr2-clean', sector],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/pr2-clean?sector=${sector}`);
+      return await response.json();
+    },
+    enabled: !!sector,
+  });
+
   // Load existing configuration for editing (moved up to avoid initialization error)
   const { data: existingConfig, error: configError } = useQuery({
     queryKey: ['/api/pr2-clean', editId],
@@ -2764,21 +2774,70 @@ export default function PR2ConfigClean() {
                 TP2 - Patching Configuration
               </h3>
               
-              {/* P26 Central Day Rate Window */}
+              {/* P26 Central Day Rate Window - Editable */}
               <Card className="bg-green-50 border-green-200 mb-4">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2">
                     <DollarSign className="w-4 h-4" />
-                    P26 Central Day Rate (£1650)
+                    P26 Central Day Rate
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200">
-                    <strong>Centralized System:</strong> All TP2 patching calculations use the single P26 day rate of £1650.
-                    Individual day rates are no longer needed in TP2 configurations.
+                <CardContent className="space-y-3">
+                  <div className="flex items-center gap-4">
+                    <Label className="w-32 text-sm font-medium text-green-700">
+                      Central Day Rate
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Label className="text-xs">£</Label>
+                      <Input
+                        placeholder="1650"
+                        value={(() => {
+                          // Find P26 configuration and extract day rate
+                          const p26Config = pr2Configurations?.find(config => config.categoryId === 'P26');
+                          const dayRateOption = p26Config?.pricingOptions?.find(option => 
+                            option.id === 'central_day_rate' || option.id === 'price_dayrate'
+                          );
+                          return dayRateOption?.value || "1650";
+                        })()}
+                        onChange={async (e) => {
+                          console.log(`💰 Updating P26 central day rate:`, e.target.value);
+                          
+                          // Find or create P26 configuration
+                          let p26Config = pr2Configurations?.find(config => config.categoryId === 'P26');
+                          
+                          if (p26Config) {
+                            // Update existing P26 configuration
+                            const updatedPricingOptions = p26Config.pricingOptions?.map(option => 
+                              (option.id === 'central_day_rate' || option.id === 'price_dayrate')
+                                ? { ...option, value: e.target.value }
+                                : option
+                            ) || [{ id: 'central_day_rate', label: 'Day Rate (All Patches)', value: e.target.value, enabled: true }];
+                            
+                            const updateData = {
+                              ...p26Config,
+                              pricingOptions: updatedPricingOptions
+                            };
+                            
+                            try {
+                              await apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updateData);
+                              console.log(`✅ Updated P26 configuration ${p26Config.id} with day rate: £${e.target.value}`);
+                              
+                              // Invalidate cache to refresh data
+                              queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', sector] });
+                            } catch (error) {
+                              console.error('❌ Failed to update P26 configuration:', error);
+                            }
+                          } else {
+                            console.log('⚠️ P26 configuration not found - would need to create one');
+                          }
+                        }}
+                        className="w-20 h-8 text-sm bg-white border-green-300"
+                      />
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-600">
-                    Navigate to P26 configuration to modify the central day rate used by all TP2 patches.
+                  <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200">
+                    <strong>Centralized System:</strong> All TP2 patching calculations use this single day rate.
+                    Changes here automatically apply to all patch sizes (150mm, 225mm, 300mm).
                   </div>
                 </CardContent>
               </Card>
