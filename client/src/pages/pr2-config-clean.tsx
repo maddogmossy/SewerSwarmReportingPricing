@@ -1515,14 +1515,14 @@ export default function PR2ConfigClean() {
     // Add TWO new quantity inputs (green window) to maintain pairing - empty default values
     const newQuantityOption1: PricingOption = {
       id: `quantity_${timestamp}`,
-      label: `No ${Math.floor(formData.quantityOptions.length / 2) + 1}`,
+      label: `Runs ${Math.floor(formData.quantityOptions.length / 2) + 1}`,
       enabled: true,
       value: ''
     };
     
     const newQuantityOption2: PricingOption = {
       id: `quantity_${timestamp + 1}`,
-      label: `Qty ${Math.floor(formData.quantityOptions.length / 2) + 1}`,
+      label: `No ${Math.floor(formData.quantityOptions.length / 2) + 1}`,
       enabled: true,
       value: ''
     };
