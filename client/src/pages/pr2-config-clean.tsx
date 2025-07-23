@@ -2802,8 +2802,8 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {/* Filter out Day Rate field from TP2 patching options */}
-                  {formData.pricingOptions?.filter(option => option.id !== 'price_dayrate').map((option, index) => (
+                  {/* Display all patching options (Day Rate already removed from database) */}
+                  {formData.pricingOptions?.map((option, index) => (
                     <div key={option.id} className="flex items-center gap-4">
                       <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
                       <Label className="w-32 text-sm font-medium text-gray-700">
@@ -2825,42 +2825,40 @@ export default function PR2ConfigClean() {
                           data-testid={`pricing-input-${option.id}`}
                         />
                       </div>
-                      {/* Only show Min Qty and Length Max for rows 2-5 (index > 0) */}
-                      {index > 0 && (
-                        <>
-                          <div className="ml-4 flex items-center gap-2">
-                            <Label className="text-xs">Min Qty</Label>
-                            <Input
-                              placeholder="min"
-                              value={formData.minQuantityOptions?.[index]?.value || ""}
-                              onChange={(e) => {
-                                console.log(`📊 Typing in Min Qty ${index + 1}:`, e.target.value);
-                                handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[index]?.id, e.target.value);
-                              }}
-                              className="w-12 h-8 text-sm"
-                              disabled={false}
-                              readOnly={false}
-                              data-testid={`minqty-input-${index}`}
-                            />
-                          </div>
-                          <div className="ml-4 flex items-center gap-2">
-                            <Label className="text-xs">Length (Max)</Label>
-                            <Input
-                              placeholder="length"
-                              value={formData.rangeOptions?.[index]?.rangeEnd || ""}
-                              onChange={(e) => {
-                                console.log(`📏 Length input ${index + 1} (${option.label}):`, e.target.value);
-                                const rangeId = formData.rangeOptions?.[index]?.id || `range_length_${index + 1}`;
-                                handleRangeValueChange(rangeId, 'rangeEnd', e.target.value);
-                              }}
-                              className="w-20 h-8 text-sm"
-                              disabled={false}
-                              readOnly={false}
-                              data-testid={`length-input-${index}`}
-                            />
-                          </div>
-                        </>
-                      )}
+                      {/* Show Min Qty and Length Max for all rows */}
+                      <>
+                        <div className="ml-4 flex items-center gap-2">
+                          <Label className="text-xs">Min Qty</Label>
+                          <Input
+                            placeholder="min"
+                            value={formData.minQuantityOptions?.[index + 1]?.value || ""}
+                            onChange={(e) => {
+                              console.log(`📊 Typing in Min Qty ${index + 1}:`, e.target.value);
+                              handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[index + 1]?.id, e.target.value);
+                            }}
+                            className="w-12 h-8 text-sm"
+                            disabled={false}
+                            readOnly={false}
+                            data-testid={`minqty-input-${index}`}
+                          />
+                        </div>
+                        <div className="ml-4 flex items-center gap-2">
+                          <Label className="text-xs">Length (Max)</Label>
+                          <Input
+                            placeholder="length"
+                            value={formData.rangeOptions?.[index + 2]?.rangeEnd || ""}
+                            onChange={(e) => {
+                              console.log(`📏 Length input ${index + 1} (${option.label}):`, e.target.value);
+                              const rangeId = formData.rangeOptions?.[index + 2]?.id || `range_length_${index + 1}`;
+                              handleRangeValueChange(rangeId, 'rangeEnd', e.target.value);
+                            }}
+                            className="w-20 h-8 text-sm"
+                            disabled={false}
+                            readOnly={false}
+                            data-testid={`length-input-${index}`}
+                          />
+                        </div>
+                      </>
                     </div>
                   ))}
                 </CardContent>
