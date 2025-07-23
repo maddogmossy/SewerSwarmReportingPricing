@@ -3663,7 +3663,7 @@ export default function PR2ConfigClean() {
                               {!isFirstOption && !isLastOption && (
                                 <Button
                                   size="sm"
-                                  onClick={() => deleteInputsFromAllWindows(Math.floor(index / 2) - 1)}
+                                  onClick={() => deleteInputsFromAllWindows(Math.floor(index / 2))}
                                   className="h-6 w-12 text-xs bg-red-600 text-white hover:bg-red-700 border-0 flex-shrink-0"
                                 >
                                   <Trash2 className="w-3 h-3" />

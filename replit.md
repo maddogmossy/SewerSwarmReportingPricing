@@ -722,6 +722,23 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 23, 2025)
 
+### CRITICAL: Delete Row Two Bug Fix Complete - Index Calculation Fixed ✅
+- **Date**: January 23, 2025  
+- **Status**: Successfully fixed delete functionality for row two (ID db10) in purple window
+- **Root Cause Identified**: Delete button index calculation `Math.floor(index / 2) - 1` was incorrect for row 2
+- **Issues Fixed**:
+  - **Index Calculation**: Fixed from `Math.floor(index / 2) - 1` to `Math.floor(index / 2)` for proper row targeting
+  - **Row 2 Deletion**: ID db10 (Percentage 2, index 2) now correctly deletes pairIndex 1 instead of pairIndex 0
+  - **Cross-Window Deletion**: Properly removes corresponding items from green, orange, and purple windows
+  - **Database Persistence**: Delete operations save to database within 500ms via `debouncedSave()` calls
+- **Technical Implementation**:
+  - Updated delete button onClick in pr2-config-clean.tsx line 3669
+  - Row structure: Row 1 (indices 0,1), Row 2 (indices 2,3) - now properly calculated
+  - For index 2 (Percentage 2): `Math.floor(2 / 2) = 1` (correct pairIndex)
+  - For index 3 (Length 2): `Math.floor(3 / 2) = 1` (same pairIndex)
+- **User Benefit**: Delete buttons now target correct rows for removal across all three windows
+- **Result**: Complete delete functionality operational for all rows in purple window
+
 ### CRITICAL: Meterage Rule Detection Bug Fix Complete - Label Matching Fixed ✅
 - **Date**: January 23, 2025  
 - **Status**: Successfully fixed meterage rule detection logic to handle both "No 2" and "Runs 2" label patterns
