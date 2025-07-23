@@ -2921,10 +2921,10 @@ export default function PR2ConfigClean() {
                           <Input
                             placeholder="length"
                             maxLength={6}
-                            value={formData.rangeOptions?.[index + 1]?.rangeEnd || ""}
+                            value={formData.rangeOptions?.[index]?.rangeEnd || ""}
                             onChange={(e) => {
                               console.log(`📏 Length input ${index + 1} (${option.label}):`, e.target.value);
-                              const rangeId = formData.rangeOptions?.[index + 1]?.id || `range_length_${index + 1}`;
+                              const rangeId = formData.rangeOptions?.[index]?.id || `range_length_${index + 1}`;
                               handleRangeValueChange(rangeId, 'rangeEnd', e.target.value);
                             }}
                             className="w-20 h-8 text-sm"
