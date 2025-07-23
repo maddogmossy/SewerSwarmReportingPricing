@@ -2023,11 +2023,12 @@ export default function PR2ConfigClean() {
     return parts.join('. ');
   };
 
+  // TEMPORARILY DISABLED: Auto-description generation was causing data truncation issues
   // Update description when options change
-  React.useEffect(() => {
-    const autoDesc = generateAutoDescription();
-    setFormData(prev => ({ ...prev, description: autoDesc }));
-  }, [formData.pricingOptions, formData.quantityOptions, formData.minQuantityOptions, formData.rangeOptions, formData.mathOperators]);
+  // React.useEffect(() => {
+  //   const autoDesc = generateAutoDescription();
+  //   setFormData(prev => ({ ...prev, description: autoDesc }));
+  // }, [formData.pricingOptions, formData.quantityOptions, formData.minQuantityOptions, formData.rangeOptions, formData.mathOperators]);
   
   // Sync patching colors when page loads
   React.useEffect(() => {
