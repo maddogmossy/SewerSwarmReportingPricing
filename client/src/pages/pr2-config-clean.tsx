@@ -814,7 +814,7 @@ export default function PR2ConfigClean() {
       clearTimeout(saveTimeout);
     }
     
-    // Set new timeout to save after 2 seconds of no changes
+    // Set new timeout to save after 500ms of no changes
     const timeoutId = setTimeout(async () => {
       try {
         const payload = {
@@ -847,7 +847,7 @@ export default function PR2ConfigClean() {
         console.error('❌ Save failed:', error);
       }
       setSaveTimeout(null);
-    }, 2000);
+    }, 500);
     
     setSaveTimeout(timeoutId);
   };
