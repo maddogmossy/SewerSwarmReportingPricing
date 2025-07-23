@@ -2876,7 +2876,7 @@ export default function PR2ConfigClean() {
                     <div className="flex items-center gap-2">
                       <Label className="text-xs">£</Label>
                       <Input
-                        placeholder="1650"
+                        placeholder="0.00"
                         value={p26DayRate}
                         onChange={(e) => {
                           // Update local state immediately for responsive typing
