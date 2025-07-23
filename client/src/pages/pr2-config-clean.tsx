@@ -3642,46 +3642,46 @@ export default function PR2ConfigClean() {
                         📏 Ranges
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2">
+                    <CardContent className="space-y-1">
                       {/* Display each range option individually in vertical list */}
-                      {formData.rangeOptions?.map((option, index) => {
-                        const isFirstOption = index === 0;
-                        const isLastOption = index === formData.rangeOptions.length - 1;
-                        
-                        return (
-                          <div key={option.id} className="flex items-center gap-2 text-xs">
-                            <span className="font-medium min-w-0 w-20">
-                              {option.label.includes("Percentage") ? "% (Max)" : "Length (Max)"}
-                            </span>
-                            <Input
-                              placeholder=""
-                              value={option.rangeEnd || ""}
-                              onChange={(e) => handleRangeValueChange(option.id, 'rangeEnd', e.target.value)}
-                              className="bg-white border-purple-300 h-6 text-xs w-16"
-                            />
-                            {isLastOption && (
-                              <Button
-                                size="sm"
-                                onClick={addNewInputsToAllWindows}
-                                className="h-6 w-16 text-xs bg-green-600 text-white hover:bg-green-700 border-0 ml-2"
-                              >
-                                <Plus className="w-3 h-3 mr-1" />
-                                Add
-                              </Button>
-                            )}
-                            {!isFirstOption && !isLastOption && (
-                              <Button
-                                size="sm"
-                                onClick={() => deleteInputsFromAllWindows(Math.floor(index / 2) - 1)}
-                                className="h-6 w-16 text-xs bg-red-600 text-white hover:bg-red-700 border-0 ml-2"
-                              >
-                                <Trash2 className="w-3 h-3 mr-1" />
-                                Del
-                              </Button>
-                            )}
-                          </div>
-                        );
-                      })}
+                      <div className="grid grid-cols-1 gap-1">
+                        {formData.rangeOptions?.map((option, index) => {
+                          const isFirstOption = index === 0;
+                          const isLastOption = index === formData.rangeOptions.length - 1;
+                          
+                          return (
+                            <div key={option.id} className="flex items-center gap-2 text-xs w-full">
+                              <span className="font-medium w-20 flex-shrink-0">
+                                {option.label.includes("Percentage") ? "% (Max)" : "Length (Max)"}
+                              </span>
+                              <Input
+                                placeholder=""
+                                value={option.rangeEnd || ""}
+                                onChange={(e) => handleRangeValueChange(option.id, 'rangeEnd', e.target.value)}
+                                className="bg-white border-purple-300 h-6 text-xs w-16 flex-shrink-0"
+                              />
+                              {isLastOption && (
+                                <Button
+                                  size="sm"
+                                  onClick={addNewInputsToAllWindows}
+                                  className="h-6 w-12 text-xs bg-green-600 text-white hover:bg-green-700 border-0 flex-shrink-0"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </Button>
+                              )}
+                              {!isFirstOption && !isLastOption && (
+                                <Button
+                                  size="sm"
+                                  onClick={() => deleteInputsFromAllWindows(Math.floor(index / 2) - 1)}
+                                  className="h-6 w-12 text-xs bg-red-600 text-white hover:bg-red-700 border-0 flex-shrink-0"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
