@@ -562,7 +562,7 @@ export default function Dashboard() {
   const [selectedPatchSection, setSelectedPatchSection] = useState<any>(null);
   const [selectedPatchCalculation, setSelectedPatchCalculation] = useState<any>(null);
   
-  // TP2 distribution dialog state - FORCE SHOW FOR TESTING
+  // TP2 distribution dialog state
   const [showTP2DistributionDialog, setShowTP2DistributionDialog] = useState<{
     show: boolean;
     tp2Sections: any[];
@@ -570,15 +570,11 @@ export default function Dashboard() {
     minQuantity: number;
     message: string;
   }>({
-    show: true, // FORCE SHOW FOR TESTING
-    tp2Sections: [
-      { itemNo: 13, letterSuffix: 'a' },
-      { itemNo: 20, letterSuffix: '' },
-      { itemNo: 21, letterSuffix: 'a' }
-    ],
-    totalDefects: 3,
+    show: false,
+    tp2Sections: [],
+    totalDefects: 0,
     minQuantity: 4,
-    message: 'TP2 minimum quantity not met - configuration required for structural repairs'
+    message: ''
   });
 
   // Validation warning popup system
@@ -1757,6 +1753,12 @@ export default function Dashboard() {
       setValidationResult(result);
 
       // Check for TP2 configuration issues and trigger warning popups
+      console.log('🚀 CALLING TP2 VALIDATION FUNCTION:', {
+        sectionsLength: rawSectionData.length,
+        configsLength: pr2Configurations.length,
+        hasPatching: pr2Configurations.some(c => c.categoryId === 'patching'),
+        devId: 'tp2-function-call-trigger'
+      });
       checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
     }
   }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo, workCategories, vehicleTravelRates]);
