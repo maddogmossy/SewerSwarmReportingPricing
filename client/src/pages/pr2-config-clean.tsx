@@ -2512,7 +2512,7 @@ export default function PR2ConfigClean() {
 
         {/* Sector Selection Checkboxes */}
         <Card className="mb-6 relative">
-          <DevLabel id="db3" />
+          <DevLabel id="db3" position="top-right" />
           <CardHeader>
             <CardTitle className="text-gray-900 flex items-center gap-2">
               <Building className="w-5 h-5" />
@@ -2557,7 +2557,7 @@ export default function PR2ConfigClean() {
 
         {/* Color Picker Section */}
         <Card className="mb-6 relative">
-          <DevLabel id="db5" />
+          <DevLabel id="db5" position="top-right" />
           <CardHeader>
             <CardTitle className="text-gray-900 flex items-center gap-2">
               <div 
@@ -2668,7 +2668,7 @@ export default function PR2ConfigClean() {
 
         {/* Pipe Size Selection - Show for ALL categories */}
         <Card className="mb-6 relative">
-            <DevLabel id="db1" />
+            <DevLabel id="db1" position="top-right" />
             <CardHeader>
               <CardTitle className="text-gray-900 flex items-center gap-2">
                 <Ruler className="w-5 h-5" />
@@ -2828,7 +2828,7 @@ export default function PR2ConfigClean() {
 
         {/* Vehicle Travel Rates - Main Page Level (P19) */}
         <Card className="mb-6 bg-cyan-50 border-cyan-200" data-component="p19">
-          <DevLabel id="p19" />
+          <DevLabel id="db15" position="top-right" />
           <CardHeader className="pb-2">
             <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
               <Truck className="w-5 h-5" />
@@ -2923,7 +2923,7 @@ export default function PR2ConfigClean() {
 
         {/* Configuration Title */}
         <div className="mb-6 relative">
-          <DevLabel id="db2" />
+          <DevLabel id="db2" position="top-right" />
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             {(() => {
               // Correct the logic for loading the right template
@@ -3204,7 +3204,7 @@ export default function PR2ConfigClean() {
                 
                 {/* Blue Window: Day Rate */}
 <Card className="relative bg-blue-50 border-blue-200 w-56 flex-shrink-0">
-                  <DevLabel id="db6" />
+                  <DevLabel id="db6" position="top-right" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-blue-700 text-xs flex items-center gap-1 whitespace-nowrap">
                       <Coins className="w-3 h-3" />
@@ -3233,7 +3233,7 @@ export default function PR2ConfigClean() {
 
                 {/* Math Window - DISABLED PER USER REQUEST */}
                 <Card className="relative bg-gray-50 border-gray-200 w-20 flex-shrink-0">
-                  <DevLabel id="db7" />
+                  <DevLabel id="db7" position="top-right" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
                       <Calculator className="w-3 h-3 mr-1" />
@@ -3251,7 +3251,7 @@ export default function PR2ConfigClean() {
 
                 {/* Green Window: Runs per Shift */}
                 <Card className="relative bg-green-50 border-green-200 w-60 flex-shrink-0">
-                  <DevLabel id="db8" />
+                  <DevLabel id="db8" position="top-right" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-green-700 text-xs flex items-center gap-1">
                       <Package className="w-3 h-3" />
@@ -3279,7 +3279,7 @@ export default function PR2ConfigClean() {
 
                 {/* Orange Window: Min Quantity */}
                 <Card className="relative bg-orange-50 border-orange-200 w-52 flex-shrink-0">
-                  <DevLabel id="db9" />
+                  <DevLabel id="db9" position="top-right" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
                       <Target className="w-3 h-3" />
@@ -3307,7 +3307,7 @@ export default function PR2ConfigClean() {
 
               {/* Purple Window: Ranges */}
               <Card className="relative bg-purple-50 border-purple-200 flex-1">
-                <DevLabel id="db10" />
+                <DevLabel id="db10" position="top-right" />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
                     <BarChart3 className="w-3 h-3" />
@@ -3606,7 +3606,7 @@ export default function PR2ConfigClean() {
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent className="relative">
-          <DevLabel id="db4" />
+          <DevLabel id="db4" position="top-right" />
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Configuration</AlertDialogTitle>
             <AlertDialogDescription>
