@@ -1769,8 +1769,19 @@ export default function Dashboard() {
         sectionsLength: rawSectionData.length,
         configsLength: pr2Configurations.length,
         hasPatching: pr2Configurations.some(c => c.categoryId === 'patching'),
+        pr2ConfigDetails: pr2Configurations.map(c => ({ id: c.id, categoryId: c.categoryId, categoryName: c.categoryName })),
         devId: 'tp2-function-call-trigger'
       });
+      
+      // CRITICAL: Load all configurations, not just pr2Configurations
+      console.log('🔍 CONFIGURATION SOURCE INVESTIGATION:', {
+        pr2ConfigurationsSource: 'useQuery pr2-clean endpoint',
+        pr2ConfigsCount: pr2Configurations?.length || 0,
+        pr2ConfigIds: pr2Configurations?.map(c => c.id) || [],
+        needsAllConfigs: 'Need to include TP2 patching configs (153, 156, 157)',
+        devId: 'config-source-debug'
+      });
+      
       checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
     }
   }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo, workCategories, vehicleTravelRates]);
@@ -1788,12 +1799,23 @@ export default function Dashboard() {
       configDetails: configurations.map(c => ({
         id: c.id,
         categoryId: c.categoryId,
+        categoryName: c.categoryName,
         hasPricingOptions: !!c.pricingOptions?.length
       })),
       devId: 'available-configs-debug'
     });
 
-    const tp2Config = configurations.find(config => config.categoryId === 'patching');
+    // Find ALL TP2 patching configurations (should be IDs 153, 156, 157)
+    const tp2Configs = configurations.filter(config => config.categoryId === 'patching');
+    console.log('🔍 TP2 Patching Configurations Found:', {
+      count: tp2Configs.length,
+      configIds: tp2Configs.map(c => c.id),
+      configNames: tp2Configs.map(c => c.categoryName),
+      devId: 'tp2-configs-found'
+    });
+
+    // Use first TP2 configuration found (or we could check all of them)
+    const tp2Config = tp2Configs[0];
     console.log('🔍 TP2 Configuration Found:', {
       configExists: !!tp2Config,
       configId: tp2Config?.id,
@@ -1889,18 +1911,35 @@ export default function Dashboard() {
     }
   };
 
-  // IMMEDIATE TEST - Force run TP2 validation on every render
+  // Load ALL configurations for TP2 validation (not sector-filtered)
+  const { data: allConfigurations = [] } = useQuery({
+    queryKey: ['all-pr2-configs-for-tp2'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/pr2-clean');
+      const data = await response.json();
+      console.log('🔍 ALL CONFIGURATIONS LOADED:', {
+        totalConfigs: data.length,
+        configDetails: data.map((c: any) => ({ id: c.id, categoryId: c.categoryId, categoryName: c.categoryName })),
+        devId: 'all-configs-loaded'
+      });
+      return data;
+    },
+    enabled: hasAuthenticData && rawSectionData?.length > 0,
+    staleTime: 300000 // 5 minutes
+  });
+
+  // IMMEDIATE TEST - Force run TP2 validation with ALL configurations
   console.log('🎯 IMMEDIATE TP2 VALIDATION TEST:', {
     hasAuthenticData,
     rawSectionDataLength: rawSectionData?.length || 0,
-    pr2ConfigurationsLength: pr2Configurations?.length || 0,
-    willRunValidation: hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations?.length > 0,
+    allConfigurationsLength: allConfigurations?.length || 0,
+    willRunValidation: hasAuthenticData && rawSectionData?.length > 0 && allConfigurations?.length > 0,
     devId: 'immediate-validation-test'
   });
 
-  if (hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations?.length > 0) {
-    console.log('🚀 RUNNING TP2 VALIDATION IMMEDIATELY');
-    checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
+  if (hasAuthenticData && rawSectionData?.length > 0 && allConfigurations?.length > 0) {
+    console.log('🚀 RUNNING TP2 VALIDATION IMMEDIATELY WITH ALL CONFIGS');
+    checkTP2ConfigurationIssues(rawSectionData, allConfigurations);
   }
 
   // Handler for applying day rate adjustments to TP2 sections
