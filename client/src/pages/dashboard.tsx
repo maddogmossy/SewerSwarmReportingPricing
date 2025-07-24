@@ -1719,17 +1719,17 @@ export default function Dashboard() {
     if (tp2Configs.length === 0) return; // No TP2 configurations found
 
     // ENABLED: Dashboard-based TP2 minimum quantity validation using pipe-size-specific checking
-    // Group structural defects by pipe size and check against corresponding TP2 configurations
+    // Use authentic database classification instead of text-based detection
     const structuralDefects = sections.filter(section => {
-      const defects = section.defects || '';
-      const hasStructuralDefect = requiresStructuralRepair(defects);
+      // Use authentic defectType from database instead of text analysis
+      const isStructural = section.defectType === 'structural';
       
-      // Debug structural defect classification  
+      // Debug to verify authentic database classification
       if (section.itemNo === 19 || section.itemNo === '13a' || section.itemNo === 20 || section.itemNo === '21a') {
-        console.log(`Item ${section.itemNo} - structural: ${hasStructuralDefect}, defects: "${defects}"`);
+        console.log(`Item ${section.itemNo} - authentic defectType: "${section.defectType}", structural: ${isStructural}`);
       }
       
-      return hasStructuralDefect;
+      return isStructural;
     });
 
     // Group structural defects by pipe size
