@@ -3268,17 +3268,16 @@ export default function Dashboard() {
     // Get smart counting result for all sections
     const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations);
     
-    // Find minimum quantity from TP1 configurations (which have quantityOptions green windows)
+    // Find minimum quantity from TP2 minQuantityOptions (orange window)
     let minQuantity = 4; // Default minimum
     pr2Configurations.forEach(config => {
-      // Only TP1 configurations have quantityOptions (green window) - TP2 doesn't
-      if (config.categoryId !== 'patching' && config.quantityOptions) {
-        const quantityOptions = config.quantityOptions || [];
-        const runsOption = quantityOptions.find((opt: any) => 
-          opt.label?.toLowerCase().includes('runs') && opt.enabled && opt.value
+      if (config.categoryId === 'patching' && config.minQuantityOptions) {
+        const minQuantityOptions = config.minQuantityOptions || [];
+        const minQtyOption = minQuantityOptions.find((opt: any) => 
+          opt.label?.toLowerCase().includes('min') && opt.enabled && opt.value
         );
-        if (runsOption) {
-          const minValue = parseFloat(runsOption.value || '0');
+        if (minQtyOption) {
+          const minValue = parseFloat(minQtyOption.value || '0');
           if (minValue > 0) {
             minQuantity = minValue;
           }
