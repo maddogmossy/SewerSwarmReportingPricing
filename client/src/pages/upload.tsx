@@ -422,12 +422,12 @@ export default function Upload() {
                     const IconComponent = sector.icon;
 
                     const sectorIdMap = {
-                      'utilities': 8,
-                      'adoption': 9, 
-                      'highways': 10,
-                      'domestic': 11,
-                      'insurance': 12,
-                      'construction': 13
+                      'utilities': 1,
+                      'adoption': 2, 
+                      'highways': 3,
+                      'domestic': 4,
+                      'insurance': 5,
+                      'construction': 6
                     };
 
                     return (
