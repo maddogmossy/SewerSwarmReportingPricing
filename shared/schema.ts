@@ -531,6 +531,7 @@ export const insertProjectFolderSchema = createInsertSchema(projectFolders).omit
 export const insertFileUploadSchema = createInsertSchema(fileUploads).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

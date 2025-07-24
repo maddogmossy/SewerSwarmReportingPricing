@@ -1578,15 +1578,33 @@ export default function Dashboard() {
   // FIXED: Removed cache invalidation useEffect that was causing infinite loops
   // Cache invalidation will be handled by React Query automatically
 
+  // DEBUG: Check currentUpload state
+  console.log('🔍 DEBUG currentUpload state:', {
+    currentUpload: currentUpload ? { id: currentUpload.id, status: currentUpload.status } : null,
+    completedUploads: completedUploads.length,
+    reportId,
+    selectedReportIds,
+    devId: 'current-upload-debug'
+  });
+
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'wrc-refresh-v2'], // Cache bust for WRc update
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'wrc-refresh-v3'], // Cache bust for debugging
     enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     retry: false
+  });
+
+  // DEBUG: Check rawSectionData state  
+  console.log('🔍 DEBUG rawSectionData state:', {
+    rawSectionDataLength: rawSectionData?.length || 0,
+    sectionsLoading,
+    sectionsError: sectionsError?.message,
+    queryEnabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
+    devId: 'raw-section-data-debug'
   });
 
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
