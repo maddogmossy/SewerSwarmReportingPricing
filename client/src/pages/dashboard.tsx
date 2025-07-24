@@ -561,6 +561,21 @@ export default function Dashboard() {
   const [showPatchPricingDialog, setShowPatchPricingDialog] = useState(false);
   const [selectedPatchSection, setSelectedPatchSection] = useState<any>(null);
   const [selectedPatchCalculation, setSelectedPatchCalculation] = useState<any>(null);
+  
+  // TP2 distribution dialog state
+  const [showTP2DistributionDialog, setShowTP2DistributionDialog] = useState<{
+    show: boolean;
+    tp2Sections: any[];
+    totalDefects: number;
+    minQuantity: number;
+    message: string;
+  }>({
+    show: false,
+    tp2Sections: [],
+    totalDefects: 0,
+    minQuantity: 4,
+    message: ''
+  });
 
   // Validation warning popup system
   const validationWarnings = useValidationWarnings();
@@ -1795,26 +1810,55 @@ export default function Dashboard() {
       devId: 'tp2-validation-checkpoint-4'
     });
 
-    // DISABLED: Hardcoded day rate validation logic removed
-    // This validation was expecting specific day rate adjustments (£50) and base costs (£350)
-    // that don't match authentic Configuration 153 values (Day Rate £1650, Double Layer £425)
-    console.log('🔍 TP2 Day Rate values found:', {
-      dayRateOption: dayRateOption ? { label: dayRateOption.label, value: dayRateOption.value } : null,
-      doubleLayerOption: doubleLayerOption ? { label: doubleLayerOption.label, value: doubleLayerOption.value } : null,
-      dayRate,
-      doubleLayerCost,
-      note: 'Validation disabled - using authentic values from Configuration 153',
-      devId: 'tp2-validation-disabled'
+    // ENABLED: Dashboard-based TP2 minimum quantity validation using authentic structural defect counting
+    // Count ALL structural defects across all pipe sizes from dashboard sections
+    const structuralDefects = sections.filter(section => {
+      const defects = section.defects || '';
+      const hasStructuralDefect = requiresStructuralRepair(defects);
+      return hasStructuralDefect;
     });
 
-    // DISABLED: Hardcoded validation system removed to prevent conflicts with authentic Configuration 153 values
-    // This validation was using hardcoded expected costs (£475, £600, £570) that don't match authentic user data
-    // Configuration 153 has authentic values: Day Rate £1650, Double Layer £425
-    // Removing this entire validation block to eliminate "TP2 Day Rate Distribution Needed" popup
-    console.log('⚠️ TP2 cost distribution validation disabled - using authentic Configuration 153 values only');
-    
-    // Note: TP2 cost validation now handled by cost calculation level (line 1241) which properly uses 
-    // authentic configuration values instead of hardcoded expectations
+    console.log('🔍 TP2 Structural Defects Analysis:', {
+      totalSections: sections.length,
+      structuralDefectsFound: structuralDefects.length,
+      structuralDefectIds: structuralDefects.map(s => `${s.itemNo}${s.letterSuffix || ''}`),
+      devId: 'tp2-structural-counting'
+    });
+
+    // Get minimum quantity requirement from TP2 configuration
+    const minQuantityOptions = tp2Config.minQuantityOptions || [];
+    const minQtyOption = minQuantityOptions.find((opt: any) => 
+      opt.label?.toLowerCase().includes('min') && opt.enabled && opt.value
+    );
+    const minQuantity = minQtyOption ? parseFloat(minQtyOption.value || '4') : 4;
+
+    console.log('🔍 TP2 Minimum Quantity Check:', {
+      structuralDefectsCount: structuralDefects.length,
+      minQuantityRequired: minQuantity,
+      belowMinimum: structuralDefects.length < minQuantity,
+      minQtyOption: minQtyOption ? { label: minQtyOption.label, value: minQtyOption.value } : 'Using default: 4',
+      devId: 'tp2-minimum-validation'
+    });
+
+    // Trigger popup if structural defects are below minimum quantity
+    if (structuralDefects.length > 0 && structuralDefects.length < minQuantity) {
+      console.log('🚨 TP2 POPUP TRIGGER:', {
+        reason: 'Structural defects below minimum quantity',
+        structuralDefects: structuralDefects.length,
+        minRequired: minQuantity,
+        defectItems: structuralDefects.map(s => `Item ${s.itemNo}${s.letterSuffix || ''}`),
+        devId: 'tp2-popup-triggered'
+      });
+
+      // Show TP2 minimum quantity warning popup
+      setShowTP2DistributionDialog({
+        show: true,
+        tp2Sections: structuralDefects,
+        totalDefects: structuralDefects.length,
+        minQuantity: minQuantity,
+        message: `${structuralDefects.length} structural defects found but ${minQuantity} minimum required for TP2 patching`
+      });
+    }
   };
 
   // Handler for applying day rate adjustments to TP2 sections
@@ -4217,6 +4261,69 @@ export default function Dashboard() {
           onPriceUpdate={handlePatchPriceUpdate}
         />
       )}
+
+      {/* TP2 Minimum Quantity Warning Dialog */}
+      <Dialog open={showTP2DistributionDialog.show} onOpenChange={(open) => 
+        setShowTP2DistributionDialog(prev => ({ ...prev, show: open }))
+      }>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-orange-600 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              TP2 Minimum Quantity Warning
+            </DialogTitle>
+            <DialogDescription>
+              {showTP2DistributionDialog.message}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-orange-800">Structural defects found:</span>
+                  <span className="text-orange-900 font-bold">{showTP2DistributionDialog.totalDefects}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-orange-800">Minimum required:</span>
+                  <span className="text-orange-900 font-bold">{showTP2DistributionDialog.minQuantity}</span>
+                </div>
+                <div className="border-t border-orange-200 pt-3">
+                  <p className="text-sm text-orange-700">
+                    <strong>Affected sections:</strong>
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {showTP2DistributionDialog.tp2Sections.map((section, index) => (
+                      <span 
+                        key={index}
+                        className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-md font-medium"
+                      >
+                        Item {section.itemNo}{section.letterSuffix || ''}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowTP2DistributionDialog(prev => ({ ...prev, show: false }))}
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                // Navigate to TP2 configuration page
+                window.location.href = `/pr2-config-clean?categoryId=patching&sector=${currentSector.id}`;
+              }}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              Configure TP2 Pricing
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
