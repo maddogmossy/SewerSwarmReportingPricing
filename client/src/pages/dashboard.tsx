@@ -2756,12 +2756,18 @@ export default function Dashboard() {
     }
   };
 
-  // Smart counting system: count sections that meet any configuration toward orange minimum
+  // FIXED: Smart counting system - only count sections that NEED CLEANING/SURVEYING (not all sections)
   const countSectionsTowardMinimum = (rawSectionData: any[], pr2Configurations: any[]) => {
     let sectionCount = 0;
     const configMatch: { [key: number]: any } = {}; // Track which config each section uses
     
     rawSectionData.forEach(section => {
+      // CRITICAL FIX: Only count sections that actually need cleaning/surveying
+      const needsCleaning = requiresCleaning(section.defects || '');
+      if (!needsCleaning) {
+        return; // Skip sections that don't need cleaning
+      }
+      
       // Check each configuration to see if section meets requirements
       for (const config of pr2Configurations) {
         const meetsRequirements = checkSectionMeetsPR2Requirements(section, config);
@@ -2771,6 +2777,12 @@ export default function Dashboard() {
           break; // Stop checking other configs once we find a match
         }
       }
+    });
+    
+    console.log('🎯 FIXED COUNT - Only sections needing cleaning:', {
+      totalSections: rawSectionData.length,
+      sectionsNeedingCleaning: sectionCount,
+      expectedCount: '~10 sections per user'
     });
     
     return { sectionCount, configMatch };
@@ -3274,6 +3286,13 @@ export default function Dashboard() {
         const minValue = parseFloat(runsOption.value || '0');
         highestMinRequired = Math.max(highestMinRequired, minValue);
       }
+    });
+    
+    console.log('🎯 FINAL DB8 GREEN WINDOW CHECK:', {
+      sectionsNeedingCleaning: sectionCount,
+      highestDB8Requirement: highestMinRequired,
+      comparison: `${sectionCount} > ${highestMinRequired}`,
+      result: sectionCount > highestMinRequired ? 'GREEN costs' : 'RED costs'
     });
     
     return sectionCount > highestMinRequired;
