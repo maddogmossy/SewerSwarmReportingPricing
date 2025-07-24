@@ -1775,20 +1775,6 @@ export default function Dashboard() {
     }
   }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo, workCategories, vehicleTravelRates]);
 
-  // IMMEDIATE TEST - Force run TP2 validation on every render
-  console.log('🎯 IMMEDIATE TP2 VALIDATION TEST:', {
-    hasAuthenticData,
-    rawSectionDataLength: rawSectionData?.length || 0,
-    pr2ConfigurationsLength: pr2Configurations?.length || 0,
-    willRunValidation: hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations?.length > 0,
-    devId: 'immediate-validation-test'
-  });
-
-  if (hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations?.length > 0) {
-    console.log('🚀 RUNNING TP2 VALIDATION IMMEDIATELY');
-    checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
-  }
-
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
     console.log('🔍 TP2 VALIDATION CHECK START:', {
@@ -1797,6 +1783,16 @@ export default function Dashboard() {
       devId: 'tp2-validation-checkpoint-1'
     });
     
+    console.log('🔍 Available Configurations:', {
+      totalConfigs: configurations.length,
+      configDetails: configurations.map(c => ({
+        id: c.id,
+        categoryId: c.categoryId,
+        hasPricingOptions: !!c.pricingOptions?.length
+      })),
+      devId: 'available-configs-debug'
+    });
+
     const tp2Config = configurations.find(config => config.categoryId === 'patching');
     console.log('🔍 TP2 Configuration Found:', {
       configExists: !!tp2Config,
@@ -1892,6 +1888,20 @@ export default function Dashboard() {
       });
     }
   };
+
+  // IMMEDIATE TEST - Force run TP2 validation on every render
+  console.log('🎯 IMMEDIATE TP2 VALIDATION TEST:', {
+    hasAuthenticData,
+    rawSectionDataLength: rawSectionData?.length || 0,
+    pr2ConfigurationsLength: pr2Configurations?.length || 0,
+    willRunValidation: hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations?.length > 0,
+    devId: 'immediate-validation-test'
+  });
+
+  if (hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations?.length > 0) {
+    console.log('🚀 RUNNING TP2 VALIDATION IMMEDIATELY');
+    checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
+  }
 
   // Handler for applying day rate adjustments to TP2 sections
   const handleApplyDayRateAdjustment = async (tp2Sections: any[], adjustmentPerItem: number) => {
