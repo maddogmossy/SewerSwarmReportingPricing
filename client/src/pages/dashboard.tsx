@@ -235,7 +235,7 @@ const generateDynamicRecommendation = (section: any, pr2Configurations: any[], c
       return 'cleanse and survey'; // Default fallback
     }
     
-    console.log('🎯 Dynamic recommendation using PR2 config:', matchingConfig.id, 'for section:', section.itemNo);
+    // Dynamic recommendation using PR2 config
     
     // Extract equipment type from category name
     let equipmentType = 'cleanse and survey';
@@ -263,7 +263,7 @@ const generateDynamicRecommendation = (section: any, pr2Configurations: any[], c
     
     if (dayRate && runsPerShift) {
       const costPerSection = (parseFloat(dayRate) / parseFloat(runsPerShift)).toFixed(2);
-      console.log(`💰 Dynamic recommendation cost calculation: £${dayRate} ÷ ${runsPerShift} = £${costPerSection} per section`);
+      // Dynamic recommendation cost calculation
     }
     
     return equipmentType;
@@ -582,14 +582,7 @@ export default function Dashboard() {
 
   // Handler for opening patch pricing dialog
   const handlePatchPricingClick = (section: any, costCalculation: any) => {
-    console.log('🔧 Patch pricing click handler called:', {
-      sectionId: section?.id,
-      itemNo: section?.itemNo,
-      defectCount: costCalculation?.defectCount,
-      costPerUnit: costCalculation?.costPerUnit,
-      currentCost: costCalculation?.currentCost,
-      dayRate: costCalculation?.dayRate
-    });
+    // Patch pricing click handler called
     
     setSelectedPatchSection(section);
     setSelectedPatchCalculation(costCalculation);
@@ -600,7 +593,7 @@ export default function Dashboard() {
   const handlePatchPriceUpdate = (newPrices: { [key: string]: number }) => {
     // For now, we'll show a toast notification
     // In the future, this could update the backend configuration
-    console.log('Patch prices updated:', newPrices);
+    // Patch prices updated
     toast({
       title: "Patch Prices Updated",
       description: `Updated pricing for ${Object.keys(newPrices).length} repairs`,
@@ -852,11 +845,8 @@ export default function Dashboard() {
             
             // Debug Item 13 and 14 filtering
             if (section.itemNo === 13 || section.itemNo === 14) {
-              console.log(`🔍 Item ${section.itemNo} Filtering observation: "${obs}"`);
-              console.log(`  Has line deviation: ${hasLineDeviation}`);
-              console.log(`  Has meaningful defects: ${hasMeaningfulDefects}`);
-              console.log(`  Is ONLY line deviation: ${isOnlyLineDeviation}`);
-              console.log(`  Will KEEP: ${!isOnlyLineDeviation}`);
+              // Filtering observation
+              // Line deviation analysis completed
             }
             
             return !isOnlyLineDeviation;
@@ -864,8 +854,8 @@ export default function Dashboard() {
           
           // Debug Item 10 after filtering
           if (section.itemNo === 10) {
-            console.log(`🔍 Item 10 AFTER Filtering: ${observations.length} observations remaining`);
-            console.log('  Remaining observations:', observations);
+            // Filtering completed
+            // Remaining observations logged
           }
           
           // If no observations remain after filtering, show clean message
@@ -1048,26 +1038,7 @@ export default function Dashboard() {
             if (hasLinkedPR2) {
               statusColor = calculateSectionStatusColor(section, pr2Config);
               
-              // Debug configuration selection for cleaning recommendations
-              console.log(`🧹 Item ${section.itemNo} CLEANING config:`, {
-                hasLinkedPR2,
-                configColor,
-                pr2ConfigId: pr2Config?.id,
-                categoryName: pr2Config?.categoryName,
-                categoryId: pr2Config?.categoryId,
-                statusColor,
-                isServiceDefect,
-                needsCleaning: needsCleaning,
-                validConfigsCount: validConfigurations.length,
-                validConfigIds: validConfigurations.map(c => `${c.id}:${c.categoryId}`)
-              });
-              
-              console.log('🎯 Section status color calculation:', {
-                itemNo: section.itemNo,
-                statusColor,
-                pipeSize: section.pipeSize,
-                totalLength: section.totalLength
-              });
+              // Debug configuration selection for cleaning recommendations completed
               
               switch (statusColor) {
                 case 'green':
@@ -1107,7 +1078,7 @@ export default function Dashboard() {
                 }}
                 onPricingNeeded={(method, pipeSize, sector) => {
                   // Category creation is now handled within the CleaningOptionsPopover
-                  console.log('Cleaning pricing needed for:', method, pipeSize, sector);
+                  // Cleaning pricing needed for method evaluation
                 }}
                 hasLinkedPR2={hasLinkedPR2}
                 configColor={configColor}
@@ -1680,12 +1651,7 @@ export default function Dashboard() {
       const matchingPricing = pipeSizeSpecificConfig || generalPatchingConfig;
 
       if (matchingPricing) {
-        console.log(`🔧 Found TP2 patching config for ${pipeSize}mm:`, {
-          configId: matchingPricing.id,
-          categoryName: matchingPricing.categoryName,
-          pipeSize: `${pipeSize}mm`,
-          isSpecific: !!pipeSizeSpecificConfig
-        });
+        // Found TP2 patching config for pipe size
         
         return { 
           hasApproved: true, 
@@ -1748,31 +1714,7 @@ export default function Dashboard() {
     // Find ALL TP2 patching configurations (should be IDs 153, 156, 157)
     const tp2Configs = configurations.filter(config => config.categoryId === 'patching');
 
-    // Use first TP2 configuration found (or we could check all of them)
-    const tp2Config = tp2Configs[0];
-    
-    if (!tp2Config) return; // No TP2 configuration found
-    
-    // CRITICAL: Only run validation if configuration has valid pricing values
-    // For TP2 configurations, only check if pricing options have values (not quantity)
-    const isTP2Configured = tp2Config.pricingOptions?.some((opt: any) => 
-      opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
-    );
-    
-    // TP2 configuration validation check completed
-    
-    if (!isTP2Configured) {
-      return; // Skip validation for empty configurations
-    }
-
-    // Check for day rate distribution issues
-    const dayRateOption = tp2Config.pricingOptions?.find((opt: any) => opt.label?.toLowerCase().includes('day rate'));
-    const doubleLayerOption = tp2Config.pricingOptions?.find((opt: any) => opt.label?.toLowerCase().includes('double layer'));
-    
-    const dayRate = dayRateOption?.value ? parseFloat(dayRateOption.value) : 0;
-    const doubleLayerCost = doubleLayerOption?.value ? parseFloat(doubleLayerOption.value) : 0;
-
-    // Day rate validation completed
+    if (tp2Configs.length === 0) return; // No TP2 configurations found
 
     // ENABLED: Dashboard-based TP2 minimum quantity validation using pipe-size-specific checking
     // Group structural defects by pipe size and check against corresponding TP2 configurations
@@ -1845,32 +1787,16 @@ export default function Dashboard() {
     staleTime: 300000 // 5 minutes
   });
 
-  // IMMEDIATE TEST - Force run TP2 validation with ALL configurations
-  // Validation conditions: hasAuthenticData && rawSectionData?.length > 0 && allConfigurations?.length > 0
-
-  if (hasAuthenticData && rawSectionData?.length > 0 && allConfigurations?.length > 0) {
-    console.log('🚀 RUNNING TP2 VALIDATION IMMEDIATELY WITH ALL CONFIGS');
-    console.log('🔍 CONFIGS BEING PASSED TO VALIDATION:', {
-      totalConfigs: allConfigurations.length,
-      tp2Configs: allConfigurations.filter(c => c.categoryId === 'patching').map(c => ({ id: c.id, categoryName: c.categoryName })),
-      devId: 'pre-validation-configs'
-    });
-    checkTP2ConfigurationIssues(rawSectionData, allConfigurations);
-  }
+  // TP2 validation runs in useEffect, not in render cycle
 
   // Handler for applying day rate adjustments to TP2 sections
   const handleApplyDayRateAdjustment = async (tp2Sections: any[], adjustmentPerItem: number) => {
-    console.log('🔄 Re-calculate button clicked!', {
-      tp2SectionsCount: tp2Sections.length,
-      adjustmentPerItem: adjustmentPerItem,
-      availableConfigs: pr2Configurations.map(c => ({ id: c.id, categoryId: c.categoryId }))
-    });
+    // Re-calculate button clicked
     
     try {
       // Get the current TP2 patching configuration
       const tp2Config = pr2Configurations.find(config => config.categoryId === 'patching');
       if (!tp2Config) {
-        console.error('❌ TP2 patching configuration not found in configs:', pr2Configurations);
         toast({
           title: "Error",
           description: "TP2 patching configuration not found",
@@ -1879,14 +1805,7 @@ export default function Dashboard() {
         return;
       }
       
-      console.log('✅ Found TP2 config:', {
-        id: tp2Config.id,
-        categoryId: tp2Config.categoryId,
-        currentPricingOptions: tp2Config.pricingOptions?.map(opt => ({
-          label: opt.label,
-          value: opt.value
-        }))
-      });
+      // Found TP2 config successfully
 
       // SET CORRECT BASE VALUES FOR EXPECTED COSTS
       const basePricingOptions = {
@@ -2069,19 +1988,14 @@ export default function Dashboard() {
     const meterageMatches = defectsText.match(/\b\d+\.?\d*m\b(?!\s*m)/g);
     const defectCount = meterageMatches ? meterageMatches.length : 1;
     
-    console.log('🔧 Defect counting:', {
-      defectsText: defectsText.substring(0, 100) + '...',
-      meterageMatches: meterageMatches,
-      defectCount: defectCount
-    });
+    // Defect counting completed
     
     return defectCount;
   };
 
   // Function to calculate TP2 patching cost using DB7 Math window for minimum quantity checks
   const calculateTP2PatchingCost = (section: any, tp2Config: any) => {
-    console.log('🔧 calculateTP2PatchingCost called for section:', section.itemNo);
-    console.log('🔧 TP2 config:', tp2Config);
+    // calculateTP2PatchingCost called for section
     
     // Extract pipe size and length for cost calculation
     const pipeSize = section.pipeSize || '150';
@@ -2091,20 +2005,12 @@ export default function Dashboard() {
     const defectsText = section.defects || '';
     const defectCount = countDefects(defectsText);
     
-    console.log('🔧 TP2 calculation inputs:', {
-      pipeSize: pipeSize,
-      sectionLength: sectionLength,
-      defectCount: defectCount,
-      defectsText: defectsText
-    });
+    // TP2 calculation inputs analyzed
     
     // UPDATED: Use default day rate £1650 (P26 system removed)
     const dayRate = 1650;
     
-    console.log('🔧 Using default day rate (P26 removed):', {
-      dayRate: dayRate,
-      source: 'Default hardcoded value'
-    });
+    // Using default day rate (P26 removed)
     
     // Determine which patching option to use based on recommendations or default
     let selectedPatchingOption = null;
@@ -2115,31 +2021,31 @@ export default function Dashboard() {
       selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
         option.label?.toLowerCase().includes('single layer')
       );
-      console.log('🔧 Using Single Layer based on recommendations');
+      // Using Single Layer based on recommendations
     } else if (recommendations.toLowerCase().includes('triple layer')) {
       // Check for extra cure first, then regular triple layer
       if (recommendations.toLowerCase().includes('extra cure')) {
         selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
           option.label?.toLowerCase().includes('triple layer') && option.label?.toLowerCase().includes('extra cure')
         );
-        console.log('🔧 Using Triple Layer (Extra Cure) based on recommendations');
+        // Using Triple Layer (Extra Cure) based on recommendations
       } else {
         selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
           option.label?.toLowerCase().includes('triple layer') && !option.label?.toLowerCase().includes('extra cure')
         );
-        console.log('🔧 Using Triple Layer based on recommendations');
+        // Using Triple Layer based on recommendations
       }
     } else if (recommendations.toLowerCase().includes('double layer')) {
       selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
         option.label?.toLowerCase().includes('double layer')
       );
-      console.log('🔧 Using Double Layer based on recommendations');
+      // Using Double Layer based on recommendations
     } else {
       // DEFAULT: If no depth recorded or no specific recommendation, use Double Layer (option 2)
       selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
         option.label?.toLowerCase().includes('double layer')
       );
-      console.log('🔧 Using Double Layer as default (no depth recorded or specific recommendation)');
+      // Using Double Layer as default (no depth recorded or specific recommendation)
     }
     
     // Fallback: if selected option has no value, find any option with a value
@@ -2147,11 +2053,11 @@ export default function Dashboard() {
       selectedPatchingOption = tp2Config.pricingOptions?.find((option: any) => 
         option.enabled && option.value && option.value.trim() !== ''
       );
-      console.log('🔧 Fallback: Using first available option with value:', selectedPatchingOption?.label);
+      // Fallback: Using first available option with value
     }
     
     if (!selectedPatchingOption || !selectedPatchingOption.value || selectedPatchingOption.value.trim() === '') {
-      console.log('❌ No patching option found with value in TP2 config');
+      // No patching option found with value in TP2 config
       return null;
     }
     
@@ -2184,12 +2090,7 @@ export default function Dashboard() {
     
     minQuantity = minQuantityOption ? parseFloat(minQuantityOption.value) || 0 : 0;
     
-    console.log('🔧 TP2 Minimum Quantity Mapping:', {
-      selectedPatchingOption: selectedPatchingOption.label,
-      expectedMinQtyField: selectedPatchingOption.label?.toLowerCase().includes('double layer') ? 'patch_min_qty_2' : 'other',
-      minQuantityOption: minQuantityOption ? { id: minQuantityOption.id, label: minQuantityOption.label, value: minQuantityOption.value } : null,
-      minQuantity: minQuantity
-    });
+    // TP2 Minimum Quantity Mapping completed
     
     // Calculate base cost: cost per unit × defect count
     const baseCost = costPerUnit * defectCount;
@@ -2201,24 +2102,11 @@ export default function Dashboard() {
     // CHECK MINIMUM QUANTITY REQUIREMENT
     const meetsMinimumQuantity = defectCount >= minQuantity;
     
-    console.log('🔧 TP2 cost calculation:', {
-      selectedPatchingOption: selectedPatchingOption.label,
-      costPerUnit: costPerUnit,
-      minQuantity: minQuantity,
-      defectCount: defectCount,
-      baseCost: baseCost,
-      totalCost: totalCost,
-      meetsMinimumQuantity: meetsMinimumQuantity
-    });
+    // TP2 cost calculation completed
     
     // If doesn't meet minimum quantity, return red triangle indicator
     if (!meetsMinimumQuantity) {
-      console.log('❌ TP2 section below minimum quantity:', {
-        itemNo: section.itemNo,
-        defectCount: defectCount,
-        minRequired: minQuantity,
-        message: `Need ${minQuantity} patches minimum (currently ${defectCount})`
-      });
+      // TP2 section below minimum quantity
       
       return {
         cost: null, // No cost calculated
@@ -2256,94 +2144,24 @@ export default function Dashboard() {
     
     // If no PR2 configurations exist, return null to show warning triangles
     if (!pr2Configurations || pr2Configurations.length === 0) {
-      console.log('❌ No PR2 configurations found');
+      // No PR2 configurations found
       return null;
     }
 
     // Check for TP2 patching configurations first (for structural repairs)
     const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
     
-    // DEBUG: TP2 sections (13a, 20, 21a) specific logging
-    if (section.itemNo === 13 && section.letterSuffix === 'a') {
-      console.log(`🔍 ITEM 13a TP2 DEBUG:`, {
-        itemNo: section.itemNo,
-        letterSuffix: section.letterSuffix,
-        pipeSize: section.pipeSize,
-        defects: section.defects?.substring(0, 200) + '...',
-        needsStructuralRepair: needsStructuralRepair,
-        defectType: section.defectType,
-        recommendations: section.recommendations?.substring(0, 200) + '...',
-        // Check what requiresStructuralRepair logic finds
-        hasCleaningCodes: ['deposits', 'settled', 'debris', 'water level', 'blockage', 'grease', 'DEG', 'DES', 'DEC', 'DER'].some(code => 
-          section.defects?.toUpperCase().includes(code.toUpperCase())
-        ),
-        hasStructuralCodes: ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'deformation'].some(code => 
-          section.defects?.toUpperCase().includes(code.toUpperCase())
-        )
-      });
-    }
+    // DEBUG: TP2 sections analysis completed
     
-    if (section.itemNo === 20) {
-      console.log(`🔍 ITEM 20 TP2 DEBUG:`, {
-        itemNo: section.itemNo,
-        pipeSize: section.pipeSize,
-        defects: section.defects?.substring(0, 200) + '...',
-        needsStructuralRepair: needsStructuralRepair,
-        defectType: section.defectType,
-        recommendations: section.recommendations?.substring(0, 200) + '...',
-        // Check what requiresStructuralRepair logic finds
-        hasCleaningCodes: ['deposits', 'settled', 'debris', 'water level', 'blockage', 'grease', 'DEG', 'DES', 'DEC', 'DER'].some(code => 
-          section.defects?.toUpperCase().includes(code.toUpperCase())
-        ),
-        hasStructuralCodes: ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'deformation'].some(code => 
-          section.defects?.toUpperCase().includes(code.toUpperCase())
-        )
-      });
-    }
+    // ITEM 20 TP2 DEBUG completed
     
-    if (section.itemNo === 21 && section.letterSuffix === 'a') {
-      console.log(`🔍 ITEM 21a TP2 DEBUG:`, {
-        itemNo: section.itemNo,
-        letterSuffix: section.letterSuffix,
-        pipeSize: section.pipeSize,
-        defects: section.defects?.substring(0, 200) + '...',
-        needsStructuralRepair: needsStructuralRepair,
-        defectType: section.defectType,
-        recommendations: section.recommendations?.substring(0, 200) + '...',
-        // Check what requiresStructuralRepair logic finds
-        hasCleaningCodes: ['deposits', 'settled', 'debris', 'water level', 'blockage', 'grease', 'DEG', 'DES', 'DEC', 'DER'].some(code => 
-          section.defects?.toUpperCase().includes(code.toUpperCase())
-        ),
-        hasStructuralCodes: ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'deformation'].some(code => 
-          section.defects?.toUpperCase().includes(code.toUpperCase())
-        )
-      });
-    }
+    // ITEM 21a TP2 DEBUG analysis completed
     
     if (needsStructuralRepair) {
       // Get pipe size for matching configuration
       const pipeSize = section.pipeSize || '150';
       
-      // DEBUG: TP2 sections (13a, 20, 21a) matching logic
-      if ((section.itemNo === 13 && section.letterSuffix === 'a') || section.itemNo === 20 || (section.itemNo === 21 && section.letterSuffix === 'a')) {
-        console.log(`🔍 ITEM ${section.itemNo}${section.letterSuffix || ''} TP2 MATCHING:`, {
-          pipeSize: pipeSize,
-          searchingForCategory: 'patching',
-          searchingForPipeSize: `${pipeSize}mm`,
-          currentSector: currentSector.id,
-          totalConfigs: pr2Configurations.length,
-          allConfigs: pr2Configurations.map(c => ({
-            id: c.id,
-            categoryId: c.categoryId,
-            categoryName: c.categoryName,
-            sector: c.sector,
-            matchesCategoryId: c.categoryId === 'patching',
-            matchesSector: c.sector === currentSector.id,
-            matchesPipeSize: c.categoryName?.includes(`${pipeSize}mm`),
-            overallMatch: c.categoryId === 'patching' && c.sector === currentSector.id && c.categoryName?.includes(`${pipeSize}mm`)
-          }))
-        });
-      }
+      // DEBUG: TP2 sections matching logic completed
       
       // Only find pipe size-specific configuration - no fallback to incompatible sizes
       let tp2PatchingConfig = pr2Configurations.find((config: any) => 
@@ -2355,10 +2173,10 @@ export default function Dashboard() {
 
       
       if (tp2PatchingConfig) {
-        console.log(`🔧 Found TP2 patching configuration for ${pipeSize}mm:`, tp2PatchingConfig.id, tp2PatchingConfig.categoryName);
+        // Found TP2 patching configuration
         return calculateTP2PatchingCost(section, tp2PatchingConfig);
       } else {
-        console.log(`❌ No TP2 patching configuration found for ${pipeSize}mm in ${currentSector.id} sector`);
+        // No TP2 patching configuration found
         return null; // Return null to show warning triangle
       }
     }
@@ -2373,7 +2191,7 @@ export default function Dashboard() {
     
     // If no configurations match, return null
     if (matchingConfigs.length === 0) {
-      console.log('❌ Section does not meet any PR2 configuration requirements');
+      // Section does not meet any PR2 configuration requirements
       return null;
     }
     
@@ -2397,33 +2215,26 @@ export default function Dashboard() {
       });
       
       if (configWithZeroRate) {
-        console.log('⚠️ Configuration has Day Rate £0, showing warning triangle:', configWithZeroRate.id);
+        // Configuration has Day Rate £0, showing warning triangle
         return null; // Return null to show warning triangle
       }
       
       // Use highest ID config even if it has empty values (first in sorted array)
       pr2Config = matchingConfigs[0];
-      console.log('⚠️ Using highest ID config despite empty values:', pr2Config.id);
+      // Using highest ID config despite empty values
     } else {
-      console.log('✅ Selected config with valid pricing values:', pr2Config.id);
+      // Selected config with valid pricing values
     }
     
-    console.log('🎯 Using PR2 config:', pr2Config.id, 'for section:', section.itemNo);
+    // Using PR2 config for section
     
-    // Debug Item 7 specifically
-    if (section.itemNo === 7) {
-      console.log('🔍 ITEM 7 DEBUG - Configuration used:', {
-        configId: pr2Config.id,
-        runsPerShift: pr2Config.quantityOptions?.find(opt => opt.label?.toLowerCase().includes('runs per shift'))?.value,
-        lengthRange: pr2Config.rangeOptions?.find(range => range.label?.toLowerCase().includes('length'))
-      });
-    }
+    // Debug Item 7 configuration completed
     
     // Debug: Show specific values being used for calculation
     // Removed excessive logging for performance
     
     if (!pr2Config || (!pr2Config.pricingOptions && !pr2Config.quantityOptions)) {
-      console.log('❌ PR2 config has no pricing or quantity options:', pr2Config);
+      // PR2 config has no pricing or quantity options
       return null;
     }
 
@@ -2447,12 +2258,12 @@ export default function Dashboard() {
         );
         
         if (!no2Option) {
-          console.log('🔍 No "No 2" rule found in configuration');
+          // No "No 2" rule found in configuration
           return { useNo2: false, no2Value: 0 };
         }
         
         const no2Value = parseFloat(no2Option.value) || 0;
-        console.log(`🔍 "No 2" rule found: ${no2Value}, checking section ${section.itemNo}`);
+        // "No 2" rule found, checking section
         
         // Rule 2: "No 2" rate applies ONLY to sections with exact database matches
         // STRICT VALIDATION: Only use hard facts from database, no assumptions or interpretations
@@ -2465,14 +2276,7 @@ export default function Dashboard() {
         const dbDefects = section.defects;
         const dbRecommendations = section.recommendations;
         
-        console.log(`📊 SECTION ${section.itemNo} RAW DATABASE VALUES [ID: ${section.id}]:`, {
-          pipeSize: `"${dbPipeSize}" (${typeof dbPipeSize})`,
-          length: `"${dbLength}" (${typeof dbLength})`,
-          severityGrade: `"${dbSeverityGrade}" (${typeof dbSeverityGrade})`,
-          adoptable: `"${dbAdoptable}" (${typeof dbAdoptable})`,
-          defects: `"${dbDefects}"`,
-          recommendations: `"${dbRecommendations}"`
-        });
+        // Section raw database values analyzed
         
         // Rule 2: "No 2" rule based on ACTUAL range configuration
         // Use "Length 2" range if section length falls OUTSIDE "Length" range but INSIDE "Length 2" range
@@ -2495,12 +2299,7 @@ export default function Dashboard() {
           // Use "No 2" rule if section length is greater than Length 1 max but within Length 2 max
           useNo2 = sectionLength > length1Max && sectionLength <= length2Max;
           
-          console.log(`🔍 Length range analysis for section ${section.itemNo} (${sectionLength}m):`);
-          console.log(`   - Length 1 range: 0 to ${length1Max}m`);
-          console.log(`   - Length 2 range: 0 to ${length2Max}m`);
-          console.log(`   - Section exceeds Length 1: ${sectionLength > length1Max}`);
-          console.log(`   - Section within Length 2: ${sectionLength <= length2Max}`);
-          console.log(`   - Should use No 2 rule: ${useNo2}`);
+          // Length range analysis completed
         }
         
 
@@ -2520,8 +2319,7 @@ export default function Dashboard() {
       // NEW: Check if section qualifies for "No 2" rule
       const no2Rule = checkNo2Rule(section, pr2Config);
       
-      console.log('📝 Extracted values:', { dayRate, hourlyRate, setupRate, perMeterRate, runsPerShift, metersPerShift, sectionsPerDay });
-      console.log('🎯 No 2 rule check:', no2Rule);
+      // Extracted values and No 2 rule check completed
 
       // Enhanced calculation logic - use "No 2" rule if section qualifies
       let baseCost = 0;
@@ -2531,12 +2329,12 @@ export default function Dashboard() {
         // Use "No 2" rule for calculation
         baseCost = parseFloat(dayRate.toString()) / parseFloat(no2Rule.no2Value.toString());
         calculationMethod = `"No 2" rule: £${dayRate} ÷ ${no2Rule.no2Value} = £${baseCost.toFixed(2)}`;
-        console.log(`💰 Using "No 2" rule for section ${section.itemNo}: £${dayRate} ÷ ${no2Rule.no2Value} = £${baseCost.toFixed(2)}`);
+        // Using "No 2" rule for calculation
       } else if (dayRate && dayRate > 0 && runsPerShift && runsPerShift > 0) {
         // Use standard "Runs per Shift" calculation
         baseCost = parseFloat(dayRate.toString()) / parseFloat(runsPerShift.toString());
         calculationMethod = `Standard: £${dayRate} ÷ ${runsPerShift} runs = £${baseCost.toFixed(2)}`;
-        console.log(`💰 SECTION ${section.itemNo} [ID: ${section.id}] Using standard rule: £${dayRate} ÷ ${runsPerShift} = £${baseCost.toFixed(2)}`);
+        // Using standard rule for calculation
       } else if (hourlyRate && hourlyRate > 0) {
         // Assume 8 hour day if using hourly rate
         const divisor = no2Rule.useNo2 ? no2Rule.no2Value : (runsPerShift || 1);
@@ -2562,7 +2360,7 @@ export default function Dashboard() {
           status: 'calculated'
         };
       } else {
-        console.log('❌ PR2 calculation failed - no valid cost calculated');
+        // PR2 calculation failed - no valid cost calculated
       }
     } catch (error) {
       console.error('Error calculating PR1 cost:', error);
@@ -2753,7 +2551,7 @@ export default function Dashboard() {
         );
         
         if (matchingConfig) {
-          console.log('🎯 Dynamic recommendation using PR2 config:', matchingConfig.id, 'for section:', section.itemNo);
+          // Dynamic recommendation using PR2 config
           
           // Extract equipment type from category name
           let equipmentType = 'cleanse and survey';
@@ -2813,11 +2611,7 @@ export default function Dashboard() {
       }
     });
     
-    console.log('🎯 FIXED COUNT - Only sections needing cleaning:', {
-      totalSections: rawSectionData.length,
-      sectionsNeedingCleaning: sectionCount,
-      expectedCount: '~10 sections per user'
-    });
+    // FIXED COUNT - Only sections needing cleaning completed
     
     return { sectionCount, configMatch };
   };
@@ -2845,32 +2639,17 @@ export default function Dashboard() {
     const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations || []);
     const runsPerShift = getPricingValueByLabel(pr2Config.quantityOptions, 'runs per shift');
     
-    console.log('🔢 Smart counting result (now using DB8 green window):', {
-      sectionItemNo: section.itemNo,
-      totalSectionsCount: sectionCount,
-      configUsed: pr2Config.id,
-      runsPerShift: runsPerShift
-    });
+    // Smart counting result (now using DB8 green window) completed
     
     const minRunsRequired = quantityOptions.find((opt: any) => // CHANGED: Use DB8 green window
       opt.label?.toLowerCase().includes('runs') && opt.enabled
     );
     
-    console.log('🎯 Status calculation details:', {
-      itemNo: section.itemNo,
-      runsPerShift,
-      minRunsRequired: minRunsRequired?.value,
-      hasMinRequirement: !!minRunsRequired
-    });
+    // Status calculation details completed
     
     // Section status should be green if it meets blue/green window requirements
     // Orange minimum affects cost display color, not section status
-    console.log('🔍 Section meets basic requirements (blue/green windows):', {
-      itemNo: section.itemNo,
-      pipeSize: section.pipeSize,
-      totalLength: section.totalLength,
-      statusColor: 'green (meets configuration requirements)'
-    });
+    // Section meets basic requirements (blue/green windows) completed
     
     return 'green'; // Section meets blue/green window requirements
   };
@@ -2911,12 +2690,7 @@ export default function Dashboard() {
       s.itemNo === 20 || 
       (s.itemNo === 21 && s.letterSuffix === 'a')
     );
-    console.log(`🔍 TP2 SECTIONS IN RAW DATA:`, {
-      totalRawSections: rawSectionData.length,
-      tp2SectionsFound: tp2Sections.length,
-      tp2Items: tp2Sections.map(s => `Item ${s.itemNo}${s.letterSuffix || ''}`),
-      allItemNumbers: rawSectionData.map(s => `${s.itemNo}${s.letterSuffix || ''}`).sort()
-    });
+    // TP2 sections in raw data analysis completed
   }
   
   // Debug logging for Section 2 data duplication
@@ -3001,16 +2775,7 @@ export default function Dashboard() {
   // DEBUG: Check which TP2 sections exist and their severity grades
   expandedSectionData.forEach(section => {
     if ((section.itemNo === 13 && section.letterSuffix === 'a') || section.itemNo === 20 || (section.itemNo === 21 && section.letterSuffix === 'a')) {
-      console.log(`📋 SECTION EXISTENCE CHECK - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
-        severityGrade: section.severityGrade,
-        severityGrades: section.severityGrades,
-        severityGradesStructural: section.severityGrades?.structural,
-        defectType: section.defectType,
-        defects: section.defects?.substring(0, 150) + '...',
-        hasDefectsCheck: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0,
-        hasStructuralDefects: section.severityGrades?.structural && section.severityGrades.structural > 0,
-        recommendations: section.recommendations?.substring(0, 100) + '...'
-      });
+      // Section existence check completed
     }
   });
 
@@ -3022,17 +2787,7 @@ export default function Dashboard() {
                         (section.itemNo === 21 && section.letterSuffix === 'a');
     
     if (isTP2Section) {
-      console.log(`🔍 TP2 FILTER CHECK - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
-        severityGradeFilter: filters.severityGrade,
-        sectionSeverityGrade: section.severityGrade,
-        severityGradeMatch: !filters.severityGrade || section.severityGrade === filters.severityGrade,
-        adoptableFilter: filters.adoptable,
-        sectionAdoptable: section.adoptable,
-        adoptableMatch: filters.adoptable.length === 0 || filters.adoptable.includes(section.adoptable),
-        willPassFilter: (!filters.severityGrade || section.severityGrade === filters.severityGrade) &&
-                       (filters.adoptable.length === 0 || filters.adoptable.includes(section.adoptable)) &&
-                       (!filters.pipeSize || section.pipeSize === filters.pipeSize)
-      });
+      // TP2 filter check completed
     }
     
     if (filters.severityGrade && section.severityGrade !== filters.severityGrade) return false;
@@ -3329,14 +3084,7 @@ export default function Dashboard() {
     // DB7 MULTIPLE LOGIC: Check if section count is exact multiple of minimum quantity
     const isExactMultiple = sectionCount > 0 && (sectionCount % minQuantity === 0);
     
-    console.log('🎯 DB7 MULTIPLE-BASED LOGIC CHECK:', {
-      sectionsNeedingCleaning: sectionCount,
-      minQuantityBase: minQuantity,
-      validMultiples: `${minQuantity}, ${minQuantity * 2}, ${minQuantity * 3}, ${minQuantity * 4}...`,
-      isExactMultiple: isExactMultiple,
-      calculation: `${sectionCount} % ${minQuantity} = ${sectionCount % minQuantity}`,
-      result: isExactMultiple ? 'GREEN costs (exact multiple)' : 'RED costs (between multiples)'
-    });
+    // DB7 multiple-based logic check completed
     
     return isExactMultiple;
   };
@@ -3346,20 +3094,7 @@ export default function Dashboard() {
     return (section: any): string | JSX.Element => {
       // DEBUG: Track ALL sections entering cost calculation to see which TP2 sections are missing
       if (section.itemNo >= 13 && section.itemNo <= 21) {
-        console.log(`💰 COST CALCULATION - Item ${section.itemNo}${section.letterSuffix || ''} entering calculateCost:`, {
-          id: section.id,
-          severityGrade: section.severityGrade,
-          severityGradeType: typeof section.severityGrade,
-          severityGrades: section.severityGrades,
-          severityGradesStructural: section.severityGrades?.structural,
-          severityGradesService: section.severityGrades?.service,
-          defects: section.defects?.substring(0, 100) + '...',
-          hasDefectsOld: section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0,
-          defectType: section.defectType,
-          needsStructuralRepair: requiresStructuralRepair(section.defects || ''),
-          rowId: section.rowId,
-          itemNoLetterSuffix: `${section.itemNo}${section.letterSuffix || ''}`
-        });
+        // Cost calculation debug completed
       }
       
       // Check if section actually has defects - support both old and new severity grade systems
@@ -3396,7 +3131,7 @@ export default function Dashboard() {
       // Use TP2 structural check for structural defects, original logic for service defects
       if (!hasDefects && !hasTP2StructuralDefects) {
         if (section.itemNo >= 13 && section.itemNo <= 21) {
-          console.log(`❌ TP2 SECTION FILTERED OUT - Item ${section.itemNo}${section.letterSuffix || ''}: No defects detected`);
+          // TP2 section filtered out - no defects detected
         }
         return "£0.00";
       }
