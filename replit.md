@@ -722,6 +722,22 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 24, 2025)
 
+### CRITICAL: Travel Rate Documentation Correction & P19 Dev ID Added ✅
+- **Date**: January 24, 2025
+- **Status**: Removed incorrect work type specific travel limits and added P19 dev id to Vehicle Travel Rates UI card
+- **Issues Fixed**:
+  - **Incorrect Travel Limits Removed**: Eliminated outdated work type specific limits (CCTV: 50mi, Jetting: 40mi, Patching: 30mi, Tankering: 25mi)
+  - **P19 Integration Confirmed**: System now correctly uses P19 Vehicle Travel Rates configuration for all pipe sizes
+  - **Dev ID Added**: Added data-component="p19" to Vehicle Travel Rates UI card for debugging purposes
+  - **Documentation Updated**: Travel time calculation workflow now references P19 configuration instead of work type limits
+- **Technical Implementation**:
+  - Updated replit.md to remove work type specific travel allowances section
+  - Modified travel workflow steps to emphasize P19 Vehicle Travel Rates integration
+  - Added DevLabel id="p19" to Vehicle Travel Rates card in pr2-config-clean.tsx
+  - Travel calculations now exclusively use vehicle-specific hourly rates from P19 configuration
+- **User Correction Applied**: "please remove" - work type limits eliminated as requested, P19 dev id added
+- **Result**: Travel time calculations now correctly use P19 Vehicle Travel Rates (£55/hr for 3.5t, £75/hr for 26t) with 2-hour base allowance
+
 ### CRITICAL: DB8/DB9 Cost Logic Migration Complete - RED/GREEN Cost Display Fixed ✅
 - **Date**: January 24, 2025
 - **Status**: Successfully migrated dashboard cost color logic from DB9 (orange window) to DB8 (green window)
@@ -955,17 +971,11 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Workflow Steps**:
   1. **Address Validation**: UK postcode format validation and address component checking
   2. **Distance Calculation**: Depot to project site distance using postcode matching (production: Google Maps API)
-  3. **Work Type Allowances**: Category-specific travel limits (CCTV: 50mi, Jetting: 40mi, Patching: 30mi, etc.)
+  3. **Vehicle Travel Rate Integration**: Uses P19 Vehicle Travel Rates configuration for all pipe sizes
   4. **Additional Travel Rate Integration**: Vehicle-specific hourly rates for travel over 2 hours
   5. **Dashboard Alerts**: Green (within allowance) and orange/red (exceeds limits) with cost calculations
-  6. **Vehicle Selection Impact**: Category-specific vehicle types with different travel rates
-- **Travel Allowances by Work Type**:
-  - CCTV: 50 miles max, £1.80/mile over
-  - Jetting: 40 miles max, £2.20/mile over  
-  - Directional Water Cutting: 35 miles max, £2.80/mile over
-  - Patching: 30 miles max, £2.50/mile over (requires NIN +£45)
-  - Tankering: 25 miles max, £3.00/mile over
-- **Additional Travel Rate Logic**: `excessHours × additionalTravelRatePerHour` for travel over 120 minutes
+  6. **Vehicle Selection Impact**: Vehicle-specific rates from P19 configuration determine additional travel costs
+- **Additional Travel Rate Logic**: `excessHours × additionalTravelRatePerHour` for travel over 120 minutes (uses P19 Vehicle Travel Rates values)
 - **Dashboard Integration**: Real-time cost calculations showing both distance overages and time overages
 - **User Confirmation**: "lock this in" - workflow explanation complete and approved
 - **Result**: Complete understanding of travel cost calculation system operational

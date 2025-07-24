@@ -2826,9 +2826,9 @@ export default function PR2ConfigClean() {
             </CardContent>
           </Card>
 
-        {/* Vehicle Travel Rates - Main Page Level (DB11) */}
+        {/* Vehicle Travel Rates - Main Page Level (P19) */}
         <Card className="mb-6 bg-cyan-50 border-cyan-200">
-          <DevLabel id="db11" />
+          <DevLabel id="p19" />
           <CardHeader className="pb-2">
             <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
               <Truck className="w-5 h-5" />
