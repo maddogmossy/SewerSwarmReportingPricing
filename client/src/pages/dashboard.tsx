@@ -1719,13 +1719,13 @@ export default function Dashboard() {
       
       // Debug: Check specific sections for TP2 validation
       if (section.itemNo === '13a' || section.itemNo === '20' || section.itemNo === '21a') {
-        console.log(`TP2 Debug - Item ${section.itemNo}: defects="${defects}", structural=${hasStructuralDefect}`);
+        console.log(`TP2 Debug - Item ${section.itemNo}: defects="${defects}", structural=${hasStructuralDefect}, pipeSize=${section.pipeSize}`);
       }
       
       return hasStructuralDefect;
     });
 
-    // Structural defects analysis completed
+    console.log('All structural defects found:', structuralDefects.map(s => `${s.itemNo} (${s.pipeSize}mm)`));
 
     // Group structural defects by pipe size
     const defectsByPipeSize = structuralDefects.reduce((acc: any, section: any) => {
@@ -1734,6 +1734,8 @@ export default function Dashboard() {
       acc[pipeSize].push(section);
       return acc;
     }, {});
+
+    console.log('Defects grouped by pipe size:', defectsByPipeSize);
 
     // Structural defects grouped by pipe size for validation
 
