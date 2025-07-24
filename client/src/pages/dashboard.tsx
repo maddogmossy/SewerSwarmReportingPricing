@@ -1775,6 +1775,20 @@ export default function Dashboard() {
     }
   }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo, workCategories, vehicleTravelRates]);
 
+  // IMMEDIATE TEST - Force run TP2 validation on every render
+  console.log('🎯 IMMEDIATE TP2 VALIDATION TEST:', {
+    hasAuthenticData,
+    rawSectionDataLength: rawSectionData?.length || 0,
+    pr2ConfigurationsLength: pr2Configurations?.length || 0,
+    willRunValidation: hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations?.length > 0,
+    devId: 'immediate-validation-test'
+  });
+
+  if (hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations?.length > 0) {
+    console.log('🚀 RUNNING TP2 VALIDATION IMMEDIATELY');
+    checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
+  }
+
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
     console.log('🔍 TP2 VALIDATION CHECK START:', {
