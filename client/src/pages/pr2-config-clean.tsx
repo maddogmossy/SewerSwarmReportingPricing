@@ -2969,11 +2969,11 @@ export default function PR2ConfigClean() {
                     </div>
                   </div>
                   <div className="text-sm text-gray-600 mt-3">
-                    <p><strong>Multiple-Based Logic:</strong></p>
+                    <p><strong>Multiple-Based Logic (DB8 Green Window):</strong></p>
                     <ul className="list-disc ml-4 mt-1">
                       <li>Green cost: When section count matches multiples (4, 8, 12, 16, 20, 24...)</li>
                       <li>Red cost: When section count falls between multiples</li>
-                      <li>Uses minimum quantity from configuration for multiple calculation</li>
+                      <li>Uses DB8 green window "Runs per Shift" value for multiple calculation</li>
                     </ul>
                   </div>
                 </CardContent>

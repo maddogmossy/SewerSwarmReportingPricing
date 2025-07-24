@@ -3268,15 +3268,15 @@ export default function Dashboard() {
     // Get smart counting result for all sections
     const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations);
     
-    // Find minimum quantity from configurations for multiple calculation
+    // Find minimum quantity from DB8 GREEN WINDOW (quantityOptions) for multiple calculation
     let minQuantity = 4; // Default minimum
     pr2Configurations.forEach(config => {
-      const minQuantityOptions = config.minQuantityOptions || [];
-      const minQtyOption = minQuantityOptions.find((opt: any) => 
-        opt.label?.toLowerCase().includes('min') && opt.enabled && opt.value
+      const quantityOptions = config.quantityOptions || []; // DB8 GREEN WINDOW
+      const runsOption = quantityOptions.find((opt: any) => 
+        opt.label?.toLowerCase().includes('runs') && opt.enabled && opt.value
       );
-      if (minQtyOption) {
-        const minValue = parseFloat(minQtyOption.value || '0');
+      if (runsOption) {
+        const minValue = parseFloat(runsOption.value || '0');
         if (minValue > 0) {
           minQuantity = minValue;
         }
