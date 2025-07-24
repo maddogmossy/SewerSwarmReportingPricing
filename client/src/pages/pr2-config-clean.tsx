@@ -2939,19 +2939,19 @@ export default function PR2ConfigClean() {
                 TP2 - Patching Configuration
               </h3>
               
-              {/* DB7 Math Window - Day Rate and Minimum Quantity Calculations */}
+              {/* DB7 Day Rate Input */}
               <Card className="bg-green-50 border-green-200 mb-4 relative">
                 <DevLabel id="db7" position="top-right" />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                    <Calculator className="w-4 h-4" />
-                    Math - Day Rate & Multiple Logic
+                    <Banknote className="w-4 h-4" />
+                    Day Rate
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center gap-4">
                     <Label className="w-32 text-sm font-medium text-black">
-                      Central Day Rate
+                      Day Rate
                     </Label>
                     <div className="flex items-center gap-2">
                       <Label className="text-xs">£</Label>
@@ -2969,11 +2969,11 @@ export default function PR2ConfigClean() {
                     </div>
                   </div>
                   <div className="text-sm text-gray-600 mt-3">
-                    <p><strong>Multiple-Based Logic (DB8 Purple Window Min Qty):</strong></p>
+                    <p><strong>Dashboard Multiple Logic:</strong></p>
                     <ul className="list-disc ml-4 mt-1">
-                      <li>Green cost: When section count matches multiples (4, 8, 12, 16, 20, 24...)</li>
-                      <li>Red cost: When section count falls between multiples</li>
-                      <li>Uses DB8 purple window Min Qty values for multiple calculation</li>
+                      <li>Uses this day rate for TP2 cost calculations</li>
+                      <li>Multiple logic uses DB8 Min Qty values (4, 8, 12, 16...)</li>
+                      <li>Green costs when section count matches multiples</li>
                     </ul>
                   </div>
                 </CardContent>
