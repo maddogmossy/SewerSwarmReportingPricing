@@ -1575,21 +1575,21 @@ export default function PR2ConfigClean() {
     const percentageIdToDelete = formData.rangeOptions[rangePercentageIndex]?.id;
     const lengthIdToDelete = formData.rangeOptions[rangeLengthIndex]?.id;
     
-    // For green and orange windows, we need to delete the item at the same index as pairIndex
-    // Since all windows were created together, the nth item in each corresponds to the nth pair
+    // FIXED: Use pairIndex directly to target the same row number in green and orange windows
+    // Row 0 = first items, Row 1 = second items (what user wants to delete), etc.
     const quantityIdToDelete = formData.quantityOptions[pairIndex]?.id;
     const minQuantityIdToDelete = formData.minQuantityOptions[pairIndex]?.id;
     
-    console.log(`🗑️ DELETE DEBUG: Deleting pair ${pairIndex}:`);
+    console.log(`🗑️ DELETE SECOND ROW: Deleting row ${pairIndex + 1} (pairIndex=${pairIndex}):`);
     console.log(`🗑️ Current formData state:`, {
-      quantityOptions: formData.quantityOptions.map(q => `${q.id}:${q.label}`),
-      minQuantityOptions: formData.minQuantityOptions.map(m => `${m.id}:${m.label}`),
-      rangeOptions: formData.rangeOptions.map(r => `${r.id}:${r.label}`)
+      quantityOptions: formData.quantityOptions.map((q, i) => `[${i}] ${q.id}:${q.label}`),
+      minQuantityOptions: formData.minQuantityOptions.map((m, i) => `[${i}] ${m.id}:${m.label}`),
+      rangeOptions: formData.rangeOptions.map((r, i) => `[${i}] ${r.id}:${r.label}`)
     });
-    console.log(`  - Green item (index ${pairIndex}): ${quantityIdToDelete}`);
-    console.log(`  - Orange item (index ${pairIndex}): ${minQuantityIdToDelete}`);
-    console.log(`  - Purple percentage (index ${rangePercentageIndex}): ${percentageIdToDelete}`);
-    console.log(`  - Purple length (index ${rangeLengthIndex}): ${lengthIdToDelete}`);
+    console.log(`  - Green row ${pairIndex + 1} (index ${pairIndex}): ${quantityIdToDelete}`);
+    console.log(`  - Orange row ${pairIndex + 1} (index ${pairIndex}): ${minQuantityIdToDelete}`);
+    console.log(`  - Purple percentage row ${pairIndex + 1} (index ${rangePercentageIndex}): ${percentageIdToDelete}`);
+    console.log(`  - Purple length row ${pairIndex + 1} (index ${rangeLengthIndex}): ${lengthIdToDelete}`);
     
     setFormData(prev => ({
       ...prev,
@@ -1608,12 +1608,7 @@ export default function PR2ConfigClean() {
       )
     }));
     
-    console.log(`🗑️ FIXED DELETE: Removed row ${pairIndex + 1} from all windows`);
-    console.log(`🗑️ After deletion formData state:`, {
-      quantityOptions: formData.quantityOptions.filter(option => option.id !== quantityIdToDelete).map(q => `${q.id}:${q.label}`),
-      minQuantityOptions: formData.minQuantityOptions.filter(option => option.id !== minQuantityIdToDelete).map(m => `${m.id}:${m.label}`),
-      rangeOptions: formData.rangeOptions.filter(option => option.id !== percentageIdToDelete && option.id !== lengthIdToDelete).map(r => `${r.id}:${r.label}`)
-    });
+    console.log(`🗑️ SUCCESSFULLY DELETED ROW ${pairIndex + 1}: Removed from all three windows (green/orange/purple)`);
   };
 
   // Wrapper function for deleting range pairs from purple window
