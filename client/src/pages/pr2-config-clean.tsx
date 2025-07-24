@@ -2955,7 +2955,8 @@ export default function PR2ConfigClean() {
               </h3>
               
               {/* P26 Central Day Rate Window - Editable */}
-              <Card className="bg-green-50 border-green-200 mb-4">
+              <Card className="bg-green-50 border-green-200 mb-4 relative">
+                <DevLabel id="db7" position="top-right" />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2">
                     <Banknote className="w-4 h-4" />
@@ -3013,7 +3014,8 @@ export default function PR2ConfigClean() {
               </Card>
               
               {/* Purple Window: 4 Patching Options (excluding Day Rate) */}
-              <Card className="bg-purple-50 border-purple-200">
+              <Card className="bg-purple-50 border-purple-200 relative">
+                <DevLabel id="db8" position="top-right" />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
                     <Coins className="w-4 h-4" />
