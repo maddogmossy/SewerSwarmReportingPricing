@@ -1712,7 +1712,19 @@ export default function Dashboard() {
 
   // Validation effect - runs after sections are loaded
   useEffect(() => {
-    if (hasAuthenticData && rawSectionData.length > 0 && pr2Configurations) {
+    console.log('🔄 useEffect trigger check:', {
+      hasAuthenticData,
+      rawSectionDataLength: rawSectionData?.length || 0,
+      pr2ConfigurationsLength: pr2Configurations?.length || 0,
+      pr2ConfigurationsExists: !!pr2Configurations,
+      travelInfoExists: !!travelInfo,
+      workCategoriesLength: workCategories?.length || 0,
+      vehicleTravelRatesLength: vehicleTravelRates?.length || 0,
+      shouldRun: hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations,
+      devId: 'useeffect-trigger-debug'
+    });
+    
+    if (hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations) {
       console.log('🔍 Running validation with data:', {
         sectionsCount: rawSectionData.length,
         hasTravelInfo: !!travelInfo,
