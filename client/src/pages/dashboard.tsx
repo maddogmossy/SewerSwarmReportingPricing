@@ -95,12 +95,14 @@ const requiresStructuralRepair = (defects: string): boolean => {
   
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
   if (hasStructuralDefects) {
-    // Logging removed to prevent infinite loops
+    // Debug specific items that are being incorrectly classified
+    if (defects.includes('19') || defectsUpper.includes('ITEM 19')) {
+      console.log(`Item 19 defects check: "${defects}" - has structural: ${hasStructuralDefects}`);
+    }
     return true; // Use TP2 for structural repair
   }
   
   // Default: Use TP1 for any unclassified defects
-  // Section defects unclassified - logging removed
   return false;
 };
 
@@ -1716,6 +1718,12 @@ export default function Dashboard() {
     const structuralDefects = sections.filter(section => {
       const defects = section.defects || '';
       const hasStructuralDefect = requiresStructuralRepair(defects);
+      
+      // Debug Item 19 specifically to see why it's being classified as structural
+      if (section.itemNo === 19) {
+        console.log(`ITEM 19 DEBUG: defects="${defects}", classified as structural=${hasStructuralDefect}`);
+      }
+      
       return hasStructuralDefect;
     });
 
