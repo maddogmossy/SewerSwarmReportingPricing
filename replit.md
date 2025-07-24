@@ -720,7 +720,24 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.3' to return to this stable checkpoint
 
-## Recent Changes (Updated January 23, 2025)
+## Recent Changes (Updated January 24, 2025)
+
+### CRITICAL: DB8/DB9 Cost Logic Migration Complete - RED/GREEN Cost Display Fixed ✅
+- **Date**: January 24, 2025
+- **Status**: Successfully migrated dashboard cost color logic from DB9 (orange window) to DB8 (green window)
+- **Root Cause Fixed**: Dashboard was counting ALL sections (26) instead of only sections needing cleaning (10)
+- **Issues Fixed**:
+  - **Smart Counting Logic**: Modified `countSectionsTowardMinimum()` to only count sections requiring cleaning/surveying
+  - **DB8 Migration**: Changed `checkOrangeMinimumMet()` from `minQuantityOptions` (DB9) to `quantityOptions` (DB8)
+  - **Math Window Disabled**: DB7 Math window now shows "Removed" per user request
+  - **Proper Color Logic**: 10 sections needing cleaning < 25 DB8 requirement = RED costs (working correctly)
+- **Technical Implementation**:
+  - Added `requiresCleaning()` filter to section counting logic
+  - Updated all dashboard functions to use DB8 green window values instead of DB9 orange window
+  - Added comprehensive debug logging for cost color determination
+  - DB9 orange window preserved but no longer controls cost display colors
+- **User Confirmation**: "thats working" - cost colors now display correctly based on DB8 green window values
+- **Result**: Dashboard cost column shows red when sections needing cleaning (10) < DB8 green window requirement (25)
 
 ### CRITICAL: Duplicate UI System Elimination & Vehicle Save Fix Complete ✅
 - **Date**: January 23, 2025  
