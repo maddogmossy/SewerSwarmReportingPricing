@@ -2872,6 +2872,101 @@ export default function PR2ConfigClean() {
             </CardContent>
           </Card>
 
+        {/* Vehicle Travel Rates - Main Page Level (DB11) */}
+        <Card className="mb-6 bg-cyan-50 border-cyan-200">
+          <DevLabel id="db11" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
+              <Truck className="w-5 h-5" />
+              Vehicle Travel Rates (All Pipe Sizes)
+            </CardTitle>
+            <p className="text-sm text-cyan-600 mt-1">
+              These rates apply to all pipe sizes and configurations
+            </p>
+          </CardHeader>
+          <CardContent className="py-3">
+            <div className="space-y-2">
+              {formData.vehicleTravelRates && formData.vehicleTravelRates.length > 0 ? 
+                formData.vehicleTravelRates.map((vehicle, index) => (
+                  <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
+                    <div className="flex items-center gap-2">
+                      <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
+                        {vehicle.vehicleType}
+                      </Label>
+                      <span className="text-sm text-cyan-600">£</span>
+                      <Input
+                        placeholder="rate"
+                        maxLength={6}
+                        value={vehicle.hourlyRate || ""}
+                        onChange={(e) => {
+                          console.log(`🚗 MAIN PAGE VEHICLE UPDATE: ${vehicle.id} from ${vehicle.hourlyRate} to ${e.target.value}`);
+                          const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
+                          updateVehicleTravelRate(updatedVehicle);
+                        }}
+                        className="bg-white border-cyan-300 h-8 text-sm w-20"
+                        data-field="hourly-rate"
+                        data-window="vehicle-main"
+                        data-option-id={vehicle.id}
+                      />
+                      <span className="text-sm text-cyan-600">/hr</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder="2"
+                        maxLength={3}
+                        value={vehicle.numberOfHours || "2"}
+                        onChange={(e) => {
+                          console.log(`🚗 MAIN PAGE HOURS UPDATE: ${vehicle.id} from ${vehicle.numberOfHours} to ${e.target.value}`);
+                          const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
+                          updateVehicleTravelRate(updatedVehicle);
+                        }}
+                        className="bg-white border-cyan-300 h-8 text-sm w-16"
+                        data-field="number-of-hours"
+                        data-window="vehicle-main"
+                        data-option-id={vehicle.id}
+                      />
+                      <span className="text-sm text-cyan-600">hours</span>
+                    </div>
+                    <div className="flex gap-2">
+                      {index === 0 && (
+                        <Button
+                          variant="outline"
+                          onClick={() => setAddVehicleDialogOpen(true)}
+                          className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add Vehicle
+                        </Button>
+                      )}
+                      {index > 0 && (
+                        <Button
+                          variant="outline"
+                          onClick={() => deleteVehicleTravelRate(vehicle.id)}
+                          className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )) : (
+                  <div className="bg-white p-4 rounded-lg border border-cyan-200 flex items-center justify-between">
+                    <span className="text-sm text-cyan-600">No vehicle travel rates configured</span>
+                    <Button
+                      variant="outline"
+                      onClick={() => setAddVehicleDialogOpen(true)}
+                      className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Vehicle
+                    </Button>
+                  </div>
+                )
+              }
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Configuration Title */}
         <div className="mb-6 relative">
           <DevLabel id="db2" />
@@ -3352,97 +3447,7 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* Teal/Cyan Window: Vehicle Travel Rates */}
-              <Card className="relative bg-cyan-50 border-cyan-200 w-80 flex-shrink-0">
-                <DevLabel id="db11" />
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-cyan-700 text-xs flex items-center gap-1">
-                    <Truck className="w-3 h-3" />
-                    Vehicle Travel Rates
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="py-1">
-                  <div className="space-y-1">
-                    {formData.vehicleTravelRates && formData.vehicleTravelRates.length > 0 ? 
-                      formData.vehicleTravelRates.map((vehicle, index) => (
-                        <div key={vehicle.id} className="flex gap-2 items-center">
-                          <div className="flex items-center gap-1">
-                            <Label className="text-xs font-medium text-cyan-700 flex-shrink-0">
-                              {vehicle.vehicleType}
-                            </Label>
-                            <span className="text-xs text-cyan-600">£</span>
-                            <Input
-                              placeholder="rate"
-                              maxLength={6}
-                              value={vehicle.hourlyRate || ""}
-                              onChange={(e) => {
-                                console.log(`🚗 HOURLY RATE CHANGE: ${vehicle.id} from ${vehicle.hourlyRate} to ${e.target.value}`);
-                                const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
-                                console.log(`🚗 UPDATED VEHICLE:`, updatedVehicle);
-                                updateVehicleTravelRate(updatedVehicle);
-                              }}
-                              className="bg-white border-cyan-300 h-6 text-xs w-16 flex items-center"
-                              data-field="hourly-rate"
-                              data-window="vehicle"
-                              data-option-id={vehicle.id}
-                            />
-                            <span className="text-xs text-cyan-600">/hr</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Input
-                              placeholder="2"
-                              maxLength={3}
-                              value={vehicle.numberOfHours || "2"}
-                              onChange={(e) => {
-                                console.log(`🚗 HOURS CHANGE: ${vehicle.id} from ${vehicle.numberOfHours} to ${e.target.value}`);
-                                const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
-                                console.log(`🚗 UPDATED VEHICLE:`, updatedVehicle);
-                                updateVehicleTravelRate(updatedVehicle);
-                              }}
-                              className="bg-white border-cyan-300 h-6 text-xs w-10 flex items-center"
-                              data-field="number-of-hours"
-                              data-window="vehicle"
-                              data-option-id={vehicle.id}
-                            />
-                            <span className="text-xs text-cyan-600">hours</span>
-                          </div>
-                          {index === 0 && (
-                            <Button
-                              variant="outline"
-                              onClick={() => setAddVehicleDialogOpen(true)}
-                              className="h-6 text-xs border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                            >
-                              <Plus className="w-3 h-3 mr-1" />
-                              Add
-                            </Button>
-                          )}
-                          {index > 0 && (
-                            <Button
-                              variant="outline"
-                              onClick={() => deleteVehicleTravelRate(vehicle.id)}
-                              className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          )}
-                        </div>
-                      )) : (
-                        <div className="text-xs text-cyan-600 p-2 flex items-center justify-between">
-                          <span>No vehicle travel rates configured</span>
-                          <Button
-                            variant="outline"
-                            onClick={() => setAddVehicleDialogOpen(true)}
-                            className="h-6 text-xs border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                          >
-                            <Plus className="w-3 h-3 mr-1" />
-                            Add
-                          </Button>
-                        </div>
-                      )
-                    }
-                  </div>
-                </CardContent>
-              </Card>
+
             </div>
             )}
           </CollapsibleContent>
@@ -3531,7 +3536,7 @@ export default function PR2ConfigClean() {
                   
                   {/* Blue Window */}
                   <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0 relative">
-                    <DevLabel id="db11" />
+                    <DevLabel id="db6" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-blue-700 text-xs flex items-center gap-1">
                         💰 Pricing
