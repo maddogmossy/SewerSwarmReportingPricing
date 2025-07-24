@@ -602,7 +602,9 @@ export default function PR2ConfigClean() {
   // Handle value changes for input fields
   const handleValueChange = (optionType: string, optionId: string, value: string) => {
     console.log(`🔧 handleValueChange called: ${optionType}, ${optionId}, ${value}`);
-    console.log(`🔧 CRITICAL - FIELD db11 VALUE CHANGE: "${value}" for option ${optionId} in configuration id${editId}`);
+    // Determine correct dev code based on current category
+    const currentDevCode = window.location.href.includes('categoryId=patching') ? 'db6' : 'db11';
+    console.log(`🔧 CRITICAL - FIELD ${currentDevCode} VALUE CHANGE: "${value}" for option ${optionId} in configuration id${editId}`);
     
     // Mark that user has made changes to prevent automatic form overwrite
     console.log(`🔧 USER CHANGED VALUE: ${optionType}, ${optionId}, ${value} - setting hasUserChanges = true`);
@@ -2713,14 +2715,16 @@ export default function PR2ConfigClean() {
                   
                   const isCurrentConfig = (currentConfigId === configId) || (currentConfigId === null && editId === String(configId));
                   
-                  console.log(`🔍 Rendering button: ${pipeSize} (Pricing Window db11) - Current: ${isCurrentConfig}`);
+                  // Use correct dev code based on configuration type
+                  const devCode = categoryId === 'patching' ? 'db6' : 'db11';
+                  console.log(`🔍 Rendering button: ${pipeSize} (${categoryId === 'patching' ? 'TP2 Patching' : 'Pricing Window'} ${devCode}) - Current: ${isCurrentConfig}`);
                   
                   return (
                     <button
                       key={pipeSize}
                       onClick={async () => {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
-                        console.log(`🚀 LOADING CONFIG: ${pipeSize} configuration (Pricing Window db11)`);
+                        console.log(`🚀 LOADING CONFIG: ${pipeSize} configuration (${categoryId === 'patching' ? 'TP2 Patching db6' : 'Pricing Window db11'})`);
                         
                         // CRITICAL: Cancel any pending debounced saves to prevent contamination
                         if (saveTimeout) {
@@ -2794,7 +2798,7 @@ export default function PR2ConfigClean() {
                           // Update URL to reflect the configuration change
                           setLocation(`/pr2-config-clean?categoryId=${targetCategoryId}&sector=${sector}&edit=${configId}`);
                           
-                          console.log(`✅ Form data updated to show ${pipeSize} configuration (Pricing Window db11)`);
+                          console.log(`✅ Form data updated to show ${pipeSize} configuration (${categoryId === 'patching' ? 'TP2 Patching db6' : 'Pricing Window db11'})`);
                           
                         } catch (error) {
                           console.error(`❌ Failed to load configuration ${configId}:`, error);
@@ -2812,11 +2816,11 @@ export default function PR2ConfigClean() {
                   ? `Currently editing: ${(() => {
                       // Use existing configuration data if available
                       if (existingConfig && existingConfig.categoryName) {
-                        // Extract pipe size from category name or use current configuration
-                        if (existingConfig.categoryName.includes('150mm')) return `150mm Pricing Window (db11) - (id${editId})`;
-                        if (existingConfig.categoryName.includes('225mm')) return `225mm Pricing Window (db11) - (id${editId})`;
-                        if (existingConfig.categoryName.includes('300mm')) return `300mm Pricing Window (db11) - (id${editId})`;
-                        return `Pricing Window (db11) - (id${editId})`;
+                        // Extract pipe size from category name or use current configuration - TP2 PATCHING USES db6 NOT db11
+                        if (existingConfig.categoryName.includes('150mm')) return `150mm TP2 Patching (db6) - (id${editId})`;
+                        if (existingConfig.categoryName.includes('225mm')) return `225mm TP2 Patching (db6) - (id${editId})`;
+                        if (existingConfig.categoryName.includes('300mm')) return `300mm TP2 Patching (db6) - (id${editId})`;
+                        return `TP2 Patching (db6) - (id${editId})`;
                       }
                       return 'New Configuration';
                     })()}`
