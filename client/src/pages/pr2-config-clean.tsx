@@ -2366,28 +2366,15 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // DISABLED AUTO-SAVE NAVIGATION: Prevent unwanted configuration creation during navigation
+  // FIXED DASH BUTTON SAVE: Save configuration changes before navigation
   const handleAutoSaveAndNavigate = (destination: string) => {
     return async () => {
-      console.log('💾 Auto-saving configuration before navigation (has actual values or editing existing)...');
+      console.log('💾 DASH BUTTON CLICKED: Saving configuration before navigation...');
       
-      // DISABLED: Skip all auto-save during navigation to prevent unwanted configurations
-      console.log('🔄 Auto-saving configuration before navigation...');
-      console.log('✅ Configuration saved successfully');
-      
-      // Navigate without saving
-      window.location.href = destination;
-      return;
-      
-      if (shouldSave) {
-        console.log('💾 Auto-saving configuration before navigation (has actual values or editing existing)...');
-      } else {
-        console.log('⏭️ Skipping auto-save - no actual values entered, just navigating...');
-      }
-
-      if (shouldSave) {
+      // CRITICAL FIX: Actually save the changes when dash button clicked
+      if (isEditing && editId) {
         try {
-          console.log('🔄 Auto-saving configuration before navigation...');
+          console.log('🔄 Saving delete changes and other modifications before dashboard navigation...');
           
           const payload = {
             categoryName: formData.categoryName,
@@ -2403,54 +2390,26 @@ export default function PR2ConfigClean() {
             pricingStackOrder: formData.pricingStackOrder,
             quantityStackOrder: formData.quantityStackOrder,
             minQuantityStackOrder: formData.minQuantityStackOrder,
-            rangeStackOrder: formData.rangeStackOrder
+            rangeStackOrder: formData.rangeStackOrder,
+            vehicleTravelRates: formData.vehicleTravelRates,
+            vehicleTravelRatesStackOrder: formData.vehicleTravelRatesStackOrder
           };
 
-          if (isEditing && editId) {
-            // Update existing configuration
-            await fetch(`/api/pr2-clean/${editId}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            console.log('✅ Configuration updated successfully');
-          } else {
-            // Create new configuration
-            await fetch('/api/pr2-clean', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            console.log('✅ Configuration saved successfully');
-          }
-          
-          // CRITICAL: Invalidate dashboard queries so costs update immediately
-          console.log('🔄 Invalidating dashboard queries to refresh cost calculations...');
-          queryClient.invalidateQueries({ queryKey: ['/api/uploads'] });
-          queryClient.invalidateQueries({ queryKey: ['/api/uploads'] });
-          // Invalidate all upload sections (can't predict exact uploadId)
-          queryClient.invalidateQueries({ predicate: (query) => {
-            return query.queryKey[0]?.toString().includes('/api/uploads/') && 
-                   query.queryKey[0]?.toString().includes('/sections');
-          }});
-          queryClient.invalidateQueries({ predicate: (query) => {
-            return query.queryKey[0]?.toString().includes('/api/uploads/') && 
-                   query.queryKey[0]?.toString().includes('/defects');
-          }});
-          console.log('✅ Dashboard queries invalidated - cost calculations will refresh');
+          // Update existing configuration with delete changes
+          await fetch(`/api/pr2-clean/${editId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          console.log('✅ DASH BUTTON SAVE SUCCESSFUL: Delete changes and modifications saved to database');
           
         } catch (error) {
-          console.error('❌ Auto-save failed:', error);
-          // Continue with navigation even if save fails
+          console.error('❌ Dash button save failed:', error);
         }
       }
-
-      // Navigate to destination with sector context
-      if (destination === '/pr2-pricing') {
-        setLocation(`${destination}?sector=${sector}`);
-      } else {
-        setLocation(destination);
-      }
+      
+      // Navigate to destination
+      window.location.href = destination;
     };
   };
 
