@@ -309,7 +309,7 @@ export default function PR2ConfigClean() {
         description: '',
         categoryColor: '#ffffff', // Default white color - user must assign color
         pricingOptions: [
-          { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' },
+          { id: 'db7_day_rate', label: 'Central Day Rate', enabled: true, value: '1650' },
           { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' },
           { id: 'double_layer_cost', label: 'Double Layer', enabled: true, value: '' },
           { id: 'triple_layer_cost', label: 'Triple Layer', enabled: true, value: '' },
@@ -331,7 +331,7 @@ export default function PR2ConfigClean() {
           { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', numberOfHours: '2', enabled: true }
         ],
         mathOperators: [], // No math window for TP2
-        pricingStackOrder: ['price_dayrate', 'single_layer_cost', 'double_layer_cost', 'triple_layer_cost', 'triple_extra_cure_cost'],
+        pricingStackOrder: ['db7_day_rate', 'single_layer_cost', 'double_layer_cost', 'triple_layer_cost', 'triple_extra_cure_cost'],
         quantityStackOrder: [],
         minQuantityStackOrder: ['minquantity_runs', 'patch_min_qty_1', 'patch_min_qty_2', 'patch_min_qty_3', 'patch_min_qty_4'],
         rangeStackOrder: ['range_length'],
@@ -2969,11 +2969,11 @@ export default function PR2ConfigClean() {
                     </div>
                   </div>
                   <div className="text-sm text-gray-600 mt-3">
-                    <p><strong>Multiple-Based Logic (DB8 Green Window):</strong></p>
+                    <p><strong>Multiple-Based Logic (TP1 Green Windows):</strong></p>
                     <ul className="list-disc ml-4 mt-1">
                       <li>Green cost: When section count matches multiples (4, 8, 12, 16, 20, 24...)</li>
                       <li>Red cost: When section count falls between multiples</li>
-                      <li>Uses DB8 green window "Runs per Shift" value for multiple calculation</li>
+                      <li>Uses TP1 configuration "Runs per Shift" values for multiple calculation</li>
                     </ul>
                   </div>
                 </CardContent>
