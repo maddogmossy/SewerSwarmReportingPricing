@@ -91,14 +91,19 @@ const requiresStructuralRepair = (defects: string): boolean => {
   }
   
   // PRIORITY 2: Only use TP2 for true structural defects
-  const structuralCodes = ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'deformation'];
+  const structuralCodes = ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture'];
   
+  // Check for major structural defects requiring TP2 patching
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
-  if (hasStructuralDefects) {
-    // Debug specific items that are being incorrectly classified
-    if (defects.includes('19') || defectsUpper.includes('ITEM 19')) {
-      console.log(`Item 19 defects check: "${defects}" - has structural: ${hasStructuralDefects}`);
-    }
+  
+  // Special handling for deformation - only if it's significant (over certain threshold)
+  const hasSignificantDeformation = defectsUpper.includes('DEFORMATION') && (
+    defectsUpper.includes('10%') || defectsUpper.includes('15%') || defectsUpper.includes('20%') ||
+    defectsUpper.includes('25%') || defectsUpper.includes('30%') || defectsUpper.includes('MAJOR') ||
+    defectsUpper.includes('SEVERE')
+  );
+  
+  if (hasStructuralDefects || hasSignificantDeformation) {
     return true; // Use TP2 for structural repair
   }
   
@@ -1719,9 +1724,9 @@ export default function Dashboard() {
       const defects = section.defects || '';
       const hasStructuralDefect = requiresStructuralRepair(defects);
       
-      // Debug Item 19 specifically to see why it's being classified as structural
-      if (section.itemNo === 19) {
-        console.log(`ITEM 19 DEBUG: defects="${defects}", classified as structural=${hasStructuralDefect}`);
+      // Debug structural defect classification  
+      if (section.itemNo === 19 || section.itemNo === '13a' || section.itemNo === 20 || section.itemNo === '21a') {
+        console.log(`Item ${section.itemNo} - structural: ${hasStructuralDefect}, defects: "${defects}"`);
       }
       
       return hasStructuralDefect;
