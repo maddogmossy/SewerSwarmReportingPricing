@@ -1827,9 +1827,13 @@ export default function Dashboard() {
     if (!tp2Config) return; // No TP2 configuration found
     
     // CRITICAL: Only run validation if configuration has valid pricing values
-    const isProperlyConfigured = isConfigurationProperlyConfigured(tp2Config);
+    // For TP2 configurations, only check if pricing options have values (not quantity)
+    const isTP2Configured = tp2Config.pricingOptions?.some((opt: any) => 
+      opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
+    );
+    
     console.log('🔍 TP2 Configuration Validation:', {
-      isProperlyConfigured,
+      isTP2Configured,
       pricingOptions: tp2Config.pricingOptions?.map((opt: any) => ({
         id: opt.id,
         label: opt.label,
@@ -1839,7 +1843,7 @@ export default function Dashboard() {
       devId: 'tp2-validation-checkpoint-3'
     });
     
-    if (!isProperlyConfigured) {
+    if (!isTP2Configured) {
       console.log('⚠️ TP2 configuration not properly configured, skipping validation');
       return; // Skip validation for empty configurations
     }

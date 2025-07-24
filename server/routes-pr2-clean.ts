@@ -160,7 +160,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           ));
       } else if (sector) {
         // Filter by both userId and sector using single sector field
-        // Filtering logging removed
+        console.log('🔍 DEBUGGING: Loading configs for sector:', sector);
         configurations = await db
           .select()
           .from(pr2Configurations)
@@ -168,6 +168,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
             eq(pr2Configurations.userId, "test-user"),
             eq(pr2Configurations.sector, sector)
           ));
+        console.log('🔍 DEBUGGING: Found configs:', configurations.map(c => ({ id: c.id, categoryId: c.categoryId, categoryName: c.categoryName })));
       } else {
         // If no sector specified, return all configurations for user
         // Filtering logging removed
