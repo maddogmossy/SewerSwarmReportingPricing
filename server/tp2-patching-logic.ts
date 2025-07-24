@@ -33,7 +33,7 @@ export interface TP2PatchingRules {
  */
 export const TP2_PATCHING_RULES: TP2PatchingRules = {
   templateSystem: 'TP2_ONLY',
-  configurationId: 162, // P26 Central Day Rate configuration ID
+  configurationId: null, // P26 system removed - using DB7 Math window for min qty checks
   sector: 'utilities',
   
   // Repair counting methodology
@@ -167,9 +167,8 @@ export function calculateTP2Cost(section: any, tp2Config: any, p26Config?: any):
   );
   const minQuantity = minQuantityOption ? parseInt(minQuantityOption.value) : 3;
   
-  // Get day rate from P26 config or default
-  const dayRate = p26Config?.pricingOptions?.[0]?.value ? 
-    parseFloat(p26Config.pricingOptions[0].value) : 1650;
+  // Use default day rate (P26 system removed - using DB7 Math window for min qty checks)
+  const dayRate = 1650;
   
   return {
     cost: unitCost * repairCount,

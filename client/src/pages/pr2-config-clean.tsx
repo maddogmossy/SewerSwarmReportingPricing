@@ -157,7 +157,7 @@ export default function PR2ConfigClean() {
     enabled: !!categoryId,
   });
   
-  // Query all configurations for current sector (to access P26 configuration)
+  // Query all configurations for current sector (P26 removed - using DB7 Math window)
   const { data: pr2Configurations } = useQuery({
     queryKey: ['/api/pr2-clean', sector],
     queryFn: async () => {
@@ -167,24 +167,9 @@ export default function PR2ConfigClean() {
     enabled: !!sector,
   });
 
-  // Local state for P26 day rate input to prevent API calls on every keystroke
-  const [p26DayRate, setP26DayRate] = useState("");
-  const [p26Initialized, setP26Initialized] = useState(false);
+  // P26 system removed - using DB7 Math window for minimum quantity calculations
 
-  // Initialize P26 day rate when data loads (only once)
-  useEffect(() => {
-    if (pr2Configurations && !p26Initialized) {
-      const p26Config = pr2Configurations.find(config => config.categoryId === 'P26');
-      const dayRateOption = p26Config?.pricingOptions?.find(option => 
-        option.id === 'central_day_rate' || option.id === 'price_dayrate'
-      );
-      // Only set if there's actually a value, allow empty state
-      if (dayRateOption?.value && dayRateOption.value !== "") {
-        setP26DayRate(dayRateOption.value);
-      }
-      setP26Initialized(true);
-    }
-  }, [pr2Configurations, p26Initialized]);
+  // P26 initialization removed - system now uses DB7 Math window
 
   // Load existing configuration for editing (moved up to avoid initialization error)
   const { data: existingConfig, error: configError } = useQuery({
@@ -2954,61 +2939,23 @@ export default function PR2ConfigClean() {
                 TP2 - Patching Configuration
               </h3>
               
-              {/* P26 Central Day Rate Window - Editable */}
+              {/* DB7 Math Window - Minimum Quantity Calculations */}
               <Card className="bg-green-50 border-green-200 mb-4 relative">
                 <DevLabel id="db7" position="top-right" />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                    <Banknote className="w-4 h-4" />
-                    Day Rate
+                    <Calculator className="w-4 h-4" />
+                    Math - Minimum Quantity Calculations
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center gap-4">
-                    <Label className="w-32 text-sm font-medium text-black">
-                      Central Day Rate
-                    </Label>
-                    <div className="flex items-center gap-2">
-                      <Label className="text-xs">£</Label>
-                      <Input
-                        placeholder="0.00"
-                        value={p26DayRate}
-                        onChange={(e) => {
-                          // Update local state immediately for responsive typing
-                          setP26DayRate(e.target.value);
-                        }}
-                        onBlur={async (e) => {
-                          // Save to database when user finishes typing (on blur)
-                          console.log(`💰 Saving P26 central day rate:`, e.target.value);
-                          
-                          let p26Config = pr2Configurations?.find(config => config.categoryId === 'P26');
-                          
-                          if (p26Config) {
-                            const updatedPricingOptions = p26Config.pricingOptions?.map(option => 
-                              (option.id === 'central_day_rate' || option.id === 'price_dayrate')
-                                ? { ...option, value: e.target.value }
-                                : option
-                            ) || [{ id: 'central_day_rate', label: 'Day Rate (All Patches)', value: e.target.value, enabled: true }];
-                            
-                            const updateData = {
-                              ...p26Config,
-                              pricingOptions: updatedPricingOptions
-                            };
-                            
-                            try {
-                              await apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updateData);
-                              console.log(`✅ Saved P26 configuration ${p26Config.id} with day rate: £${e.target.value}`);
-                              
-                              // Invalidate cache to refresh data
-                              queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', sector] });
-                            } catch (error) {
-                              console.error('❌ Failed to save P26 configuration:', error);
-                            }
-                          }
-                        }}
-                        className="w-20 h-8 text-sm bg-white border-green-300"
-                      />
-                    </div>
+                  <div className="text-sm text-gray-600">
+                    <p>DB7 Math window uses configuration minimum quantities to determine cost display colors:</p>
+                    <ul className="list-disc ml-4 mt-2">
+                      <li>Red cost: When section count &lt; minimum quantity threshold</li>
+                      <li>Green cost: When section count ≥ minimum quantity threshold</li>
+                      <li>Day rate: £1650 default (P26 system removed)</li>
+                    </ul>
                   </div>
                 </CardContent>
               </Card>

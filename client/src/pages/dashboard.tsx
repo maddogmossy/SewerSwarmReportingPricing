@@ -2037,7 +2037,7 @@ export default function Dashboard() {
     return defectCount;
   };
 
-  // Function to calculate TP2 patching cost using P26 Central Day Rate System
+  // Function to calculate TP2 patching cost using DB7 Math window for minimum quantity checks
   const calculateTP2PatchingCost = (section: any, tp2Config: any) => {
     console.log('🔧 calculateTP2PatchingCost called for section:', section.itemNo);
     console.log('🔧 TP2 config:', tp2Config);
@@ -2057,19 +2057,12 @@ export default function Dashboard() {
       defectsText: defectsText
     });
     
-    // UPDATED: Get day rate from P26 Central Configuration (ID: 162)
-    // No longer looks for day rate in individual TP2 configurations
-    const p26Config = pr2Configurations.find(config => 
-      config.categoryId === 'P26' && config.sector === currentSector.id
-    );
-    const dayRate = p26Config?.pricingOptions?.[0]?.value ? 
-      parseFloat(p26Config.pricingOptions[0].value) : 1650;
+    // UPDATED: Use default day rate £1650 (P26 system removed)
+    const dayRate = 1650;
     
-    console.log('🔧 P26 Central Day Rate:', {
-      p26ConfigFound: !!p26Config,
-      p26ConfigId: p26Config?.id,
+    console.log('🔧 Using default day rate (P26 removed):', {
       dayRate: dayRate,
-      source: p26Config ? 'P26 Configuration' : 'Default fallback'
+      source: 'Default hardcoded value'
     });
     
     // Determine which patching option to use based on recommendations or default
