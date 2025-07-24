@@ -1712,7 +1712,7 @@ export default function Dashboard() {
 
   // Validation effect - runs after sections are loaded
   useEffect(() => {
-    if (hasAuthenticData && rawSectionData.length > 0 && pr2Configurations.length >= 0) {
+    if (hasAuthenticData && rawSectionData.length > 0 && pr2Configurations) {
       console.log('🔍 Running validation with data:', {
         sectionsCount: rawSectionData.length,
         hasTravelInfo: !!travelInfo,
