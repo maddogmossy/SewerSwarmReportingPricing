@@ -342,8 +342,8 @@ export default function PR2ConfigClean() {
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
         ],
         vehicleTravelRates: [
-          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', enabled: true },
-          { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', enabled: true }
+          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
+          { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', numberOfHours: '2', enabled: true }
         ],
         mathOperators: [], // No math window for TP2
         pricingStackOrder: ['price_dayrate', 'single_layer_cost', 'double_layer_cost', 'triple_layer_cost', 'triple_extra_cure_cost'],
@@ -373,8 +373,8 @@ export default function PR2ConfigClean() {
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
         ],
         vehicleTravelRates: [
-          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', enabled: true },
-          { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', enabled: true }
+          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
+          { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', numberOfHours: '2', enabled: true }
         ],
         mathOperators: ['N/A'],
         pricingStackOrder: ['price_dayrate'],
@@ -479,8 +479,8 @@ export default function PR2ConfigClean() {
     // Ensure vehicleTravelRates is initialized if missing
     if (!defaultData.vehicleTravelRates) {
       defaultData.vehicleTravelRates = [
-        { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', enabled: true },
-        { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', enabled: true }
+        { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
+        { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', numberOfHours: '2', enabled: true }
       ];
     }
     if (!defaultData.vehicleTravelRatesStackOrder) {
