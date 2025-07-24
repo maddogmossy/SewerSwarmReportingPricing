@@ -2939,22 +2939,41 @@ export default function PR2ConfigClean() {
                 TP2 - Patching Configuration
               </h3>
               
-              {/* DB7 Math Window - Minimum Quantity Calculations */}
+              {/* DB7 Math Window - Day Rate and Minimum Quantity Calculations */}
               <Card className="bg-green-50 border-green-200 mb-4 relative">
                 <DevLabel id="db7" position="top-right" />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-2">
                     <Calculator className="w-4 h-4" />
-                    Math - Minimum Quantity Calculations
+                    Math - Day Rate & Multiple Logic
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="text-sm text-gray-600">
-                    <p>DB7 Math window uses configuration minimum quantities to determine cost display colors:</p>
-                    <ul className="list-disc ml-4 mt-2">
-                      <li>Red cost: When section count &lt; minimum quantity threshold</li>
-                      <li>Green cost: When section count ≥ minimum quantity threshold</li>
-                      <li>Day rate: £1650 default (P26 system removed)</li>
+                  <div className="flex items-center gap-4">
+                    <Label className="w-32 text-sm font-medium text-black">
+                      Central Day Rate
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Label className="text-xs">£</Label>
+                      <Input
+                        placeholder="1650"
+                        value={formData.pricingOptions?.find(opt => opt.id === 'db7_day_rate')?.value || '1650'}
+                        onChange={(e) => {
+                          console.log(`💰 DB7 Day Rate changed:`, e.target.value);
+                          handleValueChange('pricingOptions', 'db7_day_rate', e.target.value);
+                        }}
+                        className="w-20 h-8 text-sm bg-white border-green-300"
+                        data-field="day-rate"
+                        data-window="db7"
+                      />
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600 mt-3">
+                    <p><strong>Multiple-Based Logic:</strong></p>
+                    <ul className="list-disc ml-4 mt-1">
+                      <li>Green cost: When section count matches multiples (4, 8, 12, 16, 20, 24...)</li>
+                      <li>Red cost: When section count falls between multiples</li>
+                      <li>Uses minimum quantity from configuration for multiple calculation</li>
                     </ul>
                   </div>
                 </CardContent>

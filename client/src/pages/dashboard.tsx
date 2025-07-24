@@ -3259,7 +3259,7 @@ export default function Dashboard() {
     );
   };
 
-  // CHANGED: Check if collective count meets DB8 GREEN WINDOW requirements (instead of DB9 orange)
+  // DB7 MULTIPLE-BASED LOGIC: Check if section count matches multiples of minimum quantity
   const checkOrangeMinimumMet = (): boolean => {
     if (!pr2Configurations || pr2Configurations.length === 0) {
       return true;
@@ -3268,27 +3268,34 @@ export default function Dashboard() {
     // Get smart counting result for all sections
     const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations);
     
-    // FIXED: Use DB8 quantityOptions (green window) instead of DB9 minQuantityOptions (orange window)
-    let highestMinRequired = 0;
+    // Find minimum quantity from configurations for multiple calculation
+    let minQuantity = 4; // Default minimum
     pr2Configurations.forEach(config => {
-      const quantityOptions = config.quantityOptions || []; // CHANGED: Use DB8 green window
-      const runsOption = quantityOptions.find((opt: any) => 
-        opt.label?.toLowerCase().includes('runs') && opt.enabled
+      const minQuantityOptions = config.minQuantityOptions || [];
+      const minQtyOption = minQuantityOptions.find((opt: any) => 
+        opt.label?.toLowerCase().includes('min') && opt.enabled && opt.value
       );
-      if (runsOption) {
-        const minValue = parseFloat(runsOption.value || '0');
-        highestMinRequired = Math.max(highestMinRequired, minValue);
+      if (minQtyOption) {
+        const minValue = parseFloat(minQtyOption.value || '0');
+        if (minValue > 0) {
+          minQuantity = minValue;
+        }
       }
     });
     
-    console.log('🎯 FINAL DB8 GREEN WINDOW CHECK:', {
+    // DB7 MULTIPLE LOGIC: Check if section count is exact multiple of minimum quantity
+    const isExactMultiple = sectionCount > 0 && (sectionCount % minQuantity === 0);
+    
+    console.log('🎯 DB7 MULTIPLE-BASED LOGIC CHECK:', {
       sectionsNeedingCleaning: sectionCount,
-      highestDB8Requirement: highestMinRequired,
-      comparison: `${sectionCount} > ${highestMinRequired}`,
-      result: sectionCount > highestMinRequired ? 'GREEN costs' : 'RED costs'
+      minQuantityBase: minQuantity,
+      validMultiples: `${minQuantity}, ${minQuantity * 2}, ${minQuantity * 3}, ${minQuantity * 4}...`,
+      isExactMultiple: isExactMultiple,
+      calculation: `${sectionCount} % ${minQuantity} = ${sectionCount % minQuantity}`,
+      result: isExactMultiple ? 'GREEN costs (exact multiple)' : 'RED costs (between multiples)'
     });
     
-    return sectionCount > highestMinRequired;
+    return isExactMultiple;
   };
 
   // Cost calculation function for enhanced table - using useMemo to ensure reactivity
