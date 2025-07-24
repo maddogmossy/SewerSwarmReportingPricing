@@ -1716,6 +1716,12 @@ export default function Dashboard() {
     const structuralDefects = sections.filter(section => {
       const defects = section.defects || '';
       const hasStructuralDefect = requiresStructuralRepair(defects);
+      
+      // Debug: Check specific sections for TP2 validation
+      if (section.itemNo === '13a' || section.itemNo === '20' || section.itemNo === '21a') {
+        console.log(`TP2 Debug - Item ${section.itemNo}: defects="${defects}", structural=${hasStructuralDefect}`);
+      }
+      
       return hasStructuralDefect;
     });
 
