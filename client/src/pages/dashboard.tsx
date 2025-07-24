@@ -2786,8 +2786,8 @@ export default function Dashboard() {
       return 'default'; // Will show red with "Outside PR2 configuration ranges" message
     }
     
-    // Check minimum quantity requirements using smart counting system
-    const minQuantityOptions = pr2Config.minQuantityOptions || [];
+    // CHANGED: Check DB8 GREEN WINDOW requirements using smart counting system (instead of DB9 orange)
+    const quantityOptions = pr2Config.quantityOptions || []; // CHANGED: Use DB8 green window
     
     // Extract values using same logic as calculateAutoCost
     const getPricingValueByLabel = (options: any[], label: string) => {
@@ -2799,14 +2799,14 @@ export default function Dashboard() {
     const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations || []);
     const runsPerShift = getPricingValueByLabel(pr2Config.quantityOptions, 'runs per shift');
     
-    console.log('🔢 Smart counting result:', {
+    console.log('🔢 Smart counting result (now using DB8 green window):', {
       sectionItemNo: section.itemNo,
       totalSectionsCount: sectionCount,
       configUsed: pr2Config.id,
       runsPerShift: runsPerShift
     });
     
-    const minRunsRequired = minQuantityOptions.find((opt: any) => 
+    const minRunsRequired = quantityOptions.find((opt: any) => // CHANGED: Use DB8 green window
       opt.label?.toLowerCase().includes('runs') && opt.enabled
     );
     
@@ -3254,7 +3254,7 @@ export default function Dashboard() {
     );
   };
 
-  // Check if collective count meets orange minimum requirements
+  // CHANGED: Check if collective count meets DB8 GREEN WINDOW requirements (instead of DB9 orange)
   const checkOrangeMinimumMet = (): boolean => {
     if (!pr2Configurations || pr2Configurations.length === 0) {
       return true;
@@ -3263,15 +3263,15 @@ export default function Dashboard() {
     // Get smart counting result for all sections
     const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations);
     
-    // Check highest orange minimum requirement across all configurations
+    // FIXED: Use DB8 quantityOptions (green window) instead of DB9 minQuantityOptions (orange window)
     let highestMinRequired = 0;
     pr2Configurations.forEach(config => {
-      const minQuantityOptions = config.minQuantityOptions || [];
-      const minRunsOption = minQuantityOptions.find((opt: any) => 
+      const quantityOptions = config.quantityOptions || []; // CHANGED: Use DB8 green window
+      const runsOption = quantityOptions.find((opt: any) => 
         opt.label?.toLowerCase().includes('runs') && opt.enabled
       );
-      if (minRunsOption) {
-        const minValue = parseFloat(minRunsOption.value || '0');
+      if (runsOption) {
+        const minValue = parseFloat(runsOption.value || '0');
         highestMinRequired = Math.max(highestMinRequired, minValue);
       }
     });
