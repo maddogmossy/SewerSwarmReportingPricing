@@ -3235,9 +3235,9 @@ export default function PR2ConfigClean() {
                   </CardContent>
                 </Card>
 
-                {/* Math Window - DISABLED PER USER REQUEST */}
+                {/* Math Window - RESTORED */}
                 <Card className="relative bg-gray-50 border-gray-200 w-20 flex-shrink-0">
-                  <DevLabel id="db7" position="top-right" />
+                  <DevLabel id="db13" position="top-right" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
                       <Calculator className="w-3 h-3 mr-1" />
@@ -3246,9 +3246,17 @@ export default function PR2ConfigClean() {
                   </CardHeader>
                   <CardContent className="py-1">
                     <div className="flex items-center justify-center">
-                      <div className="text-gray-400 text-xs">
-                        Removed
-                      </div>
+                      <Select value="÷" onValueChange={() => {}}>
+                        <SelectTrigger className="w-12 h-6 text-xs">
+                          <SelectValue placeholder="÷" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="÷">÷</SelectItem>
+                          <SelectItem value="+">+</SelectItem>
+                          <SelectItem value="-">-</SelectItem>
+                          <SelectItem value="×">×</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </CardContent>
                 </Card>
@@ -3273,6 +3281,7 @@ export default function PR2ConfigClean() {
                               value={option.value || ""}
                               onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
                               className="bg-white border-green-300 h-6 text-xs w-16 flex-shrink-0"
+                              data-dev-id="db13"
                             />
                           </div>
                         );
@@ -3522,7 +3531,7 @@ export default function PR2ConfigClean() {
 
                   {/* Green Window */}
                   <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0 relative">
-                    <DevLabel id="db13" />
+                    <DevLabel id="db8" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-green-700 text-xs flex items-center gap-1">
                         📊 Quantity
