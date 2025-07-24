@@ -3676,7 +3676,7 @@ export default function Dashboard() {
                       className="text-xs"
                     >
                       <DevLabel id="db28" />
-                      <DevLabel id="b7" />
+                      <DevLabel id="db7" />
                       {showColumnSelector ? 'Done Selecting' : 'Hide Columns'}
                     </Button>
                     <Button

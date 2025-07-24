@@ -344,7 +344,7 @@ export default function PR2Pricing() {
       data-source-item={sourceItemNo}
     >
       <DevLabel id="p4" position="top-right" />
-      <DevLabel id="TEST-RED-LABEL" />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
