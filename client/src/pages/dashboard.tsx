@@ -511,7 +511,7 @@ export default function Dashboard() {
         return new Set(JSON.parse(savedHiddenColumns));
       }
     } catch (error) {
-      console.error('Error loading hidden columns from localStorage:', error);
+      // Error loading hidden columns from localStorage
     }
     return new Set();
   });
@@ -1848,7 +1848,7 @@ export default function Dashboard() {
         throw new Error('Failed to update TP2 configuration');
       }
     } catch (error) {
-      console.error('Error applying day rate adjustment:', error);
+      // Error applying day rate adjustment
       toast({
         title: "Error",
         description: "Failed to apply day rate adjustment",
@@ -2356,7 +2356,7 @@ export default function Dashboard() {
         // PR2 calculation failed - no valid cost calculated
       }
     } catch (error) {
-      console.error('Error calculating PR1 cost:', error);
+      // Error calculating PR1 cost
     }
 
     // Return null if calculation fails
@@ -3319,7 +3319,7 @@ export default function Dashboard() {
                           }
                         }
                       } catch (error) {
-                        console.error('Processing error:', error);
+                        // Processing error occurred
                         toast({
                           title: "Error",
                           description: "Failed to process Wincan database: " + error.message,
