@@ -562,7 +562,7 @@ export default function Dashboard() {
   const [selectedPatchSection, setSelectedPatchSection] = useState<any>(null);
   const [selectedPatchCalculation, setSelectedPatchCalculation] = useState<any>(null);
   
-  // TP2 distribution dialog state
+  // TP2 distribution dialog state - FORCE SHOW FOR TESTING
   const [showTP2DistributionDialog, setShowTP2DistributionDialog] = useState<{
     show: boolean;
     tp2Sections: any[];
@@ -570,11 +570,15 @@ export default function Dashboard() {
     minQuantity: number;
     message: string;
   }>({
-    show: false,
-    tp2Sections: [],
-    totalDefects: 0,
+    show: true, // FORCE SHOW FOR TESTING
+    tp2Sections: [
+      { itemNo: 13, letterSuffix: 'a' },
+      { itemNo: 20, letterSuffix: '' },
+      { itemNo: 21, letterSuffix: 'a' }
+    ],
+    totalDefects: 3,
     minQuantity: 4,
-    message: ''
+    message: 'TP2 minimum quantity not met - configuration required for structural repairs'
   });
 
   // Validation warning popup system
