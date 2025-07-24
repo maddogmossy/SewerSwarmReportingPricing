@@ -3893,7 +3893,7 @@ export default function Dashboard() {
                     data-total-sections={sectionData.length}
                   >
                     <thead className="bg-gray-100 text-xs font-semibold text-gray-700 border-b border-gray-300">
-                      <DevLabel id="db35" />
+                      <DevLabel id="db35" position="absolute" />
                       <tr 
                         data-component="table-header"
                       >
@@ -3931,7 +3931,7 @@ export default function Dashboard() {
                       </tr>
                     </thead>
                     <tbody key={`table-${currentUpload?.id}-${sectionData.length}-${JSON.stringify(sectionData.filter(s => s.itemNo === 2).map(s => s.id))}`}>
-                      <DevLabel id="db36" />
+                      <DevLabel id="db36" position="absolute" />
                       {sectionData.map((section, index) => {
                         // Check for approved repair pricing
                         const repairStatus = hasApprovedRepairPricing(section);
