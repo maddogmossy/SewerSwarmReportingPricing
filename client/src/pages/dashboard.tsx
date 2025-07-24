@@ -794,17 +794,11 @@ export default function Dashboard() {
         
         // Debug Item 3 requirements check
         if (section.itemNo === 3) {
-          console.log('=== ITEM 3 REQUIREMENTS CHECK ===');
-          console.log('Pipe size:', section.pipeSize);
-          console.log('Total length:', section.totalLength);
-          console.log('Defects:', defectsText);
+          // ITEM 3 REQUIREMENTS CHECK - analysis completed
           
           // Extract percentage from water level
           const waterLevelMatch = defectsText.match(/(\d+)%.*vertical dimension/);
           const percentage = waterLevelMatch ? parseInt(waterLevelMatch[1]) : 0;
-          console.log('Water level percentage:', percentage);
-          console.log('Max allowed percentage (from config): [varies by configuration]');
-          console.log('Percentage check: depends on PR2 configuration ranges');
         }
         
         // Check if observations contain multiple distinct observations (either line breaks or periods)
@@ -1151,7 +1145,7 @@ export default function Dashboard() {
                 }}
                 onPricingNeeded={(method, pipeSize, sector) => {
                   // Repair category creation can be implemented here if needed
-                  console.log('Repair pricing needed for:', method, pipeSize, sector);
+                  // Repair pricing needed for method evaluation
                 }}
               >
                 <div 
@@ -1380,8 +1374,7 @@ export default function Dashboard() {
   };
 
   const handleViewReport = (uploadId: number) => {
-    console.log(`handleViewReport called with uploadId: ${uploadId}`);
-    console.log(`Navigating to: /dashboard?reportId=${uploadId}`);
+    // Navigating to dashboard with report ID
     window.location.href = `/dashboard?reportId=${uploadId}`;
   };
 
@@ -3116,16 +3109,7 @@ export default function Dashboard() {
       
       // ADDITIONAL DEBUG: Log why TP2 sections might be failing hasDefects check
       if (section.itemNo >= 13 && section.itemNo <= 21) {
-        console.log(`🔍 TP2 DEFECTS CHECK - Item ${section.itemNo}${section.letterSuffix || ''}:`, {
-          needsStructuralRepair,
-          hasDefects,
-          hasTP2StructuralDefects,
-          severityGrade: section.severityGrade,
-          severityGradesStructural: section.severityGrades?.structural,
-          defectType: section.defectType,
-          willReturnZero: !hasDefects,
-          willReturnZeroAfterFix: !hasDefects && !hasTP2StructuralDefects
-        });
+        // TP2 DEFECTS CHECK - Item analysis completed
       }
       
       // Use TP2 structural check for structural defects, original logic for service defects
@@ -3331,7 +3315,7 @@ export default function Dashboard() {
                           });
                           if (response.requiresFreshUpload) {
                             // Show corruption message and suggest re-upload
-                            console.log("🚫 LOCKDOWN: Database file corrupted - requires fresh upload");
+                            // LOCKDOWN: Database file corrupted - requires fresh upload
                           }
                         }
                       } catch (error) {
