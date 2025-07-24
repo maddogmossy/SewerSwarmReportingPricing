@@ -1716,16 +1716,8 @@ export default function Dashboard() {
     const structuralDefects = sections.filter(section => {
       const defects = section.defects || '';
       const hasStructuralDefect = requiresStructuralRepair(defects);
-      
-      // Debug: Check specific sections for TP2 validation
-      if (section.itemNo === '13a' || section.itemNo === '20' || section.itemNo === '21a') {
-        console.log(`TP2 Debug - Item ${section.itemNo}: defects="${defects}", structural=${hasStructuralDefect}, pipeSize=${section.pipeSize}`);
-      }
-      
       return hasStructuralDefect;
     });
-
-    console.log('All structural defects found:', structuralDefects.map(s => `${s.itemNo} (${s.pipeSize}mm)`));
 
     // Group structural defects by pipe size
     const defectsByPipeSize = structuralDefects.reduce((acc: any, section: any) => {
@@ -1734,8 +1726,6 @@ export default function Dashboard() {
       acc[pipeSize].push(section);
       return acc;
     }, {});
-
-    console.log('Defects grouped by pipe size:', defectsByPipeSize);
 
     // Structural defects grouped by pipe size for validation
 
@@ -1761,15 +1751,18 @@ export default function Dashboard() {
         if (defectCount > 0 && defectCount < minQuantity && !triggeredValidation) {
           // TP2 popup triggered for minimum quantity validation
 
+          // Show ALL structural defects across all pipe sizes, not just this pipe size
+          const totalStructuralDefects = structuralDefects.length;
+          
           // Show TP2 minimum quantity warning popup
           setShowTP2DistributionDialog({
             show: true,
-            tp2Sections: defects as any[],
-            totalDefects: defectCount,
+            tp2Sections: structuralDefects, // Show ALL structural defects, not just this pipe size
+            totalDefects: totalStructuralDefects, // Total count across all pipe sizes
             minQuantity: minQuantity,
             configurationId: pipeSizeConfig.id,
             pipeSize: pipeSize,
-            message: `${defectCount} structural defects (${pipeSize}mm) found but ${minQuantity} minimum required for TP2 patching`
+            message: `${totalStructuralDefects} structural defects found but ${minQuantity} minimum required for TP2 patching`
           });
           
           triggeredValidation = true; // Only show one popup at a time
