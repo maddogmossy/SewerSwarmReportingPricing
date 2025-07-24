@@ -4007,12 +4007,17 @@ export default function Dashboard() {
                 </div>
                 <div className="border-t border-orange-200 pt-3">
                   <p className="text-sm text-orange-700">
-                    <strong>TP2 Configuration ID:</strong>
+                    <strong>Configure TP2 Patching - Configuration IDs to Update:</strong>
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-md font-medium">
-                      ID {showTP2DistributionDialog.configurationId} ({showTP2DistributionDialog.pipeSize}mm TP2 Patching)
+                    <span className="px-3 py-2 bg-blue-100 text-blue-900 text-sm rounded-lg font-bold border-2 border-blue-300">
+                      ID 153 (150mm) • ID 156 (225mm) • ID 157 (300mm)
                     </span>
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-xs text-blue-700 font-medium">
+                      Currently failing: ID {showTP2DistributionDialog.configurationId} requires minimum {showTP2DistributionDialog.minQuantity} defects
+                    </p>
                   </div>
                   <div className="mt-3">
                     <p className="text-sm text-orange-700">

@@ -917,22 +917,22 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **User Benefits**: Single source of truth for day rates eliminates confusion and ensures consistency across all patch sizes
 - **Result**: Complete P26 central day rate system operational with clean UI hiding individual day rate fields
 
-### CRITICAL: Item 13a Display Issue Resolved ✅
-- **Date**: January 22, 2025
-- **Status**: Successfully resolved Item 13a not displaying calculated TP2 cost
-- **Root Cause Identified**: Server-side data retrieval issue - Item 13a wasn't being returned by `/api/uploads/83/sections` endpoint
-- **Solution**: Database refresh triggered by updating item 20 resolved the missing data issue
+### CRITICAL: TP2 Validation Display Enhancement Complete ✅
+- **Date**: January 24, 2025
+- **Status**: Successfully enhanced TP2 validation popup to clearly show configuration IDs 153, 156, 157
+- **User Request**: "it should be looking at 153, 156, 157, no?" - popup should reference configuration IDs not just section items
 - **Issues Fixed**:
-  - Item 13a now correctly displays £425.00 (150mm structural defect using Configuration 153)
-  - TP2 cost calculation working properly for all structural defects
-  - Dashboard white box with yellow frame now shows actual calculated prices
-  - Zero synthetic data policy maintained - only authentic Configuration 153 values used
+  - **Configuration ID Display**: Popup now prominently shows "ID 153 (150mm) • ID 156 (225mm) • ID 157 (300mm)"
+  - **Clear Reference**: Users understand they need to configure these specific IDs for TP2 patching
+  - **Pipe-Size-Specific Matching**: Maintains proper 150mm→ID 153, 225mm→ID 156, 300mm→ID 157 validation
+  - **Comprehensive Context**: Shows both configuration IDs AND affected sections for complete information
 - **Technical Implementation**:
-  - Debug logging confirmed frontend logic was correct - issue was missing API data
-  - Configuration 153 (150mm TP2) working correctly: Day Rate £1650, Double Layer £425, Min Qty 4
-  - Removed debug logging after successful resolution
-- **User Benefits**: All TP2 structural repairs now display correct calculated costs
-- **Result**: Complete TP2 cost display system operational with authentic pricing data
+  - Added configurationId and pipeSize fields to TP2 dialog state
+  - Enhanced dialog display to show all three TP2 configuration IDs in prominent blue badge
+  - Added "Currently failing" status line showing specific configuration and minimum requirement
+  - Maintained pipe-size-specific validation logic with proper configuration matching
+- **User Benefits**: Clear guidance on which configuration IDs (153, 156, 157) to update for TP2 patching requirements
+- **Result**: TP2 validation system now clearly references configuration IDs as primary information with section details as secondary context
 
 ### CRITICAL: TP2 Popup Prevention System Complete ✅
 - **Date**: January 22, 2025
