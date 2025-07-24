@@ -1864,8 +1864,8 @@ export default function Dashboard() {
       devId: 'tp2-validation-checkpoint-4'
     });
 
-    // ENABLED: Dashboard-based TP2 minimum quantity validation using authentic structural defect counting
-    // Count ALL structural defects across all pipe sizes from dashboard sections
+    // ENABLED: Dashboard-based TP2 minimum quantity validation using pipe-size-specific checking
+    // Group structural defects by pipe size and check against corresponding TP2 configurations
     const structuralDefects = sections.filter(section => {
       const defects = section.defects || '';
       const hasStructuralDefect = requiresStructuralRepair(defects);
@@ -1875,43 +1875,69 @@ export default function Dashboard() {
     console.log('🔍 TP2 Structural Defects Analysis:', {
       totalSections: sections.length,
       structuralDefectsFound: structuralDefects.length,
-      structuralDefectIds: structuralDefects.map(s => `${s.itemNo}${s.letterSuffix || ''}`),
+      structuralDefectIds: structuralDefects.map(s => `${s.itemNo}${s.letterSuffix || ''} (${s.pipeSize}mm)`),
       devId: 'tp2-structural-counting'
     });
 
-    // Get minimum quantity requirement from TP2 configuration
-    const minQuantityOptions = tp2Config.minQuantityOptions || [];
-    const minQtyOption = minQuantityOptions.find((opt: any) => 
-      opt.label?.toLowerCase().includes('min') && opt.enabled && opt.value
-    );
-    const minQuantity = minQtyOption ? parseFloat(minQtyOption.value || '4') : 4;
+    // Group structural defects by pipe size
+    const defectsByPipeSize = structuralDefects.reduce((acc: any, section: any) => {
+      const pipeSize = section.pipeSize;
+      if (!acc[pipeSize]) acc[pipeSize] = [];
+      acc[pipeSize].push(section);
+      return acc;
+    }, {});
 
-    console.log('🔍 TP2 Minimum Quantity Check:', {
-      structuralDefectsCount: structuralDefects.length,
-      minQuantityRequired: minQuantity,
-      belowMinimum: structuralDefects.length < minQuantity,
-      minQtyOption: minQtyOption ? { label: minQtyOption.label, value: minQtyOption.value } : 'Using default: 4',
-      devId: 'tp2-minimum-validation'
-    });
+    console.log('🔍 Structural Defects Grouped by Pipe Size:', defectsByPipeSize);
 
-    // Trigger popup if structural defects are below minimum quantity
-    if (structuralDefects.length > 0 && structuralDefects.length < minQuantity) {
-      console.log('🚨 TP2 POPUP TRIGGER:', {
-        reason: 'Structural defects below minimum quantity',
-        structuralDefects: structuralDefects.length,
-        minRequired: minQuantity,
-        defectItems: structuralDefects.map(s => `Item ${s.itemNo}${s.letterSuffix || ''}`),
-        devId: 'tp2-popup-triggered'
-      });
+    // Check each pipe size against its corresponding TP2 configuration
+    let triggeredValidation = false;
+    for (const [pipeSize, defects] of Object.entries(defectsByPipeSize)) {
+      // Find the TP2 configuration for this pipe size
+      const pipeSizeConfig = tp2Configs.find((config: any) => 
+        config.categoryName.includes(`${pipeSize}mm`)
+      );
+      
+      if (pipeSizeConfig) {
+        // Get minimum quantity for this pipe size
+        const minQuantityOption = pipeSizeConfig.minQuantityOptions?.find((opt: any) => 
+          opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
+        );
+        const minQuantity = minQuantityOption?.value ? parseInt(minQuantityOption.value) : 0;
+        const defectCount = (defects as any[]).length;
 
-      // Show TP2 minimum quantity warning popup
-      setShowTP2DistributionDialog({
-        show: true,
-        tp2Sections: structuralDefects,
-        totalDefects: structuralDefects.length,
-        minQuantity: minQuantity,
-        message: `${structuralDefects.length} structural defects found but ${minQuantity} minimum required for TP2 patching`
-      });
+        console.log(`🔍 ${pipeSize}mm TP2 Validation:`, {
+          configId: pipeSizeConfig.id,
+          configName: pipeSizeConfig.categoryName,
+          minQuantity,
+          defectCount,
+          isBelowMinimum: defectCount < minQuantity,
+          affectedItems: (defects as any[]).map(s => `Item ${s.itemNo}${s.letterSuffix || ''}`)
+        });
+
+        // Trigger popup if defects below minimum for this pipe size
+        if (defectCount > 0 && defectCount < minQuantity && !triggeredValidation) {
+          console.log('🚨 TP2 POPUP TRIGGER:', {
+            reason: `${pipeSize}mm structural defects below minimum quantity`,
+            defectCount,
+            minQuantityRequired: minQuantity,
+            configId: pipeSizeConfig.id,
+            affectedItems: (defects as any[]).map(s => `Item ${s.itemNo}${s.letterSuffix || ''}`),
+            devId: 'tp2-popup-triggered'
+          });
+
+          // Show TP2 minimum quantity warning popup
+          setShowTP2DistributionDialog({
+            show: true,
+            tp2Sections: defects as any[],
+            totalDefects: defectCount,
+            minQuantity: minQuantity,
+            message: `${defectCount} structural defects (${pipeSize}mm) found but ${minQuantity} minimum required for TP2 patching`
+          });
+          
+          triggeredValidation = true; // Only show one popup at a time
+          break;
+        }
+      }
     }
   };
 
