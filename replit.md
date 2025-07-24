@@ -722,27 +722,30 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 24, 2025)
 
-### CRITICAL: P26 Configuration System Completely Removed - DB7 Math Window Integration Complete ✅
+### CRITICAL: DB7 Day Rate Input System Complete - P26 System Eliminated ✅
 - **Date**: January 24, 2025
-- **Status**: Successfully eliminated P26 Configuration (ID 162) completely and integrated DB7 Math window for minimum quantity calculations
-- **Root Cause**: P26 system was redundant after DB7 Math window implementation and potentially interfering with TP2 popup functionality
+- **Status**: Successfully eliminated P26 system and implemented clean DB7 day rate input for TP2 configurations
 - **Issues Fixed**:
-  - **Database Cleanup**: Deleted P26 Configuration ID 162 from pr2_configurations table
-  - **Frontend Cleanup**: Removed all P26 UI elements from pr2-config-clean.tsx (replaced with DB7 Math window explanation)
-  - **Dashboard Integration**: Updated calculateTP2PatchingCost function to use £1650 hardcoded day rate instead of P26 lookup
-  - **Server Logic Update**: Modified server/tp2-patching-logic.ts to remove P26 dependencies and use default day rate
-  - **TP2 Popup Fix**: Eliminated potential P26 interference with TP2 popup window functionality
+  - **P26 System Completely Removed**: Eliminated all P26 references, database records, and UI components
+  - **DB7 Window Clarified**: Changed from confusing "Math Window" to simple "Day Rate" input field
+  - **Window Structure Corrected**: Confirmed TP2 has only DB7 (green) and DB8 (purple) windows - no orange window
+  - **Multiple Logic Fixed**: Dashboard uses TP2's own minQuantityOptions (embedded in DB8 purple window) for multiple calculations
+  - **DNC Protocol Enforced**: Maintained strict separation between TP1 and TP2 systems without mixing
+- **TP2 Structure Locked (DNC)**:
+  - **DB7**: Green background - Simple day rate input field (£1650 default)
+  - **DB8**: Purple background - Patching options with embedded Min Qty fields inline
+  - **No orange window exists** - Min Qty fields are embedded within purple DB8 window
 - **Technical Implementation**:
-  - Removed P26 state variables (p26DayRate, p26Initialized) and related useEffect hooks
-  - Updated dashboard functions to use £1650 default day rate instead of P26 configuration lookup
-  - Modified checkOrangeMinimumMet() function to continue using DB8 (green window) for cost color determination
-  - Updated TP2_PATCHING_RULES configurationId from 162 to null (P26 system removed)
-  - Replaced P26 Central Day Rate UI card with DB7 Math window information display
+  - Updated DB7 title from "Math - Day Rate & Multiple Logic" to simple "Day Rate"
+  - Changed icon from Calculator to Banknote for clarity
+  - Fixed dashboard logic to use TP2 minQuantityOptions for multiple-based calculations (4,8,12,16...)
+  - Added db7_day_rate option to TP2 form structure with £1650 default
+  - Corrected description to clarify dashboard handles multiple logic, not the window itself
 - **User Benefits**: 
-  - Simplified system architecture with single DB7 source for minimum quantity calculations
-  - Eliminated potential TP2 popup conflicts caused by P26 system interference
-  - Cleaner UI with DB7 Math window documentation instead of redundant P26 controls
-- **Result**: Complete P26 system removal with DB7 Math window handling all minimum quantity logic and TP2 popup issues potentially resolved
+  - Clear understanding that DB7 is just a day rate input, not a math calculation window
+  - Proper TP2 system structure with only green and purple windows
+  - Multiple logic correctly uses TP2's own minimum quantity values
+- **Result**: Clean DB7 day rate input system operational with proper TP2 window structure and DNC compliance
 
 ### CRITICAL: P4 Category Card Border Issue Resolved ✅
 - **Date**: January 24, 2025
