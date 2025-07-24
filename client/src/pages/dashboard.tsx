@@ -568,6 +568,8 @@ export default function Dashboard() {
     tp2Sections: any[];
     totalDefects: number;
     minQuantity: number;
+    configurationId?: number;
+    pipeSize?: string;
     message: string;
   }>({
     show: false,
@@ -1757,6 +1759,8 @@ export default function Dashboard() {
             tp2Sections: defects as any[],
             totalDefects: defectCount,
             minQuantity: minQuantity,
+            configurationId: pipeSizeConfig.id,
+            pipeSize: pipeSize,
             message: `${defectCount} structural defects (${pipeSize}mm) found but ${minQuantity} minimum required for TP2 patching`
           });
           
@@ -4003,17 +4007,27 @@ export default function Dashboard() {
                 </div>
                 <div className="border-t border-orange-200 pt-3">
                   <p className="text-sm text-orange-700">
-                    <strong>Affected sections:</strong>
+                    <strong>TP2 Configuration ID:</strong>
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {showTP2DistributionDialog.tp2Sections.map((section, index) => (
-                      <span 
-                        key={index}
-                        className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-md font-medium"
-                      >
-                        Item {section.itemNo}{section.letterSuffix || ''}
-                      </span>
-                    ))}
+                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-md font-medium">
+                      ID {showTP2DistributionDialog.configurationId} ({showTP2DistributionDialog.pipeSize}mm TP2 Patching)
+                    </span>
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-sm text-orange-700">
+                      <strong>Affected sections:</strong>
+                    </p>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {showTP2DistributionDialog.tp2Sections.map((section, index) => (
+                        <span 
+                          key={index}
+                          className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-md font-medium"
+                        >
+                          Item {section.itemNo}{section.letterSuffix || ''}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
