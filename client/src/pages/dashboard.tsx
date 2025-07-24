@@ -1943,6 +1943,11 @@ export default function Dashboard() {
 
   if (hasAuthenticData && rawSectionData?.length > 0 && allConfigurations?.length > 0) {
     console.log('🚀 RUNNING TP2 VALIDATION IMMEDIATELY WITH ALL CONFIGS');
+    console.log('🔍 CONFIGS BEING PASSED TO VALIDATION:', {
+      totalConfigs: allConfigurations.length,
+      tp2Configs: allConfigurations.filter(c => c.categoryId === 'patching').map(c => ({ id: c.id, categoryName: c.categoryName })),
+      devId: 'pre-validation-configs'
+    });
     checkTP2ConfigurationIssues(rawSectionData, allConfigurations);
   }
 
