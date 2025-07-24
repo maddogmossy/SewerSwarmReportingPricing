@@ -1578,15 +1578,6 @@ export default function Dashboard() {
   // FIXED: Removed cache invalidation useEffect that was causing infinite loops
   // Cache invalidation will be handled by React Query automatically
 
-  // DEBUG: Check currentUpload state
-  console.log('🔍 DEBUG currentUpload state:', {
-    currentUpload: currentUpload ? { id: currentUpload.id, status: currentUpload.status } : null,
-    completedUploads: completedUploads.length,
-    reportId,
-    selectedReportIds,
-    devId: 'current-upload-debug'
-  });
-
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
     queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'wrc-refresh-v3'], // Cache bust for debugging
@@ -1596,15 +1587,6 @@ export default function Dashboard() {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     retry: false
-  });
-
-  // DEBUG: Check rawSectionData state  
-  console.log('🔍 DEBUG rawSectionData state:', {
-    rawSectionDataLength: rawSectionData?.length || 0,
-    sectionsLoading,
-    sectionsError: sectionsError?.message,
-    queryEnabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
-    devId: 'raw-section-data-debug'
   });
 
   // CRITICAL: If API fails or returns empty data, NEVER show fake data
@@ -1730,26 +1712,7 @@ export default function Dashboard() {
 
   // Validation effect - runs after sections are loaded
   useEffect(() => {
-    console.log('🔄 useEffect trigger check:', {
-      hasAuthenticData,
-      rawSectionDataLength: rawSectionData?.length || 0,
-      pr2ConfigurationsLength: pr2Configurations?.length || 0,
-      pr2ConfigurationsExists: !!pr2Configurations,
-      travelInfoExists: !!travelInfo,
-      workCategoriesLength: workCategories?.length || 0,
-      vehicleTravelRatesLength: vehicleTravelRates?.length || 0,
-      shouldRun: hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations,
-      devId: 'useeffect-trigger-debug'
-    });
-    
     if (hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations) {
-      console.log('🔍 Running validation with data:', {
-        sectionsCount: rawSectionData.length,
-        hasTravelInfo: !!travelInfo,
-        pr2ConfigsCount: pr2Configurations?.length || 0,
-        workCategoriesCount: workCategories?.length || 0,
-        vehicleRatesCount: vehicleTravelRates?.length || 0
-      });
       
       // Transform section data to match validation interface
       const reportSections: ReportSection[] = rawSectionData.map(section => ({
@@ -1773,32 +1736,7 @@ export default function Dashboard() {
         vehicleTravelRates
       );
       
-      console.log('📋 Validation result calculated:', {
-        isReady: result.isReady,
-        issuesCount: result.issues.length,
-        summary: result.summary,
-        issues: result.issues
-      });
-      
       setValidationResult(result);
-
-      // Check for TP2 configuration issues and trigger warning popups
-      console.log('🚀 CALLING TP2 VALIDATION FUNCTION:', {
-        sectionsLength: rawSectionData.length,
-        configsLength: pr2Configurations.length,
-        hasPatching: pr2Configurations.some(c => c.categoryId === 'patching'),
-        pr2ConfigDetails: pr2Configurations.map(c => ({ id: c.id, categoryId: c.categoryId, categoryName: c.categoryName })),
-        devId: 'tp2-function-call-trigger'
-      });
-      
-      // CRITICAL: Load all configurations, not just pr2Configurations
-      console.log('🔍 CONFIGURATION SOURCE INVESTIGATION:', {
-        pr2ConfigurationsSource: 'useQuery pr2-clean endpoint',
-        pr2ConfigsCount: pr2Configurations?.length || 0,
-        pr2ConfigIds: pr2Configurations?.map(c => c.id) || [],
-        needsAllConfigs: 'Need to include TP2 patching configs (153, 156, 157)',
-        devId: 'config-source-debug'
-      });
       
       checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
     }
@@ -1806,41 +1744,12 @@ export default function Dashboard() {
 
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
-    console.log('🔍 TP2 VALIDATION CHECK START:', {
-      sectionsCount: sections.length,
-      configurationsCount: configurations.length,
-      devId: 'tp2-validation-checkpoint-1'
-    });
-    
-    console.log('🔍 Available Configurations:', {
-      totalConfigs: configurations.length,
-      configDetails: configurations.map(c => ({
-        id: c.id,
-        categoryId: c.categoryId,
-        categoryName: c.categoryName,
-        hasPricingOptions: !!c.pricingOptions?.length
-      })),
-      devId: 'available-configs-debug'
-    });
 
     // Find ALL TP2 patching configurations (should be IDs 153, 156, 157)
     const tp2Configs = configurations.filter(config => config.categoryId === 'patching');
-    console.log('🔍 TP2 Patching Configurations Found:', {
-      count: tp2Configs.length,
-      configIds: tp2Configs.map(c => c.id),
-      configNames: tp2Configs.map(c => c.categoryName),
-      devId: 'tp2-configs-found'
-    });
 
     // Use first TP2 configuration found (or we could check all of them)
     const tp2Config = tp2Configs[0];
-    console.log('🔍 TP2 Configuration Found:', {
-      configExists: !!tp2Config,
-      configId: tp2Config?.id,
-      categoryId: tp2Config?.categoryId,
-      pricingOptionsCount: tp2Config?.pricingOptions?.length || 0,
-      devId: 'tp2-validation-checkpoint-2'
-    });
     
     if (!tp2Config) return; // No TP2 configuration found
     
@@ -1850,19 +1759,9 @@ export default function Dashboard() {
       opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
     );
     
-    console.log('🔍 TP2 Configuration Validation:', {
-      isTP2Configured,
-      pricingOptions: tp2Config.pricingOptions?.map((opt: any) => ({
-        id: opt.id,
-        label: opt.label,
-        value: opt.value,
-        enabled: opt.enabled
-      })),
-      devId: 'tp2-validation-checkpoint-3'
-    });
+    // TP2 configuration validation check completed
     
     if (!isTP2Configured) {
-      console.log('⚠️ TP2 configuration not properly configured, skipping validation');
       return; // Skip validation for empty configurations
     }
 
@@ -1873,14 +1772,7 @@ export default function Dashboard() {
     const dayRate = dayRateOption?.value ? parseFloat(dayRateOption.value) : 0;
     const doubleLayerCost = doubleLayerOption?.value ? parseFloat(doubleLayerOption.value) : 0;
 
-    console.log('🔍 TP2 Day Rate Validation Check:', {
-      dayRateOption: dayRateOption ? { label: dayRateOption.label, value: dayRateOption.value } : null,
-      doubleLayerOption: doubleLayerOption ? { label: doubleLayerOption.label, value: doubleLayerOption.value } : null,
-      dayRate,
-      doubleLayerCost,
-      hasBothValues: dayRate > 0 && doubleLayerCost > 0,
-      devId: 'tp2-validation-checkpoint-4'
-    });
+    // Day rate validation completed
 
     // ENABLED: Dashboard-based TP2 minimum quantity validation using pipe-size-specific checking
     // Group structural defects by pipe size and check against corresponding TP2 configurations
@@ -1890,12 +1782,7 @@ export default function Dashboard() {
       return hasStructuralDefect;
     });
 
-    console.log('🔍 TP2 Structural Defects Analysis:', {
-      totalSections: sections.length,
-      structuralDefectsFound: structuralDefects.length,
-      structuralDefectIds: structuralDefects.map(s => `${s.itemNo}${s.letterSuffix || ''} (${s.pipeSize}mm)`),
-      devId: 'tp2-structural-counting'
-    });
+    // Structural defects analysis completed
 
     // Group structural defects by pipe size
     const defectsByPipeSize = structuralDefects.reduce((acc: any, section: any) => {
@@ -1905,7 +1792,7 @@ export default function Dashboard() {
       return acc;
     }, {});
 
-    console.log('🔍 Structural Defects Grouped by Pipe Size:', defectsByPipeSize);
+    // Structural defects grouped by pipe size for validation
 
     // Check each pipe size against its corresponding TP2 configuration
     let triggeredValidation = false;
@@ -1923,25 +1810,11 @@ export default function Dashboard() {
         const minQuantity = minQuantityOption?.value ? parseInt(minQuantityOption.value) : 0;
         const defectCount = (defects as any[]).length;
 
-        console.log(`🔍 ${pipeSize}mm TP2 Validation:`, {
-          configId: pipeSizeConfig.id,
-          configName: pipeSizeConfig.categoryName,
-          minQuantity,
-          defectCount,
-          isBelowMinimum: defectCount < minQuantity,
-          affectedItems: (defects as any[]).map(s => `Item ${s.itemNo}${s.letterSuffix || ''}`)
-        });
+        // TP2 validation for pipe size specific configuration
 
         // Trigger popup if defects below minimum for this pipe size
         if (defectCount > 0 && defectCount < minQuantity && !triggeredValidation) {
-          console.log('🚨 TP2 POPUP TRIGGER:', {
-            reason: `${pipeSize}mm structural defects below minimum quantity`,
-            defectCount,
-            minQuantityRequired: minQuantity,
-            configId: pipeSizeConfig.id,
-            affectedItems: (defects as any[]).map(s => `Item ${s.itemNo}${s.letterSuffix || ''}`),
-            devId: 'tp2-popup-triggered'
-          });
+          // TP2 popup triggered for minimum quantity validation
 
           // Show TP2 minimum quantity warning popup
           setShowTP2DistributionDialog({
@@ -1965,11 +1838,7 @@ export default function Dashboard() {
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/pr2-clean');
       const data = await response.json();
-      console.log('🔍 ALL CONFIGURATIONS LOADED:', {
-        totalConfigs: data.length,
-        configDetails: data.map((c: any) => ({ id: c.id, categoryId: c.categoryId, categoryName: c.categoryName })),
-        devId: 'all-configs-loaded'
-      });
+      // All configurations loaded successfully
       return data;
     },
     enabled: hasAuthenticData && rawSectionData?.length > 0,
@@ -1977,13 +1846,7 @@ export default function Dashboard() {
   });
 
   // IMMEDIATE TEST - Force run TP2 validation with ALL configurations
-  console.log('🎯 IMMEDIATE TP2 VALIDATION TEST:', {
-    hasAuthenticData,
-    rawSectionDataLength: rawSectionData?.length || 0,
-    allConfigurationsLength: allConfigurations?.length || 0,
-    willRunValidation: hasAuthenticData && rawSectionData?.length > 0 && allConfigurations?.length > 0,
-    devId: 'immediate-validation-test'
-  });
+  // Validation conditions: hasAuthenticData && rawSectionData?.length > 0 && allConfigurations?.length > 0
 
   if (hasAuthenticData && rawSectionData?.length > 0 && allConfigurations?.length > 0) {
     console.log('🚀 RUNNING TP2 VALIDATION IMMEDIATELY WITH ALL CONFIGS');
