@@ -722,6 +722,18 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 24, 2025)
 
+### CRITICAL: P4 Category Card Border Issue Resolved ✅
+- **Date**: January 24, 2025
+- **Status**: Successfully resolved missing border on P4 id 16 (CCTV/Jet Vac category card)
+- **Root Cause Identified**: Border wasn't displaying because categoryColor wasn't selected for the CCTV/Jet Vac configuration
+- **Issue Fixed**: Configuration ID 161 now has categoryColor "#FF6B6B" which enables proper border display
+- **Technical Details**: 
+  - Border styling uses: `borderColor: existingConfiguration?.categoryColor ? hexToRgba(existingConfiguration.categoryColor, 0.3) : '#e5e7eb'`
+  - Without categoryColor, cards default to gray border (#e5e7eb)
+  - With categoryColor set, cards display colored border at 30% opacity
+- **User Confirmation**: "found the issues the colur wasnt sellected" - border now displays correctly
+- **Result**: P4 id 16 (CCTV/Jet Vac) now has proper red border matching other configured category cards like id 6 (Patching)
+
 ### CRITICAL: Travel Rate Documentation Correction & P19 Dev ID Added ✅
 - **Date**: January 24, 2025
 - **Status**: Removed incorrect work type specific travel limits and added P19 dev id to Vehicle Travel Rates UI card
