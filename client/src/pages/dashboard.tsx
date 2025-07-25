@@ -2045,9 +2045,52 @@ export default function Dashboard() {
         };
       }
       
-      // ID4 config exists - use it for calculation (eventually will link to ID6 for patch+cut)
+      // ID4 config exists - use separate robotic cutting calculation
       console.log(`💰 Item ${section.itemNo}: Using ID4 robotic cutting configuration`);
-      tp2Config = id4Config;
+      
+      // SEPARATE LOGIC FOR ID4 ROBOTIC CUTTING
+      // Check if ID4 has configured pricing options
+      const firstCutOption = id4Config.pricingOptions?.find((option: any) => 
+        option.label?.toLowerCase().includes('first cut') && option.value && option.value.trim() !== ''
+      );
+      const perCutOption = id4Config.pricingOptions?.find((option: any) => 
+        option.label?.toLowerCase().includes('cost per cut') && option.value && option.value.trim() !== ''
+      );
+      
+      if (!firstCutOption && !perCutOption) {
+        // ID4 configuration exists but has no pricing values configured
+        console.log(`💰 Item ${section.itemNo}: ID4 configuration found but no cutting costs configured - showing £0.00`);
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'ID4 Not Configured',
+          status: 'id4_unconfigured',
+          patchingType: 'Robotic Cutting (Unconfigured)',
+          defectCount: 0,
+          costPerUnit: 0,
+          recommendation: 'Configure ID4 robotic cutting costs in pricing configuration'
+        };
+      }
+      
+      // ID4 has configured values - calculate robotic cutting cost
+      // This is where ID6 logic will eventually combine cutting + patching costs
+      const firstCutCost = firstCutOption ? parseFloat(firstCutOption.value) || 0 : 0;
+      const perCutCost = perCutOption ? parseFloat(perCutOption.value) || 0 : 0;
+      
+      // Simple calculation for now - eventually ID6 will add patching costs
+      const totalCuttingCost = firstCutCost + perCutCost;
+      
+      console.log(`💰 Item ${section.itemNo}: ID4 robotic cutting cost calculated: £${totalCuttingCost}`);
+      return {
+        cost: totalCuttingCost,
+        currency: '£',
+        method: 'ID4 Robotic Cutting',
+        status: 'id4_calculated',
+        patchingType: 'Robotic Cutting',
+        defectCount: 1,
+        costPerUnit: totalCuttingCost,
+        recommendation: `ID4 robotic cutting required (eventually ID6 will add patching costs)`
+      };
     }
     
     // Extract pipe size and length for cost calculation
