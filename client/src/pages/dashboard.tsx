@@ -2633,22 +2633,28 @@ export default function Dashboard() {
     
     // Check percentage range - SEPARATE water levels from defect percentages
     if (percentageRange && section.defects) {
-      // Extract DEFECT percentages only (exclude water levels)
-      const defectMatches = section.defects.match(/(\d+)%(?!\s*of the vertical dimension)/g);
-      // Extract WATER LEVEL percentages separately  
-      const waterLevelMatches = section.defects.match(/(\d+)%\s*of the vertical dimension/g);
+      // CRITICAL FIX: Skip percentage validation for SA (Survey Abandoned) codes
+      const defectsUpper = section.defects.toUpperCase();
+      const isSurveyAbandoned = defectsUpper.includes('SA ') || defectsUpper.includes('SURVEY ABANDONED') || defectsUpper.includes('BUNGED');
       
-      // Check defect percentages against PR2 range
-      if (defectMatches && defectMatches.length > 0) {
-        const defectPercentages = defectMatches.map((match: string) => parseInt(match.replace('%', '')));
-        const maxDefectPercentage = Math.max(...defectPercentages);
+      if (!isSurveyAbandoned) {
+        // Extract DEFECT percentages only (exclude water levels)
+        const defectMatches = section.defects.match(/(\d+)%(?!\s*of the vertical dimension)/g);
+        // Extract WATER LEVEL percentages separately  
+        const waterLevelMatches = section.defects.match(/(\d+)%\s*of the vertical dimension/g);
         
-        const minPercent = parseInt(percentageRange.rangeStart || '0');
-        const maxPercent = parseInt(percentageRange.rangeEnd || '100');
-        
-        if (maxDefectPercentage < minPercent || maxDefectPercentage > maxPercent) {
-          // Section fails defect percentage check - logging removed
-          return false;
+        // Check defect percentages against PR2 range
+        if (defectMatches && defectMatches.length > 0) {
+          const defectPercentages = defectMatches.map((match: string) => parseInt(match.replace('%', '')));
+          const maxDefectPercentage = Math.max(...defectPercentages);
+          
+          const minPercent = parseInt(percentageRange.rangeStart || '0');
+          const maxPercent = parseInt(percentageRange.rangeEnd || '100');
+          
+          if (maxDefectPercentage < minPercent || maxDefectPercentage > maxPercent) {
+            // Section fails defect percentage check - logging removed
+            return false;
+          }
         }
       }
       
