@@ -1810,19 +1810,11 @@ export default function Dashboard() {
       
       // Found TP2 config successfully
 
-      // SET CORRECT BASE VALUES FOR EXPECTED COSTS
-      const basePricingOptions = {
-        'price_dayrate': '1650',          // Day Rate: £1650
-        'single_layer_cost': '475',       // Single Layer: Item 13a = £475  
-        'double_layer_cost': '600',       // Double Layer: Item 20 = £600
-        'triple_layer_cost': '570',       // Triple Layer: Item 21a = £570
-        'triple_layer_extra_cost': '475'  // Triple Layer Extra: £475
-      };
+      // REMOVED: No synthetic base values - user must enter authentic pricing data
+      // All costs now come from user-entered configuration values only
       
-      const updatedPricingOptions = tp2Config.pricingOptions?.map((option: any) => ({
-        ...option,
-        value: basePricingOptions[option.id] || option.value
-      })) || [];
+      // Use only authentic user-entered pricing values - no synthetic data
+      const updatedPricingOptions = tp2Config.pricingOptions || [];
 
       // Update the configuration with day rate adjustments
       const response = await fetch(`/api/pr2-clean/${tp2Config.id}`, {
