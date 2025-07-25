@@ -407,32 +407,65 @@ function classifyWincanObservations(observationText: string, sector: string) {
     adoptable = 'Yes';
   }
   
-  // Junctions and connections are typically observations only
-  else if (upperText.includes('JUNCTION') || upperText.includes('JN ')) {
-    severityGrade = 0;
-    recommendations = 'No action required this pipe section is at an adoptable condition';
-    adoptable = 'Yes';
-  }
-  
-  // Check for structural defects ONLY - WRc Drain Repair Book recommendations
+  // Check for structural defects with junction proximity rule (1-meter rule)
   else if (upperText.includes('DEFORMATION') || upperText.includes('DEFORMED') || upperText.includes('D ')) {
     defectType = 'structural';
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
     
+    // CRITICAL: Check for 1-meter junction rule - Junction proximity to structural defects
+    let requiresRoboticCutting = false;
+    let junctionMessage = '';
+    if (upperText.includes('JUNCTION') && upperText.includes('DEFORMATION')) {
+      // Extract junction and deformation positions
+      const junctionMatch = observationText.match(/JUNCTION AT (\d+\.?\d*)M/i);
+      const deformationMatches = observationText.match(/DEFORMATION[^@]*AT (\d+\.?\d*)M(?:, (\d+\.?\d*)M)?/i);
+      
+      if (junctionMatch && deformationMatches) {
+        const junctionPos = parseFloat(junctionMatch[1]);
+        const deformationPos1 = parseFloat(deformationMatches[1]);
+        const deformationPos2 = deformationMatches[2] ? parseFloat(deformationMatches[2]) : null;
+        
+        // Check if any deformation is within 1 meter of junction
+        const distance1 = Math.abs(junctionPos - deformationPos1);
+        const distance2 = deformationPos2 ? Math.abs(junctionPos - deformationPos2) : Infinity;
+        const minDistance = Math.min(distance1, distance2);
+        
+        if (minDistance <= 1.0) {
+          requiresRoboticCutting = true;
+          const deformationPositions = deformationPos2 ? `${deformationPos1}m, ${deformationPos2}m` : `${deformationPos1}m`;
+          junctionMessage = `Junction within 1m of deformation requires robotic cutting (ID4) to reopen connection at ${junctionPos}m and install 150mm patches at ${deformationPositions}`;
+          console.log(`🤖 1-METER RULE TRIGGERED: Junction at ${junctionPos}m, Deformation at ${deformationPositions} - Distance: ${minDistance.toFixed(2)}m`);
+        }
+      }
+    }
+    
     if (percentage >= 20) {
       severityGrade = 4;
-      recommendations = 'WRc Drain Repair Book: Excavate and replace affected section due to severe deformation compromising structural integrity';
+      recommendations = requiresRoboticCutting ? 
+        `WRc Drain Repair Book: Major structural repair required. ${junctionMessage}` :
+        'WRc Drain Repair Book: Excavate and replace affected section due to severe deformation compromising structural integrity';
       adoptable = 'No';
     } else if (percentage >= 10) {
       severityGrade = 3;
-      recommendations = 'WRc Drain Repair Book: Install full-length CIPP liner or consider excavation if at joint or severely displaced';
+      recommendations = requiresRoboticCutting ?
+        `WRc Drain Repair Book: Structural repair required. ${junctionMessage}` :
+        'WRc Drain Repair Book: Install full-length CIPP liner or consider excavation if at joint or severely displaced';
       adoptable = 'Conditional';
     } else {
       severityGrade = 2;
-      recommendations = 'WRc Drain Repair Book: Local patch lining (glass mat or silicate) recommended for minor deformation';
+      recommendations = requiresRoboticCutting ?
+        `WRc Drain Repair Book: ${junctionMessage}` :
+        'WRc Drain Repair Book: Local patch lining (glass mat or silicate) recommended for minor deformation';
       adoptable = 'Conditional';
     }
+  }
+  
+  // Junctions without deformation are typically observations only
+  else if (upperText.includes('JUNCTION') || upperText.includes('JN ')) {
+    severityGrade = 0;
+    recommendations = 'No action required this pipe section is at an adoptable condition';
+    adoptable = 'Yes';
   }
   
   // For any other observation codes that don't match defect patterns, treat as Grade 0
