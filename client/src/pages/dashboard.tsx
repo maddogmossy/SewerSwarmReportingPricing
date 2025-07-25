@@ -1776,7 +1776,7 @@ export default function Dashboard() {
         console.error('🔧 VALIDATION EFFECT ERROR:', error);
       }
     }
-  }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo, workCategories, vehicleTravelRates]);
+  }, [hasAuthenticData, rawSectionData?.length, pr2Configurations?.length]);
 
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
@@ -1835,13 +1835,10 @@ export default function Dashboard() {
       }))
     });
 
-    // TEMPORARY DEBUG: Disable TP2 warning to test fix
-    console.log('🔧 TP2 WARNING DISABLED FOR TESTING');
-    
     // Only trigger TP2 warning if BOTH conditions are met:
     // 1. There are structural sections showing triangles (no cost possible)
     // 2. Costs are displaying as red (orange minimum not met)
-    if (false && structuralSectionsWithTriangles.length > 0 && costsAreRed) {
+    if (structuralSectionsWithTriangles.length > 0 && costsAreRed) {
       
       // Find the configuration for the first structural section with triangle
       const firstTriangleSection = structuralSectionsWithTriangles[0];
