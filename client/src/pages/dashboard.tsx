@@ -2275,19 +2275,29 @@ export default function Dashboard() {
       };
     }
     
-    const costPerSection = dayRate / runsPerShift;
+    const baseCostPerSection = dayRate / runsPerShift;
     
-    console.log(`✅ Item ${section.itemNo}: TP1 cost calculated: £${costPerSection.toFixed(2)} (passes range validation)`);
+    // Calculate travel cost adjustment if applicable
+    const travelAdjustment = calculateTravelCostAdjustment(section, 'service');
+    const finalCostPerSection = baseCostPerSection + travelAdjustment;
+    
+    const recommendationText = travelAdjustment > 0 
+      ? `TP1 cleaning: £${baseCostPerSection.toFixed(2)} + £${travelAdjustment.toFixed(2)} travel = £${finalCostPerSection.toFixed(2)}`
+      : `TP1 cleaning: £${dayRate} ÷ ${runsPerShift} runs = £${baseCostPerSection.toFixed(2)}`;
+    
+    console.log(`✅ Item ${section.itemNo}: TP1 cost calculated: £${finalCostPerSection.toFixed(2)} (${travelAdjustment > 0 ? 'with travel adjustment' : 'passes range validation'})`);
     
     return {
-      cost: costPerSection,
+      cost: finalCostPerSection,
       currency: '£',
       method: 'TP1 Cleaning',
       status: 'calculated',
       patchingType: 'CCTV Jet Vac Cleaning',
       defectCount: 1, // Service defects count as 1 section to clean
-      costPerUnit: costPerSection,
-      recommendation: `TP1 cleaning: £${dayRate} ÷ ${runsPerShift} runs = £${costPerSection.toFixed(2)}`
+      costPerUnit: finalCostPerSection,
+      baseCost: baseCostPerSection,
+      travelCost: travelAdjustment,
+      recommendation: recommendationText
     };
   };
 
