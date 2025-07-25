@@ -1260,12 +1260,15 @@ export default function Dashboard() {
           let costCalculation;
           if (isStructuralDefectForCost) {
             // Route structural defects (21a, 22a) to TP2/TP3 calculation
+            console.log(`💰 Item ${section.itemNo}: STRUCTURAL - routing to calculateAutoCost (TP2/TP3)`);
             costCalculation = calculateAutoCost(section);
           } else if (isServiceDefectForCost || needsCleaning) {
             // Route service defects (21, 22, 23) to TP1 cleaning calculation
+            console.log(`💰 Item ${section.itemNo}: SERVICE - routing to calculateTP1CleaningCost`);
             costCalculation = calculateTP1CleaningCost(section);
           } else {
             // Fallback to auto cost calculation
+            console.log(`💰 Item ${section.itemNo}: FALLBACK - routing to calculateAutoCost`);
             costCalculation = calculateAutoCost(section);
           }
           
