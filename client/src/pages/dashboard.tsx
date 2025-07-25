@@ -1197,8 +1197,32 @@ export default function Dashboard() {
               </CleaningOptionsPopover>
             );
           } 
-          // For structural defects, show repair options  
+          // For structural defects, check for robotic cutting first
           else {
+            // CRITICAL: Check for robotic cutting (ID4) requirements FIRST
+            const recommendations = section.recommendations || '';
+            const requiresRoboticCutting = recommendations.toLowerCase().includes('robotic cutting') || 
+                                         recommendations.toLowerCase().includes('id4');
+            
+            if (requiresRoboticCutting) {
+              // Route to P4 robotic cutting page instead of TP2 patching
+              console.log(`🤖 Item ${section.itemNo}: ROBOTIC CUTTING DETECTED - should route to P4`);
+              
+              return (
+                <div 
+                  className="text-xs max-w-sm bg-yellow-50 hover:bg-yellow-100 border-2 border-yellow-200 hover:border-yellow-400 p-3 ml-1 mt-1 mr-1 rounded-lg transition-all duration-300 hover:shadow-md cursor-pointer"
+                  onClick={() => {
+                    window.open(`/pr2-config-clean?categoryId=robotic-cutting&sector=${currentSector.id}&edit=163`, '_blank');
+                  }}
+                >
+                  <div className="font-bold text-black mb-1">🤖 TP3 ROBOTIC CUTTING</div>
+                  <div className="text-black">{recommendations}</div>
+                  <div className="text-xs text-black mt-1 font-medium">→ Click to configure P4 (ID4)</div>
+                </div>
+              );
+            }
+            
+            // For standard structural defects, show TP2 repair options  
             // Check if TP2 patching configuration exists for this pipe size and sector
             const pipeSize = section.pipeSize || '150';
             const pipeSizeSpecificConfig = repairPricingData?.find(config => 
