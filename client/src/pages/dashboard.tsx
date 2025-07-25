@@ -1857,10 +1857,26 @@ export default function Dashboard() {
       }))
     });
 
-    // Only trigger TP2 warning if BOTH conditions are met:
-    // 1. There are structural sections showing triangles (no cost possible)
-    // 2. Costs are displaying as red (orange minimum not met)
-    if (structuralSectionsWithTriangles.length > 0 && costsAreRed) {
+    // CRITICAL FIX: Only trigger TP2 warning when ALL sections have complete pricing AND costs are red
+    // Don't trigger for unconfigured prices (triangles) - only for configured prices that are below minimum
+    const allSectionsHaveCompletePricing = sections.every(section => {
+      const costCalc = calculateAutoCost(section);
+      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured'].includes(costCalc.status);
+    });
+    
+    console.log('🔧 TP2 MQW CHECK:', {
+      allSectionsConfigured: allSectionsHaveCompletePricing,
+      costsAreRed: costsAreRed,
+      shouldTrigger: allSectionsHaveCompletePricing && costsAreRed,
+      totalSections: sections.length,
+      sectionsWithTriangles: sections.filter(s => {
+        const calc = calculateAutoCost(s);
+        return !calc || calc.cost === 0 || ['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured'].includes(calc.status);
+      }).length
+    });
+    
+    // Only trigger TP2 warning when ALL pricing is complete AND costs are red due to minimum quantity issues
+    if (allSectionsHaveCompletePricing && costsAreRed) {
       
       // Find the configuration for the first structural section with triangle
       const firstTriangleSection = structuralSectionsWithTriangles[0];
