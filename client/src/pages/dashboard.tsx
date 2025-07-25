@@ -2248,9 +2248,25 @@ export default function Dashboard() {
       };
     }
     
+    // CRITICAL FIX: Check if section meets PR2 range requirements before calculating cost
+    const meetsRangeRequirements = checkSectionMeetsPR2Requirements(section, tp1Config);
+    if (!meetsRangeRequirements) {
+      console.log(`❌ Item ${section.itemNo}: Section fails PR2 range validation (length: "${section.totalLength}", pipe: "${section.pipeSize}") - showing Configure PR2`);
+      return {
+        cost: 0,
+        currency: '£',
+        method: 'Configure PR2',
+        status: 'tp1_range_failed',
+        patchingType: 'Outside PR2 Configuration Ranges',
+        defectCount: 0,
+        costPerUnit: 0,
+        recommendation: 'Section specifications outside configured PR2 ranges'
+      };
+    }
+    
     const costPerSection = dayRate / runsPerShift;
     
-    console.log(`✅ Item ${section.itemNo}: TP1 cost calculated: £${costPerSection.toFixed(2)}`);
+    console.log(`✅ Item ${section.itemNo}: TP1 cost calculated: £${costPerSection.toFixed(2)} (passes range validation)`);
     
     return {
       cost: costPerSection,
