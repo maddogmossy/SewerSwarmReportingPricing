@@ -407,26 +407,19 @@ function classifyWincanObservations(observationText: string, sector: string) {
     adoptable = 'Yes';
   }
   
-  // Check for structural defects with junction proximity rule (1-meter rule)
-  else if (upperText.includes('DEFORMATION') || upperText.includes('DEFORMED') || upperText.includes('D ')) {
+  // Check for TRUE structural defects only - specific deformation patterns
+  else if (upperText.includes('DEFORMATION, ') && upperText.includes('CROSS-SECTIONAL AREA LOSS')) {
     defectType = 'structural';
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
-    
-    console.log(`🔍 CHECKING ITEM: upperText="${upperText}"`);
-    console.log(`🔍 CHECKING ITEM: observationText="${observationText}"`);
     
     // CRITICAL: Check for 1-meter junction rule - Junction proximity to structural defects
     let requiresRoboticCutting = false;
     let junctionMessage = '';
     if (upperText.includes('JUNCTION') && upperText.includes('DEFORMATION')) {
-      console.log(`🎯 JUNCTION + DEFORMATION DETECTED: ${observationText}`);
       // Extract junction and deformation positions (case-insensitive patterns)
       const junctionMatch = observationText.match(/junction at (\d+\.?\d*)m/i);
       const deformationMatches = observationText.match(/deformation.*?(?:loss\s+)?at (\d+\.?\d*)m(?:, (\d+\.?\d*)m)?/i);
-      
-      console.log(`🎯 Junction match:`, junctionMatch);
-      console.log(`🎯 Deformation matches:`, deformationMatches);
       
       if (junctionMatch && deformationMatches) {
         const junctionPos = parseFloat(junctionMatch[1]);
@@ -470,13 +463,15 @@ function classifyWincanObservations(observationText: string, sector: string) {
   
   // Junctions without deformation are typically observations only
   else if (upperText.includes('JUNCTION') || upperText.includes('JN ')) {
+    defectType = 'service'; // Explicitly set as service
     severityGrade = 0;
     recommendations = 'No action required this pipe section is at an adoptable condition';
     adoptable = 'Yes';
   }
   
-  // For any other observation codes that don't match defect patterns, treat as Grade 0
+  // For any other observation codes that don't match defect patterns, treat as Grade 0 service
   else {
+    defectType = 'service'; // Explicitly set as service
     severityGrade = 0;
     recommendations = 'No action required this pipe section is at an adoptable condition';
     adoptable = 'Yes';
@@ -932,36 +927,15 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       if (authenticGrades) {
         console.log(`🎯 Found authentic SECSTAT grades for Item ${authenticItemNo}:`, authenticGrades);
         
-        // Use structural grade if available, otherwise use service grade
-        const authenticSeverity = authenticGrades.structural !== null ? authenticGrades.structural : authenticGrades.service;
-        if (authenticSeverity !== null) {
-          severityGrade = authenticSeverity;
-          defectType = authenticGrades.structural !== null ? 'structural' : 'service';
-          console.log(`✅ Using authentic SECSTAT severity grade: ${severityGrade} (${defectType})`);
-          
-          // Generate recommendations based on authentic grade
-          if (severityGrade === 0) {
-            recommendations = 'No action required this pipe section is at an adoptable condition';
-            adoptable = 'Yes';
-          } else if (severityGrade <= 2) {
-            recommendations = defectType === 'structural' ? 
-              'WRc Drain Repair Book: Local patch lining recommended for minor structural issues' :
-              'WRc Sewer Cleaning Manual: Standard cleaning and maintenance required';
-            adoptable = 'Conditional';
-          } else if (severityGrade <= 3) {
-            recommendations = defectType === 'structural' ? 
-              'WRc Drain Repair Book: Structural repair or relining required' :
-              'WRc Sewer Cleaning Manual: High-pressure jetting and cleaning required';
-            adoptable = 'Conditional';
-          } else {
-            recommendations = defectType === 'structural' ? 
-              'WRc Drain Repair Book: Immediate excavation and replacement required' :
-              'Critical service intervention required';
-            adoptable = 'No';
-          }
-          
-          srmGrading = getSRMGrading(severityGrade, defectType);
-        }
+        // Use classification-based defect type, not SECSTAT-based  
+        const mscc5Classification = classifyWincanObservations(defectText, sector);
+        defectType = mscc5Classification.defectType;
+        severityGrade = mscc5Classification.severityGrade;
+        recommendations = mscc5Classification.recommendations;
+        adoptable = mscc5Classification.adoptable;
+        srmGrading = mscc5Classification.srmGrading;
+        
+        console.log(`✅ Using MSCC5 classification instead of SECSTAT: ${severityGrade} (${defectType})`);
       }
       
       // Fallback to MSCC5 classification if no authentic grades found
