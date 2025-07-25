@@ -2637,11 +2637,12 @@ export default function Dashboard() {
       const defectsUpper = section.defects.toUpperCase();
       const isSurveyAbandoned = defectsUpper.includes('SA ') || defectsUpper.includes('SURVEY ABANDONED') || defectsUpper.includes('BUNGED');
       
+      // Extract WATER LEVEL percentages (needed for all sections)
+      const waterLevelMatches = section.defects.match(/(\d+)%\s*of the vertical dimension/g);
+      
       if (!isSurveyAbandoned) {
         // Extract DEFECT percentages only (exclude water levels)
         const defectMatches = section.defects.match(/(\d+)%(?!\s*of the vertical dimension)/g);
-        // Extract WATER LEVEL percentages separately  
-        const waterLevelMatches = section.defects.match(/(\d+)%\s*of the vertical dimension/g);
         
         // Check defect percentages against PR2 range
         if (defectMatches && defectMatches.length > 0) {
