@@ -2277,8 +2277,8 @@ export default function Dashboard() {
     
     const baseCostPerSection = dayRate / runsPerShift;
     
-    // Calculate travel cost adjustment if applicable
-    const travelAdjustment = calculateTravelCostAdjustment(section, 'service');
+    // Travel cost integration placeholder (DNC protocol - not implemented yet)
+    const travelAdjustment = 0; // Will be replaced with calculateTravelCostAdjustment(section, 'service')
     const finalCostPerSection = baseCostPerSection + travelAdjustment;
     
     const recommendationText = travelAdjustment > 0 
