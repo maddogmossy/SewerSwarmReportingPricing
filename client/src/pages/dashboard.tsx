@@ -2251,7 +2251,14 @@ export default function Dashboard() {
     // CRITICAL FIX: Check if section meets PR2 range requirements before calculating cost
     const meetsRangeRequirements = checkSectionMeetsPR2Requirements(section, tp1Config);
     if (!meetsRangeRequirements) {
-      console.log(`❌ Item ${section.itemNo}: Section fails PR2 range validation (length: "${section.totalLength}", pipe: "${section.pipeSize}") - showing Configure PR2`);
+      // Debug logging to understand why range validation fails
+      const debugLength = parseFloat(section.totalLength || '0');
+      const debugPipeSize = parseInt(section.pipeSize?.replace(/[^\d]/g, '') || '0');
+      console.log(`❌ Item ${section.itemNo}: Section fails PR2 range validation:`);
+      console.log(`   - Raw length: "${section.totalLength}" → Parsed: ${debugLength}`);
+      console.log(`   - Raw pipe size: "${section.pipeSize}" → Parsed: ${debugPipeSize}`);
+      console.log(`   - Config ranges:`, tp1Config?.rangeOptions?.map(r => `${r.label}: ${r.rangeStart}-${r.rangeEnd} (enabled: ${r.enabled})`));
+      
       return {
         cost: 0,
         currency: '£',
