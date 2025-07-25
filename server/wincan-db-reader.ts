@@ -152,15 +152,15 @@ async function formatObservationText(observations: string[], sector: string = 'u
 // Extract authentic values from database records  
 function extractAuthenticValue(record: any, fieldNames: string[]): string | null {
   for (const fieldName of fieldNames) {
-    // Check for exact field name
-    if (record[fieldName] && record[fieldName] !== null && record[fieldName] !== '') {
+    // Check for exact field name - properly handle zero values
+    if (record[fieldName] !== null && record[fieldName] !== undefined && record[fieldName] !== '') {
       return String(record[fieldName]);
     }
     
     // Check for field names containing the keyword
     for (const key of Object.keys(record)) {
       if (key.toLowerCase().includes(fieldName.toLowerCase()) && 
-          record[key] && record[key] !== null && record[key] !== '') {
+          record[key] !== null && record[key] !== undefined && record[key] !== '') {
         return String(record[key]);
       }
     }
@@ -273,7 +273,8 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             // Extract authentic pipe specifications
             const pipeSize = extractAuthenticValue(record, ['OBJ_Size1', 'Size1', 'Diameter']) || '150';
             const pipeMaterial = extractAuthenticValue(record, ['OBJ_Material', 'Material']) || 'PVC';
-            const totalLength = parseFloat(extractAuthenticValue(record, ['OBJ_Length', 'Length']) || '10');
+            const lengthValue = extractAuthenticValue(record, ['OBJ_Length', 'Length']);
+            const totalLength = lengthValue !== null ? parseFloat(lengthValue) : 10;
             
             // Extract authentic inspection metadata
             const inspectionDate = extractAuthenticValue(record, ['OBJ_TimeStamp', 'TimeStamp', 'Date']) || '2024-01-01';
@@ -326,8 +327,8 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
               finishMH: finishMH,
               pipeSize: pipeSize.toString(),
               pipeMaterial: pipeMaterial,
-              totalLength: totalLength.toString(),
-              lengthSurveyed: totalLength.toString(),
+              totalLength: totalLength.toFixed(2),
+              lengthSurveyed: totalLength.toFixed(2),
               defects: defectText,
               recommendations: recommendations,
               severityGrade: severityGrade,
