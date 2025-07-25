@@ -1600,7 +1600,7 @@ export default function Dashboard() {
 
   // MULTI-REPORT SUPPORT: Fetch sections from multiple selected reports or single current upload
   const { data: rawSectionData = [], isLoading: sectionsLoading, refetch: refetchSections, error: sectionsError } = useQuery<any[]>({
-    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'item15-fix', Date.now()], // Force fresh data
+    queryKey: [`/api/uploads/${currentUpload?.id}/sections`, 'item15-fix-v2'], // Fixed cache key
     enabled: !!(currentUpload?.id && (currentUpload?.status === "completed" || currentUpload?.status === "extracted_pending_review")),
     staleTime: 0,
     gcTime: 0,
