@@ -1362,6 +1362,7 @@ export default function Dashboard() {
             }
           } else {
             // Show warning triangle when no pricing is configured
+            console.log(`❌ Item ${section.itemNo}: No cost calculation returned - costCalculation:`, costCalculation);
             if (needsCleaning && !needsStructuralRepair) {
               return (
                 <div 
@@ -2051,8 +2052,10 @@ export default function Dashboard() {
       config.sector === currentSector.id
     );
     
-    if (!tp1Config || !isConfigurationProperlyConfigured(tp1Config)) {
-      // No TP1 configuration found or not properly configured - return £0.00
+    console.log(`🔍 Item ${section.itemNo}: TP1 Config found:`, tp1Config ? `ID ${tp1Config.id}` : 'None');
+    
+    if (!tp1Config) {
+      console.log(`❌ Item ${section.itemNo}: No TP1 configuration found for sector ${currentSector.id}`);
       return {
         cost: 0,
         currency: '£',
@@ -2065,16 +2068,25 @@ export default function Dashboard() {
       };
     }
     
+    console.log(`🔍 Item ${section.itemNo}: TP1 Config validation: pricingOptions length=${tp1Config.pricingOptions?.length}, quantityOptions length=${tp1Config.quantityOptions?.length}`);
+    
+    // Skip isConfigurationProperlyConfigured check for now - let's debug the actual values
+    console.log(`🔍 Item ${section.itemNo}: TP1 pricingOptions:`, tp1Config.pricingOptions);
+    console.log(`🔍 Item ${section.itemNo}: TP1 quantityOptions:`, tp1Config.quantityOptions);
+    
     // Extract day rate and runs per shift from TP1 configuration
     const dayRateOption = tp1Config.pricingOptions?.find((option: any) => 
       option.label?.toLowerCase().includes('day rate') && option.value && option.value.trim() !== ''
     );
-    const runsOption = tp1Config.pricingOptions?.find((option: any) => 
-      option.label?.toLowerCase().includes('runs') && option.value && option.value.trim() !== ''
+    const runsOption = tp1Config.quantityOptions?.find((option: any) => 
+      option.label?.toLowerCase().includes('runs per shift') && option.value && option.value.trim() !== ''
     );
     
+    console.log(`🔍 Item ${section.itemNo}: TP1 dayRateOption:`, dayRateOption);
+    console.log(`🔍 Item ${section.itemNo}: TP1 runsOption:`, runsOption);
+    
     if (!dayRateOption || !runsOption) {
-      // TP1 config exists but missing essential values - return £0.00
+      console.log(`❌ Item ${section.itemNo}: TP1 missing essential values - dayRate:${!!dayRateOption}, runs:${!!runsOption}`);
       return {
         cost: 0,
         currency: '£',
@@ -2091,7 +2103,10 @@ export default function Dashboard() {
     const dayRate = parseFloat(dayRateOption.value) || 0;
     const runsPerShift = parseFloat(runsOption.value) || 0;
     
+    console.log(`💰 Item ${section.itemNo}: TP1 calculation: £${dayRate} ÷ ${runsPerShift} runs`);
+    
     if (dayRate === 0 || runsPerShift === 0) {
+      console.log(`❌ Item ${section.itemNo}: TP1 invalid values - dayRate:${dayRate}, runsPerShift:${runsPerShift}`);
       return {
         cost: 0,
         currency: '£',
@@ -2105,6 +2120,8 @@ export default function Dashboard() {
     }
     
     const costPerSection = dayRate / runsPerShift;
+    
+    console.log(`✅ Item ${section.itemNo}: TP1 cost calculated: £${costPerSection.toFixed(2)}`);
     
     return {
       cost: costPerSection,
