@@ -1390,9 +1390,15 @@ export class MSCC5Classifier {
     
     // Special handling for S/A codes with service connection analysis
     if (defectCode === 'S/A') {
-      // S/A service connections are infrastructure features, not defects - always Grade 0
       const serviceConnectionAnalysis = this.analyzeServiceConnection(defectText);
-      adjustedGrade = 0; // S/A codes are always Grade 0 observations
+      
+      // If it requires contractor confirmation (bung, not connected, blockage), use MSCC5 default grade 2
+      if (serviceConnectionAnalysis.requiresContractorConfirmation) {
+        adjustedGrade = detectedDefect.default_grade; // Use MSCC5 default grade 2 for service connections requiring action
+      } else {
+        adjustedGrade = 0; // Only Grade 0 for simple infrastructure observations without action needed
+      }
+      
       finalRecommendations = serviceConnectionAnalysis.recommendations;
     }
     
