@@ -481,7 +481,10 @@ export class MSCC5Classifier {
     const upperText = defectText.toUpperCase();
     const hasServiceConnection = upperText.includes('S/A') || upperText.includes('SERVICE CONNECTION');
     const isNotConnected = upperText.includes('NO CONNECTED') || upperText.includes('NOT CONNECTED');
-    const hasBungInLine = upperText.includes('BUNG IN LINE') || upperText.includes('BUNG');
+    const hasBungInLine = upperText.includes('BUNG IN LINE') || upperText.includes('BUNG') || 
+                         upperText.includes('BUNGED OFF') || upperText.includes('BUNGED') || 
+                         upperText.includes('CAP WITHIN LENGTH') || upperText.includes('CAP') || 
+                         upperText.includes('CAPPED');
     const hasCompleteBlockage = upperText.includes('WL 100%') || upperText.includes('COMPLETE BLOCKAGE');
     
     let recommendations = '';
