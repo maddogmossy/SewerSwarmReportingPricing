@@ -2004,6 +2004,22 @@ export default function Dashboard() {
     if (recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')) {
       // This section requires ID4 robotic cutting configuration
       // Check if ID4 configuration exists (now using 'robotic-cutting' categoryId)
+      
+      // Safety check: Ensure pr2Configurations exists before accessing
+      if (!pr2Configurations || !Array.isArray(pr2Configurations)) {
+        console.log(`❌ Item ${section.itemNo}: pr2Configurations not available for ID4 check`);
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'ID4 Data Missing',
+          status: 'data_missing',
+          patchingType: 'Configuration Data Missing',
+          defectCount: 0,
+          costPerUnit: 0,
+          recommendation: 'Configuration data not loaded'
+        };
+      }
+      
       const id4Config = pr2Configurations.find((config: any) => 
         config.categoryId === 'robotic-cutting'
       );
@@ -2172,8 +2188,8 @@ export default function Dashboard() {
   const calculateAutoCost = (section: any) => {
     // Removed excessive logging for performance
     
-    // If no PR2 configurations exist, return null to show warning triangles
-    if (!pr2Configurations || pr2Configurations.length === 0) {
+    // Safety check: Ensure pr2Configurations exists and is an array
+    if (!pr2Configurations || !Array.isArray(pr2Configurations) || pr2Configurations.length === 0) {
       // No PR2 configurations found
       return null;
     }
@@ -2268,10 +2284,9 @@ export default function Dashboard() {
       return null;
     }
 
-    try {
-      // Removed excessive logging for performance
-      
-      // Extract values from PR2 configuration arrays by matching labels
+    // Removed excessive logging for performance
+    
+    // Extract values from PR2 configuration arrays by matching labels
       const getPricingValueByLabel = (options: any[], label: string) => {
         const option = options?.find(opt => opt.label && opt.label.toLowerCase().includes(label.toLowerCase()));
         return option ? parseFloat(option.value) || 0 : 0;
@@ -2392,9 +2407,6 @@ export default function Dashboard() {
       } else {
         // PR2 calculation failed - no valid cost calculated
       }
-    } catch (error) {
-      // Error calculating PR1 cost
-    }
 
     // Return null if calculation fails
     return null;
