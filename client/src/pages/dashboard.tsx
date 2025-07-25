@@ -1725,13 +1725,17 @@ export default function Dashboard() {
       const isStructural = section.defectType === 'structural';
       
       // Debug to verify authentic database classification
-      if (section.itemNo === 19 || section.itemNo === '13a' || section.itemNo === 20 || section.itemNo === '21a') {
-        console.log(`Item ${section.itemNo} - authentic defectType: "${section.defectType}", structural: ${isStructural}`);
+      if (section.itemNo === 19 || section.itemNo === '13a' || section.itemNo === 20 || section.itemNo === '21a' || 
+          (section.itemNo === 13 && section.letterSuffix === 'a') || (section.itemNo === 21 && section.letterSuffix === 'a')) {
+        console.log(`Item ${section.itemNo}${section.letterSuffix || ''} - defectType: "${section.defectType}", structural: ${isStructural}`);
       }
       
       return isStructural;
     });
 
+    // Log all structural defects found
+    console.log('🔧 ALL STRUCTURAL DEFECTS FOUND:', structuralDefects.map(s => `${s.itemNo}${s.letterSuffix || ''} (${s.pipeSize}mm)`));
+    
     // Group structural defects by pipe size
     const defectsByPipeSize = structuralDefects.reduce((acc: any, section: any) => {
       const pipeSize = section.pipeSize;
@@ -1739,6 +1743,8 @@ export default function Dashboard() {
       acc[pipeSize].push(section);
       return acc;
     }, {});
+    
+    console.log('🔧 DEFECTS BY PIPE SIZE:', Object.keys(defectsByPipeSize).map(size => `${size}mm: ${defectsByPipeSize[size].length} defects`));
 
     // Structural defects grouped by pipe size for validation
 
