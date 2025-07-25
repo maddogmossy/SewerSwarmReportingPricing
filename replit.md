@@ -720,6 +720,32 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v5.9.3' to return to this stable checkpoint
 
+## REV V6.0 CHECKPOINT - MULTI-DEFECT SPLITTING SYSTEM COMPLETE (January 25, 2025)
+
+🔒 **PRODUCTION READY - COMPLETE MULTI-DEFECT SPLITTING SYSTEM LOCKED:**
+- **Multi-Defect Logic Fixed**: Integrated `splitMultiDefectSection` into wincan-db-reader.ts processing flow
+- **Item 22 Split Successfully**: Applied to Upload 83 creating Item 22 (service: DES deposits, SER:4/STR:0) and Item 22a (structural: OJM open joint, SER:1/STR:2)
+- **Automatic Detection**: System now identifies mixed service/structural defects during upload processing
+- **Letter Suffix System**: Creates subsections with 'a' suffix for structural defects while service defects retain original item number
+- **STR/SER Grade Accuracy**: Proper severity grade assignment based on defect type classification
+- **Database Integration**: Complete storage of split sections with proper letter_suffix column population
+- **MSCC5 Compliance**: Defect type classification follows structural vs service categorization rules
+
+🔒 **TECHNICAL IMPLEMENTATION LOCKED:**
+- **Processing Integration**: Multi-defect splitting applied after MSCC5 classification in readWincanDatabase function
+- **Split Logic**: `MSCC5Classifier.splitMultiDefectSection()` analyzes defect text and creates appropriate subsections
+- **Defect Type Detection**: Service defects (DES, DER, WL) vs structural defects (OJM, CR, JDL, etc.)
+- **Grade Assignment**: Proper STR/SER grade distribution based on defect classification
+- **Database Schema**: letter_suffix field properly populated for split sections (22a, 13a, etc.)
+
+🔒 **VERIFIED WORKING FEATURES:**
+- **Upload 83 Verified**: 27 total sections including properly split Item 22/22a
+- **Console Logging**: Comprehensive debug output showing split detection and processing
+- **Dashboard Display**: Split sections display correctly with proper item numbering
+- **Grade Classification**: Accurate STR/SER severity grades based on authentic defect analysis
+
+⚡ **ROLLBACK COMMAND:** Use 'rev v6.0' to return to this stable checkpoint
+
 ## Recent Changes (Updated January 25, 2025)
 
 ### CRITICAL: TP2 MQW Warning Logic Fixed - Complete Pricing Requirement Implemented ✅
