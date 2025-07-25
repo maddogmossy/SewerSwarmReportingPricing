@@ -3280,29 +3280,29 @@ export default function Dashboard() {
     // Get smart counting result for all sections
     const { sectionCount } = countSectionsTowardMinimum(rawSectionData || [], pr2Configurations);
     
-    // Find minimum quantity from TP2 minQuantityOptions (orange window)
-    let minQuantity = 4; // Default minimum
+    // MIGRATION FIX: Use DB8 green window quantityOptions instead of DB9 orange window minQuantityOptions
+    let minQuantity = 25; // Default minimum from DB8 green window
     pr2Configurations.forEach(config => {
-      if (config.categoryId === 'patching' && config.minQuantityOptions) {
-        const minQuantityOptions = config.minQuantityOptions || [];
-        const minQtyOption = minQuantityOptions.find((opt: any) => 
-          opt.label?.toLowerCase().includes('min') && opt.enabled && opt.value
+      if (config.categoryId === 'cctv-jet-vac' && config.quantityOptions) {
+        const quantityOptions = config.quantityOptions || [];
+        const quantityOption = quantityOptions.find((opt: any) => 
+          opt.label?.toLowerCase().includes('runs per shift') && opt.enabled && opt.value
         );
-        if (minQtyOption) {
-          const minValue = parseFloat(minQtyOption.value || '0');
-          if (minValue > 0) {
-            minQuantity = minValue;
+        if (quantityOption) {
+          const quantityValue = parseFloat(quantityOption.value || '0');
+          if (quantityValue > 0) {
+            minQuantity = quantityValue;
           }
         }
       }
     });
     
-    // DB7 MULTIPLE LOGIC: Check if section count is exact multiple of minimum quantity
-    const isExactMultiple = sectionCount > 0 && (sectionCount % minQuantity === 0);
+    // DB8 GREEN WINDOW LOGIC: Check if section count meets or exceeds DB8 quantity threshold
+    const meetsMinimum = sectionCount >= minQuantity;
     
-    // DB7 multiple-based logic check completed
+    console.log(`🔍 DB8 Logic Check: ${sectionCount} sections >= ${minQuantity} minimum = ${meetsMinimum}`);
     
-    return isExactMultiple;
+    return meetsMinimum;
   };
 
   // Cost calculation function for enhanced table - using useMemo to ensure reactivity
