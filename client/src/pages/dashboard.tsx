@@ -1030,6 +1030,19 @@ export default function Dashboard() {
           const needsCleaning = requiresCleaning(section.defects || '');
           const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
 
+          // Debug Item 15 classification
+          if (section.itemNo === 15) {
+            console.log(`🔍 Item 15 Debug:`, {
+              defectType: section.defectType,
+              isServiceDefect,
+              isStructuralDefect,
+              needsCleaning,
+              needsStructuralRepair,
+              defects: section.defects,
+              shouldShowCleaning: isServiceDefect || (needsCleaning && !isStructuralDefect)
+            });
+          }
+
           // MSCC5 RULE: Service defects ALWAYS route to TP1 cleaning regardless of text content
           // Structural defects route to TP2 patching based on defectType, not text detection
           if (isServiceDefect || (needsCleaning && !isStructuralDefect)) {
