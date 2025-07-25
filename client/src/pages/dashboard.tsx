@@ -1242,7 +1242,7 @@ export default function Dashboard() {
                 : 0;
             
             // Extract day rate from PR2 configuration for dialog
-            let dayRate = 1850; // Default fallback
+            let dayRate = 0; // No synthetic fallbacks - must come from user configuration
             if (pr2Configurations && pr2Configurations.length > 0) {
               const matchingConfig = pr2Configurations.find(config => 
                 config.categoryId === 'patching' && 
@@ -1253,7 +1253,7 @@ export default function Dashboard() {
                   opt.label?.toLowerCase().includes('day rate')
                 );
                 if (dayRateOption && dayRateOption.value) {
-                  dayRate = parseFloat(dayRateOption.value) || 1850;
+                  dayRate = parseFloat(dayRateOption.value) || 0; // No synthetic fallback
                 }
               }
             }
