@@ -147,6 +147,17 @@ export default function PR2ConfigClean() {
     configName,
     isEditing
   });
+  
+  // Determine template type based on category
+  const getTemplateType = (categoryId: string): 'TP1' | 'TP2' | 'TP3' => {
+    if (categoryId === 'patching') {
+      return 'TP2'; // Patching configurations use TP2 template
+    } else if (categoryId === 'robotic-cutting') {
+      return 'TP3'; // Robotic cutting uses TP3 template
+    } else {
+      return 'TP1'; // All other categories use standard TP1 template
+    }
+  };
 
   // Get all configurations for this category to detect existing pipe sizes (moved here for proper initialization order)
   const { data: allCategoryConfigs } = useQuery({
@@ -415,31 +426,7 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // Function to determine template type (TP1 vs TP2 vs TP3)
-  const getTemplateType = (categoryId: string) => {
-    // TP1 categories: CCTV, van pack, jet vac, cctv/van pack, directional water cutting, tankering
-    const tp1Categories = [
-      'cctv', 'van-pack', 'jet-vac', 'cctv-van-pack', 'cctv-jet-vac', 
-      'directional-water-cutter', 'tankering'
-    ];
-    
-    // TP2 categories: patching only
-    const tp2Categories = ['patching'];
-    
-    // TP3 categories: robotic cutting only
-    const tp3Categories = ['robotic-cutting'];
-    
-    if (tp2Categories.includes(categoryId)) {
-      return 'TP2';
-    } else if (tp3Categories.includes(categoryId)) {
-      return 'TP3';
-    } else if (tp1Categories.includes(categoryId)) {
-      return 'TP1';
-    } else {
-      // Default to TP1 for new categories (lining, exco, etc. will be added later)
-      return 'TP1';
-    }
-  };
+
 
   // Auto-create pipe-size-specific configuration if needed
   const createPipeSizeConfiguration = async (categoryId: string, sector: string, pipeSize: string, configName: string): Promise<number | null> => {
@@ -1032,13 +1019,13 @@ export default function PR2ConfigClean() {
       
       // CRITICAL FIX: Only create copies when editing ID 48 specifically
       // Do NOT create copies for other IDs (94, 95, etc.) as they are just examples
-      if (isEditing && editId && editId === 48 && !sectorsWithConfig.includes(sectorId)) {
+      if (isEditing && editId && parseInt(editId) === 48 && !sectorsWithConfig.includes(sectorId)) {
         console.log(`💾 Auto-saving configuration to sector: ${sectorId} (ID 48 context only)`);
         await createSectorCopy(sectorId);
         
         // Update sectorsWithConfig to include this sector
         setSectorsWithConfig(prev => [...new Set([...prev, sectorId])]);
-      } else if (editId !== 48) {
+      } else if (parseInt(editId || '0') !== 48) {
         console.log(`⚠️ Skipping copy creation - not in ID 48 context (current ID: ${editId})`);
       }
     } else {
@@ -1062,7 +1049,7 @@ export default function PR2ConfigClean() {
               config.sector === sectorId && config.categoryId === categoryId
             );
             
-            if (configToDelete) {
+            if (configToDelete && configToDelete.id) {
               console.log(`🗑️ Deleting configuration ID: ${configToDelete.id}`);
               await fetch(`/api/pr2-clean/${configToDelete.id}`, {
                 method: 'DELETE',
@@ -2809,7 +2796,6 @@ export default function PR2ConfigClean() {
                           
                           // CRITICAL: Clear form state completely before loading new data
                           setFormData({
-                            categoryId: configData.categoryId,
                             categoryName: configData.categoryName,
                             description: configData.description,
                             sector: configData.sector,
@@ -2822,7 +2808,9 @@ export default function PR2ConfigClean() {
                             pricingStackOrder: configData.pricingStackOrder || [],
                             quantityStackOrder: configData.quantityStackOrder || [],
                             minQuantityStackOrder: configData.minQuantityStackOrder || [],
-                            rangeStackOrder: configData.rangeStackOrder || []
+                            rangeStackOrder: configData.rangeStackOrder || [],
+                            vehicleTravelRates: configData.vehicleTravelRates || [],
+                            vehicleTravelRatesStackOrder: configData.vehicleTravelRatesStackOrder || []
                           });
                           
                           // Update current config ID to highlight the correct button
