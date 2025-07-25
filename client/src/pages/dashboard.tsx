@@ -1718,75 +1718,60 @@ export default function Dashboard() {
 
     if (tp2Configs.length === 0) return; // No TP2 configurations found
 
-    // ENABLED: Dashboard-based TP2 minimum quantity validation using pipe-size-specific checking
-    // Use authentic database classification instead of text-based detection
-    const structuralDefects = sections.filter(section => {
-      // Use authentic defectType from database instead of text analysis
+    // CRITICAL FIX: Only trigger TP2 warning when structural triangles are visible AND costs are red
+    // Check if any structural sections are showing triangles in cost column
+    const structuralSectionsWithTriangles = sections.filter(section => {
       const isStructural = section.defectType === 'structural';
+      if (!isStructural) return false;
       
-      // Debug to verify authentic database classification
-      if (section.itemNo === 19 || section.itemNo === '13a' || section.itemNo === 20 || section.itemNo === '21a' || 
-          (section.itemNo === 13 && section.letterSuffix === 'a') || (section.itemNo === 21 && section.letterSuffix === 'a')) {
-        console.log(`Item ${section.itemNo}${section.letterSuffix || ''} - defectType: "${section.defectType}", structural: ${isStructural}`);
-      }
+      // Check if this section would show a triangle (no cost calculation possible)
+      const costCalculation = calculateAutoCost(section);
+      const showsTriangle = !costCalculation || costCalculation === null;
       
-      return isStructural;
+      return showsTriangle;
     });
 
-    // Log all structural defects found
-    console.log('🔧 ALL STRUCTURAL DEFECTS FOUND:', structuralDefects.map(s => `${s.itemNo}${s.letterSuffix || ''} (${s.pipeSize}mm)`));
-    
-    // Group structural defects by pipe size
-    const defectsByPipeSize = structuralDefects.reduce((acc: any, section: any) => {
-      const pipeSize = section.pipeSize;
-      if (!acc[pipeSize]) acc[pipeSize] = [];
-      acc[pipeSize].push(section);
-      return acc;
-    }, {});
-    
-    console.log('🔧 DEFECTS BY PIPE SIZE:', Object.keys(defectsByPipeSize).map(size => `${size}mm: ${defectsByPipeSize[size].length} defects`));
+    // Check if costs are displaying as red (orange minimum not met)
+    const orangeMinimumMet = checkOrangeMinimumMet();
+    const costsAreRed = !orangeMinimumMet;
 
-    // Structural defects grouped by pipe size for validation
+    console.log('🔧 TP2 WARNING CHECK:', {
+      structuralTriangles: structuralSectionsWithTriangles.length,
+      costsAreRed: costsAreRed,
+      shouldTrigger: structuralSectionsWithTriangles.length > 0 && costsAreRed
+    });
 
-    // Check each pipe size against its corresponding TP2 configuration
-    let triggeredValidation = false;
-    for (const [pipeSize, defects] of Object.entries(defectsByPipeSize)) {
-      // Find the TP2 configuration for this pipe size
+    // Only trigger TP2 warning if BOTH conditions are met:
+    // 1. There are structural sections showing triangles (no cost possible)
+    // 2. Costs are displaying as red (orange minimum not met)
+    if (structuralSectionsWithTriangles.length > 0 && costsAreRed) {
+      
+      // Find the configuration for the first structural section with triangle
+      const firstTriangleSection = structuralSectionsWithTriangles[0];
+      const pipeSize = firstTriangleSection.pipeSize;
+      
       const pipeSizeConfig = tp2Configs.find((config: any) => 
         config.categoryName.includes(`${pipeSize}mm`)
       );
       
       if (pipeSizeConfig) {
-        // Get minimum quantity for this pipe size
         const minQuantityOption = pipeSizeConfig.minQuantityOptions?.find((opt: any) => 
           opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
         );
         const minQuantity = minQuantityOption?.value ? parseInt(minQuantityOption.value) : 0;
-        const defectCount = (defects as any[]).length;
-
-        // TP2 validation for pipe size specific configuration
-
-        // Trigger popup if defects below minimum for this pipe size
-        if (defectCount > 0 && defectCount < minQuantity && !triggeredValidation) {
-          // TP2 popup triggered for minimum quantity validation
-
-          // Show ALL structural defects across all pipe sizes, not just this pipe size
-          const totalStructuralDefects = structuralDefects.length;
-          
-          // Show TP2 minimum quantity warning popup
-          setShowTP2DistributionDialog({
-            show: true,
-            tp2Sections: structuralDefects, // Show ALL structural defects, not just this pipe size
-            totalDefects: totalStructuralDefects, // Total count across all pipe sizes
-            minQuantity: minQuantity,
-            configurationId: pipeSizeConfig.id,
-            pipeSize: pipeSize,
-            message: `${totalStructuralDefects} structural defects found but ${minQuantity} minimum required for TP2 patching`
-          });
-          
-          triggeredValidation = true; // Only show one popup at a time
-          break;
-        }
+        
+        console.log('🔧 TP2 WARNING TRIGGERED: Structural triangles visible AND costs are red');
+        
+        // Show TP2 minimum quantity warning popup
+        setShowTP2DistributionDialog({
+          show: true,
+          tp2Sections: structuralSectionsWithTriangles,
+          totalDefects: structuralSectionsWithTriangles.length,
+          minQuantity: minQuantity,
+          configurationId: pipeSizeConfig.id,
+          pipeSize: pipeSize,
+          message: `${structuralSectionsWithTriangles.length} structural sections showing triangles and costs are red - TP2 configuration needed`
+        });
       }
     }
   };
