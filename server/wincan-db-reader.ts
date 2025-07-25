@@ -64,9 +64,17 @@ async function formatObservationText(observations: string[], sector: string = 'u
   const combinedObservations = observations.join(' ');
   const bellyAnalysis = await MSCC5Classifier.analyzeBellyCondition(combinedObservations, sector);
   
-  // STEP 2: Filter water level observations based on belly analysis
+  // STEP 2: Filter water level observations and finish node codes based on belly analysis
   const preFiltered = observations.filter(obs => {
     const isWaterLevel = obs.includes('Water level') || obs.includes('WL ') || obs.includes('WL(');
+    const isFinishNode = obs.includes('CPF ') || obs.includes('COF ') || obs.includes('OCF ') || 
+                        obs.includes('CP (') || obs.includes('OC (') || obs.includes('MHF ') || 
+                        obs.includes('Finish node') || obs.includes('Start node');
+    
+    if (isFinishNode) {
+      console.log(`🔧 Removing finish node observation: ${obs} (not relevant to pipe defects)`);
+      return false;
+    }
     
     if (isWaterLevel) {
       // Only keep water level observations if they are part of a belly condition requiring excavation
@@ -79,7 +87,7 @@ async function formatObservationText(observations: string[], sector: string = 'u
       }
     }
     
-    return true; // Keep all non-water level observations
+    return true; // Keep all other observations
   });
   
   console.log(`🔧 After belly-based WL filtering: ${preFiltered.length} observations remain`);
