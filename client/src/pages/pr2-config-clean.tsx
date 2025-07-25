@@ -623,7 +623,11 @@ export default function PR2ConfigClean() {
   const handleValueChange = (optionType: string, optionId: string, value: string) => {
     console.log(`🔧 handleValueChange called: ${optionType}, ${optionId}, ${value}`);
     // Determine correct dev code based on current category
-    const currentDevCode = window.location.href.includes('categoryId=patching') ? 'db6' : 'db11';
+    const currentDevCode = (() => {
+      if (window.location.href.includes('categoryId=patching')) return 'db6';
+      if (window.location.href.includes('categoryId=robotic-cutting')) return 'db2';
+      return 'db11'; // TP1 CCTV configurations
+    })();
     console.log(`🔧 CRITICAL - FIELD ${currentDevCode} VALUE CHANGE: "${value}" for option ${optionId} in configuration id${editId}`);
     
     // Mark that user has made changes to prevent automatic form overwrite
@@ -2742,15 +2746,29 @@ export default function PR2ConfigClean() {
                   const isCurrentConfig = (currentConfigId === configId) || (currentConfigId === null && editId === String(configId));
                   
                   // Use correct dev code based on configuration type
-                  const devCode = categoryId === 'patching' ? 'db6' : 'db11';
-                  console.log(`🔍 Rendering button: ${pipeSize} (${categoryId === 'patching' ? 'TP2 Patching' : 'Pricing Window'} ${devCode}) - Current: ${isCurrentConfig}`);
+                  const devCode = (() => {
+                    if (categoryId === 'patching') return 'db6';
+                    if (categoryId === 'robotic-cutting') return 'db2';
+                    return 'db11'; // TP1 CCTV configurations
+                  })();
+                  const buttonType = (() => {
+                    if (categoryId === 'patching') return 'TP2 Patching';
+                    if (categoryId === 'robotic-cutting') return 'TP3 Robotic Cutting';
+                    return 'Pricing Window';
+                  })();
+                  console.log(`🔍 Rendering button: ${pipeSize} (${buttonType} ${devCode}) - Current: ${isCurrentConfig}`);
                   
                   return (
                     <button
                       key={pipeSize}
                       onClick={async () => {
                         console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
-                        console.log(`🚀 LOADING CONFIG: ${pipeSize} configuration (${categoryId === 'patching' ? 'TP2 Patching db6' : 'Pricing Window db11'})`);
+                        const configType = (() => {
+                          if (categoryId === 'patching') return 'TP2 Patching db6';
+                          if (categoryId === 'robotic-cutting') return 'TP3 Robotic Cutting db2';
+                          return 'Pricing Window db11';
+                        })();
+                        console.log(`🚀 LOADING CONFIG: ${pipeSize} configuration (${configType})`);
                         
                         // CRITICAL: Cancel any pending debounced saves to prevent contamination
                         if (saveTimeout) {
@@ -2825,7 +2843,12 @@ export default function PR2ConfigClean() {
                           // Update URL to reflect the configuration change
                           setLocation(`/pr2-config-clean?categoryId=${targetCategoryId}&sector=${sector}&edit=${configId}`);
                           
-                          console.log(`✅ Form data updated to show ${pipeSize} configuration (${categoryId === 'patching' ? 'TP2 Patching db6' : 'Pricing Window db11'})`);
+                          const successType = (() => {
+                            if (categoryId === 'patching') return 'TP2 Patching db6';
+                            if (categoryId === 'robotic-cutting') return 'TP3 Robotic Cutting db2';
+                            return 'Pricing Window db11';
+                          })();
+                          console.log(`✅ Form data updated to show ${pipeSize} configuration (${successType})`);
                           
                         } catch (error) {
                           console.error(`❌ Failed to load configuration ${configId}:`, error);
@@ -2851,7 +2874,14 @@ export default function PR2ConfigClean() {
                       }
                       return 'New Configuration';
                     })()}`
-                  : `Currently editing 150mm Pricing Window (db11) - (id${editId}) for ${formData.categoryName || 'this category'}`
+                  : (() => {
+                      // TP3 Robotic Cutting uses DB2, not DB11
+                      if (categoryId === 'robotic-cutting') {
+                        return `Currently editing TP3 Robotic Cutting (DB2) - (id${editId}) for ${formData.categoryName || 'this category'}`;
+                      }
+                      // TP1 CCTV configurations use DB11
+                      return `Currently editing 150mm Pricing Window (DB11) - (id${editId}) for ${formData.categoryName || 'this category'}`;
+                    })()
                 }
               </p>
             </CardContent>
