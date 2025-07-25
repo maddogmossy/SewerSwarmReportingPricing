@@ -847,8 +847,8 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           recommendations: serviceClassification.recommendations,
           severityGrade: serviceClassification.severityGrade,
           severityGrades: {
-            structural: authenticServiceGrades?.structural ?? null,
-            service: authenticServiceGrades?.service ?? null
+            structural: authenticServiceGrades?.structural ?? 0,
+            service: authenticServiceGrades?.service ?? serviceClassification.severityGrade
           },
           adoptable: serviceClassification.adoptable,
           inspectionDate: inspectionDate,
@@ -891,8 +891,8 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           recommendations: structuralClassification.recommendations,
           severityGrade: structuralClassification.severityGrade,
           severityGrades: {
-            structural: authenticServiceGrades?.structural ?? null,
-            service: authenticServiceGrades?.service ?? null
+            structural: authenticServiceGrades?.structural ?? structuralClassification.severityGrade,
+            service: authenticServiceGrades?.service ?? 0
           },
           adoptable: structuralClassification.adoptable,
           inspectionDate: inspectionDate,
@@ -973,7 +973,11 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         severityGrades: authenticGrades ? {
           structural: authenticGrades.structural,
           service: authenticGrades.service
-        } : null,
+        } : {
+          // For sections without SECSTAT data, set proper grades based on MSCC5 classification
+          structural: defectType === 'structural' ? severityGrade : 0,
+          service: defectType === 'service' ? severityGrade : 0
+        },
         adoptable: adoptable,
         inspectionDate: inspectionDate,
         inspectionTime: inspectionTime,
