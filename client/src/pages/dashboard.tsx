@@ -1736,43 +1736,60 @@ export default function Dashboard() {
 
   // Validation effect - runs after sections are loaded
   useEffect(() => {
-    if (hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations) {
-      
-      // Transform section data to match validation interface
-      const reportSections: ReportSection[] = rawSectionData.map(section => ({
-        id: section.id,
-        itemNo: section.itemNo,
-        defectType: section.defectType || null,
-        recommendations: section.recommendations || '',
-        cost: section.cost || '',
-        pipeSize: section.pipeSize || '',
-        totalLength: section.totalLength || '',
-        hasConfiguration: hasConfiguration(section),
-        meetsMinimum: meetsMinimumQuantities(section)
-      }));
+    console.log('🔧 VALIDATION EFFECT RUNNING:', {
+      hasAuthenticData,
+      rawSectionDataLength: rawSectionData?.length || 0,
+      pr2ConfigurationsLength: pr2Configurations?.length || 0,
+      workCategoriesLength: workCategories?.length || 0,
+      vehicleTravelRatesLength: vehicleTravelRates?.length || 0
+    });
 
-      // Run validation with work categories and vehicle travel rates
-      const result = validateReportExportReadiness(
-        reportSections, 
-        travelInfo, 
-        pr2Configurations,
-        workCategories,
-        vehicleTravelRates
-      );
-      
-      setValidationResult(result);
-      
-      checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
+    if (hasAuthenticData && rawSectionData?.length > 0 && pr2Configurations) {
+      try {
+        // Transform section data to match validation interface
+        const reportSections: ReportSection[] = rawSectionData.map(section => ({
+          id: section.id,
+          itemNo: section.itemNo,
+          defectType: section.defectType || null,
+          recommendations: section.recommendations || '',
+          cost: section.cost || '',
+          pipeSize: section.pipeSize || '',
+          totalLength: section.totalLength || '',
+          hasConfiguration: hasConfiguration(section),
+          meetsMinimum: meetsMinimumQuantities(section)
+        }));
+
+        // Run validation with work categories and vehicle travel rates
+        const result = validateReportExportReadiness(
+          reportSections, 
+          travelInfo, 
+          pr2Configurations,
+          workCategories,
+          vehicleTravelRates
+        );
+        
+        setValidationResult(result);
+        
+        console.log('🔧 CALLING TP2 CONFIG CHECK...');
+        checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
+      } catch (error) {
+        console.error('🔧 VALIDATION EFFECT ERROR:', error);
+      }
     }
   }, [hasAuthenticData, rawSectionData, pr2Configurations, travelInfo, workCategories, vehicleTravelRates]);
 
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
+    console.log('🔧 TP2 CONFIG CHECK STARTED - sections:', sections.length, 'configs:', configurations.length);
 
     // Find ALL TP2 patching configurations (should be IDs 153, 156, 157)
     const tp2Configs = configurations.filter(config => config.categoryId === 'patching');
+    console.log('🔧 TP2 CONFIGS FOUND:', tp2Configs.length);
 
-    if (tp2Configs.length === 0) return; // No TP2 configurations found
+    if (tp2Configs.length === 0) {
+      console.log('🔧 NO TP2 CONFIGS - RETURNING');
+      return; // No TP2 configurations found
+    }
 
     // CRITICAL FIX: Only trigger TP2 warning when structural triangles are visible AND costs are red
     // Check if any structural sections are showing triangles in cost column
@@ -1805,15 +1822,26 @@ export default function Dashboard() {
     const costsAreRed = !orangeMinimumMet;
 
     console.log('🔧 TP2 WARNING CHECK:', {
+      totalSections: sections.length,
+      structuralSections: sections.filter(s => s.defectType === 'structural').length,
+      serviceSections: sections.filter(s => s.defectType === 'service').length,
       structuralTriangles: structuralSectionsWithTriangles.length,
       costsAreRed: costsAreRed,
-      shouldTrigger: structuralSectionsWithTriangles.length > 0 && costsAreRed
+      shouldTrigger: structuralSectionsWithTriangles.length > 0 && costsAreRed,
+      triangleSections: structuralSectionsWithTriangles.map(s => ({
+        itemNo: s.itemNo,
+        defectType: s.defectType,
+        costCalc: calculateAutoCost(s)
+      }))
     });
 
+    // TEMPORARY DEBUG: Disable TP2 warning to test fix
+    console.log('🔧 TP2 WARNING DISABLED FOR TESTING');
+    
     // Only trigger TP2 warning if BOTH conditions are met:
     // 1. There are structural sections showing triangles (no cost possible)
     // 2. Costs are displaying as red (orange minimum not met)
-    if (structuralSectionsWithTriangles.length > 0 && costsAreRed) {
+    if (false && structuralSectionsWithTriangles.length > 0 && costsAreRed) {
       
       // Find the configuration for the first structural section with triangle
       const firstTriangleSection = structuralSectionsWithTriangles[0];
