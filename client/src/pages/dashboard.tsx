@@ -1222,7 +1222,12 @@ export default function Dashboard() {
 
         
         // Display "Complete" for all Grade 0 sections with "Complete" in cost field
-        if (section.cost === 'Complete' || (section.severityGrade === '0' && section.adoptable === 'Yes')) {
+        // Check both old severityGrade field AND new severity_grades JSON
+        const hasNoDefects = (section.cost === 'Complete') || 
+          (section.severityGrade === '0' && section.adoptable === 'Yes' && 
+           (!section.severityGrades || (section.severityGrades.service === 0 && section.severityGrades.structural === 0)));
+        
+        if (hasNoDefects) {
           return (
             <span className="px-1 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">
               Complete
@@ -1234,7 +1239,11 @@ export default function Dashboard() {
         // No synthetic pricing calculations - show warning symbols for unconfigured pricing
         
         // Calculate costs for defective sections using PR2 configurations
-        if (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) {
+        // Check both old severityGrade field AND new severity_grades JSON for service/structural grades > 0
+        const hasDefectsRequiringCost = (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
+          (section.severityGrades && (section.severityGrades.service > 0 || section.severityGrades.structural > 0));
+        
+        if (hasDefectsRequiringCost) {
           // DEBUG: Removed console logging to prevent infinite loops
           
           // Check if this section requires cleaning vs structural repair
