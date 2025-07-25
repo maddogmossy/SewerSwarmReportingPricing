@@ -145,6 +145,37 @@ const isConfigurationProperlyConfigured = (config: any): boolean => {
   return hasValidPricingValues && hasValidQuantityValues;
 };
 
+// Function to check if configuration has DB15 travel rates configured
+const hasDB15TravelRates = (config: any): boolean => {
+  if (!config || !config.vehicleTravelRates) return false;
+  
+  return config.vehicleTravelRates.some((rate: any) => 
+    rate.enabled && 
+    rate.hourlyRate && 
+    rate.hourlyRate.trim() !== '' && 
+    rate.vehicleType && 
+    rate.vehicleType.trim() !== '' &&
+    rate.numberOfHours &&
+    rate.numberOfHours.trim() !== ''
+  );
+};
+
+// Function to calculate travel costs from P19 configuration
+const calculateTravelCost = (config: any): number => {
+  if (!hasDB15TravelRates(config)) return 0;
+  
+  const travelRates = config.vehicleTravelRates?.filter((rate: any) => rate.enabled) || [];
+  let totalTravelCost = 0;
+  
+  travelRates.forEach((rate: any) => {
+    const hourlyRate = parseFloat(rate.hourlyRate) || 0;
+    const hours = parseFloat(rate.numberOfHours) || 0;
+    totalTravelCost += hourlyRate * hours;
+  });
+  
+  return totalTravelCost;
+};
+
 // Generate dynamic recommendations based on section data and PR2 configurations
 const generateDynamicRecommendation = (section: any, pr2Configurations: any[], checkFunction?: any): string => {
   const { startMH, finishMH, pipeSize, totalLength, defects, recommendations } = section;
@@ -603,6 +634,18 @@ export default function Dashboard() {
     tp1Sections: [],
     totalSections: 0,
     minQuantity: 25,
+    message: ''
+  });
+
+  // DB15 Travel Configuration Warning dialog state
+  const [showTravelConfigDialog, setShowTravelConfigDialog] = useState<{
+    show: boolean;
+    configType: 'TP1' | 'TP2';
+    configurationId?: number;
+    message: string;
+  }>({
+    show: false,
+    configType: 'TP1',
     message: ''
   });
 
@@ -1905,32 +1948,53 @@ export default function Dashboard() {
     // Only trigger TP2 warning when ALL pricing is complete AND costs are red due to minimum quantity issues
     if (allSectionsHaveCompletePricing && costsAreRed) {
       
-      // Find the configuration for the first structural section with triangle
-      const firstTriangleSection = structuralSectionsWithTriangles[0];
-      const pipeSize = firstTriangleSection.pipeSize;
+      // Find all structural sections that need TP2 patching
+      const structuralSections = sections.filter(s => s.defectType === 'structural');
       
-      const pipeSizeConfig = tp2Configs.find((config: any) => 
-        config.categoryName.includes(`${pipeSize}mm`)
-      );
-      
-      if (pipeSizeConfig) {
-        const minQuantityOption = pipeSizeConfig.minQuantityOptions?.find((opt: any) => 
-          opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
+      if (structuralSections.length > 0) {
+        // Check primary TP2 configuration for travel rates
+        const primaryTP2Config = tp2Configs[0]; // Use first available TP2 config
+        
+        if (primaryTP2Config && !hasDB15TravelRates(primaryTP2Config)) {
+          console.log('🔧 TP2 CONFIG MISSING DB15 TRAVEL RATES');
+          setShowTravelConfigDialog({
+            show: true,
+            configType: 'TP2',
+            configurationId: primaryTP2Config.id,
+            message: `TP2 Configuration (ID ${primaryTP2Config.id}) missing DB15 Vehicle Travel Rates. Configure travel rates to include transportation costs in minimum quantity calculations.`
+          });
+          return;
+        }
+        
+        // Find the configuration for the first structural section  
+        const firstStructuralSection = structuralSections[0];
+        const pipeSize = firstStructuralSection.pipeSize;
+        
+        const pipeSizeConfig = tp2Configs.find((config: any) => 
+          config.categoryName.includes(`${pipeSize}mm`)
         );
-        const minQuantity = minQuantityOption?.value ? parseInt(minQuantityOption.value) : 0;
         
-        console.log('🔧 TP2 WARNING TRIGGERED: Structural triangles visible AND costs are red');
-        
-        // Show TP2 minimum quantity warning popup
-        setShowTP2DistributionDialog({
-          show: true,
-          tp2Sections: structuralSectionsWithTriangles,
-          totalDefects: structuralSectionsWithTriangles.length,
-          minQuantity: minQuantity,
-          configurationId: pipeSizeConfig.id,
-          pipeSize: pipeSize,
-          message: `${structuralSectionsWithTriangles.length} structural sections showing triangles and costs are red - TP2 configuration needed`
-        });
+        if (pipeSizeConfig) {
+          const minQuantityOption = pipeSizeConfig.minQuantityOptions?.find((opt: any) => 
+            opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
+          );
+          const minQuantity = minQuantityOption?.value ? parseInt(minQuantityOption.value) : 0;
+          const travelCost = calculateTravelCost(primaryTP2Config);
+          
+          console.log('🔧 TP2 WARNING TRIGGERED: All pricing complete AND costs are red');
+          console.log('🔧 TP2 TRAVEL COST INTEGRATED:', travelCost);
+          
+          // Show TP2 minimum quantity warning popup with travel costs
+          setShowTP2DistributionDialog({
+            show: true,
+            tp2Sections: structuralSections,
+            totalDefects: structuralSections.length,
+            minQuantity: minQuantity,
+            configurationId: pipeSizeConfig.id,
+            pipeSize: pipeSize,
+            message: `${structuralSections.length} structural sections require patching but minimum quantity (${minQuantity}) not met for cost-effective operation. Travel costs included: £${travelCost.toFixed(2)}`
+          });
+        }
       }
     }
   };
@@ -1978,21 +2042,35 @@ export default function Dashboard() {
       const tp1Config = tp1Configs[0]; // Use first available config
       
       if (tp1Config) {
+        // Check for DB15 travel configuration
+        if (!hasDB15TravelRates(tp1Config)) {
+          console.log('🔧 TP1 CONFIG MISSING DB15 TRAVEL RATES');
+          setShowTravelConfigDialog({
+            show: true,
+            configType: 'TP1',
+            configurationId: tp1Config.id,
+            message: `TP1 Configuration (ID ${tp1Config.id}) missing DB15 Vehicle Travel Rates. Configure travel rates to include transportation costs in minimum quantity calculations.`
+          });
+          return;
+        }
+
         const minQuantityOption = tp1Config.quantityOptions?.find((opt: any) => 
           opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
         );
         const minQuantity = minQuantityOption?.value ? parseInt(minQuantityOption.value) : 0;
+        const travelCost = calculateTravelCost(tp1Config);
         
         console.log('🔧 TP1 WARNING TRIGGERED: All pricing complete AND costs are red');
+        console.log('🔧 TP1 TRAVEL COST INTEGRATED:', travelCost);
         
-        // Show TP1 minimum quantity warning popup
+        // Show TP1 minimum quantity warning popup with travel costs
         setShowTP1DistributionDialog({
           show: true,
           tp1Sections: serviceSections.filter(s => requiresCleaning(s)),
           totalDefects: serviceSections.filter(s => requiresCleaning(s)).length,
           minQuantity: minQuantity,
           configurationId: tp1Config.id,
-          message: `${serviceSections.filter(s => requiresCleaning(s)).length} sections require cleaning but minimum quantity (${minQuantity}) not met for cost-effective operation.`
+          message: `${serviceSections.filter(s => requiresCleaning(s)).length} sections require cleaning but minimum quantity (${minQuantity}) not met for cost-effective operation. Travel costs included: £${travelCost.toFixed(2)}`
         });
       }
     }
@@ -4634,6 +4712,63 @@ export default function Dashboard() {
               className="bg-orange-600 hover:bg-orange-700 text-white"
             >
               Configure TP2 Pricing
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* DB15 Travel Configuration Required Warning Dialog */}
+      <Dialog open={showTravelConfigDialog.show} onOpenChange={(open) => 
+        setShowTravelConfigDialog(prev => ({ ...prev, show: open }))
+      }>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-amber-600 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              DB15 Travel Configuration Required
+            </DialogTitle>
+            <DialogDescription>
+              {showTravelConfigDialog.message}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-amber-800">Configuration Type:</span>
+                  <span className="text-amber-900 font-bold">{showTravelConfigDialog.configType}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-amber-800">Configuration ID:</span>
+                  <span className="text-amber-900 font-bold">#{showTravelConfigDialog.configurationId}</span>
+                </div>
+                <div className="mt-3 p-3 bg-amber-100 rounded-md">
+                  <p className="text-sm text-amber-800 font-medium mb-2">
+                    Missing DB15 Vehicle Travel Rates
+                  </p>
+                  <p className="text-xs text-amber-700">
+                    Configure vehicle travel rates in the teal DB15 window to include transportation costs in minimum quantity calculations and warning totals.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowTravelConfigDialog(prev => ({ ...prev, show: false }))}
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                // Navigate to configuration page based on type
+                const categoryId = showTravelConfigDialog.configType === 'TP1' ? 'cctv-jet-vac' : 'patching';
+                window.location.href = `/pr2-config-clean?categoryId=${categoryId}&sector=${currentSector.id}&edit=${showTravelConfigDialog.configurationId}`;
+              }}
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+            >
+              Configure DB15 Travel Rates
             </Button>
           </DialogFooter>
         </DialogContent>

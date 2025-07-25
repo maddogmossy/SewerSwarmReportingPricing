@@ -746,6 +746,28 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ⚡ **ROLLBACK COMMAND:** Use 'rev v6.0' to return to this stable checkpoint
 
+### CRITICAL: P19 Vehicle Travel Rates Integration Complete - Option B Implemented ✅
+- **Date**: January 25, 2025
+- **Status**: Successfully integrated P19 Vehicle Travel Rates into both TP1 and TP2 warning systems using Option B approach
+- **Issues Fixed**:
+  - **Separate Travel Configuration Warnings**: Implemented "DB15 Travel Configuration Required" warnings for missing travel rates
+  - **TP1 Travel Integration**: ID 161 with travel values shows total costs including travel expenses in warning popup
+  - **TP2 Travel Integration**: ID 153 missing travel values shows separate travel configuration warning dialog  
+  - **Helper Functions**: Added `hasDB15TravelRates()` and `calculateTravelCost()` functions for travel validation
+  - **Dual Warning System**: Travel warnings trigger separately from minimum quantity warnings when DB15 rates missing
+- **Technical Implementation**:
+  - Added travel configuration dialog state for TP1/TP2 configuration type tracking
+  - Enhanced TP1 warning function to check DB15 rates and include travel costs in message
+  - Enhanced TP2 warning function to show travel configuration warnings when rates missing
+  - Created amber-styled "DB15 Travel Configuration Required" dialog with configuration ID display
+  - Travel cost integration shows "Travel costs included: £X.XX" when rates are configured
+- **User Benefits**: 
+  - Clear separation between minimum quantity issues and travel configuration issues
+  - ID 161 (TP1) shows complete costs including travel when properly configured
+  - ID 153 (TP2) shows travel configuration guidance when rates are missing
+  - Direct navigation to DB15 window configuration from warning dialogs
+- **Result**: Complete P19 Vehicle Travel Rates integration with separate warning system for incomplete travel configurations
+
 ## Recent Changes (Updated January 25, 2025)
 
 ### CRITICAL: TP2 Structural Defect Routing Fix Complete - Split Section System Operational ✅
