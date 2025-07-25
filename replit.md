@@ -722,6 +722,26 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 25, 2025)
 
+### CRITICAL: Complete MHf Node/Finish Code Filtering System Locked ✅
+- **Date**: January 25, 2025
+- **Status**: Successfully eliminated all start/finish node codes from dashboard observations display
+- **Issues Fixed**:
+  - **Complete Finish Node Filtering**: Added COF, OCF, CPF, CP, OC to existing MH/MHF filtering system
+  - **Database Query Enhancement**: Updated wincan-db-reader.ts observation query to exclude all node codes at extraction level
+  - **Text Processing Filter**: Added finish node detection in formatObservationText function for double-layer protection
+  - **Database Cleanup**: Removed existing CPF codes from Items 14 and 19 using regex-based SQL updates
+  - **Comprehensive Coverage**: System now filters all MSCC5 node reference codes (MH, MHF, COF, OCF, CPF, CP, OC)
+- **Technical Implementation**:
+  - Database query filter: `WHERE OBJ_Code NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')`
+  - Text processing filter: Detects 'Finish node', 'Start node', and specific code patterns
+  - SQL cleanup: `REGEXP_REPLACE` removes existing finish node references from stored observations
+  - Dual-layer filtering ensures complete elimination at both extraction and processing levels
+- **User Benefits**: 
+  - Clean dashboard display focused only on pipe defects, not junction features
+  - Consistent MSCC5 standards compliance by separating pipe vs node observations
+  - Eliminated user confusion from irrelevant finish node codes in defect reports
+- **Result**: Complete elimination of all start/finish node codes from dashboard observations display
+
 ### CRITICAL: MSCC5 Severity Grade Accuracy Improvement Complete ✅
 - **Date**: January 25, 2025
 - **Status**: Successfully achieved 100% MSCC5 classification accuracy by adding defect codes to observations column
