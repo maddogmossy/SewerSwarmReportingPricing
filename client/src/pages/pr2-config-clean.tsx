@@ -2418,15 +2418,21 @@ export default function PR2ConfigClean() {
           };
 
           // Update existing configuration with delete changes
-          await fetch(`/api/pr2-clean/${editId}`, {
+          const response = await fetch(`/api/pr2-clean/${editId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          
           console.log('✅ DASH BUTTON SAVE SUCCESSFUL: Delete changes and modifications saved to database');
           
         } catch (error) {
           console.error('❌ Dash button save failed:', error);
+          // Don't throw the error - allow navigation to continue
         }
       }
       
@@ -2504,7 +2510,7 @@ export default function PR2ConfigClean() {
                   }
                   // If validation passes, clear warning and proceed with navigation
                   setShowValidationWarning(false);
-                  handleAutoSaveAndNavigate('/dashboard')();
+                  await handleAutoSaveAndNavigate('/dashboard')();
                 }}
                 variant="outline"
                 className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
