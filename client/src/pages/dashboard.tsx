@@ -1010,9 +1010,10 @@ export default function Dashboard() {
 
         
         // WRc recommendations take priority over generic approved repair descriptions
-        // Only use approved repair pricing if no WRc recommendations exist
+        // CRITICAL: SA bung conditions must preserve authentic recommendations (no TP2 override)
+        // Only use approved repair pricing if no WRc recommendations exist AND not SA bung condition
         if (approvedRepairStatus.hasApproved && approvedRepairStatus.pricingConfig && 
-            (!section.recommendations || !section.recommendations.includes('WRc'))) {
+            (!section.recommendations || (!section.recommendations.includes('WRc') && !section.recommendations.includes('bung')))) {
           const pricingConfig = approvedRepairStatus.pricingConfig;
           const repairDescription = pricingConfig.description || "Approved repair configuration available";
           
