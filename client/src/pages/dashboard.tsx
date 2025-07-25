@@ -2004,97 +2004,7 @@ export default function Dashboard() {
   // Function to calculate TP2 patching cost using DB7 Math window for minimum quantity checks
   const calculateTP2PatchingCost = (section: any, tp2Config: any) => {
     // calculateTP2PatchingCost called for section
-    
-    // CRITICAL FIX: Check for robotic cutting (ID4) requirements FIRST
-    const recommendations = section.recommendations || '';
-    console.log(`🤖 Item ${section.itemNo}: Checking recommendations for robotic cutting: "${recommendations}"`);
-    
-    if (recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')) {
-      console.log(`🤖 Item ${section.itemNo}: ROBOTIC CUTTING DETECTED - routing to TP3 ID4 (ID 163)`);
-      // This section requires ID4 robotic cutting configuration
-      // Check if ID4 configuration exists (now using 'robotic-cutting' categoryId)
-      
-      // Safety check: Ensure pr2Configurations exists before accessing
-      if (!pr2Configurations || !Array.isArray(pr2Configurations)) {
-        console.log(`❌ Item ${section.itemNo}: pr2Configurations not available for ID4 check`);
-        return {
-          cost: 0,
-          currency: '£',
-          method: 'ID4 Data Missing',
-          status: 'data_missing',
-          patchingType: 'Configuration Data Missing',
-          defectCount: 0,
-          costPerUnit: 0,
-          recommendation: 'Configuration data not loaded'
-        };
-      }
-      
-      const id4Config = pr2Configurations.find((config: any) => 
-        config.categoryId === 'robotic-cutting'
-      );
-      
-      if (!id4Config) {
-        // ID4 configuration doesn't exist - return £0.00
-        console.log(`💰 Item ${section.itemNo}: Requires ID4 robotic cutting but no ID4 configuration found - showing £0.00`);
-        return {
-          cost: 0,
-          currency: '£',
-          method: 'ID4 Required',
-          status: 'id4_missing',
-          patchingType: 'Robotic Cutting Required',
-          defectCount: 0,
-          costPerUnit: 0,
-          recommendation: 'Configure ID4 robotic cutting pricing first'
-        };
-      }
-      
-      // ID4 config exists - use separate robotic cutting calculation
-      console.log(`💰 Item ${section.itemNo}: Using ID4 robotic cutting configuration`);
-      
-      // SEPARATE LOGIC FOR ID4 ROBOTIC CUTTING
-      // Check if ID4 has configured pricing options
-      const firstCutOption = id4Config.pricingOptions?.find((option: any) => 
-        option.label?.toLowerCase().includes('first cut') && option.value && option.value.trim() !== ''
-      );
-      const perCutOption = id4Config.pricingOptions?.find((option: any) => 
-        option.label?.toLowerCase().includes('cost per cut') && option.value && option.value.trim() !== ''
-      );
-      
-      if (!firstCutOption && !perCutOption) {
-        // ID4 configuration exists but has no pricing values configured
-        console.log(`💰 Item ${section.itemNo}: ID4 configuration found but no cutting costs configured - showing £0.00`);
-        return {
-          cost: 0,
-          currency: '£',
-          method: 'ID4 Not Configured',
-          status: 'id4_unconfigured',
-          patchingType: 'Robotic Cutting (Unconfigured)',
-          defectCount: 0,
-          costPerUnit: 0,
-          recommendation: 'Configure ID4 robotic cutting costs in pricing configuration'
-        };
-      }
-      
-      // ID4 has configured values - calculate robotic cutting cost
-      // This is where ID6 logic will eventually combine cutting + patching costs
-      const firstCutCost = firstCutOption ? parseFloat(firstCutOption.value) || 0 : 0;
-      const perCutCost = perCutOption ? parseFloat(perCutOption.value) || 0 : 0;
-      
-      // Simple calculation for now - eventually ID6 will add patching costs
-      const totalCuttingCost = firstCutCost + perCutCost;
-      
-      console.log(`💰 Item ${section.itemNo}: ID4 robotic cutting cost calculated: £${totalCuttingCost}`);
-      return {
-        cost: totalCuttingCost,
-        currency: '£',
-        method: 'ID4 Robotic Cutting',
-        status: 'id4_calculated',
-        patchingType: 'Robotic Cutting',
-        defectCount: 1,
-        costPerUnit: totalCuttingCost,
-        recommendation: `ID4 robotic cutting required (eventually ID6 will add patching costs)`
-      };
-    }
+    // Robotic cutting detection now handled in calculateAutoCost function
     
     // Extract pipe size and length for cost calculation
     const pipeSize = section.pipeSize || '150';
@@ -2113,6 +2023,7 @@ export default function Dashboard() {
     
     // Determine which patching option to use based on recommendations or default
     let selectedPatchingOption = null;
+    const recommendations = section.recommendations || '';
     
     // Check if recommendations specify a specific patch type
     if (recommendations.toLowerCase().includes('single layer')) {
@@ -2239,6 +2150,93 @@ export default function Dashboard() {
   // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {
     // Removed excessive logging for performance
+    
+    // CRITICAL FIX: Check for robotic cutting (ID4) requirements FIRST before any other routing
+    const recommendations = section.recommendations || '';
+    console.log(`🤖 Item ${section.itemNo}: Checking recommendations for robotic cutting: "${recommendations}"`);
+    
+    if (recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')) {
+      console.log(`🤖 Item ${section.itemNo}: ROBOTIC CUTTING DETECTED - routing to TP3 ID4 (ID 163)`);
+      
+      // Safety check: Ensure pr2Configurations exists before accessing
+      if (!pr2Configurations || !Array.isArray(pr2Configurations)) {
+        console.log(`❌ Item ${section.itemNo}: pr2Configurations not available for ID4 check`);
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'ID4 Data Missing',
+          status: 'data_missing',
+          patchingType: 'Configuration Data Missing',
+          defectCount: 0,
+          costPerUnit: 0,
+          recommendation: 'Configuration data not loaded'
+        };
+      }
+      
+      const id4Config = pr2Configurations.find((config: any) => 
+        config.categoryId === 'robotic-cutting'
+      );
+      
+      if (!id4Config) {
+        // ID4 configuration doesn't exist - return £0.00
+        console.log(`💰 Item ${section.itemNo}: Requires ID4 robotic cutting but no ID4 configuration found - showing £0.00`);
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'ID4 Required',
+          status: 'id4_missing',
+          patchingType: 'Robotic Cutting Required',
+          defectCount: 0,
+          costPerUnit: 0,
+          recommendation: 'Configure ID4 robotic cutting pricing first'
+        };
+      }
+      
+      // ID4 config exists - check if it has configured pricing options
+      console.log(`💰 Item ${section.itemNo}: Using ID4 robotic cutting configuration (ID ${id4Config.id})`);
+      
+      const firstCutOption = id4Config.pricingOptions?.find((option: any) => 
+        option.label?.toLowerCase().includes('first cut') && option.value && option.value.trim() !== ''
+      );
+      const perCutOption = id4Config.pricingOptions?.find((option: any) => 
+        option.label?.toLowerCase().includes('cost per cut') && option.value && option.value.trim() !== ''
+      );
+      
+      if (!firstCutOption && !perCutOption) {
+        // ID4 config exists but has no pricing values - show £0.00
+        console.log(`💰 Item ${section.itemNo}: ID4 configuration exists but has no pricing values - showing £0.00`);
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'ID4 Unconfigured',
+          status: 'id4_unconfigured',
+          patchingType: 'Robotic Cutting (Unconfigured)',
+          defectCount: 0,
+          costPerUnit: 0,
+          recommendation: 'Configure ID4 robotic cutting pricing values'
+        };
+      }
+      
+      // Calculate robotic cutting cost
+      const firstCutCost = firstCutOption ? parseFloat(firstCutOption.value) || 0 : 0;
+      const perCutCost = perCutOption ? parseFloat(perCutOption.value) || 0 : 0;
+      
+      // Simple calculation: first cut + per cut (assuming 1 additional cut)
+      const totalCost = firstCutCost + perCutCost;
+      
+      console.log(`💰 Item ${section.itemNo}: ID4 robotic cutting cost: £${firstCutCost} (first) + £${perCutCost} (per cut) = £${totalCost}`);
+      
+      return {
+        cost: totalCost,
+        currency: '£',
+        method: 'ID4 Robotic Cutting',
+        status: 'id4_calculated',
+        patchingType: 'Robotic Cutting',
+        defectCount: 1,
+        costPerUnit: totalCost,
+        recommendation: `Robotic cutting: £${firstCutCost} first cut + £${perCutCost} per additional cut`
+      };
+    }
     
     // Safety check: Ensure pr2Configurations exists and is an array
     if (!pr2Configurations || !Array.isArray(pr2Configurations) || pr2Configurations.length === 0) {
