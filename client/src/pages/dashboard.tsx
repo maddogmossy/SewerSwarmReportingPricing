@@ -1027,34 +1027,30 @@ export default function Dashboard() {
         }
         
         if (hasRepairableDefects && section.recommendations && !section.recommendations.includes('No action required')) {
-          // PRIORITY CHECK: Multi-defect sections - prioritize structural defects over service defects
-          // Query the database for BOTH defect types for this section
-          const hasStructuralDefects = rawSectionData.some(s => 
-            s.itemNo === section.itemNo && s.defectType === 'structural'
-          );
-          const hasServiceDefects = rawSectionData.some(s => 
-            s.itemNo === section.itemNo && s.defectType === 'service'  
-          );
+          // Check defect type from multi-defect splitting system - use INDIVIDUAL section defectType
+          const isServiceDefect = section.defectType === 'service';
+          const isStructuralDefect = section.defectType === 'structural';
           
           // For service defects or cleaning-based defects, show cleaning options
           const needsCleaning = requiresCleaning(section.defects || '');
           const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
 
-          // Debug routing logic for items 21-23
-          if ([21, 22, 23].includes(section.itemNo)) {
-            console.log(`🔍 Item ${section.itemNo} Routing Debug:`, {
-              hasStructuralDefects,
-              hasServiceDefects,
-              currentDefectType: section.defectType,
+          // Debug routing logic for split sections
+          if ([21, 22, 23].includes(section.itemNo) || section.itemNo.toString().includes('a')) {
+            console.log(`🔍 Item ${section.itemNo} Split Section Debug:`, {
+              defectType: section.defectType,
+              isServiceDefect,
+              isStructuralDefect,
               needsCleaning,
               needsStructuralRepair,
-              willRouteToTP2: hasStructuralDefects
+              willRouteToTP1: isServiceDefect,
+              willRouteToTP2: isStructuralDefect
             });
           }
 
-          // MSCC5 PRIORITY RULE: Structural defects take PRIORITY over service defects
-          // If section has ANY structural defects, route to TP2 patching
-          if (!hasStructuralDefects && (hasServiceDefects || needsCleaning)) {
+          // MSCC5 RULE: Route based on INDIVIDUAL section defectType, not cross-section checking
+          // Service defects route to TP1, structural defects route to TP2
+          if (isServiceDefect || (needsCleaning && !isStructuralDefect)) {
             // Check if any CLEANING PR2 configurations exist AND have actual values configured (exclude patching)
             const validConfigurations = repairPricingData?.filter(config => 
               config.categoryId !== 'patching' && isConfigurationProperlyConfigured(config)
@@ -1142,7 +1138,7 @@ export default function Dashboard() {
               </CleaningOptionsPopover>
             );
           } 
-          // For structural defects or sections with structural components, show repair options  
+          // For structural defects, show repair options  
           else {
             // Check if TP2 patching configuration exists for this pipe size and sector
             const pipeSize = section.pipeSize || '150';
@@ -1257,20 +1253,16 @@ export default function Dashboard() {
           const needsCleaning = requiresCleaning(section.defects || '');
           const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
           
-          // PRIORITY ROUTING FIX: Check for BOTH defect types, prioritize structural
-          const hasStructuralDefectsForCost = rawSectionData.some(s => 
-            s.itemNo === section.itemNo && s.defectType === 'structural'
-          );
-          const hasServiceDefectsForCost = rawSectionData.some(s => 
-            s.itemNo === section.itemNo && s.defectType === 'service'  
-          );
+          // SPLIT SECTION ROUTING: Use individual section defectType for cost calculation
+          const isServiceDefectForCost = section.defectType === 'service';
+          const isStructuralDefectForCost = section.defectType === 'structural';
           
           let costCalculation;
-          if (hasStructuralDefectsForCost) {
-            // Route sections with ANY structural defects to TP2/TP3 calculation
+          if (isStructuralDefectForCost) {
+            // Route structural defects (21a, 22a) to TP2/TP3 calculation
             costCalculation = calculateAutoCost(section);
-          } else if (hasServiceDefectsForCost || needsCleaning) {
-            // Route service-only defects to TP1 cleaning calculation
+          } else if (isServiceDefectForCost || needsCleaning) {
+            // Route service defects (21, 22, 23) to TP1 cleaning calculation
             costCalculation = calculateTP1CleaningCost(section);
           } else {
             // Fallback to auto cost calculation
