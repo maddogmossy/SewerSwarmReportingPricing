@@ -1207,8 +1207,17 @@ export default function Dashboard() {
           const needsCleaning = requiresCleaning(section.defects || '');
           const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
           
-          // Try to calculate cost using PR2 configuration (includes TP2 patching)
-          const costCalculation = calculateAutoCost(section);
+          // MSCC5 ROUTING FIX: Service defects route to TP1, structural defects route to TP2/TP3
+          const isServiceDefect = section.defectType === 'service';
+          
+          let costCalculation;
+          if (isServiceDefect) {
+            // Route service defects to TP1 cleaning calculation
+            costCalculation = calculateTP1CleaningCost(section);
+          } else {
+            // Route structural defects to TP2/TP3 calculation
+            costCalculation = calculateAutoCost(section);
+          }
           
           // Check for TP2 below minimum quantity case - show RED COST instead of triangle
           if (costCalculation && 'showRedTriangle' in costCalculation && costCalculation.showRedTriangle) {
@@ -1986,6 +1995,81 @@ export default function Dashboard() {
     // Defect counting completed
     
     return defectCount;
+  };
+
+  // Function to calculate TP1 cleaning cost for service defects
+  const calculateTP1CleaningCost = (section: any) => {
+    // Find TP1 CCTV configuration for this sector
+    const tp1Config = pr2Configurations?.find(config => 
+      config.categoryId === 'cctv-jet-vac' && 
+      config.sector === currentSector.id
+    );
+    
+    if (!tp1Config || !isConfigurationProperlyConfigured(tp1Config)) {
+      // No TP1 configuration found or not properly configured - return £0.00
+      return {
+        cost: 0,
+        currency: '£',
+        method: 'TP1 Required',
+        status: 'tp1_missing',
+        patchingType: 'TP1 Cleaning Required',
+        defectCount: 0,
+        costPerUnit: 0,
+        recommendation: 'Configure TP1 CCTV cleaning pricing first'
+      };
+    }
+    
+    // Extract day rate and runs per shift from TP1 configuration
+    const dayRateOption = tp1Config.pricingOptions?.find((option: any) => 
+      option.label?.toLowerCase().includes('day rate') && option.value && option.value.trim() !== ''
+    );
+    const runsOption = tp1Config.pricingOptions?.find((option: any) => 
+      option.label?.toLowerCase().includes('runs') && option.value && option.value.trim() !== ''
+    );
+    
+    if (!dayRateOption || !runsOption) {
+      // TP1 config exists but missing essential values - return £0.00
+      return {
+        cost: 0,
+        currency: '£',
+        method: 'TP1 Unconfigured',
+        status: 'tp1_unconfigured',
+        patchingType: 'TP1 Cleaning (Unconfigured)',
+        defectCount: 0,
+        costPerUnit: 0,
+        recommendation: 'Configure TP1 day rate and runs per shift values'
+      };
+    }
+    
+    // Calculate TP1 cleaning cost: Day Rate ÷ Runs Per Shift
+    const dayRate = parseFloat(dayRateOption.value) || 0;
+    const runsPerShift = parseFloat(runsOption.value) || 0;
+    
+    if (dayRate === 0 || runsPerShift === 0) {
+      return {
+        cost: 0,
+        currency: '£',
+        method: 'TP1 Invalid Values',
+        status: 'tp1_invalid',
+        patchingType: 'TP1 Cleaning (Invalid Values)',
+        defectCount: 0,
+        costPerUnit: 0,
+        recommendation: 'TP1 configuration has invalid values'
+      };
+    }
+    
+    const costPerSection = dayRate / runsPerShift;
+    
+    return {
+      cost: costPerSection,
+      currency: '£',
+      method: 'TP1 Cleaning',
+      status: 'calculated',
+      patchingType: 'CCTV Jet Vac Cleaning',
+      defectCount: 1, // Service defects count as 1 section to clean
+      costPerUnit: costPerSection,
+      recommendation: `TP1 cleaning: £${dayRate} ÷ ${runsPerShift} runs = £${costPerSection.toFixed(2)}`
+    };
   };
 
   // Function to calculate TP2 patching cost using DB7 Math window for minimum quantity checks
