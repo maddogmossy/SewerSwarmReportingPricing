@@ -590,6 +590,22 @@ export default function Dashboard() {
     message: ''
   });
 
+  // TP1 minimum quantity warning dialog state
+  const [showTP1DistributionDialog, setShowTP1DistributionDialog] = useState<{
+    show: boolean;
+    tp1Sections: any[];
+    totalSections: number;
+    minQuantity: number;
+    configurationId?: number;
+    message: string;
+  }>({
+    show: false,
+    tp1Sections: [],
+    totalSections: 0,
+    minQuantity: 25,
+    message: ''
+  });
+
   // Validation warning popup system
   const validationWarnings = useValidationWarnings();
 
@@ -1787,6 +1803,13 @@ export default function Dashboard() {
         } catch (error) {
           console.error('🔧 TP2 CONFIG CHECK ERROR:', error);
         }
+
+        try {
+          checkTP1ConfigurationIssues(rawSectionData, pr2Configurations);
+          console.log('🔧 TP1 CONFIG CHECK COMPLETED');
+        } catch (error) {
+          console.error('🔧 TP1 CONFIG CHECK ERROR:', error);
+        }
       } catch (error) {
         console.error('🔧 VALIDATION EFFECT ERROR:', error);
       }
@@ -1907,6 +1930,69 @@ export default function Dashboard() {
           configurationId: pipeSizeConfig.id,
           pipeSize: pipeSize,
           message: `${structuralSectionsWithTriangles.length} structural sections showing triangles and costs are red - TP2 configuration needed`
+        });
+      }
+    }
+  };
+
+  // Function to detect TP1 configuration issues and trigger validation warnings  
+  const checkTP1ConfigurationIssues = (sections: any[], configurations: any[]) => {
+    console.log('🔧 TP1 CONFIG CHECK STARTED - sections:', sections.length, 'configs:', configurations.length);
+
+    // Find TP1 cleaning configurations for current sector
+    const tp1Configs = configurations.filter(config => 
+      config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
+    );
+    console.log('🔧 TP1 CONFIGS FOUND:', tp1Configs.length);
+
+    if (tp1Configs.length === 0) {
+      console.log('🔧 NO TP1 CONFIGS - RETURNING');
+      return; // No TP1 configurations found
+    }
+
+    // Check if costs are displaying as red (orange minimum not met)
+    const orangeMinimumMet = checkOrangeMinimumMet();
+    const costsAreRed = !orangeMinimumMet;
+
+    // Only trigger TP1 warning when ALL sections have complete pricing AND costs are red
+    const allSectionsHaveCompletePricing = sections.every(section => {
+      const costCalc = calculateAutoCost(section);
+      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured'].includes(costCalc.status);
+    });
+
+    // Debug TP1 sections
+    const serviceSections = sections.filter(s => s.defectType === 'service');
+    console.log('🔧 TP1 MQW CHECK:', {
+      allSectionsConfigured: allSectionsHaveCompletePricing,
+      costsAreRed: costsAreRed,
+      shouldTrigger: allSectionsHaveCompletePricing && costsAreRed,
+      totalSections: sections.length,
+      serviceSections: serviceSections.length,
+      sectionsNeedingCleaning: serviceSections.filter(s => requiresCleaning(s)).length
+    });
+    
+    // Only trigger TP1 warning when ALL pricing is complete AND costs are red due to minimum quantity issues
+    if (allSectionsHaveCompletePricing && costsAreRed) {
+      
+      // Find the main TP1 configuration
+      const tp1Config = tp1Configs[0]; // Use first available config
+      
+      if (tp1Config) {
+        const minQuantityOption = tp1Config.quantityOptions?.find((opt: any) => 
+          opt.enabled && opt.value && opt.value.trim() !== '' && opt.value !== '0'
+        );
+        const minQuantity = minQuantityOption?.value ? parseInt(minQuantityOption.value) : 0;
+        
+        console.log('🔧 TP1 WARNING TRIGGERED: All pricing complete AND costs are red');
+        
+        // Show TP1 minimum quantity warning popup
+        setShowTP1DistributionDialog({
+          show: true,
+          tp1Sections: serviceSections.filter(s => requiresCleaning(s)),
+          totalDefects: serviceSections.filter(s => requiresCleaning(s)).length,
+          minQuantity: minQuantity,
+          configurationId: tp1Config.id,
+          message: `${serviceSections.filter(s => requiresCleaning(s)).length} sections require cleaning but minimum quantity (${minQuantity}) not met for cost-effective operation.`
         });
       }
     }
@@ -2879,6 +2965,27 @@ export default function Dashboard() {
     }
     
     return true;
+  };
+
+  // Function to check if a section requires cleaning (for TP1)
+  const requiresCleaning = (section: any): boolean => {
+    if (!section) return false;
+    
+    // Service defects that require cleaning
+    if (section.defectType === 'service') return true;
+    
+    // Check defect text for cleaning requirements
+    const defects = section.defects || '';
+    const defectsUpper = defects.toUpperCase();
+    
+    // Service defect codes that require cleaning
+    const serviceDefectCodes = ['DES', 'DER', 'WL', 'DEC', 'DEF', 'RI', 'OB', 'S/A'];
+    const hasServiceDefects = serviceDefectCodes.some(code => defectsUpper.includes(code));
+    
+    // Water levels require cleaning
+    const hasWaterLevels = defectsUpper.includes('WATER LEVEL') || defectsUpper.includes('% OF THE VERTICAL DIMENSION');
+    
+    return hasServiceDefects || hasWaterLevels;
   };
 
   // Component-level dynamic recommendation function with access to checkSectionMeetsPR2Requirements
@@ -4375,6 +4482,84 @@ export default function Dashboard() {
           onPriceUpdate={handlePatchPriceUpdate}
         />
       )}
+
+      {/* TP1 Minimum Quantity Warning Dialog */}
+      <Dialog open={showTP1DistributionDialog.show} onOpenChange={(open) => 
+        setShowTP1DistributionDialog(prev => ({ ...prev, show: open }))
+      }>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-blue-600 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              TP1 Minimum Quantity Warning
+            </DialogTitle>
+            <DialogDescription>
+              {showTP1DistributionDialog.message}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-blue-800">Service defects requiring cleaning:</span>
+                  <span className="text-blue-900 font-bold">{showTP1DistributionDialog.totalDefects}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-blue-800">Minimum required:</span>
+                  <span className="text-blue-900 font-bold">{showTP1DistributionDialog.minQuantity}</span>
+                </div>
+                <div className="border-t border-blue-200 pt-3">
+                  <p className="text-sm text-blue-700">
+                    <strong>Configure TP1 Cleaning - Configuration ID to Update:</strong>
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <span className="px-3 py-2 bg-orange-100 text-orange-900 text-sm rounded-lg font-bold border-2 border-orange-300">
+                      ID {showTP1DistributionDialog.configurationId} (CCTV/Jet Vac)
+                    </span>
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-xs text-orange-700 font-medium">
+                      Currently failing: Configuration requires minimum {showTP1DistributionDialog.minQuantity} sections for cost-effective operation
+                    </p>
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-sm text-blue-700">
+                      <strong>Affected sections:</strong>
+                    </p>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {showTP1DistributionDialog.tp1Sections.map((section, index) => (
+                        <span 
+                          key={index}
+                          className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-md font-medium"
+                        >
+                          Item {section.itemNo}{section.letterSuffix || ''}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowTP1DistributionDialog(prev => ({ ...prev, show: false }))}
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                // Navigate to TP1 configuration page
+                window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}`;
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Configure TP1 Cleaning
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* TP2 Minimum Quantity Warning Dialog */}
       <Dialog open={showTP2DistributionDialog.show} onOpenChange={(open) => 
