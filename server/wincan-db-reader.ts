@@ -188,10 +188,12 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
       
       console.log(`📊 Found ${sectionRecords.length} section records in database`);
       
-      // Get observations for each section
+      // Get observations for each section (exclude finish node codes)
       const observationQuery = `
         SELECT OBJ_Section_REF, OBJ_Code, OBJ_PosFrom, OBJ_Text 
         FROM SECOBS 
+        WHERE OBJ_Code IS NOT NULL 
+        AND OBJ_Code NOT IN ('MH', 'MHF', 'COF', 'OCF', 'CPF', 'CP', 'OC')
         ORDER BY OBJ_Section_REF, OBJ_PosFrom
       `;
       
