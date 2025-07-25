@@ -96,6 +96,7 @@ const CATEGORY_PAGE_IDS = {
   'ims-cutting': 'p24',
   'excavation': 'p25',
   'patching': 'p26',
+  'robotic-cutting': 'p4', // TP3 Template - ID4 Robotic Cutting
   'tankering': 'p27'
 };
 
@@ -227,6 +228,7 @@ export default function PR2ConfigClean() {
         'ims-cutting': `${formattedSize} IMS Cutting Configuration`,
         'excavation': `${formattedSize} Excavation Configuration`,
         'patching': `${formattedSize} Patching Configuration`,
+        'robotic-cutting': `${formattedSize} Robotic Cutting Configuration`, // TP3 Template
         'tankering': `${formattedSize} Tankering Configuration`
       };
       return categoryMap[categoryId] || `${formattedSize} Configuration`;
@@ -246,6 +248,7 @@ export default function PR2ConfigClean() {
       'ims-cutting': 'IMS Cutting Configuration',
       'excavation': 'Excavation Configuration',
       'patching': 'Patching Configuration',
+      'robotic-cutting': 'Robotic Cutting Configuration', // TP3 Template
       'tankering': 'Tankering Configuration'
     };
     return categoryMap[categoryId] || 'Configuration';
@@ -298,11 +301,11 @@ export default function PR2ConfigClean() {
     return false;
   };
 
-  // Clean form state with default options initialized - different for TP1 vs TP2
+  // Clean form state with default options initialized - different for TP1 vs TP2 vs TP3
   const getDefaultFormData = () => {
-    const isPatching = categoryId === 'patching';
+    const templateType = getTemplateType(categoryId || '');
     
-    if (isPatching) {
+    if (templateType === 'TP2') {
       // TP2 - Patching Configuration (no green window, no math, custom purple)
       return {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
@@ -335,6 +338,46 @@ export default function PR2ConfigClean() {
         quantityStackOrder: [],
         minQuantityStackOrder: ['minquantity_runs', 'patch_min_qty_1', 'patch_min_qty_2', 'patch_min_qty_3', 'patch_min_qty_4'],
         rangeStackOrder: ['range_length'],
+        vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_7_5t'],
+        sector
+      };
+    } else if (templateType === 'TP3') {
+      // TP3 - Robotic Cutting Configuration (specific template structure per user requirements)
+      return {
+        categoryName: categoryId ? getCategoryName(categoryId) : '',
+        description: '',
+        categoryColor: '#ffffff', // Default white color - user must assign color
+        
+        // DB10 Window (Blue) - Pipe Range & Cutting Costs
+        pricingOptions: [
+          { id: 'pipe_range_min', label: 'Pipe Range (Min)', enabled: true, value: '' },
+          { id: 'pipe_range_max', label: 'Pipe Range (Max)', enabled: true, value: '' },
+          { id: 'first_cut_cost', label: 'First Cut Cost', enabled: true, value: '' },
+          { id: 'cost_per_cut_after_1st', label: 'Cost Per Cut After 1st', enabled: true, value: '' }
+        ],
+        
+        // Green Window - Number of Cuts Per Shift
+        quantityOptions: [
+          { id: 'cuts_per_shift', label: 'No of Cuts Per Shift', enabled: true, value: '' }
+        ],
+        
+        // Purple Window - Range Options (empty for TP3)
+        rangeOptions: [],
+        
+        // Orange Window - Min Quantity Options (empty for TP3)
+        minQuantityOptions: [],
+        
+        // DB15 Window (Teal) - Vehicle Travel Time (separate from main template)
+        vehicleTravelRates: [
+          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
+          { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', numberOfHours: '2', enabled: true }
+        ],
+        
+        mathOperators: [], // No math window for TP3
+        pricingStackOrder: ['pipe_range_min', 'pipe_range_max', 'first_cut_cost', 'cost_per_cut_after_1st'],
+        quantityStackOrder: ['cuts_per_shift'],
+        minQuantityStackOrder: [],
+        rangeStackOrder: [],
         vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_7_5t'],
         sector
       };
@@ -372,7 +415,7 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // Function to determine template type (TP1 vs TP2)
+  // Function to determine template type (TP1 vs TP2 vs TP3)
   const getTemplateType = (categoryId: string) => {
     // TP1 categories: CCTV, van pack, jet vac, cctv/van pack, directional water cutting, tankering
     const tp1Categories = [
@@ -383,8 +426,13 @@ export default function PR2ConfigClean() {
     // TP2 categories: patching only
     const tp2Categories = ['patching'];
     
+    // TP3 categories: robotic cutting only
+    const tp3Categories = ['robotic-cutting'];
+    
     if (tp2Categories.includes(categoryId)) {
       return 'TP2';
+    } else if (tp3Categories.includes(categoryId)) {
+      return 'TP3';
     } else if (tp1Categories.includes(categoryId)) {
       return 'TP1';
     } else {

@@ -2003,10 +2003,9 @@ export default function Dashboard() {
     const recommendations = section.recommendations || '';
     if (recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')) {
       // This section requires ID4 robotic cutting configuration
-      // Check if ID4 configuration exists
+      // Check if ID4 configuration exists (now using 'robotic-cutting' categoryId)
       const id4Config = pr2Configurations.find((config: any) => 
-        config.categoryId === 'patching' && 
-        config.categoryName?.toLowerCase().includes('id4')
+        config.categoryId === 'robotic-cutting'
       );
       
       if (!id4Config) {
@@ -2024,7 +2023,7 @@ export default function Dashboard() {
         };
       }
       
-      // ID4 config exists - use it for calculation
+      // ID4 config exists - use it for calculation (eventually will link to ID6 for patch+cut)
       console.log(`💰 Item ${section.itemNo}: Using ID4 robotic cutting configuration`);
       tp2Config = id4Config;
     }
