@@ -1,4 +1,4 @@
-import { db } from "./storage";
+import { db } from "./db";
 import { sectionInspections } from "../shared/schema";
 import { eq } from "drizzle-orm";
 
