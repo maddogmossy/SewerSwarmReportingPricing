@@ -64,7 +64,16 @@ const requiresCleaning = (defects: string): boolean => {
   const cleaningCodes = ['DEG', 'DES', 'DEC', 'DER', 'debris', 'deposits', 'blockage'];
   const defectsUpper = defects.toUpperCase();
   
-  return cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
+  // Check for basic cleaning codes
+  const hasCleaningCodes = cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
+  
+  // Check for SA codes with bung conditions requiring cleanse and resurvey
+  const hasSABungCondition = defectsUpper.includes('SA ') && (
+    defectsUpper.includes('BUNG') || defectsUpper.includes('CAP') || 
+    defectsUpper.includes('NOT CONNECTED') || defectsUpper.includes('BLOCKAGE')
+  );
+  
+  return hasCleaningCodes || hasSABungCondition;
 };
 
 // Helper function to convert hex to rgba with opacity
