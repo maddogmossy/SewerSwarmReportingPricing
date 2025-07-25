@@ -722,6 +722,27 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 25, 2025)
 
+### CRITICAL: TP2 MQW Warning Logic Fixed - Complete Pricing Requirement Implemented ✅
+- **Date**: January 25, 2025
+- **Status**: Successfully fixed TP2 Minimum Quantity Warning to only trigger when ALL sections have complete pricing
+- **Issues Fixed**:
+  - **Premature Warning Trigger**: TP2 MQW was incorrectly triggering when sections had unconfigured pricing (triangles)
+  - **Logic Enhancement**: Modified trigger to require ALL 24 sections to have successful cost calculations before warning
+  - **Status Exclusion**: System now properly excludes tp1_unconfigured, tp1_invalid, tp2_unconfigured, id4_unconfigured statuses
+  - **Red Cost Requirement**: Warning only appears when fully calculated costs are red due to minimum quantity violations
+- **Technical Implementation**:
+  - Added `allSectionsHaveCompletePricing` validation requiring cost > 0 and valid status for all sections
+  - Enhanced debug logging with "🔧 TP2 MQW CHECK" to track pricing completion status
+  - Modified trigger condition from "structural sections with triangles" to "complete pricing AND red costs"
+  - Comprehensive status filtering prevents triangles from triggering structural defect warnings
+- **User Benefits**: 
+  - TP2 warning no longer appears prematurely when TP1 service pricing is incomplete
+  - System properly distinguishes between unconfigured pricing vs minimum quantity violations
+  - Warning only appears when all pricing is complete and genuinely below minimum thresholds
+- **Result**: TP2 MQW now correctly suppressed until all 24 sections have complete pricing calculations
+
+## Recent Changes (Updated January 25, 2025)
+
 ### CRITICAL: Complete MHf Node/Finish Code Filtering System Locked ✅
 - **Date**: January 25, 2025
 - **Status**: Successfully eliminated all start/finish node codes from dashboard observations display
