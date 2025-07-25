@@ -1330,7 +1330,12 @@ export default function Dashboard() {
             );
           }
           
-          if (costCalculation && 'cost' in costCalculation && costCalculation.cost > 0) {
+          // Check if this is a valid cost calculation (not a failed configuration)
+          const isValidCostCalculation = costCalculation && 'cost' in costCalculation && 
+            costCalculation.cost > 0 && 
+            !['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured'].includes(costCalculation.status);
+          
+          if (isValidCostCalculation) {
             // Check if orange minimum is met to determine cost color
             const orangeMinimumMet = checkOrangeMinimumMet();
             const costColor = orangeMinimumMet ? "text-green-700" : "text-red-600";
@@ -1781,9 +1786,16 @@ export default function Dashboard() {
                                    recommendations.toLowerCase().includes('id4');
       if (requiresRoboticCutting) return false;
       
-      // Check if this section would show a triangle (no cost calculation possible)
+      // Check if this section would show a triangle (no valid cost calculation)
       const costCalculation = calculateAutoCost(section);
-      const showsTriangle = !costCalculation || costCalculation === null;
+      
+      // A section shows a triangle if:
+      // 1. No cost calculation returned (null)
+      // 2. Cost calculation failed (cost = 0 with failed status)
+      const showsTriangle = !costCalculation || 
+                           costCalculation === null || 
+                           (costCalculation.cost === 0 && 
+                            ['tp1_unconfigured', 'tp1_invalid', 'tp1_missing', 'id4_unconfigured'].includes(costCalculation.status));
       
       return showsTriangle;
     });
