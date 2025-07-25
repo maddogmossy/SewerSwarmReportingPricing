@@ -215,23 +215,23 @@ async function formatObservationText(observations: string[], sector: string = 'u
         }
       }
       
-      // Build full description with defect name and percentage
+      // Build full description with defect code prefix and description
       if (defectDescriptions[code]) {
         // Special handling for WL codes - keep original compact format
         if (code === 'WL') {
           fullDescription = obs; // Keep original format like "WL 20% 1.3m, 18.03m"
         } else if (percentageText) {
-          fullDescription = `${defectDescriptions[code]}, ${percentageText}`;
+          fullDescription = `${code} ${defectDescriptions[code]}, ${percentageText}`;
         } else {
           // Add default percentage for common defects to show enhanced descriptions
           if (code === 'DES') {
-            fullDescription = `${defectDescriptions[code]}, 5% cross-sectional area loss`;
+            fullDescription = `${code} ${defectDescriptions[code]}, 5% cross-sectional area loss`;
           } else if (code === 'DER') {
-            fullDescription = `${defectDescriptions[code]}, 10% cross-sectional area loss`;
+            fullDescription = `${code} ${defectDescriptions[code]}, 10% cross-sectional area loss`;
           } else if (code === 'D') {
-            fullDescription = `${defectDescriptions[code]}, 8% cross-sectional area loss`;
+            fullDescription = `${code} ${defectDescriptions[code]}, 8% cross-sectional area loss`;
           } else {
-            fullDescription = defectDescriptions[code];
+            fullDescription = `${code} ${defectDescriptions[code]}`;
           }
         }
       } else {
@@ -539,8 +539,8 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     }
     
     // Check file header to determine if corrupted
-    const buffer = fs.readFileSync(filePath, { start: 0, end: 15 });
-    const header = buffer.toString('ascii');
+    const buffer = fs.readFileSync(filePath);
+    const header = buffer.subarray(0, 16).toString('ascii');
     
     if (!header.startsWith('SQLite format')) {
       console.error("❌ CORRUPTED DATABASE FILE DETECTED");
@@ -846,10 +846,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           defects: serviceDefectText,
           recommendations: serviceClassification.recommendations,
           severityGrade: serviceClassification.severityGrade,
-          severityGrades: {
-            structural: authenticServiceGrades?.structural ?? 0,
-            service: authenticServiceGrades?.service ?? serviceClassification.severityGrade
-          },
           adoptable: serviceClassification.adoptable,
           inspectionDate: inspectionDate,
           inspectionTime: inspectionTime,
@@ -890,10 +886,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           defects: structuralDefectText,
           recommendations: structuralClassification.recommendations,
           severityGrade: structuralClassification.severityGrade,
-          severityGrades: {
-            structural: authenticServiceGrades?.structural ?? structuralClassification.severityGrade,
-            service: authenticServiceGrades?.service ?? 0
-          },
           adoptable: structuralClassification.adoptable,
           inspectionDate: inspectionDate,
           inspectionTime: inspectionTime,
@@ -970,14 +962,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         defects: defectText,
         recommendations: recommendations,
         severityGrade: severityGrade,
-        severityGrades: authenticGrades ? {
-          structural: authenticGrades.structural,
-          service: authenticGrades.service
-        } : {
-          // For sections without SECSTAT data, set proper grades based on MSCC5 classification
-          structural: defectType === 'structural' ? severityGrade : 0,
-          service: defectType === 'service' ? severityGrade : 0
-        },
         adoptable: adoptable,
         inspectionDate: inspectionDate,
         inspectionTime: inspectionTime,
@@ -1063,7 +1047,6 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         defectType: section.defectType,
         recommendations: section.recommendations,
         severityGrade: section.severityGrade,
-        severityGrades: section.severityGrades,
         adoptable: section.adoptable,
         startMHDepth: 'No data',
         finishMHDepth: 'No data'
