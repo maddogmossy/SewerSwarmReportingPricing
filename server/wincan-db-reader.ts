@@ -413,13 +413,20 @@ function classifyWincanObservations(observationText: string, sector: string) {
     const percentageMatch = observationText.match(/(\d+)%/);
     const percentage = percentageMatch ? parseInt(percentageMatch[1]) : 5;
     
+    console.log(`🔍 CHECKING ITEM: upperText="${upperText}"`);
+    console.log(`🔍 CHECKING ITEM: observationText="${observationText}"`);
+    
     // CRITICAL: Check for 1-meter junction rule - Junction proximity to structural defects
     let requiresRoboticCutting = false;
     let junctionMessage = '';
     if (upperText.includes('JUNCTION') && upperText.includes('DEFORMATION')) {
-      // Extract junction and deformation positions
-      const junctionMatch = observationText.match(/JUNCTION AT (\d+\.?\d*)M/i);
-      const deformationMatches = observationText.match(/DEFORMATION[^@]*AT (\d+\.?\d*)M(?:, (\d+\.?\d*)M)?/i);
+      console.log(`🎯 JUNCTION + DEFORMATION DETECTED: ${observationText}`);
+      // Extract junction and deformation positions (case-insensitive patterns)
+      const junctionMatch = observationText.match(/junction at (\d+\.?\d*)m/i);
+      const deformationMatches = observationText.match(/deformation.*?(?:loss\s+)?at (\d+\.?\d*)m(?:, (\d+\.?\d*)m)?/i);
+      
+      console.log(`🎯 Junction match:`, junctionMatch);
+      console.log(`🎯 Deformation matches:`, deformationMatches);
       
       if (junctionMatch && deformationMatches) {
         const junctionPos = parseFloat(junctionMatch[1]);
