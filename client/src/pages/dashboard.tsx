@@ -2014,6 +2014,36 @@ export default function Dashboard() {
   const calculateTP2PatchingCost = (section: any, tp2Config: any) => {
     // calculateTP2PatchingCost called for section
     
+    // CRITICAL FIX: Check for robotic cutting (ID4) requirements FIRST
+    const recommendations = section.recommendations || '';
+    if (recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')) {
+      // This section requires ID4 robotic cutting configuration
+      // Check if ID4 configuration exists
+      const id4Config = pr2Configurations.find((config: any) => 
+        config.categoryId === 'patching' && 
+        config.categoryName?.toLowerCase().includes('id4')
+      );
+      
+      if (!id4Config) {
+        // ID4 configuration doesn't exist - return £0.00
+        console.log(`💰 Item ${section.itemNo}: Requires ID4 robotic cutting but no ID4 configuration found - showing £0.00`);
+        return {
+          cost: 0,
+          currency: '£',
+          method: 'ID4 Required',
+          status: 'id4_missing',
+          patchingType: 'Robotic Cutting Required',
+          defectCount: 0,
+          costPerUnit: 0,
+          recommendation: 'Configure ID4 robotic cutting pricing first'
+        };
+      }
+      
+      // ID4 config exists - use it for calculation
+      console.log(`💰 Item ${section.itemNo}: Using ID4 robotic cutting configuration`);
+      tp2Config = id4Config;
+    }
+    
     // Extract pipe size and length for cost calculation
     const pipeSize = section.pipeSize || '150';
     const sectionLength = parseFloat(section.totalLength) || 0;
@@ -2031,7 +2061,6 @@ export default function Dashboard() {
     
     // Determine which patching option to use based on recommendations or default
     let selectedPatchingOption = null;
-    const recommendations = section.recommendations || '';
     
     // Check if recommendations specify a specific patch type
     if (recommendations.toLowerCase().includes('single layer')) {
