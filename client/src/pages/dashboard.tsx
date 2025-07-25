@@ -2404,9 +2404,12 @@ export default function Dashboard() {
     // Calculate base cost: cost per unit × defect count
     const baseCost = costPerUnit * defectCount;
     
+    // Travel cost integration placeholder (DNC protocol - matching TP1 structure)
+    const travelAdjustment = 0; // Will be replaced with calculateTravelCostAdjustment(section, 'structural')
+    
     // USE DIRECT CONFIGURATION VALUES - NO DAY RATE DISTRIBUTION
     // The configuration values already include final cost (£475, £600, £570)
-    const totalCost = costPerUnit * defectCount;
+    const totalCost = (costPerUnit * defectCount) + travelAdjustment;
     
     // CHECK MINIMUM QUANTITY REQUIREMENT
     const meetsMinimumQuantity = defectCount >= minQuantity;
@@ -2425,19 +2428,23 @@ export default function Dashboard() {
         minRequired: minQuantity,
         costPerUnit: costPerUnit,
         baseCost: baseCost,
+        travelCost: travelAdjustment,
         dayRateAdjustment: 0,
         totalCost: totalCost, // Include total cost with day rate adjustment for red display
         status: 'below_minimum'
       };
     }
     
-    // Update recommendation to include pipe size and length with P26 day rate info
-    const recommendationText = `To install ${pipeSize}mm x ${sectionLength}m ${selectedPatchingOption.label.toLowerCase()} patching`;
+    // Update recommendation to include pipe size and length with travel cost info
+    const recommendationText = travelAdjustment > 0 
+      ? `TP2 patching: £${baseCost.toFixed(2)} + £${travelAdjustment.toFixed(2)} travel = £${totalCost.toFixed(2)}`
+      : `To install ${pipeSize}mm x ${sectionLength}m ${selectedPatchingOption.label.toLowerCase()} patching`;
     
     return {
       cost: totalCost,
       costPerUnit: costPerUnit,
       baseCost: baseCost,
+      travelCost: travelAdjustment,
       dayRateAdjustment: 0,
       dayRate: dayRate, // Now from P26 Central Configuration
       defectCount: defectCount,
