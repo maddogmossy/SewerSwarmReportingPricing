@@ -92,13 +92,15 @@ const requiresStructuralRepair = (defects: string): boolean => {
   const defectsUpper = defects.toUpperCase();
   
   // PRIORITY 1: Check for structural defects FIRST (safety critical)
-  const structuralCodes = ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'deformation'];
+  // CRITICAL FIX: Only check for actual defect CODES, not descriptive text
+  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDM ', 'OJM ', 'OJL ', ' D ', 'crack', 'fracture'];
   
   // Check for major structural defects requiring TP2 patching
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
   
   // Special handling for significant deformation (safety critical)
-  const hasSignificantDeformation = defectsUpper.includes('DEFORMATION') && (
+  // CRITICAL FIX: Only trigger on actual "D " defect code with percentages, not service defect descriptions
+  const hasSignificantDeformation = defectsUpper.includes(' D ') && (
     defectsUpper.includes('5%') || defectsUpper.includes('10%') || defectsUpper.includes('15%') || 
     defectsUpper.includes('20%') || defectsUpper.includes('25%') || defectsUpper.includes('30%') || 
     defectsUpper.includes('MAJOR') || defectsUpper.includes('SEVERE')
