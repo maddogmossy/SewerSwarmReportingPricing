@@ -1724,6 +1724,12 @@ export default function Dashboard() {
       const isStructural = section.defectType === 'structural';
       if (!isStructural) return false;
       
+      // EXCLUDE robotic cutting cases - they use ID4, not TP2
+      const recommendations = section.recommendations || '';
+      const requiresRoboticCutting = recommendations.toLowerCase().includes('robotic cutting') || 
+                                   recommendations.toLowerCase().includes('id4');
+      if (requiresRoboticCutting) return false;
+      
       // Check if this section would show a triangle (no cost calculation possible)
       const costCalculation = calculateAutoCost(section);
       const showsTriangle = !costCalculation || costCalculation === null;
