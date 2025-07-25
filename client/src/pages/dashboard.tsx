@@ -76,38 +76,31 @@ const hexToRgba = (hex: string, opacity: number): string => {
 };
 
 // Function to detect if defects require structural repair (TP2 patching)
+// AUTHENTIC MSCC5/WRc STANDARDS: Structural defects take PRIORITY over service defects
 const requiresStructuralRepair = (defects: string): boolean => {
   if (!defects) return false;
   
-  // PRIORITY 1: If defects contain cleaning codes, use TP1 (cleaning), not TP2 (patching)
-  const cleaningCodes = ['deposits', 'settled', 'debris', 'water level', 'blockage', 'grease', 'DEG', 'DES', 'DEC', 'DER'];
   const defectsUpper = defects.toUpperCase();
   
-  // Check for cleaning defects first - these should use TP1
-  const hasCleaningDefects = cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
-  if (hasCleaningDefects) {
-    // Section has cleaning defects - logging removed
-    return false; // Use TP1 for cleaning
-  }
-  
-  // PRIORITY 2: Only use TP2 for true structural defects
-  const structuralCodes = ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture'];
+  // PRIORITY 1: Check for structural defects FIRST (safety critical)
+  const structuralCodes = ['CR', 'FL', 'FC', 'JDL', 'JDM', 'OJM', 'OJL', 'crack', 'fracture', 'deformation'];
   
   // Check for major structural defects requiring TP2 patching
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
   
-  // Special handling for deformation - only if it's significant (over certain threshold)
+  // Special handling for significant deformation (safety critical)
   const hasSignificantDeformation = defectsUpper.includes('DEFORMATION') && (
-    defectsUpper.includes('10%') || defectsUpper.includes('15%') || defectsUpper.includes('20%') ||
-    defectsUpper.includes('25%') || defectsUpper.includes('30%') || defectsUpper.includes('MAJOR') ||
-    defectsUpper.includes('SEVERE')
+    defectsUpper.includes('5%') || defectsUpper.includes('10%') || defectsUpper.includes('15%') || 
+    defectsUpper.includes('20%') || defectsUpper.includes('25%') || defectsUpper.includes('30%') || 
+    defectsUpper.includes('MAJOR') || defectsUpper.includes('SEVERE')
   );
   
+  // AUTHENTIC MSCC5: If ANY structural defects exist, use TP2 regardless of service defects
   if (hasStructuralDefects || hasSignificantDeformation) {
-    return true; // Use TP2 for structural repair
+    return true; // Structural repair takes priority
   }
   
-  // Default: Use TP1 for any unclassified defects
+  // PRIORITY 2: Only if NO structural defects, then it's service-only (TP1)
   return false;
 };
 
