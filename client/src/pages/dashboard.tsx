@@ -968,9 +968,19 @@ export default function Dashboard() {
           </div>
         );
       case 'srmGrading':
-        // Use the higher of structural or service grade for SRM assessment
-        const maxGrade = Math.max(section.severityGrades?.structural || 0, section.severityGrades?.service || 0);
-        const srm = getSrmBadge(maxGrade);
+        // MSCC5 SRM calculation - special handling for deformation defects
+        const structuralGrade = section.severityGrades?.structural || 0;
+        const serviceGrade = section.severityGrades?.service || 0;
+        const sectionDefects = section.defects || '';
+        
+        let srmGrade = Math.max(structuralGrade, serviceGrade);
+        
+        // Special MSCC5 rule: Deformation with cross-sectional area loss is critical (SRM4)
+        if (sectionDefects.includes('Deformation') && sectionDefects.includes('cross-sectional area loss')) {
+          srmGrade = 4; // Override to CRITICAL for deformation with area loss
+        }
+        
+        const srm = getSrmBadge(srmGrade);
         return (
           <div className="text-sm text-center">
             <span className={`px-2 py-1 rounded text-xs font-semibold ${srm.className}`}>
