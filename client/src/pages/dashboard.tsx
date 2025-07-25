@@ -3917,8 +3917,10 @@ export default function Dashboard() {
                           data-upload-id={currentUpload?.id}
                           data-page="dashboard"
                           className={`${
-                          // Standard Grade 0 adoptable highlighting only
-                          (section.severityGrade === 0 || section.severityGrade === '0') && section.adoptable === 'Yes' 
+                          // Standard Grade 0 adoptable highlighting only - check both old and new severity grade fields
+                          ((section.severityGrade === 0 || section.severityGrade === '0') && 
+                           (!section.severityGrades || (section.severityGrades.service === 0 && section.severityGrades.structural === 0))) && 
+                          section.adoptable === 'Yes' 
                           ? 'bg-green-200 hover:bg-green-300' 
                           : 'hover:bg-slate-50'
                         } border-b border-gray-200`}>
