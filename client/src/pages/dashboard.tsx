@@ -1011,7 +1011,9 @@ export default function Dashboard() {
           const needsCleaning = requiresCleaning(section.defects || '');
           const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
 
-          if ((isServiceDefect || needsCleaning) && !needsStructuralRepair) {
+          // MSCC5 RULE: Service defects ALWAYS route to TP1 cleaning regardless of text content
+          // Structural defects route to TP2 patching based on defectType, not text detection
+          if (isServiceDefect || (needsCleaning && !isStructuralDefect)) {
             // Check if any CLEANING PR2 configurations exist AND have actual values configured (exclude patching)
             const validConfigurations = repairPricingData?.filter(config => 
               config.categoryId !== 'patching' && isConfigurationProperlyConfigured(config)
