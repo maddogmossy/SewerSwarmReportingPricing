@@ -93,14 +93,14 @@ const requiresStructuralRepair = (defects: string): boolean => {
   
   // PRIORITY 1: Check for structural defects FIRST (safety critical)
   // CRITICAL FIX: Only check for actual defect CODES, not descriptive text
-  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDM ', 'OJM ', 'OJL ', ' D ', 'crack', 'fracture'];
+  const structuralCodes = ['CR ', 'FL ', 'FC ', 'JDL ', 'JDM ', 'OJM ', 'OJL ', 'crack', 'fracture'];
   
   // Check for major structural defects requiring TP2 patching
   const hasStructuralDefects = structuralCodes.some(code => defectsUpper.includes(code.toUpperCase()));
   
   // Special handling for significant deformation (safety critical)
-  // CRITICAL FIX: Only trigger on actual "D " defect code with percentages, not service defect descriptions
-  const hasSignificantDeformation = defectsUpper.includes(' D ') && (
+  // FIXED: Match "D Deformation" pattern more accurately 
+  const hasSignificantDeformation = (defectsUpper.includes('D DEFORMATION') || defectsUpper.includes(' D ')) && (
     defectsUpper.includes('5%') || defectsUpper.includes('10%') || defectsUpper.includes('15%') || 
     defectsUpper.includes('20%') || defectsUpper.includes('25%') || defectsUpper.includes('30%') || 
     defectsUpper.includes('MAJOR') || defectsUpper.includes('SEVERE')
@@ -2296,7 +2296,7 @@ export default function Dashboard() {
 
   // Function to calculate TP2 patching cost using DB7 Math window for minimum quantity checks
   const calculateTP2PatchingCost = (section: any, tp2Config: any) => {
-    // calculateTP2PatchingCost called for section
+    console.log(`🔧 Item ${section.itemNo}: calculateTP2PatchingCost called with config ID ${tp2Config.id}`);
     // Robotic cutting detection now handled in calculateAutoCost function
     
     // Extract pipe size and length for cost calculation
@@ -2539,6 +2539,7 @@ export default function Dashboard() {
 
     // Check for TP2 patching configurations first (for structural repairs)
     const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
+    console.log(`🔍 Item ${section.itemNo}: TP2 Check - needsStructuralRepair: ${needsStructuralRepair}, defects: "${section.defects}"`);
     
     // DEBUG: TP2 sections analysis completed
     
@@ -2559,13 +2560,17 @@ export default function Dashboard() {
         config.categoryName?.includes(`${pipeSize}mm`)
       );
       
-
+      console.log(`🔍 Item ${section.itemNo}: TP2 Config search - pipeSize: ${pipeSize}mm, found config:`, tp2PatchingConfig?.id || 'none');
       
       if (tp2PatchingConfig) {
         // Found TP2 patching configuration
-        return calculateTP2PatchingCost(section, tp2PatchingConfig);
+        console.log(`💰 Item ${section.itemNo}: Calling calculateTP2PatchingCost with config ID ${tp2PatchingConfig.id}`);
+        const tp2Result = calculateTP2PatchingCost(section, tp2PatchingConfig);
+        console.log(`💰 Item ${section.itemNo}: TP2 calculation result:`, tp2Result);
+        return tp2Result;
       } else {
         // No TP2 patching configuration found
+        console.log(`❌ Item ${section.itemNo}: No TP2 config found for ${pipeSize}mm`);
         return null; // Return null to show warning triangle
       }
     }
