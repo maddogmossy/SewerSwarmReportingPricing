@@ -2007,7 +2007,10 @@ export default function Dashboard() {
     
     // CRITICAL FIX: Check for robotic cutting (ID4) requirements FIRST
     const recommendations = section.recommendations || '';
+    console.log(`🤖 Item ${section.itemNo}: Checking recommendations for robotic cutting: "${recommendations}"`);
+    
     if (recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')) {
+      console.log(`🤖 Item ${section.itemNo}: ROBOTIC CUTTING DETECTED - routing to TP3 ID4 (ID 163)`);
       // This section requires ID4 robotic cutting configuration
       // Check if ID4 configuration exists (now using 'robotic-cutting' categoryId)
       
