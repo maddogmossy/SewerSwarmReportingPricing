@@ -339,8 +339,21 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             
             // Only add if we have meaningful data
             if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
-              authenticSections.push(sectionData);
-              console.log("✅ Added authentic section:", sectionData.itemNo);
+              // Apply multi-defect splitting logic if defects exist
+              if (defectText && defectText !== 'No service or structural defect found') {
+                console.log(`🔍 Checking Section ${authenticItemNo} for multi-defect splitting`);
+                const { MSCC5Classifier } = await import('./mscc5-classifier');
+                const splitSections = MSCC5Classifier.splitMultiDefectSection(defectText, authenticItemNo, sectionData);
+                
+                for (const splitSection of splitSections) {
+                  authenticSections.push(splitSection);
+                  const displayNo = splitSection.letterSuffix ? `${splitSection.itemNo}${splitSection.letterSuffix}` : splitSection.itemNo;
+                  console.log(`✅ Added authentic section: ${displayNo} (${splitSection.defectType})`);
+                }
+              } else {
+                authenticSections.push(sectionData);
+                console.log("✅ Added authentic section:", sectionData.itemNo);
+              }
             } else {
               console.log("⚠️ Skipping section with missing manhole data");
             }
