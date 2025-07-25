@@ -748,6 +748,25 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 25, 2025)
 
+### CRITICAL: TP2 Structural Defect Routing Fix Complete - Split Section System Operational ✅
+- **Date**: January 25, 2025
+- **Status**: Successfully fixed TP2 routing for split sections - Items 21a/22a now correctly calculate TP2 costs
+- **Issues Fixed**:
+  - **Structural Defect Detection**: Enhanced `requiresStructuralRepair()` function to properly detect "D Deformation" patterns
+  - **Split Section Routing**: Items 21a/22a (structural) now route to TP2 calculation while Items 21/22 (service) route to TP1
+  - **Individual Section Logic**: Each section now uses its own `defectType` field for routing decisions instead of checking across item numbers
+  - **TP2 Configuration Matching**: Proper pipe size-based configuration matching (150mm→ID 153, 225mm→ID 156, 300mm→ID 157)
+- **Technical Implementation**:
+  - Updated structural defect detection regex to include `D\s+Deformation` pattern for percentage-based deformation
+  - Modified cost calculation routing to use individual section `defectType` instead of item-level analysis
+  - Enhanced calculateAutoCost to properly trigger TP2 calculations for structural sections
+  - Cleaned up debug logging while maintaining core functionality
+- **User Benefits**: 
+  - Split sections now display correct cost calculations based on their individual defect types
+  - Items 21a/22a show TP2 orange triangles indicating structural repair pricing
+  - Items 21/22 show TP1 cleaning costs (£74.00) for service defects
+- **Result**: Complete multi-defect splitting system with proper TP2/TP1 routing based on individual section defect types
+
 ### CRITICAL: TP2 MQW Warning Logic Fixed - Complete Pricing Requirement Implemented ✅
 - **Date**: January 25, 2025
 - **Status**: Successfully fixed TP2 Minimum Quantity Warning to only trigger when ALL sections have complete pricing

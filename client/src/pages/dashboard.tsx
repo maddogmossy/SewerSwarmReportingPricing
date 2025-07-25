@@ -1260,15 +1260,12 @@ export default function Dashboard() {
           let costCalculation;
           if (isStructuralDefectForCost) {
             // Route structural defects (21a, 22a) to TP2/TP3 calculation
-            console.log(`💰 Item ${section.itemNo}: STRUCTURAL - routing to calculateAutoCost (TP2/TP3)`);
             costCalculation = calculateAutoCost(section);
           } else if (isServiceDefectForCost || needsCleaning) {
             // Route service defects (21, 22, 23) to TP1 cleaning calculation
-            console.log(`💰 Item ${section.itemNo}: SERVICE - routing to calculateTP1CleaningCost`);
             costCalculation = calculateTP1CleaningCost(section);
           } else {
             // Fallback to auto cost calculation
-            console.log(`💰 Item ${section.itemNo}: FALLBACK - routing to calculateAutoCost`);
             costCalculation = calculateAutoCost(section);
           }
           
@@ -2296,7 +2293,7 @@ export default function Dashboard() {
 
   // Function to calculate TP2 patching cost using DB7 Math window for minimum quantity checks
   const calculateTP2PatchingCost = (section: any, tp2Config: any) => {
-    console.log(`🔧 Item ${section.itemNo}: calculateTP2PatchingCost called with config ID ${tp2Config.id}`);
+    // TP2 patching cost calculation for structural defects
     // Robotic cutting detection now handled in calculateAutoCost function
     
     // Extract pipe size and length for cost calculation
@@ -2539,13 +2536,6 @@ export default function Dashboard() {
 
     // Check for TP2 patching configurations first (for structural repairs)
     const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
-    console.log(`🔍 Item ${section.itemNo}: TP2 Check - needsStructuralRepair: ${needsStructuralRepair}, defects: "${section.defects}"`);
-    
-    // DEBUG: TP2 sections analysis completed
-    
-    // ITEM 20 TP2 DEBUG completed
-    
-    // ITEM 21a TP2 DEBUG analysis completed
     
     if (needsStructuralRepair) {
       // Get pipe size for matching configuration
@@ -2560,17 +2550,11 @@ export default function Dashboard() {
         config.categoryName?.includes(`${pipeSize}mm`)
       );
       
-      console.log(`🔍 Item ${section.itemNo}: TP2 Config search - pipeSize: ${pipeSize}mm, found config:`, tp2PatchingConfig?.id || 'none');
-      
       if (tp2PatchingConfig) {
         // Found TP2 patching configuration
-        console.log(`💰 Item ${section.itemNo}: Calling calculateTP2PatchingCost with config ID ${tp2PatchingConfig.id}`);
-        const tp2Result = calculateTP2PatchingCost(section, tp2PatchingConfig);
-        console.log(`💰 Item ${section.itemNo}: TP2 calculation result:`, tp2Result);
-        return tp2Result;
+        return calculateTP2PatchingCost(section, tp2PatchingConfig);
       } else {
         // No TP2 patching configuration found
-        console.log(`❌ Item ${section.itemNo}: No TP2 config found for ${pipeSize}mm`);
         return null; // Return null to show warning triangle
       }
     }
