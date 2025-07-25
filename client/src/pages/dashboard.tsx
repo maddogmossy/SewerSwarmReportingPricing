@@ -2617,7 +2617,9 @@ export default function Dashboard() {
     
     // CRITICAL FIX: Check for robotic cutting (ID4) requirements FIRST before any other routing
     const recommendations = section.recommendations || '';
-    console.log(`🤖 Item ${section.itemNo}: Checking recommendations for robotic cutting: "${recommendations}"`);
+    console.log(`🤖 Item ${section.itemNo}: RECOMMENDATIONS DEBUG: "${recommendations}"`);
+    console.log(`🤖 Item ${section.itemNo}: ROBOTIC CUTTING CHECK: ${recommendations.toLowerCase().includes('robotic cutting')}`);
+    console.log(`🤖 Item ${section.itemNo}: ID4 CHECK: ${recommendations.toLowerCase().includes('id4')}`);
     
     if (recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')) {
       console.log(`🤖 Item ${section.itemNo}: ROBOTIC CUTTING DETECTED - routing to TP3 ID4 (ID 163)`);
