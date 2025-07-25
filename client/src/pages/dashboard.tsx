@@ -1770,8 +1770,19 @@ export default function Dashboard() {
         
         setValidationResult(result);
         
-        console.log('🔧 CALLING TP2 CONFIG CHECK...');
-        checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
+        console.log('🔧 CALLING TP2 CONFIG CHECK at:', new Date().toLocaleTimeString(), 'with data:', {
+          sectionsLength: rawSectionData.length,
+          configsLength: pr2Configurations.length,
+          sampleSection: rawSectionData[0]?.itemNo,
+          sampleConfig: pr2Configurations[0]?.categoryId
+        });
+        
+        try {
+          checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
+          console.log('🔧 TP2 CONFIG CHECK COMPLETED');
+        } catch (error) {
+          console.error('🔧 TP2 CONFIG CHECK ERROR:', error);
+        }
       } catch (error) {
         console.error('🔧 VALIDATION EFFECT ERROR:', error);
       }
@@ -1821,9 +1832,19 @@ export default function Dashboard() {
     const orangeMinimumMet = checkOrangeMinimumMet();
     const costsAreRed = !orangeMinimumMet;
 
+    // Debug all sections first
+    const allStructuralSections = sections.filter(s => s.defectType === 'structural');
+    
+    console.log('🔧 ALL STRUCTURAL SECTIONS:', allStructuralSections.map(s => ({
+      itemNo: s.itemNo,
+      defectType: s.defectType,
+      recommendations: s.recommendations?.substring(0, 50) + '...',
+      costCalc: calculateAutoCost(s)
+    })));
+    
     console.log('🔧 TP2 WARNING CHECK:', {
       totalSections: sections.length,
-      structuralSections: sections.filter(s => s.defectType === 'structural').length,
+      structuralSections: allStructuralSections.length,
       serviceSections: sections.filter(s => s.defectType === 'service').length,
       structuralTriangles: structuralSectionsWithTriangles.length,
       costsAreRed: costsAreRed,
@@ -1831,6 +1852,7 @@ export default function Dashboard() {
       triangleSections: structuralSectionsWithTriangles.map(s => ({
         itemNo: s.itemNo,
         defectType: s.defectType,
+        recommendations: s.recommendations?.substring(0, 30) + '...',
         costCalc: calculateAutoCost(s)
       }))
     });
