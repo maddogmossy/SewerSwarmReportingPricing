@@ -2149,16 +2149,70 @@ export default function Dashboard() {
     console.log(`🔍 Item ${section.itemNo}: TP1 pricingOptions:`, tp1Config.pricingOptions);
     console.log(`🔍 Item ${section.itemNo}: TP1 quantityOptions:`, tp1Config.quantityOptions);
     
-    // Extract day rate and runs per shift from TP1 configuration
+    // Extract day rate from TP1 configuration
     const dayRateOption = tp1Config.pricingOptions?.find((option: any) => 
       option.label?.toLowerCase().includes('day rate') && option.value && option.value.trim() !== ''
     );
-    const runsOption = tp1Config.quantityOptions?.find((option: any) => 
-      option.label?.toLowerCase().includes('runs per shift') && option.value && option.value.trim() !== ''
-    );
+    
+    // CRITICAL FIX: Check meterage rule to determine if "Runs 2" should be used instead of standard "Runs per Shift"
+    // Define meterage rule logic directly in TP1 function
+    const checkMeterage = (section: any, config: any) => {
+      // Find "No 2" or "Runs 2" option in quantity options
+      const no2Option = config.quantityOptions?.find((opt: any) => 
+        opt.label && (
+          opt.label.toLowerCase().includes('no 2') || 
+          opt.label.toLowerCase().includes('runs 2')
+        ) && opt.value && opt.value.trim() !== ''
+      );
+      
+      if (!no2Option) {
+        return { useNo2: false, no2Value: 0 };
+      }
+      
+      const no2Value = parseFloat(no2Option.value) || 0;
+      const sectionLength = parseFloat(section.totalLength) || 0;
+      
+      // Find the length ranges in the configuration
+      const lengthRange = config.rangeOptions?.find((range: any) => 
+        range.label === 'Length' && range.enabled
+      );
+      const lengthRange2 = config.rangeOptions?.find((range: any) => 
+        range.label === 'Length 2' && range.enabled
+      );
+      
+      let useNo2 = false;
+      
+      if (lengthRange && lengthRange2) {
+        const length1Max = parseFloat(lengthRange.rangeEnd) || 0;
+        const length2Max = parseFloat(lengthRange2.rangeEnd) || 0;
+        
+        // Use "No 2" rule if section length is greater than Length 1 max but within Length 2 max
+        useNo2 = sectionLength > length1Max && sectionLength <= length2Max;
+      }
+      
+      return { useNo2, no2Value };
+    };
+    
+    const no2RuleResult = checkMeterage(section, tp1Config);
+    
+    let runsOption;
+    if (no2RuleResult.useNo2) {
+      // Use "Runs 2" value for sections that exceed Range 1 but are within Range 2
+      runsOption = tp1Config.quantityOptions?.find((option: any) => 
+        (option.label?.toLowerCase().includes('runs 2') || option.label?.toLowerCase().includes('no 2')) && 
+        option.value && option.value.trim() !== ''
+      );
+      console.log(`🔧 Item ${section.itemNo}: Using "Runs 2" value (${runsOption?.value}) due to length ${section.totalLength}m > Range 1 limit`);
+    } else {
+      // Use standard "Runs per Shift" value
+      runsOption = tp1Config.quantityOptions?.find((option: any) => 
+        option.label?.toLowerCase().includes('runs per shift') && option.value && option.value.trim() !== ''
+      );
+      console.log(`🔧 Item ${section.itemNo}: Using standard "Runs per Shift" value (${runsOption?.value}) for length ${section.totalLength}m`);
+    }
     
     console.log(`🔍 Item ${section.itemNo}: TP1 dayRateOption:`, dayRateOption);
-    console.log(`🔍 Item ${section.itemNo}: TP1 runsOption:`, runsOption);
+    console.log(`🔍 Item ${section.itemNo}: TP1 runsOption (${no2RuleResult.useNo2 ? 'Runs 2' : 'Standard'}):`, runsOption);
     
     if (!dayRateOption || !runsOption) {
       console.log(`❌ Item ${section.itemNo}: TP1 missing essential values - dayRate:${!!dayRateOption}, runs:${!!runsOption}`);
