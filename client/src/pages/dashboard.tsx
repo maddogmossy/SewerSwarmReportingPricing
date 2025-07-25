@@ -1000,7 +1000,9 @@ export default function Dashboard() {
       case 'recommendations':
         
         // Check if section has defects requiring repair (not Grade 0)
-        const hasRepairableDefects = section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0;
+        // Check both old severityGrade field AND new severity_grades JSON for service/structural grades > 0
+        const hasRepairableDefects = (section.severityGrade && section.severityGrade !== "0" && section.severityGrade !== 0) ||
+          (section.severityGrades && (section.severityGrades.service > 0 || section.severityGrades.structural > 0));
         
         // Check if this section has approved repair pricing configuration
         const approvedRepairStatus = hasApprovedRepairPricing(section);
