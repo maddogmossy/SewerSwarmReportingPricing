@@ -82,6 +82,12 @@ const SECTORS = [
   { id: 'domestic', name: 'Domestic', label: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
+// P26 Upper Level Data Structure (separate from individual TP2 configurations)
+interface P26UpperLevel {
+  db7DayRate: string;
+  db15VehicleRates: VehicleTravelRate[];
+}
+
 // Category ID to page ID mapping (matching pr2-pricing.tsx devId values)
 const CATEGORY_PAGE_IDS = {
   'cctv': 'p15',
@@ -329,7 +335,6 @@ export default function PR2ConfigClean() {
         description: '',
         categoryColor: '#ffffff', // Default white color - user must assign color
         pricingOptions: [
-          { id: 'db7_day_rate', label: 'Central Day Rate', enabled: true, value: '1650' },
           { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' },
           { id: 'double_layer_cost', label: 'Double Layer', enabled: true, value: '' },
           { id: 'triple_layer_cost', label: 'Triple Layer', enabled: true, value: '' },
@@ -346,16 +351,13 @@ export default function PR2ConfigClean() {
         rangeOptions: [
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
         ],
-        vehicleTravelRates: [
-          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
-          { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', numberOfHours: '2', enabled: true }
-        ],
+        vehicleTravelRates: [], // Removed - now at P26 upper level
         mathOperators: [], // No math window for TP2
-        pricingStackOrder: ['db7_day_rate', 'single_layer_cost', 'double_layer_cost', 'triple_layer_cost', 'triple_extra_cure_cost'],
+        pricingStackOrder: ['single_layer_cost', 'double_layer_cost', 'triple_layer_cost', 'triple_extra_cure_cost'],
         quantityStackOrder: [],
         minQuantityStackOrder: ['minquantity_runs', 'patch_min_qty_1', 'patch_min_qty_2', 'patch_min_qty_3', 'patch_min_qty_4'],
         rangeStackOrder: ['range_length'],
-        vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_7_5t'],
+        vehicleTravelRatesStackOrder: [], // Removed - now at P26 upper level
         sector
       };
     } else if (templateType === 'TP3') {
@@ -547,6 +549,15 @@ export default function PR2ConfigClean() {
       return null;
     }
   };
+
+  // P26 Upper Level State (separate from individual TP2 configurations)
+  const [p26UpperLevel, setP26UpperLevel] = useState<P26UpperLevel>({
+    db7DayRate: '1650',
+    db15VehicleRates: [
+      { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '55', numberOfHours: '2', enabled: true },
+      { id: 'vehicle_26t', vehicleType: '26t', hourlyRate: '75', numberOfHours: '2', enabled: true }
+    ]
+  });
 
   const [formData, setFormData] = useState<CleanFormData>(() => {
     const defaultData = getDefaultFormData();
@@ -2820,7 +2831,46 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* P26 DB15: TP2 Patching Vehicle Travel Rates */}
+        {/* P26 UPPER LEVEL: DB7 Day Rate (Shared across all TP2 configurations) */}
+        {categoryId === 'patching' && (
+          <Card className="mb-6 bg-green-50 border-green-200 relative">
+            <DevLabel id="db7" position="top-right" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-green-700 text-lg flex items-center gap-2">
+                <Banknote className="w-5 h-5" />
+                P26 - Central Day Rate (All Pipe Sizes)
+              </CardTitle>
+              <p className="text-sm text-green-600 mt-1">
+                Shared day rate for all TP2 patching configurations (150mm, 225mm, 300mm)
+              </p>
+            </CardHeader>
+            <CardContent className="py-3">
+              <div className="bg-white p-4 rounded-lg border border-green-200">
+                <div className="flex items-center gap-3">
+                  <Label className="text-sm font-medium text-green-700 min-w-[80px]">
+                    Day Rate
+                  </Label>
+                  <span className="text-sm text-green-600">£</span>
+                  <Input
+                    placeholder="1650"
+                    maxLength={6}
+                    value={p26UpperLevel.db7DayRate}
+                    onChange={(e) => {
+                      setP26UpperLevel(prev => ({
+                        ...prev,
+                        db7DayRate: e.target.value
+                      }));
+                    }}
+                    className="bg-white border-green-300 h-8 text-sm w-24"
+                  />
+                  <span className="text-sm text-green-600">/day</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* P26 UPPER LEVEL: DB15 Vehicle Travel Rates (Shared across all TP2 configurations) */}
         {categoryId === 'patching' && (
           <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
             <DevLabel id="db15" position="top-right" />
@@ -2830,13 +2880,13 @@ export default function PR2ConfigClean() {
                 P26 - Vehicle Travel Rates (All Pipe Sizes)
               </CardTitle>
               <p className="text-sm text-cyan-600 mt-1">
-                Shared rates for all TP2 patching configurations (150mm, 225mm, 300mm)
+                Shared vehicle rates for all TP2 patching configurations (150mm, 225mm, 300mm)
               </p>
             </CardHeader>
             <CardContent className="py-3">
               <div className="space-y-2">
-                {formData.vehicleTravelRates && formData.vehicleTravelRates.length > 0 ? 
-                  formData.vehicleTravelRates.map((vehicle, index) => (
+                {p26UpperLevel.db15VehicleRates && p26UpperLevel.db15VehicleRates.length > 0 ? 
+                  p26UpperLevel.db15VehicleRates.map((vehicle, index) => (
                     <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
                       <div className="flex items-center gap-2">
                         <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
