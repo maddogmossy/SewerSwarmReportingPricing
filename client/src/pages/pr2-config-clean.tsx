@@ -3553,7 +3553,7 @@ export default function PR2ConfigClean() {
               
               {/* Purple Window: 4 Patching Options (excluding Day Rate) */}
               <Card className="bg-purple-50 border-purple-200 relative">
-                <DevLabel id="db8" position="top-right" />
+                <DevLabel id="db8-tp2" position="top-right" />
                 <CardHeader className="pb-2">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
                     <Coins className="w-4 h-4" />
@@ -3760,7 +3760,7 @@ export default function PR2ConfigClean() {
 
                 {/* Green Window: Runs per Shift */}
                 <Card className="relative bg-green-50 border-green-200 w-60 flex-shrink-0">
-                  <DevLabel id="db8" position="top-right" />
+                  <DevLabel id="db8-tp1-green" position="top-right" />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-green-700 text-xs flex items-center gap-1">
                       <Package className="w-3 h-3" />
@@ -4080,7 +4080,7 @@ export default function PR2ConfigClean() {
 
                   {/* Green Window */}
                   <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0 relative">
-                    <DevLabel id="db8" />
+                    <DevLabel id="db8-tp1-standard" />
                     <CardHeader className="pb-2">
                       <CardTitle className="text-green-700 text-xs flex items-center gap-1">
                         📊 Quantity
