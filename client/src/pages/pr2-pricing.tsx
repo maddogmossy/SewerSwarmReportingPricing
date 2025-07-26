@@ -647,74 +647,7 @@ export default function PR2Pricing() {
           </Card>
         </div>
 
-        {/* Vehicle Travel Rates Section - DB15 for each category */}
-        <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
-          <DevLabel id="db15" position="top-right" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
-              <Truck className="w-5 h-5" />
-              Vehicle Travel Rates (All Categories)
-            </CardTitle>
-            <p className="text-sm text-cyan-600 mt-1">
-              These rates apply to all categories in {currentSector.name} sector
-            </p>
-          </CardHeader>
-          <CardContent className="py-3">
-            <div className="space-y-2">
-              <div className="text-sm text-cyan-600 mb-3">
-                Configure vehicle travel rates that will be shared across:
-                <span className="ml-1 font-medium">
-                  CCTV/Jet Vac (ID 16), Patching (ID 6), Robotic Cutting (ID 4)
-                </span>
-              </div>
-              
-              {/* Default vehicle options for new configurations */}
-              <div className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-cyan-700 min-w-[60px]">3.5t</span>
-                  <span className="text-sm text-cyan-600">£</span>
-                  <input
-                    placeholder="55"
-                    maxLength={6}
-                    className="bg-white border border-cyan-300 rounded h-8 text-sm w-20 px-2"
-                  />
-                  <span className="text-sm text-cyan-600">/hr</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    placeholder="2"
-                    maxLength={3}
-                    defaultValue="2"
-                    className="bg-white border border-cyan-300 rounded h-8 text-sm w-16 px-2"
-                  />
-                  <span className="text-sm text-cyan-600">hours</span>
-                </div>
-              </div>
-              
-              <div className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-cyan-700 min-w-[60px]">26t</span>
-                  <span className="text-sm text-cyan-600">£</span>
-                  <input
-                    placeholder="75"
-                    maxLength={6}
-                    className="bg-white border border-cyan-300 rounded h-8 text-sm w-20 px-2"
-                  />
-                  <span className="text-sm text-cyan-600">/hr</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    placeholder="2"
-                    maxLength={3}
-                    defaultValue="2"
-                    className="bg-white border border-cyan-300 rounded h-8 text-sm w-16 px-2"
-                  />
-                  <span className="text-sm text-cyan-600">hours</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
 
       </div>
 

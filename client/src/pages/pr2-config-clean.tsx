@@ -2924,17 +2924,29 @@ export default function PR2ConfigClean() {
             </CardContent>
           </Card>
 
-        {/* Vehicle Travel Rates - Main Page Level (P19) - Hidden only for individual TP2 pipe configs */}
-        {!editId && (
+        {/* Vehicle Travel Rates - P19 for TP1, P26 for TP2 main, P4 for TP3 */}
+        {((categoryId === 'cctv-jet-vac' && editId) || 
+          (categoryId === 'patching' && !editId) || 
+          (categoryId === 'robotic-cutting' && editId)) && (
         <Card className="mb-6 bg-cyan-50 border-cyan-200 relative" data-component="p19">
           <DevLabel id="db15" position="top-right" />
           <CardHeader className="pb-2">
             <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
               <Truck className="w-5 h-5" />
-              Vehicle Travel Rates (All Pipe Sizes)
+              {(() => {
+                if (categoryId === 'cctv-jet-vac') return 'P19 - Vehicle Travel Rates';
+                if (categoryId === 'patching') return 'P26 - Vehicle Travel Rates (All Pipe Sizes)';
+                if (categoryId === 'robotic-cutting') return 'P4 - Vehicle Travel Rates';
+                return 'Vehicle Travel Rates';
+              })()}
             </CardTitle>
             <p className="text-sm text-cyan-600 mt-1">
-              These rates apply to all pipe sizes and configurations
+              {(() => {
+                if (categoryId === 'cctv-jet-vac') return 'TP1 cleaning operations vehicle travel rates';
+                if (categoryId === 'patching') return 'Shared rates for all TP2 patching configurations (150mm, 225mm, 300mm)';
+                if (categoryId === 'robotic-cutting') return 'TP3 robotic cutting operations vehicle travel rates';
+                return 'Vehicle travel rates for this configuration';
+              })()}
             </p>
           </CardHeader>
           <CardContent className="py-3">
