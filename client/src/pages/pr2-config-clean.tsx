@@ -2870,104 +2870,105 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* P26 UPPER LEVEL: DB15 Vehicle Travel Rates (Shared across all TP2 configurations) */}
+        {/* P26 UPPER LEVEL: DB15 Vehicle Travel Rates (COMPLETELY SEPARATE FROM P19) */}
         {categoryId === 'patching' && (
           <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
-            <DevLabel id="db15" position="top-right" />
+            <DevLabel id="p26-db15" position="top-right" />
             <CardHeader className="pb-2">
               <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
                 <Truck className="w-5 h-5" />
-                P26 - Vehicle Travel Rates (All Pipe Sizes)
+                P26 DB15 - Vehicle Travel Rates (TP2 Upper Level)
               </CardTitle>
               <p className="text-sm text-cyan-600 mt-1">
-                Shared vehicle rates for all TP2 patching configurations (150mm, 225mm, 300mm) - COMPLETELY SEPARATE FROM P19
+                P26 upper level vehicle rates - ZERO inheritance from P19 configurations
               </p>
             </CardHeader>
             <CardContent className="py-3">
               <div className="space-y-2">
-                {p26UpperLevel.db15VehicleRates && p26UpperLevel.db15VehicleRates.length > 0 ? 
-                  p26UpperLevel.db15VehicleRates.map((vehicle, index) => (
-                    <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
-                          {vehicle.vehicleType}
-                        </Label>
-                        <span className="text-sm text-cyan-600">£</span>
-                        <Input
-                          placeholder="rate"
-                          maxLength={6}
-                          value={vehicle.hourlyRate || ""}
-                          onChange={(e) => {
-                            // Update local state immediately for responsive UI
-                            setFormData(prev => ({
-                              ...prev,
-                              vehicleTravelRates: prev.vehicleTravelRates.map(v => 
-                                v.id === vehicle.id ? { ...v, hourlyRate: e.target.value } : v
-                              )
-                            }));
-                            // Debounced save will handle the sync
-                            debouncedSave();
-                          }}
-                          className="bg-white border-cyan-300 h-8 text-sm w-20"
-                        />
-                        <span className="text-sm text-cyan-600">/hr</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          placeholder="2"
-                          maxLength={3}
-                          value={vehicle.numberOfHours || "2"}
-                          onChange={(e) => {
-                            // Update local state immediately for responsive UI
-                            setFormData(prev => ({
-                              ...prev,
-                              vehicleTravelRates: prev.vehicleTravelRates.map(v => 
-                                v.id === vehicle.id ? { ...v, numberOfHours: e.target.value } : v
-                              )
-                            }));
-                            // Debounced save will handle the sync
-                            debouncedSave();
-                          }}
-                          className="bg-white border-cyan-300 h-8 text-sm w-16"
-                        />
-                        <span className="text-sm text-cyan-600">hours</span>
-                      </div>
-                      <div className="flex gap-2">
-                        {index === 0 && (
-                          <Button
-                            variant="outline"
-                            onClick={() => setAddVehicleDialogOpen(true)}
-                            className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                          >
-                            <Plus className="w-4 h-4 mr-1" />
-                            Add Vehicle
-                          </Button>
-                        )}
-                        {index > 0 && (
-                          <Button
-                            variant="outline"
-                            onClick={() => deleteVehicleTravelRate(vehicle.id)}
-                            className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
+                {p26UpperLevel.db15VehicleRates.map((vehicle, index) => (
+                  <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
+                    <div className="flex items-center gap-2">
+                      <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
+                        {vehicle.vehicleType}
+                      </Label>
+                      <span className="text-sm text-cyan-600">£</span>
+                      <Input
+                        placeholder="rate"
+                        maxLength={6}
+                        value={vehicle.hourlyRate || ""}
+                        onChange={(e) => {
+                          // P26 ISOLATED STATE - NO CONTAMINATION FROM P19
+                          setP26UpperLevel(prev => ({
+                            ...prev,
+                            db15VehicleRates: prev.db15VehicleRates.map(v => 
+                              v.id === vehicle.id ? { ...v, hourlyRate: e.target.value } : v
+                            )
+                          }));
+                        }}
+                        className="bg-white border-cyan-300 h-8 text-sm w-20"
+                      />
+                      <span className="text-sm text-cyan-600">/hr</span>
                     </div>
-                  )) : (
-                    <div className="bg-white p-4 rounded-lg border border-cyan-200 flex items-center justify-between">
-                      <span className="text-sm text-cyan-600">No vehicle travel rates configured</span>
-                      <Button
-                        variant="outline"
-                        onClick={() => setAddVehicleDialogOpen(true)}
-                        className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                      >
-                        <Plus className="w-4 h-4 mr-1" />
-                        Add Vehicle
-                      </Button>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder="2"
+                        maxLength={3}
+                        value={vehicle.numberOfHours || "2"}
+                        onChange={(e) => {
+                          // P26 ISOLATED STATE - NO CONTAMINATION FROM P19
+                          setP26UpperLevel(prev => ({
+                            ...prev,
+                            db15VehicleRates: prev.db15VehicleRates.map(v => 
+                              v.id === vehicle.id ? { ...v, numberOfHours: e.target.value } : v
+                            )
+                          }));
+                        }}
+                        className="bg-white border-cyan-300 h-8 text-sm w-16"
+                      />
+                      <span className="text-sm text-cyan-600">hours</span>
                     </div>
-                  )
-                }
+                    <div className="flex gap-2">
+                      {index === 0 && (
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            // ADD TO P26 STATE ONLY
+                            const newId = `p26_vehicle_${Date.now()}`;
+                            setP26UpperLevel(prev => ({
+                              ...prev,
+                              db15VehicleRates: [...prev.db15VehicleRates, {
+                                id: newId,
+                                vehicleType: '7.5t',
+                                hourlyRate: '',
+                                numberOfHours: '2',
+                                enabled: true
+                              }]
+                            }));
+                          }}
+                          className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add P26 Vehicle
+                        </Button>
+                      )}
+                      {index > 0 && (
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            // DELETE FROM P26 STATE ONLY
+                            setP26UpperLevel(prev => ({
+                              ...prev,
+                              db15VehicleRates: prev.db15VehicleRates.filter(v => v.id !== vehicle.id)
+                            }));
+                          }}
+                          className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
