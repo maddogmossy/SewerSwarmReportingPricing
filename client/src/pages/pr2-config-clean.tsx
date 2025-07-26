@@ -3251,88 +3251,37 @@ export default function PR2ConfigClean() {
         {/* W007: Range Options Window */}
         <Card className="mb-6 relative bg-purple-50 border-purple-200">
           <DevLabel id="W007" position="top-right" />
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-purple-700 text-xs flex items-center gap-1">
-                    <BarChart3 className="w-3 h-3" />
-                    Range Options
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="py-1">
-                  <div className="space-y-1">
-                    {formData.rangeOptions && 
-                      Array.from({ length: Math.ceil(formData.rangeOptions.length / 2) }, (_, pairIndex) => {
-                        const percentageOption = formData.rangeOptions[pairIndex * 2];
-                        const lengthOption = formData.rangeOptions[pairIndex * 2 + 1];
-                        
-                        return (
-                          <div key={`pair-${pairIndex}`} className="flex gap-2">
-                            {percentageOption && (
-                              <div className="flex items-center gap-1">
-                                <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                                  % (Max)
-                                </Label>
-                                <Input
-                                  placeholder="0"
-                                  maxLength={6}
-                                  value={percentageOption.rangeEnd || ""}
-                                  onChange={(e) => handleRangeValueChange(percentageOption.id, 'rangeEnd', e.target.value)}
-                                  disabled={!percentageOption.enabled}
-                                  className="bg-white border-purple-300 h-6 text-xs w-16 flex items-center"
-                                />
-                              </div>
-                            )}
-                            {lengthOption && (
-                              <div className="flex items-center gap-1">
-                                <Label className="text-xs font-medium text-purple-700 flex-shrink-0">
-                                  Length (Max)
-                                </Label>
-                                <Input
-                                  placeholder="0"
-                                  maxLength={6}
-                                  value={lengthOption.rangeEnd || ""}
-                                  onChange={(e) => handleRangeValueChange(lengthOption.id, 'rangeEnd', e.target.value)}
-                                  disabled={!lengthOption.enabled}
-                                  className="bg-white border-purple-300 h-6 text-xs w-16 flex items-center"
-                                />
-                              </div>
-                            )}
-                            {pairIndex === 0 && (
-                              <Button
-                                variant="outline"
-                                onClick={addNewInputsToAllWindows}
-                                className="h-6 text-xs border-green-300 text-green-700 hover:bg-green-100 bg-green-50"
-                              >
-                                <Plus className="w-3 h-3 mr-1" />
-                                Add
-                              </Button>
-                            )}
-                            {pairIndex > 0 && (
-                              <Button
-                                variant="outline"
-                                onClick={() => {
-                                  console.log(`🗑️ Deleting range pair: pairIndex=${pairIndex}`);
-                                  deleteRangePair(pairIndex);
-                                }}
-                                className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            )}
-                          </div>
-                        );
-                      })
-                    }
-                  </div>
-                </CardContent>
-              </Card>
-
-
-            </div>
-            )}
-          </CollapsibleContent>
-        </Collapsible>
-          );
-        })}
+          <CardHeader>
+            <CardTitle className="text-purple-700 flex items-center gap-2">
+              <BarChart3 className="w-5 h-5" />
+              Range Options
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {formData.rangeOptions?.map((option, index) => (
+              <div key={option.id} className="flex items-center gap-4">
+                <Label className="w-32 text-sm font-medium text-gray-700">
+                  {option.label}
+                </Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Min"
+                    value={option.rangeStart || ""}
+                    onChange={(e) => handleRangeValueChange(option.id, 'rangeStart', e.target.value)}
+                    className="w-20 h-8 text-sm"
+                  />
+                  <span className="text-sm text-gray-500">to</span>
+                  <Input
+                    placeholder="Max"
+                    value={option.rangeEnd || ""}
+                    onChange={(e) => handleRangeValueChange(option.id, 'rangeEnd', e.target.value)}
+                    className="w-20 h-8 text-sm"
+                  />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
         {/* General Configuration Interface (for non-pipe-size configurations) */}
         {categoryId !== 'patching' && getPipeSizeConfigurations().length === 0 && isEditing && editId && (
