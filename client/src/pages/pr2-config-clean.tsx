@@ -83,10 +83,7 @@ const SECTORS = [
 ];
 
 // P26 Upper Level Data Structure (separate from individual TP2 configurations)
-interface P26UpperLevel {
-  db7DayRate: string;
-  db15VehicleRates: VehicleTravelRate[];
-}
+// REMOVED - Now using database queries directly
 
 // Category ID to page ID mapping (matching pr2-pricing.tsx devId values)
 const CATEGORY_PAGE_IDS = {
@@ -550,13 +547,15 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // P26 Upper Level State (COMPLETELY SEPARATE FROM P19 - DNC COMPLIANCE)
-  const [p26UpperLevel, setP26UpperLevel] = useState<P26UpperLevel>({
-    db7DayRate: '1650',
-    db15VehicleRates: [
-      { id: 'p26_vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
-      { id: 'p26_vehicle_26t', vehicleType: '26t', hourlyRate: '', numberOfHours: '2', enabled: true }
-    ]
+  // Query P26 configuration from database
+  const { data: p26Config } = useQuery({
+    queryKey: ['/api/pr2-clean/P26', sector],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/pr2-clean?sector=${sector}&categoryId=P26`);
+      const configs = await response.json();
+      return configs.length > 0 ? configs[0] : null;
+    },
+    enabled: !!sector,
   });
 
   const [formData, setFormData] = useState<CleanFormData>(() => {
@@ -2840,10 +2839,10 @@ export default function PR2ConfigClean() {
             <CardHeader className="pb-2">
               <CardTitle className="text-green-700 text-lg flex items-center gap-2">
                 <Banknote className="w-5 h-5" />
-                DB7 - Day Rate (P26 Upper Level)
+                DB7 - Day Rate
               </CardTitle>
               <p className="text-sm text-green-600 mt-1">
-                Central day rate for all TP2 patching configurations - used by lower windows
+                Central day rate for all TP2 patching configurations - saves to database
               </p>
             </CardHeader>
             <CardContent className="py-3">
@@ -2856,12 +2855,18 @@ export default function PR2ConfigClean() {
                   <Input
                     placeholder="1650"
                     maxLength={6}
-                    value={p26UpperLevel.db7DayRate}
+                    value={p26Config?.pricingOptions?.find(opt => opt.id === 'db7_day_rate')?.value || '1650'}
                     onChange={(e) => {
-                      setP26UpperLevel(prev => ({
-                        ...prev,
-                        db7DayRate: e.target.value
-                      }));
+                      // Update P26 configuration in database
+                      if (p26Config) {
+                        const updatedPricingOptions = p26Config.pricingOptions?.map(opt => 
+                          opt.id === 'db7_day_rate' ? { ...opt, value: e.target.value } : opt
+                        ) || [{ id: 'db7_day_rate', label: 'Central Day Rate', value: e.target.value, enabled: true }];
+                        
+                        // Save to database immediately
+                        const updatedConfig = { ...p26Config, pricingOptions: updatedPricingOptions };
+                        apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
+                      }
                     }}
                     className="bg-white border-green-300 h-8 text-sm w-24"
                   />
@@ -2887,7 +2892,7 @@ export default function PR2ConfigClean() {
             </CardHeader>
             <CardContent className="py-3">
               <div className="space-y-2">
-                {p26UpperLevel.db15VehicleRates.map((vehicle, index) => (
+                {p26Config?.vehicleTravelRates?.map((vehicle, index) => (
                   <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
                     <div className="flex items-center gap-2">
                       <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
@@ -2899,13 +2904,15 @@ export default function PR2ConfigClean() {
                         maxLength={6}
                         value={vehicle.hourlyRate || ""}
                         onChange={(e) => {
-                          // P26 ISOLATED STATE - NO CONTAMINATION FROM P19
-                          setP26UpperLevel(prev => ({
-                            ...prev,
-                            db15VehicleRates: prev.db15VehicleRates.map(v => 
+                          // Update P26 configuration in database
+                          if (p26Config) {
+                            const updatedVehicleRates = p26Config.vehicleTravelRates?.map(v => 
                               v.id === vehicle.id ? { ...v, hourlyRate: e.target.value } : v
-                            )
-                          }));
+                            ) || [];
+                            
+                            const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
+                            apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
+                          }
                         }}
                         className="bg-white border-cyan-300 h-8 text-sm w-20"
                       />
@@ -2917,13 +2924,15 @@ export default function PR2ConfigClean() {
                         maxLength={3}
                         value={vehicle.numberOfHours || "2"}
                         onChange={(e) => {
-                          // P26 ISOLATED STATE - NO CONTAMINATION FROM P19
-                          setP26UpperLevel(prev => ({
-                            ...prev,
-                            db15VehicleRates: prev.db15VehicleRates.map(v => 
+                          // Update P26 configuration in database
+                          if (p26Config) {
+                            const updatedVehicleRates = p26Config.vehicleTravelRates?.map(v => 
                               v.id === vehicle.id ? { ...v, numberOfHours: e.target.value } : v
-                            )
-                          }));
+                            ) || [];
+                            
+                            const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
+                            apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
+                          }
                         }}
                         className="bg-white border-cyan-300 h-8 text-sm w-16"
                       />
@@ -2934,18 +2943,23 @@ export default function PR2ConfigClean() {
                         <Button
                           variant="outline"
                           onClick={() => {
-                            // ADD TO P26 STATE ONLY
-                            const newId = `p26_vehicle_${Date.now()}`;
-                            setP26UpperLevel(prev => ({
-                              ...prev,
-                              db15VehicleRates: [...prev.db15VehicleRates, {
-                                id: newId,
-                                vehicleType: '7.5t',
-                                hourlyRate: '',
-                                numberOfHours: '2',
-                                enabled: true
-                              }]
-                            }));
+                            // Add vehicle to P26 configuration in database
+                            if (p26Config) {
+                              const newId = `p26_vehicle_${Date.now()}`;
+                              const updatedVehicleRates = [
+                                ...(p26Config.vehicleTravelRates || []),
+                                {
+                                  id: newId,
+                                  vehicleType: '7.5t',
+                                  hourlyRate: '',
+                                  numberOfHours: '2',
+                                  enabled: true
+                                }
+                              ];
+                              
+                              const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
+                              apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
+                            }
                           }}
                           className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
                         >
@@ -2957,11 +2971,13 @@ export default function PR2ConfigClean() {
                         <Button
                           variant="outline"
                           onClick={() => {
-                            // DELETE FROM P26 STATE ONLY
-                            setP26UpperLevel(prev => ({
-                              ...prev,
-                              db15VehicleRates: prev.db15VehicleRates.filter(v => v.id !== vehicle.id)
-                            }));
+                            // Delete vehicle from P26 configuration in database
+                            if (p26Config) {
+                              const updatedVehicleRates = p26Config.vehicleTravelRates?.filter(v => v.id !== vehicle.id) || [];
+                              
+                              const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
+                              apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
+                            }
                           }}
                           className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
                         >
@@ -3063,50 +3079,6 @@ export default function PR2ConfigClean() {
               </div>
             </CardContent>
           </Card>
-        )}
-
-        {/* P26 Main Page Components - DB7 appears on P26 page */}
-        {categoryId === 'patching' && (
-          <>
-            {/* DB7 Day Rate */}
-            <Card className="mb-6 bg-green-50 border-green-200 relative">
-              <DevLabel id="db7" position="top-right" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                  <Banknote className="w-4 h-4" />
-                  DB7 - Day Rate
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-4">
-                  <Label className="w-32 text-sm font-medium text-black">
-                    Day Rate
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <Label className="text-xs">£</Label>
-                    <Input
-                      placeholder="1650"
-                      value={formData.pricingOptions?.find(opt => opt.id === 'db7_day_rate')?.value || '1650'}
-                      onChange={(e) => {
-                        console.log(`💰 DB7 Day Rate changed:`, e.target.value);
-                        handleValueChange('pricingOptions', 'db7_day_rate', e.target.value);
-                      }}
-                      className="w-20 h-8 text-sm bg-white border-green-300"
-                      data-field="day-rate"
-                      data-window="db7"
-                    />
-                  </div>
-                </div>
-                <div className="text-sm text-gray-600 mt-3">
-                  <p><strong>Shared across all TP2 patches (153, 156, 157):</strong></p>
-                  <ul className="list-disc ml-4 mt-1">
-                    <li>Used for all TP2 cost calculations</li>
-                    <li>Configure once, applies to all pipe sizes</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </>
         )}
 
         {/* Color Picker Section */}
