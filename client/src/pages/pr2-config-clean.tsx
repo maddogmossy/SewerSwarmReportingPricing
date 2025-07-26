@@ -3407,62 +3407,7 @@ export default function PR2ConfigClean() {
                 </CardContent>
               </Card>
 
-              {/* DB15 Window: Vehicle Travel Rates */}
-              <Card className="bg-cyan-50 border-cyan-200 relative">
-                <DevLabel id="db15" position="top-right" />
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-cyan-700 text-sm flex items-center gap-2">
-                    <Truck className="w-4 h-4" />
-                    DB15 - Vehicle Travel Rates
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {formData.vehicleTravelRates?.map((vehicle, index) => (
-                    <div key={vehicle.id} className="flex items-center gap-4">
-                      <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
-                      <Label className="w-32 text-sm font-medium text-gray-700">
-                        {vehicle.vehicleType} Vehicle
-                      </Label>
-                      <div className="ml-4 flex items-center gap-2">
-                        <Label className="text-xs">£/hr</Label>
-                        <Input
-                          placeholder="rate"
-                          value={vehicle.hourlyRate || ""}
-                          onChange={(e) => updateVehicleTravelRate(vehicle.id, 'hourlyRate', e.target.value)}
-                          className="w-16 h-8 text-sm"
-                        />
-                      </div>
-                      <div className="ml-4 flex items-center gap-2">
-                        <Label className="text-xs">Hours</Label>
-                        <Input
-                          placeholder="2"
-                          value={vehicle.numberOfHours || ""}
-                          onChange={(e) => updateVehicleTravelRate(vehicle.id, 'numberOfHours', e.target.value)}
-                          className="w-12 h-8 text-sm"
-                        />
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => deleteVehicleTravelRate(vehicle.id)}
-                        className="ml-4 h-8 w-8 p-0 text-red-600 border-red-200 hover:bg-red-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  
-                  {/* Add new vehicle button */}
-                  <Button
-                    onClick={() => setAddVehicleDialogOpen(true)}
-                    variant="outline"
-                    className="w-full h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add Vehicle Rate
-                  </Button>
-                </CardContent>
-              </Card>
+
             </div>
           </div>
         )}
