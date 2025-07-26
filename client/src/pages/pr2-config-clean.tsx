@@ -2487,7 +2487,10 @@ export default function PR2ConfigClean() {
               >
                 Edit {(() => {
                   const templateType = getTemplateType(categoryId || '');
-                  if (templateType === 'TP3') {
+                  console.log(`🔍 PAGE TITLE DEBUG: categoryId="${categoryId}", templateType="${templateType}", formData.categoryName="${formData.categoryName}"`);
+                  
+                  // FORCE TP3 title detection - robotic-cutting should ALWAYS show TP3 title
+                  if (categoryId === 'robotic-cutting') {
                     return 'TP3 - Robotic Cutting Configuration';
                   } else if (templateType === 'TP2') {
                     return formData.categoryName || 'TP2 - Patching Configuration';
@@ -3584,7 +3587,10 @@ export default function PR2ConfigClean() {
                             <Input
                               placeholder="rate"
                               value={vehicle.hourlyRate || ""}
-                              onChange={(e) => updateVehicleTravelRate(vehicle.id, 'hourlyRate', e.target.value)}
+                              onChange={(e) => updateVehicleTravelRate({
+                                ...vehicle,
+                                hourlyRate: e.target.value
+                              })}
                               className="w-16 h-8 text-sm"
                             />
                           </div>
@@ -3593,7 +3599,10 @@ export default function PR2ConfigClean() {
                             <Input
                               placeholder="hours"
                               value={vehicle.numberOfHours || ""}
-                              onChange={(e) => updateVehicleTravelRate(vehicle.id, 'numberOfHours', e.target.value)}
+                              onChange={(e) => updateVehicleTravelRate({
+                                ...vehicle,
+                                numberOfHours: e.target.value
+                              })}
                               className="w-16 h-8 text-sm"
                             />
                           </div>
