@@ -550,12 +550,12 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // P26 Upper Level State (separate from individual TP2 configurations)
+  // P26 Upper Level State (COMPLETELY SEPARATE FROM P19 - DNC COMPLIANCE)
   const [p26UpperLevel, setP26UpperLevel] = useState<P26UpperLevel>({
     db7DayRate: '1650',
     db15VehicleRates: [
-      { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '55', numberOfHours: '2', enabled: true },
-      { id: 'vehicle_26t', vehicleType: '26t', hourlyRate: '75', numberOfHours: '2', enabled: true }
+      { id: 'p26_vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
+      { id: 'p26_vehicle_26t', vehicleType: '26t', hourlyRate: '', numberOfHours: '2', enabled: true }
     ]
   });
 
@@ -2880,7 +2880,7 @@ export default function PR2ConfigClean() {
                 P26 - Vehicle Travel Rates (All Pipe Sizes)
               </CardTitle>
               <p className="text-sm text-cyan-600 mt-1">
-                Shared vehicle rates for all TP2 patching configurations (150mm, 225mm, 300mm)
+                Shared vehicle rates for all TP2 patching configurations (150mm, 225mm, 300mm) - COMPLETELY SEPARATE FROM P19
               </p>
             </CardHeader>
             <CardContent className="py-3">
