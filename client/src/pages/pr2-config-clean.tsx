@@ -43,6 +43,7 @@ interface CleanFormData {
   categoryName: string;
   description: string;
   categoryColor: string;
+  pipeSize: string;
   
   // Blue Window - Pricing Options
   pricingOptions: PricingOption[];
@@ -331,6 +332,7 @@ export default function PR2ConfigClean() {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
         categoryColor: '#ffffff', // Default white color - user must assign color
+        pipeSize: pipeSize || '',
         pricingOptions: [
           { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' },
           { id: 'double_layer_cost', label: 'Double Layer', enabled: true, value: '' },
@@ -363,6 +365,7 @@ export default function PR2ConfigClean() {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
         categoryColor: '#ffffff', // Default white color - user must assign color
+        pipeSize: pipeSize || '',
         
         // DB10 Window (Blue) - Pipe Range & Cutting Costs
         pricingOptions: [
@@ -403,6 +406,7 @@ export default function PR2ConfigClean() {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
         categoryColor: '#ffffff', // Default white color - user must assign color
+        pipeSize: pipeSize || '',
         
         // Blue Window - Central Day Rate for all pipe sizes
         pricingOptions: [
@@ -445,6 +449,7 @@ export default function PR2ConfigClean() {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
         description: '',
         categoryColor: '#ffffff', // Default white color - user must assign color
+        pipeSize: pipeSize || '',
         pricingOptions: [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
         ],
@@ -1410,6 +1415,7 @@ export default function PR2ConfigClean() {
           categoryName: correctCategoryName,
           description: config.description || '',
           categoryColor: config.categoryColor || '#93c5fd',
+          pipeSize: pipeSize || '',
           pricingOptions: pricingOptions,
           quantityOptions: quantityOptions,
           minQuantityOptions: minQuantityOptions,
@@ -2914,7 +2920,6 @@ export default function PR2ConfigClean() {
               </div>
             </div>
           )}
-          )}
 
         {/* Sector Selection Checkboxes */}
         <Card className="mb-6 relative">
@@ -3596,6 +3601,7 @@ export default function PR2ConfigClean() {
                             categoryName: configData.categoryName,
                             description: configData.description,
                             sector: configData.sector,
+                            pipeSize: pipeSize || '',
                             pricingOptions: configData.pricingOptions || [],
                             quantityOptions: configData.quantityOptions || [],
                             minQuantityOptions: configData.minQuantityOptions || [],
