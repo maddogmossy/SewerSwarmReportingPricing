@@ -44,22 +44,22 @@ const SECTORS = [
   { id: 'domestic', name: 'Domestic', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
-// Standard category options with no colors, just symbols
+// Standard category options - Frontend DevLabels use database IDs with 'F' prefix for unified system
 const STANDARD_CATEGORIES = [
-  { id: 'cctv', name: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video, devId: 1 },
-  { id: 'van-pack', name: 'Van Pack', description: 'High-pressure water jetting and debris removal', icon: Truck, devId: 2 },
-  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves, devId: 15 },
-  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection and cleansing operations', icon: Monitor, devId: 10 },
-  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video, devId: 16 },
-  { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings, devId: 14 },
-  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves, devId: 5 },
-  { id: 'patching', name: 'Patching', description: 'Point repairs and structural patching', icon: Edit, devId: 6 },
-  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket, devId: 11 },
-  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame, devId: 12 },
-  { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun, devId: 13 },
-  { id: 'robotic-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations', icon: Settings, devId: 4 },
-  { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe, devId: 8 },
-  { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck, devId: 9 }
+  { id: 'cctv', name: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video },
+  { id: 'van-pack', name: 'Van Pack', description: 'High-pressure water jetting and debris removal', icon: Truck },
+  { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
+  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection and cleansing operations', icon: Monitor },
+  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
+  { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
+  { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves },
+  { id: 'patching', name: 'Patching', description: 'Point repairs and structural patching', icon: Edit },
+  { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket },
+  { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame },
+  { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun },
+  { id: 'robotic-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations', icon: Settings },
+  { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe },
+  { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck }
 ];
 
 export default function PR2Pricing() {
@@ -586,7 +586,7 @@ export default function PR2Pricing() {
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
-                      <DevLabel id={category.devId?.toString() || `category-card-${category.id}`} />
+                      <DevLabel id={existingConfiguration ? `F${existingConfiguration.id}` : `F-${category.id}`} />
                       <CardContent className="p-4 text-center relative">
                         <category.icon className={`h-8 w-8 mx-auto mb-2 ${
                           isUserCreated ? 'text-green-700' : 'text-gray-700'
