@@ -149,11 +149,13 @@ export default function PR2ConfigClean() {
   });
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'TP2' | 'TP3' => {
+  const getTemplateType = (categoryId: string): 'TP1' | 'TP2' | 'TP3' | 'P26' => {
     if (categoryId === 'patching') {
       return 'TP2'; // Patching configurations use TP2 template
     } else if (categoryId === 'robotic-cutting') {
       return 'TP3'; // Robotic cutting uses TP3 template
+    } else if (categoryId === 'day-rate-db11') {
+      return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else {
       return 'TP1'; // All other categories use standard TP1 template
     }
@@ -240,6 +242,7 @@ export default function PR2ConfigClean() {
         'excavation': `${formattedSize} Excavation Configuration`,
         'patching': `${formattedSize} Patching Configuration`,
         'robotic-cutting': `${formattedSize} Robotic Cutting Configuration`, // TP3 Template
+        'day-rate-db11': `${formattedSize} P26 Day Rate Configuration`, // P26 Template
         'tankering': `${formattedSize} Tankering Configuration`
       };
       return categoryMap[categoryId] || `${formattedSize} Configuration`;
@@ -260,6 +263,7 @@ export default function PR2ConfigClean() {
       'excavation': 'Excavation Configuration',
       'patching': 'Patching Configuration',
       'robotic-cutting': 'Robotic Cutting Configuration', // TP3 Template
+      'day-rate-db11': 'P26 - Day Rate Configuration', // P26 Template
       'tankering': 'Tankering Configuration'
     };
     return categoryMap[categoryId] || 'Configuration';
@@ -394,6 +398,47 @@ export default function PR2ConfigClean() {
         vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_7_5t'],
         sector
       };
+    } else if (templateType === 'P26') {
+      // P26 - Day Rate Configuration with Multiple Pipe Sizes and DB15 component
+      return {
+        categoryName: categoryId ? getCategoryName(categoryId) : '',
+        description: '',
+        categoryColor: '#ffffff', // Default white color - user must assign color
+        
+        // Blue Window - Central Day Rate for all pipe sizes
+        pricingOptions: [
+          { id: 'central_day_rate', label: 'Central Day Rate', enabled: true, value: '1650' }
+        ],
+        
+        // Green Window - Multiple pipe size configurations
+        quantityOptions: [
+          { id: '100mm_day_rate', label: '100mm Day Rate', enabled: true, value: '' },
+          { id: '150mm_day_rate', label: '150mm Day Rate', enabled: true, value: '' },
+          { id: '200mm_day_rate', label: '200mm Day Rate', enabled: true, value: '' },
+          { id: '225mm_day_rate', label: '225mm Day Rate', enabled: true, value: '' },
+          { id: '300mm_day_rate', label: '300mm Day Rate', enabled: true, value: '' }
+        ],
+        
+        // Orange Window - Min Quantity Options (empty for P26)
+        minQuantityOptions: [],
+        
+        // Purple Window - Range Options (empty for P26)  
+        rangeOptions: [],
+        
+        // DB15 Window (Teal) - Vehicle Travel Rates (like P19)
+        vehicleTravelRates: [
+          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '55', numberOfHours: '2', enabled: true },
+          { id: 'vehicle_26t', vehicleType: '26t', hourlyRate: '75', numberOfHours: '2', enabled: true }
+        ],
+        
+        mathOperators: ['N/A'], // No math operations for P26
+        pricingStackOrder: ['central_day_rate'],
+        quantityStackOrder: ['100mm_day_rate', '150mm_day_rate', '200mm_day_rate', '225mm_day_rate', '300mm_day_rate'],
+        minQuantityStackOrder: [],
+        rangeStackOrder: [],
+        vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_26t'],
+        sector
+      };
     } else {
       // TP1 - Standard Configuration (all windows)
       return {
@@ -435,6 +480,7 @@ export default function PR2ConfigClean() {
       
       const templateType = getTemplateType(categoryId);
       const isTP2 = templateType === 'TP2';
+      const isP26 = templateType === 'P26';
       
       // Create configuration based on template type
       const newConfig = {
@@ -450,11 +496,15 @@ export default function PR2ConfigClean() {
           { id: 'double_layer_cost', label: 'Double Layer', enabled: true, value: '' },
           { id: 'triple_layer_cost', label: 'Triple Layer', enabled: true, value: '' },
           { id: 'triple_extra_cure_cost', label: 'Triple Layer (with Extra Cure Time)', enabled: true, value: '' }
+        ] : isP26 ? [
+          { id: 'central_day_rate', label: 'Central Day Rate', enabled: true, value: '1650' }
         ] : [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
         ],
         
-        quantityOptions: isTP2 ? [] : [
+        quantityOptions: isTP2 ? [] : isP26 ? [
+          { id: `${pipeSize}_day_rate`, label: `${pipeSize} Day Rate`, enabled: true, value: '' }
+        ] : [
           { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
         ],
         
@@ -467,12 +517,17 @@ export default function PR2ConfigClean() {
         
         rangeOptions: isTP2 ? [
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
-        ] : [
+        ] : isP26 ? [] : [
           { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
         ],
         
-        mathOperators: isTP2 ? [] : ['÷'],
+        vehicleTravelRates: isP26 ? [
+          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '55', numberOfHours: '2', enabled: true },
+          { id: 'vehicle_26t', vehicleType: '26t', hourlyRate: '75', numberOfHours: '2', enabled: true }
+        ] : [],
+        
+        mathOperators: isTP2 || isP26 ? [] : ['÷'],
         isActive: true
       };
 
@@ -3072,6 +3127,8 @@ export default function PR2ConfigClean() {
               
               if (templateType === 'TP2') {
                 return "Edit TP2 - Patching Configuration";
+              } else if (templateType === 'P26') {
+                return "Edit P26 - Day Rate Configuration";
               } else if (templateType === 'TP1') {
                 // Use dynamic category name instead of hardcoded "CCTV Jet Vac"
                 const categoryName = getCategoryName(categoryId || '');
@@ -3082,6 +3139,129 @@ export default function PR2ConfigClean() {
             })()}
           </h2>
         </div>
+
+        {/* P26 Unified Configuration - Show for day-rate-db11 category */}
+        {categoryId === 'day-rate-db11' && (
+          <div key="unified-p26-config">
+            <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                P26 - Day Rate Configuration
+              </h3>
+              
+              {/* Blue Window: Central Day Rate */}
+              <Card className="bg-blue-50 border-blue-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
+                    <Banknote className="w-4 h-4" />
+                    Central Day Rate
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.pricingOptions?.map((option, index) => (
+                    <div key={option.id} className="flex items-center gap-4">
+                      <Label className="w-32 text-sm font-medium text-gray-700">
+                        {option.label}
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-xs">£</Label>
+                        <Input
+                          placeholder="1650"
+                          value={option.value || ""}
+                          onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
+                          className="w-20 h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+              
+              {/* Green Window: Multiple Pipe Size Day Rates */}
+              <Card className="bg-green-50 border-green-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-green-700 text-sm flex items-center gap-2">
+                    <Calculator className="w-4 h-4" />
+                    Pipe Size Day Rates
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.quantityOptions?.map((option, index) => (
+                    <div key={option.id} className="flex items-center gap-4">
+                      <Label className="w-32 text-sm font-medium text-gray-700">
+                        {option.label}
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-xs">£</Label>
+                        <Input
+                          placeholder="rate"
+                          value={option.value || ""}
+                          onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                          className="w-20 h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+              
+              {/* DB15 Window: Vehicle Travel Rates */}
+              <Card className="bg-cyan-50 border-cyan-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-cyan-700 text-sm flex items-center gap-2">
+                    <Truck className="w-4 h-4" />
+                    DB15 - Vehicle Travel Rates
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {formData.vehicleTravelRates?.map((vehicle, index) => (
+                    <div key={vehicle.id} className="flex items-center gap-4">
+                      <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
+                      <Label className="w-32 text-sm font-medium text-gray-700">
+                        {vehicle.vehicleType} Vehicle
+                      </Label>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Label className="text-xs">£/hr</Label>
+                        <Input
+                          placeholder="rate"
+                          value={vehicle.hourlyRate || ""}
+                          onChange={(e) => updateVehicleTravelRate(vehicle.id, 'hourlyRate', e.target.value)}
+                          className="w-16 h-8 text-sm"
+                        />
+                      </div>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Label className="text-xs">Hours</Label>
+                        <Input
+                          placeholder="2"
+                          value={vehicle.numberOfHours || ""}
+                          onChange={(e) => updateVehicleTravelRate(vehicle.id, 'numberOfHours', e.target.value)}
+                          className="w-12 h-8 text-sm"
+                        />
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteVehicleTravelRate(vehicle.id)}
+                        className="ml-4 h-8 w-8 p-0 text-red-600 border-red-200 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  {/* Add new vehicle button */}
+                  <Button
+                    onClick={() => setAddVehicleDialogOpen(true)}
+                    variant="outline"
+                    className="w-full h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Vehicle Rate
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
 
         {/* TP2 Unified Configuration - Show pipe size specific interface for patching */}
         {categoryId === 'patching' && (
@@ -3671,6 +3851,105 @@ export default function PR2ConfigClean() {
                                 numberOfHours: e.target.value
                               })}
                               className="w-16 h-8 text-sm"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : getTemplateType(categoryId) === 'P26' ? (
+                /* P26 Day Rate Configuration - Blue window for central rate, Green window for pipe sizes, DB15 for vehicles */
+                <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">P26 Day Rate Configuration</h3>
+                  
+                  {/* Blue Window: Central Day Rate */}
+                  <Card className="bg-blue-50 border-blue-200">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
+                        <Banknote className="w-4 h-4" />
+                        Central Day Rate
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {formData.pricingOptions?.map((option, index) => (
+                        <div key={option.id} className="flex items-center gap-4">
+                          <Label className="w-32 text-sm font-medium text-gray-700">
+                            {option.label}
+                          </Label>
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs">£</Label>
+                            <Input
+                              placeholder="1650"
+                              value={option.value || ""}
+                              onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
+                              className="w-20 h-8 text-sm"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                  
+                  {/* Green Window: Multiple Pipe Size Day Rates */}
+                  <Card className="bg-green-50 border-green-200">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-green-700 text-sm flex items-center gap-2">
+                        <Calculator className="w-4 h-4" />
+                        Pipe Size Day Rates
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {formData.quantityOptions?.map((option, index) => (
+                        <div key={option.id} className="flex items-center gap-4">
+                          <Label className="w-32 text-sm font-medium text-gray-700">
+                            {option.label}
+                          </Label>
+                          <div className="flex items-center gap-2">
+                            <Label className="text-xs">£</Label>
+                            <Input
+                              placeholder="rate"
+                              value={option.value || ""}
+                              onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                              className="w-20 h-8 text-sm"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                  
+                  {/* DB15 Window: Vehicle Travel Rates */}
+                  <Card className="bg-cyan-50 border-cyan-200">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-cyan-700 text-sm flex items-center gap-2">
+                        <Truck className="w-4 h-4" />
+                        DB15 - Vehicle Travel Rates
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {formData.vehicleTravelRates?.map((vehicle, index) => (
+                        <div key={vehicle.id} className="flex items-center gap-4">
+                          <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
+                          <Label className="w-32 text-sm font-medium text-gray-700">
+                            {vehicle.vehicleType} Vehicle
+                          </Label>
+                          <div className="ml-4 flex items-center gap-2">
+                            <Label className="text-xs">£/hr</Label>
+                            <Input
+                              placeholder="rate"
+                              value={vehicle.hourlyRate || ""}
+                              onChange={(e) => updateVehicleTravelRate(vehicle.id, 'hourlyRate', e.target.value)}
+                              className="w-16 h-8 text-sm"
+                            />
+                          </div>
+                          <div className="ml-4 flex items-center gap-2">
+                            <Label className="text-xs">Hours</Label>
+                            <Input
+                              placeholder="2"
+                              value={vehicle.numberOfHours || ""}
+                              onChange={(e) => updateVehicleTravelRate(vehicle.id, 'numberOfHours', e.target.value)}
+                              className="w-12 h-8 text-sm"
                             />
                           </div>
                         </div>
