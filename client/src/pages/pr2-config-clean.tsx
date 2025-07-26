@@ -3122,46 +3122,12 @@ export default function PR2ConfigClean() {
             SECTION BREAK
           </div>
         </div>
-        <div className="my-8 border-t-4 border-dashed border-gray-400"></div>
 
-        {/* ========================================= */}
-        {/* LOWER SECTION: TP1 CONFIGURATIONS        */}
-        {/* ========================================= */}
 
-        {/* Visible section header for users */}
-        <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-lg">
-          <h2 className="text-lg font-bold text-green-800 mb-2">⚙️ Lower Configuration Section</h2>
-          <p className="text-sm text-green-700">TP1, TP2, TP3 template configurations and pipe size settings</p>
-        </div>
 
-        {/* W003: Quantity Options Window - LOWER SECTION */}
-        <Card className="mb-6 relative bg-green-50 border-green-200">
-          <DevLabel id="W003" position="top-right" />
-          <CardHeader>
-            <CardTitle className="text-green-700 flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              Quantity Options
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {formData.quantityOptions?.map((option, index) => (
-              <div key={option.id} className="flex items-center gap-4">
-                <Label className="w-32 text-sm font-medium text-gray-700">
-                  {option.label}
-                </Label>
-                <Input
-                  placeholder="30"
-                  value={option.value || ""}
-                  onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                  className="w-20 h-8 text-sm"
-                />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
 
-        {/* General Configuration Interface (for non-pipe-size configurations) */}
-        {categoryId !== 'patching' && getPipeSizeConfigurations().length === 0 && isEditing && editId && (
+        {/* General Configuration Interface (for non-pipe-size configurations) - REMOVED */}
+        {false && categoryId !== 'patching' && getPipeSizeConfigurations().length === 0 && isEditing && editId && (
             <div className="space-y-4">
               {/* Conditional rendering based on template type */}
               {getTemplateType(categoryId) === 'TP2' ? (
