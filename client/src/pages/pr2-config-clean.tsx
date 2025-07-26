@@ -3024,17 +3024,29 @@ export default function PR2ConfigClean() {
           <DevLabel id="db2" position="top-right" />
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             {(() => {
-              // Correct the logic for loading the right template
+              // Force TP3 title override for robotic-cutting to prevent PR1 cache contamination
+              if (categoryId === 'robotic-cutting') {
+                console.log('🔧 FORCING TP3 title override - preventing PR1 cache bleed');
+                return "Edit TP3 - Robotic Cutting Configuration";
+              }
+              
+              // Use existing configuration name if editing
+              if (isEditing && existingConfig && existingConfig.categoryName) {
+                return `Edit ${existingConfig.categoryName}`;
+              }
+              
+              // Get template type for other cases
               const templateType = getTemplateType(categoryId || '');
-              const activeCategoryId = templateType === 'TP2' ? 2 : 1; // TP2 = 2, TP1 = 1
               
-              const templateTitle = activeCategoryId === 1
-                ? "Edit CCTV Jet Vac Configuration"
-                : activeCategoryId === 2
-                  ? "Edit TP2 - Patching Configuration"
-                  : `Edit Template ${activeCategoryId}`;
+              if (templateType === 'TP2') {
+                return "Edit TP2 - Patching Configuration";
+              } else if (templateType === 'TP1') {
+                // Use dynamic category name instead of hardcoded "CCTV Jet Vac"
+                const categoryName = getCategoryName(categoryId || '');
+                return `Edit ${categoryName}`;
+              }
               
-              return templateTitle;
+              return "Edit Configuration";
             })()}
           </h2>
         </div>
