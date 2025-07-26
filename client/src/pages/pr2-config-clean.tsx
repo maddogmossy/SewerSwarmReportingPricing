@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -311,6 +311,8 @@ export default function PR2ConfigClean() {
     
     return false;
   };
+
+
 
   // Clean form state with default options initialized - different for TP1 vs TP2 vs TP3
   const getDefaultFormData = () => {
@@ -3512,6 +3514,78 @@ export default function PR2ConfigClean() {
                               value={formData.rangeOptions?.[index]?.rangeEnd || ""}
                               onChange={(e) => handleRangeValueChange(formData.rangeOptions?.[index]?.id, 'rangeEnd', e.target.value)}
                               className="w-20 h-8 text-sm"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : getTemplateType(categoryId) === 'TP3' ? (
+                /* TP3 Robotic Cutting - DB2 and DB15 Windows Only */
+                <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">TP3 Robotic Cutting Configuration</h3>
+                  
+                  {/* DB2 Window: Pricing Options Only */}
+                  <Card className="bg-blue-50 border-blue-200">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
+                        <Scissors className="w-4 h-4" />
+                        DB2 - Robotic Cutting Pricing
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {formData.pricingOptions?.map((option, index) => (
+                        <div key={option.id} className="flex items-center gap-4">
+                          <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
+                          <Label className="w-32 text-sm font-medium text-gray-700">
+                            {option.label}
+                          </Label>
+                          <div className="ml-4 flex items-center gap-2">
+                            <Label className="text-xs">£</Label>
+                            <Input
+                              placeholder="cost"
+                              value={option.value || ""}
+                              onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
+                              className="w-20 h-8 text-sm"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                  
+                  {/* DB15 Window: Vehicle Travel Rates */}
+                  <Card className="bg-cyan-50 border-cyan-200">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-cyan-700 text-sm flex items-center gap-2">
+                        <Truck className="w-4 h-4" />
+                        DB15 - Vehicle Travel Rates
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {formData.vehicleTravelRates?.map((vehicle, index) => (
+                        <div key={vehicle.id} className="flex items-center gap-4">
+                          <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
+                          <Label className="w-20 text-sm font-medium text-gray-700">
+                            {vehicle.vehicleType}
+                          </Label>
+                          <div className="ml-4 flex items-center gap-2">
+                            <Label className="text-xs">£/hr</Label>
+                            <Input
+                              placeholder="rate"
+                              value={vehicle.hourlyRate || ""}
+                              onChange={(e) => updateVehicleTravelRate(vehicle.id, 'hourlyRate', e.target.value)}
+                              className="w-16 h-8 text-sm"
+                            />
+                          </div>
+                          <div className="ml-4 flex items-center gap-2">
+                            <Label className="text-xs">Hours</Label>
+                            <Input
+                              placeholder="hours"
+                              value={vehicle.numberOfHours || ""}
+                              onChange={(e) => updateVehicleTravelRate(vehicle.id, 'numberOfHours', e.target.value)}
+                              className="w-16 h-8 text-sm"
                             />
                           </div>
                         </div>
