@@ -2683,72 +2683,276 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* P26 Main Page Components - DB15 & DB7 appear on P26 page */}
+        {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
+        {categoryId === 'cctv-jet-vac' && (
+          <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
+            <DevLabel id="db15" position="top-right" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
+                <Truck className="w-5 h-5" />
+                P19 - Vehicle Travel Rates
+              </CardTitle>
+              <p className="text-sm text-cyan-600 mt-1">
+                TP1 cleaning operations vehicle travel rates
+              </p>
+            </CardHeader>
+            <CardContent className="py-3">
+              <div className="space-y-2">
+                {formData.vehicleTravelRates && formData.vehicleTravelRates.length > 0 ? 
+                  formData.vehicleTravelRates.map((vehicle, index) => (
+                    <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
+                          {vehicle.vehicleType}
+                        </Label>
+                        <span className="text-sm text-cyan-600">£</span>
+                        <Input
+                          placeholder="rate"
+                          maxLength={6}
+                          value={vehicle.hourlyRate || ""}
+                          onChange={(e) => {
+                            const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
+                            updateVehicleTravelRate(updatedVehicle);
+                          }}
+                          className="bg-white border-cyan-300 h-8 text-sm w-20"
+                        />
+                        <span className="text-sm text-cyan-600">/hr</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="2"
+                          maxLength={3}
+                          value={vehicle.numberOfHours || "2"}
+                          onChange={(e) => {
+                            const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
+                            updateVehicleTravelRate(updatedVehicle);
+                          }}
+                          className="bg-white border-cyan-300 h-8 text-sm w-16"
+                        />
+                        <span className="text-sm text-cyan-600">hours</span>
+                      </div>
+                      <div className="flex gap-2">
+                        {index === 0 && (
+                          <Button
+                            variant="outline"
+                            onClick={() => setAddVehicleDialogOpen(true)}
+                            className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                          >
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add Vehicle
+                          </Button>
+                        )}
+                        {index > 0 && (
+                          <Button
+                            variant="outline"
+                            onClick={() => deleteVehicleTravelRate(vehicle.id)}
+                            className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="bg-white p-4 rounded-lg border border-cyan-200 flex items-center justify-between">
+                      <span className="text-sm text-cyan-600">No vehicle travel rates configured</span>
+                      <Button
+                        variant="outline"
+                        onClick={() => setAddVehicleDialogOpen(true)}
+                        className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add Vehicle
+                      </Button>
+                    </div>
+                  )
+                }
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* P26 DB15: TP2 Patching Vehicle Travel Rates */}
+        {categoryId === 'patching' && (
+          <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
+            <DevLabel id="db15" position="top-right" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
+                <Truck className="w-5 h-5" />
+                P26 - Vehicle Travel Rates (All Pipe Sizes)
+              </CardTitle>
+              <p className="text-sm text-cyan-600 mt-1">
+                Shared rates for all TP2 patching configurations (150mm, 225mm, 300mm)
+              </p>
+            </CardHeader>
+            <CardContent className="py-3">
+              <div className="space-y-2">
+                {formData.vehicleTravelRates && formData.vehicleTravelRates.length > 0 ? 
+                  formData.vehicleTravelRates.map((vehicle, index) => (
+                    <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
+                          {vehicle.vehicleType}
+                        </Label>
+                        <span className="text-sm text-cyan-600">£</span>
+                        <Input
+                          placeholder="rate"
+                          maxLength={6}
+                          value={vehicle.hourlyRate || ""}
+                          onChange={(e) => {
+                            const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
+                            updateVehicleTravelRate(updatedVehicle);
+                          }}
+                          className="bg-white border-cyan-300 h-8 text-sm w-20"
+                        />
+                        <span className="text-sm text-cyan-600">/hr</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="2"
+                          maxLength={3}
+                          value={vehicle.numberOfHours || "2"}
+                          onChange={(e) => {
+                            const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
+                            updateVehicleTravelRate(updatedVehicle);
+                          }}
+                          className="bg-white border-cyan-300 h-8 text-sm w-16"
+                        />
+                        <span className="text-sm text-cyan-600">hours</span>
+                      </div>
+                      <div className="flex gap-2">
+                        {index === 0 && (
+                          <Button
+                            variant="outline"
+                            onClick={() => setAddVehicleDialogOpen(true)}
+                            className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                          >
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add Vehicle
+                          </Button>
+                        )}
+                        {index > 0 && (
+                          <Button
+                            variant="outline"
+                            onClick={() => deleteVehicleTravelRate(vehicle.id)}
+                            className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="bg-white p-4 rounded-lg border border-cyan-200 flex items-center justify-between">
+                      <span className="text-sm text-cyan-600">No vehicle travel rates configured</span>
+                      <Button
+                        variant="outline"
+                        onClick={() => setAddVehicleDialogOpen(true)}
+                        className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add Vehicle
+                      </Button>
+                    </div>
+                  )
+                }
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* P4 DB15: TP3 Robotic Cutting Vehicle Travel Rates */}
+        {categoryId === 'robotic-cutting' && (
+          <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
+            <DevLabel id="db15" position="top-right" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
+                <Truck className="w-5 h-5" />
+                P4 - Vehicle Travel Rates
+              </CardTitle>
+              <p className="text-sm text-cyan-600 mt-1">
+                TP3 robotic cutting operations vehicle travel rates
+              </p>
+            </CardHeader>
+            <CardContent className="py-3">
+              <div className="space-y-2">
+                {formData.vehicleTravelRates && formData.vehicleTravelRates.length > 0 ? 
+                  formData.vehicleTravelRates.map((vehicle, index) => (
+                    <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
+                          {vehicle.vehicleType}
+                        </Label>
+                        <span className="text-sm text-cyan-600">£</span>
+                        <Input
+                          placeholder="rate"
+                          maxLength={6}
+                          value={vehicle.hourlyRate || ""}
+                          onChange={(e) => {
+                            const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
+                            updateVehicleTravelRate(updatedVehicle);
+                          }}
+                          className="bg-white border-cyan-300 h-8 text-sm w-20"
+                        />
+                        <span className="text-sm text-cyan-600">/hr</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="2"
+                          maxLength={3}
+                          value={vehicle.numberOfHours || "2"}
+                          onChange={(e) => {
+                            const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
+                            updateVehicleTravelRate(updatedVehicle);
+                          }}
+                          className="bg-white border-cyan-300 h-8 text-sm w-16"
+                        />
+                        <span className="text-sm text-cyan-600">hours</span>
+                      </div>
+                      <div className="flex gap-2">
+                        {index === 0 && (
+                          <Button
+                            variant="outline"
+                            onClick={() => setAddVehicleDialogOpen(true)}
+                            className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                          >
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add Vehicle
+                          </Button>
+                        )}
+                        {index > 0 && (
+                          <Button
+                            variant="outline"
+                            onClick={() => deleteVehicleTravelRate(vehicle.id)}
+                            className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="bg-white p-4 rounded-lg border border-cyan-200 flex items-center justify-between">
+                      <span className="text-sm text-cyan-600">No vehicle travel rates configured</span>
+                      <Button
+                        variant="outline"
+                        onClick={() => setAddVehicleDialogOpen(true)}
+                        className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add Vehicle
+                      </Button>
+                    </div>
+                  )
+                }
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* P26 Main Page Components - DB7 appears on P26 page */}
         {categoryId === 'patching' && (
           <>
-            {/* DB15 Window: Vehicle Travel Rates */}
-            <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
-              <DevLabel id="db15" position="top-right" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-cyan-700 text-sm flex items-center gap-2">
-                  <Truck className="w-4 h-4" />
-                  DB15 - Vehicle Travel Rates
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {formData.vehicleTravelRates?.map((vehicle, index) => (
-                  <div key={vehicle.id} className="flex items-center gap-4">
-                    <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
-                    <Label className="w-32 text-sm font-medium text-gray-700">
-                      {vehicle.vehicleType} Vehicle
-                    </Label>
-                    <div className="ml-4 flex items-center gap-2">
-                      <Label className="text-xs">£/hr</Label>
-                      <Input
-                        placeholder="rate"
-                        value={vehicle.hourlyRate || ""}
-                        onChange={(e) => {
-                          const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
-                          updateVehicleTravelRate(updatedVehicle);
-                        }}
-                        className="w-16 h-8 text-sm"
-                      />
-                    </div>
-                    <div className="ml-4 flex items-center gap-2">
-                      <Label className="text-xs">Hours</Label>
-                      <Input
-                        placeholder="2"
-                        value={vehicle.numberOfHours || ""}
-                        onChange={(e) => {
-                          const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
-                          updateVehicleTravelRate(updatedVehicle);
-                        }}
-                        className="w-12 h-8 text-sm"
-                      />
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deleteVehicleTravelRate(vehicle.id)}
-                      className="ml-4 h-8 w-8 p-0 text-red-600 border-red-200 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
-                
-                {/* Add new vehicle button */}
-                <Button
-                  onClick={() => setAddVehicleDialogOpen(true)}
-                  variant="outline"
-                  className="w-full h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add Vehicle Rate
-                </Button>
-              </CardContent>
-            </Card>
-
             {/* DB7 Day Rate */}
             <Card className="mb-6 bg-green-50 border-green-200 relative">
               <DevLabel id="db7" position="top-right" />
@@ -3135,114 +3339,7 @@ export default function PR2ConfigClean() {
             </CardContent>
           </Card>
 
-        {/* Vehicle Travel Rates - P19 for TP1, P26 for main TP2 page only, P4 for TP3 */}
-        {((categoryId === 'cctv-jet-vac' && editId) || 
-          (categoryId === 'patching' && !editId) || 
-          (categoryId === 'robotic-cutting' && editId)) && (
-        <Card className="mb-6 bg-cyan-50 border-cyan-200 relative" data-component="p19">
-          <DevLabel id="db15" position="top-right" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
-              <Truck className="w-5 h-5" />
-              {(() => {
-                if (categoryId === 'cctv-jet-vac') return 'P19 - Vehicle Travel Rates';
-                if (categoryId === 'patching') return 'P26 - Vehicle Travel Rates (All Pipe Sizes)';
-                if (categoryId === 'robotic-cutting') return 'P4 - Vehicle Travel Rates';
-                return 'Vehicle Travel Rates';
-              })()}
-            </CardTitle>
-            <p className="text-sm text-cyan-600 mt-1">
-              {(() => {
-                if (categoryId === 'cctv-jet-vac') return 'TP1 cleaning operations vehicle travel rates';
-                if (categoryId === 'patching') return 'Shared rates for all TP2 patching configurations (150mm, 225mm, 300mm)';
-                if (categoryId === 'robotic-cutting') return 'TP3 robotic cutting operations vehicle travel rates';
-                return 'Vehicle travel rates for this configuration';
-              })()}
-            </p>
-          </CardHeader>
-          <CardContent className="py-3">
-            <div className="space-y-2">
-              {formData.vehicleTravelRates && formData.vehicleTravelRates.length > 0 ? 
-                formData.vehicleTravelRates.map((vehicle, index) => (
-                  <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
-                        {vehicle.vehicleType}
-                      </Label>
-                      <span className="text-sm text-cyan-600">£</span>
-                      <Input
-                        placeholder="rate"
-                        maxLength={6}
-                        value={vehicle.hourlyRate || ""}
-                        onChange={(e) => {
-                          console.log(`🚗 MAIN PAGE VEHICLE UPDATE: ${vehicle.id} from ${vehicle.hourlyRate} to ${e.target.value}`);
-                          const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
-                          updateVehicleTravelRate(updatedVehicle);
-                        }}
-                        className="bg-white border-cyan-300 h-8 text-sm w-20"
-                        data-field="hourly-rate"
-                        data-window="vehicle-main"
-                        data-option-id={vehicle.id}
-                      />
-                      <span className="text-sm text-cyan-600">/hr</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        placeholder="2"
-                        maxLength={3}
-                        value={vehicle.numberOfHours || "2"}
-                        onChange={(e) => {
-                          console.log(`🚗 MAIN PAGE HOURS UPDATE: ${vehicle.id} from ${vehicle.numberOfHours} to ${e.target.value}`);
-                          const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
-                          updateVehicleTravelRate(updatedVehicle);
-                        }}
-                        className="bg-white border-cyan-300 h-8 text-sm w-16"
-                        data-field="number-of-hours"
-                        data-window="vehicle-main"
-                        data-option-id={vehicle.id}
-                      />
-                      <span className="text-sm text-cyan-600">hours</span>
-                    </div>
-                    <div className="flex gap-2">
-                      {index === 0 && (
-                        <Button
-                          variant="outline"
-                          onClick={() => setAddVehicleDialogOpen(true)}
-                          className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                        >
-                          <Plus className="w-4 h-4 mr-1" />
-                          Add Vehicle
-                        </Button>
-                      )}
-                      {index > 0 && (
-                        <Button
-                          variant="outline"
-                          onClick={() => deleteVehicleTravelRate(vehicle.id)}
-                          className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                )) : (
-                  <div className="bg-white p-4 rounded-lg border border-cyan-200 flex items-center justify-between">
-                    <span className="text-sm text-cyan-600">No vehicle travel rates configured</span>
-                    <Button
-                      variant="outline"
-                      onClick={() => setAddVehicleDialogOpen(true)}
-                      className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                    >
-                      <Plus className="w-4 h-4 mr-1" />
-                      Add Vehicle
-                    </Button>
-                  </div>
-                )
-              }
-            </div>
-          </CardContent>
-        </Card>
-        )}
+
 
         {/* Configuration Title */}
         <div className="mb-6 relative">
