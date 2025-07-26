@@ -2683,50 +2683,7 @@ export default function PR2ConfigClean() {
 
 
 
-        {/* Sector Selection Checkboxes */}
-        <Card className="mb-6 relative">
-          <DevLabel id="W001" position="top-right" />
-          <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center gap-2">
-              <Building className="w-5 h-5" />
-              Apply Configuration to Sectors
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {SECTORS.map((sect) => {
-                const Icon = sect.icon;
-                const isSelected = selectedSectors.includes(sect.id);
-                const hasExistingConfig = sectorsWithConfig.includes(sect.id);
-                
-                return (
-                  <div key={sect.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`sector-${sect.id}`}
-                      checked={isSelected}
-                      onCheckedChange={(checked) => handleSectorChange(sect.id, checked as boolean)}
-                      className="border-gray-300"
-                    />
-                    <Label 
-                      htmlFor={`sector-${sect.id}`} 
-                      className={`flex items-center gap-2 cursor-pointer ${sect.color} font-medium`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      {sect.name}
-                      {hasExistingConfig && (
-                        <span className="text-xs text-gray-500">(existing)</span>
-                      )}
-                    </Label>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="mt-4 text-sm text-gray-600">
-              <p>✓ Checking sectors automatically saves this pricing configuration</p>
-              <p>✗ Unchecking sectors automatically removes the configuration</p>
-            </div>
-          </CardContent>
-        </Card>
+
 
         {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
         {categoryId === 'cctv-jet-vac' && (
@@ -3031,44 +2988,7 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* ========================================= */}
-        {/* UPPER SECTION: ONLY W001, W003, W007     */}
-        {/* ========================================= */}
 
-        {/* Visible section header for users */}
-        <div className="mb-6 p-4 bg-blue-100 border border-blue-300 rounded-lg">
-          <h2 className="text-lg font-bold text-blue-800 mb-2">🔧 Upper Configuration Section</h2>
-          <p className="text-sm text-blue-700">Core configuration windows: Day Rate, Quantity Options, and Range Settings</p>
-        </div>
-
-        {/* W001: Day Rate Window */}
-        <Card className="mb-6 relative bg-blue-50 border-blue-200">
-          <DevLabel id="W001" position="top-right" />
-          <CardHeader>
-            <CardTitle className="text-blue-700 flex items-center gap-2">
-              <Banknote className="w-5 h-5" />
-              Day Rate Configuration
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {formData.pricingOptions?.map((option, index) => (
-              <div key={option.id} className="flex items-center gap-4">
-                <Label className="w-32 text-sm font-medium text-gray-700">
-                  {option.label}
-                </Label>
-                <div className="flex items-center gap-2">
-                  <Label className="text-xs">£</Label>
-                  <Input
-                    placeholder="1850"
-                    value={option.value || ""}
-                    onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
-                    className="w-20 h-8 text-sm"
-                  />
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
 
         {/* W005: DB7 Day Rate (from P26 patching configurations) */}
         {categoryId === 'patching' && (
@@ -3187,67 +3107,9 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* Pipe Size Selection - Upper Section */}
-        <Card className="mb-6 relative bg-orange-50 border-orange-200">
-          <DevLabel id="pipe-sizes" position="top-right" />
-          <CardHeader>
-            <CardTitle className="text-orange-700 flex items-center gap-2">
-              <Settings className="w-5 h-5" />
-              Pipe Size Configuration
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white p-3 rounded-lg border border-orange-200 text-center">
-                <div className="text-lg font-bold text-orange-700">150mm</div>
-                <div className="text-sm text-orange-600">Standard</div>
-              </div>
-              <div className="bg-white p-3 rounded-lg border border-orange-200 text-center">
-                <div className="text-lg font-bold text-orange-700">225mm</div>
-                <div className="text-sm text-orange-600">Medium</div>
-              </div>
-              <div className="bg-white p-3 rounded-lg border border-orange-200 text-center">
-                <div className="text-lg font-bold text-orange-700">300mm</div>
-                <div className="text-sm text-orange-600">Large</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* W007: Range Options Window */}
-        <Card className="mb-6 relative bg-purple-50 border-purple-200">
-          <DevLabel id="W007" position="top-right" />
-          <CardHeader>
-            <CardTitle className="text-purple-700 flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
-              Range Options
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {formData.rangeOptions?.map((option, index) => (
-              <div key={option.id} className="flex items-center gap-4">
-                <Label className="w-32 text-sm font-medium text-gray-700">
-                  {option.label}
-                </Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    placeholder="Min"
-                    value={option.rangeStart || ""}
-                    onChange={(e) => handleRangeValueChange(option.id, 'rangeStart', e.target.value)}
-                    className="w-20 h-8 text-sm"
-                  />
-                  <span className="text-sm text-gray-500">to</span>
-                  <Input
-                    placeholder="Max"
-                    value={option.rangeEnd || ""}
-                    onChange={(e) => handleRangeValueChange(option.id, 'rangeEnd', e.target.value)}
-                    className="w-20 h-8 text-sm"
-                  />
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+
+
 
         {/* ========================================= */}
         {/* END OF UPPER SECTION                     */}
