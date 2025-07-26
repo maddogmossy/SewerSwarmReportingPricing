@@ -2675,6 +2675,247 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
+          {/* UPPER LEVEL STRUCTURE: CCTV/Jet Vac Standard Components */}
+          {categoryId === 'cctv-jet-vac' && (
+            <div className="space-y-6 mb-8">
+              {/* 1. Apply Configuration to Sectors */}
+              <Card className="bg-gray-50 border-gray-200">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-gray-800 text-lg flex items-center gap-2">
+                    <Building className="w-5 h-5" />
+                    1. Apply Configuration to Sectors
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {SECTORS.map((sectorItem) => (
+                      <div key={sectorItem.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`sector-${sectorItem.id}`}
+                          checked={selectedSectors.includes(sectorItem.id)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedSectors([...selectedSectors, sectorItem.id]);
+                            } else {
+                              setSelectedSectors(selectedSectors.filter(s => s !== sectorItem.id));
+                            }
+                          }}
+                        />
+                        <Label 
+                          htmlFor={`sector-${sectorItem.id}`}
+                          className={`cursor-pointer font-medium ${sectorItem.color}`}
+                        >
+                          {sectorItem.name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 2. Category Color */}
+              <Card className="bg-gray-50 border-gray-200">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-gray-800 text-lg flex items-center gap-2">
+                    <Settings className="w-5 h-5" />
+                    2. Category Color
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-8 h-8 rounded border-2 border-gray-300"
+                        style={{ backgroundColor: formData.categoryColor || '#ffffff' }}
+                      />
+                      <Input
+                        type="color"
+                        value={formData.categoryColor || '#ffffff'}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          categoryColor: e.target.value
+                        }))}
+                        className="w-16 h-8 p-1 border cursor-pointer"
+                      />
+                    </div>
+                    <Label className="text-sm text-gray-600">
+                      Select category identification color
+                    </Label>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 3. Pipe Size Selection */}
+              <Card className="bg-gray-50 border-gray-200">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-gray-800 text-lg flex items-center gap-2">
+                    <Ruler className="w-5 h-5" />
+                    3. Pipe Size Selection
+                  </CardTitle>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Each pipe size creates a unique TP1 template with its own dev ID
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
+                    {[100, 150, 225, 300, 375, 450, 525, 600, 675, 750, 825, 900, 975, 1050, 1125, 1200, 1275, 1350, 1425, 1500].map((size) => (
+                      <Button
+                        key={size}
+                        variant="outline"
+                        size="sm"
+                        data-dev-id={`tp1-${size}mm`}
+                        className={`
+                          h-10 text-xs font-medium border-2 transition-all
+                          ${formData.pipeSize === size.toString() 
+                            ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                            : 'border-gray-300 hover:border-gray-400'
+                          }
+                        `}
+                        onClick={() => setFormData(prev => ({
+                          ...prev,
+                          pipeSize: size.toString()
+                        }))}
+                      >
+                        {size}mm
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 4. DB7 - Day Rate */}
+              <Card className="bg-green-50 border-green-200">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-green-700 text-lg flex items-center gap-2">
+                    <Banknote className="w-5 h-5" />
+                    4. DB7 - Day Rate
+                  </CardTitle>
+                  <p className="text-sm text-green-600 mt-1">
+                    Central day rate applied across all pipe sizes
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-3">
+                    <Label className="text-sm font-medium text-green-700 min-w-[80px]">
+                      Day Rate
+                    </Label>
+                    <span className="text-sm text-green-600">£</span>
+                    <Input
+                      placeholder="1850"
+                      maxLength={6}
+                      value={formData.pricingOptions?.find(opt => opt.id === 'price_dayrate')?.value || ''}
+                      onChange={(e) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          pricingOptions: prev.pricingOptions.map(opt =>
+                            opt.id === 'price_dayrate' ? { ...opt, value: e.target.value } : opt
+                          )
+                        }));
+                        debouncedSave();
+                      }}
+                      className="bg-white border-green-300 h-8 text-sm w-24"
+                    />
+                    <span className="text-sm text-green-600">/day</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 5. DB15 - Vehicle Travel Rates */}
+              <Card className="bg-cyan-50 border-cyan-200">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
+                    <Truck className="w-5 h-5" />
+                    5. DB15 - Vehicle Travel Rates (TP1 Upper Level)
+                  </CardTitle>
+                  <p className="text-sm text-cyan-600 mt-1">
+                    Vehicle travel rates for TP1 cleaning operations
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {formData.vehicleTravelRates && formData.vehicleTravelRates.length > 0 ? 
+                      formData.vehicleTravelRates.map((vehicle, index) => (
+                        <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
+                          <div className="flex items-center gap-2">
+                            <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
+                              {vehicle.vehicleType}
+                            </Label>
+                            <span className="text-sm text-cyan-600">£</span>
+                            <Input
+                              placeholder="55"
+                              maxLength={6}
+                              value={vehicle.hourlyRate || ""}
+                              onChange={(e) => {
+                                const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
+                                updateVehicleTravelRate(updatedVehicle);
+                              }}
+                              className="bg-white border-cyan-300 h-8 text-sm w-20"
+                            />
+                            <span className="text-sm text-cyan-600">/hr</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              placeholder="2"
+                              maxLength={3}
+                              value={vehicle.numberOfHours || "2"}
+                              onChange={(e) => {
+                                const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
+                                updateVehicleTravelRate(updatedVehicle);
+                              }}
+                              className="bg-white border-cyan-300 h-8 text-sm w-16"
+                            />
+                            <span className="text-sm text-cyan-600">hours</span>
+                          </div>
+                          <div className="flex gap-2">
+                            {index === 0 && (
+                              <Button
+                                variant="outline"
+                                onClick={() => setAddVehicleDialogOpen(true)}
+                                className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                              >
+                                <Plus className="w-4 h-4 mr-1" />
+                                Add Vehicle
+                              </Button>
+                            )}
+                            {index > 0 && (
+                              <Button
+                                variant="outline"
+                                onClick={() => deleteVehicleTravelRate(vehicle.id)}
+                                className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )) : (
+                        <div className="bg-white p-4 rounded-lg border border-cyan-200 flex items-center justify-between">
+                          <span className="text-sm text-cyan-600">No vehicle travel rates configured</span>
+                          <Button
+                            variant="outline"
+                            onClick={() => setAddVehicleDialogOpen(true)}
+                            className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                          >
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add Vehicle
+                          </Button>
+                        </div>
+                      )
+                    }
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Divider between Upper Level and Lower Level TP1 Templates */}
+              <div className="border-b-2 border-gray-300 my-8 relative">
+                <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-50 px-6 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-full">
+                  TP1 Templates Below (Lower Level)
+                </div>
+              </div>
+            </div>
+          )}
+          )}
+
         {/* Sector Selection Checkboxes */}
         <Card className="mb-6 relative">
           <DevLabel id="W001" position="top-right" />
