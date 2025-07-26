@@ -841,6 +841,7 @@ This prevents data contamination and ensures authentic extraction integrity.
   - Eliminated duplicate day rate entries and redundant fields across system
   - Maintained authentic unit costs for each pipe size while centralizing day rate logic
 - **Result**: Clean separation between central day rate (P26) and pipe-specific patching costs (TP2), eliminating confusion and redundancy
+- **W006 Input Issue Fixed**: Removed frontend logic that was automatically re-adding db7_day_rate fields to TP2 configurations, allowing proper input functionality
 
 ### CRITICAL: Complete PR1 System Removal & Cache Cleanup ✅
 - **Date**: January 25, 2025
