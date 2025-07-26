@@ -2485,7 +2485,16 @@ export default function PR2ConfigClean() {
                 className="text-2xl font-bold text-gray-900"
                 data-component="page-title"
               >
-                Edit {formData.categoryName || 'Configuration'}
+                Edit {(() => {
+                  const templateType = getTemplateType(categoryId || '');
+                  if (templateType === 'TP3') {
+                    return 'TP3 - Robotic Cutting Configuration';
+                  } else if (templateType === 'TP2') {
+                    return formData.categoryName || 'TP2 - Patching Configuration';
+                  } else {
+                    return formData.categoryName || 'TP1 - Configuration';
+                  }
+                })()}
               </h1>
               <p className="text-gray-600 mt-1">
                 Sector: <span className="font-medium text-blue-600">{sector}</span>
