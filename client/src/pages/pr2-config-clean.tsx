@@ -406,9 +406,7 @@ export default function PR2ConfigClean() {
         quantityOptions: [
           { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
         ],
-        minQuantityOptions: [
-          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
-        ],
+        minQuantityOptions: [],
         rangeOptions: [
           { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
@@ -420,7 +418,7 @@ export default function PR2ConfigClean() {
         mathOperators: ['N/A'],
         pricingStackOrder: ['price_dayrate'],
         quantityStackOrder: ['quantity_runs'],
-        minQuantityStackOrder: ['minquantity_runs'],
+        minQuantityStackOrder: [],
         rangeStackOrder: ['range_percentage', 'range_length'],
         vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_7_5t'],
         sector
@@ -465,9 +463,7 @@ export default function PR2ConfigClean() {
           { id: 'patch_min_qty_2', label: 'Min Qty 2', enabled: true, value: '' },
           { id: 'patch_min_qty_3', label: 'Min Qty 3', enabled: true, value: '' },
           { id: 'patch_min_qty_4', label: 'Min Qty 4', enabled: true, value: '' }
-        ] : [
-          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
-        ],
+        ] : [],
         
         rangeOptions: isTP2 ? [
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
@@ -694,7 +690,7 @@ export default function PR2ConfigClean() {
     console.log(`🧹 Cleared values from second purple row`);
   }
 
-  // Clean up extra green and orange entries while preserving base entries
+  // Clean up extra green entries while preserving base entries (DB14 orange window removed)
   const removeExtraGreenOrangeEntries = () => {
     setFormData(prev => ({
       ...prev,
@@ -702,12 +698,10 @@ export default function PR2ConfigClean() {
         opt.id === "quantity_runs" // Keep only "Runs per Shift"
       ),
       quantityStackOrder: ["quantity_runs"],
-      minQuantityOptions: prev.minQuantityOptions.filter(opt => 
-        opt.id === "minquantity_runs" // Keep only "Min Runs per Shift"
-      ),
-      minQuantityStackOrder: ["minquantity_runs"]
+      minQuantityOptions: [], // DB14 orange window removed from TP1
+      minQuantityStackOrder: []
     }));
-    console.log(`🧹 Removed extra green and orange entries, kept base entries only`);
+    console.log(`🧹 Removed extra green entries, DB14 orange window removed from TP1`);
   }
 
   // DISABLED: Auto cleanup was interfering with manual add operations
@@ -1288,9 +1282,7 @@ export default function PR2ConfigClean() {
           { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
         ];
         
-        const defaultMinQuantityOptions = [
-          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
-        ];
+        const defaultMinQuantityOptions = [];
         
         const defaultRangeOptions = [
           { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
@@ -1387,9 +1379,7 @@ export default function PR2ConfigClean() {
           { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
         ];
         
-        const defaultMinQuantityOptions = [
-          { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
-        ];
+        const defaultMinQuantityOptions = [];
         
         const defaultRangeOptions = [
           { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
@@ -2867,9 +2857,9 @@ export default function PR2ConfigClean() {
                           }
                         }
                         
+                        let finalConfigId = configId;
+                        
                         try {
-                          let finalConfigId = configId;
-                          
                           // If configId is null, use auto-detection system to find or create configuration
                           if (!configId) {
                             console.log(`🔍 AUTO-DETECTION: Finding or creating ${pipeSize} configuration for ${categoryId}`);
@@ -2916,7 +2906,7 @@ export default function PR2ConfigClean() {
                           console.log(`✅ Form data updated to show ${pipeSize} configuration (${successType})`);
                           
                         } catch (error) {
-                          console.error(`❌ Failed to load configuration ${finalConfigId}:`, error);
+                          console.error(`❌ Failed to load configuration ${finalConfigId || configId || 'unknown'}:`, error);
                         }
                       }}
                       className={`px-4 py-2 rounded border hover:bg-gray-50 transition-colors ${isCurrentConfig ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-white border-gray-300"}`}
@@ -3776,43 +3766,7 @@ export default function PR2ConfigClean() {
                     </CardContent>
                   </Card>
 
-                  {/* Orange Window */}  
-                  <Card className="bg-orange-50 border-orange-200 w-52 flex-shrink-0 relative">
-                    <DevLabel id="db14" />
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
-                        🎯 Min Quantity
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-1">
-                      <div className="grid grid-cols-1 gap-1">
-                        {formData.minQuantityOptions?.map((option, index) => {
-                          const isLastOption = index === formData.minQuantityOptions.length - 1;
-                          
-                          return (
-                            <div key={option.id} className="flex items-center gap-2 text-xs w-full">
-                              <span className="font-medium w-16 flex-shrink-0">Min</span>
-                              <Input
-                                placeholder=""
-                                value={option.value || ""}
-                                onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
-                                className="bg-white border-orange-300 h-6 text-xs w-16 flex-shrink-0"
-                              />
-                              {isLastOption && (
-                                <Button
-                                  size="sm"
-                                  onClick={addNewInputsToAllWindows}
-                                  className="h-6 w-12 text-xs bg-green-600 text-white hover:bg-green-700 border-0 flex-shrink-0"
-                                >
-                                  <Plus className="w-3 h-3" />
-                                </Button>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </CardContent>
-                  </Card>
+
 
 
                 </div>
