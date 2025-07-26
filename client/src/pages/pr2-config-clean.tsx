@@ -583,7 +583,6 @@ export default function PR2ConfigClean() {
   
   // State for pipe size switching within unified page
   const [currentConfigId, setCurrentConfigId] = useState<number | null>(editId ? parseInt(editId) : null);
-  const [selectedPipeSize, setSelectedPipeSize] = useState<string>('150mm');
   
   // Color sync for patching configurations
   const syncPatchingColors = async () => {
@@ -1020,6 +1019,10 @@ export default function PR2ConfigClean() {
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
 
   // Configuration loading moved above getCategoryName function
+
+  // Pipe Size Selection State - Upper Level Configuration
+  const [selectedPipeSize, setSelectedPipeSize] = useState<string>(pipeSize || '150');
+  const [availablePipeSizes, setAvailablePipeSizes] = useState<string[]>(['100', '150', '225', '300']);
 
   // Admin controls
   const { data: adminData } = useQuery({
@@ -2723,6 +2726,132 @@ export default function PR2ConfigClean() {
 
 
 
+
+        {/* Upper Level Pipe Size Configuration */}
+        <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 relative">
+          <DevLabel id="W020" position="top-right" />
+          <CardHeader className="pb-3">
+            <CardTitle className="text-blue-700 text-lg flex items-center gap-2">
+              <Ruler className="w-5 h-5" />
+              Pipe Size Configuration
+            </CardTitle>
+            <p className="text-sm text-blue-600 mt-1">
+              Select pipe sizes for this configuration category
+            </p>
+          </CardHeader>
+          <CardContent className="py-3">
+            <div className="space-y-4">
+              {/* Current Pipe Size Display */}
+              <div className="bg-white p-4 rounded-lg border border-blue-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Ruler className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-blue-800">Current Configuration</h4>
+                      <p className="text-sm text-blue-600">
+                        {formData.pipeSize || selectedPipeSize}mm Pipe Size
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                    Active
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Pipe Size Selector */}
+              <div className="bg-white p-4 rounded-lg border border-blue-200">
+                <Label className="text-sm font-medium text-blue-700 mb-3 block">
+                  Available Pipe Sizes
+                </Label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {availablePipeSizes.map((size) => (
+                    <Button
+                      key={size}
+                      variant={selectedPipeSize === size ? "default" : "outline"}
+                      onClick={() => {
+                        setSelectedPipeSize(size);
+                        setFormData(prev => ({
+                          ...prev,
+                          pipeSize: size
+                        }));
+                        debouncedSave();
+                      }}
+                      className={`h-12 flex flex-col items-center justify-center ${
+                        selectedPipeSize === size 
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                          : 'border-blue-200 text-blue-700 hover:bg-blue-50'
+                      }`}
+                    >
+                      <span className="font-bold text-lg">{size}</span>
+                      <span className="text-xs">mm</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pipe Size Management */}
+              <div className="bg-white p-4 rounded-lg border border-blue-200">
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-sm font-medium text-blue-700">
+                    Custom Pipe Size
+                  </Label>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                    onClick={() => {
+                      const customSize = prompt("Enter custom pipe size (mm):");
+                      if (customSize && !isNaN(Number(customSize))) {
+                        const newSizes = [...availablePipeSizes, customSize].sort((a, b) => Number(a) - Number(b));
+                        setAvailablePipeSizes([...new Set(newSizes)]);
+                        setSelectedPipeSize(customSize);
+                        setFormData(prev => ({
+                          ...prev,
+                          pipeSize: customSize
+                        }));
+                        debouncedSave();
+                      }
+                    }}
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Custom Size
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {availablePipeSizes.map((size) => (
+                    <div key={size} className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded text-sm">
+                      <span className="text-blue-700">{size}mm</span>
+                      {availablePipeSizes.length > 1 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const newSizes = availablePipeSizes.filter(s => s !== size);
+                            setAvailablePipeSizes(newSizes);
+                            if (selectedPipeSize === size && newSizes.length > 0) {
+                              setSelectedPipeSize(newSizes[0]);
+                              setFormData(prev => ({
+                                ...prev,
+                                pipeSize: newSizes[0]
+                              }));
+                              debouncedSave();
+                            }
+                          }}
+                          className="h-4 w-4 p-0 text-red-500 hover:text-red-700"
+                        >
+                          ×
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
         {categoryId === 'cctv-jet-vac' && (
