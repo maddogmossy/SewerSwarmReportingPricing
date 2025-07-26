@@ -3193,6 +3193,10 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
+        {/* ========================================= */}
+        {/* UPPER SECTION: ONLY W001, W003, W007     */}
+        {/* ========================================= */}
+
         {/* W001: Day Rate Window */}
         <Card className="mb-6 relative bg-blue-50 border-blue-200">
           <DevLabel id="W001" position="top-right" />
@@ -3282,6 +3286,14 @@ export default function PR2ConfigClean() {
             ))}
           </CardContent>
         </Card>
+
+        {/* ========================================= */}
+        {/* END OF UPPER SECTION                     */}
+        {/* ========================================= */}
+
+        {/* ========================================= */}
+        {/* LOWER SECTION: TP1 CONFIGURATIONS        */}
+        {/* ========================================= */}
 
         {/* General Configuration Interface (for non-pipe-size configurations) */}
         {categoryId !== 'patching' && getPipeSizeConfigurations().length === 0 && isEditing && editId && (
