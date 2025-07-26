@@ -206,7 +206,7 @@ export default function Reports() {
               <div className="flex items-center gap-4">
                 <label className="text-sm font-medium text-slate-700">Select Folder:</label>
                 <div className="relative" id="folder-dropdown">
-                  <DevLabel id="db24" />
+                  <DevLabel id="P007" />
                   {/* Compact Folder Selector */}
                   <button
                     onClick={() => setShowFolderDropdown(!showFolderDropdown)}
@@ -232,7 +232,7 @@ export default function Reports() {
                   {/* Dropdown Menu */}
                   {showFolderDropdown && (
                     <div className="absolute top-full left-0 mt-1 bg-white border border-slate-300 rounded-md shadow-lg z-20 min-w-[400px] max-h-96 overflow-y-auto">
-                      <DevLabel id="db25" />
+                      <DevLabel id="C011" />
                       {/* All Folders Option */}
                       <div
                         onClick={() => {
@@ -242,7 +242,7 @@ export default function Reports() {
                         }}
                         className="flex items-center justify-between p-3 hover:bg-slate-50 cursor-pointer border-b"
                       >
-                        <DevLabel id="db26" />
+                        <DevLabel id="C012" />
                         <div className="flex items-center gap-2">
                           <Folder className="h-4 w-4 text-blue-600" />
                           <span className="font-medium text-sm">All Folders</span>
@@ -290,7 +290,7 @@ export default function Reports() {
                             <div key={folderKey}>
                               {/* Unfoldered Reports Header */}
                               <div className="flex items-center justify-between p-3 hover:bg-blue-50 border-b bg-slate-50">
-                                <DevLabel id="db27" />
+                                <DevLabel id="C013" />
                                 <div className="flex items-center gap-2">
                                   <FileText className="h-4 w-4 text-slate-600" />
                                   <span className="font-medium text-sm">Unorganized Reports</span>

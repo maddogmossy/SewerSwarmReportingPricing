@@ -344,7 +344,7 @@ export default function PR2Pricing() {
       data-config-name={configName}
       data-source-item={sourceItemNo}
     >
-      <DevLabel id="p4" position="top-right" />
+      <DevLabel id="P003" position="top-right" />
 
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -464,7 +464,7 @@ export default function PR2Pricing() {
                           }
                         }}
                       >
-                        <DevLabel id="28" />
+                        <DevLabel id="C009" />
                         <CardContent className="p-4 text-center relative">
                           <Waves className="h-8 w-8 mx-auto mb-2 text-blue-600" />
                           <h3 className="font-medium text-sm mb-1">
@@ -516,7 +516,7 @@ export default function PR2Pricing() {
                           }
                         }}
                       >
-                        <DevLabel id="29" />
+                        <DevLabel id="C010" />
                         <CardContent className="p-4 text-center relative">
                           <Monitor className="h-8 w-8 mx-auto mb-2 text-blue-600" />
                           <h3 className="font-medium text-sm mb-1">

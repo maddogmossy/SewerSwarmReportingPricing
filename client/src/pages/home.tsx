@@ -248,10 +248,10 @@ export default function Home() {
           </div>
 
           <div className="max-w-6xl mx-auto">
-            <DevLabel id="p1" position="top-right" />
+            <DevLabel id="P001" position="top-right" />
             <div className="mb-8">
               <Card className="relative">
-                <DevLabel id="2" />
+                <DevLabel id="C001" />
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
@@ -282,7 +282,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Link to="/upload">
                 <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
-                  <DevLabel id="3" />
+                  <DevLabel id="C002" />
                   <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
                       <Upload className="h-6 w-6 text-blue-600" />
@@ -297,7 +297,7 @@ export default function Home() {
 
               <Link to="/dashboard">
                 <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
-                  <DevLabel id="4" />
+                  <DevLabel id="C003" />
                   <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
                       <BarChart3 className="h-6 w-6 text-emerald-600" />
@@ -312,7 +312,7 @@ export default function Home() {
 
               <Link to="/sector-pricing">
                 <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
-                  <DevLabel id="5" />
+                  <DevLabel id="C004" />
                   <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
                       <Settings className="h-6 w-6 text-orange-600" />
@@ -327,7 +327,7 @@ export default function Home() {
 
               <Link to="/reports">
                 <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
-                  <DevLabel id="6" />
+                  <DevLabel id="C005" />
                   <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4">
                       <FileText className="h-6 w-6 text-cyan-600" />
@@ -342,7 +342,7 @@ export default function Home() {
 
               <Link to="/checkout">
                 <Card className="relative hover:shadow-lg transition-shadow cursor-pointer h-full">
-                  <DevLabel id="7" />
+                  <DevLabel id="C006" />
                   <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                       <Gift className="h-6 w-6 text-purple-600" />
@@ -358,7 +358,7 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="relative">
-                <DevLabel id="8" />
+                <DevLabel id="C007" />
                 <CardHeader>
                   <CardTitle className="text-lg">Supported Sectors</CardTitle>
                 </CardHeader>
@@ -393,7 +393,7 @@ export default function Home() {
               </Card>
 
               <Card className="relative">
-                <DevLabel id="9" />
+                <DevLabel id="C008" />
                 <CardHeader>
                   <CardTitle className="text-lg">File Formats</CardTitle>
                 </CardHeader>

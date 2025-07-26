@@ -1002,7 +1002,7 @@ function CustomerSettingsContent() {
 
           <TabsContent value="account" className="space-y-4">
             <Card className="relative">
-              <DevLabel id="8" />
+              <DevLabel id="C014" />
               <CardHeader>
                 <CardTitle>Profile Information</CardTitle>
                 <CardDescription>
@@ -1038,7 +1038,7 @@ function CustomerSettingsContent() {
 
           <TabsContent value="payment" className="space-y-4">
             <Card className="relative">
-              <DevLabel id="9" />
+              <DevLabel id="C015" />
               <CardHeader>
                 <CardTitle>Payment Methods</CardTitle>
                 <CardDescription>
@@ -1149,7 +1149,7 @@ function CustomerSettingsContent() {
             <>
               <TabsContent value="company" className="space-y-4">
                 <Card className="relative">
-                  <DevLabel id="10" />
+                  <DevLabel id="C016" />
                   <CardHeader>
                     <CardTitle>Company Settings</CardTitle>
                     <CardDescription>
@@ -1376,7 +1376,7 @@ function CustomerSettingsContent() {
 
               <TabsContent value="depot" className="space-y-4">
                 <Card className="relative">
-                  <DevLabel id="11" />
+                  <DevLabel id="C017" />
                   <CardHeader>
                     <CardTitle>Depot Settings</CardTitle>
                     <CardDescription>
@@ -1587,7 +1587,7 @@ function CustomerSettingsContent() {
 
                 {/* Vehicle Travel Rates Section */}
                 <Card className="relative">
-                  <DevLabel id="12" />
+                  <DevLabel id="C018" />
                   <CardHeader>
                     <CardTitle>Vehicle Travel Rates</CardTitle>
                     <CardDescription>
@@ -1820,7 +1820,7 @@ function CustomerSettingsContent() {
 
               <TabsContent value="team" className="space-y-4">
                 <Card className="relative">
-                  <DevLabel id="13" />
+                  <DevLabel id="C019" />
                   <CardHeader>
                     <CardTitle>Team Members</CardTitle>
                     <CardDescription>

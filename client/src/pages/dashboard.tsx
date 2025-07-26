@@ -4015,7 +4015,7 @@ export default function Dashboard() {
             
             {/* Section Inspection Data Table */}
             <Card className="relative">
-              <DevLabel id="dashboard-sections-table" />
+              <DevLabel id="P004" />
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -4046,8 +4046,8 @@ export default function Dashboard() {
                       onClick={() => setShowColumnSelector(!showColumnSelector)}
                       className="text-xs"
                     >
-                      <DevLabel id="db28" />
-                      <DevLabel id="db7" />
+                      <DevLabel id="T001" />
+                      <DevLabel id="T002" />
                       {showColumnSelector ? 'Done Selecting' : 'Hide Columns'}
                     </Button>
                     <Button
@@ -4063,8 +4063,8 @@ export default function Dashboard() {
                       className="text-xs"
                       disabled={columns.filter(col => col.hideable).every(col => hiddenColumns.has(col.key))}
                     >
-                      <DevLabel id="db29" />
-                      <DevLabel id="b8" />
+                      <DevLabel id="T003" />
+                      <DevLabel id="T004" />
                       Hide All
                     </Button>
                     <Button
@@ -4077,8 +4077,8 @@ export default function Dashboard() {
                       className="text-xs"
                       disabled={hiddenColumns.size === 0}
                     >
-                      <DevLabel id="db30" />
-                      <DevLabel id="b9" />
+                      <DevLabel id="T005" />
+                      <DevLabel id="T006" />
                       Unhide All
                     </Button>
                     
@@ -4088,7 +4088,7 @@ export default function Dashboard() {
                       onClick={() => setShowFilters(!showFilters)}
                       className="text-xs"
                     >
-                      <DevLabel id="db31" />
+                      <DevLabel id="T007" />
                       <DevLabel id="b10" />
                       <Filter className="h-4 w-4 mr-1" />
                       {showFilters ? 'Hide Filters' : 'Filter Data'}

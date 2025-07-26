@@ -357,7 +357,7 @@ export default function Upload() {
 
   return (
     <div className="relative container mx-auto p-6 space-y-6">
-      <DevLabel id="p2" position="top-right" />
+      <DevLabel id="P002" position="top-right" />
       {/* Navigation */}
       <div className="flex gap-4 mb-6">
         <Link to="/">

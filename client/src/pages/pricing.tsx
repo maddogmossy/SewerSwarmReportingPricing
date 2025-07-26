@@ -408,11 +408,11 @@ export default function Pricing() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-      <DevLabel id="pricing-main-container" />
+      <DevLabel id="P008" />
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Navigation */}
         <div className="relative flex justify-start gap-4">
-          <DevLabel id="pricing-navigation-bar" />
+          <DevLabel id="C020" />
           <Link href="/">
             <Button variant="outline" className="flex items-center gap-2">
               <Home className="h-4 w-4" />
@@ -430,7 +430,7 @@ export default function Pricing() {
         
         {/* Header */}
         <div className="relative text-center space-y-4">
-          <DevLabel id="pricing-header-section" />
+          <DevLabel id="C021" />
           <div className="flex items-center justify-center gap-3">
             <Settings className="h-8 w-8 text-blue-600" />
             <h1 className="text-4xl font-bold text-gray-900">
@@ -446,7 +446,7 @@ export default function Pricing() {
         {/* Category Selection */}
         <div className="flex justify-center">
           <div className="relative flex gap-2 bg-white p-2 rounded-lg shadow-sm">
-            <DevLabel id="pricing-category-selector" />
+            <DevLabel id="C022" />
             {workCategories.filter(cat => cat.implemented).map((category) => {
               const IconComponent = category.icon;
               return (
@@ -469,7 +469,7 @@ export default function Pricing() {
           {/* Left Column - Rules Section */}
           <div className="space-y-6">
             <Card className="relative">
-              <DevLabel id="pricing-rules-section" />
+              <DevLabel id="C023" />
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
@@ -477,7 +477,7 @@ export default function Pricing() {
                     Rules Section - {selectedCategoryData?.name}
                   </CardTitle>
                   <div className="relative">
-                    <DevLabel id="pricing-add-rule-button" />
+                    <DevLabel id="B001" />
                     <Button onClick={() => setShowAddRule(true)} className="flex items-center gap-2">
                       <Plus className="h-4 w-4" />
                       Add Rule
@@ -494,7 +494,7 @@ export default function Pricing() {
                   <div className="space-y-4">
                     {pricingRules.map((rule: PricingRule) => (
                       <div key={rule.id} className="relative border rounded-lg p-4 space-y-3">
-                        <DevLabel id={`pricing-rule-card-${rule.id}`} />
+                        <DevLabel id={`C024-${rule.id}`} />
                         <div className="flex items-start justify-between">
                           <div className="space-y-1">
                             <h4 className="font-medium text-sm">{rule.recommendationType}</h4>
@@ -527,7 +527,7 @@ export default function Pricing() {
           {/* Right Column - Equipment Specifications */}
           <div className="space-y-6">
             <Card className="relative">
-              <DevLabel id="pricing-equipment-section" />
+              <DevLabel id="C025" />
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
@@ -535,7 +535,7 @@ export default function Pricing() {
                     Current Assets/Vehicles - {selectedCategoryData?.name}
                   </CardTitle>
                   <div className="relative">
-                    <DevLabel id="pricing-add-equipment-button" />
+                    <DevLabel id="B002" />
                     <Button onClick={() => setShowAddEquipment(true)} className="flex items-center gap-2">
                       <Plus className="h-4 w-4" />
                       Add Asset
@@ -555,7 +555,7 @@ export default function Pricing() {
                       
                       return (
                         <div key={equipment.id} className="relative border rounded-lg p-4 space-y-3 bg-white">
-                          <DevLabel id={`pricing-asset-card-${equipment.id}`} />
+                          <DevLabel id={`C026-${equipment.id}`} />
                           <div className="flex items-start justify-between">
                             <div className="space-y-2 flex-1">
                               <h4 className="font-medium text-base text-gray-900">{equipment.name}</h4>
@@ -628,7 +628,7 @@ export default function Pricing() {
       {showAddRule && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="relative bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DevLabel id="pricing-add-rule-dialog" />
+            <DevLabel id="D001" />
             <h3 className="text-lg font-semibold mb-4">Add New Pricing Rule</h3>
             <div className="space-y-4">
               <div>
@@ -863,7 +863,7 @@ export default function Pricing() {
       {showAddEquipment && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="relative bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DevLabel id="pricing-add-equipment-dialog" />
+            <DevLabel id="D002" />
             <h3 className="text-lg font-semibold mb-4">Add New Equipment</h3>
             <div className="space-y-4">
               <div>
@@ -1017,7 +1017,7 @@ export default function Pricing() {
       {showAddEquipment && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="relative bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <DevLabel id="pricing-equipment-form-dialog" />
+            <DevLabel id="D003" />
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold">
                 {editingEquipment ? 'Edit Equipment' : 'Add New Equipment'}
@@ -1086,7 +1086,7 @@ export default function Pricing() {
 
               {/* Right Column - Standard Equipment Templates */}
               <div className="relative space-y-4">
-                <DevLabel id="pricing-equipment-templates" />
+                <DevLabel id="C027" />
                 <h3 className="font-medium text-gray-900">Standard Survey Equipment</h3>
                 <p className="text-sm text-gray-600">Click any template to pre-fill the form</p>
                 
@@ -1097,7 +1097,7 @@ export default function Pricing() {
                       className="relative border rounded-lg p-3 cursor-pointer hover:bg-gray-50 transition-colors"
                       onClick={() => handleAddStandardEquipment(equipment)}
                     >
-                      <DevLabel id={`pricing-template-${index}`} />
+                      <DevLabel id={`C028-${index}`} />
                       <div className="font-medium text-sm text-gray-900">{equipment.name}</div>
                       <div className="text-xs text-gray-600 mt-1">{equipment.description}</div>
                       <div className="text-xs text-blue-600 mt-1">
