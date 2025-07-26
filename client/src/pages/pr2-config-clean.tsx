@@ -3366,8 +3366,8 @@ export default function PR2ConfigClean() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {/* Display all patching options (Day Rate already removed from database) */}
-                  {formData.pricingOptions?.map((option, index) => (
+                  {/* Display patching options (excluding Central Day Rate) */}
+                  {formData.pricingOptions?.filter(option => option.id !== 'db7_day_rate' && option.id !== 'central_day_rate').map((option, index) => (
                     <div key={option.id} className="flex items-center gap-4">
                       <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
                       <Label className="w-32 text-sm font-medium text-gray-700">
