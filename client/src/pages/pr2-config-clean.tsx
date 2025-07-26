@@ -407,7 +407,8 @@ export default function PR2ConfigClean() {
         
         // Blue Window - Central Day Rate for all pipe sizes
         pricingOptions: [
-          { id: 'central_day_rate', label: 'Central Day Rate', enabled: true, value: '1650' }
+          { id: 'central_day_rate', label: 'Central Day Rate', enabled: true, value: '1650' },
+          { id: 'db7_day_rate', label: 'DB7 Day Rate', enabled: true, value: '1650' }
         ],
         
         // Green Window - Multiple pipe size configurations
@@ -432,7 +433,7 @@ export default function PR2ConfigClean() {
         ],
         
         mathOperators: ['N/A'], // No math operations for P26
-        pricingStackOrder: ['central_day_rate'],
+        pricingStackOrder: ['central_day_rate', 'db7_day_rate'],
         quantityStackOrder: ['100mm_day_rate', '150mm_day_rate', '200mm_day_rate', '225mm_day_rate', '300mm_day_rate'],
         minQuantityStackOrder: [],
         rangeStackOrder: [],
@@ -3327,113 +3328,136 @@ export default function PR2ConfigClean() {
 
 
 
-        {/* TP2 Unified Configuration - Show pipe size specific interface for patching */}
+        {/* P26 HIERARCHICAL STRUCTURE - TP2 Unified Configuration */}
         {categoryId === 'patching' && (
-          <div key="unified-tp2-config">
-            {/* TP2 Interface with 5 Pricing Options */}
-            <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+          <div key="p26-hierarchical-config">
+            {/* Level 1: DB15, DB7 Shared Settings */}
+            <div className="space-y-4 p-4 border rounded-lg bg-gray-50 mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                TP2 - Patching Configuration
+                P26 - Level 1: Shared Settings (All Pipe Sizes)
               </h3>
               
-
-              
-              {/* Purple Window: 4 Patching Options (excluding Day Rate) */}
-              <Card className="bg-purple-50 border-purple-200 relative">
-                <DevLabel id="db8" position="top-right" />
+              {/* DB15 - Vehicle Travel Rates */}
+              <Card className="bg-teal-50 border-teal-200">
+                <DevLabel id="db15" position="top-right" />
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
-                    <Coins className="w-4 h-4" />
-                    Patching Options - {(() => {
-                      // Extract pipe size from existing configuration or form data
-                      if (existingConfig && existingConfig.categoryName) {
-                        if (existingConfig.categoryName.includes('150mm')) return '150mm';
-                        if (existingConfig.categoryName.includes('225mm')) return '225mm';
-                        if (existingConfig.categoryName.includes('300mm')) return '300mm';
-                      }
-                      if (pipeSize) return pipeSize;
-                      if (selectedPipeSize) return selectedPipeSize;
-                      return 'All Sizes';
-                    })()}
+                  <CardTitle className="text-teal-700 text-sm flex items-center gap-2">
+                    <Truck className="w-4 h-4" />
+                    DB15 - Vehicle Travel Rates
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  {/* Display all patching options (Day Rate already removed from database) */}
-                  {formData.pricingOptions?.map((option, index) => (
-                    <div key={option.id} className="flex items-center gap-4">
-                      <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
-                      <Label className="w-32 text-sm font-medium text-gray-700">
-                        {option.label}
-                      </Label>
-                      <div className="ml-4 flex items-center gap-2">
+                <CardContent className="space-y-2">
+                  {formData.vehicleTravelRates?.map((rate, index) => (
+                    <div key={rate.id} className="flex items-center gap-4">
+                      <Label className="w-12 text-sm font-medium">{rate.vehicleType}</Label>
+                      <div className="flex items-center gap-2">
                         <Label className="text-xs">£</Label>
                         <Input
-                          placeholder="cost"
-                          maxLength={6}
-                          value={option.value || ""}
-                          onChange={(e) => {
-                            console.log(`💰 Typing in ${option.label}:`, e.target.value);
-                            console.log(`💰 DETAILED VALUE DEBUG - Option: ${option.label}, ID: ${option.id}, Value: "${e.target.value}", Length: ${e.target.value.length}`);
-                            handleValueChange('pricingOptions', option.id, e.target.value);
-                          }}
-                          className="w-20 h-8 text-sm"
-                          disabled={false}
-                          readOnly={false}
-                          data-testid={`pricing-input-${option.id}`}
+                          placeholder="rate"
+                          value={rate.hourlyRate || ""}
+                          onChange={(e) => updateVehicleTravelRate({...rate, hourlyRate: e.target.value})}
+                          className="w-16 h-6 text-xs"
                         />
+                        <Label className="text-xs">/hr</Label>
                       </div>
-                      {/* Show Min Qty and Length Max for all rows */}
-                      <>
-                        <div className="ml-4 flex items-center gap-2">
-                          <Label className="text-xs">Min Qty</Label>
-                          <Input
-                            placeholder="min"
-                            maxLength={4}
-                            value={formData.minQuantityOptions?.[index + 1]?.value || ""}
-                            onChange={(e) => {
-                              console.log(`📊 Typing in Min Qty ${index + 1}:`, e.target.value);
-                              handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[index + 1]?.id, e.target.value);
-                            }}
-                            className="w-12 h-8 text-sm"
-                            disabled={false}
-                            readOnly={false}
-                            data-testid={`minqty-input-${index}`}
-                          />
-                        </div>
-                        <div className="ml-4 flex items-center gap-2">
-                          <Label className="text-xs">Length (Max)</Label>
-                          <Input
-                            placeholder="length"
-                            maxLength={6}
-                            value={formData.rangeOptions?.[index]?.rangeEnd || ""}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-                              console.log(`📏 CRITICAL DEBUG - Length input ${index + 1} (${option.label}):`);
-                              console.log(`📏 RAW INPUT: "${inputValue}" (length: ${inputValue.length})`);
-                              console.log(`📏 Character codes:`, inputValue.split('').map(c => c.charCodeAt(0)));
-                              
-                              const rangeId = formData.rangeOptions?.[index]?.id || `range_length_${index + 1}`;
-                              console.log(`📏 About to call handleRangeValueChange with:`, {
-                                rangeId,
-                                field: 'rangeEnd',
-                                value: inputValue,
-                                valueLength: inputValue.length
-                              });
-                              handleRangeValueChange(rangeId, 'rangeEnd', inputValue);
-                            }}
-                            className="w-20 h-8 text-sm"
-                            disabled={false}
-                            readOnly={false}
-                            data-testid={`length-input-${index}`}
-                          />
-                        </div>
-                      </>
                     </div>
                   ))}
                 </CardContent>
               </Card>
 
+              {/* DB7 - Central Day Rate */}
+              <Card className="bg-green-50 border-green-200">
+                <DevLabel id="db7" position="top-right" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-green-700 text-sm flex items-center gap-2">
+                    <Banknote className="w-4 h-4" />
+                    DB7 - Day Rate
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs">£</Label>
+                    <Input
+                      placeholder="day rate"
+                      value={formData.pricingOptions?.find(opt => opt.id === 'db7_day_rate')?.value || ""}
+                      onChange={(e) => handleValueChange('pricingOptions', 'db7_day_rate', e.target.value)}
+                      className="w-20 h-8 text-sm"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
+            {/* Level 2: Pipe Size Selection */}
+            <div className="space-y-4 p-4 border rounded-lg bg-blue-50 mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                P26 - Level 2: Pipe Size Selection
+              </h3>
+              <div className="flex gap-4">
+                <Button variant="outline" className="bg-white">150mm</Button>
+                <Button variant="outline" className="bg-white">225mm</Button>
+                <Button variant="outline" className="bg-white">300mm</Button>
+              </div>
+            </div>
+
+            {/* Level 3: DB8 Purple Window - Single Unified Interface */}
+            <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                P26 - Level 3: DB8 Patching Options
+              </h3>
+              
+              <Card className="bg-purple-50 border-purple-200">
+                <DevLabel id="db8" position="top-right" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
+                    <Coins className="w-4 h-4" />
+                    DB8 - Patching Options
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {/* Four Standard Patching Options */}
+                  {[
+                    { id: 'single', label: 'Single', index: 0 },
+                    { id: 'double', label: 'Double', index: 1 },
+                    { id: 'triple', label: 'Triple', index: 2 },
+                    { id: 'triple_extra_cure', label: 'Triple with Extra Cure', index: 3 }
+                  ].map((patchType) => (
+                    <div key={patchType.id} className="flex items-center gap-4">
+                      <span className="font-bold text-gray-700 w-8">{patchType.index + 1}.</span>
+                      <Label className="w-32 text-sm font-medium text-gray-700">
+                        {patchType.label}
+                      </Label>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Label className="text-xs">£</Label>
+                        <Input
+                          placeholder="cost"
+                          value={formData.pricingOptions?.[patchType.index]?.value || ""}
+                          onChange={(e) => handleValueChange('pricingOptions', formData.pricingOptions?.[patchType.index]?.id, e.target.value)}
+                          className="w-20 h-8 text-sm"
+                        />
+                      </div>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Label className="text-xs">Min Qty</Label>
+                        <Input
+                          placeholder="min"
+                          value={formData.minQuantityOptions?.[patchType.index]?.value || ""}
+                          onChange={(e) => handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[patchType.index]?.id, e.target.value)}
+                          className="w-12 h-8 text-sm"
+                        />
+                      </div>
+                      <div className="ml-4 flex items-center gap-2">
+                        <Label className="text-xs">Length (Max)</Label>
+                        <Input
+                          placeholder="length"
+                          value={formData.rangeOptions?.[patchType.index]?.rangeEnd || ""}
+                          onChange={(e) => handleRangeValueChange(formData.rangeOptions?.[patchType.index]?.id, 'rangeEnd', e.target.value)}
+                          className="w-20 h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
             </div>
           </div>
         )}
@@ -3478,59 +3502,14 @@ export default function PR2ConfigClean() {
               </Button>
             </div>
             <CollapsibleContent className="mb-6">
-            {/* Conditional rendering based on template type */}
+            {/* TP2 categories now use P26 hierarchical structure - no individual dropdowns */}
             {getTemplateType(categoryId) === 'TP2' ? (
-              <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">TP2 Patching Configuration</h3>
-                
-                {/* Purple Window: 4 Patching Options */}
-                <Card className="bg-purple-50 border-purple-200">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
-                      <Coins className="w-4 h-4" />
-                      Patching Options
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {/* Numbered list layout for 4 patching options */}
-                    {pipeSizeFormData.pricingOptions?.map((option, index) => (
-                      <div key={option.id} className="flex items-center gap-4">
-                        <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
-                        <Label className="w-32 text-sm font-medium text-gray-700">
-                          {option.label}
-                        </Label>
-                        <div className="ml-4 flex items-center gap-2">
-                          <Label className="text-xs">£</Label>
-                          <Input
-                            placeholder="cost"
-                            value={option.value || ""}
-                            onChange={(e) => updatePipeSizeConfig(pipeSizeConfig.id, 'pricingOptions', option.id, e.target.value)}
-                            className="w-20 h-8 text-sm"
-                          />
-                        </div>
-                        <div className="ml-4 flex items-center gap-2">
-                          <Label className="text-xs">Min Qty</Label>
-                          <Input
-                            placeholder="min"
-                            value={pipeSizeFormData.minQuantityOptions?.[index]?.value || ""}
-                            onChange={(e) => updatePipeSizeConfig(pipeSizeConfig.id, 'minQuantityOptions', pipeSizeFormData.minQuantityOptions?.[index]?.id, e.target.value)}
-                            className="w-12 h-8 text-sm"
-                          />
-                        </div>
-                        <div className="ml-4 flex items-center gap-2">
-                          <Label className="text-xs">Length (Max)</Label>
-                          <Input
-                            placeholder="length"
-                            value={pipeSizeFormData.rangeOptions?.[index]?.rangeEnd || ""}
-                            onChange={(e) => updatePipeSizeConfigRange(pipeSizeConfig.id, pipeSizeFormData.rangeOptions?.[index]?.id, 'rangeEnd', e.target.value)}
-                            className="w-20 h-8 text-sm"
-                          />
-                        </div>
-
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
+              <div className="space-y-4 p-4 border rounded-lg bg-gray-100">
+                <h3 className="text-lg font-semibold text-gray-600 mb-4">TP2 - Redirected to P26 System</h3>
+                <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded border">
+                  TP2 patching configurations now use the unified P26 hierarchical structure.
+                  Please use the main patching category interface above for all TP2 configurations.
+                </div>
               </div>
             ) : (
               <div className="flex flex-wrap gap-4 p-4 border rounded-lg bg-gray-50">
@@ -3712,75 +3691,12 @@ export default function PR2ConfigClean() {
             <div className="space-y-4">
               {/* Conditional rendering based on template type */}
               {getTemplateType(categoryId) === 'TP2' ? (
-                <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">TP2 Patching Configuration</h3>
-                  
-                  {/* P26 Central Day Rate Window */}
-                  <Card className="bg-green-50 border-green-200">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                        <DollarSign className="w-4 h-4" />
-                        P26 Central Day Rate (£1650)
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200">
-                        <strong>Centralized System:</strong> All TP2 patching calculations use the single P26 day rate of £1650.
-                        Individual day rates are no longer needed in TP2 configurations.
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        Navigate to P26 configuration to modify the central day rate used by all TP2 patches.
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  {/* Purple Window: 4 Patching Options */}
-                  <Card className="bg-purple-50 border-purple-200">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
-                        <Coins className="w-4 h-4" />
-                        Patching Options
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {/* Filter out Day Rate field from TP2 patching options */}
-                      {formData.pricingOptions?.filter(option => option.id !== 'price_dayrate').map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-4">
-                          <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
-                          <Label className="w-32 text-sm font-medium text-gray-700">
-                            {option.label}
-                          </Label>
-                          <div className="ml-4 flex items-center gap-2">
-                            <Label className="text-xs">£</Label>
-                            <Input
-                              placeholder="cost"
-                              value={option.value || ""}
-                              onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
-                              className="w-16 h-8 text-sm"
-                            />
-                          </div>
-                          <div className="ml-4 flex items-center gap-2">
-                            <Label className="text-xs">Min Qty</Label>
-                            <Input
-                              placeholder="min"
-                              value={formData.minQuantityOptions?.[index]?.value || ""}
-                              onChange={(e) => handleValueChange('minQuantityOptions', formData.minQuantityOptions?.[index]?.id, e.target.value)}
-                              className="w-12 h-8 text-sm"
-                            />
-                          </div>
-                          <div className="ml-4 flex items-center gap-2">
-                            <Label className="text-xs">Length (Max)</Label>
-                            <Input
-                              placeholder="length"
-                              value={formData.rangeOptions?.[index]?.rangeEnd || ""}
-                              onChange={(e) => handleRangeValueChange(formData.rangeOptions?.[index]?.id, 'rangeEnd', e.target.value)}
-                              className="w-20 h-8 text-sm"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
+                <div className="space-y-4 p-4 border rounded-lg bg-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-600 mb-4">TP2 - Legacy Interface Disabled</h3>
+                  <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded border">
+                    This individual TP2 configuration interface has been replaced by the unified P26 hierarchical structure.
+                    All TP2 patching configurations now use the main patching category interface above.
+                  </div>
                 </div>
               ) : getTemplateType(categoryId) === 'TP3' ? (
                 /* TP3 Robotic Cutting - DB2 and DB15 Windows Only */
