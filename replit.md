@@ -826,6 +826,26 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 25, 2025)
 
+### CRITICAL: Complete PR1 System Removal & Cache Cleanup ✅
+- **Date**: January 25, 2025
+- **Status**: Successfully removed all remaining PR1 system code and references
+- **Issues Fixed**:
+  - **TP3 Title Contamination**: Fixed "Edit CCTV Jet Vac Configuration" title bleeding from PR1 cache
+  - **PR1 Code Removal**: Deleted all PR1 files, components, and documentation references
+  - **Cache Contamination Prevention**: Added PR1 cache clearing logic for robotic-cutting configurations
+  - **Backup File Cleanup**: Removed backup files (replit_backup_v8_1.md, repair-pricing.tsx, etc.)
+  - **Documentation Cleanup**: Removed entire PR1 system section from replit.md
+- **Technical Implementation**:
+  - Added localStorage clearing for potential PR1 cache keys when loading TP3 configurations
+  - Enhanced TP3 template name override to prevent PR1 title contamination
+  - Removed files: `repair-pricing.tsx`, `repair-options-popover-old.tsx`, backup components
+  - Added forced TP3 title override: "TP3 - Robotic Cutting Configuration"
+- **User Benefits**: 
+  - Clean codebase without legacy PR1 system references
+  - Proper TP3 titles without contamination from old cached data
+  - Eliminated confusion from duplicate/backup components
+- **Result**: Complete PR1 system elimination with proper TP3 title display and cache contamination prevention
+
 ### CRITICAL: Complete MHf Node/Finish Code Filtering System Locked ✅
 - **Date**: January 25, 2025
 - **Status**: Successfully eliminated all start/finish node codes from dashboard observations display
@@ -2216,47 +2236,7 @@ Both rules are permanently locked and displayed on screen per user requirement
 5. Return to PR2 pricing page to allow further editing
 6. Configurations persist selected options and values for editing
 
-## PR1 PRICING SYSTEM (January 13, 2025)
 
-🔒 **LEGACY PRICING CODE ELIMINATION COMPLETED (July 13, 2025)** - Successfully removed ALL legacy pricing code that was causing JSX compilation errors. Eliminated 3000+ lines of broken formData dependencies, complex dialog components, and legacy pricing workflows. Application now runs cleanly with direct routing to PR1 pricing system. All "Add Price" buttons and cleaning options route to `/pr1-pricing` without interference from old code.
-
-🔒 **DIRECT PRICING WORKFLOW LOCKED (July 13, 2025)** - Successfully eliminated ALL category creation loops and routing issues. All cleaning options ("Cleanse and Survey", "Custom", "Add New") now route directly to simplified PR1 pricing system (`/pr1-pricing-simple.tsx`) without any intermediate dialogs. Completely removed showInitialDialog loops and category selection interference. Users confirmed workflow: dashboard → cleaning recommendation → direct pricing configuration interface. ZERO category creation friction. System permanently locked.
-
-🔒 **FAKE PRICING DATA ELIMINATION COMPLETED (July 13, 2025)** - Successfully eliminated ALL fake/ops pricing values throughout the system. Fixed repair pricing summary to show £0 Average Cost instead of fake £197. Disabled old calculateAutoCost function in dashboard to return null (shows warning triangles). Updated pricing summary to show 0 Work Categories and 0 Pricing Rules until PR1 configurations are saved. All values now properly sourced from PR1 system or showing authentic 0/warning states. Complete elimination of synthetic pricing calculations.
-
-🔒 **PR1 SAVE VALIDATION SYSTEM IMPLEMENTED (July 13, 2025)** - Added comprehensive validation to PR1 pricing form to prevent saving incomplete configurations. System now validates that all enabled checkboxes have corresponding values entered before allowing save. Users receive clear error message "Please enter values for all enabled options before saving" when attempting to save with empty fields. Enhanced user experience with "Enter value" placeholders and proper form validation workflow. Save button now correctly redirects to dashboard after successful validation and save.
-
-🔒 **PR1 DASHBOARD INTEGRATION COMPLETED (July 13, 2025)** - Successfully integrated PR1 pricing configurations with dashboard cost calculations. Fixed critical data structure mismatch where dashboard was reading from `pricingValues` object but PR1 was storing in `pricingOptions` and `quantityOptions` arrays. Enhanced `calculateAutoCost` function to properly extract values from PR1 array structure using `getPricingValue` helper function. Added comprehensive debugging to track PR1 configuration loading, value extraction, and cost calculation success. Dashboard now reads from `/api/pr1-pricing` endpoint and performs calculation: Day Rate ÷ Runs per Shift = Cost per Section. System displays calculated costs in green text with tooltips showing calculation method.
-
-🔒 **HARDCODED PR1 BYPASS IMPLEMENTED (July 13, 2025)** - Eliminated in-memory storage persistence issues by implementing hardcoded PR1 configuration directly in dashboard component. Uses dayRate: 1850 and runsPerShift: 30 to calculate £61.67 per defective section. This bypasses all legacy pricing systems and storage problems. Dashboard now shows authentic calculated costs for defective sections without relying on unstable server storage. Complete elimination of warning triangles and fake pricing displays.
-
-🔒 **PR1 COMPREHENSIVE DELETE SYSTEM LOCKED** - Successfully implemented complete deletion functionality that removes categories from ALL storage locations: database (repairPricing table), in-memory pricingStorage, and workCategoriesStorage. The critical bug where "Cleanse/Survey" category persisted after deletion is now permanently fixed. Delete function performs comprehensive cleanup across all three storage layers with detailed logging and confirmation of complete removal.
-
-🔒 **PR1 SYSTEM ARCHITECTURE COMPLETED** - Created standalone PR1 pricing system completely separate from old systems with:
-- Initial popup dialog with "Add Category" and "Custom" options
-- Category selection with preloaded options (CCTV, Van Pack, CCTV/Jet Vac, CCTV/Van Pack)
-- 5-box color-coded system: Blue (pricing), Green (quantities), Orange (min quantities), Purple (ranges)
-- Math operators (+, -, /, x) between pricing options with dropdown selection
-- Range fields with min/max for pipe size, percentage, and length
-- Auto-populated descriptions based on configured ranges
-- Minimum quantity validation for dashboard cost color control
-- Complete navigation migration from simple-pricing to pr1-pricing
-
-🔒 **NAVIGATION INTEGRATION COMPLETE** - Updated all dashboard navigation points to use PR1 system:
-- Cleaning options popover redirects to /pr1-pricing
-- Repair options popover redirects to /pr1-pricing  
-- Dashboard callback functions point to PR1 instead of old systems
-- All popover pre-fill data properly formatted for PR1 system
-
-🔒 **PR1 SAVE FUNCTIONALITY LOCKED** - Successfully implemented complete save functionality with backend API integration:
-- Save button now has proper onClick handler with loading states
-- Backend POST/GET endpoints created for /api/pr1-pricing
-- Frontend mutation with toast notifications for success/error states
-- Data persistence to server memory storage with all 5-box configurations
-- Automatic redirect to dashboard after successful save
-
-🔒 **PR1 THREE-OPTION STRUCTURE LOCKED** - Fixed initial dialog structure to properly separate options:
-- Option 1: "Cleanse and Survey" (category setup with preloaded options)
 
 ## REV V6.4.1 CHECKPOINT - RECOMMENDATION WINDOW STYLING STANDARDIZED (July 16, 2025)
 

@@ -3457,7 +3457,7 @@ export default function PR2ConfigClean() {
                               <Button
                                 variant="outline"
                                 onClick={() => {
-                                  console.log(`🗑️ OLD SYSTEM DELETE: pairIndex=${pairIndex}`);
+                                  console.log(`🗑️ Deleting range pair: pairIndex=${pairIndex}`);
                                   deleteRangePair(pairIndex);
                                 }}
                                 className="h-6 text-xs border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
