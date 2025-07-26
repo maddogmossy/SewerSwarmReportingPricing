@@ -58,7 +58,6 @@ const STANDARD_CATEGORIES = [
   { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame, devId: 12 },
   { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun, devId: 13 },
   { id: 'robotic-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations', icon: Settings, devId: 4 },
-  { id: 'day-rate-db11', name: 'P26 - Day Rate', description: 'Central day rate configuration for TP2 patching operations', icon: Banknote, devId: 26 },
   { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe, devId: 8 },
   { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck, devId: 9 }
 ];
