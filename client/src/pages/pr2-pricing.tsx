@@ -58,8 +58,7 @@ const STANDARD_CATEGORIES = [
   { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun, devId: 13 },
   { id: 'robotic-cutting', name: 'Robotic Cutting', description: 'Robotic cutting and grinding operations', icon: Settings, devId: 4 },
   { id: 'excavation', name: 'Excavation', description: 'Open cut excavation and replacement works', icon: Pickaxe, devId: 8 },
-  { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck, devId: 9 },
-  { id: 'P19', name: 'P19 - Vehicle Travel Rates', description: 'Central configuration for vehicle travel rates used across all TP1/TP2/TP3 systems', icon: Car, devId: 19 }
+  { id: 'tankering', name: 'Tankering', description: 'Vacuum tanker operations and waste removal', icon: Truck, devId: 9 }
 ];
 
 export default function PR2Pricing() {
