@@ -2683,8 +2683,8 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
-        {categoryId === 'cctv-jet-vac' && (
+        {/* P19 DB15: TP1 CCTV Vehicle Travel Rates - Only show on main cctv-jet-vac page, NOT when editing individual IDs */}
+        {categoryId === 'cctv-jet-vac' && !editId && (
           <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
             <DevLabel id="db15" position="top-right" />
             <CardHeader className="pb-2">
@@ -2772,8 +2772,8 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* P26 DB15: TP2 Patching Vehicle Travel Rates */}
-        {categoryId === 'patching' && (
+        {/* P26 DB15: TP2 Patching Vehicle Travel Rates - Only show on main patching page, NOT when editing individual IDs */}
+        {categoryId === 'patching' && !editId && (
           <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
             <DevLabel id="db15" position="top-right" />
             <CardHeader className="pb-2">
@@ -2861,8 +2861,8 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* P4 DB15: TP3 Robotic Cutting Vehicle Travel Rates */}
-        {categoryId === 'robotic-cutting' && (
+        {/* P4 DB15: TP3 Robotic Cutting Vehicle Travel Rates - Only show on main robotic-cutting page, NOT when editing individual IDs */}
+        {categoryId === 'robotic-cutting' && !editId && (
           <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
             <DevLabel id="db15" position="top-right" />
             <CardHeader className="pb-2">
