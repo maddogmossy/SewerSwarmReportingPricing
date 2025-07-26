@@ -1289,8 +1289,16 @@ export default function PR2ConfigClean() {
         const minQuantityOptions = existingMinQuantityOptions.length > 0 ? existingMinQuantityOptions : defaultMinQuantityOptions;
         const rangeOptions = existingRangeOptions.length > 0 ? existingRangeOptions : defaultRangeOptions;
         
+        // FORCE TP3 template name override to prevent title contamination
+        const correctCategoryName = (() => {
+          if (categoryId === 'robotic-cutting') {
+            return 'TP3 - Robotic Cutting Configuration';
+          }
+          return config.categoryName || 'CCTV Price Configuration';
+        })();
+        
         const newFormData = {
-          categoryName: config.categoryName || 'CCTV Price Configuration',
+          categoryName: correctCategoryName,
           description: config.description || '',
           categoryColor: config.categoryColor || '#93c5fd',
           pricingOptions: pricingOptions,
