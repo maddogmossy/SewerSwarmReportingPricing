@@ -2735,194 +2735,7 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* Pipe Size Selection - Show for ALL categories */}
-        <Card className="mb-6 relative">
-            <DevLabel id="db1" position="top-right" />
-            <CardHeader>
-              <CardTitle className="text-gray-900 flex items-center gap-2">
-                <Ruler className="w-5 h-5" />
-                Pipe Size Selection
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-4">
-                {(() => {
-                  // Define pipe sizes based on category type
-                  let availablePipeSizes;
-                  
-                  if (categoryId === 'patching') {
-                    // TP2 Patching - unified configuration handles all pipe sizes in one interface
-                    availablePipeSizes = ['150mm', '225mm', '300mm'];
-                  } else {
-                    // TP1 CCTV - only 150mm available to prevent ID sharing conflict
-                    availablePipeSizes = ['150mm'];
-                  }
-                  
-                  return availablePipeSizes;
-                })().map((pipeSize) => {
-                  // Map pipe sizes to correct configuration IDs based on current category
-                  let configId;
-                  let targetCategoryId;
-                  
-                  if (categoryId === 'patching') {
-                    // TP2 Patching - use separate configurations for each pipe size
-                    if (pipeSize === '150mm') {
-                      configId = 153; // 150mm TP2 Patching Configuration
-                    } else if (pipeSize === '225mm') {
-                      configId = 156; // 225mm TP2 Patching Configuration
-                    } else if (pipeSize === '300mm') {
-                      configId = 157; // 300mm TP2 Patching Configuration
-                    }
-                    targetCategoryId = 'patching';
-                  } else {
-                    // TP1 CCTV configurations - only 150mm available (Pricing Window db11)
-                    configId = 152; // CCTV Jet Vac Configuration
-                    targetCategoryId = categoryId; // Keep current category
-                  }
-                  
-                  const isCurrentConfig = (currentConfigId === configId) || (currentConfigId === null && editId === String(configId));
-                  
-                  // Use correct dev code based on configuration type
-                  const devCode = (() => {
-                    if (categoryId === 'patching') return 'db6';
-                    if (categoryId === 'robotic-cutting') return 'db2';
-                    return 'db11'; // TP1 CCTV configurations
-                  })();
-                  const buttonType = (() => {
-                    if (categoryId === 'patching') return 'TP2 Patching';
-                    if (categoryId === 'robotic-cutting') return 'TP3 Robotic Cutting';
-                    return 'Pricing Window';
-                  })();
-                  console.log(`🔍 Rendering button: ${pipeSize} (${buttonType} ${devCode}) - Current: ${isCurrentConfig}`);
-                  
-                  return (
-                    <button
-                      key={pipeSize}
-                      onClick={async () => {
-                        console.log(`🚀 BUTTON CLICKED: ${pipeSize} button clicked!`);
-                        const configType = (() => {
-                          if (categoryId === 'patching') return 'TP2 Patching db6';
-                          if (categoryId === 'robotic-cutting') return 'TP3 Robotic Cutting db2';
-                          return 'Pricing Window db11';
-                        })();
-                        console.log(`🚀 LOADING CONFIG: ${pipeSize} configuration (${configType})`);
-                        
-                        // CRITICAL: Cancel any pending debounced saves to prevent contamination
-                        if (saveTimeout) {
-                          clearTimeout(saveTimeout);
-                          setSaveTimeout(null);
-                          console.log('🛑 Cancelled pending debounced save to prevent data contamination');
-                        }
-                        
-                        // AUTO-SAVE: Save current configuration before switching if we're editing
-                        if (isEditing && editId && formData) {
-                          console.log(`💾 AUTO-SAVE: Saving current configuration ${editId} before switching to ${pipeSize}`);
-                          try {
-                            const autoSavePayload = {
-                              categoryName: formData.categoryName,
-                              description: formData.description,
-                              categoryColor: formData.categoryColor,
-                              sector: sector,
-                              categoryId: categoryId,
-                              pricingOptions: formData.pricingOptions,
-                              quantityOptions: formData.quantityOptions,
-                              minQuantityOptions: formData.minQuantityOptions,
-                              rangeOptions: formData.rangeOptions,
-                              mathOperators: formData.mathOperators,
-                              pricingStackOrder: formData.pricingStackOrder,
-                              quantityStackOrder: formData.quantityStackOrder,
-                              minQuantityStackOrder: formData.minQuantityStackOrder,
-                              rangeStackOrder: formData.rangeStackOrder
-                            };
 
-                            await fetch(`/api/pr2-clean/${editId}`, {
-                              method: 'PUT',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify(autoSavePayload)
-                            });
-                            
-                            console.log(`✅ AUTO-SAVE: Successfully saved configuration ${editId} before switching`);
-                          } catch (autoSaveError) {
-                            console.error(`❌ AUTO-SAVE: Failed to save configuration ${editId}:`, autoSaveError);
-                            // Continue with switching even if auto-save fails
-                          }
-                        }
-                        
-                        try {
-                          // Load the specific configuration data directly
-                          const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
-                          const configData = await response.json();
-                          
-                          console.log(`✅ Loaded config data for ID ${configId}:`, configData);
-                          
-                          // CRITICAL: Clear form state completely before loading new data
-                          setFormData({
-                            categoryName: configData.categoryName,
-                            description: configData.description,
-                            sector: configData.sector,
-                            pricingOptions: configData.pricingOptions || [],
-                            quantityOptions: configData.quantityOptions || [],
-                            minQuantityOptions: configData.minQuantityOptions || [],
-                            rangeOptions: configData.rangeOptions || [],
-                            categoryColor: configData.categoryColor || '#ffffff',
-                            mathOperators: configData.mathOperators || 'divide',
-                            pricingStackOrder: configData.pricingStackOrder || [],
-                            quantityStackOrder: configData.quantityStackOrder || [],
-                            minQuantityStackOrder: configData.minQuantityStackOrder || [],
-                            rangeStackOrder: configData.rangeStackOrder || [],
-                            vehicleTravelRates: configData.vehicleTravelRates || [],
-                            vehicleTravelRatesStackOrder: configData.vehicleTravelRatesStackOrder || []
-                          });
-                          
-                          // Update current config ID to highlight the correct button
-                          setCurrentConfigId(configId);
-                          
-                          // Update URL to reflect the configuration change
-                          setLocation(`/pr2-config-clean?categoryId=${targetCategoryId}&sector=${sector}&edit=${configId}`);
-                          
-                          const successType = (() => {
-                            if (categoryId === 'patching') return 'TP2 Patching db6';
-                            if (categoryId === 'robotic-cutting') return 'TP3 Robotic Cutting db2';
-                            return 'Pricing Window db11';
-                          })();
-                          console.log(`✅ Form data updated to show ${pipeSize} configuration (${successType})`);
-                          
-                        } catch (error) {
-                          console.error(`❌ Failed to load configuration ${configId}:`, error);
-                        }
-                      }}
-                      className={`px-4 py-2 rounded border hover:bg-gray-50 transition-colors ${isCurrentConfig ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-white border-gray-300"}`}
-                    >
-                      {pipeSize}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="text-sm text-gray-600 mt-2">
-                {categoryId === 'patching' 
-                  ? `Currently editing: ${(() => {
-                      // Use existing configuration data if available
-                      if (existingConfig && existingConfig.categoryName) {
-                        // Extract pipe size from category name or use current configuration - TP2 PATCHING USES db6 NOT db11
-                        if (existingConfig.categoryName.includes('150mm')) return `150mm TP2 Patching (db6) - (id${editId})`;
-                        if (existingConfig.categoryName.includes('225mm')) return `225mm TP2 Patching (db6) - (id${editId})`;
-                        if (existingConfig.categoryName.includes('300mm')) return `300mm TP2 Patching (db6) - (id${editId})`;
-                        return `TP2 Patching (db6) - (id${editId})`;
-                      }
-                      return 'New Configuration';
-                    })()}`
-                  : (() => {
-                      // TP3 Robotic Cutting uses DB2, not DB11
-                      if (categoryId === 'robotic-cutting') {
-                        return `Currently editing TP3 Robotic Cutting (DB2) - (id${editId}) for ${formData.categoryName || 'this category'}`;
-                      }
-                      // TP1 CCTV configurations use DB11
-                      return `Currently editing 150mm Pricing Window (DB11) - (id${editId}) for ${formData.categoryName || 'this category'}`;
-                    })()
-                }
-              </p>
-            </CardContent>
-          </Card>
 
         {/* Vehicle Travel Rates - P19 for TP1, P26 for main TP2 page only, P4 for TP3 */}
         {((categoryId === 'cctv-jet-vac' && editId) || 
@@ -3033,36 +2846,61 @@ export default function PR2ConfigClean() {
         </Card>
         )}
 
-        {/* Configuration Title */}
+        {/* Configuration Title with 150mm Direct Access Button */}
         <div className="mb-6 relative">
           <DevLabel id="db2" position="top-right" />
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
-            {(() => {
-              // Force TP3 title override for robotic-cutting to prevent PR1 cache contamination
-              if (categoryId === 'robotic-cutting') {
-                console.log('🔧 FORCING TP3 title override - preventing PR1 cache bleed');
-                return "Edit TP3 - Robotic Cutting Configuration";
-              }
-              
-              // Use existing configuration name if editing
-              if (isEditing && existingConfig && existingConfig.categoryName) {
-                return `Edit ${existingConfig.categoryName}`;
-              }
-              
-              // Get template type for other cases
-              const templateType = getTemplateType(categoryId || '');
-              
-              if (templateType === 'TP2') {
-                return "Edit TP2 - Patching Configuration";
-              } else if (templateType === 'TP1') {
-                // Use dynamic category name instead of hardcoded "CCTV Jet Vac"
-                const categoryName = getCategoryName(categoryId || '');
-                return `Edit ${categoryName}`;
-              }
-              
-              return "Edit Configuration";
-            })()}
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">
+              {(() => {
+                // Force TP3 title override for robotic-cutting to prevent PR1 cache contamination
+                if (categoryId === 'robotic-cutting') {
+                  console.log('🔧 FORCING TP3 title override - preventing PR1 cache bleed');
+                  return "Edit TP3 - Robotic Cutting Configuration";
+                }
+                
+                // Use existing configuration name if editing
+                if (isEditing && existingConfig && existingConfig.categoryName) {
+                  return `Edit ${existingConfig.categoryName}`;
+                }
+                
+                // Get template type for other cases
+                const templateType = getTemplateType(categoryId || '');
+                
+                if (templateType === 'TP2') {
+                  return "Edit TP2 - Patching Configuration";
+                } else if (templateType === 'TP1') {
+                  // Use dynamic category name instead of hardcoded "CCTV Jet Vac"
+                  const categoryName = getCategoryName(categoryId || '');
+                  return `Edit ${categoryName}`;
+                }
+                
+                return "Edit Configuration";
+              })()}
+            </h2>
+            
+            {/* 150mm Direct Access Button for TP1 CCTV categories */}
+            {categoryId === 'cctv-jet-vac' && (
+              <button
+                onClick={async () => {
+                  console.log('🚀 DB2 150mm BUTTON CLICKED: Direct access to 150mm configuration');
+                  
+                  // Navigate directly to 150mm CCTV Jet Vac configuration (ID 161)
+                  const configId = 161;
+                  const targetUrl = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sector}&edit=${configId}`;
+                  
+                  console.log(`🚀 DB2 NAVIGATION: ${targetUrl}`);
+                  setLocation(targetUrl);
+                  
+                  // Force page reload to ensure proper configuration loading
+                  window.location.href = targetUrl;
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <Ruler className="w-4 h-4" />
+                150mm Configuration
+              </button>
+            )}
+          </div>
         </div>
 
         {/* TP2 Unified Configuration - Show pipe size specific interface for patching */}
