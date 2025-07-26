@@ -84,7 +84,6 @@ const SECTORS = [
 
 // P26 Upper Level Data Structure (separate from individual TP2 configurations)
 interface P26UpperLevel {
-  db7DayRate: string;
   db15VehicleRates: VehicleTravelRate[];
 }
 
@@ -552,7 +551,6 @@ export default function PR2ConfigClean() {
 
   // P26 Upper Level State (COMPLETELY SEPARATE FROM P19 - DNC COMPLIANCE)
   const [p26UpperLevel, setP26UpperLevel] = useState<P26UpperLevel>({
-    db7DayRate: '1650',
     db15VehicleRates: [
       { id: 'p26_vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
       { id: 'p26_vehicle_26t', vehicleType: '26t', hourlyRate: '', numberOfHours: '2', enabled: true }
@@ -2831,44 +2829,7 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* P26 UPPER LEVEL: DB7 Day Rate (Shared across all TP2 configurations) */}
-        {categoryId === 'patching' && (
-          <Card className="mb-6 bg-green-50 border-green-200 relative">
-            <DevLabel id="db7" position="top-right" />
-            <CardHeader className="pb-2">
-              <CardTitle className="text-green-700 text-lg flex items-center gap-2">
-                <Banknote className="w-5 h-5" />
-                P26 - Central Day Rate (All Pipe Sizes)
-              </CardTitle>
-              <p className="text-sm text-green-600 mt-1">
-                Shared day rate for all TP2 patching configurations (150mm, 225mm, 300mm)
-              </p>
-            </CardHeader>
-            <CardContent className="py-3">
-              <div className="bg-white p-4 rounded-lg border border-green-200">
-                <div className="flex items-center gap-3">
-                  <Label className="text-sm font-medium text-green-700 min-w-[80px]">
-                    Day Rate
-                  </Label>
-                  <span className="text-sm text-green-600">£</span>
-                  <Input
-                    placeholder="1650"
-                    maxLength={6}
-                    value={p26UpperLevel.db7DayRate}
-                    onChange={(e) => {
-                      setP26UpperLevel(prev => ({
-                        ...prev,
-                        db7DayRate: e.target.value
-                      }));
-                    }}
-                    className="bg-white border-green-300 h-8 text-sm w-24"
-                  />
-                  <span className="text-sm text-green-600">/day</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+
 
         {/* P26 UPPER LEVEL: DB15 Vehicle Travel Rates (COMPLETELY SEPARATE FROM P19) */}
         {categoryId === 'patching' && (
