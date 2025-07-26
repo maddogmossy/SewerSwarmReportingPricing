@@ -2926,7 +2926,7 @@ export default function PR2ConfigClean() {
 
         {/* Vehicle Travel Rates - P19 for TP1, P26 for TP2 main, P4 for TP3 */}
         {((categoryId === 'cctv-jet-vac' && editId) || 
-          (categoryId === 'patching' && !editId) || 
+          (categoryId === 'patching' && (!editId || ![153, 156, 157].includes(parseInt(editId)))) || 
           (categoryId === 'robotic-cutting' && editId)) && (
         <Card className="mb-6 bg-cyan-50 border-cyan-200 relative" data-component="p19">
           <DevLabel id="db15" position="top-right" />
