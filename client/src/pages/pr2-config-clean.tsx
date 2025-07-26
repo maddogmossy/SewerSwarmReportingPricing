@@ -2753,8 +2753,11 @@ export default function PR2ConfigClean() {
                   if (categoryId === 'patching') {
                     // TP2 Patching - unified configuration handles all pipe sizes in one interface
                     availablePipeSizes = ['150mm', '225mm', '300mm'];
+                  } else if (categoryId === 'cctv-jet-vac') {
+                    // TP1 CCTV Jet Vac - exclude from dropdown, handled elsewhere
+                    availablePipeSizes = [];
                   } else {
-                    // TP1 CCTV - only 150mm available to prevent ID sharing conflict
+                    // Other TP1 categories - only 150mm available
                     availablePipeSizes = ['150mm'];
                   }
                   
