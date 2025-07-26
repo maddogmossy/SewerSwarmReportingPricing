@@ -2924,8 +2924,8 @@ export default function PR2ConfigClean() {
             </CardContent>
           </Card>
 
-        {/* Vehicle Travel Rates - Main Page Level (P19) - Hidden for TP3 and individual TP2 pipe configs */}
-        {getTemplateType(categoryId || '') !== 'TP3' && !editId && (
+        {/* Vehicle Travel Rates - Main Page Level (P19) - Hidden only for individual TP2 pipe configs */}
+        {!editId && (
         <Card className="mb-6 bg-cyan-50 border-cyan-200 relative" data-component="p19">
           <DevLabel id="db15" position="top-right" />
           <CardHeader className="pb-2">
