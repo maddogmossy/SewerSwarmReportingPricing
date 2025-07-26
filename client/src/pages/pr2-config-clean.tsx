@@ -113,6 +113,9 @@ const SECTOR_CONFIG = {
   domestic: { textColor: 'text-amber-600', bgColor: 'bg-amber-50' }
 };
 
+// Define SECTOR_OPTIONS based on SECTORS array
+const SECTOR_OPTIONS = SECTORS;
+
 // No standard color options - users can select custom colors only
 
 export default function PR2ConfigClean() {
@@ -894,6 +897,7 @@ export default function PR2ConfigClean() {
 
   // DEBOUNCED SAVE: Save input values after user stops typing
   const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   const debouncedSave = () => {
     if (!isEditing || !editId) return;
@@ -2570,6 +2574,41 @@ export default function PR2ConfigClean() {
       // Navigate to destination
       window.location.href = destination;
     };
+  };
+
+  // Handle delete configuration
+  const handleDelete = async () => {
+    if (!editId) return;
+    
+    try {
+      setIsSaving(true);
+      await apiRequest('DELETE', `/api/pr2-clean/${editId}`);
+      
+      // Invalidate cache
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      
+      // Navigate back to pricing page
+      setLocation(`/pr2-pricing?sector=${sector}`);
+    } catch (error) {
+      console.error('❌ Delete failed:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle range change function
+  const handleRangeChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      rangeOptions: prev.rangeOptions.map(opt => 
+        opt.id === optionId 
+          ? { ...opt, [field]: value }
+          : opt
+      )
+    }));
+    
+    // Auto-save the changes
+    debouncedSave();
   };
 
   // Get dynamic page ID based on category
