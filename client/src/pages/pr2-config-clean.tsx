@@ -3297,6 +3297,15 @@ export default function PR2ConfigClean() {
         {/* END OF UPPER SECTION                     */}
         {/* ========================================= */}
 
+        {/* Visual divider line */}
+        <div className="my-8 border-t-4 border-dashed border-gray-400"></div>
+        <div className="my-8 text-center">
+          <div className="inline-block bg-red-500 text-white px-6 py-2 rounded-full font-bold">
+            SECTION BREAK
+          </div>
+        </div>
+        <div className="my-8 border-t-4 border-dashed border-gray-400"></div>
+
         {/* ========================================= */}
         {/* LOWER SECTION: TP1 CONFIGURATIONS        */}
         {/* ========================================= */}
