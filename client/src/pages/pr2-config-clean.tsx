@@ -1328,6 +1328,15 @@ export default function PR2ConfigClean() {
         const existingRangeOptions = Array.isArray(config.rangeOptions) ? config.rangeOptions : [];
         const existingPricingOptions = Array.isArray(config.pricingOptions) ? config.pricingOptions : [];
         
+        // For TP2 patching configurations, ensure db7_day_rate option exists
+        if (categoryId === 'patching' && existingPricingOptions.length > 0) {
+          const hasDB7Option = existingPricingOptions.some(opt => opt.id === 'db7_day_rate');
+          if (!hasDB7Option) {
+            console.log(`🔧 Adding missing db7_day_rate option to TP2 configuration ${config.id}`);
+            existingPricingOptions.unshift({ id: 'db7_day_rate', label: 'Central Day Rate', enabled: true, value: '1650' });
+          }
+        }
+        
         // Initialize single-option defaults for each window (matching your requirement)
         const defaultPricingOptions = [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
