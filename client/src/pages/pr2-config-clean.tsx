@@ -2318,6 +2318,10 @@ export default function PR2ConfigClean() {
           });
         }
       });
+    } else if (categoryId === 'cctv-jet-vac') {
+      // CCTV Jet Vac - exclude from pipe size configurations dropdown
+      // ID 161 should not appear in any dropdown interface
+      return [];
     } else {
       // Original logic for other categories
       allCategoryConfigs.forEach(config => {
