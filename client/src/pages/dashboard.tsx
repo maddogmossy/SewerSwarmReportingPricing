@@ -1383,16 +1383,15 @@ export default function Dashboard() {
                 ? costCalculation.defectCount * costCalculation.costPerUnit || 0 
                 : 0;
             
-            // Extract day rate from PR2 configuration for dialog
+            // Extract day rate from P26 configuration for dialog
             let dayRate = 0; // No synthetic fallbacks - must come from user configuration
             if (pr2Configurations && pr2Configurations.length > 0) {
-              const matchingConfig = pr2Configurations.find(config => 
-                config.categoryId === 'patching' && 
-                config.sector === currentSector.id
+              const p26Config = pr2Configurations.find(config => 
+                config.categoryId === 'P26'
               );
-              if (matchingConfig && matchingConfig.pricingOptions) {
-                const dayRateOption = matchingConfig.pricingOptions.find((opt: any) => 
-                  opt.label?.toLowerCase().includes('day rate')
+              if (p26Config && p26Config.pricingOptions) {
+                const dayRateOption = p26Config.pricingOptions.find((opt: any) => 
+                  opt.id === 'db7_day_rate'
                 );
                 if (dayRateOption && dayRateOption.value) {
                   dayRate = parseFloat(dayRateOption.value) || 0; // No synthetic fallback
@@ -2504,10 +2503,21 @@ export default function Dashboard() {
     
     // TP2 calculation inputs analyzed
     
-    // UPDATED: Use default day rate £1650 (P26 system removed)
-    const dayRate = 1650;
+    // Get day rate from P26 configuration
+    let dayRate = 1650; // Fallback if P26 not found
     
-    // Using default day rate (P26 removed)
+    // Find P26 configuration for central day rate
+    if (pr2Configurations && pr2Configurations.length > 0) {
+      const p26Config = pr2Configurations.find(config => config.categoryId === 'P26');
+      if (p26Config && p26Config.pricingOptions) {
+        const dayRateOption = p26Config.pricingOptions.find((opt: any) => 
+          opt.id === 'db7_day_rate' && opt.value
+        );
+        if (dayRateOption && dayRateOption.value) {
+          dayRate = parseFloat(dayRateOption.value) || 1650;
+        }
+      }
+    }
     
     // Determine which patching option to use based on recommendations or default
     let selectedPatchingOption = null;

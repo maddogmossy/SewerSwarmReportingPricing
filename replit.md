@@ -826,6 +826,22 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 25, 2025)
 
+### CRITICAL: TP2 Day Rate System Centralization Complete ✅
+- **Date**: January 25, 2025
+- **Status**: Successfully centralized all TP2 day rate logic to use only P26 configuration
+- **Issues Fixed**:
+  - **Database Cleanup**: Removed `db7_day_rate` from all TP2 patching configurations (153, 156, 157)
+  - **Dashboard Logic Updated**: Modified `calculateTP2PatchingCost` to read day rate from P26 configuration (ID 170) instead of individual TP2 configs
+  - **Dialog Integration**: Updated dialog day rate extraction to use P26 configuration instead of searching patching configurations
+  - **W011 Purple Window**: Now displays only patching layer options (Single Layer, Double Layer, Triple Layer, Triple Layer Extra) without day rate contamination
+  - **System Architecture**: P26 configuration (ID 170) is sole source of central day rate (£1650) for all TP2 calculations
+- **Technical Implementation**:
+  - TP2 configurations now contain only 4 patching layer options each with pipe-specific costs (£425, £520, £550)
+  - Dashboard functions query P26 config by `categoryId === 'P26'` for day rate lookup
+  - Eliminated duplicate day rate entries and redundant fields across system
+  - Maintained authentic unit costs for each pipe size while centralizing day rate logic
+- **Result**: Clean separation between central day rate (P26) and pipe-specific patching costs (TP2), eliminating confusion and redundancy
+
 ### CRITICAL: Complete PR1 System Removal & Cache Cleanup ✅
 - **Date**: January 25, 2025
 - **Status**: Successfully removed all remaining PR1 system code and references
