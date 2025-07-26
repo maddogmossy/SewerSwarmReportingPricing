@@ -922,6 +922,40 @@ export default function PR2ConfigClean() {
         
         if (response.ok) {
           console.log('✅ Input values saved successfully');
+          
+          // CRITICAL: Sync P26 vehicle data across all TP2 patching configurations
+          if (categoryId === 'patching' && payload.vehicleTravelRates?.length > 0) {
+            console.log('🔄 P26 SYNC: Syncing vehicle travel rates across all TP2 configurations...');
+            
+            try {
+              // Get all patching configurations for this user
+              const allConfigsResponse = await fetch(`/api/pr2-clean?sector=${sector}&categoryId=patching`);
+              if (allConfigsResponse.ok) {
+                const patchingConfigs = await allConfigsResponse.json();
+                
+                // Sync vehicle data to all other patching configs
+                for (const config of patchingConfigs) {
+                  if (config.id !== editId) { // Don't update the current config again
+                    const syncPayload = {
+                      ...config,
+                      vehicleTravelRates: payload.vehicleTravelRates,
+                      vehicleTravelRatesStackOrder: payload.vehicleTravelRatesStackOrder
+                    };
+                    
+                    await fetch(`/api/pr2-clean/${config.id}`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(syncPayload)
+                    });
+                    
+                    console.log(`✅ P26 SYNC: Synced vehicle data to config ${config.id} (${config.pipeSize}mm)`);
+                  }
+                }
+              }
+            } catch (syncError) {
+              console.error('❌ P26 SYNC ERROR:', syncError);
+            }
+          }
         }
       } catch (error) {
         console.error('❌ Save failed:', error);
