@@ -3209,8 +3209,8 @@ export default function PR2ConfigClean() {
           </div>
         )}
 
-        {/* P26 Main Page Components - DB15 & DB7 appear ONCE on main page */}
-        {categoryId === 'patching' && !editId && (
+        {/* P26 Main Page Components - DB15 & DB7 appear on P26 page */}
+        {categoryId === 'patching' && (
           <div className="space-y-6 mb-6">
             {/* DB15 Window: Vehicle Travel Rates - Main P26 Page Only */}
             <Card className="bg-cyan-50 border-cyan-200 relative">
