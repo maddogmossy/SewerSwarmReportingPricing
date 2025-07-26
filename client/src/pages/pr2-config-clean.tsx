@@ -2745,8 +2745,15 @@ export default function PR2ConfigClean() {
                           maxLength={6}
                           value={vehicle.hourlyRate || ""}
                           onChange={(e) => {
-                            const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
-                            updateVehicleTravelRate(updatedVehicle);
+                            // Update local state immediately for responsive UI
+                            setFormData(prev => ({
+                              ...prev,
+                              vehicleTravelRates: prev.vehicleTravelRates.map(v => 
+                                v.id === vehicle.id ? { ...v, hourlyRate: e.target.value } : v
+                              )
+                            }));
+                            // Debounced save will handle the sync
+                            debouncedSave();
                           }}
                           className="bg-white border-cyan-300 h-8 text-sm w-20"
                         />
@@ -2758,8 +2765,15 @@ export default function PR2ConfigClean() {
                           maxLength={3}
                           value={vehicle.numberOfHours || "2"}
                           onChange={(e) => {
-                            const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
-                            updateVehicleTravelRate(updatedVehicle);
+                            // Update local state immediately for responsive UI
+                            setFormData(prev => ({
+                              ...prev,
+                              vehicleTravelRates: prev.vehicleTravelRates.map(v => 
+                                v.id === vehicle.id ? { ...v, numberOfHours: e.target.value } : v
+                              )
+                            }));
+                            // Debounced save will handle the sync
+                            debouncedSave();
                           }}
                           className="bg-white border-cyan-300 h-8 text-sm w-16"
                         />
@@ -2834,8 +2848,15 @@ export default function PR2ConfigClean() {
                           maxLength={6}
                           value={vehicle.hourlyRate || ""}
                           onChange={(e) => {
-                            const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
-                            updateVehicleTravelRate(updatedVehicle);
+                            // Update local state immediately for responsive UI
+                            setFormData(prev => ({
+                              ...prev,
+                              vehicleTravelRates: prev.vehicleTravelRates.map(v => 
+                                v.id === vehicle.id ? { ...v, hourlyRate: e.target.value } : v
+                              )
+                            }));
+                            // Debounced save will handle the sync
+                            debouncedSave();
                           }}
                           className="bg-white border-cyan-300 h-8 text-sm w-20"
                         />
@@ -2847,8 +2868,15 @@ export default function PR2ConfigClean() {
                           maxLength={3}
                           value={vehicle.numberOfHours || "2"}
                           onChange={(e) => {
-                            const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
-                            updateVehicleTravelRate(updatedVehicle);
+                            // Update local state immediately for responsive UI
+                            setFormData(prev => ({
+                              ...prev,
+                              vehicleTravelRates: prev.vehicleTravelRates.map(v => 
+                                v.id === vehicle.id ? { ...v, numberOfHours: e.target.value } : v
+                              )
+                            }));
+                            // Debounced save will handle the sync
+                            debouncedSave();
                           }}
                           className="bg-white border-cyan-300 h-8 text-sm w-16"
                         />
