@@ -3619,33 +3619,7 @@ export default function PR2ConfigClean() {
                   </CardContent>
                 </Card>
 
-                {/* Orange Window: Min Quantity */}
-                <Card className="relative bg-orange-50 border-orange-200 w-52 flex-shrink-0">
-                  <DevLabel id="db9" position="top-right" />
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-orange-700 text-xs flex items-center gap-1">
-                      <Target className="w-3 h-3" />
-                      Min Quantity Options
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-1">
-                    <div className="grid grid-cols-1 gap-1">
-                      {formData.minQuantityOptions?.map((option, index) => {
-                        return (
-                          <div key={option.id} className="flex items-center gap-2 text-xs w-full">
-                            <span className="font-medium w-16 flex-shrink-0">Min</span>
-                            <Input
-                              placeholder=""
-                              value={option.value || ""}
-                              onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
-                              className="bg-white border-orange-300 h-6 text-xs w-16 flex-shrink-0"
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-              </Card>
+
 
               {/* Purple Window: Ranges */}
               <Card className="relative bg-purple-50 border-purple-200 flex-1">
