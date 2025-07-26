@@ -3197,6 +3197,12 @@ export default function PR2ConfigClean() {
         {/* UPPER SECTION: ONLY W001, W003, W007     */}
         {/* ========================================= */}
 
+        {/* Visible section header for users */}
+        <div className="mb-6 p-4 bg-blue-100 border border-blue-300 rounded-lg">
+          <h2 className="text-lg font-bold text-blue-800 mb-2">🔧 Upper Configuration Section</h2>
+          <p className="text-sm text-blue-700">Core configuration windows: Day Rate, Quantity Options, and Range Settings</p>
+        </div>
+
         {/* W001: Day Rate Window */}
         <Card className="mb-6 relative bg-blue-50 border-blue-200">
           <DevLabel id="W001" position="top-right" />
@@ -3294,6 +3300,12 @@ export default function PR2ConfigClean() {
         {/* ========================================= */}
         {/* LOWER SECTION: TP1 CONFIGURATIONS        */}
         {/* ========================================= */}
+
+        {/* Visible section header for users */}
+        <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-lg">
+          <h2 className="text-lg font-bold text-green-800 mb-2">⚙️ Lower Configuration Section</h2>
+          <p className="text-sm text-green-700">TP1, TP2, TP3 template configurations and pipe size settings</p>
+        </div>
 
         {/* General Configuration Interface (for non-pipe-size configurations) */}
         {categoryId !== 'patching' && getPipeSizeConfigurations().length === 0 && isEditing && editId && (
