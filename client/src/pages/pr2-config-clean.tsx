@@ -2749,23 +2749,21 @@ export default function PR2ConfigClean() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-4">
+              <div className="grid grid-cols-5 gap-3">
                 {(() => {
-                  // Define pipe sizes based on category type
-                  let availablePipeSizes;
+                  // All 15 MSCC5 standard pipe sizes (internal diameters)
+                  const allMSCC5PipeSizes = ['100mm', '150mm', '200mm', '225mm', '300mm', '375mm', '450mm', '525mm', '600mm', '675mm', '750mm', '900mm', '1050mm', '1200mm', '1500mm'];
                   
                   if (categoryId === 'patching') {
                     // TP2 Patching - unified configuration handles all pipe sizes in one interface
-                    availablePipeSizes = ['150mm', '225mm', '300mm'];
+                    return ['150mm', '225mm', '300mm'];
                   } else if (categoryId === 'cctv-jet-vac') {
-                    // TP1 CCTV Jet Vac - exclude from dropdown, handled elsewhere
-                    availablePipeSizes = [];
+                    // TP1 CCTV Jet Vac - show all 15 MSCC5 pipe sizes
+                    return allMSCC5PipeSizes;
                   } else {
-                    // Other TP1 categories - only 150mm available
-                    availablePipeSizes = ['150mm'];
+                    // Other TP1 categories - show all 15 MSCC5 pipe sizes
+                    return allMSCC5PipeSizes;
                   }
-                  
-                  return availablePipeSizes;
                 })().map((pipeSize) => {
                   // Map pipe sizes to correct configuration IDs based on current category
                   let configId;
@@ -2782,12 +2780,26 @@ export default function PR2ConfigClean() {
                     }
                     targetCategoryId = 'patching';
                   } else {
-                    // TP1 CCTV configurations - only 150mm available (Pricing Window db11)
-                    configId = 161; // CCTV Jet Vac Configuration
+                    // All other categories - auto-detection system with ID assignment
+                    if (pipeSize === '150mm') {
+                      configId = 161; // Existing 150mm CCTV Jet Vac Configuration
+                    } else {
+                      // Auto-detect or create new IDs for other pipe sizes using the existing system
+                      configId = null; // Will be auto-detected/created
+                    }
                     targetCategoryId = categoryId; // Keep current category
                   }
                   
-                  const isCurrentConfig = (currentConfigId === configId) || (currentConfigId === null && editId === String(configId));
+                  const isCurrentConfig = (() => {
+                    if (configId) {
+                      return (currentConfigId === configId) || (currentConfigId === null && editId === String(configId));
+                    } else {
+                      // For auto-detection cases, check if we're editing a pipe-size-specific config for this pipe size
+                      if (!editId) return false;
+                      const currentConfig = allCategoryConfigs?.find(c => c.id === parseInt(editId));
+                      return currentConfig?.categoryName?.includes(pipeSize.replace('mm', 'mm'));
+                    }
+                  })();
                   
                   // Use correct dev code based on configuration type
                   const devCode = (() => {
@@ -2856,11 +2868,20 @@ export default function PR2ConfigClean() {
                         }
                         
                         try {
+                          let finalConfigId = configId;
+                          
+                          // If configId is null, use auto-detection system to find or create configuration
+                          if (!configId) {
+                            console.log(`🔍 AUTO-DETECTION: Finding or creating ${pipeSize} configuration for ${categoryId}`);
+                            finalConfigId = await ensurePipeSizeConfiguration(pipeSize, categoryId, sector);
+                            console.log(`✅ AUTO-DETECTION: Got configuration ID ${finalConfigId} for ${pipeSize}`);
+                          }
+                          
                           // Load the specific configuration data directly
-                          const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
+                          const response = await apiRequest('GET', `/api/pr2-clean/${finalConfigId}`);
                           const configData = await response.json();
                           
-                          console.log(`✅ Loaded config data for ID ${configId}:`, configData);
+                          console.log(`✅ Loaded config data for ID ${finalConfigId}:`, configData);
                           
                           // CRITICAL: Clear form state completely before loading new data
                           setFormData({
@@ -2882,10 +2903,10 @@ export default function PR2ConfigClean() {
                           });
                           
                           // Update current config ID to highlight the correct button
-                          setCurrentConfigId(configId);
+                          setCurrentConfigId(finalConfigId);
                           
                           // Update URL to reflect the configuration change
-                          setLocation(`/pr2-config-clean?categoryId=${targetCategoryId}&sector=${sector}&edit=${configId}`);
+                          setLocation(`/pr2-config-clean?categoryId=${targetCategoryId}&sector=${sector}&edit=${finalConfigId}`);
                           
                           const successType = (() => {
                             if (categoryId === 'patching') return 'TP2 Patching db6';
@@ -2895,7 +2916,7 @@ export default function PR2ConfigClean() {
                           console.log(`✅ Form data updated to show ${pipeSize} configuration (${successType})`);
                           
                         } catch (error) {
-                          console.error(`❌ Failed to load configuration ${configId}:`, error);
+                          console.error(`❌ Failed to load configuration ${finalConfigId}:`, error);
                         }
                       }}
                       className={`px-4 py-2 rounded border hover:bg-gray-50 transition-colors ${isCurrentConfig ? "bg-yellow-500 text-white hover:bg-yellow-600" : "bg-white border-gray-300"}`}
