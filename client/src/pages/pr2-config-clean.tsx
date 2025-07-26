@@ -2990,152 +2990,38 @@ export default function PR2ConfigClean() {
 
 
 
-        {/* W005: DB7 Day Rate (from P26 patching configurations) */}
-        {categoryId === 'patching' && (
-          <Card className="mb-6 bg-green-50 border-green-200 relative">
-            <DevLabel id="W005" position="top-right" />
-            <CardHeader className="pb-2">
-              <CardTitle className="text-green-700 text-lg flex items-center gap-2">
-                <Banknote className="w-5 h-5" />
-                DB7 - Day Rate
-              </CardTitle>
-              <p className="text-sm text-green-600 mt-1">
-                Central day rate for all TP2 patching configurations - saves to database
-              </p>
-            </CardHeader>
-            <CardContent className="py-3">
-              <div className="bg-white p-4 rounded-lg border border-green-200">
-                <div className="flex items-center gap-3">
-                  <Label className="text-sm font-medium text-green-700 min-w-[80px]">
-                    Day Rate
-                  </Label>
-                  <span className="text-sm text-green-600">£</span>
+        {/* W001: Pricing Options Window */}
+        <Card className="mb-6 relative bg-blue-50 border-blue-200">
+          <DevLabel id="W001" position="top-right" />
+          <CardHeader>
+            <CardTitle className="text-blue-700 flex items-center gap-2">
+              <Banknote className="w-5 h-5" />
+              Pricing Options
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {formData.pricingOptions?.map((option, index) => (
+              <div key={option.id} className="flex items-center gap-4">
+                <Label className="w-32 text-sm font-medium text-gray-700">
+                  {option.label}
+                </Label>
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs">£</Label>
                   <Input
-                    placeholder="1650"
-                    maxLength={6}
-                    value={p26Config?.pricingOptions?.find(opt => opt.id === 'db7_day_rate')?.value || '1650'}
-                    onChange={(e) => {
-                      // Update P26 configuration in database
-                      if (p26Config) {
-                        const updatedPricingOptions = p26Config.pricingOptions?.map(opt => 
-                          opt.id === 'db7_day_rate' ? { ...opt, value: e.target.value } : opt
-                        ) || [{ id: 'db7_day_rate', label: 'Central Day Rate', value: e.target.value, enabled: true }];
-                        
-                        // Save to database immediately
-                        const updatedConfig = { ...p26Config, pricingOptions: updatedPricingOptions };
-                        apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
-                      }
-                    }}
-                    className="bg-white border-green-300 h-8 text-sm w-24"
+                    placeholder="1850"
+                    value={option.value || ""}
+                    onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
+                    className="w-20 h-8 text-sm"
                   />
-                  <span className="text-sm text-green-600">/day</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            ))}
+          </CardContent>
+        </Card>
 
-        {/* W006: P26 DB15 Vehicle Travel Rates */}
-        {categoryId === 'patching' && (
-          <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
-            <DevLabel id="W006" position="top-right" />
-            <CardHeader className="pb-2">
-              <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
-                <Truck className="w-5 h-5" />
-                P26 DB15 - Vehicle Travel Rates (TP2 Upper Level)
-              </CardTitle>
-              <p className="text-sm text-cyan-600 mt-1">
-                P26 upper level vehicle rates - ZERO inheritance from P19 configurations
-              </p>
-            </CardHeader>
-            <CardContent className="py-3">
-              <div className="space-y-2">
-                {p26Config?.vehicleTravelRates?.map((vehicle, index) => (
-                  <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
-                        {vehicle.vehicleType}
-                      </Label>
-                      <span className="text-sm text-cyan-600">£</span>
-                      <Input
-                        placeholder="rate"
-                        maxLength={6}
-                        value={vehicle.hourlyRate || ""}
-                        onChange={(e) => {
-                          // Update P26 configuration in database
-                          if (p26Config) {
-                            const updatedVehicleRates = p26Config.vehicleTravelRates?.map(v => 
-                              v.id === vehicle.id ? { ...v, hourlyRate: e.target.value } : v
-                            ) || [];
-                            
-                            const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
-                            apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
-                          }
-                        }}
-                        className="bg-white border-cyan-300 h-8 text-sm w-20"
-                      />
-                      <span className="text-sm text-cyan-600">/hr</span>
-                    </div>
-                    <div className="flex items-center gap-2 ml-4">
-                      <Label className="text-sm font-medium text-cyan-700">Hours:</Label>
-                      <Input
-                        placeholder="hours"
-                        maxLength={3}
-                        value={vehicle.numberOfHours || ""}
-                        onChange={(e) => {
-                          // Update P26 configuration in database
-                          if (p26Config) {
-                            const updatedVehicleRates = p26Config.vehicleTravelRates?.map(v => 
-                              v.id === vehicle.id ? { ...v, numberOfHours: e.target.value } : v
-                            ) || [];
-                            
-                            const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
-                            apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
-                          }
-                        }}
-                        className="bg-white border-cyan-300 h-8 text-sm w-16"
-                      />
-                    </div>
-                  </div>
-                )) || (
-                  <div className="bg-white p-4 rounded-lg border border-cyan-200 flex items-center justify-between">
-                    <span className="text-sm text-cyan-600">No vehicle travel rates configured</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-
-
-
-
-        {/* ========================================= */}
-        {/* END OF UPPER SECTION                     */}
-        {/* ========================================= */}
-
-        {/* Visual divider line */}
-        <div className="my-8 border-t-4 border-dashed border-gray-400"></div>
-        <div className="my-8 text-center">
-          <div className="inline-block bg-red-500 text-white px-6 py-2 rounded-full font-bold">
-            SECTION BREAK
-          </div>
-        </div>
-
-        {/* ========================================= */}
-        {/* LOWER SECTION: TP1 CONFIGURATIONS        */}
-        {/* ========================================= */}
-
-        {/* Visible section header for users */}
-        <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-lg">
-          <h2 className="text-lg font-bold text-green-800 mb-2">⚙️ Lower Configuration Section</h2>
-          <p className="text-sm text-green-700">TP1, TP2, TP3 template configurations and pipe size settings</p>
-        </div>
-
-        {/* W003: Quantity Options Window - LOWER SECTION */}
+        {/* W002: Quantity Options Window */}
         <Card className="mb-6 relative bg-green-50 border-green-200">
-          <DevLabel id="W003" position="top-right" />
+          <DevLabel id="W002" position="top-right" />
           <CardHeader>
             <CardTitle className="text-green-700 flex items-center gap-2">
               <Package className="w-5 h-5" />
@@ -3159,431 +3045,126 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* General Configuration Interface (for non-pipe-size configurations) */}
-        {categoryId !== 'patching' && getPipeSizeConfigurations().length === 0 && isEditing && editId && (
-            <div className="space-y-4">
-              {/* Conditional rendering based on template type */}
-              {getTemplateType(categoryId) === 'TP2' ? (
-                <div className="space-y-4 p-4 border rounded-lg bg-gray-100">
-                  <h3 className="text-lg font-semibold text-gray-600 mb-4">TP2 - Legacy Interface Disabled</h3>
-                  <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded border">
-                    This individual TP2 configuration interface has been replaced by the unified P26 hierarchical structure.
-                    All TP2 patching configurations now use the main patching category interface above.
-                  </div>
+        {/* W004: Min Quantity Options Window */}
+        <Card className="mb-6 relative bg-orange-50 border-orange-200">
+          <DevLabel id="W004" position="top-right" />
+          <CardHeader>
+            <CardTitle className="text-orange-700 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5" />
+              Min Quantity Options
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {formData.minQuantityOptions?.map((option, index) => (
+              <div key={option.id} className="flex items-center gap-4">
+                <Label className="w-32 text-sm font-medium text-gray-700">
+                  {option.label}
+                </Label>
+                <Input
+                  placeholder="25"
+                  value={option.value || ""}
+                  onChange={(e) => handleValueChange('minQuantityOptions', option.id, e.target.value)}
+                  className="w-20 h-8 text-sm"
+                />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* W007: Range Options Window */}
+        <Card className="mb-6 relative bg-purple-50 border-purple-200">
+          <DevLabel id="W007" position="top-right" />
+          <CardHeader>
+            <CardTitle className="text-purple-700 flex items-center gap-2">
+              <BarChart3 className="w-5 h-5" />
+              Range Options
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {formData.rangeOptions?.map((option, index) => (
+              <div key={option.id} className="flex items-center gap-4">
+                <Label className="w-32 text-sm font-medium text-gray-700">
+                  {option.label}
+                </Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="R1"
+                    value={option.rangeStart || ""}
+                    onChange={(e) => handleRangeChange(option.id, 'rangeStart', e.target.value)}
+                    className="w-16 h-8 text-sm"
+                  />
+                  <span className="text-sm text-gray-500">to</span>
+                  <Input
+                    placeholder="R2"
+                    value={option.rangeEnd || ""}
+                    onChange={(e) => handleRangeChange(option.id, 'rangeEnd', e.target.value)}
+                    className="w-16 h-8 text-sm"
+                  />
                 </div>
-              ) : getTemplateType(categoryId) === 'TP3' ? (
-                /* TP3 Robotic Cutting - DB2 and DB15 Windows Only */
-                <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">TP3 Robotic Cutting Configuration</h3>
-                  
-                  {/* DB2 Window: Pricing Options Only */}
-                  <Card className="bg-blue-50 border-blue-200">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
-                        <Scissors className="w-4 h-4" />
-                        DB2 - Robotic Cutting Pricing
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {formData.pricingOptions?.map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-4">
-                          <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
-                          <Label className="w-32 text-sm font-medium text-gray-700">
-                            {option.label}
-                          </Label>
-                          <div className="ml-4 flex items-center gap-2">
-                            <Label className="text-xs">£</Label>
-                            <Input
-                              placeholder="cost"
-                              value={option.value || ""}
-                              onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
-                              className="w-20 h-8 text-sm"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                  
-                  {/* DB15 Window: Vehicle Travel Rates */}
-                  <Card className="bg-cyan-50 border-cyan-200">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-cyan-700 text-sm flex items-center gap-2">
-                        <Truck className="w-4 h-4" />
-                        DB15 - Vehicle Travel Rates
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {formData.vehicleTravelRates?.map((vehicle, index) => (
-                        <div key={vehicle.id} className="flex items-center gap-4">
-                          <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
-                          <Label className="w-20 text-sm font-medium text-gray-700">
-                            {vehicle.vehicleType}
-                          </Label>
-                          <div className="ml-4 flex items-center gap-2">
-                            <Label className="text-xs">£/hr</Label>
-                            <Input
-                              placeholder="rate"
-                              value={vehicle.hourlyRate || ""}
-                              onChange={(e) => updateVehicleTravelRate({
-                                ...vehicle,
-                                hourlyRate: e.target.value
-                              })}
-                              className="w-16 h-8 text-sm"
-                            />
-                          </div>
-                          <div className="ml-4 flex items-center gap-2">
-                            <Label className="text-xs">Hours</Label>
-                            <Input
-                              placeholder="hours"
-                              value={vehicle.numberOfHours || ""}
-                              onChange={(e) => updateVehicleTravelRate({
-                                ...vehicle,
-                                numberOfHours: e.target.value
-                              })}
-                              className="w-16 h-8 text-sm"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+
+
+
+
+
+
+        {/* Apply to Sectors Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Apply Configuration to Sectors</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {SECTOR_OPTIONS.map((sector) => (
+                <div key={sector.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={sector.id}
+                    checked={selectedSectors.includes(sector.id)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setSelectedSectors([...selectedSectors, sector.id]);
+                      } else {
+                        setSelectedSectors(selectedSectors.filter(s => s !== sector.id));
+                      }
+                    }}
+                  />
+                  <label
+                    htmlFor={sector.id}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {sector.name}
+                  </label>
                 </div>
-              ) : getTemplateType(categoryId) === 'P26' ? (
-                /* P26 Day Rate Configuration - Blue window for central rate, Green window for pipe sizes, DB15 for vehicles */
-                <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">P26 Day Rate Configuration</h3>
-                  
-                  {/* Blue Window: Central Day Rate */}
-                  <Card className="bg-blue-50 border-blue-200">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
-                        <Banknote className="w-4 h-4" />
-                        Central Day Rate
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {formData.pricingOptions?.map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-4">
-                          <Label className="w-32 text-sm font-medium text-gray-700">
-                            {option.label}
-                          </Label>
-                          <div className="flex items-center gap-2">
-                            <Label className="text-xs">£</Label>
-                            <Input
-                              placeholder="1650"
-                              value={option.value || ""}
-                              onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
-                              className="w-20 h-8 text-sm"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                  
-                  {/* Green Window: Multiple Pipe Size Day Rates */}
-                  <Card className="bg-green-50 border-green-200">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                        <Calculator className="w-4 h-4" />
-                        Pipe Size Day Rates
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {formData.quantityOptions?.map((option, index) => (
-                        <div key={option.id} className="flex items-center gap-4">
-                          <Label className="w-32 text-sm font-medium text-gray-700">
-                            {option.label}
-                          </Label>
-                          <div className="flex items-center gap-2">
-                            <Label className="text-xs">£</Label>
-                            <Input
-                              placeholder="rate"
-                              value={option.value || ""}
-                              onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                              className="w-20 h-8 text-sm"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                  
-
-                </div>
-              ) : (
-                /* Standard TP1 Configuration Layout - Blue/Green/Orange/Purple Windows */
-                <div className="flex flex-wrap gap-4">
-                  
-                  {/* Blue Window */}
-                  <Card className="bg-blue-50 border-blue-200 w-56 flex-shrink-0 relative">
-                    <DevLabel id="W016" />
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-blue-700 text-xs flex items-center gap-1">
-                        💰 Pricing
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      {formData.pricingOptions?.map((option) => (
-                        <div key={option.id} className="flex items-center gap-2 text-xs">
-                          <span className="font-medium min-w-0 flex-1 truncate">{option.label}</span>
-                          <Input
-                            placeholder=""
-                            value={option.value || ""}
-                            onChange={(e) => handleValueChange('pricingOptions', option.id, e.target.value)}
-                            className="bg-white border-blue-300 h-6 text-xs w-20"
-                          />
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-
-                  {/* Math Window */}
-                  <Card className="bg-gray-50 border-gray-200 w-20 flex-shrink-0 relative">
-                    <DevLabel id="W017" />
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-gray-700 text-xs flex items-center justify-center whitespace-nowrap">
-                        Math
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex items-center justify-center">
-                      <Select value="÷" onValueChange={() => {}}>
-                        <SelectTrigger className="w-12 h-6 text-xs">
-                          <SelectValue placeholder="÷" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="÷">÷</SelectItem>
-                          <SelectItem value="+">+</SelectItem>
-                          <SelectItem value="-">-</SelectItem>
-                          <SelectItem value="×">×</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </CardContent>
-                  </Card>
-
-                  {/* Green Window */}
-                  <Card className="bg-green-50 border-green-200 w-60 flex-shrink-0 relative">
-                    <DevLabel id="W018" />
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-green-700 text-xs flex items-center gap-1">
-                        📊 Quantity
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-1">
-                      <div className="grid grid-cols-1 gap-1">
-                        {formData.quantityOptions?.map((option, index) => {
-                          const isLastOption = index === formData.quantityOptions.length - 1;
-                          
-                          return (
-                            <div key={option.id} className="flex items-center gap-2 text-xs w-full">
-                              <span className="font-medium w-20 flex-shrink-0">Runs</span>
-                              <Input
-                                placeholder=""
-                                value={option.value || ""}
-                                onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                                className="bg-white border-green-300 h-6 text-xs w-16 flex-shrink-0"
-                              />
-                              {isLastOption && (
-                                <Button
-                                  size="sm"
-                                  onClick={addNewInputsToAllWindows}
-                                  className="h-6 w-12 text-xs bg-green-600 text-white hover:bg-green-700 border-0 flex-shrink-0"
-                                >
-                                  <Plus className="w-3 h-3" />
-                                </Button>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-
-
-
-                </div>
-              )}
+              ))}
             </div>
-          )})
+          </CardContent>
+        </Card>
 
-        {/* Note: Configuration panels now handled by Dynamic Pipe Size Configuration Panels above */}
+        {/* Save and Actions */}
+        <div className="flex flex-col gap-4">
+          <Button
+            onClick={handleSave}
+            className="w-full"
+            disabled={isSaving}
+          >
+            {isSaving ? "Saving..." : "Save Configuration"}
+          </Button>
+          
+          {isEditing && (
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              className="w-full"
+            >
+              Delete Configuration
+            </Button>
+          )}
+        </div>
       </div>
-
-
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="relative">
-          <DevLabel id="W019" position="top-right" />
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Configuration</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this configuration? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfiguration}
-              className="bg-red-600 hover:bg-red-700"
-              data-action="delete-configuration"
-              data-config-id={editId}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* 100mm Delete Confirmation Dialog */}
-      <AlertDialog open={show100mmDeleteDialog} onOpenChange={setShow100mmDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete 100mm Configuration</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete the 100mm CCTV Jet Vac Configuration (ID: 109)? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handle100mmDeleteConfiguration}
-              className="bg-red-600 hover:bg-red-700"
-              data-action="delete-100mm-configuration"
-              data-config-id="109"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Add Vehicle Travel Rate Dialog */}
-      <Dialog open={addVehicleDialogOpen} onOpenChange={setAddVehicleDialogOpen}>
-        <DialogContent className="bg-cyan-50 border-cyan-200">
-          <DialogHeader>
-            <DialogTitle className="text-cyan-700 flex items-center gap-2">
-              <Truck className="w-4 h-4" />
-              Add Vehicle Travel Rate
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="vehicle-type" className="text-cyan-700">Vehicle Type</Label>
-              <Input
-                id="vehicle-type"
-                placeholder="e.g., 3.5t, 7.5t, 18t"
-                value={newVehicleType}
-                onChange={(e) => setNewVehicleType(e.target.value)}
-                className="border-cyan-300"
-              />
-            </div>
-            <div>
-              <Label htmlFor="hourly-rate" className="text-cyan-700">Hourly Rate (£)</Label>
-              <Input
-                id="hourly-rate"
-                placeholder="e.g., 45.00"
-                value={newHourlyRate}
-                onChange={(e) => setNewHourlyRate(e.target.value)}
-                className="border-cyan-300"
-              />
-            </div>
-            <div>
-              <Label htmlFor="number-of-hours" className="text-cyan-700">Number of Hours</Label>
-              <Input
-                id="number-of-hours"
-                placeholder="2"
-                defaultValue="2"
-                className="border-cyan-300"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={addVehicleTravelRate}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white"
-              >
-                Add Vehicle Rate
-              </Button>
-              <Button
-                onClick={() => setAddVehicleDialogOpen(false)}
-                variant="outline"
-                className="border-cyan-300 text-cyan-700"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Vehicle Travel Rate Dialog */}
-      <Dialog open={editVehicleDialogOpen} onOpenChange={setEditVehicleDialogOpen}>
-        <DialogContent className="bg-cyan-50 border-cyan-200">
-          <DialogHeader>
-            <DialogTitle className="text-cyan-700 flex items-center gap-2">
-              <Truck className="w-4 h-4" />
-              Edit Vehicle Travel Rate
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="edit-vehicle-type" className="text-cyan-700">Vehicle Type</Label>
-              <Input
-                id="edit-vehicle-type"
-                placeholder="e.g., 3.5t, 7.5t, 18t"
-                value={newVehicleType}
-                onChange={(e) => setNewVehicleType(e.target.value)}
-                className="border-cyan-300"
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-hourly-rate" className="text-cyan-700">Hourly Rate (£)</Label>
-              <Input
-                id="edit-hourly-rate"
-                placeholder="e.g., 45.00"
-                value={newHourlyRate}
-                onChange={(e) => setNewHourlyRate(e.target.value)}
-                className="border-cyan-300"
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-number-of-hours" className="text-cyan-700">Number of Hours</Label>
-              <Input
-                id="edit-number-of-hours"
-                placeholder="2"
-                defaultValue="2"
-                className="border-cyan-300"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={() => {
-                  if (editingVehicle) {
-                    updateVehicleTravelRate({
-                      ...editingVehicle,
-                      vehicleType: newVehicleType,
-                      hourlyRate: newHourlyRate,
-                      numberOfHours: editingVehicle?.numberOfHours || "2"
-                    });
-                  }
-                }}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white"
-              >
-                Update Vehicle Rate
-              </Button>
-              <Button
-                onClick={() => setEditVehicleDialogOpen(false)}
-                variant="outline"
-                className="border-cyan-300 text-cyan-700"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
