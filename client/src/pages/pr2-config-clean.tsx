@@ -2831,168 +2831,6 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-
-
-        {/* P26 UPPER LEVEL: DB7 Day Rate (Shared across all TP2 configurations) */}
-        {categoryId === 'patching' && (
-          <Card className="mb-6 bg-green-50 border-green-200 relative">
-            <DevLabel id="W005" position="top-right" />
-            <CardHeader className="pb-2">
-              <CardTitle className="text-green-700 text-lg flex items-center gap-2">
-                <Banknote className="w-5 h-5" />
-                DB7 - Day Rate
-              </CardTitle>
-              <p className="text-sm text-green-600 mt-1">
-                Central day rate for all TP2 patching configurations - saves to database
-              </p>
-            </CardHeader>
-            <CardContent className="py-3">
-              <div className="bg-white p-4 rounded-lg border border-green-200">
-                <div className="flex items-center gap-3">
-                  <Label className="text-sm font-medium text-green-700 min-w-[80px]">
-                    Day Rate
-                  </Label>
-                  <span className="text-sm text-green-600">£</span>
-                  <Input
-                    placeholder="1650"
-                    maxLength={6}
-                    value={p26Config?.pricingOptions?.find(opt => opt.id === 'db7_day_rate')?.value || '1650'}
-                    onChange={(e) => {
-                      // Update P26 configuration in database
-                      if (p26Config) {
-                        const updatedPricingOptions = p26Config.pricingOptions?.map(opt => 
-                          opt.id === 'db7_day_rate' ? { ...opt, value: e.target.value } : opt
-                        ) || [{ id: 'db7_day_rate', label: 'Central Day Rate', value: e.target.value, enabled: true }];
-                        
-                        // Save to database immediately
-                        const updatedConfig = { ...p26Config, pricingOptions: updatedPricingOptions };
-                        apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
-                      }
-                    }}
-                    className="bg-white border-green-300 h-8 text-sm w-24"
-                  />
-                  <span className="text-sm text-green-600">/day</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* P26 UPPER LEVEL: DB15 Vehicle Travel Rates (COMPLETELY SEPARATE FROM P19) */}
-        {categoryId === 'patching' && (
-          <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
-            <DevLabel id="W006" position="top-right" />
-            <CardHeader className="pb-2">
-              <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
-                <Truck className="w-5 h-5" />
-                P26 DB15 - Vehicle Travel Rates (TP2 Upper Level)
-              </CardTitle>
-              <p className="text-sm text-cyan-600 mt-1">
-                P26 upper level vehicle rates - ZERO inheritance from P19 configurations
-              </p>
-            </CardHeader>
-            <CardContent className="py-3">
-              <div className="space-y-2">
-                {p26Config?.vehicleTravelRates?.map((vehicle, index) => (
-                  <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
-                    <div className="flex items-center gap-2">
-                      <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
-                        {vehicle.vehicleType}
-                      </Label>
-                      <span className="text-sm text-cyan-600">£</span>
-                      <Input
-                        placeholder="rate"
-                        maxLength={6}
-                        value={vehicle.hourlyRate || ""}
-                        onChange={(e) => {
-                          // Update P26 configuration in database
-                          if (p26Config) {
-                            const updatedVehicleRates = p26Config.vehicleTravelRates?.map(v => 
-                              v.id === vehicle.id ? { ...v, hourlyRate: e.target.value } : v
-                            ) || [];
-                            
-                            const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
-                            apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
-                          }
-                        }}
-                        className="bg-white border-cyan-300 h-8 text-sm w-20"
-                      />
-                      <span className="text-sm text-cyan-600">/hr</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        placeholder="2"
-                        maxLength={3}
-                        value={vehicle.numberOfHours || "2"}
-                        onChange={(e) => {
-                          // Update P26 configuration in database
-                          if (p26Config) {
-                            const updatedVehicleRates = p26Config.vehicleTravelRates?.map(v => 
-                              v.id === vehicle.id ? { ...v, numberOfHours: e.target.value } : v
-                            ) || [];
-                            
-                            const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
-                            apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
-                          }
-                        }}
-                        className="bg-white border-cyan-300 h-8 text-sm w-16"
-                      />
-                      <span className="text-sm text-cyan-600">hours</span>
-                    </div>
-                    <div className="flex gap-2">
-                      {index === 0 && (
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            // Add vehicle to P26 configuration in database
-                            if (p26Config) {
-                              const newId = `p26_vehicle_${Date.now()}`;
-                              const updatedVehicleRates = [
-                                ...(p26Config.vehicleTravelRates || []),
-                                {
-                                  id: newId,
-                                  vehicleType: '7.5t',
-                                  hourlyRate: '',
-                                  numberOfHours: '2',
-                                  enabled: true
-                                }
-                              ];
-                              
-                              const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
-                              apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
-                            }
-                          }}
-                          className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                        >
-                          <Plus className="w-4 h-4 mr-1" />
-                          Add P26 Vehicle
-                        </Button>
-                      )}
-                      {index > 0 && (
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            // Delete vehicle from P26 configuration in database
-                            if (p26Config) {
-                              const updatedVehicleRates = p26Config.vehicleTravelRates?.filter(v => v.id !== vehicle.id) || [];
-                              
-                              const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
-                              apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
-                            }
-                          }}
-                          className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* P4 DB15: TP3 Robotic Cutting Vehicle Travel Rates */}
         {categoryId === 'robotic-cutting' && (
           <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
@@ -3232,29 +3070,147 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* W003: Quantity Options Window */}
-        <Card className="mb-6 relative bg-green-50 border-green-200">
-          <DevLabel id="W003" position="top-right" />
+        {/* W005: DB7 Day Rate (from P26 patching configurations) */}
+        {categoryId === 'patching' && (
+          <Card className="mb-6 bg-green-50 border-green-200 relative">
+            <DevLabel id="W005" position="top-right" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-green-700 text-lg flex items-center gap-2">
+                <Banknote className="w-5 h-5" />
+                DB7 - Day Rate
+              </CardTitle>
+              <p className="text-sm text-green-600 mt-1">
+                Central day rate for all TP2 patching configurations - saves to database
+              </p>
+            </CardHeader>
+            <CardContent className="py-3">
+              <div className="bg-white p-4 rounded-lg border border-green-200">
+                <div className="flex items-center gap-3">
+                  <Label className="text-sm font-medium text-green-700 min-w-[80px]">
+                    Day Rate
+                  </Label>
+                  <span className="text-sm text-green-600">£</span>
+                  <Input
+                    placeholder="1650"
+                    maxLength={6}
+                    value={p26Config?.pricingOptions?.find(opt => opt.id === 'db7_day_rate')?.value || '1650'}
+                    onChange={(e) => {
+                      // Update P26 configuration in database
+                      if (p26Config) {
+                        const updatedPricingOptions = p26Config.pricingOptions?.map(opt => 
+                          opt.id === 'db7_day_rate' ? { ...opt, value: e.target.value } : opt
+                        ) || [{ id: 'db7_day_rate', label: 'Central Day Rate', value: e.target.value, enabled: true }];
+                        
+                        // Save to database immediately
+                        const updatedConfig = { ...p26Config, pricingOptions: updatedPricingOptions };
+                        apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
+                      }
+                    }}
+                    className="bg-white border-green-300 h-8 text-sm w-24"
+                  />
+                  <span className="text-sm text-green-600">/day</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* W006: P26 DB15 Vehicle Travel Rates */}
+        {categoryId === 'patching' && (
+          <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
+            <DevLabel id="W006" position="top-right" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
+                <Truck className="w-5 h-5" />
+                P26 DB15 - Vehicle Travel Rates (TP2 Upper Level)
+              </CardTitle>
+              <p className="text-sm text-cyan-600 mt-1">
+                P26 upper level vehicle rates - ZERO inheritance from P19 configurations
+              </p>
+            </CardHeader>
+            <CardContent className="py-3">
+              <div className="space-y-2">
+                {p26Config?.vehicleTravelRates?.map((vehicle, index) => (
+                  <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
+                    <div className="flex items-center gap-2">
+                      <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
+                        {vehicle.vehicleType}
+                      </Label>
+                      <span className="text-sm text-cyan-600">£</span>
+                      <Input
+                        placeholder="rate"
+                        maxLength={6}
+                        value={vehicle.hourlyRate || ""}
+                        onChange={(e) => {
+                          // Update P26 configuration in database
+                          if (p26Config) {
+                            const updatedVehicleRates = p26Config.vehicleTravelRates?.map(v => 
+                              v.id === vehicle.id ? { ...v, hourlyRate: e.target.value } : v
+                            ) || [];
+                            
+                            const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
+                            apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
+                          }
+                        }}
+                        className="bg-white border-cyan-300 h-8 text-sm w-20"
+                      />
+                      <span className="text-sm text-cyan-600">/hr</span>
+                    </div>
+                    <div className="flex items-center gap-2 ml-4">
+                      <Label className="text-sm font-medium text-cyan-700">Hours:</Label>
+                      <Input
+                        placeholder="hours"
+                        maxLength={3}
+                        value={vehicle.numberOfHours || ""}
+                        onChange={(e) => {
+                          // Update P26 configuration in database
+                          if (p26Config) {
+                            const updatedVehicleRates = p26Config.vehicleTravelRates?.map(v => 
+                              v.id === vehicle.id ? { ...v, numberOfHours: e.target.value } : v
+                            ) || [];
+                            
+                            const updatedConfig = { ...p26Config, vehicleTravelRates: updatedVehicleRates };
+                            apiRequest('PUT', `/api/pr2-clean/${p26Config.id}`, updatedConfig);
+                          }
+                        }}
+                        className="bg-white border-cyan-300 h-8 text-sm w-16"
+                      />
+                    </div>
+                  </div>
+                )) || (
+                  <div className="bg-white p-4 rounded-lg border border-cyan-200 flex items-center justify-between">
+                    <span className="text-sm text-cyan-600">No vehicle travel rates configured</span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Pipe Size Selection - Upper Section */}
+        <Card className="mb-6 relative bg-orange-50 border-orange-200">
+          <DevLabel id="pipe-sizes" position="top-right" />
           <CardHeader>
-            <CardTitle className="text-green-700 flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              Quantity Options
+            <CardTitle className="text-orange-700 flex items-center gap-2">
+              <Settings className="w-5 h-5" />
+              Pipe Size Configuration
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {formData.quantityOptions?.map((option, index) => (
-              <div key={option.id} className="flex items-center gap-4">
-                <Label className="w-32 text-sm font-medium text-gray-700">
-                  {option.label}
-                </Label>
-                <Input
-                  placeholder="30"
-                  value={option.value || ""}
-                  onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
-                  className="w-20 h-8 text-sm"
-                />
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-white p-3 rounded-lg border border-orange-200 text-center">
+                <div className="text-lg font-bold text-orange-700">150mm</div>
+                <div className="text-sm text-orange-600">Standard</div>
               </div>
-            ))}
+              <div className="bg-white p-3 rounded-lg border border-orange-200 text-center">
+                <div className="text-lg font-bold text-orange-700">225mm</div>
+                <div className="text-sm text-orange-600">Medium</div>
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-orange-200 text-center">
+                <div className="text-lg font-bold text-orange-700">300mm</div>
+                <div className="text-sm text-orange-600">Large</div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -3315,6 +3271,32 @@ export default function PR2ConfigClean() {
           <h2 className="text-lg font-bold text-green-800 mb-2">⚙️ Lower Configuration Section</h2>
           <p className="text-sm text-green-700">TP1, TP2, TP3 template configurations and pipe size settings</p>
         </div>
+
+        {/* W003: Quantity Options Window - LOWER SECTION */}
+        <Card className="mb-6 relative bg-green-50 border-green-200">
+          <DevLabel id="W003" position="top-right" />
+          <CardHeader>
+            <CardTitle className="text-green-700 flex items-center gap-2">
+              <Package className="w-5 h-5" />
+              Quantity Options
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {formData.quantityOptions?.map((option, index) => (
+              <div key={option.id} className="flex items-center gap-4">
+                <Label className="w-32 text-sm font-medium text-gray-700">
+                  {option.label}
+                </Label>
+                <Input
+                  placeholder="30"
+                  value={option.value || ""}
+                  onChange={(e) => handleValueChange('quantityOptions', option.id, e.target.value)}
+                  className="w-20 h-8 text-sm"
+                />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
         {/* General Configuration Interface (for non-pipe-size configurations) */}
         {categoryId !== 'patching' && getPipeSizeConfigurations().length === 0 && isEditing && editId && (
