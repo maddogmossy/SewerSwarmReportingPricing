@@ -3876,7 +3876,7 @@ export default function PR2ConfigClean() {
         })}
 
         {/* General Configuration Interface (for non-pipe-size configurations) */}
-        {categoryId !== 'patching' && getPipeSizeConfigurations().length === 0 && isEditing && editId && (
+        {getPipeSizeConfigurations().length === 0 && isEditing && editId && (
             <div className="space-y-4">
               {/* Conditional rendering based on template type */}
               {getTemplateType(categoryId) === 'TP2' ? (
