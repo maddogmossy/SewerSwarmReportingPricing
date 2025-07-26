@@ -2995,37 +2995,58 @@ export default function PR2ConfigClean() {
                           console.log('🛑 Cancelled pending debounced save to prevent data contamination');
                         }
                         
-                        // AUTO-SAVE: Save current configuration before switching if we're editing
-                        if (isEditing && editId && formData) {
-                          console.log(`💾 AUTO-SAVE: Saving current configuration ${editId} before switching to ${pipeSize}`);
-                          try {
-                            const autoSavePayload = {
-                              categoryName: formData.categoryName,
-                              description: formData.description,
-                              categoryColor: formData.categoryColor,
-                              sector: sector,
-                              categoryId: categoryId,
-                              pricingOptions: formData.pricingOptions,
-                              quantityOptions: formData.quantityOptions,
-                              minQuantityOptions: formData.minQuantityOptions,
-                              rangeOptions: formData.rangeOptions,
-                              mathOperators: formData.mathOperators,
-                              pricingStackOrder: formData.pricingStackOrder,
-                              quantityStackOrder: formData.quantityStackOrder,
-                              minQuantityStackOrder: formData.minQuantityStackOrder,
-                              rangeStackOrder: formData.rangeStackOrder
-                            };
+                        // AUTO-SAVE: Save current configuration before switching
+                        const hasChangesToSave = formData && (
+                          formData.pricingOptions?.some(opt => opt.value) ||
+                          formData.quantityOptions?.some(opt => opt.value) ||
+                          formData.minQuantityOptions?.some(opt => opt.value) ||
+                          formData.rangeOptions?.some(opt => opt.rangeStart || opt.rangeEnd) ||
+                          formData.vehicleTravelRates?.some(vtr => vtr.hourlyRate || vtr.numberOfHours)
+                        );
 
-                            await fetch(`/api/pr2-clean/${editId}`, {
-                              method: 'PUT',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify(autoSavePayload)
-                            });
-                            
-                            console.log(`✅ AUTO-SAVE: Successfully saved configuration ${editId} before switching`);
-                          } catch (autoSaveError) {
-                            console.error(`❌ AUTO-SAVE: Failed to save configuration ${editId}:`, autoSaveError);
-                            // Continue with switching even if auto-save fails
+                        if (hasChangesToSave) {
+                          if (isEditing && editId) {
+                            // Save existing configuration
+                            console.log(`💾 AUTO-SAVE: Saving existing configuration ${editId} before switching to ${pipeSize}`);
+                            try {
+                              const autoSavePayload = {
+                                categoryName: formData.categoryName,
+                                description: formData.description,
+                                categoryColor: formData.categoryColor,
+                                sector: sector,
+                                categoryId: categoryId,
+                                pricingOptions: formData.pricingOptions,
+                                quantityOptions: formData.quantityOptions,
+                                minQuantityOptions: formData.minQuantityOptions,
+                                rangeOptions: formData.rangeOptions,
+                                mathOperators: formData.mathOperators,
+                                pricingStackOrder: formData.pricingStackOrder,
+                                quantityStackOrder: formData.quantityStackOrder,
+                                minQuantityStackOrder: formData.minQuantityStackOrder,
+                                rangeStackOrder: formData.rangeStackOrder,
+                                vehicleTravelRates: formData.vehicleTravelRates,
+                                vehicleTravelRatesStackOrder: formData.vehicleTravelRatesStackOrder
+                              };
+
+                              await fetch(`/api/pr2-clean/${editId}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(autoSavePayload)
+                              });
+                              
+                              console.log(`✅ AUTO-SAVE: Successfully saved existing configuration ${editId} before switching`);
+                            } catch (autoSaveError) {
+                              console.error(`❌ AUTO-SAVE: Failed to save existing configuration ${editId}:`, autoSaveError);
+                            }
+                          } else {
+                            // Save new configuration data if no editId but has changes
+                            console.log(`💾 AUTO-SAVE: Creating new configuration with changes before switching to ${pipeSize}`);
+                            try {
+                              await handleSave(false); // false = don't show success message
+                              console.log(`✅ AUTO-SAVE: Successfully created new configuration before switching`);
+                            } catch (autoSaveError) {
+                              console.error(`❌ AUTO-SAVE: Failed to create new configuration:`, autoSaveError);
+                            }
                           }
                         }
                         
