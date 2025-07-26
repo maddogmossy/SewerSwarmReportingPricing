@@ -2924,7 +2924,8 @@ export default function PR2ConfigClean() {
             </CardContent>
           </Card>
 
-        {/* Vehicle Travel Rates - Main Page Level (P19) */}
+        {/* Vehicle Travel Rates - Main Page Level (P19) - Hidden for TP3 */}
+        {getTemplateType(categoryId || '') !== 'TP3' && (
         <Card className="mb-6 bg-cyan-50 border-cyan-200 relative" data-component="p19">
           <DevLabel id="db15" position="top-right" />
           <CardHeader className="pb-2">
@@ -3018,6 +3019,7 @@ export default function PR2ConfigClean() {
             </div>
           </CardContent>
         </Card>
+        )}
 
         {/* Configuration Title */}
         <div className="mb-6 relative">
