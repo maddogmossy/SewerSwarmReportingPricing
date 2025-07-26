@@ -439,6 +439,7 @@ export const pr2Configurations = pgTable("pr2_configurations", {
   userId: varchar("user_id").notNull().references(() => users.id),
   categoryId: varchar("category_id").notNull(),
   categoryName: varchar("category_name").notNull(),
+  pipeSize: varchar("pipe_size").notNull().default("150"), // MSCC5 standard pipe size (100,150,200,225,300,375,450,525,600,675,750,900,1050,1200,1500)
   description: text("description"),
   pricingOptions: jsonb("pricing_options").default('[]'), // Array of {id, label, value}
   quantityOptions: jsonb("quantity_options").default('[]'), // Array of {id, label, value}

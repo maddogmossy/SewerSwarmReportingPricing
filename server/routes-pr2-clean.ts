@@ -187,26 +187,124 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
     }
   });
 
-  // GET configurations by category
+  // GET configurations by category with pipe size filtering
   app.get('/api/pr2-clean/category/:categoryId', async (req, res) => {
     try {
       const categoryId = req.params.categoryId;
-      // API request logging removed
+      const pipeSize = req.query.pipeSize as string;
+      
+      // Build query conditions
+      let whereConditions = and(
+        eq(pr2Configurations.userId, "test-user"),
+        eq(pr2Configurations.categoryId, categoryId)
+      );
+      
+      // Add pipe size filter if provided
+      if (pipeSize) {
+        whereConditions = and(
+          whereConditions,
+          eq(pr2Configurations.pipeSize, pipeSize)
+        );
+      }
       
       const configurations = await db
         .select()
         .from(pr2Configurations)
-        .where(and(
-          eq(pr2Configurations.userId, "test-user"),
-          eq(pr2Configurations.categoryId, categoryId)
-        ))
+        .where(whereConditions)
         .orderBy(desc(pr2Configurations.id)); // Most recent first
       
-      // Configuration count logging removed
       res.json(configurations);
     } catch (error) {
       console.error('Error fetching configurations by category:', error);
       res.status(500).json({ error: 'Failed to fetch configurations' });
+    }
+  });
+
+  // MSCC5 standard pipe sizes for auto-detection
+  const MSCC5_PIPE_SIZES = [
+    '100', '150', '200', '225', '300', '375', 
+    '450', '525', '600', '675', '750', '900', 
+    '1050', '1200', '1500'
+  ];
+
+  // Auto-detect and create missing pipe size configurations
+  app.post('/api/pr2-clean/auto-detect-pipe-size', async (req, res) => {
+    try {
+      const { categoryId, pipeSize, sector = 'utilities' } = req.body;
+      
+      console.log(`🔍 Auto-detecting pipe size ${pipeSize}mm for category ${categoryId} in sector ${sector}`);
+      
+      // Validate pipe size is MSCC5 standard
+      if (!MSCC5_PIPE_SIZES.includes(pipeSize)) {
+        console.log(`❌ Invalid pipe size ${pipeSize}mm - not in MSCC5 standards`);
+        return res.status(400).json({ error: `Pipe size ${pipeSize}mm is not a valid MSCC5 standard size` });
+      }
+      
+      // Check if configuration already exists
+      const [existingConfig] = await db
+        .select()
+        .from(pr2Configurations)
+        .where(and(
+          eq(pr2Configurations.userId, "test-user"),
+          eq(pr2Configurations.categoryId, categoryId),
+          eq(pr2Configurations.pipeSize, pipeSize),
+          eq(pr2Configurations.sector, sector)
+        ));
+      
+      if (existingConfig) {
+        console.log(`✅ Configuration already exists for ${pipeSize}mm ${categoryId} in ${sector}: ID ${existingConfig.id}`);
+        return res.json(existingConfig);
+      }
+      
+      // Find base configuration for this category to copy structure
+      const [baseConfig] = await db
+        .select()
+        .from(pr2Configurations)
+        .where(and(
+          eq(pr2Configurations.userId, "test-user"),
+          eq(pr2Configurations.categoryId, categoryId),
+          eq(pr2Configurations.sector, sector)
+        ))
+        .orderBy(desc(pr2Configurations.id)); // Get most recent
+      
+      // Create category name with pipe size
+      let categoryName;
+      if (baseConfig) {
+        // Extract base name and add pipe size
+        const baseName = baseConfig.categoryName.replace(/\d+mm\s*/, '').replace(/^(TP\d+\s*-\s*)?/, '');
+        const tpPrefix = baseConfig.categoryName.match(/^(TP\d+\s*-\s*)?/)?.[0] || '';
+        categoryName = `${tpPrefix}${pipeSize}mm ${baseName}`;
+      } else {
+        categoryName = `${pipeSize}mm Configuration`;
+      }
+      
+      // Create new configuration with auto-assigned ID
+      const [newConfig] = await db
+        .insert(pr2Configurations)
+        .values({
+          userId: "test-user",
+          categoryId,
+          categoryName,
+          pipeSize,
+          description: `Auto-generated ${pipeSize}mm configuration`,
+          sector,
+          categoryColor: baseConfig?.categoryColor || '#93c5fd',
+          // Copy structure from base config if available
+          pricingOptions: baseConfig?.pricingOptions || [],
+          quantityOptions: baseConfig?.quantityOptions || [],
+          minQuantityOptions: baseConfig?.minQuantityOptions || [],
+          rangeOptions: baseConfig?.rangeOptions || [],
+          vehicleTravelRates: baseConfig?.vehicleTravelRates || [],
+          vehicleTravelRatesStackOrder: baseConfig?.vehicleTravelRatesStackOrder || [],
+          isActive: true
+        })
+        .returning();
+      
+      console.log(`🎯 Auto-created ${pipeSize}mm configuration for ${categoryId}: ID ${newConfig.id}`);
+      res.json(newConfig);
+    } catch (error) {
+      console.error('Error auto-detecting pipe size configuration:', error);
+      res.status(500).json({ error: 'Failed to auto-create pipe size configuration' });
     }
   });
 
@@ -266,6 +364,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           userId: "test-user",
           categoryId: req.body.categoryId || "clean-" + Date.now(),
           categoryName: categoryName || 'New Clean Configuration',
+          pipeSize: req.body.pipeSize || '150', // Default to 150mm if not specified
           description: description || 'Clean PR2 configuration',
           sector: sector || 'utilities', // Single sector per configuration
           categoryColor: categoryColor || '#ffffff', // Default white color - user must assign color
@@ -320,6 +419,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         .update(pr2Configurations)
         .set({
           categoryName: categoryName || 'Updated Clean Configuration',
+          pipeSize: req.body.pipeSize, // Update pipe size if provided
           description: description || 'Clean PR2 configuration',
           sector: sector || 'utilities', // Single sector per configuration
           categoryColor: categoryColor, // Use the provided color

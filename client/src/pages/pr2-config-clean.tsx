@@ -128,7 +128,7 @@ export default function PR2ConfigClean() {
   
   const sector = urlParams.get('sector') || 'utilities';
   const categoryId = urlParams.get('categoryId');
-  const editId = urlParams.get('edit') || urlParams.get('editId');
+  const editId = urlParams.get('edit') || urlParams.get('editId') || urlParams.get('id'); // Support auto-detection ID
   const pipeSize = urlParams.get('pipeSize') || urlParams.get('pipe_size');
   const configName = urlParams.get('configName');
   const sourceItemNo = urlParams.get('itemNo');
