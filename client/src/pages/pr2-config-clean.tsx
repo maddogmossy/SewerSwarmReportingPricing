@@ -2673,6 +2673,113 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
+        {/* P26 Main Page Components - DB15 & DB7 appear on P26 page */}
+        {categoryId === 'patching' && (
+          <>
+            {/* DB15 Window: Vehicle Travel Rates */}
+            <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
+              <DevLabel id="db15" position="top-right" />
+              <CardHeader className="pb-2">
+                <CardTitle className="text-cyan-700 text-sm flex items-center gap-2">
+                  <Truck className="w-4 h-4" />
+                  DB15 - Vehicle Travel Rates
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {formData.vehicleTravelRates?.map((vehicle, index) => (
+                  <div key={vehicle.id} className="flex items-center gap-4">
+                    <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
+                    <Label className="w-32 text-sm font-medium text-gray-700">
+                      {vehicle.vehicleType} Vehicle
+                    </Label>
+                    <div className="ml-4 flex items-center gap-2">
+                      <Label className="text-xs">£/hr</Label>
+                      <Input
+                        placeholder="rate"
+                        value={vehicle.hourlyRate || ""}
+                        onChange={(e) => {
+                          const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
+                          updateVehicleTravelRate(updatedVehicle);
+                        }}
+                        className="w-16 h-8 text-sm"
+                      />
+                    </div>
+                    <div className="ml-4 flex items-center gap-2">
+                      <Label className="text-xs">Hours</Label>
+                      <Input
+                        placeholder="2"
+                        value={vehicle.numberOfHours || ""}
+                        onChange={(e) => {
+                          const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
+                          updateVehicleTravelRate(updatedVehicle);
+                        }}
+                        className="w-12 h-8 text-sm"
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => deleteVehicleTravelRate(vehicle.id)}
+                      className="ml-4 h-8 w-8 p-0 text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+                
+                {/* Add new vehicle button */}
+                <Button
+                  onClick={() => setAddVehicleDialogOpen(true)}
+                  variant="outline"
+                  className="w-full h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Vehicle Rate
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* DB7 Day Rate */}
+            <Card className="mb-6 bg-green-50 border-green-200 relative">
+              <DevLabel id="db7" position="top-right" />
+              <CardHeader className="pb-2">
+                <CardTitle className="text-green-700 text-sm flex items-center gap-2">
+                  <Banknote className="w-4 h-4" />
+                  DB7 - Day Rate
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center gap-4">
+                  <Label className="w-32 text-sm font-medium text-black">
+                    Day Rate
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs">£</Label>
+                    <Input
+                      placeholder="1650"
+                      value={formData.pricingOptions?.find(opt => opt.id === 'db7_day_rate')?.value || '1650'}
+                      onChange={(e) => {
+                        console.log(`💰 DB7 Day Rate changed:`, e.target.value);
+                        handleValueChange('pricingOptions', 'db7_day_rate', e.target.value);
+                      }}
+                      className="w-20 h-8 text-sm bg-white border-green-300"
+                      data-field="day-rate"
+                      data-window="db7"
+                    />
+                  </div>
+                </div>
+                <div className="text-sm text-gray-600 mt-3">
+                  <p><strong>Shared across all TP2 patches (153, 156, 157):</strong></p>
+                  <ul className="list-disc ml-4 mt-1">
+                    <li>Used for all TP2 cost calculations</li>
+                    <li>Configure once, applies to all pipe sizes</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
         {/* Color Picker Section */}
         <Card className="mb-6 relative">
           <DevLabel id="db5" position="top-right" />
@@ -3209,112 +3316,7 @@ export default function PR2ConfigClean() {
           </div>
         )}
 
-        {/* P26 Main Page Components - DB15 & DB7 appear on P26 page */}
-        {categoryId === 'patching' && (
-          <div className="space-y-6 mb-6">
-            {/* DB15 Window: Vehicle Travel Rates - Main P26 Page Only */}
-            <Card className="bg-cyan-50 border-cyan-200 relative">
-              <DevLabel id="db15" position="top-right" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-cyan-700 text-sm flex items-center gap-2">
-                  <Truck className="w-4 h-4" />
-                  DB15 - Vehicle Travel Rates
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {formData.vehicleTravelRates?.map((vehicle, index) => (
-                  <div key={vehicle.id} className="flex items-center gap-4">
-                    <span className="font-bold text-gray-700 w-8">{index + 1}.</span>
-                    <Label className="w-32 text-sm font-medium text-gray-700">
-                      {vehicle.vehicleType} Vehicle
-                    </Label>
-                    <div className="ml-4 flex items-center gap-2">
-                      <Label className="text-xs">£/hr</Label>
-                      <Input
-                        placeholder="rate"
-                        value={vehicle.hourlyRate || ""}
-                        onChange={(e) => {
-                          const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
-                          updateVehicleTravelRate(updatedVehicle);
-                        }}
-                        className="w-16 h-8 text-sm"
-                      />
-                    </div>
-                    <div className="ml-4 flex items-center gap-2">
-                      <Label className="text-xs">Hours</Label>
-                      <Input
-                        placeholder="2"
-                        value={vehicle.numberOfHours || ""}
-                        onChange={(e) => {
-                          const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
-                          updateVehicleTravelRate(updatedVehicle);
-                        }}
-                        className="w-12 h-8 text-sm"
-                      />
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deleteVehicleTravelRate(vehicle.id)}
-                      className="ml-4 h-8 w-8 p-0 text-red-600 border-red-200 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
-                
-                {/* Add new vehicle button */}
-                <Button
-                  onClick={() => setAddVehicleDialogOpen(true)}
-                  variant="outline"
-                  className="w-full h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add Vehicle Rate
-                </Button>
-              </CardContent>
-            </Card>
 
-            {/* DB7 Day Rate - Main P26 Page Only */}
-            <Card className="bg-green-50 border-green-200 relative">
-              <DevLabel id="db7" position="top-right" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                  <Banknote className="w-4 h-4" />
-                  DB7 - Day Rate
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-4">
-                  <Label className="w-32 text-sm font-medium text-black">
-                    Day Rate
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <Label className="text-xs">£</Label>
-                    <Input
-                      placeholder="1650"
-                      value={formData.pricingOptions?.find(opt => opt.id === 'db7_day_rate')?.value || '1650'}
-                      onChange={(e) => {
-                        console.log(`💰 DB7 Day Rate changed:`, e.target.value);
-                        handleValueChange('pricingOptions', 'db7_day_rate', e.target.value);
-                      }}
-                      className="w-20 h-8 text-sm bg-white border-green-300"
-                      data-field="day-rate"
-                      data-window="db7"
-                    />
-                  </div>
-                </div>
-                <div className="text-sm text-gray-600 mt-3">
-                  <p><strong>Shared across all TP2 patches (153, 156, 157):</strong></p>
-                  <ul className="list-disc ml-4 mt-1">
-                    <li>Used for all TP2 cost calculations</li>
-                    <li>Configure once, applies to all pipe sizes</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {/* TP2 Unified Configuration - Show pipe size specific interface for patching */}
         {categoryId === 'patching' && (
