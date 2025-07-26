@@ -1232,11 +1232,25 @@ export default function PR2ConfigClean() {
     // Reset flags when switching to different config
     console.log(`🔄 Resetting flags: hasUserChanges = false`);
     setHasUserChanges(false);
+    
+    // CLEAR PR1 CACHE CONTAMINATION for robotic-cutting configurations
+    if (categoryId === 'robotic-cutting') {
+      console.log('🧹 Clearing potential PR1 cache contamination for TP3 robotic-cutting');
+      // Clear any localStorage that might contain old PR1 data
+      try {
+        localStorage.removeItem('pr1-config-cache');
+        localStorage.removeItem('config-form-data');
+        localStorage.removeItem('category-config-cache');
+      } catch (e) {
+        console.log('localStorage clear failed (expected in some environments)');
+      }
+    }
+    
     // Force invalidate the specific configuration query to trigger fresh fetch
     if (editId) {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
     }
-  }, [editId]);
+  }, [editId, categoryId]);
   
   // Single useEffect to handle all configuration loading
   useEffect(() => {
@@ -1289,9 +1303,10 @@ export default function PR2ConfigClean() {
         const minQuantityOptions = existingMinQuantityOptions.length > 0 ? existingMinQuantityOptions : defaultMinQuantityOptions;
         const rangeOptions = existingRangeOptions.length > 0 ? existingRangeOptions : defaultRangeOptions;
         
-        // FORCE TP3 template name override to prevent title contamination
+        // FORCE TP3 template name override to prevent PR1 cache contamination
         const correctCategoryName = (() => {
           if (categoryId === 'robotic-cutting') {
+            console.log('🔧 FORCING TP3 title override - preventing PR1 cache bleed');
             return 'TP3 - Robotic Cutting Configuration';
           }
           return config.categoryName || 'CCTV Price Configuration';
