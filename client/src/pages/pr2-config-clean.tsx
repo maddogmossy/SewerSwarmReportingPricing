@@ -158,7 +158,7 @@ export default function PR2ConfigClean() {
   
   // Determine template type based on category
   const getTemplateType = (categoryId: string): 'TP1' | 'TP2' | 'TP3' | 'P26' | 'P006a' => {
-    if (categoryId === 'patching') {
+    if (categoryId === 'patching' || categoryId === 'patching-p006a') {
       return 'TP2'; // Patching configurations use TP2 template
     } else if (categoryId === 'robotic-cutting') {
       return 'TP3'; // Robotic cutting uses TP3 template
@@ -2653,7 +2653,7 @@ export default function PR2ConfigClean() {
       data-sector={sector}
       data-is-editing={isEditing}
     >
-      <DevLabel id="P006" position="top-right" />
+      <DevLabel id={getTemplateType(categoryId || '') === 'TP2' ? 'TP2' : 'P006'} position="top-right" />
       <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
