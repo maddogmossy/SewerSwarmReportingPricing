@@ -3613,53 +3613,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
             </CardContent>
           </Card>
 
-          {/* Orange Card - Min Quantity */}
-          <Card className="bg-orange-50 border-orange-200">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-orange-700 text-sm flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Hash className="w-4 h-4" />
-                  Min Quantity
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={addMinQuantityOption}
-                  className="h-6 w-6 p-0 text-orange-600 hover:bg-orange-100"
-                >
-                  <Plus className="w-3 h-3" />
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="py-2 space-y-2">
-              {tp1Data.minQuantityOptions.map((option, index) => (
-                <div key={option.id} className="flex gap-1">
-                  <Input
-                    placeholder="20"
-                    value={option.value}
-                    onChange={(e) => updateMinQuantityOption(index, 'value', e.target.value)}
-                    className="border-orange-200 focus:border-orange-500 text-xs"
-                  />
-                  <Input
-                    placeholder="Label"
-                    value={option.label}
-                    onChange={(e) => updateMinQuantityOption(index, 'label', e.target.value)}
-                    className="border-orange-200 focus:border-orange-500 text-xs"
-                  />
-                  {tp1Data.minQuantityOptions.length > 1 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteMinQuantityOption(index)}
-                      className="h-8 w-8 p-0 text-red-600 hover:bg-red-100"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+
 
           {/* Purple Card - Ranges */}
           <Card className="bg-purple-50 border-purple-200">

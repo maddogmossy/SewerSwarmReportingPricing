@@ -785,7 +785,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 ### CRITICAL: P006 TP1 Template System Implementation Complete ✅
 - **Date**: January 27, 2025  
 - **Status**: Successfully implemented individual TP1 template system for all pipe sizes on P006 page
-- **Latest Update**: Simplified Day Rate and Runs per Shift windows in P007 TP1 template to single input fields (Blue: £0.00, Green: No)
+- **Latest Update**: Streamlined P007 TP1 template - simplified Blue/Green windows to single inputs (£0.00, No) and removed Orange Min Quantity window completely
 - **Features Added**:
   - **Contextual Pipe Size Templates**: TP1 template appears dynamically based on currently selected pipe size
   - **Individual Configuration**: Each pipe size gets its own separate TP1 template with unique category ID (P006-TP1-{size})
