@@ -3633,8 +3633,8 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                 </Button>
               </CardTitle>
             </CardHeader>
-            <CardContent className="py-2 space-y-2">
-              <div className="space-y-2">
+            <CardContent className="py-2">
+              <div className="flex gap-2">
                 <Input
                   placeholder="Debris %"
                   className="border-purple-200 focus:border-purple-500 text-xs h-7"
