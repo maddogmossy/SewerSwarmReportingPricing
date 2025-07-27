@@ -3041,13 +3041,13 @@ export default function PR2ConfigClean() {
                   {/* Titles Row */}
                   <div className="flex gap-2 items-center">
                     <div className="flex-1">
-                      <Label className="text-teal-600 font-semibold text-sm flex items-center gap-1">
+                      <Label className="text-gray-900 font-semibold text-sm flex items-center gap-1">
                         <Truck className="w-3 h-3" />
                         Vehicle
                       </Label>
                     </div>
                     <div className="flex-1 flex justify-center">
-                      <Label className="text-teal-600 font-semibold text-sm flex items-center gap-1 whitespace-nowrap">
+                      <Label className="text-gray-900 font-semibold text-sm flex items-center gap-1 whitespace-nowrap">
                         <Banknote className="w-3 h-3" />
                         Cost per hr
                       </Label>
