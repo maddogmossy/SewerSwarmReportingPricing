@@ -782,6 +782,32 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 27, 2025)
 
+### CRITICAL: P006 TP1 Template Single-Row Placeholder System Complete ✅
+- **Date**: January 27, 2025
+- **Status**: Successfully implemented single-row placeholder system with locked green + button functionality
+- **Final Implementation**: TP1 templates now have optimized single-row structure:
+  - **Database Structure**: Single placeholder row with combined "Debris % / Length M" label
+  - **Frontend Display**: Row 1 shows "Debris %" and "Length M" placeholders in separate input fields
+  - **Button Logic**: Green + button permanently locked on Row 1 (index === 0), never moves
+  - **Delete Logic**: Red delete buttons appear only in purple window for custom rows (index > 0)
+  - **Paired Deletion**: Delete function removes corresponding rows from both green and purple windows
+- **Technical Implementation**:
+  - Updated all 17 TP1 configurations with single `range_combined` placeholder
+  - Modified button display logic: Green + always on Row 1, Red X only on custom rows
+  - Enhanced delete function to maintain paired relationship between windows
+  - Removed delete buttons from green window to prevent user confusion
+  - Auto-save functionality preserved for all add/delete operations
+- **User-Confirmed Working Features**:
+  - **Row 1 (Protected)**: "Debris %" | "Length M" | Green + button (always locked)
+  - **Row 2+ (Custom)**: User inputs | User inputs | Red delete button (purple window only)
+  - **Add Function**: Creates new custom rows below placeholder row
+  - **Delete Function**: Removes specific custom rows from both windows simultaneously
+  - **Database Persistence**: All changes auto-save with proper paired relationships
+- **User Validation**: "bingo. lock this in" - Complete satisfaction with final implementation
+- **Result**: Streamlined TP1 template system with protected placeholder row and unlimited custom range capability
+
+## Recent Changes (Updated January 27, 2025)
+
 ### CRITICAL: P006 TP1 Template Placeholder System Complete ✅
 - **Date**: January 27, 2025  
 - **Status**: Successfully implemented TP1 template system with required placeholder rows
