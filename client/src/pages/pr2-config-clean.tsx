@@ -3192,7 +3192,7 @@ export default function PR2ConfigClean() {
                         </Label>
                         <span className="text-sm text-cyan-600">£</span>
                         <Input
-                          placeholder="rate"
+                          placeholder="0.00"
                           maxLength={6}
                           value={vehicle.hourlyRate || ""}
                           onChange={(e) => {
