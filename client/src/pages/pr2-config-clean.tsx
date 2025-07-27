@@ -3847,7 +3847,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                     >
                       <Plus className="w-3 h-3" />
                     </Button>
-                  ) : (
+                  ) : index > 1 ? (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -3856,6 +3856,8 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                     >
                       <X className="w-3 h-3" />
                     </Button>
+                  ) : (
+                    <div className="h-7 w-7"></div>
                   )}
                 </div>
               ))}
