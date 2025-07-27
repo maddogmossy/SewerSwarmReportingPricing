@@ -277,17 +277,32 @@ export default function PR2Pricing() {
     
     // Check if there's an existing configuration for this category using CTF P006 pattern matching
     const existingConfig = pr2Configurations.find(config => {
+      console.log(`🔍 Checking config ${config.id} (${config.categoryId}) against category ${categoryId}`);
+      
       // Direct category ID match
-      if (config.categoryId === categoryId) return true;
+      if (config.categoryId === categoryId) {
+        console.log(`✅ Direct match found: ${config.categoryId} === ${categoryId}`);
+        return true;
+      }
       
       // Legacy matches
-      if (config.categoryName?.toLowerCase() === categoryId.toLowerCase()) return true;
-      if (categoryId === 'cctv' && config.categoryName === 'CCTV') return true;
-      if (categoryId === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration') return true;
+      if (config.categoryName?.toLowerCase() === categoryId.toLowerCase()) {
+        console.log(`✅ Legacy name match found: ${config.categoryName} === ${categoryId}`);
+        return true;
+      }
+      if (categoryId === 'cctv' && config.categoryName === 'CCTV') {
+        console.log(`✅ Legacy CCTV match found`);
+        return true;
+      }
+      if (categoryId === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration') {
+        console.log(`✅ Legacy CCTV-Jet-Vac match found`);
+        return true;
+      }
       
       // CTF P006 template pattern matching
       if (config.categoryId?.startsWith('P006-')) {
         const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+mm?$/, '');
+        console.log(`🔍 CTF Pattern: ${config.categoryId} → configType: ${configType}`);
         
         // Map CTF categories to standard category IDs
         const ctfMapping: Record<string, string> = {
@@ -299,7 +314,13 @@ export default function PR2Pricing() {
           'CCTV-CLEANSING-ROOT-CUTTING': 'cctv-cleansing-root-cutting'
         };
         
-        return ctfMapping[configType] === categoryId;
+        const mappedCategory = ctfMapping[configType];
+        console.log(`🔍 CTF Mapping: ${configType} → ${mappedCategory}, comparing to ${categoryId}`);
+        
+        if (mappedCategory === categoryId) {
+          console.log(`✅ CTF match found: ${config.categoryId} maps to ${categoryId}`);
+          return true;
+        }
       }
       
       return false;
