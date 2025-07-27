@@ -283,6 +283,9 @@ export default function PR2Pricing() {
       // P006a template matching (priority matching)
       if (categoryId === 'cctv' && config.categoryId === 'cctv-p006a') return true;
       if (categoryId === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
+      if (categoryId === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
+      if (categoryId === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
+      if (categoryId === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
       
       // Legacy matches
       if (config.categoryName?.toLowerCase() === categoryId.toLowerCase()) return true;
@@ -581,6 +584,9 @@ export default function PR2Pricing() {
                     // P006a template matches - map category IDs to P006a configurations
                     if (category.id === 'cctv' && config.categoryId === 'cctv-p006a') return true;
                     if (category.id === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
+                    if (category.id === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
+                    if (category.id === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
+                    if (category.id === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
                     
                     // Legacy exact match for cctv-jet-vac
                     if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
