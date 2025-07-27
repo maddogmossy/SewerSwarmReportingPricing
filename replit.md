@@ -783,27 +783,28 @@ This prevents data contamination and ensures authentic extraction integrity.
 ## Recent Changes (Updated January 27, 2025)
 
 ### CRITICAL: P006 TP1 Template System Implementation Complete ✅
-- **Date**: January 27, 2025
+- **Date**: January 27, 2025  
 - **Status**: Successfully implemented individual TP1 template system for all pipe sizes on P006 page
+- **Latest Update**: Removed Day Rate and Runs per Shift UI windows from P007 TP1 template per user request
 - **Features Added**:
   - **Contextual Pipe Size Templates**: TP1 template appears dynamically based on currently selected pipe size
   - **Individual Configuration**: Each pipe size gets its own separate TP1 template with unique category ID (P006-TP1-{size})
   - **Smart Template Management**: Template title and content change automatically when different pipe sizes are selected
   - **One-Click Access**: Single "Configure TP1 Template" button creates or opens the specific template for current pipe size
-  - **Clean Interface**: No bulk actions or grid layout - just contextual template for active pipe size
+  - **Streamlined Interface**: Only Min Quantity and Range windows displayed (Day Rate and Runs per Shift windows removed)
 - **Technical Implementation**:
   - **Category ID Pattern**: Uses `P006-TP1-{size}` format (e.g., P006-TP1-150, P006-TP1-300)
-  - **Template Structure**: Standard TP1 configuration with Day Rate, Runs per Shift, Min Quantity, and Range options
+  - **Simplified Template Structure**: TP1 configuration with Min Quantity and Range options only
   - **Green Color Scheme**: Emerald gradient background (#10B981) to distinguish from other systems
   - **Navigation Integration**: Seamless routing to pr2-config-clean page with proper edit parameters
   - **Database Storage**: Individual configurations stored with pipe size-specific category IDs
 - **User Benefits**:
   - **Individual Control**: Users can configure each pipe size separately with different pricing structures
   - **Scalable System**: Supports all 25 pipe sizes with independent configuration capability
-  - **Bulk Management**: Quick creation/deletion of all templates for system-wide operations
-  - **Clean Interface**: Ultra-compact design preserves DNC elements (W020, W007, C029)
-- **DNC Compliance**: Preserved all required elements while removing blue/green/orange/purple UI windows
-- **Result**: Complete TP1 template system operational for individual pipe size configuration on P006
+  - **Clean Interface**: Ultra-compact design with only essential configuration windows
+  - **Reduced Complexity**: Simplified UI focusing on key configuration elements
+- **UI Changes**: Removed blue Day Rate and green Runs per Shift windows from TP1 template interface
+- **Result**: Streamlined TP1 template system operational with simplified two-window configuration (orange + purple)
 
 ## Recent Changes (Updated January 25, 2025)
 
