@@ -53,7 +53,6 @@ const STANDARD_CATEGORIES = [
   { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
   { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
   { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves },
-  { id: 'patching', name: 'Patching', description: 'Point repairs and structural patching', icon: Edit },
   { id: 'patching-p006a', name: 'F-Patching', description: 'Modern 4-layer patching configuration with CTF framework', icon: Edit },
   { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket },
   { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame },
@@ -153,8 +152,7 @@ export default function PR2Pricing() {
     }))
   ];
   
-  // Debug: Log all categories to see what's available
-  console.log('🎯 ALL STANDARD CATEGORIES:', allStandardCategories.map(cat => `${cat.id} - ${cat.name}`));
+  // Clean system without debug logs
 
   // Delete mutation for PR2 configurations
   const deletePR2Configuration = useMutation({
@@ -579,22 +577,11 @@ export default function PR2Pricing() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {allStandardCategories.map((category) => {
-                  // Debug: Log all categories being rendered
-                  console.log(`🎯 Rendering category: ${category.id} - ${category.name}`);
                   // Check if this is a user-created category
                   const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
                   
                   // Check for existing configuration (show ID for any saved config, even blank templates)
                   const existingConfiguration = pr2Configurations.find(config => {
-                    // Debug logging for patching-p006a category
-                    if (category.id === 'patching-p006a') {
-                      console.log(`🔍 Checking patching-p006a category against config:`, {
-                        categoryId: category.id,
-                        configId: config.id,
-                        configCategoryId: config.categoryId,
-                        match: config.categoryId === 'patching-p006a'
-                      });
-                    }
                     // Direct category ID match
                     if (config.categoryId === category.id) return true;
                     
