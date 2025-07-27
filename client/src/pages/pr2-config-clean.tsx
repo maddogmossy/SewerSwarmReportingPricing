@@ -2870,19 +2870,21 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* TP1 Template Configuration Cards for Current Pipe Size */}
-        {categoryId === 'cctv-jet-vac' && selectedPipeSize && (
-          <TP1TemplateInterface 
-            pipeSize={selectedPipeSize}
-            sector={sector}
-            key={selectedPipeSize} // Force re-render when pipe size changes
-          />
-        )}
-
-        {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
+        {/* TP1 Template and Vehicle Travel Rates Row */}
         {categoryId === 'cctv-jet-vac' && (
-          <Card className="mb-6 bg-cyan-50 border-cyan-200 relative">
-            <DevLabel id="W003" position="top-right" />
+          <div className="flex gap-6 mb-6">
+            {/* TP1 Template Configuration Cards for Current Pipe Size */}
+            {selectedPipeSize && (
+              <TP1TemplateInterface 
+                pipeSize={selectedPipeSize}
+                sector={sector}
+                key={selectedPipeSize} // Force re-render when pipe size changes
+              />
+            )}
+
+            {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
+            <Card className="bg-cyan-50 border-cyan-200 relative flex-1">
+              <DevLabel id="W003" position="top-right" />
             <CardHeader className="pb-2">
               <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
                 <Truck className="w-5 h-5" />
@@ -2980,6 +2982,7 @@ export default function PR2ConfigClean() {
               </div>
             </CardContent>
           </Card>
+          </div>
         )}
 
         {/* P4 DB15: TP3 Robotic Cutting Vehicle Travel Rates */}
@@ -3558,7 +3561,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
   }
 
   return (
-    <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative" data-component="P007">
+    <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative w-96" data-component="P007">
       <DevLabel id="P007" position="top-right" />
       <CardHeader className="pb-3">
         <CardTitle className="text-green-700 text-lg flex items-center gap-2">
