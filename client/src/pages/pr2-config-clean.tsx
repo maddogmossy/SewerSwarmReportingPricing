@@ -3635,38 +3635,8 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
             </CardHeader>
             <CardContent className="py-2 space-y-2">
               {tp1Data.rangeOptions.map((option, index) => (
-                <div key={option.id} className="space-y-1">
-                  <Input
-                    placeholder="Label"
-                    value={option.label}
-                    onChange={(e) => updateRangeOption(index, 'label', e.target.value)}
-                    className="border-purple-200 focus:border-purple-500 text-xs"
-                  />
-                  <div className="flex gap-1">
-                    <Input
-                      placeholder="0"
-                      value={option.rangeStart}
-                      onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
-                      className="border-purple-200 focus:border-purple-500 text-xs"
-                    />
-                    <span className="text-xs text-purple-600 self-center">-</span>
-                    <Input
-                      placeholder="100"
-                      value={option.rangeEnd}
-                      onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
-                      className="border-purple-200 focus:border-purple-500 text-xs"
-                    />
-                    {tp1Data.rangeOptions.length > 1 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteRangeOption(index)}
-                        className="h-8 w-8 p-0 text-red-600 hover:bg-red-100"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    )}
-                  </div>
+                <div key={option.id} className="text-xs text-purple-600">
+                  {option.label}
                 </div>
               ))}
             </CardContent>
