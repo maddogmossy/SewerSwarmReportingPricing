@@ -3004,14 +3004,14 @@ export default function PR2ConfigClean() {
             )}
 
             {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
-            <Card className="bg-teal-50 border-teal-200 relative flex-1 h-[120px]">
+            <Card className="bg-cyan-50 border-cyan-200 relative flex-1">
               <DevLabel id="W003" position="top-right" />
             <CardHeader className="pb-2">
-              <h2 className="text-teal-600 font-bold text-lg flex items-center gap-2">
+              <h2 className="text-cyan-600 font-bold text-lg flex items-center gap-2">
                 <Truck className="w-4 h-4" />
                 Vehicle Travel Rates
               </h2>
-              <p className="text-sm text-teal-600 mt-1">
+              <p className="text-sm text-cyan-600 mt-1">
                 Individual TP1 vehicle travel rates for 150mm pipes
               </p>
             </CardHeader>
@@ -3810,7 +3810,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         <div className="flex gap-4">
 
           {/* Blue Card - Day Rate (50% reduced width) */}
-          <Card className="bg-blue-50 border-blue-200 w-32 h-[120px]">
+          <Card className="bg-blue-50 border-blue-200 w-32">
             <CardHeader className="pb-2">
               <CardTitle className="text-blue-600 font-semibold text-sm flex items-center justify-between">
                 <div className="flex items-center gap-1">
@@ -3830,7 +3830,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           </Card>
 
           {/* Green Card - Runs per Shift (adjusted for title width) */}
-          <Card className="bg-green-50 border-green-200 w-40 h-[120px]">
+          <Card className="bg-green-50 border-green-200 w-40">
             <CardHeader className="pb-2">
               <CardTitle className="text-green-600 font-semibold text-sm flex items-center justify-between">
                 <div className="flex items-center gap-1">
@@ -3856,7 +3856,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
 
 
           {/* Purple Card - Ranges */}
-          <Card className="bg-purple-50 border-purple-200 w-72 h-[120px]">
+          <Card className="bg-purple-50 border-purple-200 w-72">
             <CardHeader className="pb-2">
               <CardTitle className="text-purple-600 font-semibold text-sm flex items-center">
                 <div className="flex items-center gap-2">
