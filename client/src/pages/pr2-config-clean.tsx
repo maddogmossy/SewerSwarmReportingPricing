@@ -3007,8 +3007,8 @@ export default function PR2ConfigClean() {
             <Card className="bg-cyan-50 border-cyan-200 relative w-80 h-[180px]">
               <DevLabel id="W003" position="top-right" />
             <CardHeader className="pb-2">
-              <CardTitle className="text-cyan-600 font-semibold text-sm flex items-center gap-2">
-                <Truck className="w-4 h-4" />
+              <CardTitle className="text-cyan-600 font-semibold text-sm flex items-center gap-1">
+                <Truck className="w-3 h-3" />
                 Vehicle Travel Rates
               </CardTitle>
             </CardHeader>
