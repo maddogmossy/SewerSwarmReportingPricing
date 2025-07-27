@@ -3593,8 +3593,8 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
             </CardContent>
           </Card>
 
-          {/* Green Card - Runs per Shift (60% reduced width) */}
-          <Card className="bg-green-50 border-green-200 w-28">
+          {/* Green Card - Runs per Shift (50% reduced width) */}
+          <Card className="bg-green-50 border-green-200 w-32">
             <CardHeader className="pb-2">
               <CardTitle className="text-green-700 text-xs flex items-center justify-between">
                 <div className="flex items-center gap-1">
