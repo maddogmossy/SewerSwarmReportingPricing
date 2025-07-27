@@ -628,8 +628,10 @@ export default function PR2Pricing() {
                       key={category.id}
                       className="relative cursor-pointer transition-all hover:shadow-md border-4"
                       style={{
-                        borderColor: isUserCreated ? '#bbf7d0' : '#e5e7eb',
-                        backgroundColor: 'white'
+                        borderColor: existingConfiguration?.categoryColor || (isUserCreated ? '#bbf7d0' : '#e5e7eb'),
+                        backgroundColor: existingConfiguration?.categoryColor 
+                          ? hexToRgba(existingConfiguration.categoryColor, 0.1) 
+                          : 'white'
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
