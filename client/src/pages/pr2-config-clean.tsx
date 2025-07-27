@@ -3836,11 +3836,9 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         </p>
       </CardHeader>
       <CardContent className="py-2">
-        {/* TP1 Configuration Cards Row - Uniform Container */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-          <div className="flex gap-4">
-
-            {/* Blue Section - Day Rate */}
+        {/* TP1 Configuration Cards Row */}
+        <div className="flex gap-4">
+          {/* Blue Section - Day Rate */}
             <div className="bg-blue-100 border border-blue-300 rounded-lg p-2 w-32">
               <Label className="text-gray-900 font-semibold text-sm flex items-center gap-1 mb-2">
                 <Banknote className="w-3 h-3" />
@@ -3925,7 +3923,6 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                 ))}
               </div>
             </div>
-          </div>
         </div>
 
 
