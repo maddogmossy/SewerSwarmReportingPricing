@@ -3007,12 +3007,13 @@ export default function PR2ConfigClean() {
             <Card className="bg-cyan-50 border-cyan-200 relative flex-1">
               <DevLabel id="W003" position="top-right" />
             <CardHeader className="pb-2">
-              <CardTitle className="text-cyan-600 font-semibold text-sm flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <Truck className="w-3 h-3" />
-                  Vehicle Travel Rates
-                </div>
-              </CardTitle>
+              <h2 className="text-cyan-600 font-bold text-lg flex items-center gap-2">
+                <Truck className="w-4 h-4" />
+                Vehicle Travel Rates
+              </h2>
+              <p className="text-sm text-cyan-600 mt-1">
+                Individual TP1 vehicle travel rates for 150mm pipes
+              </p>
             </CardHeader>
             <CardContent className="py-2">
               {/* Styled Container - Dark Teal - Sized to match P007 */}
