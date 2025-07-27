@@ -3840,7 +3840,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         <div className="flex gap-4">
 
           {/* Blue Card - Day Rate (50% reduced width) */}
-          <Card className="bg-blue-50 border-blue-200 w-32">
+          <Card className="bg-blue-100 border-blue-300 w-32">
             <CardHeader className="pb-2">
               <CardTitle className="text-gray-900 font-semibold text-sm flex items-center justify-between">
                 <div className="flex items-center gap-1">
@@ -3854,13 +3854,13 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                 placeholder="£0.00"
                 value={tp1Data.pricingOptions?.[0]?.value || ""}
                 onChange={(e) => updatePricingOption(0, 'value', e.target.value)}
-                className="border-blue-200 focus:border-blue-500 text-xs h-7"
+                className="border-blue-300 focus:border-blue-500 text-xs h-7"
               />
             </CardContent>
           </Card>
 
           {/* Green Card - Runs per Shift (adjusted for title width) */}
-          <Card className="bg-green-50 border-green-200 w-40">
+          <Card className="bg-green-100 border-green-300 w-40">
             <CardHeader className="pb-2">
               <CardTitle className="text-gray-900 font-semibold text-sm flex items-center justify-between">
                 <div className="flex items-center gap-1">
@@ -3876,7 +3876,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                     placeholder={option.label}
                     value={option.value || ""}
                     onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
-                    className="border-green-200 focus:border-green-500 text-xs h-7 flex-1"
+                    className="border-green-300 focus:border-green-500 text-xs h-7 flex-1"
                   />
                 </div>
               ))}
@@ -3886,7 +3886,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
 
 
           {/* Purple Card - Ranges */}
-          <Card className="bg-purple-50 border-purple-200 w-96">
+          <Card className="bg-purple-100 border-purple-300 w-96">
             <CardHeader className="pb-2">
               <CardTitle className="text-gray-900 font-semibold text-sm flex items-center">
                 <div className="flex items-center gap-2">
@@ -3903,7 +3903,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                       placeholder="Debris %"
                       value={option.rangeStart || ""}
                       onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
-                      className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
+                      className="border-purple-300 focus:border-purple-500 text-xs h-7 flex-1"
                     />
                     <span className="text-gray-900 text-xs font-medium">%</span>
                   </div>
@@ -3912,7 +3912,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                       placeholder="Length M"
                       value={option.rangeEnd || ""}
                       onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
-                      className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
+                      className="border-purple-300 focus:border-purple-500 text-xs h-7 flex-1"
                     />
                     <span className="text-gray-900 text-xs font-medium">Length</span>
                   </div>
