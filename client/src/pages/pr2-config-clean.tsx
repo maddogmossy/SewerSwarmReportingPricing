@@ -3298,7 +3298,8 @@ export default function PR2ConfigClean() {
 
 
         {/* Apply to Sectors Section */}
-        <Card className="mb-6">
+        <Card className="mb-6 relative">
+          <DevLabel id="C029" position="top-right" />
           <CardHeader>
             <CardTitle>Apply Configuration to Sectors</CardTitle>
           </CardHeader>
