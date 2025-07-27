@@ -833,6 +833,25 @@ This prevents data contamination and ensures authentic extraction integrity.
   - **Reliable Isolation**: Each pipe size template saves independently without affecting others
 - **Result**: Complete auto-save system operational for P007 TP1 templates with smooth user experience
 
+### CRITICAL: React State Closure Bug Fixed - Auto-Save Values Now Persist ✅
+- **Date**: January 27, 2025
+- **Status**: Successfully resolved critical React state closure issue preventing auto-save value persistence
+- **Issue Identified**: `saveTP1Config` function was capturing stale `tp1Data` state instead of current values when auto-save triggered
+- **Root Cause**: React closure problem where setTimeout captured old state values instead of fresh user input
+- **Solution Implemented**:
+  - **New Function**: Created `saveTP1ConfigWithData(currentData)` that accepts current state as parameter
+  - **State Callback Pattern**: Modified `debouncedAutoSave` to use `setTp1Data(currentData => ...)` to capture fresh state
+  - **Closure Elimination**: Removed dependency on closure-captured `tp1Data` variable in save operations
+- **Technical Fix**:
+  - Updated auto-save to call `setTp1Data` callback and pass current state to `saveTP1ConfigWithData`
+  - Enhanced logging shows "CURRENT TP1 DATA (FRESH)" and "PAYLOAD BEING SENT (FRESH)" with actual values
+  - Preserved all existing isolation and cross-contamination prevention features
+- **User-Confirmed Results**:
+  - **Values Now Save**: Day Rate "1850" and "No Per Shift" "22" now persist correctly to database
+  - **Real-time Updates**: Console logs show actual input values being sent instead of empty strings
+  - **Database Persistence**: Backend PUT requests show correct values in payload and successful database updates
+- **Result**: Complete elimination of state closure bug - P007 auto-save now captures and saves all user input values correctly
+
 ### CRITICAL: P007 TP1 Template Cross-Contamination Bug Fixed ✅
 - **Date**: January 27, 2025
 - **Status**: Successfully resolved critical cross-contamination bug affecting TP1 template IDs 176, 179, and 184
