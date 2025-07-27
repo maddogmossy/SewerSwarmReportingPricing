@@ -327,7 +327,9 @@ export default function PR2Pricing() {
     
     // If configuration exists, navigate to edit mode
     if (existingConfig) {
-      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}`);
+      // Use the actual config's categoryId instead of the requested categoryId for proper template detection
+      const actualCategoryId = existingConfig.categoryId;
+      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${actualCategoryId}&edit=${existingConfig.id}`);
       return;
     }
     
