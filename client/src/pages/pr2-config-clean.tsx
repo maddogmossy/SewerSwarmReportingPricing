@@ -3560,14 +3560,25 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
 
   const deleteRangeOption = (index: number) => {
     setTp1Data(prev => {
-      const newOptions = prev.rangeOptions.filter((_, i) => i !== index);
-      const deletedId = prev.rangeOptions[index].id;
+      // Delete from both windows since they are paired
+      const deletedRangeId = prev.rangeOptions[index]?.id;
+      const deletedQuantityId = prev.quantityOptions[index]?.id;
+      
       return {
         ...prev,
-        rangeOptions: newOptions,
-        rangeStackOrder: (prev.rangeStackOrder || []).filter(id => id !== deletedId)
+        rangeOptions: prev.rangeOptions.filter((_, i) => i !== index),
+        rangeStackOrder: (prev.rangeStackOrder || []).filter(id => id !== deletedRangeId),
+        quantityOptions: prev.quantityOptions.filter((_, i) => i !== index),
+        quantityStackOrder: (prev.quantityStackOrder || []).filter(id => id !== deletedQuantityId)
       };
     });
+    
+    // Auto-save after deletion
+    setTimeout(() => {
+      saveTP1Config();
+    }, 100);
+    
+    console.log(`🗑️ P007 DELETE: Deleted row ${index + 1} from both purple and green windows`);
   };
 
   // Delete paired row function (deletes both green and purple row)
@@ -3794,16 +3805,6 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                     onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
                     className="border-green-200 focus:border-green-500 text-xs h-7 flex-1"
                   />
-                  {index > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteQuantityOption(index)}
-                      className="h-7 w-7 p-0 text-red-500 hover:bg-red-100"
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  )}
                 </div>
               ))}
             </CardContent>
@@ -3836,7 +3837,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                     onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
                     className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
                   />
-                  {index >= tp1Data.rangeOptions.length - 1 ? (
+                  {index === 0 ? (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -3845,17 +3846,15 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                     >
                       <Plus className="w-3 h-3" />
                     </Button>
-                  ) : index > 1 ? (
+                  ) : (
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => deletePairedRow(index)}
+                      onClick={() => deleteRangeOption(index)}
                       className="h-7 w-7 p-0 text-red-500 hover:bg-red-100"
                     >
                       <X className="w-3 h-3" />
                     </Button>
-                  ) : (
-                    <div className="h-7 w-7"></div>
                   )}
                 </div>
               ))}
