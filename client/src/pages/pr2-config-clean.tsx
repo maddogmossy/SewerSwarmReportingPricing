@@ -175,9 +175,13 @@ export default function PR2ConfigClean() {
   
   // Determine template type based on category
   const getTemplateType = (categoryId: string): 'TP1' | 'TP3' | 'P26' | 'P006a' => {
+    console.log(`🔍 TEMPLATE TYPE DEBUG: categoryId="${categoryId}"`);
+    
     if (categoryId === 'robotic-cutting') {
+      console.log(`✅ TEMPLATE: ${categoryId} → TP3`);
       return 'TP3'; // Robotic cutting uses TP3 template
     } else if (categoryId === 'day-rate-db11') {
+      console.log(`✅ TEMPLATE: ${categoryId} → P26`);
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
@@ -187,8 +191,10 @@ export default function PR2ConfigClean() {
                categoryId === 'cctv-jet-vac' || // F175 - CCTV Jet Vac Configuration
                categoryId === 'test-card' || // Test Card - CTF P006a demonstration
                categoryId === 'cctv-cleansing-root-cutting') {
+      console.log(`✅ TEMPLATE: ${categoryId} → P006a (CTF Framework)`);
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else {
+      console.log(`✅ TEMPLATE: ${categoryId} → TP1 (default)`);
       return 'TP1'; // All other categories use standard TP1 template
     }
   };
