@@ -3486,25 +3486,39 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
   };
 
   const addRangeOption = () => {
-    const newOption = {
-      id: `range_${Date.now()}`,
-      label: 'Range',
+    const timestamp = Date.now();
+    
+    // Add new quantity option for green window
+    const newQuantityOption = {
+      id: `quantity_${timestamp}`,
+      label: `Runs ${tp1Data.quantityOptions.length + 1}`,
+      value: '',
+      enabled: true
+    };
+    
+    // Add new range option for purple window
+    const newRangeOption = {
+      id: `range_${timestamp + 1}`,
+      label: `Range ${Math.floor(tp1Data.rangeOptions.length / 2) + 1}`,
       enabled: true,
       rangeStart: '',
       rangeEnd: ''
     };
+    
     setTp1Data(prev => ({
       ...prev,
-      rangeOptions: [...prev.rangeOptions, newOption],
-      rangeStackOrder: [...(prev.rangeStackOrder || []), newOption.id]
+      quantityOptions: [...prev.quantityOptions, newQuantityOption],
+      quantityStackOrder: [...(prev.quantityStackOrder || []), newQuantityOption.id],
+      rangeOptions: [...prev.rangeOptions, newRangeOption],
+      rangeStackOrder: [...(prev.rangeStackOrder || []), newRangeOption.id]
     }));
     
-    // Auto-save after adding new range option
+    // Auto-save after adding new options
     setTimeout(() => {
       saveTP1Config();
     }, 100);
     
-    console.log(`🔧 P007 ADD BUTTON: Added new range option with ID: ${newOption.id}`);
+    console.log(`🔧 P007 ADD BUTTON: Added new green row (${newQuantityOption.label}) and purple row (${newRangeOption.label})`);
   };
 
   // Delete option functions
