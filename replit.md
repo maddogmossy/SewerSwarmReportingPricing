@@ -782,10 +782,20 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 27, 2025)
 
+### CRITICAL: P006 TP1 Template Debris Placeholder Removal Complete ✅
+- **Date**: January 27, 2025  
+- **Status**: Successfully eliminated all debris placeholder rows from TP1 templates
+- **Latest Update**: Complete removal of pre-populated template rows:
+  - **Database Cleanup**: Cleared range_options for all TP1 configurations (17 records updated)
+  - **Setup Scripts Fixed**: Updated setup-all-tp1-templates.js, setup-blank-templates.js, setup-missing-templates.js to use empty arrays
+  - **Frontend Defaults**: Modified getDefaultFormData and TP1TemplateInterface to start with empty range options
+  - **User Control**: Purple windows now start completely empty, allowing custom range configuration via green + button
+  - **Zero Placeholders**: Eliminated "Debris %" and "Length" template rows per user requirements
+
 ### CRITICAL: P006 TP1 Template Label Standardization Complete ✅
 - **Date**: January 27, 2025  
 - **Status**: Successfully updated all TP1 template labels to match original system specifications
-- **Latest Update**: Standardized TP1 template labels across all components:
+- **Previous Update**: Standardized TP1 template labels across all components:
   - **Green Window**: Changed "Runs per Shift" → "No Per Shift" for consistency with original system
   - **Purple Window**: Updated "Percentage" → "Debris %" and "Length" → "Length M" for clarity
   - Updated both frontend initialization (getDefaultFormData) and backend template creation (setup-all-tp1-templates.js)
