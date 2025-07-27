@@ -3246,6 +3246,43 @@ export default function PR2ConfigClean() {
           )}
         </div>
       </div>
+
+      {/* Add Vehicle Dialog */}
+      <Dialog open={addVehicleDialogOpen} onOpenChange={setAddVehicleDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Vehicle Travel Rate</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="vehicleType">Vehicle Type</Label>
+              <Input
+                id="vehicleType"
+                placeholder="e.g. 3.5t, 26t"
+                value={newVehicleType}
+                onChange={(e) => setNewVehicleType(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="hourlyRate">Hourly Rate (£)</Label>
+              <Input
+                id="hourlyRate"
+                placeholder="e.g. 55"
+                value={newHourlyRate}
+                onChange={(e) => setNewHourlyRate(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={addVehicleTravelRate} className="flex-1">
+                Add Vehicle
+              </Button>
+              <Button variant="outline" onClick={() => setAddVehicleDialogOpen(false)} className="flex-1">
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -3262,6 +3299,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     description: `TP1 cleaning template for ${pipeSize}mm pipes`,
     categoryColor: '#10B981',
     pipeSize: pipeSize,
+    sector: sector,
     pricingOptions: [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
     quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
     minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
