@@ -2903,7 +2903,7 @@ export default function PR2ConfigClean() {
                       <Label className="text-xs font-medium text-teal-700">Vehicle</Label>
                     </div>
                     <div className="flex-1">
-                      <Label className="text-xs font-medium text-teal-700">Cost per hr</Label>
+                      <Label className="text-sm font-medium text-teal-700">Cost per hr</Label>
                     </div>
                     <div className="w-24"></div> {/* Spacer for button alignment */}
                   </div>
