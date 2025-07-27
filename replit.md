@@ -1028,6 +1028,24 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 27, 2025)
 
+### CRITICAL: P006a Template System Complete - Old P006 Templates Removed ✅
+- **Date**: January 27, 2025
+- **Status**: Successfully cleaned up old P006 template configurations and completed P006a system
+- **Templates Removed**:
+  - **F156**: Old TP2 - 225mm Patching Configuration using outdated P006 template structure
+  - **F153**: Old TP2 - 150mm Patching Configuration using outdated P006 template structure
+- **Five Active P006a Templates**: F570, F571, F572, F573, F574 all operational with complete CTF framework
+- **Category Card Color Fix**: W007 color picker now properly updates category card borders and background tints in real-time
+- **Complete Template Coverage**: 
+  - **F570 CCTV**: cctv-p006a with blue #3498DB color
+  - **F571 Van Pack**: van-pack-p006a with green #10B981 color  
+  - **F572 Jet Vac**: jet-vac-p006a with purple #9333EA color
+  - **F573 CCTV/Van Pack**: cctv-van-pack-p006a with amber #F59E0B color
+  - **F574 CCTV/Jet Vac/Root Cutting**: cctv-jet-vac-root-cutting-p006a with red #EF4444 color
+- **Technical Implementation**: Updated category card mapping logic for all five P006a configurations
+- **User Benefits**: Clean database with no old template interference, complete F175-style interface for all P006a templates
+- **Result**: All P006a configurations include W020 pipe size selection, C029 sector cards, W007 color picker, Blue/Green/Purple windows, and W003 vehicle travel rates
+
 ### CRITICAL: CTF Template Application Fixed - Complete P006/P007/W003 Integration ✅
 - **Date**: January 27, 2025
 - **Status**: Successfully applied complete CTF template framework across all P006 category configurations
