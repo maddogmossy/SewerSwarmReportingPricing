@@ -3887,19 +3887,6 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           </Card>
         </div>
 
-        {/* Save Button Row */}
-        <div className="flex justify-center mt-4">
-          <Button 
-            onClick={() => {
-              console.log(`💾 [${pipeSize}mm] MANUAL SAVE - User clicked save button`);
-              saveTP1Config();
-            }}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Save {pipeSize}mm Configuration
-          </Button>
-        </div>
 
       </CardContent>
     </Card>
