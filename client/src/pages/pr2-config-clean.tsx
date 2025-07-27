@@ -3004,14 +3004,14 @@ export default function PR2ConfigClean() {
             )}
 
             {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
-            <Card className="bg-cyan-50 border-cyan-200 relative flex-1 h-[120px]">
+            <Card className="bg-teal-50 border-teal-200 relative flex-1 h-[120px]">
               <DevLabel id="W003" position="top-right" />
             <CardHeader className="pb-2">
-              <h2 className="text-cyan-600 font-bold text-lg flex items-center gap-2">
+              <h2 className="text-teal-600 font-bold text-lg flex items-center gap-2">
                 <Truck className="w-4 h-4" />
                 Vehicle Travel Rates
               </h2>
-              <p className="text-sm text-cyan-600 mt-1">
+              <p className="text-sm text-teal-600 mt-1">
                 Individual TP1 vehicle travel rates for 150mm pipes
               </p>
             </CardHeader>
