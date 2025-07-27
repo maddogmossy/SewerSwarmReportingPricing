@@ -2771,7 +2771,7 @@ export default function PR2ConfigClean() {
                 <Label className="text-sm font-medium text-blue-700 mb-3 block">
                   Available Pipe Sizes
                 </Label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-2">
                   {availablePipeSizes.map((size) => (
                     <Button
                       key={size}
@@ -2784,14 +2784,14 @@ export default function PR2ConfigClean() {
                         }));
                         debouncedSave();
                       }}
-                      className={`h-12 flex flex-col items-center justify-center ${
+                      className={`h-10 flex flex-col items-center justify-center text-xs ${
                         selectedPipeSize === size 
                           ? 'bg-blue-600 hover:bg-blue-700 text-white' 
                           : 'border-blue-200 text-blue-700 hover:bg-blue-50'
                       }`}
                     >
-                      <span className="font-bold text-lg">{size}</span>
-                      <span className="text-xs">mm</span>
+                      <span className="font-semibold">{size}</span>
+                      <span className="text-xs opacity-75">mm</span>
                     </Button>
                   ))}
                 </div>
@@ -2825,10 +2825,10 @@ export default function PR2ConfigClean() {
                     Add Custom Size
                   </Button>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-10 gap-1">
                   {availablePipeSizes.map((size) => (
-                    <div key={size} className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded text-sm">
-                      <span className="text-blue-700">{size}mm</span>
+                    <div key={size} className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded text-xs">
+                      <span className="text-blue-700 font-medium">{size}mm</span>
                       {availablePipeSizes.length > 1 && (
                         <Button
                           variant="ghost"
@@ -2845,7 +2845,7 @@ export default function PR2ConfigClean() {
                               debouncedSave();
                             }
                           }}
-                          className="h-4 w-4 p-0 text-red-500 hover:text-red-700"
+                          className="h-3 w-3 p-0 text-red-500 hover:text-red-700 text-xs"
                         >
                           ×
                         </Button>
