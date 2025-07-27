@@ -3269,26 +3269,7 @@ export default function PR2ConfigClean() {
 
 
 
-        {/* Save and Actions */}
-        <div className="flex flex-col gap-4">
-          <Button
-            onClick={handleSave}
-            className="w-full"
-            disabled={isSaving}
-          >
-            {isSaving ? "Saving..." : "Save Configuration"}
-          </Button>
-          
-          {isEditing && (
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              className="w-full"
-            >
-              Delete Configuration
-            </Button>
-          )}
-        </div>
+
       </div>
 
       {/* Add Vehicle Dialog */}
