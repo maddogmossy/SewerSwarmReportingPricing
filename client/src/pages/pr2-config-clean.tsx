@@ -3011,7 +3011,7 @@ export default function PR2ConfigClean() {
         </Card>
 
         {/* TP1 Template and Vehicle Travel Rates Row */}
-        {categoryId === 'cctv-jet-vac' && (
+        {(categoryId === 'cctv-jet-vac' || (formData.categoryId && formData.categoryId.startsWith('P006-'))) && (
           <div className="flex gap-6 mb-6">
             {/* TP1 Template Configuration Cards for Current Pipe Size */}
             {selectedPipeSize && (
@@ -3031,7 +3031,7 @@ export default function PR2ConfigClean() {
                 Vehicle Travel Rates
               </h2>
               <p className="text-sm text-cyan-600 mt-1">
-                Individual TP1 vehicle travel rates for 150mm pipes
+                Individual TP1 vehicle travel rates for {selectedPipeSize || '150'}mm pipes
               </p>
             </CardHeader>
             <CardContent className="py-2">
