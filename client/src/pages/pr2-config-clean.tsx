@@ -896,6 +896,13 @@ export default function PR2ConfigClean() {
   const debouncedSave = () => {
     if (!isEditing || !editId) return;
     
+    // CRITICAL: Skip auto-save for TP1 templates to prevent corruption
+    const isTP1Template = ['cctv-jet-vac', 'jetting', 'cleansing'].includes(categoryId || '');
+    if (isTP1Template) {
+      console.log('⚠️ Skipping auto-save for TP1 template - use manual save only');
+      return;
+    }
+    
     // Always save when user makes changes - including clearing fields
     console.log('💾 Saving configuration changes (including cleared fields)...');
     console.log('💾 Current formData being saved:', JSON.stringify(formData, null, 2));
