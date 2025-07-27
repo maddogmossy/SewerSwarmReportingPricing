@@ -3827,13 +3827,13 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
               {tp1Data.rangeOptions?.map((option, index) => (
                 <div key={option.id} className="flex gap-2 items-center">
                   <Input
-                    placeholder={option.label === 'Debris %' ? 'Debris %' : option.label === 'Length M' ? 'Length M' : 'Start'}
+                    placeholder={option.label}
                     value={option.rangeStart || ""}
                     onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
                     className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
                   />
                   <Input
-                    placeholder={option.label === 'Debris %' ? '%' : option.label === 'Length M' ? 'M' : 'End'}
+                    placeholder={option.label}
                     value={option.rangeEnd || ""}
                     onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
                     className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
