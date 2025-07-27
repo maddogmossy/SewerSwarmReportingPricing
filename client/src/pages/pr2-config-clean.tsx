@@ -2729,9 +2729,149 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
+        {/* Apply to Sectors Section */}
+        <Card className="mb-6 relative">
+          <DevLabel id="C029" position="top-right" />
+          <CardHeader>
+            <CardTitle>Apply Configuration to Sectors</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {SECTOR_OPTIONS.map((sector) => (
+                <div key={sector.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={sector.id}
+                    checked={selectedSectors.includes(sector.id)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setSelectedSectors([...selectedSectors, sector.id]);
+                      } else {
+                        setSelectedSectors(selectedSectors.filter(s => s !== sector.id));
+                      }
+                    }}
+                  />
+                  <label
+                    htmlFor={sector.id}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {sector.name}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-
-
+        {/* Color Picker Section */}
+        <Card className="mb-6 relative">
+          <DevLabel id="W007" position="top-right" />
+          <CardHeader>
+            <CardTitle className="text-gray-900 flex items-center gap-2">
+              <div 
+                className="w-5 h-5 rounded-full border-2 border-gray-300" 
+                style={{ backgroundColor: formData.categoryColor }}
+              />
+              Category Color
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Pastel Color Palette */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium text-gray-700 mb-3 block">
+                Select Pastel Color:
+              </Label>
+              
+              {/* Pastel Color Row */}
+              <div className="flex gap-2 mb-4 flex-wrap">
+                {[
+                  '#FF6B6B', // Pure Red
+                  '#FF8E53', // Pure Orange  
+                  '#FFD93D', // Pure Yellow
+                  '#6BCF7F', // Pure Green
+                  '#4ECDC4', // Pure Teal
+                  '#45B7D1', // Pure Blue
+                  '#9B59B6', // Pure Purple
+                  '#FF6B9D', // Pure Pink
+                  '#E17055', // Pure Coral
+                  '#F39C12', // Pure Amber
+                  '#1ABC9C', // Pure Emerald
+                  '#3498DB', // Pure Sky Blue
+                  '#E74C3C', // Pure Crimson
+                  '#95A5A6', // Pure Gray
+                  '#F1C40F'  // Pure Gold
+                ].map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={async () => {
+                      console.log(`🎨 Pastel color selected: ${color}`);
+                      
+                      // Update form data immediately
+                      setFormData(prev => ({ ...prev, categoryColor: color }));
+                      
+                      // For patching category, sync ONLY color across all pipe sizes
+                      if (categoryId === 'patching') {
+                        console.log('🎨 Syncing ONLY color across all patching configurations...');
+                        
+                        const patchingConfigIds = [153, 156, 157];
+                        const updatePromises = patchingConfigIds.map(async (configId) => {
+                          try {
+                            const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
+                            const config = await response.json();
+                            
+                            // Update ONLY the color field, keep all other data independent
+                            await apiRequest('PUT', `/api/pr2-clean/${configId}`, {
+                              ...config,
+                              categoryColor: color,
+                              // Ensure we keep existing pricing data unchanged
+                              pricingOptions: config.pricingOptions,
+                              quantityOptions: config.quantityOptions,
+                              minQuantityOptions: config.minQuantityOptions,
+                              rangeOptions: config.rangeOptions
+                            });
+                            
+                            console.log(`✅ Updated ONLY color for config ${configId} to ${color}`);
+                          } catch (error) {
+                            console.error(`❌ Failed to update color for config ${configId}:`, error);
+                          }
+                        });
+                        
+                        await Promise.all(updatePromises);
+                        console.log('✅ All patching configurations updated with new color (data preserved)');
+                      } else {
+                        // For non-patching categories, save immediately with new color
+                        console.log('💾 Saving configuration changes (including cleared fields)...');
+                        
+                        // Create updated form data with new color
+                        const updatedFormData = { ...formData, categoryColor: color };
+                        console.log('💾 Current formData being saved:', JSON.stringify(updatedFormData, null, 2));
+                        
+                        // Save immediately instead of using debounced save
+                        try {
+                          const response = await apiRequest('PUT', `/api/pr2-clean/${editId}`, updatedFormData);
+                          console.log('✅ Input values saved successfully');
+                        } catch (error) {
+                          console.error('❌ Save failed:', error);
+                        }
+                      }
+                    }}
+                    className={`w-8 h-8 rounded border-2 hover:scale-110 transition-transform ${
+                      formData.categoryColor === color 
+                        ? 'border-gray-800 ring-2 ring-gray-400' 
+                        : 'border-gray-300 hover:border-gray-500'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    title={color}
+                  />
+                ))}
+              </div>
+              
+              <p className="text-xs text-gray-500 mt-4">
+                Choose from our curated selection of pastel colors
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Upper Level Pipe Size Configuration */}
         <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 relative">
@@ -3111,116 +3251,6 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* Color Picker Section */}
-        <Card className="mb-6 relative">
-          <DevLabel id="W007" position="top-right" />
-          <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center gap-2">
-              <div 
-                className="w-5 h-5 rounded-full border-2 border-gray-300" 
-                style={{ backgroundColor: formData.categoryColor }}
-              />
-              Category Color
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Pastel Color Palette */}
-            <div className="border-t pt-4">
-              <Label className="text-sm font-medium text-gray-700 mb-3 block">
-                Select Pastel Color:
-              </Label>
-              
-              {/* Pastel Color Row */}
-              <div className="flex gap-2 mb-4 flex-wrap">
-                {[
-                  '#FF6B6B', // Pure Red
-                  '#FF8E53', // Pure Orange  
-                  '#FFD93D', // Pure Yellow
-                  '#6BCF7F', // Pure Green
-                  '#4ECDC4', // Pure Teal
-                  '#45B7D1', // Pure Blue
-                  '#9B59B6', // Pure Purple
-                  '#FF6B9D', // Pure Pink
-                  '#E17055', // Pure Coral
-                  '#F39C12', // Pure Amber
-                  '#1ABC9C', // Pure Emerald
-                  '#3498DB', // Pure Sky Blue
-                  '#E74C3C', // Pure Crimson
-                  '#95A5A6', // Pure Gray
-                  '#F1C40F'  // Pure Gold
-                ].map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={async () => {
-                      console.log(`🎨 Pastel color selected: ${color}`);
-                      
-                      // Update form data immediately
-                      setFormData(prev => ({ ...prev, categoryColor: color }));
-                      
-                      // For patching category, sync ONLY color across all pipe sizes
-                      if (categoryId === 'patching') {
-                        console.log('🎨 Syncing ONLY color across all patching configurations...');
-                        
-                        const patchingConfigIds = [153, 156, 157];
-                        const updatePromises = patchingConfigIds.map(async (configId) => {
-                          try {
-                            const response = await apiRequest('GET', `/api/pr2-clean/${configId}`);
-                            const config = await response.json();
-                            
-                            // Update ONLY the color field, keep all other data independent
-                            await apiRequest('PUT', `/api/pr2-clean/${configId}`, {
-                              ...config,
-                              categoryColor: color,
-                              // Ensure we keep existing pricing data unchanged
-                              pricingOptions: config.pricingOptions,
-                              quantityOptions: config.quantityOptions,
-                              minQuantityOptions: config.minQuantityOptions,
-                              rangeOptions: config.rangeOptions
-                            });
-                            
-                            console.log(`✅ Updated ONLY color for config ${configId} to ${color}`);
-                          } catch (error) {
-                            console.error(`❌ Failed to update color for config ${configId}:`, error);
-                          }
-                        });
-                        
-                        await Promise.all(updatePromises);
-                        console.log('✅ All patching configurations updated with new color (data preserved)');
-                      } else {
-                        // For non-patching categories, save immediately with new color
-                        console.log('💾 Saving configuration changes (including cleared fields)...');
-                        
-                        // Create updated form data with new color
-                        const updatedFormData = { ...formData, categoryColor: color };
-                        console.log('💾 Current formData being saved:', JSON.stringify(updatedFormData, null, 2));
-                        
-                        // Save immediately instead of using debounced save
-                        try {
-                          const response = await apiRequest('PUT', `/api/pr2-clean/${editId}`, updatedFormData);
-                          console.log('✅ Input values saved successfully');
-                        } catch (error) {
-                          console.error('❌ Save failed:', error);
-                        }
-                      }
-                    }}
-                    className={`w-8 h-8 rounded border-2 hover:scale-110 transition-transform ${
-                      formData.categoryColor === color 
-                        ? 'border-gray-800 ring-2 ring-gray-400' 
-                        : 'border-gray-300 hover:border-gray-500'
-                    }`}
-                    style={{ backgroundColor: color }}
-                    title={color}
-                  />
-                ))}
-              </div>
-              
-              <p className="text-xs text-gray-500 mt-4">
-                Choose from our curated selection of pastel colors
-              </p>
-            </div>
-          </CardContent>
-        </Card>
 
 
 
@@ -3232,38 +3262,6 @@ export default function PR2ConfigClean() {
 
 
 
-        {/* Apply to Sectors Section */}
-        <Card className="mb-6 relative">
-          <DevLabel id="C029" position="top-right" />
-          <CardHeader>
-            <CardTitle>Apply Configuration to Sectors</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              {SECTOR_OPTIONS.map((sector) => (
-                <div key={sector.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={sector.id}
-                    checked={selectedSectors.includes(sector.id)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setSelectedSectors([...selectedSectors, sector.id]);
-                      } else {
-                        setSelectedSectors(selectedSectors.filter(s => s !== sector.id));
-                      }
-                    }}
-                  />
-                  <label
-                    htmlFor={sector.id}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {sector.name}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Save and Actions */}
         <div className="flex flex-col gap-4">
