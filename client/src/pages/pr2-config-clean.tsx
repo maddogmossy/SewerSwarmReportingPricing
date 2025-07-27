@@ -3521,10 +3521,11 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
 
   return (
     <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative" data-component="P007">
+      <DevLabel id="P007" position="top-right" />
       <CardHeader className="pb-3">
         <CardTitle className="text-green-700 text-lg flex items-center gap-2">
           <Settings className="w-5 h-5" />
-          P007 - TP1 Template - {pipeSize}mm {configId && `(ID: ${configId})`}
+          TP1 Template - {pipeSize}mm {configId && `(ID: ${configId})`}
         </CardTitle>
         <p className="text-sm text-green-600 mt-1">
           Individual TP1 cleaning configuration for {pipeSize}mm pipes
