@@ -3520,7 +3520,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
   }
 
   return (
-    <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative">
+    <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative" data-component="P007">
       <CardHeader className="pb-3">
         <CardTitle className="text-green-700 text-lg flex items-center gap-2">
           <Settings className="w-5 h-5" />
