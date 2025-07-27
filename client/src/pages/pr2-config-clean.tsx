@@ -1407,8 +1407,7 @@ export default function PR2ConfigClean() {
         const defaultMinQuantityOptions = [];
         
         const defaultRangeOptions = [
-          { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
-          { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
+          { id: 'range_combined', label: 'Debris % / Length M', enabled: true, rangeStart: '', rangeEnd: '' }
         ];
         
         // Use existing options if they exist, otherwise use defaults
@@ -1505,8 +1504,7 @@ export default function PR2ConfigClean() {
         const defaultMinQuantityOptions = [];
         
         const defaultRangeOptions = [
-          { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
-          { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
+          { id: 'range_combined', label: 'Debris % / Length M', enabled: true, rangeStart: '', rangeEnd: '' }
         ];
         
         setFormData(prev => ({
@@ -3365,8 +3363,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
     minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
     rangeOptions: [
-      { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
-      { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
+      { id: 'range_combined', label: 'Debris % / Length M', enabled: true, rangeStart: '', rangeEnd: '' }
     ],
 
     mathOperators: ['÷'],
@@ -3407,8 +3404,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
             quantityOptions: existingConfig.quantityOptions || [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
             minQuantityOptions: existingConfig.minQuantityOptions || [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
             rangeOptions: existingConfig.rangeOptions || [
-              { id: 'range_percentage', label: 'Debris %', enabled: true, rangeEnd: '', rangeStart: '' },
-              { id: 'range_length', label: 'Length M', enabled: true, rangeEnd: '', rangeStart: '' }
+              { id: 'range_combined', label: 'Debris % / Length M', enabled: true, rangeEnd: '', rangeStart: '' }
             ]
           });
         } else {
@@ -3829,13 +3825,13 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
               {tp1Data.rangeOptions?.map((option, index) => (
                 <div key={option.id} className="flex gap-2 items-center">
                   <Input
-                    placeholder={option.label}
+                    placeholder="Debris %"
                     value={option.rangeStart || ""}
                     onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
                     className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
                   />
                   <Input
-                    placeholder={option.label}
+                    placeholder="Length M"
                     value={option.rangeEnd || ""}
                     onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
                     className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
