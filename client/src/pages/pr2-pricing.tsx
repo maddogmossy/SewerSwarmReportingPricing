@@ -276,6 +276,9 @@ export default function PR2Pricing() {
     }
     
     // Check if there's an existing configuration for this category using CTF P006 pattern matching
+    console.log('🔍 Searching for configs, categoryId:', categoryId);
+    console.log('🔍 Available PR2 configs:', pr2Configurations.map(c => `ID: ${c.id}, CategoryId: ${c.categoryId}`));
+    
     const existingConfig = pr2Configurations.find(config => {
       // Direct category ID match
       if (config.categoryId === categoryId) return true;
@@ -288,6 +291,7 @@ export default function PR2Pricing() {
       // CTF P006 template pattern matching
       if (config.categoryId?.startsWith('P006-')) {
         const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+$/, '');
+        console.log(`🔍 CTF P006 match attempt: ${config.categoryId} -> configType: ${configType}`);
         
         // Map CTF categories to standard category IDs
         const ctfMapping: Record<string, string> = {
@@ -299,11 +303,15 @@ export default function PR2Pricing() {
           'CCTV-CLEANSING-ROOT-CUTTING': 'cctv-cleansing-root-cutting'
         };
         
-        return ctfMapping[configType] === categoryId;
+        const isMatch = ctfMapping[configType] === categoryId;
+        console.log(`🔍 CTF mapping check: ${configType} -> ${ctfMapping[configType]} === ${categoryId} ? ${isMatch}`);
+        return isMatch;
       }
       
       return false;
     });
+    
+    console.log('🔍 Found existing config:', existingConfig ? `ID: ${existingConfig.id}` : 'None');
     
     // Define the category mapping for clean configuration URLs
     const categoryMapping = {
