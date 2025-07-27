@@ -3470,7 +3470,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     // Add new quantity option for green window
     const newQuantityOption = {
       id: `quantity_${timestamp}`,
-      label: `Runs ${tp1Data.quantityOptions.length + 1}`,
+      label: `No Per Shift ${tp1Data.quantityOptions.length + 1}`,
       value: '',
       enabled: true
     };
@@ -3830,9 +3830,9 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                       variant="ghost"
                       size="sm"
                       onClick={() => deleteRangeOption(index)}
-                      className="h-7 w-7 p-0 text-red-500 hover:bg-red-100"
+                      className="h-7 w-7 p-0 text-white hover:bg-red-200 bg-red-600 border border-red-700"
                     >
-                      <X className="w-3 h-3" />
+                      <Trash2 className="w-3 h-3" />
                     </Button>
                   )}
                 </div>

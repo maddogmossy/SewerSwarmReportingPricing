@@ -782,6 +782,26 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 27, 2025)
 
+### CRITICAL: P007 TP1 Template Green Window & Delete Button Styling Fixed ✅
+- **Date**: January 27, 2025
+- **Status**: Successfully fixed P007 TP1 template green window labeling and delete button styling
+- **Changes Made**:
+  - **Green Window Second Row Fix**: Changed "Runs per Shift" to "No Per Shift" for new rows added via green + button
+  - **Delete Button Styling**: Updated delete button to red background with white dustbin icon matching green button aesthetic
+  - **Consistent Labeling**: New quantity options now use "No Per Shift" prefix with incremental numbering
+  - **Professional Button Design**: Delete button now uses red-600 background with white Trash2 icon and red-700 border
+- **Technical Implementation**:
+  - Updated `addRangeOption()` function: `label: \`No Per Shift ${tp1Data.quantityOptions.length + 1}\``
+  - Modified delete button styling: `"h-7 w-7 p-0 text-white hover:bg-red-200 bg-red-600 border border-red-700"`
+  - Changed icon from X to Trash2 for better visual recognition
+  - Maintained existing Trash2 import in lucide-react imports
+- **User Benefits**:
+  - **Consistent Terminology**: All green window rows now show "No Per Shift" instead of mixed terminology
+  - **Professional Design**: Delete button styling matches green + button aesthetic with red color scheme
+  - **Clear Visual Cues**: Trash icon clearly indicates delete functionality
+  - **Improved UX**: Consistent styling and labeling across P007 TP1 template interface
+- **Result**: P007 TP1 template now has consistent "No Per Shift" labeling and professionally styled red delete buttons
+
 ### CRITICAL: UI Reorganization - Apply Configuration to Sectors & Color Picker Moved to Top ✅
 - **Date**: January 27, 2025
 - **Status**: Successfully moved C029 (Apply Configuration to Sectors) and W007 (Color Picker Section) to top of page
