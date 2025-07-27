@@ -301,7 +301,7 @@ export default function PR2Pricing() {
       
       // CTF P006 template pattern matching
       if (config.categoryId?.startsWith('P006-')) {
-        const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+mm?$/, '');
+        const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+$/, '');
         console.log(`🔍 CTF Pattern: ${config.categoryId} → configType: ${configType}`);
         
         // Map CTF categories to standard category IDs
@@ -603,7 +603,7 @@ export default function PR2Pricing() {
                     
                     // CTF P006 template pattern matching
                     if (config.categoryId?.startsWith('P006-')) {
-                      const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+mm?$/, '');
+                      const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+$/, '');
                       
                       // Map CTF categories to standard category IDs
                       const ctfMapping: Record<string, string> = {
