@@ -3011,6 +3011,9 @@ export default function PR2ConfigClean() {
                 <Truck className="w-4 h-4" />
                 Vehicle Travel Rates
               </CardTitle>
+              <p className="text-sm text-cyan-600 mt-1">
+                Individual TP1 vehicle travel rates for 150mm pipes
+              </p>
             </CardHeader>
             <CardContent className="py-2">
               {/* Styled Container - Dark Teal - Sized to match P007 */}
