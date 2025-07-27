@@ -275,13 +275,35 @@ export default function PR2Pricing() {
       return;
     }
     
-    // Check if there's an existing configuration for this category
-    const existingConfig = pr2Configurations.find(config => 
-      config.categoryId === categoryId || 
-      config.categoryName?.toLowerCase() === categoryId.toLowerCase() ||
-      (categoryId === 'cctv' && config.categoryName === 'CCTV') ||
-      (categoryId === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration')
-    );
+    // Check if there's an existing configuration for this category using CTF P006 pattern matching
+    const existingConfig = pr2Configurations.find(config => {
+      // Direct category ID match
+      if (config.categoryId === categoryId) return true;
+      
+      // Legacy matches
+      if (config.categoryName?.toLowerCase() === categoryId.toLowerCase()) return true;
+      if (categoryId === 'cctv' && config.categoryName === 'CCTV') return true;
+      if (categoryId === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration') return true;
+      
+      // CTF P006 template pattern matching
+      if (config.categoryId?.startsWith('P006-')) {
+        const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+mm?$/, '');
+        
+        // Map CTF categories to standard category IDs
+        const ctfMapping: Record<string, string> = {
+          'CCTV': 'cctv',
+          'VAN-PACK': 'van-pack', 
+          'JET-VAC': 'jet-vac',
+          'CCTV-VAN-PACK': 'cctv-van-pack',
+          'CCTV-JET-VAC': 'cctv-jet-vac',
+          'CCTV-CLEANSING-ROOT-CUTTING': 'cctv-cleansing-root-cutting'
+        };
+        
+        return ctfMapping[configType] === categoryId;
+      }
+      
+      return false;
+    });
     
     console.log('🔍 Existing config found:', existingConfig);
     
