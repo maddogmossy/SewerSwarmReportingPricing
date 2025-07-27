@@ -2831,14 +2831,12 @@ export default function PR2ConfigClean() {
                     key={color}
                     type="button"
                     onClick={async () => {
-                      console.log(`🎨 Pastel color selected: ${color}`);
                       
                       // Update form data immediately
                       setFormData(prev => ({ ...prev, categoryColor: color }));
                       
                       // For patching category, sync ONLY color across all pipe sizes
                       if (categoryId === 'patching') {
-                        console.log('🎨 Syncing ONLY color across all patching configurations...');
                         
                         const patchingConfigIds = [153, 156, 157];
                         const updatePromises = patchingConfigIds.map(async (configId) => {
@@ -2857,26 +2855,20 @@ export default function PR2ConfigClean() {
                               rangeOptions: config.rangeOptions
                             });
                             
-                            console.log(`✅ Updated ONLY color for config ${configId} to ${color}`);
+
                           } catch (error) {
-                            console.error(`❌ Failed to update color for config ${configId}:`, error);
+
                           }
                         });
                         
                         await Promise.all(updatePromises);
-                        console.log('✅ All patching configurations updated with new color (data preserved)');
                       } else {
                         // For non-patching categories, save immediately with new color
-                        console.log('💾 Saving configuration changes (including cleared fields)...');
-                        
-                        // Create updated form data with new color
                         const updatedFormData = { ...formData, categoryColor: color };
-                        console.log('💾 Current formData being saved:', JSON.stringify(updatedFormData, null, 2));
                         
                         // Save immediately instead of using debounced save
                         try {
-                          const response = await apiRequest('PUT', `/api/pr2-clean/${editId}`, updatedFormData);
-                          console.log('✅ Input values saved successfully');
+                          await apiRequest('PUT', `/api/pr2-clean/${editId}`, updatedFormData);
                         } catch (error) {
                           console.error('❌ Save failed:', error);
                         }

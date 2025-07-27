@@ -277,32 +277,17 @@ export default function PR2Pricing() {
     
     // Check if there's an existing configuration for this category using CTF P006 pattern matching
     const existingConfig = pr2Configurations.find(config => {
-      console.log(`🔍 Checking config ${config.id} (${config.categoryId}) against category ${categoryId}`);
-      
       // Direct category ID match
-      if (config.categoryId === categoryId) {
-        console.log(`✅ Direct match found: ${config.categoryId} === ${categoryId}`);
-        return true;
-      }
+      if (config.categoryId === categoryId) return true;
       
       // Legacy matches
-      if (config.categoryName?.toLowerCase() === categoryId.toLowerCase()) {
-        console.log(`✅ Legacy name match found: ${config.categoryName} === ${categoryId}`);
-        return true;
-      }
-      if (categoryId === 'cctv' && config.categoryName === 'CCTV') {
-        console.log(`✅ Legacy CCTV match found`);
-        return true;
-      }
-      if (categoryId === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration') {
-        console.log(`✅ Legacy CCTV-Jet-Vac match found`);
-        return true;
-      }
+      if (config.categoryName?.toLowerCase() === categoryId.toLowerCase()) return true;
+      if (categoryId === 'cctv' && config.categoryName === 'CCTV') return true;
+      if (categoryId === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration') return true;
       
       // CTF P006 template pattern matching
       if (config.categoryId?.startsWith('P006-')) {
         const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+$/, '');
-        console.log(`🔍 CTF Pattern: ${config.categoryId} → configType: ${configType}`);
         
         // Map CTF categories to standard category IDs
         const ctfMapping: Record<string, string> = {
@@ -314,19 +299,11 @@ export default function PR2Pricing() {
           'CCTV-CLEANSING-ROOT-CUTTING': 'cctv-cleansing-root-cutting'
         };
         
-        const mappedCategory = ctfMapping[configType];
-        console.log(`🔍 CTF Mapping: ${configType} → ${mappedCategory}, comparing to ${categoryId}`);
-        
-        if (mappedCategory === categoryId) {
-          console.log(`✅ CTF match found: ${config.categoryId} maps to ${categoryId}`);
-          return true;
-        }
+        return ctfMapping[configType] === categoryId;
       }
       
       return false;
     });
-    
-    console.log('🔍 Existing config found:', existingConfig);
     
     // Define the category mapping for clean configuration URLs
     const categoryMapping = {
@@ -347,14 +324,11 @@ export default function PR2Pricing() {
     
     // If configuration exists, navigate to edit mode
     if (existingConfig) {
-      const editURL = `/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}`;
-      console.log('🔧 Navigating to edit existing config:', editURL);
-      setLocation(editURL);
+      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}`);
       return;
     }
     
     // If no existing configuration, show message instead of auto-creating
-    console.log('❌ No configuration found for category:', categoryId);
     toast({
       title: "No Configuration Found",
       description: "This category needs to be configured from the dashboard when processing a report.",
@@ -644,9 +618,7 @@ export default function PR2Pricing() {
                       key={category.id}
                       className="relative cursor-pointer transition-all hover:shadow-md border-4"
                       style={{
-                        borderColor: existingConfiguration?.categoryColor 
-                          ? hexToRgba(existingConfiguration.categoryColor, 0.3)
-                          : (isUserCreated ? '#bbf7d0' : '#e5e7eb'),
+                        borderColor: isUserCreated ? '#bbf7d0' : '#e5e7eb',
                         backgroundColor: 'white'
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}

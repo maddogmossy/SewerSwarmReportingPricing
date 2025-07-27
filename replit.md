@@ -982,6 +982,27 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 27, 2025)
 
+### CRITICAL: Category Card Display & Color System Complete ✅
+- **Date**: January 27, 2025
+- **Status**: Successfully restored default grey category card borders on P003 (pr2-pricing page) and confirmed auto-save functionality for color picker
+- **Features Implemented**:
+  - **Default Grey Cards**: Category cards on P003 now display with grey borders (#e5e7eb) by default, regardless of stored color configurations
+  - **Color Changes Only via P006/W007**: Colors only change when specifically selected from P006 pipe size interface or W007 color picker
+  - **Auto-Save Confirmed**: Color picker already has comprehensive auto-save functionality for both regular categories and patching synchronization
+  - **CTF Navigation Fixed**: Fixed critical regex pattern bug (changed `/-\d+mm?$/` to `/-\d+$/`) enabling proper P006 template navigation
+  - **Debug Cleanup**: Removed all debug console logs for clean production-ready navigation
+- **Technical Implementation**:
+  - Removed `existingConfiguration?.categoryColor` dependency from card border styling on P003
+  - Maintained existing auto-save functionality in color picker with immediate PUT requests
+  - Fixed CTF P006 template pattern matching for all 6 categories (CCTV, van pack, jet vac, etc.)
+  - Clean navigation from category cards to configuration pages without debug logging
+- **User Benefits**:
+  - **Consistent Interface**: Category cards always appear grey until colors are specifically chosen
+  - **Working Navigation**: All CTF P006 categories (CCTV, Van Pack, Jet Vac, etc.) now navigate correctly
+  - **Auto-Save Colors**: Color changes save automatically without manual intervention
+  - **Professional UI**: Clean interface without debugging information cluttering console
+- **Result**: Complete category card display system with proper default styling and confirmed auto-save color functionality
+
 ### CRITICAL: P006 TP1 Template Placeholder System Complete ✅
 - **Date**: January 27, 2025  
 - **Status**: Successfully implemented TP1 template system with required placeholder rows
