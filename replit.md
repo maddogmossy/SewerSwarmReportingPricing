@@ -71,6 +71,22 @@ This is a full-stack TypeScript application built with React frontend and Expres
 
 ## Recent Changes
 
+### CRITICAL: System Restored to Stable V8.2 State (July 27, 2025)
+- **Date**: July 27, 2025
+- **Status**: Successfully restored system to stable V8.2 checkpoint from July 17, 2025
+- **Issues Resolved**:
+  - **TP2 System Restored**: Recreated TP2 template detection and patching configuration (ID 586)
+  - **Database Cleaned**: Removed all unstable configurations and restored working ID 152 configuration
+  - **Complete Working State**: ID 152 has all 5 windows working (Blue pricing, Green quantity, Orange min quantity, Purple ranges, Math operators)
+  - **Template Detection Fixed**: Added back TP2 template type for patching category
+- **Technical Implementation**:
+  - Applied rollback_v8_2.sql to restore stable database state
+  - Updated getTemplateType() function to include TP2 for 'patching' categoryId
+  - Restored working configuration with authentic values (Day Rate £1850, Runs per Shift 25, etc.)
+  - Maintained zero synthetic data policy with authentic configuration values
+- **Current State**: System now at stable V8.2 baseline with TP2 functionality restored
+- **User Benefits**: Clean, working system without the instability issues from TP2 removal
+
 ### Pipe Size Configuration Expansion (July 27, 2025)
 - **Updated Core Configuration**: Expanded pipe sizes from 4 options (100, 150, 225, 300mm) to 25 comprehensive options (100-1500mm)
 - **Layout Optimization**: Modified grid layout from 4 columns to 6-8 columns for better space utilization with expanded range
