@@ -3905,18 +3905,18 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                         variant="ghost"
                         size="sm"
                         onClick={addRangeOption}
-                        className="h-7 w-24 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
+                        className="h-7 w-7 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
                       >
-                        <Plus className="w-3 h-3" />
+                        +
                       </Button>
                     ) : (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => deleteRangeOption(index)}
-                        className="h-7 w-24 p-0 text-white hover:bg-red-200 bg-red-600 border border-red-700"
+                        className="h-7 w-7 p-0 text-white hover:bg-red-200 bg-red-600 border border-red-700"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        ×
                       </Button>
                     )}
                   </div>
