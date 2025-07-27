@@ -3296,7 +3296,20 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           setConfigId(existingConfig.id);
           setTp1Data({
             ...existingConfig,
-            pipeSize: pipeSize // Ensure pipe size is correct
+            pipeSize: pipeSize, // Ensure pipe size is correct
+            // Add fallbacks for missing stack order arrays
+            pricingStackOrder: existingConfig.pricingStackOrder || ['price_dayrate'],
+            quantityStackOrder: existingConfig.quantityStackOrder || ['quantity_runs'],
+            minQuantityStackOrder: existingConfig.minQuantityStackOrder || ['minquantity_runs'],
+            rangeStackOrder: existingConfig.rangeStackOrder || ['range_percentage', 'range_length'],
+            // Add fallbacks for missing option arrays
+            pricingOptions: existingConfig.pricingOptions || [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
+            quantityOptions: existingConfig.quantityOptions || [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
+            minQuantityOptions: existingConfig.minQuantityOptions || [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
+            rangeOptions: existingConfig.rangeOptions || [
+              { id: 'range_percentage', label: 'Percentage', enabled: true, rangeEnd: '', rangeStart: '' },
+              { id: 'range_length', label: 'Length', enabled: true, rangeEnd: '', rangeStart: '' }
+            ]
           });
         } else {
           console.log(`📝 No existing TP1 config for ${pipeSize}mm, using defaults`);
@@ -3323,7 +3336,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     setTp1Data(prev => ({
       ...prev,
       pricingOptions: [...prev.pricingOptions, newOption],
-      pricingStackOrder: [...prev.pricingStackOrder, newOption.id]
+      pricingStackOrder: [...(prev.pricingStackOrder || []), newOption.id]
     }));
   };
 
@@ -3337,7 +3350,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     setTp1Data(prev => ({
       ...prev,
       quantityOptions: [...prev.quantityOptions, newOption],
-      quantityStackOrder: [...prev.quantityStackOrder, newOption.id]
+      quantityStackOrder: [...(prev.quantityStackOrder || []), newOption.id]
     }));
   };
 
@@ -3351,7 +3364,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     setTp1Data(prev => ({
       ...prev,
       minQuantityOptions: [...prev.minQuantityOptions, newOption],
-      minQuantityStackOrder: [...prev.minQuantityStackOrder, newOption.id]
+      minQuantityStackOrder: [...(prev.minQuantityStackOrder || []), newOption.id]
     }));
   };
 
@@ -3366,7 +3379,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     setTp1Data(prev => ({
       ...prev,
       rangeOptions: [...prev.rangeOptions, newOption],
-      rangeStackOrder: [...prev.rangeStackOrder, newOption.id]
+      rangeStackOrder: [...(prev.rangeStackOrder || []), newOption.id]
     }));
   };
 
@@ -3378,7 +3391,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       return {
         ...prev,
         pricingOptions: newOptions,
-        pricingStackOrder: prev.pricingStackOrder.filter(id => id !== deletedId)
+        pricingStackOrder: (prev.pricingStackOrder || []).filter(id => id !== deletedId)
       };
     });
   };
@@ -3390,7 +3403,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       return {
         ...prev,
         quantityOptions: newOptions,
-        quantityStackOrder: prev.quantityStackOrder.filter(id => id !== deletedId)
+        quantityStackOrder: (prev.quantityStackOrder || []).filter(id => id !== deletedId)
       };
     });
   };
@@ -3402,7 +3415,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       return {
         ...prev,
         minQuantityOptions: newOptions,
-        minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => id !== deletedId)
+        minQuantityStackOrder: (prev.minQuantityStackOrder || []).filter(id => id !== deletedId)
       };
     });
   };
@@ -3414,7 +3427,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       return {
         ...prev,
         rangeOptions: newOptions,
-        rangeStackOrder: prev.rangeStackOrder.filter(id => id !== deletedId)
+        rangeStackOrder: (prev.rangeStackOrder || []).filter(id => id !== deletedId)
       };
     });
   };
