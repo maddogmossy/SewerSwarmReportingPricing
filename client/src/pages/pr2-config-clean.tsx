@@ -3616,7 +3616,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
 
 
           {/* Purple Card - Ranges */}
-          <Card className="bg-purple-50 border-purple-200 w-80">
+          <Card className="bg-purple-50 border-purple-200 w-60">
             <CardHeader className="pb-2">
               <CardTitle className="text-purple-700 text-sm flex items-center">
                 <div className="flex items-center gap-2">
