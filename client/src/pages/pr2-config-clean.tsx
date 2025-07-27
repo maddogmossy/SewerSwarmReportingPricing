@@ -2872,123 +2872,11 @@ export default function PR2ConfigClean() {
 
         {/* TP1 Template Configuration Cards for Current Pipe Size */}
         {categoryId === 'cctv-jet-vac' && selectedPipeSize && (
-          <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-green-700 text-lg flex items-center gap-2">
-                <Settings className="w-5 h-5" />
-                TP1 Template - {selectedPipeSize}mm
-              </CardTitle>
-              <p className="text-sm text-green-600 mt-1">
-                Individual TP1 cleaning configuration for {selectedPipeSize}mm pipes
-              </p>
-            </CardHeader>
-            <CardContent className="py-3">
-              {/* TP1 Configuration Cards Row */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {/* Blue Card - Day Rate */}
-                <Card className="bg-blue-50 border-blue-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
-                      <Banknote className="w-4 h-4" />
-                      Day Rate
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-2">
-                    <Input
-                      placeholder="£1650"
-                      className="border-blue-200 focus:border-blue-500"
-                    />
-                  </CardContent>
-                </Card>
-
-                {/* Green Card - Runs per Shift */}
-                <Card className="bg-green-50 border-green-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                      <RotateCcw className="w-4 h-4" />
-                      Runs per Shift
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-2">
-                    <Input
-                      placeholder="25"
-                      className="border-green-200 focus:border-green-500"
-                    />
-                  </CardContent>
-                </Card>
-
-                {/* Orange Card - Min Quantity */}
-                <Card className="bg-orange-50 border-orange-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
-                      <Hash className="w-4 h-4" />
-                      Min Quantity
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-2">
-                    <Input
-                      placeholder="20"
-                      className="border-orange-200 focus:border-orange-500"
-                    />
-                  </CardContent>
-                </Card>
-
-                {/* Purple Card - Ranges */}
-                <Card className="bg-purple-50 border-purple-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
-                      <ArrowUpDown className="w-4 h-4" />
-                      Ranges
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="py-2">
-                    <div className="space-y-2">
-                      <div className="flex gap-1">
-                        <Input
-                          placeholder="0"
-                          className="border-purple-200 focus:border-purple-500 text-xs"
-                        />
-                        <span className="text-xs text-purple-600 self-center">-</span>
-                        <Input
-                          placeholder="100"
-                          className="border-purple-200 focus:border-purple-500 text-xs"
-                        />
-                        <span className="text-xs text-purple-600 self-center">%</span>
-                      </div>
-                      <div className="flex gap-1">
-                        <Input
-                          placeholder="0"
-                          className="border-purple-200 focus:border-purple-500 text-xs"
-                        />
-                        <span className="text-xs text-purple-600 self-center">-</span>
-                        <Input
-                          placeholder="50"
-                          className="border-purple-200 focus:border-purple-500 text-xs"
-                        />
-                        <span className="text-xs text-purple-600 self-center">m</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Save Button */}
-              <div className="mt-4 flex justify-end">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-green-200 text-green-700 hover:bg-green-50"
-                  onClick={() => {
-                    console.log(`💾 Saving TP1 template for ${selectedPipeSize}mm`);
-                    // Save logic will be implemented
-                  }}
-                >
-                  <Save className="w-4 h-4 mr-1" />
-                  Save TP1 Template
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <TP1TemplateInterface 
+            pipeSize={selectedPipeSize}
+            sector={sector}
+            key={selectedPipeSize} // Force re-render when pipe size changes
+          />
         )}
 
         {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
@@ -3361,3 +3249,492 @@ export default function PR2ConfigClean() {
     </div>
   );
 }
+
+// TP1 Template Interface Component with Full Add/Delete Row Functionality
+interface TP1TemplateInterfaceProps {
+  pipeSize: string;
+  sector: string;
+}
+
+const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, sector }) => {
+  const [tp1Data, setTp1Data] = useState<CleanFormData>({
+    categoryName: `TP1 - ${pipeSize}mm Cleaning Configuration`,
+    description: `TP1 cleaning template for ${pipeSize}mm pipes`,
+    categoryColor: '#10B981',
+    pipeSize: pipeSize,
+    pricingOptions: [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
+    quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
+    minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
+    rangeOptions: [
+      { id: 'range_percentage', label: 'Percentage', enabled: true, rangeEnd: '', rangeStart: '' },
+      { id: 'range_length', label: 'Length', enabled: true, rangeEnd: '', rangeStart: '' }
+    ],
+    rangeValues: {},
+    mathOperators: ['÷'],
+    vehicleTravelRates: [],
+    vehicleTravelRatesStackOrder: [],
+    pricingStackOrder: ['price_dayrate'],
+    quantityStackOrder: ['quantity_runs'],
+    minQuantityStackOrder: ['minquantity_runs'],
+    rangeStackOrder: ['range_percentage', 'range_length']
+  });
+
+  const [configId, setConfigId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load existing TP1 configuration for this pipe size
+  useEffect(() => {
+    const loadTP1Config = async () => {
+      try {
+        console.log(`🔧 Loading TP1 template for ${pipeSize}mm`);
+        const response = await fetch(`/api/pr2-clean?sector=${sector}&categoryId=P006-TP1-${pipeSize}`);
+        const configs = await response.json();
+        
+        if (configs && configs.length > 0) {
+          const existingConfig = configs[0];
+          console.log(`✅ Found existing TP1 config for ${pipeSize}mm:`, existingConfig.id);
+          setConfigId(existingConfig.id);
+          setTp1Data({
+            ...existingConfig,
+            pipeSize: pipeSize // Ensure pipe size is correct
+          });
+        } else {
+          console.log(`📝 No existing TP1 config for ${pipeSize}mm, using defaults`);
+          setConfigId(null);
+        }
+      } catch (error) {
+        console.error('❌ Error loading TP1 config:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTP1Config();
+  }, [pipeSize, sector]);
+
+  // Add option functions
+  const addPricingOption = () => {
+    const newOption = {
+      id: `price_${Date.now()}`,
+      label: 'New Option',
+      value: '',
+      enabled: true
+    };
+    setTp1Data(prev => ({
+      ...prev,
+      pricingOptions: [...prev.pricingOptions, newOption],
+      pricingStackOrder: [...prev.pricingStackOrder, newOption.id]
+    }));
+  };
+
+  const addQuantityOption = () => {
+    const newOption = {
+      id: `quantity_${Date.now()}`,
+      label: 'New Option',
+      value: '',
+      enabled: true
+    };
+    setTp1Data(prev => ({
+      ...prev,
+      quantityOptions: [...prev.quantityOptions, newOption],
+      quantityStackOrder: [...prev.quantityStackOrder, newOption.id]
+    }));
+  };
+
+  const addMinQuantityOption = () => {
+    const newOption = {
+      id: `minquantity_${Date.now()}`,
+      label: 'New Option',
+      value: '',
+      enabled: true
+    };
+    setTp1Data(prev => ({
+      ...prev,
+      minQuantityOptions: [...prev.minQuantityOptions, newOption],
+      minQuantityStackOrder: [...prev.minQuantityStackOrder, newOption.id]
+    }));
+  };
+
+  const addRangeOption = () => {
+    const newOption = {
+      id: `range_${Date.now()}`,
+      label: 'New Range',
+      enabled: true,
+      rangeStart: '',
+      rangeEnd: ''
+    };
+    setTp1Data(prev => ({
+      ...prev,
+      rangeOptions: [...prev.rangeOptions, newOption],
+      rangeStackOrder: [...prev.rangeStackOrder, newOption.id]
+    }));
+  };
+
+  // Delete option functions
+  const deletePricingOption = (index: number) => {
+    setTp1Data(prev => {
+      const newOptions = prev.pricingOptions.filter((_, i) => i !== index);
+      const deletedId = prev.pricingOptions[index].id;
+      return {
+        ...prev,
+        pricingOptions: newOptions,
+        pricingStackOrder: prev.pricingStackOrder.filter(id => id !== deletedId)
+      };
+    });
+  };
+
+  const deleteQuantityOption = (index: number) => {
+    setTp1Data(prev => {
+      const newOptions = prev.quantityOptions.filter((_, i) => i !== index);
+      const deletedId = prev.quantityOptions[index].id;
+      return {
+        ...prev,
+        quantityOptions: newOptions,
+        quantityStackOrder: prev.quantityStackOrder.filter(id => id !== deletedId)
+      };
+    });
+  };
+
+  const deleteMinQuantityOption = (index: number) => {
+    setTp1Data(prev => {
+      const newOptions = prev.minQuantityOptions.filter((_, i) => i !== index);
+      const deletedId = prev.minQuantityOptions[index].id;
+      return {
+        ...prev,
+        minQuantityOptions: newOptions,
+        minQuantityStackOrder: prev.minQuantityStackOrder.filter(id => id !== deletedId)
+      };
+    });
+  };
+
+  const deleteRangeOption = (index: number) => {
+    setTp1Data(prev => {
+      const newOptions = prev.rangeOptions.filter((_, i) => i !== index);
+      const deletedId = prev.rangeOptions[index].id;
+      return {
+        ...prev,
+        rangeOptions: newOptions,
+        rangeStackOrder: prev.rangeStackOrder.filter(id => id !== deletedId)
+      };
+    });
+  };
+
+  // Update option functions
+  const updatePricingOption = (index: number, field: string, value: string) => {
+    setTp1Data(prev => ({
+      ...prev,
+      pricingOptions: prev.pricingOptions.map((opt, i) => 
+        i === index ? { ...opt, [field]: value } : opt
+      )
+    }));
+  };
+
+  const updateQuantityOption = (index: number, field: string, value: string) => {
+    setTp1Data(prev => ({
+      ...prev,
+      quantityOptions: prev.quantityOptions.map((opt, i) => 
+        i === index ? { ...opt, [field]: value } : opt
+      )
+    }));
+  };
+
+  const updateMinQuantityOption = (index: number, field: string, value: string) => {
+    setTp1Data(prev => ({
+      ...prev,
+      minQuantityOptions: prev.minQuantityOptions.map((opt, i) => 
+        i === index ? { ...opt, [field]: value } : opt
+      )
+    }));
+  };
+
+  const updateRangeOption = (index: number, field: string, value: string) => {
+    setTp1Data(prev => ({
+      ...prev,
+      rangeOptions: prev.rangeOptions.map((opt, i) => 
+        i === index ? { ...opt, [field]: value } : opt
+      )
+    }));
+  };
+
+  // Save TP1 configuration
+  const saveTP1Config = async () => {
+    try {
+      console.log(`💾 Saving TP1 template for ${pipeSize}mm`);
+      
+      const payload = {
+        ...tp1Data,
+        categoryId: `P006-TP1-${pipeSize}`,
+        sector: sector
+      };
+
+      let response;
+      if (configId) {
+        // Update existing config
+        response = await fetch(`/api/pr2-clean/${configId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        // Create new config
+        response = await fetch('/api/pr2-clean', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      if (response.ok) {
+        const savedConfig = await response.json();
+        setConfigId(savedConfig.id);
+        console.log(`✅ TP1 template saved for ${pipeSize}mm with ID:`, savedConfig.id);
+      } else {
+        console.error('❌ Failed to save TP1 template');
+      }
+    } catch (error) {
+      console.error('❌ Error saving TP1 template:', error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+        <CardContent className="py-8 text-center">
+          <div className="animate-pulse text-green-600">Loading TP1 template for {pipeSize}mm...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-green-700 text-lg flex items-center gap-2">
+          <Settings className="w-5 h-5" />
+          TP1 Template - {pipeSize}mm {configId && `(ID: ${configId})`}
+        </CardTitle>
+        <p className="text-sm text-green-600 mt-1">
+          Individual TP1 cleaning configuration for {pipeSize}mm pipes
+        </p>
+      </CardHeader>
+      <CardContent className="py-3">
+        {/* TP1 Configuration Cards Row */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Blue Card - Day Rate */}
+          <Card className="bg-blue-50 border-blue-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-blue-700 text-sm flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Banknote className="w-4 h-4" />
+                  Day Rate
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={addPricingOption}
+                  className="h-6 w-6 p-0 text-blue-600 hover:bg-blue-100"
+                >
+                  <Plus className="w-3 h-3" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="py-2 space-y-2">
+              {tp1Data.pricingOptions.map((option, index) => (
+                <div key={option.id} className="flex gap-1">
+                  <Input
+                    placeholder="£1650"
+                    value={option.value}
+                    onChange={(e) => updatePricingOption(index, 'value', e.target.value)}
+                    className="border-blue-200 focus:border-blue-500 text-xs"
+                  />
+                  <Input
+                    placeholder="Label"
+                    value={option.label}
+                    onChange={(e) => updatePricingOption(index, 'label', e.target.value)}
+                    className="border-blue-200 focus:border-blue-500 text-xs"
+                  />
+                  {tp1Data.pricingOptions.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deletePricingOption(index)}
+                      className="h-8 w-8 p-0 text-red-600 hover:bg-red-100"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Green Card - Runs per Shift */}
+          <Card className="bg-green-50 border-green-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-green-700 text-sm flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4" />
+                  Runs per Shift
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={addQuantityOption}
+                  className="h-6 w-6 p-0 text-green-600 hover:bg-green-100"
+                >
+                  <Plus className="w-3 h-3" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="py-2 space-y-2">
+              {tp1Data.quantityOptions.map((option, index) => (
+                <div key={option.id} className="flex gap-1">
+                  <Input
+                    placeholder="25"
+                    value={option.value}
+                    onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
+                    className="border-green-200 focus:border-green-500 text-xs"
+                  />
+                  <Input
+                    placeholder="Label"
+                    value={option.label}
+                    onChange={(e) => updateQuantityOption(index, 'label', e.target.value)}
+                    className="border-green-200 focus:border-green-500 text-xs"
+                  />
+                  {tp1Data.quantityOptions.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteQuantityOption(index)}
+                      className="h-8 w-8 p-0 text-red-600 hover:bg-red-100"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Orange Card - Min Quantity */}
+          <Card className="bg-orange-50 border-orange-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-orange-700 text-sm flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Hash className="w-4 h-4" />
+                  Min Quantity
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={addMinQuantityOption}
+                  className="h-6 w-6 p-0 text-orange-600 hover:bg-orange-100"
+                >
+                  <Plus className="w-3 h-3" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="py-2 space-y-2">
+              {tp1Data.minQuantityOptions.map((option, index) => (
+                <div key={option.id} className="flex gap-1">
+                  <Input
+                    placeholder="20"
+                    value={option.value}
+                    onChange={(e) => updateMinQuantityOption(index, 'value', e.target.value)}
+                    className="border-orange-200 focus:border-orange-500 text-xs"
+                  />
+                  <Input
+                    placeholder="Label"
+                    value={option.label}
+                    onChange={(e) => updateMinQuantityOption(index, 'label', e.target.value)}
+                    className="border-orange-200 focus:border-orange-500 text-xs"
+                  />
+                  {tp1Data.minQuantityOptions.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteMinQuantityOption(index)}
+                      className="h-8 w-8 p-0 text-red-600 hover:bg-red-100"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Purple Card - Ranges */}
+          <Card className="bg-purple-50 border-purple-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-purple-700 text-sm flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ArrowUpDown className="w-4 h-4" />
+                  Ranges
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={addRangeOption}
+                  className="h-6 w-6 p-0 text-purple-600 hover:bg-purple-100"
+                >
+                  <Plus className="w-3 h-3" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="py-2 space-y-2">
+              {tp1Data.rangeOptions.map((option, index) => (
+                <div key={option.id} className="space-y-1">
+                  <Input
+                    placeholder="Label"
+                    value={option.label}
+                    onChange={(e) => updateRangeOption(index, 'label', e.target.value)}
+                    className="border-purple-200 focus:border-purple-500 text-xs"
+                  />
+                  <div className="flex gap-1">
+                    <Input
+                      placeholder="0"
+                      value={option.rangeStart}
+                      onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
+                      className="border-purple-200 focus:border-purple-500 text-xs"
+                    />
+                    <span className="text-xs text-purple-600 self-center">-</span>
+                    <Input
+                      placeholder="100"
+                      value={option.rangeEnd}
+                      onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
+                      className="border-purple-200 focus:border-purple-500 text-xs"
+                    />
+                    {tp1Data.rangeOptions.length > 1 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteRangeOption(index)}
+                        className="h-8 w-8 p-0 text-red-600 hover:bg-red-100"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Save Button */}
+        <div className="mt-4 flex justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-green-200 text-green-700 hover:bg-green-50"
+            onClick={saveTP1Config}
+          >
+            <Save className="w-4 h-4 mr-1" />
+            Save TP1 Template
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
