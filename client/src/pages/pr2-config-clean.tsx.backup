@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -73,9 +73,6 @@ interface CleanFormData {
   
   sector: string;
 }
-
-// Pipe sizes configuration
-const PIPE_SIZES = ['100', '125', '150', '175', '200', '225', '250', '275', '300', '350', '375', '400', '450', '500', '525', '600', '675', '750', '825', '900', '975', '1050', '1200', '1350', '1500'];
 
 // Sector definitions
 const SECTORS = [
@@ -457,6 +454,7 @@ export default function PR2ConfigClean() {
       console.log(`🔧 Creating pipe-size-specific configuration: ${configName}`);
       
       const templateType = getTemplateType(categoryId);
+      const isTP2 = templateType === 'TP2';
       const isP26 = templateType === 'P26';
       
       // Create configuration based on template type
@@ -468,28 +466,40 @@ export default function PR2ConfigClean() {
         sector,
         
         // Template-specific structure
-        pricingOptions: isP26 ? [
+        pricingOptions: isTP2 ? [
+          { id: 'single_layer_cost', label: 'Single Layer', enabled: true, value: '' },
+          { id: 'double_layer_cost', label: 'Double Layer', enabled: true, value: '' },
+          { id: 'triple_layer_cost', label: 'Triple Layer', enabled: true, value: '' },
+          { id: 'triple_extra_cure_cost', label: 'Triple Layer (with Extra Cure Time)', enabled: true, value: '' }
+        ] : isP26 ? [
           { id: 'central_day_rate', label: 'Central Day Rate', enabled: true, value: '1650' }
         ] : [
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
         ],
         
-        quantityOptions: isP26 ? [
+        quantityOptions: isTP2 ? [] : isP26 ? [
           { id: `${pipeSize}_day_rate`, label: `${pipeSize} Day Rate`, enabled: true, value: '' }
         ] : [
           { id: 'quantity_runs', label: 'No Per Shift', enabled: true, value: '' }
         ],
         
-        minQuantityOptions: [],
+        minQuantityOptions: isTP2 ? [
+          { id: 'patch_min_qty_1', label: 'Min Qty 1', enabled: true, value: '' },
+          { id: 'patch_min_qty_2', label: 'Min Qty 2', enabled: true, value: '' },
+          { id: 'patch_min_qty_3', label: 'Min Qty 3', enabled: true, value: '' },
+          { id: 'patch_min_qty_4', label: 'Min Qty 4', enabled: true, value: '' }
+        ] : [],
         
-        rangeOptions: [],
+        rangeOptions: isTP2 ? [
+          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
+        ] : [],
         
         vehicleTravelRates: isP26 ? [
           { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '55', numberOfHours: '2', enabled: true },
           { id: 'vehicle_26t', vehicleType: '26t', hourlyRate: '75', numberOfHours: '2', enabled: true }
         ] : [],
         
-        mathOperators: isP26 ? [] : ['÷'],
+        mathOperators: isTP2 || isP26 ? [] : ['÷'],
         isActive: true
       };
 
@@ -585,7 +595,7 @@ export default function PR2ConfigClean() {
     }
   };
 
-  // Reset form data when switching between templates
+  // Reset form data when switching between TP1 and TP2
   useEffect(() => {
     if (!isEditing && !editId) {
       setFormData(getDefaultFormData());
@@ -686,7 +696,7 @@ export default function PR2ConfigClean() {
       return newFormData;
     });
     
-    // For critical fields, save immediately to prevent data loss
+    // For critical TP2 fields, save immediately to prevent data loss
     const criticalPricingFields = ['price_dayrate', 'double_layer_cost', 'single_layer_cost', 'triple_layer_cost', 'triple_layer_extra_cost'];
     const criticalMinQuantityFields = ['patch_min_qty_1', 'patch_min_qty_2', 'patch_min_qty_3', 'patch_min_qty_4'];
     
@@ -905,9 +915,9 @@ export default function PR2ConfigClean() {
         if (response.ok) {
           console.log('✅ Input values saved successfully');
           
-          // CRITICAL: Sync P26 vehicle data across configurations
+          // CRITICAL: Sync P26 vehicle data across all TP2 patching configurations
           if (categoryId === 'patching' && payload.vehicleTravelRates?.length > 0) {
-            console.log('🔄 P26 SYNC: Syncing vehicle travel rates across configurations...');
+            console.log('🔄 P26 SYNC: Syncing vehicle travel rates across all TP2 configurations...');
             
             try {
               // Get all patching configurations for this user
@@ -966,7 +976,7 @@ export default function PR2ConfigClean() {
   const [editingQuantity, setEditingQuantity] = useState<PricingOption | null>(null);
   const [editingMinQuantity, setEditingMinQuantity] = useState<PricingOption | null>(null);
   
-  // Pipe Size Selection State - Dynamic based on editId
+  // TP2 Pipe Size Selection State - Dynamic based on editId - removed const declaration to avoid duplicate
   const [editingRange, setEditingRange] = useState<RangeOption | null>(null);
   
   // Vehicle Travel Rate dialog states
@@ -1352,7 +1362,7 @@ export default function PR2ConfigClean() {
         const existingRangeOptions = Array.isArray(config.rangeOptions) ? config.rangeOptions : [];
         const existingPricingOptions = Array.isArray(config.pricingOptions) ? config.pricingOptions : [];
         
-        // REMOVED: Some configurations use central configuration instead
+        // REMOVED: TP2 configurations should NOT have day rate fields - use P26 central configuration instead
         
         // Initialize single-option defaults for each window (matching your requirement)
         const defaultPricingOptions = [
@@ -2787,29 +2797,9 @@ export default function PR2ConfigClean() {
 
         {/* Upper Level Pipe Size Configuration - For P006a templates */}
         {getTemplateType(categoryId || '') === 'P006a' && (
-          <Card className="mb-6 relative">
-            <DevLabel id="W020" position="top-right" />
-            <CardHeader className="pb-3">
-              <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
-                <Wrench className="w-5 h-5" />
-                Pipe Size Configuration
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-6 md:grid-cols-8 gap-2">
-                {PIPE_SIZES.map((size) => (
-                  <Button
-                    key={size}
-                    variant={selectedPipeSize === size ? 'default' : 'outline'}
-                    className={`h-10 text-xs font-medium ${
-                      selectedPipeSize === size ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'text-gray-700 border-gray-300 hover:bg-gray-50'
-                    }`}
-                    onClick={() => setSelectedPipeSize(size)}
-                  >
-                    {size}mm
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <Card className="mb-6 relative">
+          <DevLabel id="W020" position="top-right" />
+          <CardHeader className="pb-3">
+            <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
+              <Wrench className="w-5 h-5" />
+              Pipe Size Configuration
