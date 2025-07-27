@@ -461,10 +461,7 @@ export default function PR2ConfigClean() {
           { id: 'quantity_runs', label: 'No Per Shift', enabled: true, value: '' }
         ],
         minQuantityOptions: [],
-        rangeOptions: [
-          { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
-          { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
-        ],
+        rangeOptions: [],
         vehicleTravelRates: [
           { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
           { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', numberOfHours: '2', enabled: true }
@@ -473,7 +470,7 @@ export default function PR2ConfigClean() {
         pricingStackOrder: ['price_dayrate'],
         quantityStackOrder: ['quantity_runs'],
         minQuantityStackOrder: [],
-        rangeStackOrder: ['range_percentage', 'range_length'],
+        rangeStackOrder: [],
         vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_7_5t'],
         sector
       };
@@ -526,10 +523,7 @@ export default function PR2ConfigClean() {
         
         rangeOptions: isTP2 ? [
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
-        ] : isP26 ? [] : [
-          { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
-          { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
-        ],
+        ] : [],
         
         vehicleTravelRates: isP26 ? [
           { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '55', numberOfHours: '2', enabled: true },
@@ -1405,10 +1399,7 @@ export default function PR2ConfigClean() {
         
         const defaultMinQuantityOptions = [];
         
-        const defaultRangeOptions = [
-          { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
-          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
-        ];
+        const defaultRangeOptions = [];
         
         // Use existing options if they exist, otherwise use defaults
         const pricingOptions = existingPricingOptions.length > 0 ? existingPricingOptions : defaultPricingOptions;
@@ -1503,10 +1494,7 @@ export default function PR2ConfigClean() {
         
         const defaultMinQuantityOptions = [];
         
-        const defaultRangeOptions = [
-          { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
-          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
-        ];
+        const defaultRangeOptions = [];
         
         setFormData(prev => ({
           ...prev,
@@ -3363,10 +3351,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     pricingOptions: [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
     quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
     minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
-    rangeOptions: [
-      { id: 'range_percentage', label: 'Percentage', enabled: true, rangeEnd: '', rangeStart: '' },
-      { id: 'range_length', label: 'Length', enabled: true, rangeEnd: '', rangeStart: '' }
-    ],
+    rangeOptions: [],
 
     mathOperators: ['÷'],
     vehicleTravelRates: [],
@@ -3374,7 +3359,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     pricingStackOrder: ['price_dayrate'],
     quantityStackOrder: ['quantity_runs'],
     minQuantityStackOrder: ['minquantity_runs'],
-    rangeStackOrder: ['range_percentage', 'range_length']
+    rangeStackOrder: []
   });
 
   const [configId, setConfigId] = useState<number | null>(null);
@@ -3637,11 +3622,11 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           pricingOptions: [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
           quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
           minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
-          rangeOptions: [{ id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }],
+          rangeOptions: [],
           pricingStackOrder: ['price_dayrate'],
           quantityStackOrder: ['quantity_runs'],
           minQuantityStackOrder: ['minquantity_runs'],
-          rangeStackOrder: ['range_length']
+          rangeStackOrder: []
         });
         
         // Refresh data to update UI
