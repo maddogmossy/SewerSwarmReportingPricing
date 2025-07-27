@@ -2893,22 +2893,22 @@ export default function PR2ConfigClean() {
         </Card>
 
         {/* Upper Level Pipe Size Configuration */}
-        <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 relative">
+        <Card className="mb-6 relative">
           <DevLabel id="W020" position="top-right" />
           <CardHeader className="pb-3">
-            <CardTitle className="text-blue-700 text-lg flex items-center gap-2">
+            <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
               <Ruler className="w-5 h-5" />
               Pipe Size Configuration
             </CardTitle>
-            <p className="text-sm text-blue-600 mt-1">
+            <p className="text-sm text-gray-600 mt-1">
               Select pipe sizes for this configuration category
             </p>
           </CardHeader>
           <CardContent className="py-3">
             <div className="space-y-4">
               {/* Pipe Size Selector */}
-              <div className="bg-white p-4 rounded-lg border border-blue-200">
-                <Label className="text-sm font-medium text-blue-700 mb-3 block">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <Label className="text-sm font-medium text-gray-700 mb-3 block">
                   Available Pipe Sizes
                 </Label>
                 <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-10 gap-1">
@@ -2926,8 +2926,8 @@ export default function PR2ConfigClean() {
                       }}
                       className={`h-8 px-1 text-xs font-medium ${
                         selectedPipeSize === size 
-                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                          : 'border-blue-200 text-blue-700 hover:bg-blue-50'
+                          ? 'bg-gray-600 hover:bg-gray-700 text-white' 
+                          : 'border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
                       {size}mm
@@ -2941,22 +2941,22 @@ export default function PR2ConfigClean() {
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-between border-blue-200 text-blue-700 hover:bg-blue-50 p-3"
+                    className="w-full justify-between border-gray-200 text-gray-700 hover:bg-gray-50 p-3"
                   >
                     <span className="text-sm font-medium">Custom Pipe Size Management</span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="mt-2">
-                  <div className="bg-white p-4 rounded-lg border border-blue-200">
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
                     <div className="flex items-center justify-between mb-3">
-                      <Label className="text-sm font-medium text-blue-700">
+                      <Label className="text-sm font-medium text-gray-700">
                         Manage Available Sizes
                       </Label>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                        className="border-gray-200 text-gray-700 hover:bg-gray-50"
                         onClick={() => {
                           const customSize = prompt("Enter custom pipe size (mm):");
                           if (customSize && !isNaN(Number(customSize))) {
@@ -2977,8 +2977,8 @@ export default function PR2ConfigClean() {
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {availablePipeSizes.map((size) => (
-                        <div key={size} className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded text-xs">
-                          <span className="text-blue-700 font-medium">{size}mm</span>
+                        <div key={size} className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded text-xs">
+                          <span className="text-gray-700 font-medium">{size}mm</span>
                           {availablePipeSizes.length > 1 && (
                             <Button
                               variant="ghost"
