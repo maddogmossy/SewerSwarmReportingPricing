@@ -3743,16 +3743,27 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
   };
 
   const updateRangeOption = (index: number, field: string, value: string) => {
+    let processedValue = value;
+    
+    // Auto-add .99 to length field (rangeEnd) if user enters a number without decimal
+    if (field === 'rangeEnd' && value && !isNaN(Number(value))) {
+      const numValue = parseFloat(value);
+      if (Number.isInteger(numValue) && !value.includes('.')) {
+        processedValue = (numValue + 0.99).toString();
+        console.log(`📏 [${pipeSize}mm] LENGTH AUTO-ADJUST: ${value} → ${processedValue} (added .99)`);
+      }
+    }
+    
     setTp1Data(prev => ({
       ...prev,
       rangeOptions: prev.rangeOptions.map((opt, i) => 
-        i === index ? { ...opt, [field]: value } : opt
+        i === index ? { ...opt, [field]: processedValue } : opt
       )
     }));
     
     // Trigger auto-save after update
     debouncedAutoSave();
-    console.log(`🟣 [${pipeSize}mm] PURPLE WINDOW - Range option ${index} updated: ${field} = "${value}"`);
+    console.log(`🟣 [${pipeSize}mm] PURPLE WINDOW - Range option ${index} updated: ${field} = "${processedValue}"`);
   };
 
   // Save TP1 configuration with strict isolation
