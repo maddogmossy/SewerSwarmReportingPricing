@@ -2663,6 +2663,18 @@ export default function PR2ConfigClean() {
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
+              {/* CTF P006a Large Identifier for Test Card */}
+              {categoryId === 'test-card' && getTemplateType(categoryId || '') === 'P006a' && (
+                <div className="mb-4">
+                  <h1 className="text-6xl font-bold text-blue-600 mb-2" style={{ fontSize: '4rem', lineHeight: '1' }}>
+                    CTF P006a
+                  </h1>
+                  <p className="text-xl text-gray-700 font-semibold">
+                    Configuration Template Framework - P006a Template System
+                  </p>
+                </div>
+              )}
+              
               <h1 
                 className="text-2xl font-bold text-gray-900"
                 data-component="page-title"
