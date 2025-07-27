@@ -79,8 +79,25 @@ const getTP1Template = (categoryId, categoryName, pipeSize) => ({
   
   rangeValues: {},
   mathOperators: ['÷'],
-  vehicleTravelRates: [],
-  vehicleTravelRatesStackOrder: [],
+  
+  // W003 Component - Vehicle Travel Rates (like F175)
+  vehicleTravelRates: [
+    {
+      id: 'vehicle_3_5t',
+      enabled: true,
+      hourlyRate: '',
+      vehicleType: '3.5t',
+      numberOfHours: '2'
+    },
+    {
+      id: 'vehicle_7_5t',
+      enabled: true,
+      hourlyRate: '',
+      vehicleType: '7.5t',
+      numberOfHours: '2'
+    }
+  ],
+  vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_7_5t'],
   pricingStackOrder: ['price_dayrate'],
   quantityStackOrder: ['quantity_runs'],
   minQuantityStackOrder: ['minquantity_runs'],
@@ -125,14 +142,14 @@ async function setupCTFP006Templates() {
           INSERT INTO pr2_configurations (
             user_id, category_id, category_name, pipe_size, description,
             pricing_options, quantity_options, min_quantity_options, range_options,
-            range_values, math_operators, vehicle_travel_rates,
+            range_values, math_operators, vehicle_travel_rates, vehicle_travel_rates_stack_order,
             sector, category_color, is_active
           ) VALUES (
             ${template.userId}, ${template.categoryId}, ${template.categoryName}, ${template.pipeSize}, ${template.description},
             ${JSON.stringify(template.pricingOptions)}, ${JSON.stringify(template.quantityOptions)}, 
             ${JSON.stringify(template.minQuantityOptions)}, ${JSON.stringify(template.rangeOptions)},
             ${JSON.stringify(template.rangeValues)}, ${JSON.stringify(template.mathOperators)}, 
-            ${JSON.stringify(template.vehicleTravelRates)},
+            ${JSON.stringify(template.vehicleTravelRates)}, ${JSON.stringify(template.vehicleTravelRatesStackOrder)},
             ${template.sector}, ${template.categoryColor}, ${template.isActive}
           ) RETURNING id
         `;
