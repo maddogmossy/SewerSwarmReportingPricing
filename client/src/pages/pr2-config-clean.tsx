@@ -462,6 +462,7 @@ export default function PR2ConfigClean() {
         ],
         minQuantityOptions: [],
         rangeOptions: [
+          { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
           { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
         ],
         vehicleTravelRates: [
@@ -526,6 +527,7 @@ export default function PR2ConfigClean() {
         rangeOptions: isTP2 ? [
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
         ] : isP26 ? [] : [
+          { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
           { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
         ],
         
