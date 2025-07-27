@@ -3547,7 +3547,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           {/* Blue Card - Day Rate (50% reduced width) */}
           <Card className="bg-blue-50 border-blue-200 w-32">
             <CardHeader className="pb-2">
-              <CardTitle className="text-blue-700 text-xs flex items-center justify-between">
+              <CardTitle className="text-blue-700 text-sm flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <Banknote className="w-3 h-3" />
                   Day Rate
@@ -3567,7 +3567,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           {/* Green Card - Runs per Shift (adjusted for title width) */}
           <Card className="bg-green-50 border-green-200 w-40">
             <CardHeader className="pb-2">
-              <CardTitle className="text-green-700 text-xs flex items-center justify-between">
+              <CardTitle className="text-green-700 text-sm flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <RotateCcw className="w-3 h-3" />
                   Runs per Shift
