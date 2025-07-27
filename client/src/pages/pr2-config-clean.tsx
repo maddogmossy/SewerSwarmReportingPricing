@@ -3570,6 +3570,34 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     });
   };
 
+  // Delete paired row function (deletes both green and purple row)
+  const deletePairedRow = (index: number) => {
+    setTp1Data(prev => {
+      // Delete corresponding quantity option (green window)
+      const newQuantityOptions = prev.quantityOptions.filter((_, i) => i !== index);
+      const deletedQuantityId = prev.quantityOptions[index]?.id;
+      
+      // Delete range option (purple window)
+      const newRangeOptions = prev.rangeOptions.filter((_, i) => i !== index);
+      const deletedRangeId = prev.rangeOptions[index]?.id;
+      
+      return {
+        ...prev,
+        quantityOptions: newQuantityOptions,
+        quantityStackOrder: (prev.quantityStackOrder || []).filter(id => id !== deletedQuantityId),
+        rangeOptions: newRangeOptions,
+        rangeStackOrder: (prev.rangeStackOrder || []).filter(id => id !== deletedRangeId)
+      };
+    });
+    
+    // Auto-save after deleting paired row
+    setTimeout(() => {
+      saveTP1Config();
+    }, 100);
+    
+    console.log(`🔧 P007 DELETE BUTTON: Deleted paired row at index ${index}`);
+  };
+
   // Update option functions
   const updatePricingOption = (index: number, field: string, value: string) => {
     setTp1Data(prev => ({
@@ -3670,9 +3698,8 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         </p>
       </CardHeader>
       <CardContent className="py-3">
-        {/* TP1 Configuration Cards Row */}
+        {/* TP1 Configuration Cards */}
         <div className="flex gap-4">
-
           {/* Blue Card - Day Rate (50% reduced width) */}
           <Card className="bg-blue-50 border-blue-200 w-32">
             <CardHeader className="pb-2">
@@ -3693,90 +3720,81 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
             </CardContent>
           </Card>
 
-          {/* Green Card - Runs per Shift (adjusted for title width) */}
-          <Card className="bg-green-50 border-green-200 w-40">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-green-700 text-sm flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <RotateCcw className="w-3 h-3" />
-                  Runs per Shift
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="py-2 space-y-2">
-              {tp1Data.quantityOptions?.map((option, index) => (
-                <div key={option.id} className="flex gap-1 items-center">
-                  <Input
-                    placeholder={option.label}
-                    value={option.value || ""}
-                    onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
-                    className="border-green-200 focus:border-green-500 text-xs h-7 flex-1"
-                  />
-                  {index > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteQuantityOption(index)}
-                      className="h-7 w-7 p-0 text-red-500 hover:bg-red-100"
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          {/* Green and Purple Cards - Stacked Vertically */}
+          <div className="flex flex-col gap-2 w-72">
+            {/* Green Card - Runs per Shift */}
+            <Card className="bg-green-50 border-green-200">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-green-700 text-sm flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <RotateCcw className="w-3 h-3" />
+                    Runs per Shift
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="py-2 space-y-2">
+                {tp1Data.quantityOptions?.map((option, index) => (
+                  <div key={option.id} className="flex gap-1 items-center">
+                    <Input
+                      placeholder={option.label}
+                      value={option.value || ""}
+                      onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
+                      className="border-green-200 focus:border-green-500 text-xs h-7 flex-1"
+                    />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
 
-
-
-          {/* Purple Card - Ranges */}
-          <Card className="bg-purple-50 border-purple-200 w-72">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-purple-700 text-sm flex items-center">
-                <div className="flex items-center gap-2">
-                  <ArrowUpDown className="w-4 h-4" />
-                  Ranges
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="py-2 space-y-2">
-              {tp1Data.rangeOptions?.map((option, index) => (
-                <div key={option.id} className="flex gap-2 items-center">
-                  <Input
-                    placeholder={option.label === 'Percentage' ? 'Debris %' : option.label === 'Length' ? 'Length' : 'Start'}
-                    value={option.rangeStart || ""}
-                    onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
-                    className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
-                  />
-                  <Input
-                    placeholder={option.label === 'Percentage' ? '%' : option.label === 'Length' ? 'End' : 'End'}
-                    value={option.rangeEnd || ""}
-                    onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
-                    className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
-                  />
-                  {index >= tp1Data.rangeOptions.length - 1 ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={addRangeOption}
-                      className="h-7 w-7 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteRangeOption(index)}
-                      className="h-7 w-7 p-0 text-red-500 hover:bg-red-100"
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+            {/* Purple Card - Ranges (below green) */}
+            <Card className="bg-purple-50 border-purple-200">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-purple-700 text-sm flex items-center">
+                  <div className="flex items-center gap-2">
+                    <ArrowUpDown className="w-4 h-4" />
+                    Ranges
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="py-2 space-y-2">
+                {tp1Data.rangeOptions?.map((option, index) => (
+                  <div key={option.id} className="flex gap-2 items-center">
+                    <Input
+                      placeholder={option.label === 'Percentage' ? 'Debris %' : option.label === 'Length' ? 'Length' : 'Start'}
+                      value={option.rangeStart || ""}
+                      onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
+                      className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
+                    />
+                    <Input
+                      placeholder={option.label === 'Percentage' ? '%' : option.label === 'Length' ? 'End' : 'End'}
+                      value={option.rangeEnd || ""}
+                      onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
+                      className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
+                    />
+                    {index >= tp1Data.rangeOptions.length - 1 ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={addRangeOption}
+                        className="h-7 w-7 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deletePairedRow(index)}
+                        className="h-7 w-7 p-0 text-red-500 hover:bg-red-100"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
 
