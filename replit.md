@@ -789,7 +789,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **P007 Pattern**: Individual pipe-size-specific template with auto-save functionality
 - **C029 Pattern**: Sector selection using P002-style card grid for consistent UI/UX
 
-### CTF Components:
+### CTF Components (Complete Framework):
 1. **Category Cards Interface (P002 Pattern)**:
    - Grid-based card layout with hover effects and transitions
    - Dynamic border colors and background states for configuration status
@@ -807,19 +807,27 @@ This prevents data contamination and ensures authentic extraction integrity.
    - Blue Window: Day Rate input with auto-save
    - Green Window: "No Per Shift" quantity options with auto-save
    - Purple Window: Range inputs (Debris %, Length M) with auto-save
-   - Dark Teal Window (W003): Vehicle Travel Rates with matching card header design
    - Placeholder row system with locked green + button
    - 500ms debounced auto-save across all windows
    - Isolated save system preventing cross-contamination
+   - React state closure fix for proper value persistence
 
-4. **Sector Selection Interface (C029 Pattern)**:
+4. **Vehicle Travel Rates Interface (W003 Pattern)**:
+   - Dark Teal Window: Vehicle Travel Rates with matching card header design
+   - Hourly Rate input with auto-save functionality
+   - Vehicle Type selection (3.5, 7.5, 18+ tonnes)
+   - Number of Hours configuration
+   - Consistent card styling matching P007 header design
+   - Integration with TP1/TP2 pricing systems for travel cost calculations
+
+5. **Sector Selection Interface (C029 Pattern)**:
    - P002-style card grid for sector selection (3-column layout)
    - Sector-specific color schemes (utilities=blue, adoption=teal, highways=orange)
    - Dynamic selection states with colored borders and backgrounds
    - Click-to-toggle functionality for multi-sector configuration
    - Visual consistency with main category selection interface
 
-### CTF Benefits:
+### CTF Framework Benefits:
 - **Scalable**: Easy to apply to other configuration types (TP2, TP3, etc.)
 - **Consistent UX**: Standardized interface pattern across all configuration types
 - **Visual Harmony**: Unified card-based design language throughout application
@@ -828,15 +836,16 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Extensible**: Pattern replication for new interface elements
 - **Responsive Design**: Card layouts adapt to different screen sizes and content
 - **Cross-Component Consistency**: P002 pattern successfully applied to C029, W003 card styling matches P007
+- **Complete Framework Coverage**: All major UI patterns (P002, P006, P007, W003, C029) documented and standardized
 - **Maintenance Efficiency**: Single design pattern reduces code duplication and styling inconsistencies
 
 ### CTF Implementation Status:
 ✅ **P002 Pattern**: Complete - Category cards with dynamic states and visual indicators
-✅ **P006 Pattern**: Complete - Pipe size selection with TP1 template navigation
-✅ **P007 Pattern**: Complete - Auto-save templates with React state closure fix, purple window enlarged (w-96)
+✅ **P006 Pattern**: Complete - Pipe size selection with TP1 template navigation  
+✅ **P007 Pattern**: Complete - Auto-save TP1 templates with React state closure fix, purple window enlarged (w-96)
+✅ **W003 Pattern**: Complete - Vehicle Travel Rates with card header design matching P007, auto-save functionality
 ✅ **C029 Pattern**: Complete - Sector selection using P002-style card grid
-✅ **W003 Integration**: Complete - Vehicle Travel Rates card matches P007 header design
-⚡ **Framework Ready**: CTF patterns documented and ready for replication across new components
+⚡ **Framework Ready**: All 5 CTF patterns documented and ready for replication across new components
 
 ### CTF P006 Template Expansion Complete (January 27, 2025):
 ✅ **Multi-Category Implementation Complete**: Successfully created P006 template system for all core categories:
