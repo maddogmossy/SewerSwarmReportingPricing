@@ -3269,7 +3269,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       { id: 'range_percentage', label: 'Percentage', enabled: true, rangeEnd: '', rangeStart: '' },
       { id: 'range_length', label: 'Length', enabled: true, rangeEnd: '', rangeStart: '' }
     ],
-    rangeValues: {},
+
     mathOperators: ['÷'],
     vehicleTravelRates: [],
     vehicleTravelRatesStackOrder: [],
@@ -3524,7 +3524,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       <CardHeader className="pb-3">
         <CardTitle className="text-green-700 text-lg flex items-center gap-2">
           <Settings className="w-5 h-5" />
-          TP1 Template - {pipeSize}mm {configId && `(ID: ${configId})`}
+          P007 - TP1 Template - {pipeSize}mm {configId && `(ID: ${configId})`}
         </CardTitle>
         <p className="text-sm text-green-600 mt-1">
           Individual TP1 cleaning configuration for {pipeSize}mm pipes
