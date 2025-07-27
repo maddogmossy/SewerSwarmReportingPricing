@@ -914,6 +914,7 @@ export default function PR2ConfigClean() {
     // Set new timeout to save after 500ms of no changes
     const timeoutId = setTimeout(async () => {
       try {
+        // For TP1 templates (cctv-jet-vac), don't override range options since TP1 templates manage their own
         const payload = {
           categoryName: formData.categoryName,
           description: formData.description,
@@ -923,7 +924,9 @@ export default function PR2ConfigClean() {
           pricingOptions: formData.pricingOptions,
           quantityOptions: formData.quantityOptions,
           minQuantityOptions: formData.minQuantityOptions,
-          rangeOptions: formData.rangeOptions,
+          rangeOptions: categoryId === 'cctv-jet-vac' ? 
+            [{ id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }] : 
+            formData.rangeOptions,
           vehicleTravelRates: formData.vehicleTravelRates || [],
           vehicleTravelRatesStackOrder: formData.vehicleTravelRatesStackOrder || [],
           mathOperators: formData.mathOperators,
