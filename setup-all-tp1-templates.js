@@ -33,7 +33,7 @@ async function setupAllTP1Templates() {
           '[{"id":"price_dayrate","label":"Day Rate","value":"","enabled":true}]',
           '[{"id":"quantity_runs","label":"No Per Shift","value":"","enabled":true}]',
           '[{"id":"minquantity_runs","label":"Min Runs per Shift","value":"","enabled":true}]',
-          '[{"id":"range_percentage","label":"Debris %","enabled":true,"rangeStart":"","rangeEnd":""},{"id":"range_length","label":"Length M","enabled":true,"rangeStart":"","rangeEnd":""}]',
+          '[]',
           '["÷"]',
           '[{"id":"vehicle_default","enabled":true,"hourlyRate":"","vehicleType":"3.5","numberOfHours":"2"}]',
           '["vehicle_default"]',

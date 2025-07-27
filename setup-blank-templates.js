@@ -43,15 +43,12 @@ const createBlankTP1Template = (categoryId) => {
     minQuantityOptions: [
       { id: 'minquantity_runs', label: 'Min Runs per Shift', enabled: true, value: '' }
     ],
-    rangeOptions: [
-      { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
-      { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
-    ],
+    rangeOptions: [],
     mathOperators: ['÷'],
     pricingStackOrder: ['price_dayrate'],
     quantityStackOrder: ['quantity_runs'],
     minQuantityStackOrder: ['minquantity_runs'],
-    rangeStackOrder: ['range_percentage', 'range_length']
+    rangeStackOrder: []
   };
 };
 
