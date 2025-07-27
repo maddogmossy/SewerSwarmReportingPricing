@@ -2886,13 +2886,14 @@ export default function PR2ConfigClean() {
             {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
             <Card className="bg-cyan-50 border-cyan-200 relative flex-1">
               <DevLabel id="W003" position="top-right" />
-            <CardHeader className="pb-2">
-              <CardTitle className="text-cyan-700 text-sm flex items-center">
-                <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4" />
-                  Vehicle Travel Rates
-                </div>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
+                <Truck className="w-5 h-5" />
+                Vehicle Travel Rates
               </CardTitle>
+              <p className="text-sm text-cyan-600 mt-1">
+                TP1 CCTV operations vehicle travel rates
+              </p>
             </CardHeader>
             <CardContent className="py-2">
               {/* Styled Container - Dark Teal - Sized to match P007 */}
