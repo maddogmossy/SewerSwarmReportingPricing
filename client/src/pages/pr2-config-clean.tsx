@@ -3895,18 +3895,24 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
             <CardContent className="py-2 space-y-2">
               {tp1Data.rangeOptions?.map((option, index) => (
                 <div key={option.id} className="flex gap-2 items-center">
-                  <Input
-                    placeholder="Debris %"
-                    value={option.rangeStart || ""}
-                    onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
-                    className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
-                  />
-                  <Input
-                    placeholder="Length M"
-                    value={option.rangeEnd || ""}
-                    onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
-                    className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
-                  />
+                  <div className="flex items-center gap-1 flex-1">
+                    <Input
+                      placeholder="Debris %"
+                      value={option.rangeStart || ""}
+                      onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
+                      className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
+                    />
+                    <span className="text-purple-600 text-xs font-medium">%</span>
+                  </div>
+                  <div className="flex items-center gap-1 flex-1">
+                    <Input
+                      placeholder="Length M"
+                      value={option.rangeEnd || ""}
+                      onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
+                      className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
+                    />
+                    <span className="text-purple-600 text-xs font-medium">Length</span>
+                  </div>
                   {index === 0 ? (
                     <Button
                       variant="ghost"
