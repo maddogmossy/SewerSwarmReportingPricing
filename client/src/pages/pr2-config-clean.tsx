@@ -2936,6 +2936,40 @@ export default function PR2ConfigClean() {
                 </div>
               </div>
 
+              {/* Orange Window - Min Quantity Configuration */}
+              <div className="bg-orange-100 border border-orange-300 rounded-lg p-3 mt-4">
+                <Label className="text-gray-900 font-semibold text-sm flex items-center gap-1 mb-2">
+                  <Hash className="w-3 h-3" />
+                  Min Quantity Per Shift
+                </Label>
+                <div className="flex gap-2 items-center">
+                  <Input
+                    placeholder="25"
+                    value={formData.minQuantityOptions?.[0]?.value || ""}
+                    onChange={(e) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        minQuantityOptions: [{
+                          id: 'min_runs_per_shift',
+                          label: 'Min Runs per Shift',
+                          enabled: true,
+                          value: e.target.value
+                        }]
+                      }));
+                      debouncedSave();
+                    }}
+                    className="border-orange-300 focus:border-orange-500 text-xs h-7 flex-1 bg-white"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-24 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
+                  >
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+
               {/* Collapsible Pipe Size Management */}
               <Collapsible>
                 <CollapsibleTrigger asChild>
