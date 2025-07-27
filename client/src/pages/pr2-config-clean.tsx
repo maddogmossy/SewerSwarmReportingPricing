@@ -3610,7 +3610,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                   variant="ghost"
                   size="sm"
                   onClick={addRangeOption}
-                  className="h-7 w-26 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
+                  className="h-7 w-28 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
                 >
                   <Plus className="w-3 h-3" />
                 </Button>
