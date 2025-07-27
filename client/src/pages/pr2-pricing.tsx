@@ -280,6 +280,9 @@ export default function PR2Pricing() {
       // Direct category ID match
       if (config.categoryId === categoryId) return true;
       
+      // P006a template matches - map 'cctv' to 'cctv-p006a'
+      if (categoryId === 'cctv' && config.categoryId === 'cctv-p006a') return true;
+      
       // Legacy matches
       if (config.categoryName?.toLowerCase() === categoryId.toLowerCase()) return true;
       if (categoryId === 'cctv' && config.categoryName === 'CCTV') return true;
