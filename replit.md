@@ -786,11 +786,11 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Date**: January 27, 2025
 - **Status**: Successfully implemented individual TP1 template system for all pipe sizes on P006 page
 - **Features Added**:
-  - **Ultra-Compact Grid Layout**: 25 pipe size buttons (100-1500mm) with TP1 template creation capability
+  - **Contextual Pipe Size Templates**: TP1 template appears dynamically based on currently selected pipe size
   - **Individual Configuration**: Each pipe size gets its own separate TP1 template with unique category ID (P006-TP1-{size})
-  - **Smart Template Management**: Click any pipe size to create/edit its individual TP1 configuration
-  - **Bulk Actions**: Collapsible section with "Create All TP1 Templates" and "Delete All Templates" functionality
-  - **DevLabel W021**: Systematic debugging identifier for TP1 Template System component
+  - **Smart Template Management**: Template title and content change automatically when different pipe sizes are selected
+  - **One-Click Access**: Single "Configure TP1 Template" button creates or opens the specific template for current pipe size
+  - **Clean Interface**: No bulk actions or grid layout - just contextual template for active pipe size
 - **Technical Implementation**:
   - **Category ID Pattern**: Uses `P006-TP1-{size}` format (e.g., P006-TP1-150, P006-TP1-300)
   - **Template Structure**: Standard TP1 configuration with Day Rate, Runs per Shift, Min Quantity, and Range options

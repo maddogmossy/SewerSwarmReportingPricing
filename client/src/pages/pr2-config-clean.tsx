@@ -2870,221 +2870,109 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* TP1 Template System for CCTV/Jet Vac configurations */}
-        {categoryId === 'cctv-jet-vac' && (
+        {/* TP1 Template for Current Pipe Size */}
+        {categoryId === 'cctv-jet-vac' && selectedPipeSize && (
           <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative">
-            <DevLabel id="W021" position="top-right" />
             <CardHeader className="pb-3">
               <CardTitle className="text-green-700 text-lg flex items-center gap-2">
                 <Settings className="w-5 h-5" />
-                TP1 Template System
+                TP1 Template - {selectedPipeSize}mm
               </CardTitle>
               <p className="text-sm text-green-600 mt-1">
-                Create individual TP1 templates for each pipe size
+                Individual TP1 cleaning configuration for {selectedPipeSize}mm pipes
               </p>
             </CardHeader>
             <CardContent className="py-3">
               <div className="space-y-4">
-                {/* Ultra-Compact Grid Layout */}
+                {/* Quick Access Button */}
                 <div className="bg-white p-4 rounded-lg border border-green-200">
-                  <Label className="text-sm font-medium text-green-700 mb-3 block">
-                    TP1 Template Grid (Individual Configuration by Pipe Size)
-                  </Label>
-                  <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-10 gap-1">
-                    {availablePipeSizes.map((size) => (
-                      <Button
-                        key={size}
-                        variant="outline"
-                        onClick={async () => {
-                          console.log(`🔧 Creating TP1 template for ${size}mm pipe size`);
-                          
-                          // Check if TP1 template already exists for this pipe size
-                          try {
-                            const response = await fetch(`/api/pr2-clean?sector=${sector}&categoryId=P006-TP1-${size}`);
-                            const configs = await response.json();
-                            
-                            if (configs && configs.length > 0) {
-                              // Edit existing TP1 template
-                              const existingConfig = configs[0];
-                              window.location.href = `/pr2-config-clean?sector=${sector}&categoryId=P006-TP1-${size}&edit=${existingConfig.id}`;
-                            } else {
-                              // Create new TP1 template
-                              const newConfig = {
-                                categoryId: `P006-TP1-${size}`,
-                                categoryName: `TP1 - ${size}mm Cleaning Configuration`,
-                                pipeSize: size,
-                                description: `TP1 cleaning template for ${size}mm pipes`,
-                                sector: sector,
-                                categoryColor: '#10B981', // Green color for TP1
-                                pricingOptions: [
-                                  { id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }
-                                ],
-                                quantityOptions: [
-                                  { id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }
-                                ],
-                                minQuantityOptions: [
-                                  { id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }
-                                ],
-                                rangeOptions: [
-                                  { id: 'range_percentage', label: 'Percentage', enabled: true, rangeEnd: '', rangeStart: '' },
-                                  { id: 'range_length', label: 'Length', enabled: true, rangeEnd: '', rangeStart: '' }
-                                ],
-                                mathOperators: ['÷'],
-                                vehicleTravelRates: [],
-                                vehicleTravelRatesStackOrder: []
-                              };
-                              
-                              const createResponse = await fetch('/api/pr2-clean', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(newConfig)
-                              });
-                              
-                              if (createResponse.ok) {
-                                const createdConfig = await createResponse.json();
-                                window.location.href = `/pr2-config-clean?sector=${sector}&categoryId=P006-TP1-${size}&edit=${createdConfig.id}`;
-                              }
-                            }
-                          } catch (error) {
-                            console.error('❌ Error creating TP1 template:', error);
-                          }
-                        }}
-                        className="h-12 px-2 text-xs font-medium border-green-200 text-green-700 hover:bg-green-50 flex flex-col items-center justify-center"
-                      >
-                        <span className="font-bold">{size}mm</span>
-                        <span className="text-[10px] text-green-600">TP1</span>
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Template Status Overview */}
-                <div className="bg-white p-4 rounded-lg border border-green-200">
-                  <Label className="text-sm font-medium text-green-700 mb-3 block">
-                    Template Status Overview
-                  </Label>
-                  <div className="text-xs text-green-600 space-y-1">
-                    <p>• Click any pipe size to create or edit its individual TP1 template</p>
-                    <p>• Each pipe size will have its own independent configuration</p>
-                    <p>• Templates include: Day Rate, Runs per Shift, Min Quantity, and Range settings</p>
-                  </div>
-                </div>
-
-                {/* Collapsible Bulk Actions */}
-                <Collapsible>
-                  <CollapsibleTrigger asChild>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium text-green-700">
+                        {selectedPipeSize}mm TP1 Configuration
+                      </Label>
+                      <p className="text-xs text-green-600 mt-1">
+                        Dedicated cleaning template for this pipe size
+                      </p>
+                    </div>
                     <Button
                       variant="outline"
-                      className="w-full justify-between border-green-200 text-green-700 hover:bg-green-50 p-3"
-                    >
-                      <span className="text-sm font-medium">Bulk Template Actions</span>
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="mt-2">
-                    <div className="bg-white p-4 rounded-lg border border-green-200 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm font-medium text-green-700">
-                          Bulk Operations
-                        </Label>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-green-200 text-green-700 hover:bg-green-50"
-                          onClick={async () => {
-                            if (confirm('Create TP1 templates for all pipe sizes? This will create individual configurations for each size.')) {
-                              console.log('🔧 Creating bulk TP1 templates for all pipe sizes...');
-                              
-                              for (const size of availablePipeSizes) {
-                                try {
-                                  // Check if template already exists
-                                  const response = await fetch(`/api/pr2-clean?sector=${sector}&categoryId=P006-TP1-${size}`);
-                                  const configs = await response.json();
-                                  
-                                  if (!configs || configs.length === 0) {
-                                    // Create new TP1 template
-                                    const newConfig = {
-                                      categoryId: `P006-TP1-${size}`,
-                                      categoryName: `TP1 - ${size}mm Cleaning Configuration`,
-                                      pipeSize: size,
-                                      description: `TP1 cleaning template for ${size}mm pipes`,
-                                      sector: sector,
-                                      categoryColor: '#10B981',
-                                      pricingOptions: [
-                                        { id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }
-                                      ],
-                                      quantityOptions: [
-                                        { id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }
-                                      ],
-                                      minQuantityOptions: [
-                                        { id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }
-                                      ],
-                                      rangeOptions: [
-                                        { id: 'range_percentage', label: 'Percentage', enabled: true, rangeEnd: '', rangeStart: '' },
-                                        { id: 'range_length', label: 'Length', enabled: true, rangeEnd: '', rangeStart: '' }
-                                      ],
-                                      mathOperators: ['÷'],
-                                      vehicleTravelRates: [],
-                                      vehicleTravelRatesStackOrder: []
-                                    };
-                                    
-                                    await fetch('/api/pr2-clean', {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify(newConfig)
-                                    });
-                                  }
-                                } catch (error) {
-                                  console.error(`❌ Error creating TP1 template for ${size}mm:`, error);
-                                }
-                              }
-                              
-                              alert('TP1 templates created for all pipe sizes!');
-                              window.location.reload();
-                            }
-                          }}
-                        >
-                          <Plus className="w-4 h-4 mr-1" />
-                          Create All TP1 Templates
-                        </Button>
+                      size="sm"
+                      className="border-green-200 text-green-700 hover:bg-green-50"
+                      onClick={async () => {
+                        console.log(`🔧 Opening TP1 template for ${selectedPipeSize}mm pipe size`);
                         
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-red-200 text-red-700 hover:bg-red-50"
-                          onClick={async () => {
-                            if (confirm('Delete ALL TP1 templates? This action cannot be undone.')) {
-                              console.log('🗑️ Deleting all TP1 templates...');
-                              
-                              for (const size of availablePipeSizes) {
-                                try {
-                                  const response = await fetch(`/api/pr2-clean?sector=${sector}&categoryId=P006-TP1-${size}`);
-                                  const configs = await response.json();
-                                  
-                                  for (const config of configs) {
-                                    await fetch(`/api/pr2-clean/${config.id}`, {
-                                      method: 'DELETE'
-                                    });
-                                  }
-                                } catch (error) {
-                                  console.error(`❌ Error deleting TP1 template for ${size}mm:`, error);
-                                }
-                              }
-                              
-                              alert('All TP1 templates deleted!');
-                              window.location.reload();
+                        try {
+                          // Check if TP1 template already exists for this pipe size
+                          const response = await fetch(`/api/pr2-clean?sector=${sector}&categoryId=P006-TP1-${selectedPipeSize}`);
+                          const configs = await response.json();
+                          
+                          if (configs && configs.length > 0) {
+                            // Edit existing TP1 template
+                            const existingConfig = configs[0];
+                            window.location.href = `/pr2-config-clean?sector=${sector}&categoryId=P006-TP1-${selectedPipeSize}&edit=${existingConfig.id}`;
+                          } else {
+                            // Create new TP1 template
+                            const newConfig = {
+                              categoryId: `P006-TP1-${selectedPipeSize}`,
+                              categoryName: `TP1 - ${selectedPipeSize}mm Cleaning Configuration`,
+                              pipeSize: selectedPipeSize,
+                              description: `TP1 cleaning template for ${selectedPipeSize}mm pipes`,
+                              sector: sector,
+                              categoryColor: '#10B981', // Green color for TP1
+                              pricingOptions: [
+                                { id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }
+                              ],
+                              quantityOptions: [
+                                { id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }
+                              ],
+                              minQuantityOptions: [
+                                { id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }
+                              ],
+                              rangeOptions: [
+                                { id: 'range_percentage', label: 'Percentage', enabled: true, rangeEnd: '', rangeStart: '' },
+                                { id: 'range_length', label: 'Length', enabled: true, rangeEnd: '', rangeStart: '' }
+                              ],
+                              mathOperators: ['÷'],
+                              vehicleTravelRates: [],
+                              vehicleTravelRatesStackOrder: []
+                            };
+                            
+                            const createResponse = await fetch('/api/pr2-clean', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify(newConfig)
+                            });
+                            
+                            if (createResponse.ok) {
+                              const createdConfig = await createResponse.json();
+                              window.location.href = `/pr2-config-clean?sector=${sector}&categoryId=P006-TP1-${selectedPipeSize}&edit=${createdConfig.id}`;
                             }
-                          }}
-                        >
-                          <Trash2 className="w-4 h-4 mr-1" />
-                          Delete All Templates
-                        </Button>
-                      </div>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
+                          }
+                        } catch (error) {
+                          console.error('❌ Error creating TP1 template:', error);
+                        }
+                      }}
+                    >
+                      <Settings className="w-4 h-4 mr-1" />
+                      Configure TP1 Template
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Template Information */}
+                <div className="bg-white p-4 rounded-lg border border-green-200">
+                  <Label className="text-sm font-medium text-green-700 mb-2 block">
+                    TP1 Template Features
+                  </Label>
+                  <div className="text-xs text-green-600 space-y-1">
+                    <p>• Day Rate pricing configuration</p>
+                    <p>• Runs per Shift quantity settings</p>
+                    <p>• Minimum quantity requirements</p>
+                    <p>• Percentage and length range validation</p>
+                    <p>• Vehicle travel rate configuration</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
