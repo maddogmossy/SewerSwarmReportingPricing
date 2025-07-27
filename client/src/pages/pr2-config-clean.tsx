@@ -2894,43 +2894,50 @@ export default function PR2ConfigClean() {
               </CardTitle>
             </CardHeader>
             <CardContent className="py-2">
-              <div className="space-y-1">
-                {/* Titles Row */}
-                <div className="flex gap-2 items-center">
-                  <div className="flex-1">
-                    <Label className="text-xs font-medium text-cyan-700">Vehicle</Label>
+              {/* Styled Container - Dark Teal */}
+              <div className="bg-teal-100 border border-teal-300 rounded-lg p-3">
+                <div className="space-y-1">
+                  {/* Titles Row */}
+                  <div className="flex gap-2 items-center">
+                    <div className="flex-1">
+                      <Label className="text-xs font-medium text-teal-700">Vehicle</Label>
+                    </div>
+                    <div className="flex-1">
+                      <Label className="text-xs font-medium text-teal-700">Cost per hr</Label>
+                    </div>
+                    <div className="w-24"></div> {/* Spacer for button alignment */}
                   </div>
-                  <div className="flex-1">
-                    <Label className="text-xs font-medium text-cyan-700">Cost per hr</Label>
+                  
+                  {/* Input Row */}
+                  <div className="flex gap-2 items-center">
+                    <Select>
+                      <SelectTrigger className="border-teal-300 focus:border-teal-500 text-xs h-7 bg-white">
+                        <SelectValue placeholder="Select vehicle" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1.5t">1.5t Van</SelectItem>
+                        <SelectItem value="3.5t">3.5t Van</SelectItem>
+                        <SelectItem value="7.5t">7.5t Truck</SelectItem>
+                        <SelectItem value="12t">12t Truck</SelectItem>
+                        <SelectItem value="15t">15t Truck</SelectItem>
+                        <SelectItem value="18t">18t Truck</SelectItem>
+                        <SelectItem value="26t">26t Truck</SelectItem>
+                        <SelectItem value="32t">32t Truck</SelectItem>
+                        <SelectItem value="44t">44t Truck</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      placeholder="£55"
+                      className="border-teal-300 focus:border-teal-500 text-xs h-7 bg-white"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-24 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </Button>
                   </div>
-                  <div className="w-24"></div> {/* Spacer for button alignment */}
-                </div>
-                
-                {/* Input Row */}
-                <div className="flex gap-2 items-center">
-                  <Select>
-                    <SelectTrigger className="border-cyan-200 focus:border-cyan-500 text-xs h-7">
-                      <SelectValue placeholder="Select vehicle" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="3.5t">3.5t Vehicle</SelectItem>
-                      <SelectItem value="7.5t">7.5t Vehicle</SelectItem>
-                      <SelectItem value="18t">18t Vehicle</SelectItem>
-                      <SelectItem value="26t">26t Vehicle</SelectItem>
-                      <SelectItem value="32t">32t Vehicle</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    placeholder="£55"
-                    className="border-cyan-200 focus:border-cyan-500 text-xs h-7"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 w-24 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
-                  >
-                    <Plus className="w-3 h-3" />
-                  </Button>
                 </div>
               </div>
             </CardContent>
