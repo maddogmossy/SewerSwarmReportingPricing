@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -2870,7 +2870,7 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* TP1 Template for Current Pipe Size */}
+        {/* TP1 Template Configuration Cards for Current Pipe Size */}
         {categoryId === 'cctv-jet-vac' && selectedPipeSize && (
           <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative">
             <CardHeader className="pb-3">
@@ -2883,96 +2883,109 @@ export default function PR2ConfigClean() {
               </p>
             </CardHeader>
             <CardContent className="py-3">
-              <div className="space-y-4">
-                {/* Quick Access Button */}
-                <div className="bg-white p-4 rounded-lg border border-green-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-sm font-medium text-green-700">
-                        {selectedPipeSize}mm TP1 Configuration
-                      </Label>
-                      <p className="text-xs text-green-600 mt-1">
-                        Dedicated cleaning template for this pipe size
-                      </p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-green-200 text-green-700 hover:bg-green-50"
-                      onClick={async () => {
-                        console.log(`🔧 Opening TP1 template for ${selectedPipeSize}mm pipe size`);
-                        
-                        try {
-                          // Check if TP1 template already exists for this pipe size
-                          const response = await fetch(`/api/pr2-clean?sector=${sector}&categoryId=P006-TP1-${selectedPipeSize}`);
-                          const configs = await response.json();
-                          
-                          if (configs && configs.length > 0) {
-                            // Edit existing TP1 template
-                            const existingConfig = configs[0];
-                            window.location.href = `/pr2-config-clean?sector=${sector}&categoryId=P006-TP1-${selectedPipeSize}&edit=${existingConfig.id}`;
-                          } else {
-                            // Create new TP1 template
-                            const newConfig = {
-                              categoryId: `P006-TP1-${selectedPipeSize}`,
-                              categoryName: `TP1 - ${selectedPipeSize}mm Cleaning Configuration`,
-                              pipeSize: selectedPipeSize,
-                              description: `TP1 cleaning template for ${selectedPipeSize}mm pipes`,
-                              sector: sector,
-                              categoryColor: '#10B981', // Green color for TP1
-                              pricingOptions: [
-                                { id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }
-                              ],
-                              quantityOptions: [
-                                { id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }
-                              ],
-                              minQuantityOptions: [
-                                { id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }
-                              ],
-                              rangeOptions: [
-                                { id: 'range_percentage', label: 'Percentage', enabled: true, rangeEnd: '', rangeStart: '' },
-                                { id: 'range_length', label: 'Length', enabled: true, rangeEnd: '', rangeStart: '' }
-                              ],
-                              mathOperators: ['÷'],
-                              vehicleTravelRates: [],
-                              vehicleTravelRatesStackOrder: []
-                            };
-                            
-                            const createResponse = await fetch('/api/pr2-clean', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify(newConfig)
-                            });
-                            
-                            if (createResponse.ok) {
-                              const createdConfig = await createResponse.json();
-                              window.location.href = `/pr2-config-clean?sector=${sector}&categoryId=P006-TP1-${selectedPipeSize}&edit=${createdConfig.id}`;
-                            }
-                          }
-                        } catch (error) {
-                          console.error('❌ Error creating TP1 template:', error);
-                        }
-                      }}
-                    >
-                      <Settings className="w-4 h-4 mr-1" />
-                      Configure TP1 Template
-                    </Button>
-                  </div>
-                </div>
+              {/* TP1 Configuration Cards Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* Blue Card - Day Rate */}
+                <Card className="bg-blue-50 border-blue-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-blue-700 text-sm flex items-center gap-2">
+                      <Banknote className="w-4 h-4" />
+                      Day Rate
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-2">
+                    <Input
+                      placeholder="£1650"
+                      className="border-blue-200 focus:border-blue-500"
+                    />
+                  </CardContent>
+                </Card>
 
-                {/* Template Information */}
-                <div className="bg-white p-4 rounded-lg border border-green-200">
-                  <Label className="text-sm font-medium text-green-700 mb-2 block">
-                    TP1 Template Features
-                  </Label>
-                  <div className="text-xs text-green-600 space-y-1">
-                    <p>• Day Rate pricing configuration</p>
-                    <p>• Runs per Shift quantity settings</p>
-                    <p>• Minimum quantity requirements</p>
-                    <p>• Percentage and length range validation</p>
-                    <p>• Vehicle travel rate configuration</p>
-                  </div>
-                </div>
+                {/* Green Card - Runs per Shift */}
+                <Card className="bg-green-50 border-green-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-green-700 text-sm flex items-center gap-2">
+                      <RotateCcw className="w-4 h-4" />
+                      Runs per Shift
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-2">
+                    <Input
+                      placeholder="25"
+                      className="border-green-200 focus:border-green-500"
+                    />
+                  </CardContent>
+                </Card>
+
+                {/* Orange Card - Min Quantity */}
+                <Card className="bg-orange-50 border-orange-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-orange-700 text-sm flex items-center gap-2">
+                      <Hash className="w-4 h-4" />
+                      Min Quantity
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-2">
+                    <Input
+                      placeholder="20"
+                      className="border-orange-200 focus:border-orange-500"
+                    />
+                  </CardContent>
+                </Card>
+
+                {/* Purple Card - Ranges */}
+                <Card className="bg-purple-50 border-purple-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-purple-700 text-sm flex items-center gap-2">
+                      <ArrowUpDown className="w-4 h-4" />
+                      Ranges
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="py-2">
+                    <div className="space-y-2">
+                      <div className="flex gap-1">
+                        <Input
+                          placeholder="0"
+                          className="border-purple-200 focus:border-purple-500 text-xs"
+                        />
+                        <span className="text-xs text-purple-600 self-center">-</span>
+                        <Input
+                          placeholder="100"
+                          className="border-purple-200 focus:border-purple-500 text-xs"
+                        />
+                        <span className="text-xs text-purple-600 self-center">%</span>
+                      </div>
+                      <div className="flex gap-1">
+                        <Input
+                          placeholder="0"
+                          className="border-purple-200 focus:border-purple-500 text-xs"
+                        />
+                        <span className="text-xs text-purple-600 self-center">-</span>
+                        <Input
+                          placeholder="50"
+                          className="border-purple-200 focus:border-purple-500 text-xs"
+                        />
+                        <span className="text-xs text-purple-600 self-center">m</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Save Button */}
+              <div className="mt-4 flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-green-200 text-green-700 hover:bg-green-50"
+                  onClick={() => {
+                    console.log(`💾 Saving TP1 template for ${selectedPipeSize}mm`);
+                    // Save logic will be implemented
+                  }}
+                >
+                  <Save className="w-4 h-4 mr-1" />
+                  Save TP1 Template
+                </Button>
               </div>
             </CardContent>
           </Card>
