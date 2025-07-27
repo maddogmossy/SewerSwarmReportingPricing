@@ -2907,8 +2907,8 @@ export default function PR2ConfigClean() {
           <CardContent className="py-3">
             <div className="space-y-4">
               {/* Pipe Size Selector */}
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <Label className="text-sm font-medium text-gray-700 mb-3 block">
+              <div className="bg-orange-100 p-4 rounded-lg border border-orange-300">
+                <Label className="text-sm font-medium text-gray-900 mb-3 block">
                   Available Pipe Sizes
                 </Label>
                 <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-10 gap-1">
