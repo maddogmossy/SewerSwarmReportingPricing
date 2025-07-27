@@ -785,7 +785,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 ### CRITICAL: P006 TP1 Template System Implementation Complete ✅
 - **Date**: January 27, 2025  
 - **Status**: Successfully implemented individual TP1 template system for all pipe sizes on P006 page
-- **Latest Update**: Fixed corrupted P007 TP1 template - restored proper "Percentage" and "Length" range options in Purple window (was showing "New Range")
+- **Latest Update**: Optimized P007 TP1 template layout - Blue window (w-32), Green window (w-40) for proper title display, Purple window with horizontal "Debris %" and "Length" inputs
 - **Features Added**:
   - **Contextual Pipe Size Templates**: TP1 template appears dynamically based on currently selected pipe size
   - **Individual Configuration**: Each pipe size gets its own separate TP1 template with unique category ID (P006-TP1-{size})
