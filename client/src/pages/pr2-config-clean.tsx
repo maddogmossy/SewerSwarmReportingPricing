@@ -896,10 +896,10 @@ export default function PR2ConfigClean() {
   const debouncedSave = () => {
     if (!isEditing || !editId) return;
     
-    // CRITICAL: Skip auto-save for TP1 templates to prevent corruption
+    // CRITICAL: Skip auto-save for main TP1 template form (P007 has its own auto-save)
     const isTP1Template = ['cctv-jet-vac', 'jetting', 'cleansing'].includes(categoryId || '');
     if (isTP1Template) {
-      console.log('⚠️ Skipping auto-save for TP1 template - use manual save only');
+      console.log('⚠️ Skipping main form auto-save for TP1 template - P007 has dedicated auto-save');
       return;
     }
     
