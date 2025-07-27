@@ -3361,18 +3361,21 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
   useEffect(() => {
     const loadTP1Config = async () => {
       try {
-        console.log(`🔧 Loading TP1 template for ${pipeSize}mm`);
+        console.log(`🔧 [${pipeSize}mm] Loading TP1 template`);
         const response = await fetch(`/api/pr2-clean?sector=${sector}&categoryId=P006-TP1-${pipeSize}`);
         const configs = await response.json();
         
         if (configs && configs.length > 0) {
           const existingConfig = configs[0];
-          console.log(`✅ Found existing TP1 config for ${pipeSize}mm:`, existingConfig.id);
-          console.log(`🔍 TP1 Config rangeOptions:`, existingConfig.rangeOptions);
+          console.log(`✅ [${pipeSize}mm] Found existing TP1 config:`, existingConfig.id);
+          console.log(`🔍 [${pipeSize}mm] TP1 Config rangeOptions:`, existingConfig.rangeOptions);
           setConfigId(existingConfig.id);
-          setTp1Data({
+          
+          // Create completely isolated state for this pipe size
+          const isolatedData = {
             ...existingConfig,
-            pipeSize: pipeSize, // Ensure pipe size is correct
+            pipeSize: pipeSize, // Force correct pipe size
+            categoryId: `P006-TP1-${pipeSize}`, // Force correct category ID
             // Add fallbacks for missing stack order arrays
             pricingStackOrder: existingConfig.pricingStackOrder || ['price_dayrate'],
             quantityStackOrder: existingConfig.quantityStackOrder || ['quantity_runs'],
@@ -3380,18 +3383,21 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
             rangeStackOrder: existingConfig.rangeStackOrder || ['range_percentage', 'range_length'],
             // Add fallbacks for missing option arrays
             pricingOptions: existingConfig.pricingOptions || [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
-            quantityOptions: existingConfig.quantityOptions || [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
+            quantityOptions: existingConfig.quantityOptions || [{ id: 'quantity_runs', label: 'No Per Shift', value: '', enabled: true }],
             minQuantityOptions: existingConfig.minQuantityOptions || [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
             rangeOptions: existingConfig.rangeOptions || [
               { id: 'range_combined', label: 'Debris % / Length M', enabled: true, rangeEnd: '', rangeStart: '' }
             ]
-          });
+          };
+          
+          console.log(`🔒 [${pipeSize}mm] Setting isolated TP1 data with ${isolatedData.rangeOptions.length} range options`);
+          setTp1Data(isolatedData);
         } else {
-          console.log(`📝 No existing TP1 config for ${pipeSize}mm, using defaults`);
+          console.log(`📝 [${pipeSize}mm] No existing TP1 config, using defaults`);
           setConfigId(null);
         }
       } catch (error) {
-        console.error('❌ Error loading TP1 config:', error);
+        console.error(`❌ [${pipeSize}mm] Error loading TP1 config:`, error);
       } finally {
         setIsLoading(false);
       }
@@ -3497,7 +3503,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       saveTP1Config();
     }, 100);
     
-    console.log(`🔧 P007 ADD BUTTON: Added new green row (${newQuantityOption.label}) and purple row (${newRangeOption.label})`);
+    console.log(`🔧 [${pipeSize}mm] P007 ADD BUTTON: Added new green row (${newQuantityOption.label}) and purple row (${newRangeOption.label}) to config ID: ${configId}`);
   };
 
   // Delete option functions
@@ -3557,7 +3563,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       saveTP1Config();
     }, 100);
     
-    console.log(`🗑️ P007 DELETE: Deleted row ${index + 1} from both purple and green windows`);
+    console.log(`🗑️ [${pipeSize}mm] P007 DELETE: Deleted row ${index + 1} from both purple and green windows for config ID: ${configId}`);
   };
 
   // Delete paired row function (deletes both green and purple row)
@@ -3679,20 +3685,24 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     }));
   };
 
-  // Save TP1 configuration
+  // Save TP1 configuration with isolation
   const saveTP1Config = async () => {
     try {
-      console.log(`💾 Saving TP1 template for ${pipeSize}mm`);
+      console.log(`💾 [${pipeSize}mm] Saving TP1 template (ID: ${configId})`);
       
       const payload = {
         ...tp1Data,
-        categoryId: `P006-TP1-${pipeSize}`,
+        categoryId: `P006-TP1-${pipeSize}`, // Force correct category ID
+        pipeSize: pipeSize, // Force correct pipe size
         sector: sector
       };
 
+      console.log(`🔍 [${pipeSize}mm] Saving with ${payload.rangeOptions.length} range options`);
+
       let response;
       if (configId) {
-        // Update existing config
+        // Update existing config with specific ID targeting
+        console.log(`🔄 [${pipeSize}mm] Updating existing configuration ID: ${configId}`);
         response = await fetch(`/api/pr2-clean/${configId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -3700,6 +3710,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         });
       } else {
         // Create new config
+        console.log(`🆕 [${pipeSize}mm] Creating new configuration`);
         response = await fetch('/api/pr2-clean', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -3710,12 +3721,13 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       if (response.ok) {
         const savedConfig = await response.json();
         setConfigId(savedConfig.id);
-        console.log(`✅ TP1 template saved for ${pipeSize}mm with ID:`, savedConfig.id);
+        console.log(`✅ [${pipeSize}mm] TP1 template saved successfully with ID: ${savedConfig.id}`);
+        console.log(`📊 [${pipeSize}mm] Saved with ${savedConfig.rangeOptions.length} range options`);
       } else {
-        console.error('❌ Failed to save TP1 template');
+        console.error(`❌ [${pipeSize}mm] Failed to save TP1 template`);
       }
     } catch (error) {
-      console.error('❌ Error saving TP1 template:', error);
+      console.error(`❌ [${pipeSize}mm] Error saving TP1 template:`, error);
     }
   };
 
