@@ -2894,8 +2894,8 @@ export default function PR2ConfigClean() {
               </CardTitle>
             </CardHeader>
             <CardContent className="py-2">
-              {/* Styled Container - Dark Teal */}
-              <div className="bg-teal-100 border border-teal-300 rounded-lg p-3">
+              {/* Styled Container - Dark Teal - Sized to match P007 */}
+              <div className="bg-teal-100 border border-teal-300 rounded-lg p-3 w-80">
                 <div className="space-y-1">
                   {/* Titles Row */}
                   <div className="flex gap-2 items-center">
