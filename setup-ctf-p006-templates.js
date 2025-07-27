@@ -11,14 +11,9 @@ import { neon } from '@neondatabase/serverless';
 // Initialize database connection
 const sql = neon(process.env.DATABASE_URL);
 
-// Target categories for P006 template expansion
+// Target categories for P006 template expansion - TESTING WITH CCTV ONLY
 const TARGET_CATEGORIES = [
-  { id: 'cctv', name: 'CCTV' },
-  { id: 'van-pack', name: 'Van Pack' },
-  { id: 'jet-vac', name: 'Jet Vac' },
-  { id: 'cctv-van-pack', name: 'CCTV/Van Pack' },
-  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac' },
-  { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting' }
+  { id: 'cctv', name: 'CCTV' }
 ];
 
 // All pipe sizes (25 comprehensive options)
