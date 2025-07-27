@@ -3004,28 +3004,31 @@ export default function PR2ConfigClean() {
             )}
 
             {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
-            <Card className="bg-cyan-50 border-cyan-200 relative flex-1">
+            <Card className="bg-cyan-50 border-cyan-200 relative w-80 h-[180px]">
               <DevLabel id="W003" position="top-right" />
-            <CardHeader className="pb-3">
-              <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
-                <Truck className="w-5 h-5" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-cyan-600 font-semibold text-sm flex items-center gap-2">
+                <Truck className="w-4 h-4" />
                 Vehicle Travel Rates
               </CardTitle>
-              <p className="text-sm text-cyan-600 mt-1">
-                TP1 CCTV operations vehicle travel rates
-              </p>
             </CardHeader>
             <CardContent className="py-2">
               {/* Styled Container - Dark Teal - Sized to match P007 */}
-              <div className="bg-teal-100 border border-teal-300 rounded-lg p-3 w-80">
+              <div className="bg-teal-100 border border-teal-300 rounded-lg p-3 h-full">
                 <div className="space-y-1">
                   {/* Titles Row */}
                   <div className="flex gap-2 items-center">
                     <div className="flex-1">
-                      <Label className="text-teal-600 font-semibold text-sm">Vehicle</Label>
+                      <Label className="text-teal-600 font-semibold text-sm flex items-center gap-1">
+                        <Truck className="w-3 h-3" />
+                        Vehicle
+                      </Label>
                     </div>
                     <div className="flex-1">
-                      <Label className="text-teal-600 font-semibold text-sm">Cost per hr</Label>
+                      <Label className="text-teal-600 font-semibold text-sm flex items-center gap-1">
+                        <DollarSign className="w-3 h-3" />
+                        Cost per hr
+                      </Label>
                     </div>
                     <div className="w-24"></div> {/* Spacer for button alignment */}
                   </div>
