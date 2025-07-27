@@ -1399,7 +1399,10 @@ export default function PR2ConfigClean() {
         
         const defaultMinQuantityOptions = [];
         
-        const defaultRangeOptions = [];
+        const defaultRangeOptions = [
+          { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
+        ];
         
         // Use existing options if they exist, otherwise use defaults
         const pricingOptions = existingPricingOptions.length > 0 ? existingPricingOptions : defaultPricingOptions;
@@ -1494,7 +1497,10 @@ export default function PR2ConfigClean() {
         
         const defaultMinQuantityOptions = [];
         
-        const defaultRangeOptions = [];
+        const defaultRangeOptions = [
+          { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
+        ];
         
         setFormData(prev => ({
           ...prev,
@@ -3351,7 +3357,10 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     pricingOptions: [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
     quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
     minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
-    rangeOptions: [],
+    rangeOptions: [
+      { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
+      { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
+    ],
 
     mathOperators: ['÷'],
     vehicleTravelRates: [],
