@@ -3024,9 +3024,9 @@ export default function PR2ConfigClean() {
                         Vehicle
                       </Label>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 flex justify-center">
                       <Label className="text-teal-600 font-semibold text-sm flex items-center gap-1 whitespace-nowrap">
-                        <DollarSign className="w-3 h-3" />
+                        <Banknote className="w-3 h-3" />
                         Cost per hr
                       </Label>
                     </div>
