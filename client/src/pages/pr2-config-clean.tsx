@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench, Palette } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -120,7 +120,21 @@ const SECTOR_CONFIG = {
 // Define SECTOR_OPTIONS based on SECTORS array
 const SECTOR_OPTIONS = SECTORS;
 
-// No standard color options - users can select custom colors only
+// Color options for P006a templates
+const COLOR_OPTIONS = [
+  { name: 'Blue', hex: '#3b82f6' },
+  { name: 'Green', hex: '#10b981' },
+  { name: 'Purple', hex: '#8b5cf6' },
+  { name: 'Red', hex: '#ef4444' },
+  { name: 'Orange', hex: '#f97316' },
+  { name: 'Yellow', hex: '#eab308' },
+  { name: 'Pink', hex: '#ec4899' },
+  { name: 'Indigo', hex: '#6366f1' },
+  { name: 'Teal', hex: '#14b8a6' },
+  { name: 'Cyan', hex: '#06b6d4' },
+  { name: 'Gray', hex: '#6b7280' },
+  { name: 'Black', hex: '#1f2937' }
+];
 
 export default function PR2ConfigClean() {
   const [location, setLocation] = useLocation();
@@ -1083,6 +1097,44 @@ export default function PR2ConfigClean() {
   
   // State for validation warning
   const [showValidationWarning, setShowValidationWarning] = useState(false);
+
+  // Validation errors - computed from formData
+  const validationErrors: Record<string, string> = {};
+
+  // Navigate back to dashboard
+  const handleGoBack = () => {
+    setLocation('/');
+  };
+
+  // Handle sector toggle for P006a templates
+  const handleSectorToggle = (sectorId: string) => {
+    setSelectedSectors(prev => {
+      if (prev.includes(sectorId)) {
+        return prev.filter(id => id !== sectorId);
+      } else {
+        return [...prev, sectorId];
+      }
+    });
+  };
+
+  // Handle color change for P006a templates
+  const handleColorChange = (color: string) => {
+    setFormData(prev => ({
+      ...prev,
+      categoryColor: color
+    }));
+    debouncedSave();
+  };
+
+  // Mutation for saving sectors
+  const mutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest('PUT', `/api/pr2-clean/${editId}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+    }
+  });
 
   // Handle sector checkbox changes
   const handleSectorChange = async (sectorId: string, checked: boolean) => {
@@ -2813,3 +2865,13 @@ export default function PR2ConfigClean() {
             </CardContent>
           </Card>
         )}
+
+        {/* Main content placeholder - add your content here */}
+        <div className="text-center text-gray-500 mt-8">
+          <p>Additional configuration content goes here...</p>
+        </div>
+
+      </div>
+    </div>
+  );
+}
