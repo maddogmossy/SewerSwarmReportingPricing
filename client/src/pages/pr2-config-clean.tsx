@@ -3014,7 +3014,9 @@ export default function PR2ConfigClean() {
         </Card>
 
         {/* TP1 Template and Vehicle Travel Rates Row */}
-        {(categoryId === 'cctv-jet-vac' || (formData.categoryId && formData.categoryId.startsWith('P006-'))) && (
+        {(categoryId === 'cctv-jet-vac' || 
+          (formData.categoryId && formData.categoryId.startsWith('P006-')) || 
+          getTemplateType(categoryId || '') === 'P006a') && (
           <div className="flex gap-6 mb-6">
             {/* TP1 Template Configuration Cards for Current Pipe Size */}
             {selectedPipeSize && (
