@@ -3768,14 +3768,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
               </CardTitle>
             </CardHeader>
             <CardContent className="py-2 space-y-2">
-              {tp1Data.rangeOptions?.sort((a, b) => {
-                // Sort to ensure Percentage comes first, then Length, then any new ones
-                if (a.label === 'Percentage') return -1;
-                if (b.label === 'Percentage') return 1;
-                if (a.label === 'Length') return -1;
-                if (b.label === 'Length') return 1;
-                return 0;
-              }).map((option, index) => (
+              {tp1Data.rangeOptions?.map((option, index) => (
                 <div key={option.id} className="flex gap-2 items-center">
                   <Input
                     placeholder={option.label === 'Percentage' ? 'Debris %' : option.label === 'Length' ? 'Length' : 'Start'}
