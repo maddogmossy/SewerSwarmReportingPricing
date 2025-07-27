@@ -3593,12 +3593,66 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       };
     });
     
-    // Auto-save after deleting paired row
+    // Check if this will result in no rows remaining
     setTimeout(() => {
-      saveTP1Config();
+      setTp1Data(currentData => {
+        const hasQuantityRows = currentData.quantityOptions.length > 0;
+        const hasRangeRows = currentData.rangeOptions.length > 0;
+        
+        if (!hasQuantityRows && !hasRangeRows && configId) {
+          // No rows left - delete the entire database record
+          console.log(`🗑️ P007 DELETE ENTIRE TEMPLATE: No rows remaining, deleting database record for ${pipeSize}mm (ID: ${configId})`);
+          deleteEntireTP1Template();
+        } else {
+          // Still have rows - save the updated template
+          saveTP1Config();
+        }
+        
+        return currentData;
+      });
     }, 100);
     
     console.log(`🔧 P007 DELETE BUTTON: Deleted paired row at index ${index}`);
+  };
+
+  // Delete entire TP1 template from database
+  const deleteEntireTP1Template = async () => {
+    try {
+      if (!configId) return;
+      
+      console.log(`🗑️ Deleting entire TP1 template for ${pipeSize}mm (ID: ${configId})`);
+      
+      const response = await fetch(`/api/pr2-clean/${configId}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        console.log(`✅ Successfully deleted TP1 template ${configId} for ${pipeSize}mm`);
+        setConfigId(null);
+        
+        // Reset to initial state
+        setTp1Data({
+          categoryName: `${pipeSize}mm TP1 Configuration`,
+          description: 'TP1 CCTV/Jet Vac cleaning configuration',
+          categoryColor: '#10B981',
+          pricingOptions: [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
+          quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
+          minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
+          rangeOptions: [{ id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }],
+          pricingStackOrder: ['price_dayrate'],
+          quantityStackOrder: ['quantity_runs'],
+          minQuantityStackOrder: ['minquantity_runs'],
+          rangeStackOrder: ['range_length']
+        });
+        
+        // Refresh data to update UI
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      } else {
+        console.error(`❌ Failed to delete TP1 template ${configId}`);
+      }
+    } catch (error) {
+      console.error('❌ Error deleting TP1 template:', error);
+    }
   };
 
   // Update option functions
