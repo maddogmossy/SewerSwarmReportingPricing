@@ -1023,7 +1023,11 @@ export default function PR2ConfigClean() {
 
   // Pipe Size Selection State - Upper Level Configuration
   const [selectedPipeSize, setSelectedPipeSize] = useState<string>(pipeSize || '150');
-  const [availablePipeSizes, setAvailablePipeSizes] = useState<string[]>(['100', '150', '225', '300']);
+  const [availablePipeSizes, setAvailablePipeSizes] = useState<string[]>([
+    '100', '125', '150', '175', '200', '225', '250', '275', '300', '350', '375', 
+    '400', '450', '500', '525', '600', '675', '750', '825', '900', '975', '1050', 
+    '1200', '1350', '1500'
+  ]);
 
   // Admin controls
   const { data: adminData } = useQuery({
