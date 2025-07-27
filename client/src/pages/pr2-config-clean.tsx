@@ -3392,6 +3392,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         if (configs && configs.length > 0) {
           const existingConfig = configs[0];
           console.log(`✅ Found existing TP1 config for ${pipeSize}mm:`, existingConfig.id);
+          console.log(`🔍 TP1 Config rangeOptions:`, existingConfig.rangeOptions);
           setConfigId(existingConfig.id);
           setTp1Data({
             ...existingConfig,
@@ -3405,7 +3406,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
             pricingOptions: existingConfig.pricingOptions || [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
             quantityOptions: existingConfig.quantityOptions || [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
             minQuantityOptions: existingConfig.minQuantityOptions || [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
-            rangeOptions: [
+            rangeOptions: existingConfig.rangeOptions || [
               { id: 'range_percentage', label: 'Debris %', enabled: true, rangeEnd: '', rangeStart: '' },
               { id: 'range_length', label: 'Length M', enabled: true, rangeEnd: '', rangeStart: '' }
             ]
