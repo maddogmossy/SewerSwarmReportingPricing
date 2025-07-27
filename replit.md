@@ -782,25 +782,28 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 27, 2025)
 
-### CRITICAL: P007 TP1 Template Green Window & Delete Button Styling Fixed ✅
+### CRITICAL: P007 TP1 Template Cross-Contamination Bug Fixed ✅
 - **Date**: January 27, 2025
-- **Status**: Successfully fixed P007 TP1 template green window labeling and delete button styling
+- **Status**: Successfully resolved critical cross-contamination bug affecting TP1 template IDs 176, 179, and 184
+- **Issue Identified**: Adding rows to ID 184 (225mm) incorrectly caused rows to be added to IDs 176 (100mm) and 179 (150mm)
+- **Root Cause**: Multiple TP1Template components with shared setTimeout calls causing race conditions during save operations
 - **Changes Made**:
-  - **Green Window Second Row Fix**: Changed "Runs per Shift" to "No Per Shift" for new rows added via green + button
-  - **Delete Button Styling**: Updated delete button to red background with white dustbin icon matching green button aesthetic
-  - **Consistent Labeling**: New quantity options now use "No Per Shift" prefix with incremental numbering
-  - **Professional Button Design**: Delete button now uses red-600 background with white Trash2 icon and red-700 border
+  - **Isolated Save Functions**: Enhanced saveTP1Config with pipe-size-specific logging and strict ID targeting
+  - **Database Reset**: Restored IDs 176 and 179 to single-row state, removing incorrectly added rows
+  - **Component Isolation**: Added unique state keys and timestamp-based component keys to prevent state bleeding
+  - **Save Operation Guards**: Added configId validation to prevent saves when no configuration ID available
+  - **Enhanced Logging**: Comprehensive isolation logging tracks exactly which configuration ID is being updated
 - **Technical Implementation**:
-  - Updated `addRangeOption()` function: `label: \`No Per Shift ${tp1Data.quantityOptions.length + 1}\``
-  - Modified delete button styling: `"h-7 w-7 p-0 text-white hover:bg-red-200 bg-red-600 border border-red-700"`
-  - Changed icon from X to Trash2 for better visual recognition
-  - Maintained existing Trash2 import in lucide-react imports
+  - Updated component key: `key={tp1-${selectedPipeSize}-${Date.now()}}` for complete re-render isolation
+  - Enhanced saveTP1Config with strict ID validation and "ISOLATED SAVE" logging patterns
+  - Database cleanup: Reset range_options and quantity_options for affected configurations
+  - Pipe-size-specific state initialization with unique IDs to prevent cross-contamination
 - **User Benefits**:
-  - **Consistent Terminology**: All green window rows now show "No Per Shift" instead of mixed terminology
-  - **Professional Design**: Delete button styling matches green + button aesthetic with red color scheme
-  - **Clear Visual Cues**: Trash icon clearly indicates delete functionality
-  - **Improved UX**: Consistent styling and labeling across P007 TP1 template interface
-- **Result**: P007 TP1 template now has consistent "No Per Shift" labeling and professionally styled red delete buttons
+  - **Template Isolation**: Each pipe size TP1 template operates independently without affecting others
+  - **Reliable Operations**: Adding rows to one template no longer impacts unrelated templates
+  - **Clean State**: All TP1 templates reset to correct single placeholder row configuration
+  - **Debugging Clarity**: Enhanced logging shows exactly which configuration is being modified
+- **Result**: Complete elimination of cross-contamination between TP1 template configurations with isolated save operations
 
 ### CRITICAL: UI Reorganization - Apply Configuration to Sectors & Color Picker Moved to Top ✅
 - **Date**: January 27, 2025

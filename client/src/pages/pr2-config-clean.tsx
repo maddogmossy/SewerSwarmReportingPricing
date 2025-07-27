@@ -2999,7 +2999,7 @@ export default function PR2ConfigClean() {
               <TP1TemplateInterface 
                 pipeSize={selectedPipeSize}
                 sector={sector}
-                key={selectedPipeSize} // Force re-render when pipe size changes
+                key={`tp1-${selectedPipeSize}-${Date.now()}`} // Force complete re-render with timestamp
               />
             )}
 
@@ -3332,30 +3332,36 @@ interface TP1TemplateInterfaceProps {
 }
 
 const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, sector }) => {
-  const [tp1Data, setTp1Data] = useState<CleanFormData>({
+  // Create completely isolated state with unique keys based on pipe size
+  const uniqueStateKey = `tp1-${pipeSize}`;
+  
+  const [tp1Data, setTp1Data] = useState<CleanFormData>(() => ({
     categoryName: `TP1 - ${pipeSize}mm Cleaning Configuration`,
     description: `TP1 cleaning template for ${pipeSize}mm pipes`,
     categoryColor: '#10B981',
     pipeSize: pipeSize,
     sector: sector,
-    pricingOptions: [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
-    quantityOptions: [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
-    minQuantityOptions: [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
+    categoryId: `P006-TP1-${pipeSize}`, // Ensure unique category ID
+    pricingOptions: [{ id: `price_dayrate_${pipeSize}`, label: 'Day Rate', value: '', enabled: true }],
+    quantityOptions: [{ id: `quantity_runs_${pipeSize}`, label: 'Runs per Shift', value: '', enabled: true }],
+    minQuantityOptions: [{ id: `minquantity_runs_${pipeSize}`, label: 'Min Runs per Shift', value: '', enabled: true }],
     rangeOptions: [
-      { id: 'range_combined', label: 'Debris % / Length M', enabled: true, rangeStart: '', rangeEnd: '' }
+      { id: `range_combined_${pipeSize}`, label: 'Debris % / Length M', enabled: true, rangeStart: '', rangeEnd: '' }
     ],
 
     mathOperators: ['÷'],
     vehicleTravelRates: [],
     vehicleTravelRatesStackOrder: [],
-    pricingStackOrder: ['price_dayrate'],
-    quantityStackOrder: ['quantity_runs'],
-    minQuantityStackOrder: ['minquantity_runs'],
+    pricingStackOrder: [`price_dayrate_${pipeSize}`],
+    quantityStackOrder: [`quantity_runs_${pipeSize}`],
+    minQuantityStackOrder: [`minquantity_runs_${pipeSize}`],
     rangeStackOrder: []
-  });
+  }));
 
   const [configId, setConfigId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  console.log(`🏗️ [${pipeSize}mm] TP1TemplateInterface component initialized with unique state key: ${uniqueStateKey}`);
 
   // Load existing TP1 configuration for this pipe size
   useEffect(() => {
@@ -3685,10 +3691,16 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     }));
   };
 
-  // Save TP1 configuration with isolation
+  // Save TP1 configuration with strict isolation
   const saveTP1Config = async () => {
+    // Prevent multiple saves from running simultaneously
+    if (configId === null) {
+      console.log(`⚠️ [${pipeSize}mm] Skipping save - no configuration ID available`);
+      return;
+    }
+    
     try {
-      console.log(`💾 [${pipeSize}mm] Saving TP1 template (ID: ${configId})`);
+      console.log(`💾 [${pipeSize}mm] ISOLATED SAVE - Saving ONLY TP1 template ID: ${configId}`);
       
       const payload = {
         ...tp1Data,
@@ -3697,37 +3709,25 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         sector: sector
       };
 
-      console.log(`🔍 [${pipeSize}mm] Saving with ${payload.rangeOptions.length} range options`);
+      console.log(`🔍 [${pipeSize}mm] ISOLATED SAVE - Updating ID ${configId} with ${payload.rangeOptions.length} range options`);
+      console.log(`🎯 [${pipeSize}mm] ISOLATED SAVE - Target URL: /api/pr2-clean/${configId}`);
 
-      let response;
-      if (configId) {
-        // Update existing config with specific ID targeting
-        console.log(`🔄 [${pipeSize}mm] Updating existing configuration ID: ${configId}`);
-        response = await fetch(`/api/pr2-clean/${configId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } else {
-        // Create new config
-        console.log(`🆕 [${pipeSize}mm] Creating new configuration`);
-        response = await fetch('/api/pr2-clean', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      }
+      // Only allow PUT operations for existing configs, never POST from here
+      const response = await fetch(`/api/pr2-clean/${configId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
       if (response.ok) {
         const savedConfig = await response.json();
-        setConfigId(savedConfig.id);
-        console.log(`✅ [${pipeSize}mm] TP1 template saved successfully with ID: ${savedConfig.id}`);
-        console.log(`📊 [${pipeSize}mm] Saved with ${savedConfig.rangeOptions.length} range options`);
+        console.log(`✅ [${pipeSize}mm] ISOLATED SAVE COMPLETE - Updated ID: ${savedConfig.id}`);
+        console.log(`📊 [${pipeSize}mm] ISOLATED SAVE COMPLETE - Final count: ${savedConfig.rangeOptions.length} range options`);
       } else {
-        console.error(`❌ [${pipeSize}mm] Failed to save TP1 template`);
+        console.error(`❌ [${pipeSize}mm] ISOLATED SAVE FAILED for ID: ${configId}`);
       }
     } catch (error) {
-      console.error(`❌ [${pipeSize}mm] Error saving TP1 template:`, error);
+      console.error(`❌ [${pipeSize}mm] ISOLATED SAVE ERROR for ID: ${configId}:`, error);
     }
   };
 
