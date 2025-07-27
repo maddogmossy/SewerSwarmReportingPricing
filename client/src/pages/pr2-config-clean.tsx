@@ -3618,23 +3618,15 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           {/* Purple Card - Ranges */}
           <Card className="bg-purple-50 border-purple-200">
             <CardHeader className="pb-2">
-              <CardTitle className="text-purple-700 text-sm flex items-center justify-between">
+              <CardTitle className="text-purple-700 text-sm flex items-center">
                 <div className="flex items-center gap-2">
                   <ArrowUpDown className="w-4 h-4" />
                   Ranges
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={addRangeOption}
-                  className="h-6 w-6 p-0 text-purple-600 hover:bg-purple-100"
-                >
-                  <Plus className="w-3 h-3" />
-                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent className="py-2">
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 <Input
                   placeholder="Debris %"
                   className="border-purple-200 focus:border-purple-500 text-xs h-7"
@@ -3643,6 +3635,14 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                   placeholder="Length"
                   className="border-purple-200 focus:border-purple-500 text-xs h-7"
                 />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={addRangeOption}
+                  className="h-7 w-7 p-0 text-green-600 hover:bg-green-100 bg-green-50 border border-green-200"
+                >
+                  <Plus className="w-3 h-3" />
+                </Button>
               </div>
             </CardContent>
           </Card>
