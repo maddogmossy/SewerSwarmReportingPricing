@@ -185,6 +185,7 @@ export default function PR2ConfigClean() {
                categoryId === 'jet-vac' || 
                categoryId === 'cctv-van-pack' || 
                categoryId === 'cctv-jet-vac' || // F175 - CCTV Jet Vac Configuration
+               categoryId === 'test-card' || // Test Card - CTF P006a demonstration
                categoryId === 'cctv-cleansing-root-cutting') {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else {
