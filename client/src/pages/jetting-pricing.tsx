@@ -41,8 +41,8 @@ interface UserPricing {
   sectionsPerDay: string;
 }
 
-// Standard UK pipe sizes
-const PIPE_SIZES = [75, 100, 150, 225, 300, 375, 450, 525, 600, 675, 750, 900, 1050, 1200, 1350, 1500, 1800, 2100, 2400];
+// Standard UK pipe sizes - expanded range
+const PIPE_SIZES = [75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 350, 375, 400, 450, 500, 525, 600, 675, 750, 825, 900, 975, 1050, 1200, 1350, 1500, 1800, 2100, 2400];
 
 export default function JettingPricing() {
   const { toast } = useToast();

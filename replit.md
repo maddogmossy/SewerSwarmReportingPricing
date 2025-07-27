@@ -69,6 +69,18 @@ This is a full-stack TypeScript application built with React frontend and Expres
 - **Display Pattern**: Simple category name only (no ID or pipe size)
 - **User Preference**: Keep clean without configuration details
 
+## Recent Changes
+
+### Pipe Size Configuration Expansion (July 27, 2025)
+- **Updated Core Configuration**: Expanded pipe sizes from 4 options (100, 150, 225, 300mm) to 25 comprehensive options (100-1500mm)
+- **Layout Optimization**: Modified grid layout from 4 columns to 6-8 columns for better space utilization with expanded range
+- **Cross-Platform Consistency**: Updated pipe size arrays in:
+  - `pr2-config-clean.tsx`: Main configuration interface
+  - `jetting-pricing.tsx`: Jetting equipment pricing
+  - `cleansing-pricing.tsx`: Cleansing equipment pricing
+- **UI Improvements**: Reduced button heights and improved text sizing for compact display
+- **Full Range**: 100, 125, 150, 175, 200, 225, 250, 275, 300, 350, 375, 400, 450, 500, 525, 600, 675, 750, 825, 900, 975, 1050, 1200, 1350, 1500mm
+
 ## Data Flow
 
 ### Authentication Flow
