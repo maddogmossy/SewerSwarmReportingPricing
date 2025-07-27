@@ -3815,7 +3815,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
 
   if (isLoading) {
     return (
-      <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+      <Card className="mb-6 bg-white border-gray-200">
         <CardContent className="py-8 text-center">
           <div className="animate-pulse text-green-600">Loading TP1 template for {pipeSize}mm...</div>
         </CardContent>
@@ -3824,7 +3824,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
   }
 
   return (
-    <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative w-[800px]" data-component="P007">
+    <Card className="bg-white border-gray-200 relative w-[800px]" data-component="P007">
       <DevLabel id="P007" position="top-right" />
       <CardHeader className="pb-3">
         <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
