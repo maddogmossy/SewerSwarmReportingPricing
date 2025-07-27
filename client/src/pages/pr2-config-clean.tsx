@@ -1605,13 +1605,25 @@ export default function PR2ConfigClean() {
     debouncedSave();
   };
 
-  const updatePricingOption = (optionId: string, field: 'enabled' | 'value', value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      pricingOptions: prev.pricingOptions.map(opt =>
-        opt.id === optionId ? { ...opt, [field]: value } : opt
-      )
-    }));
+  const updatePricingOption = (index: number | string, field: 'enabled' | 'value', value: any) => {
+    if (typeof index === 'number') {
+      // Array index approach for P006a templates
+      setFormData(prev => ({
+        ...prev,
+        pricingOptions: prev.pricingOptions.map((opt, i) =>
+          i === index ? { ...opt, [field]: value } : opt
+        )
+      }));
+    } else {
+      // Option ID approach for other templates
+      setFormData(prev => ({
+        ...prev,
+        pricingOptions: prev.pricingOptions.map(opt =>
+          opt.id === index ? { ...opt, [field]: value } : opt
+        )
+      }));
+    }
+    debouncedSave();
   };
 
   const moveOptionInStack = (optionId: string, direction: 'up' | 'down') => {
@@ -1685,6 +1697,49 @@ export default function PR2ConfigClean() {
     }));
     
     console.log(`🔧 Added new min quantity input: ${newOption.label}`);
+  };
+
+  // P006a template update functions
+  const updateQuantityOption = (index: number, field: 'enabled' | 'value', value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      quantityOptions: prev.quantityOptions.map((opt, i) =>
+        i === index ? { ...opt, [field]: value } : opt
+      )
+    }));
+    debouncedSave();
+  };
+
+  const updateRangeOption = (index: number, field: 'rangeStart' | 'rangeEnd', value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      rangeOptions: prev.rangeOptions.map((opt, i) =>
+        i === index ? { ...opt, [field]: value } : opt
+      )
+    }));
+    debouncedSave();
+  };
+
+  const updateVehicleOption = (index: number, field: 'enabled' | 'hourlyRate' | 'numberOfHours', value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      vehicleTravelRates: prev.vehicleTravelRates.map((vehicle, i) =>
+        i === index ? { ...vehicle, [field]: value } : vehicle
+      )
+    }));
+    debouncedSave();
+  };
+
+  const handleSaveConfiguration = async () => {
+    if (!editId) return;
+    
+    try {
+      console.log('🔧 Saving P006a configuration:', formData);
+      await mutation.mutateAsync(formData);
+      console.log('✅ P006a configuration saved successfully');
+    } catch (error) {
+      console.error('❌ Failed to save P006a configuration:', error);
+    }
   };
 
   // Master add function that adds inputs to all three windows (green, orange, purple)
@@ -1806,14 +1861,7 @@ export default function PR2ConfigClean() {
     debouncedSave();
   };
 
-  const updateQuantityOption = (optionId: string, field: 'enabled' | 'value', value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      quantityOptions: prev.quantityOptions.map(opt =>
-        opt.id === optionId ? { ...opt, [field]: value } : opt
-      )
-    }));
-  };
+
 
   const editQuantityOption = (option: PricingOption) => {
     setEditingQuantity(option);
@@ -2050,64 +2098,7 @@ export default function PR2ConfigClean() {
     return { isValid: true, message: "" };
   };
 
-  const updateRangeOption = (optionId: string, field: 'enabled' | 'rangeStart' | 'rangeEnd', value: any) => {
-    if (field === 'enabled') {
-      setFormData(prev => {
-        const updated = prev.rangeOptions.map(opt =>
-          opt.id === optionId ? { ...opt, [field]: value } : opt
-        );
-        
-        if (value) {
-          // When enabling, auto-calculate the start position
-          const enabledCount = updated.filter(opt => opt.enabled).length;
-          const optionIndex = enabledCount - 1;
-          
-          if (optionIndex === 0) {
-            // First option: 0 to empty (user will fill end)
-            return {
-              ...prev,
-              rangeOptions: updated.map(opt =>
-                opt.id === optionId ? { ...opt, rangeStart: '0', rangeEnd: '' } : opt
-              )
-            };
-          } else {
-            // Subsequent options: calculate start based on previous
-            const enabledOptions = updated.filter(opt => opt.enabled && opt.id !== optionId);
-            const lastOption = enabledOptions[enabledOptions.length - 1];
-            const newStart = lastOption?.rangeEnd ? (parseInt(lastOption.rangeEnd) + 1).toString() : '0';
-            
-            return {
-              ...prev,
-              rangeOptions: updated.map(opt =>
-                opt.id === optionId ? { ...opt, rangeStart: newStart, rangeEnd: '' } : opt
-              )
-            };
-          }
-        }
-        
-        return { ...prev, rangeOptions: updated };
-      });
-    } else if (field === 'rangeEnd') {
-      // Validate and auto-calculate sequential ranges
-      const validation = validateRangeValue(value, optionId, field);
-      if (!validation.isValid) {
-        // Show warning but still update (user feedback)
-        console.warn(`Range validation warning: ${validation.message}`);
-      }
-      
-      setFormData(prev => ({
-        ...prev,
-        rangeOptions: calculateSequentialRanges(prev.rangeOptions, optionId, value)
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        rangeOptions: prev.rangeOptions.map(opt =>
-          opt.id === optionId ? { ...opt, [field]: value } : opt
-        )
-      }));
-    }
-  };
+
 
   const editRangeOption = (option: RangeOption) => {
     setEditingRange(option);
@@ -2871,10 +2862,161 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* Main content placeholder - add your content here */}
-        <div className="text-center text-gray-500 mt-8">
-          <p>Additional configuration content goes here...</p>
-        </div>
+        {/* P006a Template Main Configuration Windows */}
+        {getTemplateType(categoryId || '') === 'P006a' && (
+          <div className="space-y-6">
+            {/* Blue Window - Pricing Options */}
+            <Card className="relative">
+              <DevLabel id="BLUE" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-blue-700 text-lg flex items-center gap-2">
+                  <DollarSign className="w-5 h-5" />
+                  Day Rate Configuration
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {formData.pricingOptions.map((option, index) => (
+                    <div key={option.id} className="flex items-center gap-4 p-3 border rounded-lg">
+                      <Label className="min-w-[100px] font-medium">{option.label}</Label>
+                      <Input
+                        type="text"
+                        value={option.value}
+                        onChange={(e) => updatePricingOption(index, 'value', e.target.value)}
+                        placeholder="Enter amount"
+                        className="flex-1"
+                      />
+                      <span className="text-sm text-gray-500">£</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Green Window - Quantity Options */}
+            <Card className="relative">
+              <DevLabel id="GREEN" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-green-700 text-lg flex items-center gap-2">
+                  <Hash className="w-5 h-5" />
+                  Quantity Configuration
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {formData.quantityOptions.map((option, index) => (
+                    <div key={option.id} className="flex items-center gap-4 p-3 border rounded-lg">
+                      <Label className="min-w-[100px] font-medium">{option.label}</Label>
+                      <Input
+                        type="text"
+                        value={option.value}
+                        onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
+                        placeholder="Enter quantity"
+                        className="flex-1"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Purple Window - Range Options */}
+            <Card className="relative">
+              <DevLabel id="PURPLE" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-purple-700 text-lg flex items-center gap-2">
+                  <Ruler className="w-5 h-5" />
+                  Range Configuration
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {formData.rangeOptions.map((option, index) => (
+                    <div key={option.id} className="p-3 border rounded-lg">
+                      <Label className="font-medium block mb-2">{option.label}</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="text"
+                          value={option.rangeStart}
+                          onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
+                          placeholder="Start %"
+                          className="flex-1"
+                        />
+                        <span className="text-gray-500">to</span>
+                        <Input
+                          type="text"
+                          value={option.rangeEnd}
+                          onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
+                          placeholder="End M"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Teal Window - Vehicle Travel Rates */}
+            <Card className="relative">
+              <DevLabel id="TEAL" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-teal-700 text-lg flex items-center gap-2">
+                  <Truck className="w-5 h-5" />
+                  Vehicle Travel Rates
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {formData.vehicleTravelRates.map((vehicle, index) => (
+                    <div key={vehicle.id} className="p-3 border rounded-lg">
+                      <div className="flex items-center gap-4 mb-2">
+                        <Label className="font-medium">{vehicle.vehicleType} Vehicle</Label>
+                        <Checkbox
+                          checked={vehicle.enabled}
+                          onCheckedChange={(checked) => updateVehicleOption(index, 'enabled', checked)}
+                        />
+                      </div>
+                      {vehicle.enabled && (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-sm">Hourly Rate (£)</Label>
+                            <Input
+                              type="text"
+                              value={vehicle.hourlyRate}
+                              onChange={(e) => updateVehicleOption(index, 'hourlyRate', e.target.value)}
+                              placeholder="Rate"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-sm">Number of Hours</Label>
+                            <Input
+                              type="text"
+                              value={vehicle.numberOfHours}
+                              onChange={(e) => updateVehicleOption(index, 'numberOfHours', e.target.value)}
+                              placeholder="Hours"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Save Configuration Button */}
+            <div className="flex justify-start">
+              <Button 
+                onClick={handleSaveConfiguration}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? 'Saving...' : 'Save Configuration'}
+              </Button>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
