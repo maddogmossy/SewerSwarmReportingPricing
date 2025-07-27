@@ -581,6 +581,15 @@ export default function PR2Pricing() {
                   
                   // Check for existing configuration (show ID for any saved config, even blank templates)
                   const existingConfiguration = pr2Configurations.find(config => {
+                    // Debug logging for patching-p006a category
+                    if (category.id === 'patching-p006a') {
+                      console.log(`🔍 Checking patching-p006a category against config:`, {
+                        categoryId: category.id,
+                        configId: config.id,
+                        configCategoryId: config.categoryId,
+                        match: config.categoryId === 'patching-p006a'
+                      });
+                    }
                     // Direct category ID match
                     if (config.categoryId === category.id) return true;
                     
