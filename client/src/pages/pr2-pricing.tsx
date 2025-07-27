@@ -588,6 +588,7 @@ export default function PR2Pricing() {
                     if (category.id === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
                     if (category.id === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
                     if (category.id === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
+                    if (category.id === 'patching-p006a' && config.categoryId === 'patching-p006a') return true;
                     
                     // Legacy exact match for cctv-jet-vac
                     if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
