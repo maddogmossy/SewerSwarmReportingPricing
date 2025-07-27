@@ -3619,18 +3619,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           </Card>
         </div>
 
-        {/* Save Button */}
-        <div className="mt-4 flex justify-end">
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-green-200 text-green-700 hover:bg-green-50"
-            onClick={saveTP1Config}
-          >
-            <Save className="w-4 h-4 mr-1" />
-            Save TP1 Template
-          </Button>
-        </div>
+
       </CardContent>
     </Card>
   );
