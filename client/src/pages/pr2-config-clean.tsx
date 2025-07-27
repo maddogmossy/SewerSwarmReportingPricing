@@ -3004,7 +3004,7 @@ export default function PR2ConfigClean() {
             )}
 
             {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
-            <Card className="bg-cyan-50 border-cyan-200 relative w-80 h-[180px]">
+            <Card className="bg-cyan-50 border-cyan-200 relative w-[800px] h-[400px]">
               <DevLabel id="W003" position="top-right" />
             <CardHeader className="pb-2">
               <CardTitle className="text-cyan-600 font-semibold text-sm flex items-center gap-2">
