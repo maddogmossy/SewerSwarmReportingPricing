@@ -3827,11 +3827,11 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative w-[800px]" data-component="P007">
       <DevLabel id="P007" position="top-right" />
       <CardHeader className="pb-3">
-        <CardTitle className="text-green-700 text-lg flex items-center gap-2">
+        <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
           <Settings className="w-5 h-5" />
           TP1 Template - {pipeSize}mm {configId && `(ID: ${configId})`}
         </CardTitle>
-        <p className="text-sm text-green-600 mt-1">
+        <p className="text-sm text-gray-600 mt-1">
           Individual TP1 cleaning configuration for {pipeSize}mm pipes
         </p>
       </CardHeader>
@@ -3842,7 +3842,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           {/* Blue Card - Day Rate (50% reduced width) */}
           <Card className="bg-blue-50 border-blue-200 w-32">
             <CardHeader className="pb-2">
-              <CardTitle className="text-blue-600 font-semibold text-sm flex items-center justify-between">
+              <CardTitle className="text-gray-900 font-semibold text-sm flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <Banknote className="w-3 h-3" />
                   Day Rate
@@ -3862,7 +3862,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           {/* Green Card - Runs per Shift (adjusted for title width) */}
           <Card className="bg-green-50 border-green-200 w-40">
             <CardHeader className="pb-2">
-              <CardTitle className="text-green-600 font-semibold text-sm flex items-center justify-between">
+              <CardTitle className="text-gray-900 font-semibold text-sm flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <RotateCcw className="w-3 h-3" />
                   No Per Shift
@@ -3888,7 +3888,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
           {/* Purple Card - Ranges */}
           <Card className="bg-purple-50 border-purple-200 w-96">
             <CardHeader className="pb-2">
-              <CardTitle className="text-purple-600 font-semibold text-sm flex items-center">
+              <CardTitle className="text-gray-900 font-semibold text-sm flex items-center">
                 <div className="flex items-center gap-2">
                   <ArrowUpDown className="w-4 h-4" />
                   Ranges
@@ -3905,7 +3905,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                       onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
                       className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
                     />
-                    <span className="text-purple-600 text-xs font-medium">%</span>
+                    <span className="text-gray-900 text-xs font-medium">%</span>
                   </div>
                   <div className="flex items-center gap-1 flex-1">
                     <Input
@@ -3914,7 +3914,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                       onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
                       className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
                     />
-                    <span className="text-purple-600 text-xs font-medium">Length</span>
+                    <span className="text-gray-900 text-xs font-medium">Length</span>
                   </div>
                   {index === 0 ? (
                     <Button
