@@ -3674,12 +3674,19 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
 
   // Update option functions with auto-save
   const updatePricingOption = (index: number, field: string, value: string) => {
-    setTp1Data(prev => ({
-      ...prev,
-      pricingOptions: prev.pricingOptions.map((opt, i) => 
+    console.log(`💰 [${pipeSize}mm] BEFORE UPDATE - Current tp1Data.pricingOptions:`, JSON.stringify(tp1Data.pricingOptions, null, 2));
+    
+    setTp1Data(prev => {
+      const newPricingOptions = prev.pricingOptions.map((opt, i) => 
         i === index ? { ...opt, [field]: value } : opt
-      )
-    }));
+      );
+      console.log(`💰 [${pipeSize}mm] AFTER UPDATE - New pricingOptions:`, JSON.stringify(newPricingOptions, null, 2));
+      
+      return {
+        ...prev,
+        pricingOptions: newPricingOptions
+      };
+    });
     
     // Trigger auto-save after update
     debouncedAutoSave();
