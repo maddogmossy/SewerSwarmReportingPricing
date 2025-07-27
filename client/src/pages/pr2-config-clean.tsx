@@ -2883,7 +2883,7 @@ export default function PR2ConfigClean() {
             )}
 
             {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
-            <Card className="bg-cyan-50 border-cyan-200 relative flex-1">
+            <Card className="bg-cyan-50 border-cyan-200 relative w-80">
               <DevLabel id="W003" position="top-right" />
             <CardHeader className="pb-2">
               <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
@@ -3561,7 +3561,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
   }
 
   return (
-    <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative w-96" data-component="P007">
+    <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative w-[600px]" data-component="P007">
       <DevLabel id="P007" position="top-right" />
       <CardHeader className="pb-3">
         <CardTitle className="text-green-700 text-lg flex items-center gap-2">
