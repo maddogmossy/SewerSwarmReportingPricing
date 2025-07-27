@@ -174,11 +174,9 @@ export default function PR2ConfigClean() {
   });
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'TP2' | 'TP3' | 'P26' | 'P006a' => {
+  const getTemplateType = (categoryId: string): 'TP1' | 'TP3' | 'P26' | 'P006a' => {
     if (categoryId === 'robotic-cutting') {
       return 'TP3'; // Robotic cutting uses TP3 template
-    } else if (categoryId === 'patching') {
-      return 'TP2'; // TP2 - Patching configurations (4-layer pricing system)
     } else if (categoryId === 'day-rate-db11') {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else if (categoryId?.includes('-p006a') || 
