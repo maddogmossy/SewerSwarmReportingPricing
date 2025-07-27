@@ -152,6 +152,9 @@ export default function PR2Pricing() {
       icon: Settings // Use Settings icon for user-created categories
     }))
   ];
+  
+  // Debug: Log all categories to see what's available
+  console.log('🎯 ALL STANDARD CATEGORIES:', allStandardCategories.map(cat => `${cat.id} - ${cat.name}`));
 
   // Delete mutation for PR2 configurations
   const deletePR2Configuration = useMutation({
@@ -576,6 +579,8 @@ export default function PR2Pricing() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {allStandardCategories.map((category) => {
+                  // Debug: Log all categories being rendered
+                  console.log(`🎯 Rendering category: ${category.id} - ${category.name}`);
                   // Check if this is a user-created category
                   const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
                   
