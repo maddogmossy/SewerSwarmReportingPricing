@@ -2900,7 +2900,7 @@ export default function PR2ConfigClean() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-green-700 text-lg flex items-center gap-2">
                   <Hash className="w-5 h-5" />
-                  Quantity Configuration
+                  No Per Shift Configuration
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -2913,6 +2913,33 @@ export default function PR2ConfigClean() {
                         value={option.value}
                         onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
                         placeholder="Enter quantity"
+                        className="flex-1"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Orange Window - Min Quantity Options */}
+            <Card className="relative">
+              <DevLabel id="ORANGE" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-orange-700 text-lg flex items-center gap-2">
+                  <Hash className="w-5 h-5" />
+                  Min Runs per Shift Configuration
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {formData.minQuantityOptions.map((option, index) => (
+                    <div key={option.id} className="flex items-center gap-4 p-3 border rounded-lg">
+                      <Label className="min-w-[100px] font-medium">{option.label}</Label>
+                      <Input
+                        type="text"
+                        value={option.value}
+                        onChange={(e) => updateMinQuantityOption(option.id, 'value', e.target.value)}
+                        placeholder="Enter minimum quantity"
                         className="flex-1"
                       />
                     </div>
@@ -2958,13 +2985,13 @@ export default function PR2ConfigClean() {
               </CardContent>
             </Card>
 
-            {/* Teal Window - Vehicle Travel Rates */}
+            {/* W003 Component - Vehicle Travel Rates */}
             <Card className="relative">
-              <DevLabel id="TEAL" position="top-right" />
+              <DevLabel id="W003" position="top-right" />
               <CardHeader className="pb-3">
                 <CardTitle className="text-teal-700 text-lg flex items-center gap-2">
                   <Truck className="w-5 h-5" />
-                  Vehicle Travel Rates
+                  W003 - Vehicle Travel Rates
                 </CardTitle>
               </CardHeader>
               <CardContent>
