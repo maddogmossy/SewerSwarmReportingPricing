@@ -2894,25 +2894,66 @@ export default function PR2ConfigClean() {
                 </Label>
                 <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-10 gap-1">
                   {availablePipeSizes.map((size) => (
-                    <Button
-                      key={size}
-                      variant={selectedPipeSize === size ? "default" : "outline"}
-                      onClick={() => {
-                        setSelectedPipeSize(size);
-                        setFormData(prev => ({
-                          ...prev,
-                          pipeSize: size
-                        }));
-                        debouncedSave();
-                      }}
-                      className={`h-8 px-1 text-xs font-medium ${
-                        selectedPipeSize === size 
-                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                          : 'border-blue-200 text-blue-700 hover:bg-blue-50'
-                      }`}
-                    >
-                      {size}mm
-                    </Button>
+                    <div key={size} className="flex flex-col gap-1">
+                      <Button
+                        variant={selectedPipeSize === size ? "default" : "outline"}
+                        onClick={() => {
+                          setSelectedPipeSize(size);
+                          setFormData(prev => ({
+                            ...prev,
+                            pipeSize: size
+                          }));
+                          debouncedSave();
+                        }}
+                        className={`h-8 px-1 text-xs font-medium ${
+                          selectedPipeSize === size 
+                            ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                            : 'border-blue-200 text-blue-700 hover:bg-blue-50'
+                        }`}
+                      >
+                        {size}mm
+                      </Button>
+                      
+                      {/* Save button for each pipe size */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={async () => {
+                          console.log(`💾 [${size}mm] W020 SAVE - User clicked save for ${size}mm`);
+                          
+                          try {
+                            // Find the TP1 configuration for this pipe size
+                            const response = await fetch(`/api/pr2-clean?sector=${sector}&categoryId=P006-TP1-${size}`);
+                            const configs = await response.json();
+                            
+                            if (configs && configs.length > 0) {
+                              const configId = configs[0].id;
+                              console.log(`💾 [${size}mm] W020 SAVE - Found config ID: ${configId}`);
+                              
+                              // Trigger a refresh of this specific configuration to save any pending changes
+                              const refreshResponse = await fetch(`/api/pr2-clean/${configId}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(configs[0])
+                              });
+                              
+                              if (refreshResponse.ok) {
+                                console.log(`✅ [${size}mm] W020 SAVE - Configuration saved successfully`);
+                              } else {
+                                console.error(`❌ [${size}mm] W020 SAVE - Save failed`);
+                              }
+                            } else {
+                              console.log(`⚠️ [${size}mm] W020 SAVE - No TP1 configuration found for this pipe size`);
+                            }
+                          } catch (error) {
+                            console.error(`❌ [${size}mm] W020 SAVE - Error:`, error);
+                          }
+                        }}
+                        className="h-6 px-1 text-xs bg-green-100 hover:bg-green-200 text-green-700 border border-green-300"
+                      >
+                        Save
+                      </Button>
+                    </div>
                   ))}
                 </div>
               </div>
