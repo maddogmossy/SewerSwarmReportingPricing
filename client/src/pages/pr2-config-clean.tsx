@@ -3023,20 +3023,20 @@ export default function PR2ConfigClean() {
             )}
 
             {/* P19 DB15: TP1 CCTV Vehicle Travel Rates */}
-            <Card className="bg-cyan-50 border-cyan-200 relative flex-1">
+            <Card className="relative flex-1">
               <DevLabel id="W003" position="top-right" />
             <CardHeader className="pb-2">
-              <h2 className="text-cyan-600 font-bold text-lg flex items-center gap-2">
+              <h2 className="text-teal-600 font-bold text-lg flex items-center gap-2">
                 <Truck className="w-4 h-4" />
                 Vehicle Travel Rates
               </h2>
-              <p className="text-sm text-cyan-600 mt-1">
+              <p className="text-sm text-gray-600 mt-1">
                 Individual TP1 vehicle travel rates for {selectedPipeSize || '150'}mm pipes
               </p>
             </CardHeader>
             <CardContent className="py-2">
               {/* Styled Container - Dark Teal - Sized to match P007 */}
-              <div className="bg-teal-100 border border-teal-300 rounded-lg p-3">
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
                 <div className="space-y-2">
                   {/* Titles Row */}
                   <div className="flex gap-2 items-center">
@@ -3066,7 +3066,7 @@ export default function PR2ConfigClean() {
                             updateVehicleTravelRate(updatedVehicle);
                           }}
                         >
-                          <SelectTrigger className="border-teal-300 focus:border-teal-500 text-xs h-7 bg-white">
+                          <SelectTrigger className="border-gray-200 focus:border-teal-500 text-xs h-7 bg-white">
                             <SelectValue placeholder="Select vehicle" />
                           </SelectTrigger>
                           <SelectContent>
@@ -3088,7 +3088,7 @@ export default function PR2ConfigClean() {
                             const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
                             updateVehicleTravelRate(updatedVehicle);
                           }}
-                          className="border-teal-300 focus:border-teal-500 text-xs h-7 bg-white"
+                          className="border-gray-200 focus:border-teal-500 text-xs h-7 bg-white"
                         />
                         {index === 0 ? (
                           <Button
@@ -3135,7 +3135,7 @@ export default function PR2ConfigClean() {
                     )) : (
                       <div className="flex gap-2 items-center">
                         <Select>
-                          <SelectTrigger className="border-teal-300 focus:border-teal-500 text-xs h-7 bg-white">
+                          <SelectTrigger className="border-gray-200 focus:border-teal-500 text-xs h-7 bg-white">
                             <SelectValue placeholder="Select vehicle" />
                           </SelectTrigger>
                           <SelectContent>
@@ -3152,7 +3152,7 @@ export default function PR2ConfigClean() {
                         </Select>
                         <Input
                           placeholder="£55"
-                          className="border-teal-300 focus:border-teal-500 text-xs h-7 bg-white"
+                          className="border-gray-200 focus:border-teal-500 text-xs h-7 bg-white"
                         />
                         <Button
                           variant="ghost"
