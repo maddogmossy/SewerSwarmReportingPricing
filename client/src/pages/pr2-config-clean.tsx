@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -3654,7 +3654,25 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     }
   };
 
-  // Update option functions
+  // Simple debounced auto-save function
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const debouncedAutoSave = useCallback(() => {
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    // Set new timeout
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      if (configId) {
+        console.log(`🔄 [${pipeSize}mm] AUTO-SAVE triggered for TP1 template ID: ${configId}`);
+        saveTP1Config();
+      }
+    }, 500); // 500ms delay after user stops typing
+  }, [configId, pipeSize]);
+
+  // Update option functions with auto-save
   const updatePricingOption = (index: number, field: string, value: string) => {
     setTp1Data(prev => ({
       ...prev,
@@ -3662,6 +3680,10 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         i === index ? { ...opt, [field]: value } : opt
       )
     }));
+    
+    // Trigger auto-save after update
+    debouncedAutoSave();
+    console.log(`💰 [${pipeSize}mm] BLUE WINDOW - Pricing option ${index} updated: ${field} = "${value}"`);
   };
 
   const updateQuantityOption = (index: number, field: string, value: string) => {
@@ -3671,6 +3693,10 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         i === index ? { ...opt, [field]: value } : opt
       )
     }));
+    
+    // Trigger auto-save after update
+    debouncedAutoSave();
+    console.log(`🟢 [${pipeSize}mm] GREEN WINDOW - Quantity option ${index} updated: ${field} = "${value}"`);
   };
 
   const updateMinQuantityOption = (index: number, field: string, value: string) => {
@@ -3680,6 +3706,10 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         i === index ? { ...opt, [field]: value } : opt
       )
     }));
+    
+    // Trigger auto-save after update
+    debouncedAutoSave();
+    console.log(`🟠 [${pipeSize}mm] ORANGE WINDOW - Min quantity option ${index} updated: ${field} = "${value}"`);
   };
 
   const updateRangeOption = (index: number, field: string, value: string) => {
@@ -3689,6 +3719,10 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         i === index ? { ...opt, [field]: value } : opt
       )
     }));
+    
+    // Trigger auto-save after update
+    debouncedAutoSave();
+    console.log(`🟣 [${pipeSize}mm] PURPLE WINDOW - Range option ${index} updated: ${field} = "${value}"`);
   };
 
   // Save TP1 configuration with strict isolation
