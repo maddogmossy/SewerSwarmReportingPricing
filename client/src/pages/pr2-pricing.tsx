@@ -578,8 +578,9 @@ export default function PR2Pricing() {
                     // Direct category ID match
                     if (config.categoryId === category.id) return true;
                     
-                    // P006a template matches - map 'cctv' to 'cctv-p006a'
+                    // P006a template matches - map category IDs to P006a configurations
                     if (category.id === 'cctv' && config.categoryId === 'cctv-p006a') return true;
+                    if (category.id === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
                     
                     // Legacy exact match for cctv-jet-vac
                     if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
