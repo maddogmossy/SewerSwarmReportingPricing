@@ -3634,11 +3634,16 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
               </CardTitle>
             </CardHeader>
             <CardContent className="py-2 space-y-2">
-              {tp1Data.rangeOptions.map((option, index) => (
-                <div key={option.id} className="text-xs text-purple-600">
-                  {option.label}
-                </div>
-              ))}
+              <div className="space-y-2">
+                <Input
+                  placeholder="Debris %"
+                  className="border-purple-200 focus:border-purple-500 text-xs h-7"
+                />
+                <Input
+                  placeholder="Length"
+                  className="border-purple-200 focus:border-purple-500 text-xs h-7"
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
