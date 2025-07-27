@@ -780,9 +780,39 @@ This prevents data contamination and ensures authentic extraction integrity.
   - Direct navigation to DB15 window configuration from warning dialogs
 - **Result**: Complete P19 Vehicle Travel Rates integration with separate warning system for incomplete travel configurations
 
+## Configuration Template Pattern (CTF - Configuration Template Framework)
+
+### Template Architecture Pattern
+**Name**: **CTF (Configuration Template Framework)**
+- **P006 Pattern**: Main configuration interface with category selection and pipe size navigation
+- **P007 Pattern**: Individual pipe-size-specific template with auto-save functionality
+- **Standardized Structure**: Blue (pricing), Green (quantity), Purple (ranges) windows with consistent auto-save behavior
+
+### CTF Components:
+1. **Category Interface (P006 Pattern)**:
+   - Pipe size selection buttons (25 sizes: 100-1500mm)
+   - "Configure TP1 Template" button for each pipe size
+   - Individual configuration management per pipe size
+   - Green emerald gradient styling (#10B981)
+
+2. **Template Interface (P007 Pattern)**:
+   - Blue Window: Day Rate input with auto-save
+   - Green Window: "No Per Shift" quantity options with auto-save
+   - Purple Window: Range inputs (Debris %, Length M) with auto-save
+   - Placeholder row system with locked green + button
+   - 500ms debounced auto-save across all windows
+   - Isolated save system preventing cross-contamination
+
+### CTF Benefits:
+- **Scalable**: Easy to apply to other configuration types (TP2, TP3, etc.)
+- **Consistent UX**: Standardized interface pattern across all configuration types
+- **Auto-Save**: Seamless user experience with automatic persistence
+- **Isolation**: Each pipe size maintains independent configuration
+- **Extensible**: Only P007 template changes for different configuration types
+
 ## Recent Changes (Updated January 27, 2025)
 
-### CRITICAL: P007 TP1 Template Auto-Save System Complete ✅
+### CRITICAL: CTF Framework - P007 TP1 Template Auto-Save System Complete ✅
 - **Date**: January 27, 2025
 - **Status**: Successfully implemented auto-save functionality for all TP1 template input fields in P007 component
 - **Features Implemented**:
