@@ -3573,7 +3573,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         {/* TP1 Configuration Cards Row */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-          {/* Blue Card - Day Rate (UI Removed) */}
+          {/* Blue Card - Day Rate */}
           <Card className="bg-blue-50 border-blue-200">
             <CardHeader className="pb-2">
               <CardTitle className="text-blue-700 text-sm flex items-center justify-between">
@@ -3584,13 +3584,16 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
               </CardTitle>
             </CardHeader>
             <CardContent className="py-2">
-              <div className="text-xs text-blue-600 text-center">
-                UI Removed
-              </div>
+              <Input
+                placeholder="£0.00"
+                value={tp1Data.pricingOptions?.[0]?.value || ""}
+                onChange={(e) => updatePricingOption(0, 'value', e.target.value)}
+                className="border-blue-200 focus:border-blue-500 text-xs"
+              />
             </CardContent>
           </Card>
 
-          {/* Green Card - Runs per Shift (UI Removed) */}
+          {/* Green Card - Runs per Shift */}
           <Card className="bg-green-50 border-green-200">
             <CardHeader className="pb-2">
               <CardTitle className="text-green-700 text-sm flex items-center justify-between">
@@ -3601,9 +3604,12 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
               </CardTitle>
             </CardHeader>
             <CardContent className="py-2">
-              <div className="text-xs text-green-600 text-center">
-                UI Removed
-              </div>
+              <Input
+                placeholder="No"
+                value={tp1Data.quantityOptions?.[0]?.value || ""}
+                onChange={(e) => updateQuantityOption(0, 'value', e.target.value)}
+                className="border-green-200 focus:border-green-500 text-xs"
+              />
             </CardContent>
           </Card>
 
