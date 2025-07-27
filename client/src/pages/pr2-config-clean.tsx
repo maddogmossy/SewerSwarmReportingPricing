@@ -2733,8 +2733,8 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
-        {/* Apply to Sectors Section - P002 Style Cards - Only for P006a templates, not TP2 */}
-        {getTemplateType(categoryId || '') !== 'TP2' && (
+        {/* Apply to Sectors Section - P002 Style Cards - For both P006a and TP2 templates */}
+        {(getTemplateType(categoryId || '') === 'P006a' || getTemplateType(categoryId || '') === 'TP2') && (
         <div className="mb-6 relative">
           <DevLabel id="C029" position="top-right" />
           <div className="mb-4">
@@ -2795,8 +2795,8 @@ export default function PR2ConfigClean() {
         </div>
         )}
 
-        {/* Color Picker Section - Only for P006a templates, not TP2 */}
-        {getTemplateType(categoryId || '') !== 'TP2' && (
+        {/* Color Picker Section - For both P006a and TP2 templates */}
+        {(getTemplateType(categoryId || '') === 'P006a' || getTemplateType(categoryId || '') === 'TP2') && (
         <Card className="mb-6 relative">
           <DevLabel id="W007" position="top-right" />
           <CardHeader>
@@ -2900,8 +2900,8 @@ export default function PR2ConfigClean() {
         </Card>
         )}
 
-        {/* Upper Level Pipe Size Configuration - Only for P006a templates, not TP2 */}
-        {getTemplateType(categoryId || '') !== 'TP2' && (
+        {/* Upper Level Pipe Size Configuration - For both P006a and TP2 templates */}
+        {(getTemplateType(categoryId || '') === 'P006a' || getTemplateType(categoryId || '') === 'TP2') && (
         <Card className="mb-6 relative">
           <DevLabel id="W020" position="top-right" />
           <CardHeader className="pb-3">
