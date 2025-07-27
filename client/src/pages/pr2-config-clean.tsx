@@ -2895,90 +2895,58 @@ export default function PR2ConfigClean() {
               </p>
             </CardHeader>
             <CardContent className="py-3">
-              <div className="space-y-2">
-                {formData.vehicleTravelRates && formData.vehicleTravelRates.length > 0 ? 
-                  formData.vehicleTravelRates.map((vehicle, index) => (
-                    <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-cyan-200">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium text-cyan-700 min-w-[60px]">
-                          {vehicle.vehicleType}
-                        </Label>
-                        <span className="text-sm text-cyan-600">£</span>
-                        <Input
-                          placeholder="rate"
-                          maxLength={6}
-                          value={vehicle.hourlyRate || ""}
-                          onChange={(e) => {
-                            // Update local state immediately for responsive UI
-                            setFormData(prev => ({
-                              ...prev,
-                              vehicleTravelRates: prev.vehicleTravelRates.map(v => 
-                                v.id === vehicle.id ? { ...v, hourlyRate: e.target.value } : v
-                              )
-                            }));
-                            // Debounced save will handle the sync
-                            debouncedSave();
-                          }}
-                          className="bg-white border-cyan-300 h-8 text-sm w-20"
-                        />
-                        <span className="text-sm text-cyan-600">/hr</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          placeholder="2"
-                          maxLength={3}
-                          value={vehicle.numberOfHours || "2"}
-                          onChange={(e) => {
-                            // Update local state immediately for responsive UI
-                            setFormData(prev => ({
-                              ...prev,
-                              vehicleTravelRates: prev.vehicleTravelRates.map(v => 
-                                v.id === vehicle.id ? { ...v, numberOfHours: e.target.value } : v
-                              )
-                            }));
-                            // Debounced save will handle the sync
-                            debouncedSave();
-                          }}
-                          className="bg-white border-cyan-300 h-8 text-sm w-16"
-                        />
-                        <span className="text-sm text-cyan-600">hours</span>
-                      </div>
-                      <div className="flex gap-2">
-                        {index === 0 && (
-                          <Button
-                            variant="outline"
-                            onClick={() => setAddVehicleDialogOpen(true)}
-                            className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                          >
-                            <Plus className="w-4 h-4 mr-1" />
-                            Add Vehicle
-                          </Button>
-                        )}
-                        {index > 0 && (
-                          <Button
-                            variant="outline"
-                            onClick={() => deleteVehicleTravelRate(vehicle.id)}
-                            className="h-8 text-sm border-red-300 text-red-700 hover:bg-red-100 bg-red-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  )) : (
-                    <div className="bg-white p-4 rounded-lg border border-cyan-200 flex items-center justify-between">
-                      <span className="text-sm text-cyan-600">No vehicle travel rates configured</span>
-                      <Button
-                        variant="outline"
-                        onClick={() => setAddVehicleDialogOpen(true)}
-                        className="h-8 text-sm border-cyan-300 text-cyan-700 hover:bg-cyan-100 bg-cyan-50"
-                      >
-                        <Plus className="w-4 h-4 mr-1" />
-                        Add Vehicle
-                      </Button>
-                    </div>
-                  )
-                }
+              <div className="flex gap-3">
+                {/* 3.5t Vehicle Rate */}
+                <div className="flex-1">
+                  <Label className="text-sm font-medium text-cyan-700 block mb-1">3.5t Vehicle</Label>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm text-cyan-600">£</span>
+                    <Input
+                      placeholder="55"
+                      maxLength={6}
+                      value={formData.vehicleTravelRates?.[0]?.hourlyRate || ""}
+                      onChange={(e) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          vehicleTravelRates: prev.vehicleTravelRates?.map((v, index) => 
+                            index === 0 ? { ...v, hourlyRate: e.target.value } : v
+                          ) || [{ id: "vehicle_1", enabled: true, hourlyRate: e.target.value, vehicleType: "3.5", numberOfHours: "2" }]
+                        }));
+                        debouncedSave();
+                      }}
+                      className="bg-white border-cyan-300 h-8 text-sm flex-1"
+                    />
+                    <span className="text-sm text-cyan-600">/hr</span>
+                  </div>
+                </div>
+
+                {/* 26t Vehicle Rate */}
+                <div className="flex-1">
+                  <Label className="text-sm font-medium text-cyan-700 block mb-1">26t Vehicle</Label>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm text-cyan-600">£</span>
+                    <Input
+                      placeholder="75"
+                      maxLength={6}
+                      value={formData.vehicleTravelRates?.[1]?.hourlyRate || ""}
+                      onChange={(e) => {
+                        setFormData(prev => {
+                          const existing = prev.vehicleTravelRates || [];
+                          const updated = [...existing];
+                          if (updated[1]) {
+                            updated[1] = { ...updated[1], hourlyRate: e.target.value };
+                          } else {
+                            updated[1] = { id: "vehicle_2", enabled: true, hourlyRate: e.target.value, vehicleType: "26", numberOfHours: "2" };
+                          }
+                          return { ...prev, vehicleTravelRates: updated };
+                        });
+                        debouncedSave();
+                      }}
+                      className="bg-white border-cyan-300 h-8 text-sm flex-1"
+                    />
+                    <span className="text-sm text-cyan-600">/hr</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
