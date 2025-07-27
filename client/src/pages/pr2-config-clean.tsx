@@ -3340,6 +3340,197 @@ export default function PR2ConfigClean() {
           </div>
         </DialogContent>
       </Dialog>
+
+        {/* Main Configuration Windows - TP2 Four-Window System */}
+        {getTemplateType(categoryId || '') === 'TP2' && (
+          <div className="space-y-6 mb-6">
+            {/* Blue Window - 4-Layer Pricing Options */}
+            <Card className="bg-blue-50 border-blue-200 relative">
+              <DevLabel id="W001" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-blue-700 text-lg flex items-center gap-2">
+                  <Banknote className="w-5 h-5" />
+                  4-Layer Pricing Options
+                </CardTitle>
+                <p className="text-sm text-blue-600 mt-1">
+                  Configure pricing for different patching layer requirements
+                </p>
+              </CardHeader>
+              <CardContent className="py-3">
+                <div className="space-y-3">
+                  {formData.pricingOptions.map((option, index) => (
+                    <div key={option.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-blue-200">
+                      <Label className="text-sm font-medium text-blue-700 min-w-[200px]">
+                        {option.label}
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-blue-600">£</span>
+                        <Input
+                          placeholder="0.00"
+                          value={option.value || ""}
+                          onChange={(e) => updatePricingOption(index, 'value', e.target.value)}
+                          className="bg-white border-blue-300 h-8 text-sm w-20"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Green Window - Quantity Options */}
+            <Card className="bg-green-50 border-green-200 relative">
+              <DevLabel id="W002" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-green-700 text-lg flex items-center gap-2">
+                  <RotateCcw className="w-5 h-5" />
+                  Quantity Options
+                </CardTitle>
+                <p className="text-sm text-green-600 mt-1">
+                  Configure quantity parameters per shift
+                </p>
+              </CardHeader>
+              <CardContent className="py-3">
+                <div className="space-y-3">
+                  {formData.quantityOptions.map((option, index) => (
+                    <div key={option.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-green-200">
+                      <Label className="text-sm font-medium text-green-700 min-w-[150px]">
+                        {option.label}
+                      </Label>
+                      <Input
+                        placeholder="0"
+                        value={option.value || ""}
+                        onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
+                        className="bg-white border-green-300 h-8 text-sm w-16"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Orange Window - Minimum Quantity Options */}
+            <Card className="bg-orange-50 border-orange-200 relative">
+              <DevLabel id="W005" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-orange-700 text-lg flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Minimum Quantity Requirements
+                </CardTitle>
+                <p className="text-sm text-orange-600 mt-1">
+                  Set minimum quantities for each patching layer type
+                </p>
+              </CardHeader>
+              <CardContent className="py-3">
+                <div className="space-y-3">
+                  {formData.minQuantityOptions.map((option, index) => (
+                    <div key={option.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-orange-200">
+                      <Label className="text-sm font-medium text-orange-700 min-w-[200px]">
+                        {option.label}
+                      </Label>
+                      <Input
+                        placeholder="0"
+                        value={option.value || ""}
+                        onChange={(e) => updateMinQuantityOption(index, 'value', e.target.value)}
+                        className="bg-white border-orange-300 h-8 text-sm w-16"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Purple Window - Range Options */}
+            <Card className="bg-purple-50 border-purple-200 relative">
+              <DevLabel id="W006" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-purple-700 text-lg flex items-center gap-2">
+                  <ArrowUpDown className="w-5 h-5" />
+                  Range Configuration
+                </CardTitle>
+                <p className="text-sm text-purple-600 mt-1">
+                  Configure pipe size and length ranges for this patching configuration
+                </p>
+              </CardHeader>
+              <CardContent className="py-3">
+                <div className="space-y-3">
+                  {formData.rangeOptions.map((option, index) => (
+                    <div key={option.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-purple-200">
+                      <Label className="text-sm font-medium text-purple-700 min-w-[150px]">
+                        {option.label}
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="Min"
+                          value={option.rangeStart || ""}
+                          onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
+                          className="bg-white border-purple-300 h-8 text-sm w-20"
+                        />
+                        <span className="text-sm text-purple-600">to</span>
+                        <Input
+                          placeholder="Max"
+                          value={option.rangeEnd || ""}
+                          onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
+                          className="bg-white border-purple-300 h-8 text-sm w-20"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Teal Window - Vehicle Travel Rates for TP2 */}
+            <Card className="bg-teal-50 border-teal-200 relative">
+              <DevLabel id="W003" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-teal-700 text-lg flex items-center gap-2">
+                  <Truck className="w-5 h-5" />
+                  Vehicle Travel Rates
+                </CardTitle>
+                <p className="text-sm text-teal-600 mt-1">
+                  Configure travel rates for patching operations
+                </p>
+              </CardHeader>
+              <CardContent className="py-3">
+                <div className="space-y-3">
+                  {formData.vehicleTravelRates.map((vehicle, index) => (
+                    <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-teal-200">
+                      <Label className="text-sm font-medium text-teal-700 min-w-[60px]">
+                        {vehicle.vehicleType}
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-teal-600">£</span>
+                        <Input
+                          placeholder="0.00"
+                          value={vehicle.hourlyRate || ""}
+                          onChange={(e) => {
+                            const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
+                            updateVehicleTravelRate(updatedVehicle);
+                          }}
+                          className="bg-white border-teal-300 h-8 text-sm w-20"
+                        />
+                        <span className="text-sm text-teal-600">/hr</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="2"
+                          value={vehicle.numberOfHours || "2"}
+                          onChange={(e) => {
+                            const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
+                            updateVehicleTravelRate(updatedVehicle);
+                          }}
+                          className="bg-white border-teal-300 h-8 text-sm w-16"
+                        />
+                        <span className="text-sm text-teal-600">hours</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
     </div>
   );
 }
