@@ -2747,26 +2747,6 @@ export default function PR2ConfigClean() {
           </CardHeader>
           <CardContent className="py-3">
             <div className="space-y-4">
-              {/* Current Pipe Size Display */}
-              <div className="bg-white p-4 rounded-lg border border-blue-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Ruler className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-blue-800">Current Configuration</h4>
-                      <p className="text-sm text-blue-600">
-                        {formData.pipeSize || selectedPipeSize}mm Pipe Size
-                      </p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                    Active
-                  </Badge>
-                </div>
-              </div>
-
               {/* Pipe Size Selector */}
               <div className="bg-white p-4 rounded-lg border border-blue-200">
                 <Label className="text-sm font-medium text-blue-700 mb-3 block">
