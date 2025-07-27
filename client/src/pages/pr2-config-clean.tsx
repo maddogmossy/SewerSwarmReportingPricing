@@ -2866,6 +2866,14 @@ export default function PR2ConfigClean() {
         {/* P006a Template Main Configuration Windows */}
         {getTemplateType(categoryId || '') === 'P006a' && (
           <div className="space-y-6">
+            {/* DEBUG: Show what we're rendering */}
+            <div className="bg-yellow-100 p-4 border rounded-lg">
+              <p className="text-sm font-mono">
+                DEBUG: Rendering P006a template for categoryId: {categoryId} | 
+                Template Type: {getTemplateType(categoryId || '')} | 
+                minQuantityOptions count: {formData.minQuantityOptions.length}
+              </p>
+            </div>
             {/* Blue Window - Pricing Options */}
             <Card className="relative">
               <DevLabel id="BLUE" position="top-right" />
