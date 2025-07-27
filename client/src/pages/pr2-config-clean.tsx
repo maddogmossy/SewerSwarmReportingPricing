@@ -3571,14 +3571,14 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       </CardHeader>
       <CardContent className="py-3">
         {/* TP1 Configuration Cards Row */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="flex gap-4">
 
-          {/* Blue Card - Day Rate */}
-          <Card className="bg-blue-50 border-blue-200">
+          {/* Blue Card - Day Rate (50% reduced width) */}
+          <Card className="bg-blue-50 border-blue-200 w-32">
             <CardHeader className="pb-2">
-              <CardTitle className="text-blue-700 text-sm flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Banknote className="w-4 h-4" />
+              <CardTitle className="text-blue-700 text-xs flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <Banknote className="w-3 h-3" />
                   Day Rate
                 </div>
               </CardTitle>
@@ -3588,17 +3588,17 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                 placeholder="£0.00"
                 value={tp1Data.pricingOptions?.[0]?.value || ""}
                 onChange={(e) => updatePricingOption(0, 'value', e.target.value)}
-                className="border-blue-200 focus:border-blue-500 text-xs"
+                className="border-blue-200 focus:border-blue-500 text-xs h-7"
               />
             </CardContent>
           </Card>
 
-          {/* Green Card - Runs per Shift */}
-          <Card className="bg-green-50 border-green-200">
+          {/* Green Card - Runs per Shift (60% reduced width) */}
+          <Card className="bg-green-50 border-green-200 w-28">
             <CardHeader className="pb-2">
-              <CardTitle className="text-green-700 text-sm flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <RotateCcw className="w-4 h-4" />
+              <CardTitle className="text-green-700 text-xs flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <RotateCcw className="w-3 h-3" />
                   Runs per Shift
                 </div>
               </CardTitle>
@@ -3608,7 +3608,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                 placeholder="No"
                 value={tp1Data.quantityOptions?.[0]?.value || ""}
                 onChange={(e) => updateQuantityOption(0, 'value', e.target.value)}
-                className="border-green-200 focus:border-green-500 text-xs"
+                className="border-green-200 focus:border-green-500 text-xs h-7"
               />
             </CardContent>
           </Card>
