@@ -785,7 +785,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 ### CRITICAL: P006 TP1 Template System Implementation Complete ✅
 - **Date**: January 27, 2025  
 - **Status**: Successfully implemented individual TP1 template system for all pipe sizes on P006 page
-- **Latest Update**: Removed Day Rate and Runs per Shift UI windows from P007 TP1 template per user request
+- **Latest Update**: Removed internal UI components from Day Rate and Runs per Shift windows in P007 TP1 template (windows preserved, input fields removed)
 - **Features Added**:
   - **Contextual Pipe Size Templates**: TP1 template appears dynamically based on currently selected pipe size
   - **Individual Configuration**: Each pipe size gets its own separate TP1 template with unique category ID (P006-TP1-{size})

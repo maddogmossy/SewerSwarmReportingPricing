@@ -3573,6 +3573,39 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
         {/* TP1 Configuration Cards Row */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
+          {/* Blue Card - Day Rate (UI Removed) */}
+          <Card className="bg-blue-50 border-blue-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-blue-700 text-sm flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Banknote className="w-4 h-4" />
+                  Day Rate
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="py-2">
+              <div className="text-xs text-blue-600 text-center">
+                UI Removed
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Green Card - Runs per Shift (UI Removed) */}
+          <Card className="bg-green-50 border-green-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-green-700 text-sm flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4" />
+                  Runs per Shift
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="py-2">
+              <div className="text-xs text-green-600 text-center">
+                UI Removed
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Orange Card - Min Quantity */}
           <Card className="bg-orange-50 border-orange-200">
