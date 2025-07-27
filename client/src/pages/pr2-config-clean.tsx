@@ -3434,6 +3434,13 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       pricingOptions: [...prev.pricingOptions, newOption],
       pricingStackOrder: [...(prev.pricingStackOrder || []), newOption.id]
     }));
+    
+    // Auto-save after adding new pricing option
+    setTimeout(() => {
+      saveTP1Config();
+    }, 100);
+    
+    console.log(`🔧 P007 ADD BUTTON: Added new pricing option with ID: ${newOption.id}`);
   };
 
   const addQuantityOption = () => {
@@ -3448,6 +3455,13 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       quantityOptions: [...prev.quantityOptions, newOption],
       quantityStackOrder: [...(prev.quantityStackOrder || []), newOption.id]
     }));
+    
+    // Auto-save after adding new quantity option
+    setTimeout(() => {
+      saveTP1Config();
+    }, 100);
+    
+    console.log(`🔧 P007 ADD BUTTON: Added new quantity option with ID: ${newOption.id}`);
   };
 
   const addMinQuantityOption = () => {
@@ -3462,6 +3476,13 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       minQuantityOptions: [...prev.minQuantityOptions, newOption],
       minQuantityStackOrder: [...(prev.minQuantityStackOrder || []), newOption.id]
     }));
+    
+    // Auto-save after adding new min quantity option
+    setTimeout(() => {
+      saveTP1Config();
+    }, 100);
+    
+    console.log(`🔧 P007 ADD BUTTON: Added new min quantity option with ID: ${newOption.id}`);
   };
 
   const addRangeOption = () => {
@@ -3477,6 +3498,13 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
       rangeOptions: [...prev.rangeOptions, newOption],
       rangeStackOrder: [...(prev.rangeStackOrder || []), newOption.id]
     }));
+    
+    // Auto-save after adding new range option
+    setTimeout(() => {
+      saveTP1Config();
+    }, 100);
+    
+    console.log(`🔧 P007 ADD BUTTON: Added new range option with ID: ${newOption.id}`);
   };
 
   // Delete option functions
