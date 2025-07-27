@@ -2870,8 +2870,8 @@ export default function PR2ConfigClean() {
           </CardContent>
         </Card>
 
-        {/* TP1 Template System for P006 */}
-        {categoryId === 'P006' && (
+        {/* TP1 Template System for CCTV/Jet Vac configurations */}
+        {categoryId === 'cctv-jet-vac' && (
           <Card className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 relative">
             <DevLabel id="W021" position="top-right" />
             <CardHeader className="pb-3">
