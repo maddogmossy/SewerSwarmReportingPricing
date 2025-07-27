@@ -2733,7 +2733,8 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
-        {/* Apply to Sectors Section - P002 Style Cards */}
+        {/* Apply to Sectors Section - P002 Style Cards - Only for P006a templates, not TP2 */}
+        {getTemplateType(categoryId || '') !== 'TP2' && (
         <div className="mb-6 relative">
           <DevLabel id="C029" position="top-right" />
           <div className="mb-4">
@@ -2792,8 +2793,10 @@ export default function PR2ConfigClean() {
             })}
           </div>
         </div>
+        )}
 
-        {/* Color Picker Section */}
+        {/* Color Picker Section - Only for P006a templates, not TP2 */}
+        {getTemplateType(categoryId || '') !== 'TP2' && (
         <Card className="mb-6 relative">
           <DevLabel id="W007" position="top-right" />
           <CardHeader>
@@ -2895,8 +2898,10 @@ export default function PR2ConfigClean() {
             </div>
           </CardContent>
         </Card>
+        )}
 
-        {/* Upper Level Pipe Size Configuration */}
+        {/* Upper Level Pipe Size Configuration - Only for P006a templates, not TP2 */}
+        {getTemplateType(categoryId || '') !== 'TP2' && (
         <Card className="mb-6 relative">
           <DevLabel id="W020" position="top-right" />
           <CardHeader className="pb-3">
@@ -3014,11 +3019,12 @@ export default function PR2ConfigClean() {
             </div>
           </CardContent>
         </Card>
+        )}
 
         {/* TP1 Template and Vehicle Travel Rates Row */}
         {(categoryId === 'cctv-jet-vac' || 
           (formData.categoryId && formData.categoryId.startsWith('P006-')) || 
-          getTemplateType(categoryId || '') === 'P006a') && (
+          (getTemplateType(categoryId || '') === 'P006a' && getTemplateType(categoryId || '') !== 'TP2')) && (
           <div className="flex gap-6 mb-6">
             {/* TP1 Template Configuration Cards for Current Pipe Size */}
             {selectedPipeSize && (
