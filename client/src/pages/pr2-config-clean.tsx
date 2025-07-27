@@ -3398,9 +3398,9 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
             pricingOptions: existingConfig.pricingOptions || [{ id: 'price_dayrate', label: 'Day Rate', value: '', enabled: true }],
             quantityOptions: existingConfig.quantityOptions || [{ id: 'quantity_runs', label: 'Runs per Shift', value: '', enabled: true }],
             minQuantityOptions: existingConfig.minQuantityOptions || [{ id: 'minquantity_runs', label: 'Min Runs per Shift', value: '', enabled: true }],
-            rangeOptions: existingConfig.rangeOptions || [
-              { id: 'range_percentage', label: 'Percentage', enabled: true, rangeEnd: '', rangeStart: '' },
-              { id: 'range_length', label: 'Length', enabled: true, rangeEnd: '', rangeStart: '' }
+            rangeOptions: [
+              { id: 'range_percentage', label: 'Debris %', enabled: true, rangeEnd: '', rangeStart: '' },
+              { id: 'range_length', label: 'Length M', enabled: true, rangeEnd: '', rangeStart: '' }
             ]
           });
         } else {
