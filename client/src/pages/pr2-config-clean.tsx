@@ -3735,13 +3735,21 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     
     try {
       console.log(`💾 [${pipeSize}mm] ISOLATED SAVE - Saving ONLY TP1 template ID: ${configId}`);
+      console.log(`🔍 [${pipeSize}mm] CURRENT TP1 DATA:`, JSON.stringify(tp1Data, null, 2));
       
       const payload = {
         ...tp1Data,
         categoryId: `P006-TP1-${pipeSize}`, // Force correct category ID
         pipeSize: pipeSize, // Force correct pipe size
-        sector: sector
+        sector: sector,
+        // Ensure pricing, quantity, and range options are properly included
+        pricingOptions: tp1Data.pricingOptions || [],
+        quantityOptions: tp1Data.quantityOptions || [],
+        minQuantityOptions: tp1Data.minQuantityOptions || [],
+        rangeOptions: tp1Data.rangeOptions || []
       };
+
+      console.log(`📤 [${pipeSize}mm] PAYLOAD BEING SENT:`, JSON.stringify(payload, null, 2));
 
       console.log(`🔍 [${pipeSize}mm] ISOLATED SAVE - Updating ID ${configId} with ${payload.rangeOptions.length} range options`);
       console.log(`🎯 [${pipeSize}mm] ISOLATED SAVE - Target URL: /api/pr2-clean/${configId}`);
