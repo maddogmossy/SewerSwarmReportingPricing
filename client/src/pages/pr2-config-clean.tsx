@@ -179,10 +179,10 @@ export default function PR2ConfigClean() {
       return 'TP3'; // Robotic cutting uses TP3 template
     } else if (categoryId === 'day-rate-db11') {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
-    } else if (categoryId?.includes('-p006a') || categoryId === 'cctv-jet-vac') {
+    } else if (categoryId?.includes('-p006a')) {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else {
-      return 'TP1'; // All other categories use standard TP1 template
+      return 'TP1'; // All other categories use standard TP1 template (including cctv-jet-vac)
     }
   };
 
