@@ -251,6 +251,7 @@ export default function PR2ConfigClean() {
         'ims-cutting': `${formattedSize} IMS Cutting Configuration`,
         'excavation': `${formattedSize} Excavation Configuration`,
         'patching': `${formattedSize} Patching Configuration`,
+        'patching-p006a': `${formattedSize} Patching Configuration`,
         'robotic-cutting': `${formattedSize} Robotic Cutting Configuration`, // TP3 Template
         'day-rate-db11': `${formattedSize} P26 Day Rate Configuration`, // P26 Template
         'tankering': `${formattedSize} Tankering Configuration`
@@ -272,6 +273,7 @@ export default function PR2ConfigClean() {
       'ims-cutting': 'IMS Cutting Configuration',
       'excavation': 'Excavation Configuration',
       'patching': 'Patching Configuration',
+      'patching-p006a': 'Patching Configuration',
       'robotic-cutting': 'Robotic Cutting Configuration', // TP3 Template
       'day-rate-db11': 'P26 - Day Rate Configuration', // P26 Template
       'tankering': 'Tankering Configuration'
