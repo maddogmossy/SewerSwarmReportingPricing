@@ -3026,7 +3026,7 @@ export default function PR2ConfigClean() {
             <Card className="relative flex-1">
               <DevLabel id="W003" position="top-right" />
             <CardHeader className="pb-2">
-              <h2 className="text-teal-600 font-bold text-lg flex items-center gap-2">
+              <h2 className="text-gray-900 font-bold text-lg flex items-center gap-2">
                 <Truck className="w-4 h-4" />
                 Vehicle Travel Rates
               </h2>
@@ -3036,7 +3036,7 @@ export default function PR2ConfigClean() {
             </CardHeader>
             <CardContent className="py-2">
               {/* Styled Container - Dark Teal - Sized to match P007 */}
-              <div className="bg-white border border-gray-200 rounded-lg p-3">
+              <div className="bg-teal-100 border border-teal-300 rounded-lg p-3">
                 <div className="space-y-2">
                   {/* Titles Row */}
                   <div className="flex gap-2 items-center">
