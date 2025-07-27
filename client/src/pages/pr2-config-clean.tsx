@@ -157,13 +157,15 @@ export default function PR2ConfigClean() {
   });
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'TP2' | 'TP3' | 'P26' => {
+  const getTemplateType = (categoryId: string): 'TP1' | 'TP2' | 'TP3' | 'P26' | 'P006a' => {
     if (categoryId === 'patching') {
       return 'TP2'; // Patching configurations use TP2 template
     } else if (categoryId === 'robotic-cutting') {
       return 'TP3'; // Robotic cutting uses TP3 template
     } else if (categoryId === 'day-rate-db11') {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
+    } else if (categoryId?.includes('-p006a') || categoryId === 'cctv-jet-vac') {
+      return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else {
       return 'TP1'; // All other categories use standard TP1 template
     }
