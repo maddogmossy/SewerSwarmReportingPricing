@@ -2886,67 +2886,30 @@ export default function PR2ConfigClean() {
             <Card className="bg-cyan-50 border-cyan-200 relative w-72">
               <DevLabel id="W003" position="top-right" />
             <CardHeader className="pb-2">
-              <CardTitle className="text-cyan-700 text-lg flex items-center gap-2">
-                <Truck className="w-5 h-5" />
-                P19 - Vehicle Travel Rates
+              <CardTitle className="text-cyan-700 text-sm flex items-center">
+                <div className="flex items-center gap-2">
+                  <Truck className="w-4 h-4" />
+                  Vehicle Travel Rates
+                </div>
               </CardTitle>
-              <p className="text-sm text-cyan-600 mt-1">
-                TP1 cleaning operations vehicle travel rates
-              </p>
             </CardHeader>
-            <CardContent className="py-3">
-              <div className="flex gap-3">
-                {/* 3.5t Vehicle Rate */}
-                <div className="flex-1">
-                  <Label className="text-sm font-medium text-cyan-700 block mb-1">3.5t Vehicle</Label>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm text-cyan-600">£</span>
-                    <Input
-                      placeholder="55"
-                      maxLength={6}
-                      value={formData.vehicleTravelRates?.[0]?.hourlyRate || ""}
-                      onChange={(e) => {
-                        setFormData(prev => ({
-                          ...prev,
-                          vehicleTravelRates: prev.vehicleTravelRates?.map((v, index) => 
-                            index === 0 ? { ...v, hourlyRate: e.target.value } : v
-                          ) || [{ id: "vehicle_1", enabled: true, hourlyRate: e.target.value, vehicleType: "3.5", numberOfHours: "2" }]
-                        }));
-                        debouncedSave();
-                      }}
-                      className="bg-white border-cyan-300 h-8 text-sm flex-1"
-                    />
-                    <span className="text-sm text-cyan-600">/hr</span>
-                  </div>
-                </div>
-
-                {/* 26t Vehicle Rate */}
-                <div className="flex-1">
-                  <Label className="text-sm font-medium text-cyan-700 block mb-1">26t Vehicle</Label>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm text-cyan-600">£</span>
-                    <Input
-                      placeholder="75"
-                      maxLength={6}
-                      value={formData.vehicleTravelRates?.[1]?.hourlyRate || ""}
-                      onChange={(e) => {
-                        setFormData(prev => {
-                          const existing = prev.vehicleTravelRates || [];
-                          const updated = [...existing];
-                          if (updated[1]) {
-                            updated[1] = { ...updated[1], hourlyRate: e.target.value };
-                          } else {
-                            updated[1] = { id: "vehicle_2", enabled: true, hourlyRate: e.target.value, vehicleType: "26", numberOfHours: "2" };
-                          }
-                          return { ...prev, vehicleTravelRates: updated };
-                        });
-                        debouncedSave();
-                      }}
-                      className="bg-white border-cyan-300 h-8 text-sm flex-1"
-                    />
-                    <span className="text-sm text-cyan-600">/hr</span>
-                  </div>
-                </div>
+            <CardContent className="py-2">
+              <div className="flex gap-2 items-center">
+                <Input
+                  placeholder="Vehicle"
+                  className="border-cyan-200 focus:border-cyan-500 text-xs h-7"
+                />
+                <Input
+                  placeholder="Cost"
+                  className="border-cyan-200 focus:border-cyan-500 text-xs h-7"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-24 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
+                >
+                  <Plus className="w-3 h-3" />
+                </Button>
               </div>
             </CardContent>
           </Card>
