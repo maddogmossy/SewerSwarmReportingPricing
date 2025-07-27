@@ -3667,7 +3667,11 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     autoSaveTimeoutRef.current = setTimeout(() => {
       if (configId) {
         console.log(`🔄 [${pipeSize}mm] AUTO-SAVE triggered for TP1 template ID: ${configId}`);
-        saveTP1Config();
+        // Get the current state at save time, not when debounced function was created
+        setTp1Data(currentData => {
+          saveTP1ConfigWithData(currentData);
+          return currentData;
+        });
       }
     }, 500); // 500ms delay after user stops typing
   }, [configId, pipeSize]);
@@ -3733,7 +3737,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
   };
 
   // Save TP1 configuration with strict isolation
-  const saveTP1Config = async () => {
+  const saveTP1ConfigWithData = async (currentData: CleanFormData) => {
     // Prevent multiple saves from running simultaneously
     if (configId === null) {
       console.log(`⚠️ [${pipeSize}mm] Skipping save - no configuration ID available`);
@@ -3742,21 +3746,21 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     
     try {
       console.log(`💾 [${pipeSize}mm] ISOLATED SAVE - Saving ONLY TP1 template ID: ${configId}`);
-      console.log(`🔍 [${pipeSize}mm] CURRENT TP1 DATA:`, JSON.stringify(tp1Data, null, 2));
+      console.log(`🔍 [${pipeSize}mm] CURRENT TP1 DATA (FRESH):`, JSON.stringify(currentData, null, 2));
       
       const payload = {
-        ...tp1Data,
+        ...currentData,
         categoryId: `P006-TP1-${pipeSize}`, // Force correct category ID
         pipeSize: pipeSize, // Force correct pipe size
         sector: sector,
         // Ensure pricing, quantity, and range options are properly included
-        pricingOptions: tp1Data.pricingOptions || [],
-        quantityOptions: tp1Data.quantityOptions || [],
-        minQuantityOptions: tp1Data.minQuantityOptions || [],
-        rangeOptions: tp1Data.rangeOptions || []
+        pricingOptions: currentData.pricingOptions || [],
+        quantityOptions: currentData.quantityOptions || [],
+        minQuantityOptions: currentData.minQuantityOptions || [],
+        rangeOptions: currentData.rangeOptions || []
       };
 
-      console.log(`📤 [${pipeSize}mm] PAYLOAD BEING SENT:`, JSON.stringify(payload, null, 2));
+      console.log(`📤 [${pipeSize}mm] PAYLOAD BEING SENT (FRESH):`, JSON.stringify(payload, null, 2));
 
       console.log(`🔍 [${pipeSize}mm] ISOLATED SAVE - Updating ID ${configId} with ${payload.rangeOptions.length} range options`);
       console.log(`🎯 [${pipeSize}mm] ISOLATED SAVE - Target URL: /api/pr2-clean/${configId}`);
@@ -3778,6 +3782,13 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
     } catch (error) {
       console.error(`❌ [${pipeSize}mm] ISOLATED SAVE ERROR for ID: ${configId}:`, error);
     }
+  }
+
+  const saveTP1Config = async () => {
+    setTp1Data(currentData => {
+      saveTP1ConfigWithData(currentData);
+      return currentData;
+    });
   };
 
   if (isLoading) {
