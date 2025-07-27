@@ -2796,63 +2796,76 @@ export default function PR2ConfigClean() {
                 </div>
               </div>
 
-              {/* Pipe Size Management */}
-              <div className="bg-white p-4 rounded-lg border border-blue-200">
-                <div className="flex items-center justify-between mb-3">
-                  <Label className="text-sm font-medium text-blue-700">
-                    Custom Pipe Size
-                  </Label>
+              {/* Collapsible Pipe Size Management */}
+              <Collapsible>
+                <CollapsibleTrigger asChild>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="border-blue-200 text-blue-700 hover:bg-blue-50"
-                    onClick={() => {
-                      const customSize = prompt("Enter custom pipe size (mm):");
-                      if (customSize && !isNaN(Number(customSize))) {
-                        const newSizes = [...availablePipeSizes, customSize].sort((a, b) => Number(a) - Number(b));
-                        setAvailablePipeSizes([...new Set(newSizes)]);
-                        setSelectedPipeSize(customSize);
-                        setFormData(prev => ({
-                          ...prev,
-                          pipeSize: customSize
-                        }));
-                        debouncedSave();
-                      }
-                    }}
+                    className="w-full justify-between border-blue-200 text-blue-700 hover:bg-blue-50 p-3"
                   >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add Custom Size
+                    <span className="text-sm font-medium">Custom Pipe Size Management</span>
+                    <ChevronDown className="h-4 w-4" />
                   </Button>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {availablePipeSizes.map((size) => (
-                    <div key={size} className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded text-xs">
-                      <span className="text-blue-700 font-medium">{size}mm</span>
-                      {availablePipeSizes.length > 1 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            const newSizes = availablePipeSizes.filter(s => s !== size);
-                            setAvailablePipeSizes(newSizes);
-                            if (selectedPipeSize === size && newSizes.length > 0) {
-                              setSelectedPipeSize(newSizes[0]);
-                              setFormData(prev => ({
-                                ...prev,
-                                pipeSize: newSizes[0]
-                              }));
-                              debouncedSave();
-                            }
-                          }}
-                          className="h-3 w-3 p-0 text-red-500 hover:text-red-700 text-xs"
-                        >
-                          ×
-                        </Button>
-                      )}
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2">
+                  <div className="bg-white p-4 rounded-lg border border-blue-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <Label className="text-sm font-medium text-blue-700">
+                        Manage Available Sizes
+                      </Label>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                        onClick={() => {
+                          const customSize = prompt("Enter custom pipe size (mm):");
+                          if (customSize && !isNaN(Number(customSize))) {
+                            const newSizes = [...availablePipeSizes, customSize].sort((a, b) => Number(a) - Number(b));
+                            setAvailablePipeSizes([...new Set(newSizes)]);
+                            setSelectedPipeSize(customSize);
+                            setFormData(prev => ({
+                              ...prev,
+                              pipeSize: customSize
+                            }));
+                            debouncedSave();
+                          }
+                        }}
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add Custom Size
+                      </Button>
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <div className="flex flex-wrap gap-1">
+                      {availablePipeSizes.map((size) => (
+                        <div key={size} className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded text-xs">
+                          <span className="text-blue-700 font-medium">{size}mm</span>
+                          {availablePipeSizes.length > 1 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const newSizes = availablePipeSizes.filter(s => s !== size);
+                                setAvailablePipeSizes(newSizes);
+                                if (selectedPipeSize === size && newSizes.length > 0) {
+                                  setSelectedPipeSize(newSizes[0]);
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    pipeSize: newSizes[0]
+                                  }));
+                                  debouncedSave();
+                                }
+                              }}
+                              className="h-3 w-3 p-0 text-red-500 hover:text-red-700 text-xs"
+                            >
+                              ×
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </CardContent>
         </Card>
