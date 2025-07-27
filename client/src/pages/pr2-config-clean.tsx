@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -3703,13 +3703,27 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className="py-2">
-              <Input
-                placeholder="No"
-                value={tp1Data.quantityOptions?.[0]?.value || ""}
-                onChange={(e) => updateQuantityOption(0, 'value', e.target.value)}
-                className="border-green-200 focus:border-green-500 text-xs h-7"
-              />
+            <CardContent className="py-2 space-y-2">
+              {tp1Data.quantityOptions?.map((option, index) => (
+                <div key={option.id} className="flex gap-1 items-center">
+                  <Input
+                    placeholder={option.label}
+                    value={option.value || ""}
+                    onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
+                    className="border-green-200 focus:border-green-500 text-xs h-7 flex-1"
+                  />
+                  {index > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteQuantityOption(index)}
+                      className="h-7 w-7 p-0 text-red-500 hover:bg-red-100"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              ))}
             </CardContent>
           </Card>
 
@@ -3725,25 +3739,42 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className="py-2">
-              <div className="flex gap-2 items-center">
-                <Input
-                  placeholder="Debris %"
-                  className="border-purple-200 focus:border-purple-500 text-xs h-7"
-                />
-                <Input
-                  placeholder="Length"
-                  className="border-purple-200 focus:border-purple-500 text-xs h-7"
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={addRangeOption}
-                  className="h-7 w-24 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
-                >
-                  <Plus className="w-3 h-3" />
-                </Button>
-              </div>
+            <CardContent className="py-2 space-y-2">
+              {tp1Data.rangeOptions?.map((option, index) => (
+                <div key={option.id} className="flex gap-2 items-center">
+                  <Input
+                    placeholder={option.label === 'Percentage' ? 'Debris %' : option.label === 'Length' ? 'Length' : 'Start'}
+                    value={option.rangeStart || ""}
+                    onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
+                    className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
+                  />
+                  <Input
+                    placeholder={option.label === 'Percentage' ? '%' : option.label === 'Length' ? 'End' : 'End'}
+                    value={option.rangeEnd || ""}
+                    onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
+                    className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
+                  />
+                  {index >= tp1Data.rangeOptions.length - 1 ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={addRangeOption}
+                      className="h-7 w-7 p-0 text-white hover:bg-green-200 bg-green-600 border border-green-700"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteRangeOption(index)}
+                      className="h-7 w-7 p-0 text-red-500 hover:bg-red-100"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              ))}
             </CardContent>
           </Card>
         </div>
