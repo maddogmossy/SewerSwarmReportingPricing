@@ -3409,7 +3409,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
   const addRangeOption = () => {
     const newOption = {
       id: `range_${Date.now()}`,
-      label: 'New Range',
+      label: 'Range',
       enabled: true,
       rangeStart: '',
       rangeEnd: ''
