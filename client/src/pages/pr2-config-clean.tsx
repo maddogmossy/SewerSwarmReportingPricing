@@ -2897,34 +2897,7 @@ export default function PR2ConfigClean() {
                     <Button
                       key={size}
                       variant={selectedPipeSize === size ? "default" : "outline"}
-                      onClick={async () => {
-                        console.log(`💾 [${size}mm] W020 PIPE SIZE CLICK - Saving P007 values for ${size}mm`);
-                        
-                        // First, save any pending P007 template changes for this pipe size
-                        try {
-                          const response = await fetch(`/api/pr2-clean?sector=${sector}&categoryId=P006-TP1-${size}`);
-                          const configs = await response.json();
-                          
-                          if (configs && configs.length > 0) {
-                            const configId = configs[0].id;
-                            console.log(`💾 [${size}mm] W020 SAVE - Found TP1 config ID: ${configId}, saving current values`);
-                            
-                            // Get current TP1 data and save it
-                            const saveResponse = await fetch(`/api/pr2-clean/${configId}`, {
-                              method: 'PUT',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify(configs[0])
-                            });
-                            
-                            if (saveResponse.ok) {
-                              console.log(`✅ [${size}mm] W020 SAVE - TP1 configuration saved successfully`);
-                            }
-                          }
-                        } catch (error) {
-                          console.error(`❌ [${size}mm] W020 SAVE - Error saving TP1 config:`, error);
-                        }
-                        
-                        // Then set the selected pipe size
+                      onClick={() => {
                         setSelectedPipeSize(size);
                         setFormData(prev => ({
                           ...prev,
