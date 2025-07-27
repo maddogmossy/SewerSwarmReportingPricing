@@ -2926,7 +2926,7 @@ export default function PR2ConfigClean() {
                       }}
                       className={`h-8 px-1 text-xs font-medium ${
                         selectedPipeSize === size 
-                          ? 'bg-gray-600 hover:bg-gray-700 text-white' 
+                          ? 'bg-green-600 hover:bg-green-700 text-white' 
                           : 'border-gray-200 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
