@@ -458,12 +458,12 @@ export default function PR2ConfigClean() {
           { id: 'price_dayrate', label: 'Day Rate', enabled: true, value: '' }
         ],
         quantityOptions: [
-          { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
+          { id: 'quantity_runs', label: 'No Per Shift', enabled: true, value: '' }
         ],
         minQuantityOptions: [],
         rangeOptions: [
-          { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
-          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
+          { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
         ],
         vehicleTravelRates: [
           { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
@@ -514,7 +514,7 @@ export default function PR2ConfigClean() {
         quantityOptions: isTP2 ? [] : isP26 ? [
           { id: `${pipeSize}_day_rate`, label: `${pipeSize} Day Rate`, enabled: true, value: '' }
         ] : [
-          { id: 'quantity_runs', label: 'Runs per Shift', enabled: true, value: '' }
+          { id: 'quantity_runs', label: 'No Per Shift', enabled: true, value: '' }
         ],
         
         minQuantityOptions: isTP2 ? [
@@ -527,8 +527,8 @@ export default function PR2ConfigClean() {
         rangeOptions: isTP2 ? [
           { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '1000' }
         ] : isP26 ? [] : [
-          { id: 'range_percentage', label: 'Percentage', enabled: true, rangeStart: '', rangeEnd: '' },
-          { id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }
+          { id: 'range_percentage', label: 'Debris %', enabled: true, rangeStart: '', rangeEnd: '' },
+          { id: 'range_length', label: 'Length M', enabled: true, rangeStart: '', rangeEnd: '' }
         ],
         
         vehicleTravelRates: isP26 ? [
@@ -3783,7 +3783,7 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
               <CardTitle className="text-green-700 text-sm flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <RotateCcw className="w-3 h-3" />
-                  Runs per Shift
+                  No Per Shift
                 </div>
               </CardTitle>
             </CardHeader>
@@ -3827,13 +3827,13 @@ const TP1TemplateInterface: React.FC<TP1TemplateInterfaceProps> = ({ pipeSize, s
               {tp1Data.rangeOptions?.map((option, index) => (
                 <div key={option.id} className="flex gap-2 items-center">
                   <Input
-                    placeholder={option.label === 'Percentage' ? 'Debris %' : option.label === 'Length' ? 'Length' : 'Start'}
+                    placeholder={option.label === 'Debris %' ? 'Debris %' : option.label === 'Length M' ? 'Length M' : 'Start'}
                     value={option.rangeStart || ""}
                     onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
                     className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"
                   />
                   <Input
-                    placeholder={option.label === 'Percentage' ? '%' : option.label === 'Length' ? 'End' : 'End'}
+                    placeholder={option.label === 'Debris %' ? '%' : option.label === 'Length M' ? 'M' : 'End'}
                     value={option.rangeEnd || ""}
                     onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
                     className="border-purple-200 focus:border-purple-500 text-xs h-7 flex-1"

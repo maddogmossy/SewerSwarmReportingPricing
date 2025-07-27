@@ -782,10 +782,20 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 27, 2025)
 
+### CRITICAL: P006 TP1 Template Label Standardization Complete ✅
+- **Date**: January 27, 2025  
+- **Status**: Successfully updated all TP1 template labels to match original system specifications
+- **Latest Update**: Standardized TP1 template labels across all components:
+  - **Green Window**: Changed "Runs per Shift" → "No Per Shift" for consistency with original system
+  - **Purple Window**: Updated "Percentage" → "Debris %" and "Length" → "Length M" for clarity
+  - Updated both frontend initialization (getDefaultFormData) and backend template creation (setup-all-tp1-templates.js)
+  - Maintained horizontal Blue-Green-Purple layout structure with correct pipe size filtering (17 standard sizes only)
+  - Complete consistency across all TP1 template creation and display functions
+
 ### CRITICAL: P006 TP1 Template System Implementation Complete ✅
 - **Date**: January 27, 2025  
 - **Status**: Successfully implemented individual TP1 template system for all pipe sizes on P006 page
-- **Latest Update**: Optimized P007 TP1 template layout - Blue window (w-32), Green window (w-40), Purple window (w-64) with horizontal "Debris %" and "Length" inputs plus external green "+" button (w-14)
+- **Previous Update**: Optimized P007 TP1 template layout - Blue window (w-32), Green window (w-40), Purple window (w-64) with horizontal "Debris %" and "Length" inputs plus external green "+" button (w-14)
 - **Features Added**:
   - **Contextual Pipe Size Templates**: TP1 template appears dynamically based on currently selected pipe size
   - **Individual Configuration**: Each pipe size gets its own separate TP1 template with unique category ID (P006-TP1-{size})

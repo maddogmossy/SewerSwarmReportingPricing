@@ -1,7 +1,7 @@
 // Create TP1 templates for all missing pipe sizes with single "Length" row format
 import { Client } from 'pg';
 
-const pipeSizes = [175, 200, 225, 275, 300, 350, 375, 400, 450, 500, 525, 600, 675, 750, 825, 900, 975, 1050, 1200, 1350, 1500];
+const pipeSizes = [100, 150, 225, 300, 375, 450, 525, 600, 675, 750, 825, 900, 975, 1050, 1200, 1350, 1500];
 
 async function setupAllTP1Templates() {
   const client = new Client({
@@ -31,9 +31,9 @@ async function setupAllTP1Templates() {
         ) VALUES (
           'test-user', $1, $2, $3, 'TP1 CCTV/Jet Vac cleaning configuration',
           '[{"id":"price_dayrate","label":"Day Rate","value":"","enabled":true}]',
-          '[{"id":"quantity_runs","label":"Runs per Shift","value":"","enabled":true}]',
+          '[{"id":"quantity_runs","label":"No Per Shift","value":"","enabled":true}]',
           '[{"id":"minquantity_runs","label":"Min Runs per Shift","value":"","enabled":true}]',
-          '[{"id":"range_length","label":"Length","enabled":true,"rangeStart":"","rangeEnd":""}]',
+          '[{"id":"range_percentage","label":"Debris %","enabled":true,"rangeStart":"","rangeEnd":""},{"id":"range_length","label":"Length M","enabled":true,"rangeStart":"","rangeEnd":""}]',
           '["÷"]',
           '[{"id":"vehicle_default","enabled":true,"hourlyRate":"","vehicleType":"3.5","numberOfHours":"2"}]',
           '["vehicle_default"]',
