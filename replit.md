@@ -780,7 +780,7 @@ This prevents data contamination and ensures authentic extraction integrity.
   - Direct navigation to DB15 window configuration from warning dialogs
 - **Result**: Complete P19 Vehicle Travel Rates integration with separate warning system for incomplete travel configurations
 
-## Configuration Template Pattern (CTF - Configuration Template Framework)
+## CTF - Configuration Template Framework
 
 ### Template Architecture Pattern
 **Name**: **CTF (Configuration Template Framework)**
@@ -833,10 +833,21 @@ This prevents data contamination and ensures authentic extraction integrity.
 ### CTF Implementation Status:
 ✅ **P002 Pattern**: Complete - Category cards with dynamic states and visual indicators
 ✅ **P006 Pattern**: Complete - Pipe size selection with TP1 template navigation
-✅ **P007 Pattern**: Complete - Auto-save templates with React state closure fix
+✅ **P007 Pattern**: Complete - Auto-save templates with React state closure fix, purple window enlarged (w-96)
 ✅ **C029 Pattern**: Complete - Sector selection using P002-style card grid
 ✅ **W003 Integration**: Complete - Vehicle Travel Rates card matches P007 header design
 ⚡ **Framework Ready**: CTF patterns documented and ready for replication across new components
+
+### CTF P006 Template Expansion Complete (January 27, 2025):
+✅ **Multi-Category Implementation Complete**: Successfully created P006 template system for all core categories:
+- **Target Categories**: CCTV, Van Pack, Jet Vac, CCTV/Van Pack, CCTV/Jet Vac, CCTV/Cleansing/Root Cutting
+- **Template Structure**: Each category has individual TP1 templates per pipe size (25 sizes × 6 categories = 150 templates)
+- **Category ID Pattern**: `P006-{CATEGORY}-{SIZE}` (e.g., P006-CCTV-150, P006-VAN-PACK-300)
+- **Database IDs**: Created templates range from ID 203-352 with complete separation
+- **Complete Separation**: Each pipe size maintains independent configuration with isolated auto-save
+- **Standardized Windows**: Blue (Day Rate), Green (No Per Shift), Orange (Min Runs), Purple (Debris %/Length) with .99 auto-addition
+- **Setup Script**: `setup-ctf-p006-templates.js` successfully executed creating comprehensive template structure
+- **Purple Window Enhanced**: Increased size to w-96 with "%" and "Length" text labels for improved UX
 
 ## Recent Changes (Updated January 27, 2025)
 
