@@ -2921,27 +2921,57 @@ export default function PR2ConfigClean() {
                   Available Pipe Sizes
                 </Label>
                 <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-10 gap-1">
-                  {availablePipeSizes.map((size) => (
-                    <Button
-                      key={size}
-                      variant={selectedPipeSize === size ? "default" : "outline"}
-                      onClick={() => {
-                        setSelectedPipeSize(size);
-                        setFormData(prev => ({
-                          ...prev,
-                          pipeSize: size
-                        }));
-                        debouncedSave();
-                      }}
-                      className={`h-8 px-1 text-xs font-medium ${
-                        selectedPipeSize === size 
-                          ? 'bg-green-600 hover:bg-green-700 text-white' 
-                          : 'border-gray-200 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {size}mm
-                    </Button>
-                  ))}
+                  {availablePipeSizes.map((size) => {
+                    // Check if configuration exists for this pipe size
+                    const pipeSizeConfigExists = allCategoryConfigs?.some(config => 
+                      config.pipeSize === size
+                    );
+                    
+                    return (
+                      <Button
+                        key={size}
+                        variant={selectedPipeSize === size ? "default" : "outline"}
+                        onClick={async () => {
+                          // Save current configuration if editing
+                          if (editId) {
+                            await handleAutoSaveAndNavigate('', false)();
+                          }
+                          
+                          // Generate pipe-size-specific category ID
+                          const baseCategoryId = categoryId?.replace(/-\d+$/, '') || '';
+                          const pipeSizeCategoryId = `${baseCategoryId}-${size}`;
+                          
+                          // Navigate to pipe-size-specific configuration
+                          const params = new URLSearchParams({
+                            categoryId: pipeSizeCategoryId,
+                            sector: sector,
+                            pipeSize: size
+                          });
+                          
+                          // If configuration exists, add edit parameter
+                          const existingConfig = allCategoryConfigs?.find(config => 
+                            config.categoryId === pipeSizeCategoryId && config.pipeSize === size
+                          );
+                          
+                          if (existingConfig) {
+                            params.append('edit', existingConfig.id.toString());
+                          }
+                          
+                          window.location.href = `/pr2-config-clean?${params.toString()}`;
+                        }}
+                        className={`h-8 px-1 text-xs font-medium relative ${
+                          selectedPipeSize === size 
+                            ? 'bg-green-600 hover:bg-green-700 text-white' 
+                            : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        {size}mm
+                        {pipeSizeConfigExists && (
+                          <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full"></span>
+                        )}
+                      </Button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -2967,17 +2997,29 @@ export default function PR2ConfigClean() {
                         variant="outline"
                         size="sm"
                         className="border-gray-200 text-gray-700 hover:bg-gray-50"
-                        onClick={() => {
+                        onClick={async () => {
                           const customSize = prompt("Enter custom pipe size (mm):");
                           if (customSize && !isNaN(Number(customSize))) {
                             const newSizes = [...availablePipeSizes, customSize].sort((a, b) => Number(a) - Number(b));
                             setAvailablePipeSizes([...new Set(newSizes)]);
-                            setSelectedPipeSize(customSize);
-                            setFormData(prev => ({
-                              ...prev,
+                            
+                            // Save current configuration if editing
+                            if (editId) {
+                              await handleAutoSaveAndNavigate('', false)();
+                            }
+                            
+                            // Generate pipe-size-specific category ID for custom size
+                            const baseCategoryId = categoryId?.replace(/-\d+$/, '') || '';
+                            const pipeSizeCategoryId = `${baseCategoryId}-${customSize}`;
+                            
+                            // Navigate to new custom pipe size configuration
+                            const params = new URLSearchParams({
+                              categoryId: pipeSizeCategoryId,
+                              sector: sector,
                               pipeSize: customSize
-                            }));
-                            debouncedSave();
+                            });
+                            
+                            window.location.href = `/pr2-config-clean?${params.toString()}`;
                           }
                         }}
                       >
@@ -2993,16 +3035,37 @@ export default function PR2ConfigClean() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => {
+                              onClick={async () => {
                                 const newSizes = availablePipeSizes.filter(s => s !== size);
                                 setAvailablePipeSizes(newSizes);
+                                
+                                // If removing current selected size, navigate to first available
                                 if (selectedPipeSize === size && newSizes.length > 0) {
-                                  setSelectedPipeSize(newSizes[0]);
-                                  setFormData(prev => ({
-                                    ...prev,
+                                  // Save current configuration if editing
+                                  if (editId) {
+                                    await handleAutoSaveAndNavigate('', false)();
+                                  }
+                                  
+                                  // Navigate to first available pipe size
+                                  const baseCategoryId = categoryId?.replace(/-\d+$/, '') || '';
+                                  const pipeSizeCategoryId = `${baseCategoryId}-${newSizes[0]}`;
+                                  
+                                  const params = new URLSearchParams({
+                                    categoryId: pipeSizeCategoryId,
+                                    sector: sector,
                                     pipeSize: newSizes[0]
-                                  }));
-                                  debouncedSave();
+                                  });
+                                  
+                                  // Check if configuration exists for first available size
+                                  const existingConfig = allCategoryConfigs?.find(config => 
+                                    config.categoryId === pipeSizeCategoryId && config.pipeSize === newSizes[0]
+                                  );
+                                  
+                                  if (existingConfig) {
+                                    params.append('edit', existingConfig.id.toString());
+                                  }
+                                  
+                                  window.location.href = `/pr2-config-clean?${params.toString()}`;
                                 }
                               }}
                               className="h-3 w-3 p-0 text-red-500 hover:text-red-700 text-xs"
@@ -3341,191 +3404,23 @@ export default function PR2ConfigClean() {
         </DialogContent>
       </Dialog>
 
-        {/* Main Configuration Windows - TP2 Four-Window System */}
+        {/* TP2 Template - Blank P007 Area (Configuration removed as requested) */}
         {getTemplateType(categoryId || '') === 'TP2' && (
-          <div className="space-y-6 mb-6">
-            {/* Blue Window - 4-Layer Pricing Options */}
-            <Card className="bg-blue-50 border-blue-200 relative">
-              <DevLabel id="W001" position="top-right" />
+          <div className="mb-6">
+            <Card className="bg-gray-50 border-gray-200 relative">
+              <DevLabel id="P007" position="top-right" />
               <CardHeader className="pb-3">
-                <CardTitle className="text-blue-700 text-lg flex items-center gap-2">
-                  <Banknote className="w-5 h-5" />
-                  4-Layer Pricing Options
+                <CardTitle className="text-gray-700 text-lg flex items-center gap-2">
+                  <Settings className="w-5 h-5" />
+                  TP2 Configuration Area
                 </CardTitle>
-                <p className="text-sm text-blue-600 mt-1">
-                  Configure pricing for different patching layer requirements
+                <p className="text-sm text-gray-600 mt-1">
+                  TP2 configuration interface - currently blank as requested
                 </p>
               </CardHeader>
-              <CardContent className="py-3">
-                <div className="space-y-3">
-                  {formData.pricingOptions.map((option, index) => (
-                    <div key={option.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-blue-200">
-                      <Label className="text-sm font-medium text-blue-700 min-w-[200px]">
-                        {option.label}
-                      </Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-blue-600">£</span>
-                        <Input
-                          placeholder="0.00"
-                          value={option.value || ""}
-                          onChange={(e) => updatePricingOption(index, 'value', e.target.value)}
-                          className="bg-white border-blue-300 h-8 text-sm w-20"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Green Window - Quantity Options */}
-            <Card className="bg-green-50 border-green-200 relative">
-              <DevLabel id="W002" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-green-700 text-lg flex items-center gap-2">
-                  <RotateCcw className="w-5 h-5" />
-                  Quantity Options
-                </CardTitle>
-                <p className="text-sm text-green-600 mt-1">
-                  Configure quantity parameters per shift
-                </p>
-              </CardHeader>
-              <CardContent className="py-3">
-                <div className="space-y-3">
-                  {formData.quantityOptions.map((option, index) => (
-                    <div key={option.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-green-200">
-                      <Label className="text-sm font-medium text-green-700 min-w-[150px]">
-                        {option.label}
-                      </Label>
-                      <Input
-                        placeholder="0"
-                        value={option.value || ""}
-                        onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
-                        className="bg-white border-green-300 h-8 text-sm w-16"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Orange Window - Minimum Quantity Options */}
-            <Card className="bg-orange-50 border-orange-200 relative">
-              <DevLabel id="W005" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-orange-700 text-lg flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Minimum Quantity Requirements
-                </CardTitle>
-                <p className="text-sm text-orange-600 mt-1">
-                  Set minimum quantities for each patching layer type
-                </p>
-              </CardHeader>
-              <CardContent className="py-3">
-                <div className="space-y-3">
-                  {formData.minQuantityOptions.map((option, index) => (
-                    <div key={option.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-orange-200">
-                      <Label className="text-sm font-medium text-orange-700 min-w-[200px]">
-                        {option.label}
-                      </Label>
-                      <Input
-                        placeholder="0"
-                        value={option.value || ""}
-                        onChange={(e) => updateMinQuantityOption(index, 'value', e.target.value)}
-                        className="bg-white border-orange-300 h-8 text-sm w-16"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Purple Window - Range Options */}
-            <Card className="bg-purple-50 border-purple-200 relative">
-              <DevLabel id="W006" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-purple-700 text-lg flex items-center gap-2">
-                  <ArrowUpDown className="w-5 h-5" />
-                  Range Configuration
-                </CardTitle>
-                <p className="text-sm text-purple-600 mt-1">
-                  Configure pipe size and length ranges for this patching configuration
-                </p>
-              </CardHeader>
-              <CardContent className="py-3">
-                <div className="space-y-3">
-                  {formData.rangeOptions.map((option, index) => (
-                    <div key={option.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-purple-200">
-                      <Label className="text-sm font-medium text-purple-700 min-w-[150px]">
-                        {option.label}
-                      </Label>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          placeholder="Min"
-                          value={option.rangeStart || ""}
-                          onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
-                          className="bg-white border-purple-300 h-8 text-sm w-20"
-                        />
-                        <span className="text-sm text-purple-600">to</span>
-                        <Input
-                          placeholder="Max"
-                          value={option.rangeEnd || ""}
-                          onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
-                          className="bg-white border-purple-300 h-8 text-sm w-20"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Teal Window - Vehicle Travel Rates for TP2 */}
-            <Card className="bg-teal-50 border-teal-200 relative">
-              <DevLabel id="W003" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-teal-700 text-lg flex items-center gap-2">
-                  <Truck className="w-5 h-5" />
-                  Vehicle Travel Rates
-                </CardTitle>
-                <p className="text-sm text-teal-600 mt-1">
-                  Configure travel rates for patching operations
-                </p>
-              </CardHeader>
-              <CardContent className="py-3">
-                <div className="space-y-3">
-                  {formData.vehicleTravelRates.map((vehicle, index) => (
-                    <div key={vehicle.id} className="flex gap-3 items-center bg-white p-3 rounded-lg border border-teal-200">
-                      <Label className="text-sm font-medium text-teal-700 min-w-[60px]">
-                        {vehicle.vehicleType}
-                      </Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-teal-600">£</span>
-                        <Input
-                          placeholder="0.00"
-                          value={vehicle.hourlyRate || ""}
-                          onChange={(e) => {
-                            const updatedVehicle = { ...vehicle, hourlyRate: e.target.value };
-                            updateVehicleTravelRate(updatedVehicle);
-                          }}
-                          className="bg-white border-teal-300 h-8 text-sm w-20"
-                        />
-                        <span className="text-sm text-teal-600">/hr</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          placeholder="2"
-                          value={vehicle.numberOfHours || "2"}
-                          onChange={(e) => {
-                            const updatedVehicle = { ...vehicle, numberOfHours: e.target.value };
-                            updateVehicleTravelRate(updatedVehicle);
-                          }}
-                          className="bg-white border-teal-300 h-8 text-sm w-16"
-                        />
-                        <span className="text-sm text-teal-600">hours</span>
-                      </div>
-                    </div>
-                  ))}
+              <CardContent className="py-8">
+                <div className="text-center text-gray-500">
+                  <p className="text-sm">TP2 configuration interface will be implemented here</p>
                 </div>
               </CardContent>
             </Card>
