@@ -2729,38 +2729,65 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
-        {/* Apply to Sectors Section */}
-        <Card className="mb-6 relative">
+        {/* Apply to Sectors Section - P002 Style Cards */}
+        <div className="mb-6 relative">
           <DevLabel id="C029" position="top-right" />
-          <CardHeader>
-            <CardTitle>Apply Configuration to Sectors</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              {SECTOR_OPTIONS.map((sector) => (
-                <div key={sector.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={sector.id}
-                    checked={selectedSectors.includes(sector.id)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setSelectedSectors([...selectedSectors, sector.id]);
-                      } else {
-                        setSelectedSectors(selectedSectors.filter(s => s !== sector.id));
-                      }
-                    }}
-                  />
-                  <label
-                    htmlFor={sector.id}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {sector.name}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Apply Configuration to Sectors</h3>
+            <p className="text-sm text-gray-600">Select sectors where this configuration will be applied</p>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4">
+            {SECTOR_OPTIONS.map((sector) => {
+              const isSelected = selectedSectors.includes(sector.id);
+              const sectorStyles = {
+                utilities: { color: '#3B82F6', bg: '#EFF6FF' },
+                adoption: { color: '#14B8A6', bg: '#F0FDFA' },
+                highways: { color: '#F59E0B', bg: '#FFFBEB' },
+                insurance: { color: '#EF4444', bg: '#FEF2F2' },
+                construction: { color: '#06B6D4', bg: '#F0F9FF' },
+                domestic: { color: '#F59E0B', bg: '#FFFBEB' }
+              };
+              const style = sectorStyles[sector.id] || { color: '#6B7280', bg: '#F9FAFB' };
+              
+              return (
+                <Card
+                  key={sector.id}
+                  className="relative cursor-pointer transition-all hover:shadow-md border-4"
+                  style={{
+                    borderColor: isSelected ? style.color : '#e5e7eb',
+                    backgroundColor: isSelected ? style.bg : 'white'
+                  }}
+                  onClick={() => {
+                    if (isSelected) {
+                      setSelectedSectors(selectedSectors.filter(s => s !== sector.id));
+                    } else {
+                      setSelectedSectors([...selectedSectors, sector.id]);
+                    }
+                  }}
+                >
+                  <CardContent className="p-4 text-center relative">
+                    <sector.icon 
+                      className="h-8 w-8 mx-auto mb-2"
+                      style={{ color: isSelected ? style.color : '#6B7280' }}
+                    />
+                    <h3 className="font-medium text-sm mb-1 text-gray-800">
+                      {sector.name}
+                    </h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">{sector.description}</p>
+                    
+                    {/* Selection indicator */}
+                    {isSelected && (
+                      <div className="absolute top-2 right-2">
+                        <Settings className="h-4 w-4" style={{ color: style.color }} />
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Color Picker Section */}
         <Card className="mb-6 relative">
