@@ -2803,13 +2803,18 @@ export default function PR2ConfigClean() {
         )}
 
         {/* Color Picker Section - For P006a templates */}
-        {getTemplateType(categoryId || '') === 'P006a' && (
+        {(() => {
+          const templateType = getTemplateType(categoryId || '');
+          const isP006a = templateType === 'P006a';
+          console.log(`🔍 W007 RENDER CHECK: categoryId="${categoryId}", templateType="${templateType}", isP006a=${isP006a}`);
+          return isP006a;
+        })() && (
         <Card className="mb-6 relative">
           <DevLabel id="W007" position="top-right" />
           <CardHeader>
             <CardTitle className="text-gray-900 flex items-center gap-2">
               <Palette className="w-5 h-5" />
-              Color Picker Section
+              🎨 W007 - Color Picker Section (CTF P006a)
             </CardTitle>
             <p className="text-sm text-gray-600">
               Select a color theme for this configuration category
@@ -2854,13 +2859,18 @@ export default function PR2ConfigClean() {
         )}
 
         {/* Upper Level Pipe Size Configuration - For P006a templates */}
-        {getTemplateType(categoryId || '') === 'P006a' && (
+        {(() => {
+          const templateType = getTemplateType(categoryId || '');
+          const isP006a = templateType === 'P006a';
+          console.log(`🔍 W020 RENDER CHECK: categoryId="${categoryId}", templateType="${templateType}", isP006a=${isP006a}`);
+          return isP006a;
+        })() && (
           <Card className="mb-6 relative">
             <DevLabel id="W020" position="top-right" />
             <CardHeader className="pb-3">
               <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
                 <Wrench className="w-5 h-5" />
-                Pipe Size Configuration
+                🔧 W020 - Pipe Size Configuration (CTF P006a)
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -2883,7 +2893,12 @@ export default function PR2ConfigClean() {
         )}
 
         {/* P006a Template Main Configuration Windows */}
-        {getTemplateType(categoryId || '') === 'P006a' && (
+        {(() => {
+          const templateType = getTemplateType(categoryId || '');
+          const isP006a = templateType === 'P006a';
+          console.log(`🔍 P007 RENDER CHECK: categoryId="${categoryId}", templateType="${templateType}", isP006a=${isP006a}`);
+          return isP006a;
+        })() && (
           <div className="space-y-6">
             {/* Blue Window - Pricing Options */}
             <Card className="relative">
@@ -2891,7 +2906,7 @@ export default function PR2ConfigClean() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-blue-700 text-lg flex items-center gap-2">
                   <DollarSign className="w-5 h-5" />
-                  Day Rate Configuration
+                  💙 BLUE - Day Rate Configuration (P007)
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -3010,7 +3025,7 @@ export default function PR2ConfigClean() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-teal-700 text-lg flex items-center gap-2">
                   <Truck className="w-5 h-5" />
-                  W003 - Vehicle Travel Rates
+                  🚛 W003 - Vehicle Travel Rates (CTF P006a)
                 </CardTitle>
               </CardHeader>
               <CardContent>

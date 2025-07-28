@@ -1,0 +1,128 @@
+Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Initial page load - setting sector to: utilities
+Console.js:61 Pipe size from URL: null
+Console.js:61 Config name from URL: null
+Console.js:61 Source item number: null
+Console.js:61 🔍 Making API request for sector: utilities
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 📥 Raw API response: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Console.js:61 📊 Response length: 9
+Console.js:61 📊 Response items: (9) ['ID: 587, Sector: utilities', 'ID: 170, Sector: utilities', 'ID: 163, Sector: utilities', 'ID: 175, Sector: utilities', 'ID: 588, Sector: utilities', 'ID: 589, Sector: utilities', 'ID: 590, Sector: utilities', 'ID: 592, Sector: utilities', 'ID: 593, Sector: utilities']
+Console.js:61 Current sector object: {id: 'utilities', name: 'Utilities', icon: {…}, color: 'text-blue-600', bgColor: 'bg-blue-50'}
+Console.js:61 Current sector bgColor: bg-blue-50
+Console.js:61 🔍 Navigation triggered for categoryId: cctv-jet-vac
+Console.js:61 📍 Current sector: utilities
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…sector=utilities&categoryId=cctv-jet-vac&edit=175', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 PAGE TITLE DEBUG: categoryId="cctv-jet-vac", templateType="P006a", formData.categoryName="CCTV Jet Vac Configuration"
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 API REQUEST: Fetching configuration 175
+Console.js:61 🔄 editId changed to: 175, clearing processedConfigId and invalidating cache
+Console.js:61 🔄 Resetting flags: hasUserChanges = false
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 175, configToUse: undefined
+Console.js:61 🔍 processedConfigId: null, current config ID: undefined
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…sector=utilities&categoryId=cctv-jet-vac&edit=175', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 PAGE TITLE DEBUG: categoryId="cctv-jet-vac", templateType="P006a", formData.categoryName="CCTV Jet Vac Configuration"
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…sector=utilities&categoryId=cctv-jet-vac&edit=175', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 PAGE TITLE DEBUG: categoryId="cctv-jet-vac", templateType="P006a", formData.categoryName="CCTV Jet Vac Configuration"
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…sector=utilities&categoryId=cctv-jet-vac&edit=175', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 PAGE TITLE DEBUG: categoryId="cctv-jet-vac", templateType="P006a", formData.categoryName="CCTV Jet Vac Configuration"
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…sector=utilities&categoryId=cctv-jet-vac&edit=175', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 PAGE TITLE DEBUG: categoryId="cctv-jet-vac", templateType="P006a", formData.categoryName="CCTV Jet Vac Configuration"
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 ✅ API RESPONSE: Configuration 175 loaded: {id: 175, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'F175 - CCTV Jet Vac Configuration', pipeSize: '150', …}
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…sector=utilities&categoryId=cctv-jet-vac&edit=175', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 PAGE TITLE DEBUG: categoryId="cctv-jet-vac", templateType="P006a", formData.categoryName="CCTV Jet Vac Configuration"
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 useEffect triggered - isEditing: true, editId: 175, configToUse: {id: 175, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'F175 - CCTV Jet Vac Configuration', pipeSize: '150', …}
+Console.js:61 🔍 processedConfigId: null, current config ID: 175
+Console.js:61 🔍 Force processing config ID: 175 (editId: 175) - hasUserChanges: false
+Console.js:61 🔍 Processing config: {id: 175, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'F175 - CCTV Jet Vac Configuration', pipeSize: '150', …}
+Console.js:61 🔧 Loading configuration data: {id: 175, userId: 'test-user', categoryId: 'cctv-jet-vac', categoryName: 'F175 - CCTV Jet Vac Configuration', pipeSize: '150', …}
+Console.js:61 🔧 Initialized form data with options: {pricingCount: 1, quantityCount: 1, minQuantityCount: 1, rangeCount: 1, vehicleCount: 2, …}
+Console.js:61 🔧 Setting form data for config 175: {quantityValue: '', rangeLength: undefined}
+Console.js:61 🔍 Detected existing config in sector: utilities
+Console.js:61 🔍 Setting sectorsWithConfig to: [utilities]
+Console.js:61 🔍 Setting selectedSectors to: [utilities]
+Console.js:61 ✅ Configuration 175 processed and marked as loaded
+Console.js:61 🔍 URLSearchParams debug: {searchParams: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', urlParamsSize: 3, allParams: {…}}
+Console.js:61 🔍 PR2ConfigClean URL params: {location: '/pr2-config-clean', fullURL: 'https://0cba532d-8b2a-4a82-be26-92c624600d8f-00-2c…sector=utilities&categoryId=cctv-jet-vac&edit=175', search: '?sector=utilities&categoryId=cctv-jet-vac&edit=175', sector: 'utilities', categoryId: 'cctv-jet-vac', …}
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 PAGE TITLE DEBUG: categoryId="cctv-jet-vac", templateType="P006a", formData.categoryName="F175 - CCTV Jet Vac Configuration"
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
+Console.js:61 🔍 TEMPLATE TYPE DEBUG: categoryId="cctv-jet-vac"
+Console.js:61 ✅ TEMPLATE: cctv-jet-vac → P006a (CTF Framework)
