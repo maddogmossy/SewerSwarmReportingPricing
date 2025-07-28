@@ -3116,113 +3116,126 @@ export default function PR2ConfigClean() {
               </Card>
             </div>
 
-            {/* MM4 Pricing Windows - Individual window for each selected pipe size */}
-            {Object.entries(selectedPipeSizes)
-              .sort(([a], [b]) => parseInt(a) - parseInt(b))
-              .map(([pipeSize, configId]) => (
-                <div key={`mm4-${pipeSize}`} className="mb-6">
-                  <div className="relative">
-                    <DevLabel id={`MM4-${pipeSize}`} position="top-right" />
-                    <Card className="bg-white border-2 border-gray-200">
-                      <CardHeader>
-                        <CardTitle className="text-lg font-semibold text-gray-900">
-                          Section Calculator - {pipeSize}mm (ID: {configId})
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-4 gap-4">
-                          {/* Blue - Day Rate (1 column) */}
-                          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                            <h4 className="font-medium text-blue-800 mb-2">Day Rate</h4>
-                            <div>
-                              <label className="text-xs text-blue-700">Day Rate</label>
-                              <Input
-                                type="text"
-                                placeholder="Enter day rate"
-                                className="border-blue-300"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Green - No Per Shift (1 column) - Dynamic Rows */}
-                          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                            <h4 className="font-medium text-green-800 mb-2">No Per Shift</h4>
-                            <div className="space-y-2">
-                              {mm4Rows.map((row, index) => (
-                                <div key={row.id}>
-                                  <label className="text-xs text-green-700">Qty Per Shift</label>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter quantity"
-                                    className="border-green-300"
-                                    value={row.greenValue}
-                                    onChange={(e) => updateMM4Row(row.id, 'greenValue', e.target.value)}
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Purple - Range Configuration (2 columns - wider for two inputs) - Dynamic Rows */}
-                          <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
-                            <h4 className="font-medium text-purple-800 mb-2">Range Configuration</h4>
-                            <div className="space-y-2">
-                              {mm4Rows.map((row, index) => (
-                                <div key={row.id} className="grid grid-cols-2 gap-2">
-                                  <div>
-                                    <label className="text-xs text-purple-700">Debris %</label>
-                                    <Input
-                                      type="text"
-                                      placeholder="0-15"
-                                      className="border-purple-300"
-                                      value={row.purpleDebris}
-                                      onChange={(e) => updateMM4Row(row.id, 'purpleDebris', e.target.value)}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="text-xs text-purple-700">Length</label>
-                                    <div className="flex items-center gap-2">
-                                      <Input
-                                        type="text"
-                                        placeholder="0-35"
-                                        className="border-purple-300 flex-1"
-                                        value={row.purpleLength}
-                                        onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
-                                      />
-                                      {index === 0 && (
-                                        <Button 
-                                          size="sm" 
-                                          className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
-                                          onClick={addMM4Row}
-                                        >
-                                          +
-                                        </Button>
-                                      )}
-                                      {index > 0 && (
-                                        <Button 
-                                          size="sm" 
-                                          variant="destructive"
-                                          className="h-8 w-8 p-0 flex-shrink-0"
-                                          onClick={() => deleteMM4Row(row.id)}
-                                        >
-                                          <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+            {/* MM4 and MM5 - Same Row Layout */}
+            <div className="grid grid-cols-3 gap-6">
+              {/* MM4 - Section Calculator (Left - spans 2 columns) */}
+              <div className="col-span-2 relative">
+                {Object.keys(selectedPipeSizes).length > 0 ? (
+                  // Show selected pipe size in DevLabel
+                  <DevLabel id={`MM4-${Object.keys(selectedPipeSizes).sort((a, b) => parseInt(a) - parseInt(b))[0]}`} position="top-right" />
+                ) : (
+                  <DevLabel id="MM4" position="top-right" />
+                )}
+                <Card className="bg-white border-2 border-gray-200">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      {Object.keys(selectedPipeSizes).length > 0 ? (
+                        // Show first selected pipe size in title
+                        `4. Section Calculator - ${Object.keys(selectedPipeSizes).sort((a, b) => parseInt(a) - parseInt(b))[0]}mm (ID: ${selectedPipeSizes[Object.keys(selectedPipeSizes).sort((a, b) => parseInt(a) - parseInt(b))[0]]})`
+                      ) : (
+                        "4. Section Calculator"
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {Object.keys(selectedPipeSizes).length > 0 ? (
+                      // Show MM4 interface when pipe size is selected
+                      <div className="grid grid-cols-4 gap-4">
+                        {/* Blue - Day Rate (1 column) */}
+                        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                          <h4 className="font-medium text-blue-800 mb-2">Day Rate</h4>
+                          <div>
+                            <label className="text-xs text-blue-700">Day Rate</label>
+                            <Input
+                              type="text"
+                              placeholder="Enter day rate"
+                              className="border-blue-300"
+                            />
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-              ))}
 
-            {/* MM5 - Vehicle Travel Rates (Always shown) */}
-            <div className="mb-6">
+                        {/* Green - No Per Shift (1 column) - Dynamic Rows */}
+                        <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                          <h4 className="font-medium text-green-800 mb-2">No Per Shift</h4>
+                          <div className="space-y-2">
+                            {mm4Rows.map((row, index) => (
+                              <div key={row.id}>
+                                <label className="text-xs text-green-700">Qty Per Shift</label>
+                                <Input
+                                  type="text"
+                                  placeholder="Enter quantity"
+                                  className="border-green-300"
+                                  value={row.greenValue}
+                                  onChange={(e) => updateMM4Row(row.id, 'greenValue', e.target.value)}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Purple - Range Configuration (2 columns - wider for two inputs) - Dynamic Rows */}
+                        <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+                          <h4 className="font-medium text-purple-800 mb-2">Range Configuration</h4>
+                          <div className="space-y-2">
+                            {mm4Rows.map((row, index) => (
+                              <div key={row.id} className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <label className="text-xs text-purple-700">Debris %</label>
+                                  <Input
+                                    type="text"
+                                    placeholder="0-15"
+                                    className="border-purple-300"
+                                    value={row.purpleDebris}
+                                    onChange={(e) => updateMM4Row(row.id, 'purpleDebris', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-xs text-purple-700">Length</label>
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      type="text"
+                                      placeholder="0-35"
+                                      className="border-purple-300 flex-1"
+                                      value={row.purpleLength}
+                                      onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
+                                    />
+                                    {index === 0 && (
+                                      <Button 
+                                        size="sm" 
+                                        className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
+                                        onClick={addMM4Row}
+                                      >
+                                        +
+                                      </Button>
+                                    )}
+                                    {index > 0 && (
+                                      <Button 
+                                        size="sm" 
+                                        variant="destructive"
+                                        className="h-8 w-8 p-0 flex-shrink-0"
+                                        onClick={() => deleteMM4Row(row.id)}
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      // Show placeholder when no pipe size selected
+                      <div className="text-center py-8 text-gray-500">
+                        <p>Select a pipe size from MM3 to configure Section Calculator</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* MM5 - Vehicle Travel Rates (Right) */}
               <div className="relative">
                 <DevLabel id="MM5" position="top-right" />
                 <Card className="bg-white border-2 border-gray-200">
