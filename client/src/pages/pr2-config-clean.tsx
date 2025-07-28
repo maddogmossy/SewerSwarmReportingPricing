@@ -1094,6 +1094,9 @@ export default function PR2ConfigClean() {
 
   // MM2 ID selection auto-save - also updates border color based on selected ID
   const handleMM2IdChange = (id: string, isSelected: boolean) => {
+    // CRITICAL: Mark that user has made changes to prevent database override
+    setHasUserChanges(true);
+    
     setSelectedIds(prev => {
       const updated = isSelected 
         ? [...prev, id]
@@ -1139,7 +1142,8 @@ export default function PR2ConfigClean() {
                     timestamp: Date.now()
                   }
                 });
-                queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+                // Don't invalidate queries to prevent reload that overwrites color
+                // queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
               } catch (error) {
                 console.error('MM2 auto-save failed:', error);
               }
