@@ -933,72 +933,7 @@ export default function PR2ConfigClean() {
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
 
-  // MM4 Row Management State
-  const [mm4Rows, setMm4Rows] = useState([
-    { id: 1, greenValue: '', purpleDebris: '', purpleLength: '' }
-  ]);
 
-  // MM4 Row Management Functions
-  const addMM4Row = () => {
-    setMm4Rows(prev => [
-      ...prev,
-      { 
-        id: prev.length + 1, 
-        greenValue: '', 
-        purpleDebris: '', 
-        purpleLength: '' 
-      }
-    ]);
-    // Trigger auto-save when adding rows
-    setTimeout(() => triggerAutoSave(), 100);
-  };
-
-  const deleteMM4Row = (rowId: number) => {
-    if (mm4Rows.length > 1) { // Keep at least one row
-      setMm4Rows(prev => prev.filter(row => row.id !== rowId));
-      // Trigger auto-save when deleting rows
-      setTimeout(() => triggerAutoSave(), 100);
-    }
-  };
-
-  const updateMM4Row = (rowId: number, field: 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
-    setMm4Rows(prev => prev.map(row => 
-      row.id === rowId ? { ...row, [field]: value } : row
-    ));
-  };
-
-  // MM5 Row Management State
-  const [mm5Rows, setMm5Rows] = useState([
-    { id: 1, vehicleWeight: '', costPerMile: '' }
-  ]);
-
-  // MM5 Row Management Functions
-  const addMM5Row = () => {
-    setMm5Rows(prev => [
-      ...prev,
-      { 
-        id: prev.length + 1, 
-        vehicleWeight: '', 
-        costPerMile: '' 
-      }
-    ]);
-    // Trigger auto-save when adding rows
-    setTimeout(() => triggerAutoSave(), 100);
-  };
-
-  const deleteMM5Row = (rowId: number) => {
-    if (mm5Rows.length > 1) { // Keep at least one row
-      setMm5Rows(prev => prev.filter(row => row.id !== rowId));
-      // Trigger auto-save when deleting rows
-      setTimeout(() => triggerAutoSave(), 100);
-    }
-  };
-
-  const updateMM5Row = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {
-    setMm5Rows(prev => prev.map(row => 
-      row.id === rowId ? { ...row, [field]: value } : row
-    ));
-  };
 
   // Auto-save functionality state
   const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -1023,6 +958,105 @@ export default function PR2ConfigClean() {
     // Always select the clicked pipe size (no deselection)
     setSelectedPipeSizeForMM4(pipeSize);
     setSelectedPipeSizeId(generatePipeSizeId(pipeSize));
+  };
+
+  // MM4/MM5 Data Storage - Scoped by pipe size/ID combination (moved here after pipe size variables)
+  const [mm4DataByPipeSize, setMm4DataByPipeSize] = useState<Record<string, any[]>>({});
+  const [mm5DataByPipeSize, setMm5DataByPipeSize] = useState<Record<string, any[]>>({});
+
+  // Get current MM4/MM5 data for selected pipe size
+  const getCurrentMM4Data = () => {
+    const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+    return mm4DataByPipeSize[key] || [{ id: 1, greenValue: '', purpleDebris: '', purpleLength: '' }];
+  };
+
+  const getCurrentMM5Data = () => {
+    const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+    return mm5DataByPipeSize[key] || [{ id: 1, vehicleWeight: '', costPerMile: '' }];
+  };
+
+  // Get current data as computed values
+  const mm4Rows = getCurrentMM4Data();
+  const mm5Rows = getCurrentMM5Data();
+
+  // Update MM4/MM5 data for specific pipe size
+  const updateMM4DataForPipeSize = (newData: any[]) => {
+    const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+    setMm4DataByPipeSize(prev => ({ ...prev, [key]: newData }));
+  };
+
+  const updateMM5DataForPipeSize = (newData: any[]) => {
+    const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+    setMm5DataByPipeSize(prev => ({ ...prev, [key]: newData }));
+  };
+
+  // MM4 Row Management Functions - Now scoped to pipe size
+  const addMM4Row = () => {
+    const currentData = getCurrentMM4Data();
+    const newData = [
+      ...currentData,
+      { 
+        id: currentData.length + 1, 
+        greenValue: '', 
+        purpleDebris: '', 
+        purpleLength: '' 
+      }
+    ];
+    updateMM4DataForPipeSize(newData);
+    // Trigger auto-save when adding rows
+    setTimeout(() => triggerAutoSave(), 100);
+  };
+
+  const deleteMM4Row = (rowId: number) => {
+    const currentData = getCurrentMM4Data();
+    if (currentData.length > 1) { // Keep at least one row
+      const newData = currentData.filter(row => row.id !== rowId);
+      updateMM4DataForPipeSize(newData);
+      // Trigger auto-save when deleting rows
+      setTimeout(() => triggerAutoSave(), 100);
+    }
+  };
+
+  const updateMM4Row = (rowId: number, field: 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
+    const currentData = getCurrentMM4Data();
+    const newData = currentData.map(row => 
+      row.id === rowId ? { ...row, [field]: value } : row
+    );
+    updateMM4DataForPipeSize(newData);
+  };
+
+  // MM5 Row Management Functions - Now scoped to pipe size
+  const addMM5Row = () => {
+    const currentData = getCurrentMM5Data();
+    const newData = [
+      ...currentData,
+      { 
+        id: currentData.length + 1, 
+        vehicleWeight: '', 
+        costPerMile: '' 
+      }
+    ];
+    updateMM5DataForPipeSize(newData);
+    // Trigger auto-save when adding rows
+    setTimeout(() => triggerAutoSave(), 100);
+  };
+
+  const deleteMM5Row = (rowId: number) => {
+    const currentData = getCurrentMM5Data();
+    if (currentData.length > 1) { // Keep at least one row
+      const newData = currentData.filter(row => row.id !== rowId);
+      updateMM5DataForPipeSize(newData);
+      // Trigger auto-save when deleting rows
+      setTimeout(() => triggerAutoSave(), 100);
+    }
+  };
+
+  const updateMM5Row = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {
+    const currentData = getCurrentMM5Data();
+    const newData = currentData.map(row => 
+      row.id === rowId ? { ...row, [field]: value } : row
+    );
+    updateMM5DataForPipeSize(newData);
   };
 
   // Configuration loading moved above getCategoryName function
@@ -1060,18 +1094,26 @@ export default function PR2ConfigClean() {
     
     const timeoutId = setTimeout(async () => {
       try {
-        // Gather all MM section data
+        // Create pipe-size-specific key for current selection
+        const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+        
+        // Gather MM section data with pipe-size isolation
         const mmData = {
           selectedPipeSize: selectedPipeSizeForMM4,
           selectedPipeSizeId: selectedPipeSizeId,
           mm1Colors: formData.categoryColor,
           mm2IdData: selectedIds,
           mm3CustomPipeSizes: customPipeSizes,
-          mm4Rows: mm4Rows,
-          mm5Rows: mm5Rows,
+          // Store MM4/MM5 data with pipe-size keys for isolation
+          mm4DataByPipeSize: { [pipeSizeKey]: getCurrentMM4Data() },
+          mm5DataByPipeSize: { [pipeSizeKey]: getCurrentMM5Data() },
+          // Keep legacy format for backward compatibility
+          mm4Rows: getCurrentMM4Data(),
+          mm5Rows: getCurrentMM5Data(),
           categoryId: categoryId,
           sector: sector,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          pipeSizeKey: pipeSizeKey // Add key for debugging
         };
 
         // Auto-save to backend - only update existing configurations, don't create new ones
@@ -1092,7 +1134,7 @@ export default function PR2ConfigClean() {
     }, 1000); // 1 second delay
     
     setAutoSaveTimeout(timeoutId);
-  }, [selectedPipeSizeForMM4, selectedPipeSizeId, formData, selectedIds, customPipeSizes, mm4Rows, mm5Rows, editId, categoryId, sector, autoSaveTimeout]);
+  }, [selectedPipeSizeForMM4, selectedPipeSizeId, formData, selectedIds, customPipeSizes, mm4DataByPipeSize, mm5DataByPipeSize, editId, categoryId, sector, autoSaveTimeout]);
 
   // MM2 Color picker auto-save (independent from MM1 ID selection)
   const handleMM1ColorChange = (color: string) => {
