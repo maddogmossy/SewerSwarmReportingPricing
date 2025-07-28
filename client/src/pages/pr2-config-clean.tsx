@@ -999,7 +999,7 @@ export default function PR2ConfigClean() {
   // Get current MM4/MM5 data for selected pipe size
   const getCurrentMM4Data = () => {
     const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-    const data = mm4DataByPipeSize[key] || [{ id: 1, greenValue: '', purpleDebris: '', purpleLength: '' }];
+    const data = mm4DataByPipeSize[key] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
     console.log(`🔍 MM4 Data for key "${key}":`, data);
     console.log('📊 All MM4 data by pipe size:', mm4DataByPipeSize);
     return data;
@@ -1031,6 +1031,7 @@ export default function PR2ConfigClean() {
       ...currentData,
       { 
         id: currentData.length + 1, 
+        blueValue: '', 
         greenValue: '', 
         purpleDebris: '', 
         purpleLength: '' 
@@ -1051,7 +1052,7 @@ export default function PR2ConfigClean() {
     }
   };
 
-  const updateMM4Row = (rowId: number, field: 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
+  const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     console.log('🔧 MM4 Row Update:');
     console.log('  - rowId:', rowId);
@@ -3419,6 +3420,8 @@ export default function PR2ConfigClean() {
                               type="text"
                               placeholder="Enter day rate"
                               className="border-blue-300"
+                              value={mm4Rows[0]?.blueValue || ''}
+                              onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
                             />
                           </div>
                         </div>
