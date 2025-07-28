@@ -1101,12 +1101,45 @@ export default function PR2ConfigClean() {
     console.log('🔒 STEP 2: hasUserChanges set to TRUE to prevent config reload');
     
     setFormData(prev => {
+      const updatedFormData = { ...prev, categoryColor: color };
       console.log('📝 STEP 3: Updating formData from', prev.categoryColor, 'to', color);
-      return { ...prev, categoryColor: color };
+      
+      // Immediate save with correct color value
+      if (editId) {
+        setTimeout(async () => {
+          try {
+            console.log('🚀 STEP 4: IMMEDIATE SAVE with correct color:', color);
+            
+            const mmData = {
+              selectedPipeSize: selectedPipeSizeForMM4,
+              selectedPipeSizeId: selectedPipeSizeId,
+              mm1Colors: color, // Use the NEW color directly
+              mm2IdData: selectedIds,
+              mm3CustomPipeSizes: customPipeSizes,
+              mm4Rows: mm4Rows,
+              mm5Rows: mm5Rows,
+              categoryId: categoryId,
+              sector: sector,
+              timestamp: Date.now()
+            };
+            
+            console.log('📦 STEP 5: Payload with correct color:', { ...updatedFormData, mmData });
+            
+            await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
+              ...updatedFormData,
+              mmData: mmData
+            });
+            
+            console.log('✅ STEP 6: MM2 color save successful with color:', color);
+            
+          } catch (error) {
+            console.error('❌ MM2 immediate save failed:', error);
+          }
+        }, 100); // Very short delay for immediate save
+      }
+      
+      return updatedFormData;
     });
-    
-    console.log('💾 STEP 4: Triggering auto-save...');
-    triggerAutoSave();
   };
 
 
@@ -1223,11 +1256,42 @@ export default function PR2ConfigClean() {
   const handleColorChange = (color: string) => {
     console.log('🎨 MM2 CUSTOM COLOR CHANGE:', color);
     setHasUserChanges(true); // Prevent config reload
-    setFormData(prev => ({
-      ...prev,
-      categoryColor: color
-    }));
-    debouncedSave();
+    
+    setFormData(prev => {
+      const updatedFormData = { ...prev, categoryColor: color };
+      
+      // Immediate save with correct color value
+      if (editId) {
+        setTimeout(async () => {
+          try {
+            const mmData = {
+              selectedPipeSize: selectedPipeSizeForMM4,
+              selectedPipeSizeId: selectedPipeSizeId,
+              mm1Colors: color, // Use the NEW color directly
+              mm2IdData: selectedIds,
+              mm3CustomPipeSizes: customPipeSizes,
+              mm4Rows: mm4Rows,
+              mm5Rows: mm5Rows,
+              categoryId: categoryId,
+              sector: sector,
+              timestamp: Date.now()
+            };
+            
+            await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
+              ...updatedFormData,
+              mmData: mmData
+            });
+            
+            console.log('✅ MM2 custom color save successful with color:', color);
+            
+          } catch (error) {
+            console.error('❌ MM2 custom save failed:', error);
+          }
+        }, 100);
+      }
+      
+      return updatedFormData;
+    });
   };
 
   // Mutation for saving sectors
