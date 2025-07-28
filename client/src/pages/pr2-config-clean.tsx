@@ -2691,7 +2691,37 @@ export default function PR2ConfigClean() {
                   }
                 })()}
               </h1>
-              <p className="text-gray-600 mt-1">
+              
+              {/* Template Information Display */}
+              <div className="mt-2 flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">Template:</span>
+                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded">
+                    {(() => {
+                      const templateType = getTemplateType(categoryId || '');
+                      if (templateType === 'P006') {
+                        return `P006 Template (F${editId || 'Unknown'})`;
+                      } else if (templateType === 'P006a') {
+                        return `P006a Template (F${editId || 'Unknown'})`;
+                      } else if (templateType === 'TP3') {
+                        return `TP3 Template (F${editId || 'Unknown'})`;
+                      } else if (templateType === 'P26') {
+                        return `P26 Template (F${editId || 'Unknown'})`;
+                      } else {
+                        return `TP1 Template (F${editId || 'Unknown'})`;
+                      }
+                    })()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">Category ID:</span>
+                  <span className="px-2 py-1 bg-gray-100 text-gray-800 text-sm font-mono rounded">
+                    {categoryId || 'Unknown'}
+                  </span>
+                </div>
+              </div>
+              
+              <p className="text-gray-600 mt-2">
                 {formData.description || 'Configure pricing options for this category'}
               </p>
             </div>
