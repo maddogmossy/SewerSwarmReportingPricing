@@ -175,10 +175,8 @@ export default function PR2ConfigClean() {
   });
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'TP3' | 'P26' | 'P006' | 'P006a' | 'MM001' => {
-    if (categoryId === 'robotic-cutting') {
-      return 'TP3'; // Robotic cutting uses TP3 template (specialized, no display interface)
-    } else if (categoryId === 'cart-card') {
+  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MM001' => {
+    if (categoryId === 'cart-card') {
       return 'TP1'; // Cart card uses standard TP1 template with full interface
     } else if (categoryId === 'day-rate-db11') {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
@@ -362,48 +360,7 @@ export default function PR2ConfigClean() {
   const getDefaultFormData = () => {
     const templateType = getTemplateType(categoryId || '');
     
-    if (templateType === 'TP3') {
-      // TP3 - Robotic Cutting Configuration (specific template structure per user requirements)
-      return {
-        categoryName: categoryId ? getCategoryName(categoryId) : '',
-        description: '',
-        categoryColor: '#ffffff', // Default white color - user must assign color
-        pipeSize: pipeSize || '',
-        
-        // DB10 Window (Blue) - Pipe Range & Cutting Costs
-        pricingOptions: [
-          { id: 'pipe_range_min', label: 'Pipe Range (Min)', enabled: true, value: '' },
-          { id: 'pipe_range_max', label: 'Pipe Range (Max)', enabled: true, value: '' },
-          { id: 'first_cut_cost', label: 'First Cut Cost', enabled: true, value: '' },
-          { id: 'cost_per_cut_after_1st', label: 'Cost Per Cut After 1st', enabled: true, value: '' }
-        ],
-        
-        // Green Window - Number of Cuts Per Shift
-        quantityOptions: [
-          { id: 'cuts_per_shift', label: 'No of Cuts Per Shift', enabled: true, value: '' }
-        ],
-        
-        // Purple Window - Range Options (empty for TP3)
-        rangeOptions: [],
-        
-        // Orange Window - Min Quantity Options (empty for TP3)
-        minQuantityOptions: [],
-        
-        // DB15 Window (Teal) - Vehicle Travel Time (separate from main template)
-        vehicleTravelRates: [
-          { id: 'vehicle_3_5t', vehicleType: '3.5t', hourlyRate: '', numberOfHours: '2', enabled: true },
-          { id: 'vehicle_7_5t', vehicleType: '7.5t', hourlyRate: '', numberOfHours: '2', enabled: true }
-        ],
-        
-        mathOperators: [], // No math window for TP3
-        pricingStackOrder: ['pipe_range_min', 'pipe_range_max', 'first_cut_cost', 'cost_per_cut_after_1st'],
-        quantityStackOrder: ['cuts_per_shift'],
-        minQuantityStackOrder: [],
-        rangeStackOrder: [],
-        vehicleTravelRatesStackOrder: ['vehicle_3_5t', 'vehicle_7_5t'],
-        sector
-      };
-    } else if (templateType === 'P26') {
+    if (templateType === 'P26') {
       // P26 - Day Rate Configuration with Multiple Pipe Sizes and DB15 component
       return {
         categoryName: categoryId ? getCategoryName(categoryId) : '',
@@ -2686,12 +2643,7 @@ export default function PR2ConfigClean() {
                   const templateType = getTemplateType(categoryId || '');
                   console.log(`🔍 PAGE TITLE DEBUG: categoryId="${categoryId}", templateType="${templateType}", formData.categoryName="${formData.categoryName}"`);
                   
-                  // FORCE TP3 title detection - robotic-cutting should ALWAYS show TP3 title
-                  if (categoryId === 'robotic-cutting') {
-                    return 'TP3 - Robotic Cutting Configuration';
-                  } else {
-                    return formData.categoryName || 'TP1 - Configuration';
-                  }
+                  return formData.categoryName || 'TP1 - Configuration';
                 })()}
               </h1>
               
@@ -2706,8 +2658,6 @@ export default function PR2ConfigClean() {
                         return `P006 Template (F${editId || 'Unknown'})`;
                       } else if (templateType === 'P006a') {
                         return `P006a Template (F${editId || 'Unknown'})`;
-                      } else if (templateType === 'TP3') {
-                        return `TP3 Template (F${editId || 'Unknown'})`;
                       } else if (templateType === 'P26') {
                         return `P26 Template (F${editId || 'Unknown'})`;
                       } else if (templateType === 'MM001') {
@@ -3237,147 +3187,7 @@ export default function PR2ConfigClean() {
           </>
         )}
 
-        {/* TP3 Template - Robotic Cutting Configuration */}
-        {getTemplateType(categoryId || '') === 'TP3' && (
-          <div className="space-y-6">
-            {/* Blue Window - Pricing Options */}
-            <Card className="relative">
-              <DevLabel id="TP3-Blue" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-blue-800 text-lg flex items-center gap-2">
-                  <DollarSign className="w-5 h-5" />
-                  Pricing Options
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="space-y-4">
-                  {formData.pricingOptions.map((option, index) => (
-                    <div key={option.id} className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={option.enabled}
-                          onChange={(e) => updatePricingOption(index, 'enabled', e.target.checked)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="font-medium text-gray-900">{option.label}</span>
-                      </div>
-                      {option.enabled && (
-                        <Input
-                          type="text"
-                          value={option.value}
-                          onChange={(e) => updatePricingOption(index, 'value', e.target.value)}
-                          placeholder={`Enter ${option.label.toLowerCase()}`}
-                          className="border-blue-300"
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* Green Window - Quantity Options */}
-            <Card className="relative">
-              <DevLabel id="TP3-Green" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-green-800 text-lg flex items-center gap-2">
-                  <Package className="w-5 h-5" />
-                  Quantity Configuration
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="bg-green-50 border border-green-200 rounded-lg">
-                <div className="space-y-4">
-                  {formData.quantityOptions.map((option, index) => (
-                    <div key={option.id} className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={option.enabled}
-                          onChange={(e) => updateQuantityOption(index, 'enabled', e.target.checked)}
-                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                        />
-                        <span className="font-medium text-gray-900">{option.label}</span>
-                      </div>
-                      {option.enabled && (
-                        <Input
-                          type="text"
-                          value={option.value}
-                          onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
-                          placeholder={`Enter ${option.label.toLowerCase()}`}
-                          className="border-green-300"
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Teal Window - Vehicle Travel Rates (DB15) */}
-            <Card className="relative">
-              <DevLabel id="TP3-Teal" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-teal-800 text-lg flex items-center gap-2">
-                  <Truck className="w-5 h-5" />
-                  Vehicle Travel Rates (DB15)
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="bg-teal-50 border border-teal-200 rounded-lg">
-                <div className="space-y-4">
-                  {formData.vehicleTravelRates.map((vehicle, index) => (
-                    <div key={vehicle.id} className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={vehicle.enabled}
-                          onChange={(e) => updateVehicleOption(index, 'enabled', e.target.checked)}
-                          className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
-                        />
-                        <span className="font-medium text-gray-900">{vehicle.vehicleType} Vehicle</span>
-                      </div>
-                      {vehicle.enabled && (
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <span className="block text-sm font-medium text-gray-700 mb-1">Hourly Rate (£)</span>
-                            <Input
-                              type="text"
-                              value={vehicle.hourlyRate}
-                              onChange={(e) => updateVehicleOption(index, 'hourlyRate', e.target.value)}
-                              placeholder="Rate"
-                              className="border-teal-300"
-                            />
-                          </div>
-                          <div>
-                            <span className="block text-sm font-medium text-gray-700 mb-1">Number of Hours</span>
-                            <Input
-                              type="text"
-                              value={vehicle.numberOfHours}
-                              onChange={(e) => updateVehicleOption(index, 'numberOfHours', e.target.value)}
-                              placeholder="2"
-                              className="border-teal-300"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Save Configuration Button */}
-            <div className="flex justify-start">
-              <Button 
-                onClick={handleSaveConfiguration}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                disabled={mutation.isPending}
-              >
-                {mutation.isPending ? 'Saving...' : 'Save TP3 Configuration'}
-              </Button>
-            </div>
-          </div>
-        )}
 
       </div>
     </div>
