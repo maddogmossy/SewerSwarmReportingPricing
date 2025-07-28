@@ -1086,10 +1086,15 @@ export default function PR2ConfigClean() {
     setAutoSaveTimeout(timeoutId);
   }, [selectedPipeSizeForMM4, selectedPipeSizeId, formData, selectedIds, customPipeSizes, mm4Rows, mm5Rows, editId, categoryId, sector, autoSaveTimeout]);
 
-  // MM1 Color picker auto-save
+  // MM1 Color picker auto-save - but don't override if MM2 has set the color
   const handleMM1ColorChange = (color: string) => {
-    setFormData(prev => ({ ...prev, categoryColor: color }));
-    triggerAutoSave();
+    if (!mm2ColorLocked) {
+      console.log('🎨 MM1 COLOR CHANGE (not locked):', color);
+      setFormData(prev => ({ ...prev, categoryColor: color }));
+      triggerAutoSave();
+    } else {
+      console.log('🔒 MM1 COLOR CHANGE BLOCKED - MM2 color is locked');
+    }
   };
 
   // MM2 ID selection auto-save - also updates border color based on selected ID
@@ -1098,7 +1103,8 @@ export default function PR2ConfigClean() {
     
     // CRITICAL: Mark that user has made changes to prevent database override
     setHasUserChanges(true);
-    console.log('🔒 hasUserChanges set to TRUE');
+    setMm2ColorLocked(true); // Lock color to prevent MM1 and config loading from overriding
+    console.log('🔒 hasUserChanges set to TRUE, MM2 color locked');
     
     setSelectedIds(prev => {
       const updated = isSelected 
@@ -1280,11 +1286,16 @@ export default function PR2ConfigClean() {
 
   // Handle color change for P006a templates
   const handleColorChange = (color: string) => {
-    setFormData(prev => ({
-      ...prev,
-      categoryColor: color
-    }));
-    debouncedSave();
+    if (!mm2ColorLocked) {
+      console.log('🎨 HANDLE COLOR CHANGE (not locked):', color);
+      setFormData(prev => ({
+        ...prev,
+        categoryColor: color
+      }));
+      debouncedSave();
+    } else {
+      console.log('🔒 HANDLE COLOR CHANGE BLOCKED - MM2 color is locked');
+    }
   };
 
   // Mutation for saving sectors
@@ -1583,6 +1594,7 @@ export default function PR2ConfigClean() {
   
   // Track if user has made changes to prevent automatic form overwrite
   const [hasUserChanges, setHasUserChanges] = useState(false);
+  const [mm2ColorLocked, setMm2ColorLocked] = useState(false); // Prevent MM1 from overriding MM2 colors
   
   // Removed hasInitialLoad - simplified logic to never overwrite user changes
   
@@ -1591,6 +1603,7 @@ export default function PR2ConfigClean() {
     setProcessedConfigId(null);
     // Reset flags when switching to different config
     setHasUserChanges(false);
+    setMm2ColorLocked(false); // Reset MM2 color lock when switching configurations
     
     // CLEAR PR1 CACHE CONTAMINATION for robotic-cutting configurations
     if (categoryId === 'robotic-cutting') {
@@ -1620,11 +1633,12 @@ export default function PR2ConfigClean() {
     console.log('🔍 CONFIG LOADING CHECK:', { 
       isEditing, 
       hasConfig: !!configToUse, 
-      hasUserChanges, 
-      willLoad: isEditing && configToUse && configToUse.id && !hasUserChanges 
+      hasUserChanges,
+      mm2ColorLocked,
+      willLoad: isEditing && configToUse && configToUse.id && !hasUserChanges && !mm2ColorLocked
     });
     
-    if (isEditing && configToUse && configToUse.id && !hasUserChanges) {
+    if (isEditing && configToUse && configToUse.id && !hasUserChanges && !mm2ColorLocked) {
       const configId = parseInt(editId || '0');
 
       
