@@ -1075,13 +1075,8 @@ export default function PR2ConfigClean() {
         }
         // Don't create new configurations during auto-save - only update existing ones
         
-        // DON'T invalidate queries when MM2 color is locked - prevents config reload override
-        if (!mm2ColorLocked) {
-          queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-          console.log('📊 Query invalidated - MM2 not locked');
-        } else {
-          console.log('🔒 Query invalidation skipped - MM2 color locked');
-        }
+        // Invalidate queries to refresh data
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
         
       } catch (error) {
         console.error('Auto-save failed:', error);
@@ -1091,103 +1086,14 @@ export default function PR2ConfigClean() {
     setAutoSaveTimeout(timeoutId);
   }, [selectedPipeSizeForMM4, selectedPipeSizeId, formData, selectedIds, customPipeSizes, mm4Rows, mm5Rows, editId, categoryId, sector, autoSaveTimeout]);
 
-  // MM1 Color picker auto-save - but don't override if MM2 has set the color
+  // MM2 Color picker auto-save (independent from MM1 ID selection)
   const handleMM1ColorChange = (color: string) => {
-    if (!mm2ColorLocked) {
-      console.log('🎨 MM1 COLOR CHANGE (not locked):', color);
-      setFormData(prev => ({ ...prev, categoryColor: color }));
-      triggerAutoSave();
-    } else {
-      console.log('🔒 MM1 COLOR CHANGE BLOCKED - MM2 color is locked');
-    }
+    console.log('🎨 MM2 COLOR CHANGE:', color);
+    setFormData(prev => ({ ...prev, categoryColor: color }));
+    triggerAutoSave();
   };
 
-  // MM2 ID selection auto-save - also updates border color based on selected ID
-  const handleMM2IdChange = (id: string, isSelected: boolean) => {
-    console.log('🎨 MM2 ID CHANGE:', { id, isSelected, currentColor: formData.categoryColor });
-    
-    // CRITICAL: Mark that user has made changes to prevent database override
-    setHasUserChanges(true);
-    setMm2ColorLocked(true); // Lock color to prevent MM1 and config loading from overriding
-    
-    // Persist MM2 lock state across page reloads
-    try {
-      localStorage.setItem('mm2ColorLocked', 'true');
-    } catch (e) {
-      console.error('Failed to save MM2 lock state:', e);
-    }
-    
-    console.log('🔒 hasUserChanges set to TRUE, MM2 color locked and persisted');
-    
-    setSelectedIds(prev => {
-      const updated = isSelected 
-        ? [...prev, id]
-        : prev.filter(selectedId => selectedId !== id);
-      console.log('📝 Updated selectedIds:', updated);
-      return updated;
-    });
-    
-    // Update border color based on the selected ID
-    if (isSelected) {
-      const selectedIdOption = MMP1_IDS.find(idOption => idOption.id === id);
-      if (selectedIdOption) {
-        console.log('🎯 Found selected ID option:', selectedIdOption);
-        
-        // Extract color from the text class (e.g., 'text-blue-600' -> '#2563eb')
-        const colorMap: { [key: string]: string } = {
-          'text-blue-600': '#2563eb',
-          'text-green-600': '#16a34a', 
-          'text-orange-600': '#ea580c',
-          'text-red-600': '#dc2626',
-          'text-purple-600': '#9333ea',
-          'text-teal-600': '#0d9488'
-        };
-        const newColor = colorMap[selectedIdOption.color] || '#2563eb';
-        console.log('🌈 NEW COLOR SELECTED:', { 
-          from: selectedIdOption.color, 
-          to: newColor,
-          currentFormDataColor: formData.categoryColor 
-        });
-        
-        // Update formData and trigger immediate save with new color
-        setFormData(prev => {
-          const updatedFormData = { ...prev, categoryColor: newColor };
-          console.log('💾 Setting formData with new color:', newColor);
-          
-          // Immediate save with the new color
-          if (editId) {
-            setTimeout(async () => {
-              try {
-                console.log('🚀 SAVING TO DATABASE with color:', newColor);
-                await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
-                  ...updatedFormData,
-                  mmData: {
-                    selectedPipeSize: selectedPipeSizeForMM4,
-                    selectedPipeSizeId: selectedPipeSizeId,
-                    mm1Colors: newColor, // Use the new color directly
-                    mm2IdData: isSelected ? [...selectedIds, id] : selectedIds.filter(selectedId => selectedId !== id),
-                    mm3CustomPipeSizes: customPipeSizes,
-                    mm4Rows: mm4Rows,
-                    mm5Rows: mm5Rows,
-                    categoryId: categoryId,
-                    sector: sector,
-                    timestamp: Date.now()
-                  }
-                });
-                console.log('✅ MM2 SAVE SUCCESSFUL');
-                // Don't invalidate queries to prevent reload that overwrites color
-                // queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-              } catch (error) {
-                console.error('❌ MM2 auto-save failed:', error);
-              }
-            }, 100);
-          }
-          
-          return updatedFormData;
-        });
-      }
-    }
-  };
+
 
   // MM4/MM5 Auto-save wrappers
   const updateMM4RowWithAutoSave = (rowId: number, field: 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
@@ -1297,18 +1203,14 @@ export default function PR2ConfigClean() {
     });
   };
 
-  // Handle color change for P006a templates
+  // Handle color change for MM2 custom color picker
   const handleColorChange = (color: string) => {
-    if (!mm2ColorLocked) {
-      console.log('🎨 HANDLE COLOR CHANGE (not locked):', color);
-      setFormData(prev => ({
-        ...prev,
-        categoryColor: color
-      }));
-      debouncedSave();
-    } else {
-      console.log('🔒 HANDLE COLOR CHANGE BLOCKED - MM2 color is locked');
-    }
+    console.log('🎨 MM2 CUSTOM COLOR CHANGE:', color);
+    setFormData(prev => ({
+      ...prev,
+      categoryColor: color
+    }));
+    debouncedSave();
   };
 
   // Mutation for saving sectors
@@ -1607,14 +1509,7 @@ export default function PR2ConfigClean() {
   
   // Track if user has made changes to prevent automatic form overwrite
   const [hasUserChanges, setHasUserChanges] = useState(false);
-  // Initialize MM2 color lock from localStorage to persist across reloads
-  const [mm2ColorLocked, setMm2ColorLocked] = useState(() => {
-    try {
-      return localStorage.getItem('mm2ColorLocked') === 'true';
-    } catch (e) {
-      return false;
-    }
-  });
+  const [mm2ColorLocked, setMm2ColorLocked] = useState(false); // Removed persistent locking
   
   // Removed hasInitialLoad - simplified logic to never overwrite user changes
   
@@ -1624,11 +1519,6 @@ export default function PR2ConfigClean() {
     // Reset flags when switching to different config
     setHasUserChanges(false);
     setMm2ColorLocked(false); // Reset MM2 color lock when switching configurations
-    try {
-      localStorage.removeItem('mm2ColorLocked');
-    } catch (e) {
-      console.error('Failed to clear MM2 lock state:', e);
-    }
     
     // CLEAR PR1 CACHE CONTAMINATION for robotic-cutting configurations
     if (categoryId === 'robotic-cutting') {
@@ -1642,12 +1532,8 @@ export default function PR2ConfigClean() {
     }
     
     // Force invalidate the specific configuration query to trigger fresh fetch
-    // But DON'T do this if we're just switching IDs within same config (MM2 color locked)
-    if (editId && !mm2ColorLocked) {
+    if (editId) {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
-      console.log('📊 Specific config query invalidated');
-    } else if (mm2ColorLocked) {
-      console.log('🔒 Specific config query invalidation skipped - MM2 color locked');
     }
   }, [editId, categoryId]);
   
@@ -1663,11 +1549,10 @@ export default function PR2ConfigClean() {
       isEditing, 
       hasConfig: !!configToUse, 
       hasUserChanges,
-      mm2ColorLocked,
-      willLoad: isEditing && configToUse && configToUse.id && !hasUserChanges && !mm2ColorLocked
+      willLoad: isEditing && configToUse && configToUse.id && !hasUserChanges
     });
     
-    if (isEditing && configToUse && configToUse.id && !hasUserChanges && !mm2ColorLocked) {
+    if (isEditing && configToUse && configToUse.id && !hasUserChanges) {
       const configId = parseInt(editId || '0');
 
       
@@ -2991,7 +2876,7 @@ export default function PR2ConfigClean() {
                           }`}
                           onClick={() => {
                             console.log('🎯 MM1 ID CARD CLICKED:', { id: idOption.id, willSelect: !isSelected });
-                            handleMM2IdChange(idOption.id, !isSelected);
+                            handleMMP1IdChange(idOption.id, !isSelected);
                           }}
                         >
                           <CardContent className="p-4 text-center relative">
@@ -3087,10 +2972,7 @@ export default function PR2ConfigClean() {
                           formData.categoryColor === color.value ? 'border-gray-800 ring-2 ring-gray-300' : 'border-gray-300'
                         }`}
                         style={{ backgroundColor: color.value }}
-                        onClick={() => {
-                          console.log('🚫 MM1 COLOR PICKER DISABLED FOR MMP1 - Use MM2 ID selection instead');
-                          // handleMM1ColorChange(color.value) - DISABLED FOR MMP1
-                        }}
+                        onClick={() => handleMM1ColorChange(color.value)}
                         title={color.name}
                       >
                         {formData.categoryColor === color.value && (
@@ -3132,10 +3014,7 @@ export default function PR2ConfigClean() {
                                   <input
                                     type="color"
                                     value={formData.categoryColor}
-                                    onChange={(e) => {
-                                      console.log('🚫 MM1 VISUAL COLOR PICKER DISABLED FOR MMP1');
-                                      // handleMM1ColorChange(e.target.value) - DISABLED FOR MMP1  
-                                    }}
+                                    onChange={(e) => handleMM1ColorChange(e.target.value)}
                                     className="w-12 h-8 rounded border border-gray-300 cursor-pointer bg-transparent"
                                     title="Choose custom color"
                                   />
@@ -3155,10 +3034,7 @@ export default function PR2ConfigClean() {
                                 <input
                                   type="text"
                                   value={formData.categoryColor}
-                                  onChange={(e) => {
-                                    console.log('🚫 MM1 HEX INPUT DISABLED FOR MMP1');
-                                    // handleColorChange(e.target.value) - DISABLED FOR MMP1
-                                  }}
+                                  onChange={(e) => handleColorChange(e.target.value)}
                                   className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
                                   placeholder="#000000"
                                   pattern="^#[0-9A-Fa-f]{6}$"
