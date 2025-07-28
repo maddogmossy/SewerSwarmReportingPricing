@@ -954,7 +954,7 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Status**: Successfully implemented MMP1 template with P002 pattern ID1-ID6 selection system and enhanced MM2 color picker
 - **Features Implemented**:
   - **ID1-ID6 Selection System**: P002-style card grid with interactive selection for price management across sectors
-  - **Advanced Color Picker**: Enhanced MM2 section with 20 preset colors (10x2 grid) plus custom color picker
+  - **Advanced Color Picker**: Enhanced MM2 section with 20 Outlook diary-style colors (10x2 grid) plus custom color picker
   - **Dual Color Input**: Users can select colors via color picker widget or manual hex code entry
   - **Visual Feedback**: Selected IDs show colored backgrounds, settings icons, and summary display
   - **Database Integration**: ID selections automatically save/remove pricing configurations to sectors
@@ -962,7 +962,7 @@ This prevents data contamination and ensures authentic extraction integrity.
   - Added MMP1_IDS array with 6 configuration templates (ID1-ID6) with unique colors and icons
   - Implemented selectedIds/idsWithConfig state management for selection tracking
   - Created handleMMP1IdChange function for selection/deselection with database operations
-  - Enhanced color picker with 20 Tailwind colors in compact 10x2 grid layout
+  - Enhanced color picker with 20 Outlook diary-style colors in compact 10x2 grid layout
   - Added custom color input (both picker widget and hex text field) for unlimited color options
 - **User Benefits**: 
   - Complete ID-based price management system following established P002 pattern

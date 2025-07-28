@@ -2765,33 +2765,33 @@ export default function PR2ConfigClean() {
                     2. Color Picker Section
                   </CardTitle>
                   <p className="text-sm text-gray-600">
-                    Choose from 20 preset colors or use custom color picker
+                    Choose from 20 Outlook diary-style colors or use custom color picker
                   </p>
                 </CardHeader>
                 <CardContent>
-                  {/* 20 Preset Colors */}
+                  {/* 20 Outlook Diary Style Colors */}
                   <div className="grid grid-cols-10 gap-2 mb-4">
                     {[
-                      { name: 'Red', value: '#EF4444' },
-                      { name: 'Rose', value: '#F43F5E' },
-                      { name: 'Pink', value: '#EC4899' },
-                      { name: 'Fuchsia', value: '#D946EF' },
-                      { name: 'Purple', value: '#9333EA' },
-                      { name: 'Violet', value: '#8B5CF6' },
-                      { name: 'Indigo', value: '#6366F1' },
-                      { name: 'Blue', value: '#3B82F6' },
-                      { name: 'Sky', value: '#0EA5E9' },
-                      { name: 'Cyan', value: '#06B6D4' },
-                      { name: 'Teal', value: '#14B8A6' },
-                      { name: 'Emerald', value: '#10B981' },
-                      { name: 'Green', value: '#22C55E' },
-                      { name: 'Lime', value: '#84CC16' },
-                      { name: 'Yellow', value: '#EAB308' },
-                      { name: 'Amber', value: '#F59E0B' },
-                      { name: 'Orange', value: '#F97316' },
-                      { name: 'Stone', value: '#78716C' },
-                      { name: 'Gray', value: '#6B7280' },
-                      { name: 'Slate', value: '#64748B' }
+                      { name: 'Light Blue', value: '#8DC3E8' },
+                      { name: 'Light Green', value: '#A4D4B4' },
+                      { name: 'Light Yellow', value: '#F5E6A3' },
+                      { name: 'Light Orange', value: '#F5C99B' },
+                      { name: 'Light Red', value: '#F5A3A3' },
+                      { name: 'Light Purple', value: '#D4A4D4' },
+                      { name: 'Light Pink', value: '#F5C2E7' },
+                      { name: 'Light Teal', value: '#A3D5D5' },
+                      { name: 'Light Gray', value: '#D4D4D4' },
+                      { name: 'Light Brown', value: '#D4B899' },
+                      { name: 'Medium Blue', value: '#5B9BD5' },
+                      { name: 'Medium Green', value: '#70AD47' },
+                      { name: 'Medium Yellow', value: '#FFC000' },
+                      { name: 'Medium Orange', value: '#ED7D31' },
+                      { name: 'Medium Red', value: '#C55A5A' },
+                      { name: 'Medium Purple', value: '#9F4F96' },
+                      { name: 'Medium Pink', value: '#E083C2' },
+                      { name: 'Medium Teal', value: '#4BACC6' },
+                      { name: 'Medium Gray', value: '#A5A5A5' },
+                      { name: 'Medium Brown', value: '#B7956D' }
                     ].map((color) => (
                       <button
                         key={color.name}
