@@ -1027,10 +1027,26 @@ export default function PR2ConfigClean() {
 
   const updateMM4Row = (rowId: number, field: 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
+    console.log('🔧 MM4 Row Update:');
+    console.log('  - rowId:', rowId);
+    console.log('  - field:', field);
+    console.log('  - value:', value);
+    console.log('  - current data before update:', currentData);
+    
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );
+    
+    console.log('  - new data after update:', newData);
+    const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+    console.log('  - storing under key:', key);
+    
     updateMM4DataForPipeSize(newData);
+    
+    // Verify storage after update
+    setTimeout(() => {
+      console.log('  - MM4 storage after update:', mm4DataByPipeSize);
+    }, 100);
   };
 
   // MM5 Row Management Functions - Independent storage
@@ -1106,6 +1122,12 @@ export default function PR2ConfigClean() {
         const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
         
         // Gather MM section data with pipe-size isolation
+        const currentMM4Data = getCurrentMM4Data();
+        console.log('💾 Auto-save MM4 Data Analysis:');
+        console.log('  - pipeSizeKey:', pipeSizeKey);
+        console.log('  - current MM4 data:', currentMM4Data);
+        console.log('  - all MM4 storage:', mm4DataByPipeSize);
+        
         const mmData = {
           selectedPipeSize: selectedPipeSizeForMM4,
           selectedPipeSizeId: selectedPipeSizeId,
@@ -1113,16 +1135,18 @@ export default function PR2ConfigClean() {
           mm2IdData: selectedIds,
           mm3CustomPipeSizes: customPipeSizes,
           // Store MM4 data with pipe-size keys for isolation, MM5 independent
-          mm4DataByPipeSize: { [pipeSizeKey]: getCurrentMM4Data() },
+          mm4DataByPipeSize: { [pipeSizeKey]: currentMM4Data },
           mm5Data: getCurrentMM5Data(), // MM5 independent of pipe size
           // Keep legacy format for backward compatibility
-          mm4Rows: getCurrentMM4Data(),
+          mm4Rows: currentMM4Data,
           mm5Rows: getCurrentMM5Data(),
           categoryId: categoryId,
           sector: sector,
           timestamp: Date.now(),
           pipeSizeKey: pipeSizeKey // Add key for debugging
         };
+        
+        console.log('💾 MM Data being saved to backend:', mmData);
 
         // Auto-save to backend - only update existing configurations, don't create new ones
         if (editId) {
@@ -1752,16 +1776,27 @@ export default function PR2ConfigClean() {
         // Load MM4/MM5 data from backend if it exists
         if (config.mmData) {
           console.log('🔄 Loading MM4/MM5 data from backend:', config.mmData);
+          console.log('🔍 MM4 Backend Data Analysis:');
+          console.log('  - mm4DataByPipeSize exists:', !!config.mmData.mm4DataByPipeSize);
+          console.log('  - mm4Rows exists:', !!config.mmData.mm4Rows);
+          console.log('  - selectedPipeSizeForMM4:', selectedPipeSizeForMM4);
+          console.log('  - selectedPipeSizeId:', selectedPipeSizeId);
           
           // Load MM4/MM5 data from pipe-size-specific storage or legacy format
           if (config.mmData.mm4DataByPipeSize) {
+            console.log('📥 Setting MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
             setMm4DataByPipeSize(config.mmData.mm4DataByPipeSize);
-            console.log('✅ Loaded MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
+            console.log('✅ MM4 data should now be loaded in storage');
           } else if (config.mmData.mm4Rows) {
             // Legacy format - store under current pipe size key
             const currentKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+            console.log('📥 Converting MM4 legacy data to pipe-size format');
+            console.log('  - Legacy data:', config.mmData.mm4Rows);
+            console.log('  - Will store under key:', currentKey);
             setMm4DataByPipeSize({ [currentKey]: config.mmData.mm4Rows });
-            console.log('✅ Loaded MM4 legacy data for key:', currentKey, config.mmData.mm4Rows);
+            console.log('✅ MM4 legacy data converted and stored');
+          } else {
+            console.log('❌ No MM4 data found in backend config');
           }
           
           // MM5 is now independent of pipe size
