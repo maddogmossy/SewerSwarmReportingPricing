@@ -2906,7 +2906,7 @@ export default function PR2ConfigClean() {
             {/* MM3 - UK Drainage Pipe Sizes (MSCC5) */}
             <div className="relative">
               <DevLabel id="MM3" position="top-right" />
-              <Card className="bg-orange-50 border-2 border-orange-200">
+              <Card className="bg-white border-2 border-gray-200">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
@@ -2956,7 +2956,7 @@ export default function PR2ConfigClean() {
                         return (
                           <div
                             key={size}
-                            className="relative group px-3 py-2 text-sm bg-white border border-gray-300 rounded text-center font-mono"
+                            className="relative group px-3 py-2 text-sm bg-orange-50 border border-orange-200 rounded text-center font-mono"
                             title={`${size}mm - ${isCustom ? 'Custom' : 'Standard UK'} drainage pipe size`}
                           >
                             {size}mm
