@@ -686,7 +686,7 @@ export default function PR2ConfigClean() {
     setHasUserChanges(true);
     
     setFormData(prev => {
-      console.log(`🔧 BEFORE UPDATE - Current formData.rangeOptions:`, prev.rangeOptions);
+
       
       const updatedFormData = {
         ...prev,
@@ -694,20 +694,19 @@ export default function PR2ConfigClean() {
           if (opt.id === optionId) {
             // CRITICAL: No processing, just store the exact value
             const updatedOpt = { ...opt, [field]: value };
-            console.log(`🔧 UPDATED OPTION:`, updatedOpt);
-            console.log(`🔧 NEW ${field} VALUE: "${updatedOpt[field]}" (length: ${updatedOpt[field].length})`);
+
             return updatedOpt;
           }
           return opt;
         })
       };
       
-      console.log(`🔧 AFTER UPDATE - New formData.rangeOptions:`, updatedFormData.rangeOptions);
+
       return updatedFormData;
     });
     
     // Trigger debounced save after range input change
-    console.log(`🔧 Triggering debouncedSave...`);
+
     debouncedSave();
   };
 
@@ -733,7 +732,7 @@ export default function PR2ConfigClean() {
   useEffect(() => {
     // Only run when we have categoryId and sector but not already editing
     if (!isEditing && categoryId && sector && allCategoryConfigs) {
-      console.log(`🔍 Looking for existing configuration for ${categoryId} in ${sector}, pipeSize: ${pipeSize}`);
+
       
       // If we have a pipe size, look for pipe-size-specific configuration first
       if (pipeSize) {
@@ -745,12 +744,12 @@ export default function PR2ConfigClean() {
         );
         
         if (pipeSizeConfig) {
-          console.log(`✅ Found pipe size-specific configuration ID: ${pipeSizeConfig.id}, redirecting to edit mode`);
+
           setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${pipeSizeConfig.id}`);
           return;
         } else {
           // AUTO-CREATE: No pipe-size-specific config exists, create one immediately
-          console.log(`🔧 No ${pipeSize}mm configuration found, auto-creating and redirecting to edit mode...`);
+
           const autoCreateAndRedirect = async () => {
             const normalizedPipeSize = pipeSize.replace(/mm$/i, '');
             const configName = `${normalizedPipeSize}mm ${categoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Configuration`;
@@ -758,7 +757,7 @@ export default function PR2ConfigClean() {
             const newConfigId = await createPipeSizeConfiguration(categoryId, sector, pipeSize, configName);
             
             if (newConfigId) {
-              console.log(`✅ Auto-created configuration ID: ${newConfigId}, redirecting to edit mode`);
+
               setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${newConfigId}`);
             } else {
               console.error('❌ Failed to auto-create configuration, staying on current page');
@@ -778,11 +777,11 @@ export default function PR2ConfigClean() {
       );
       
       if (existingConfig) {
-        console.log(`✅ Found existing general configuration ID: ${existingConfig.id}, redirecting to edit mode`);
+
         // Redirect to edit the general configuration
         setLocation(`/pr2-config-clean?categoryId=${categoryId}&sector=${sector}&edit=${existingConfig.id}`);
       } else {
-        console.log(`🔍 No general configuration found, staying on new config page`);
+
       }
     }
   }, [allCategoryConfigs, isEditing, categoryId, sector, pipeSize, setLocation]);
@@ -842,7 +841,7 @@ export default function PR2ConfigClean() {
         });
         
         if (response.ok) {
-          console.log('✅ Input values saved successfully');
+
           
           // CRITICAL: Sync P26 vehicle data across configurations
           if (categoryId === 'patching' && payload.vehicleTravelRates?.length > 0) {
@@ -869,7 +868,7 @@ export default function PR2ConfigClean() {
                       body: JSON.stringify(syncPayload)
                     });
                     
-                    console.log(`✅ P26 SYNC: Synced vehicle data to config ${config.id} (${config.pipeSize}mm)`);
+
                   }
                 }
               }
@@ -969,7 +968,7 @@ export default function PR2ConfigClean() {
     queryFn: async () => {
       const response = await apiRequest('GET', `/api/pr2-clean?categoryId=${categoryId}&sector=${sector}`);
       const configs = await response.json();
-      console.log(`🔍 Found ${configs.length} configs for categoryId ${categoryId} in sector ${sector}:`, configs);
+
       
       // If we have pipe size, look for pipe size-specific configuration first
       if (pipeSize) {
@@ -979,7 +978,7 @@ export default function PR2ConfigClean() {
         );
         
         if (pipeSizeConfig) {
-          console.log(`✅ Found pipe size-specific configuration for ${pipeSize}mm:`, pipeSizeConfig);
+
           return pipeSizeConfig;
         } else {
           console.log(`⚠️ No pipe size-specific configuration found for ${pipeSize}mm, will create new one`);
@@ -991,7 +990,7 @@ export default function PR2ConfigClean() {
       const sectorConfig = configs.find(config => config.sector === sector);
       
       if (sectorConfig) {
-        console.log(`✅ Found configuration for sector ${sector}:`, sectorConfig);
+
         return sectorConfig;
       } else {
         console.log(`⚠️ No configuration found for sector ${sector}, returning null`);
@@ -1063,11 +1062,7 @@ export default function PR2ConfigClean() {
 
   // Handle sector checkbox changes
   const handleSectorChange = async (sectorId: string, checked: boolean) => {
-    console.log(`🔄 Sector change: ${sectorId}, checked: ${checked}`);
-    console.log(`📋 Current sectorsWithConfig:`, sectorsWithConfig);
-    console.log(`📋 Current selectedSectors:`, selectedSectors);
-    console.log(`🔍 Is editing:`, isEditing);
-    console.log(`🔍 Edit ID:`, editId);
+
     
     if (checked) {
       // Add sector to selected list
@@ -1119,14 +1114,14 @@ export default function PR2ConfigClean() {
               // Refresh data
               queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
               
-              console.log(`✅ Configuration removed from sector: ${sectorId}`);
+
             }
           }
         } catch (error) {
           console.error(`❌ Failed to remove configuration from ${sectorId}:`, error);
         }
       } else {
-        console.log(`✅ Directly removing ${sectorId} from selected sectors`);
+
         // Remove sector from selected list
         setSelectedSectors(prev => prev.filter(s => s !== sectorId));
       }
@@ -1163,7 +1158,7 @@ export default function PR2ConfigClean() {
 
       if (response.ok) {
         const newConfig = await response.json();
-        console.log(`✅ Created independent copy for ${targetSectorId} with ID: ${newConfig.id}`);
+
         
         // Update sectorsWithConfig to include this new sector
         setSectorsWithConfig(prev => [...new Set([...prev, targetSectorId])]);
@@ -1181,10 +1176,7 @@ export default function PR2ConfigClean() {
   // Main save function that creates independent copies for each selected sector
   const handleSave = async () => {
     try {
-      console.log(`💾 Saving configuration to sectors:`, selectedSectors);
-      console.log(`🔍 Current formData:`, formData);
-      console.log(`🔍 Pricing options before save:`, formData.pricingOptions);
-      console.log(`🔍 Quantity options before save:`, formData.quantityOptions);
+
       
       // First, update the current configuration (or create it if it's new)
       const payload = {
@@ -1204,7 +1196,7 @@ export default function PR2ConfigClean() {
         rangeStackOrder: formData.rangeStackOrder
       };
       
-      console.log(`🔍 Payload being sent to server:`, payload);
+
 
       if (isEditing && editId) {
         // Update existing configuration
@@ -1213,7 +1205,7 @@ export default function PR2ConfigClean() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        console.log(`✅ Updated configuration ${editId} for sector ${sector}`);
+
       } else {
         // Create new configuration for current sector
         const response = await fetch('/api/pr2-clean', {
@@ -1224,7 +1216,7 @@ export default function PR2ConfigClean() {
         
         if (response.ok) {
           const newConfig = await response.json();
-          console.log(`✅ Created new configuration ${newConfig.id} for sector ${sector}`);
+
         }
       }
 
@@ -1250,9 +1242,9 @@ export default function PR2ConfigClean() {
                (query.queryKey[0]?.toString().includes('/sections') || 
                 query.queryKey[0]?.toString().includes('/defects'));
       }});
-      console.log('✅ Dashboard queries invalidated - costs will refresh on navigation');
+
       
-      console.log(`✅ Save complete! Configuration available in sectors: ${selectedSectors.join(', ')}`);
+
       
     } catch (error) {
       console.error(`❌ Save failed:`, error);
@@ -1277,10 +1269,8 @@ export default function PR2ConfigClean() {
   
   // Clear processedConfigId when editId changes to allow new configuration loading
   useEffect(() => {
-    console.log(`🔄 editId changed to: ${editId}, clearing processedConfigId and invalidating cache`);
     setProcessedConfigId(null);
     // Reset flags when switching to different config
-    console.log(`🔄 Resetting flags: hasUserChanges = false`);
     setHasUserChanges(false);
     
     // CLEAR PR1 CACHE CONTAMINATION for robotic-cutting configurations
@@ -1306,22 +1296,22 @@ export default function PR2ConfigClean() {
   useEffect(() => {
     // Use sectorConfigs for navigation without editId, existingConfig for direct editId access
     const configToUse = editId ? existingConfig : sectorConfigs;
-    console.log(`🔍 useEffect triggered - isEditing: ${isEditing}, editId: ${editId}, configToUse:`, configToUse);
-    console.log(`🔍 processedConfigId: ${processedConfigId}, current config ID: ${configToUse?.id}`);
+
+
     
     // FIXED: Force reload when editId changes, but NEVER if user has made changes
     if (isEditing && configToUse && configToUse.id && !hasUserChanges) {
       const configId = parseInt(editId || '0');
-      console.log(`🔍 Force processing config ID: ${configId} (editId: ${editId}) - hasUserChanges: ${hasUserChanges}`);
+
       
       // Always process when editId is present, but NEVER overwrite user changes
       if (configId > 0) {
         // Get the actual config object (might be wrapped in array)
         const config = Array.isArray(configToUse) ? configToUse[0] : configToUse;
-      console.log(`🔍 Processing config:`, config);
+
       
       if (config) {
-        console.log(`🔧 Loading configuration data:`, config);
+
         
         // Handle array vs object format for quantityOptions and minQuantityOptions
         const existingQuantityOptions = Array.isArray(config.quantityOptions) ? config.quantityOptions : [];
@@ -1355,7 +1345,7 @@ export default function PR2ConfigClean() {
         // FORCE TP3 template name override to prevent PR1 cache contamination
         const correctCategoryName = (() => {
           if (categoryId === 'robotic-cutting') {
-            console.log('🔧 FORCING TP3 title override - preventing PR1 cache bleed');
+
             return 'TP3 - Robotic Cutting Configuration';
           }
           return config.categoryName || 'CCTV Price Configuration';
@@ -1380,19 +1370,7 @@ export default function PR2ConfigClean() {
           sector
         };
         
-        console.log(`🔧 Initialized form data with options:`, {
-          pricingCount: pricingOptions.length,
-          quantityCount: quantityOptions.length,
-          minQuantityCount: minQuantityOptions.length,
-          rangeCount: rangeOptions.length,
-          vehicleCount: config.vehicleTravelRates?.length || 0,
-          vehicleData: config.vehicleTravelRates
-        });
 
-        console.log(`🔧 Setting form data for config ${config.id}:`, {
-          quantityValue: newFormData.quantityOptions?.[0]?.value,
-          rangeLength: newFormData.rangeOptions?.find(r => r.label === 'Length')?.rangeEnd
-        });
 
         // Set the form data directly without reset (fixes display issue)
         setFormData(newFormData);
@@ -1400,33 +1378,25 @@ export default function PR2ConfigClean() {
         // Set single sector information
         const configSector = config.sector || sector;
         
-        console.log(`🔍 Detected existing config in sector: ${configSector}`);
-        console.log(`🔍 Setting sectorsWithConfig to: [${configSector}]`);
-        console.log(`🔍 Setting selectedSectors to: [${configSector}]`);
         
         setSectorsWithConfig([configSector]);
         setSelectedSectors([configSector]);
         
         // Mark this config as processed to prevent double loading
         setProcessedConfigId(config.id);
-        console.log(`✅ Configuration ${config.id} processed and marked as loaded`);
       } else if (configToUse && configToUse.id && processedConfigId === configToUse.id) {
-        console.log(`⏭️ Skipping already processed configuration ${configToUse.id}`);
       }
       } // Close the if (configId > 0) block
     } else if (!isEditing) {
       // Start with the current sector for new configurations
-      console.log(`🔍 Starting new config with sector: ${sector}`);
       setSelectedSectors([sector]);
       setSectorsWithConfig([]);
       
       // If we have pipe size but no existing config, create new pipe size-specific config
       if (pipeSize && categoryId && !sectorConfigs) {
-        console.log(`🆕 Creating new pipe size-specific configuration for ${pipeSize}mm`);
         
         // Use the configName from URL if available, otherwise generate it
         const pipeSizeConfigName = configName || getCategoryName(categoryId);
-        console.log(`🆕 Setting category name to: ${pipeSizeConfigName}`);
         
         // Initialize with single specific options for each window
         const defaultPricingOptions = [
@@ -1598,7 +1568,6 @@ export default function PR2ConfigClean() {
       quantityStackOrder: [...prev.quantityStackOrder, newOption.id]
     }));
     
-    console.log(`🔧 Added new quantity input: ${newOption.label}`);
   };
 
   // Simple add new min quantity input function (no dialog needed)
@@ -1616,7 +1585,6 @@ export default function PR2ConfigClean() {
       minQuantityStackOrder: [...prev.minQuantityStackOrder, newOption.id]
     }));
     
-    console.log(`🔧 Added new min quantity input: ${newOption.label}`);
   };
 
   // P006a template update functions
@@ -1654,9 +1622,7 @@ export default function PR2ConfigClean() {
     if (!editId) return;
     
     try {
-      console.log('🔧 Saving P006a configuration:', formData);
       await mutation.mutateAsync(formData);
-      console.log('✅ P006a configuration saved successfully');
     } catch (error) {
       console.error('❌ Failed to save P006a configuration:', error);
     }
@@ -1666,8 +1632,6 @@ export default function PR2ConfigClean() {
   const addNewInputsToAllWindows = () => {
     const timestamp = Date.now();
     
-    console.log(`🔧 DB10 ADD BUTTON CLICKED - Adding new input windows to db8, db9, db10`);
-    console.log(`🔧 Current state: ${formData.quantityOptions.length} quantity, ${formData.minQuantityOptions.length} min quantity, ${formData.rangeOptions.length} range options`);
     
     // Add ONE new quantity input (green window) - only runs, no pairing needed
     const newQuantityOption: PricingOption = {
@@ -1713,7 +1677,6 @@ export default function PR2ConfigClean() {
       rangeStackOrder: [...prev.rangeStackOrder, newPercentageOption.id, newLengthOption.id]
     }));
     
-    console.log(`🔧 Added new inputs to all windows: ${newQuantityOption.label}, ${newMinQuantityOption.label}, ${newPercentageOption.label}+${newLengthOption.label}`);
   };
 
   // Fixed delete function that removes corresponding inputs from all three windows
@@ -2241,7 +2204,6 @@ export default function PR2ConfigClean() {
       const response = await apiRequest('POST', '/api/pr2-clean', payload);
       
       if (response.ok) {
-        console.log(`✅ Created copy for sector: ${targetSector}`);
       }
     } catch (error) {
       console.error(`❌ Failed to create copy for sector ${targetSector}:`, error);
@@ -2312,12 +2274,10 @@ export default function PR2ConfigClean() {
     );
     
     if (existingConfig) {
-      console.log(`✅ Found existing ${normalizedPipeSize}mm configuration:`, existingConfig.id);
       return existingConfig.id;
     }
     
     // No pipe-size-specific config exists, create one using existing function
-    console.log(`🔍 No ${normalizedPipeSize}mm configuration found for ${categoryId}, creating new one...`);
     const newConfigId = await createPipeSizeConfiguration(categoryId, sector, pipeSize, `${normalizedPipeSize}mm ${categoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Configuration`);
     return newConfigId;
   };
@@ -2379,9 +2339,6 @@ export default function PR2ConfigClean() {
     
     // Sort by pipe size (smallest to largest)
     pipeSizeConfigs.sort((a, b) => a.pipeSizeNum - b.pipeSizeNum);
-    
-    console.log(`🔍 getPipeSizeConfigurations for category ${categoryId} found ${pipeSizeConfigs.length} configs:`, 
-                pipeSizeConfigs.map(p => `${p.pipeSize} (ID: ${p.id})`));
     
     return pipeSizeConfigs;
   };
@@ -2448,7 +2405,6 @@ export default function PR2ConfigClean() {
       setShow100mmDeleteDialog(false);
       
       // Navigate back to pricing page after successful deletion
-      console.log(`✅ Configuration ${configId} deleted successfully, navigating to pricing page`);
       setLocation(`/pr2-pricing?sector=${sector || 'utilities'}`);
       
     } catch (error) {
@@ -2496,7 +2452,6 @@ export default function PR2ConfigClean() {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
           
-          console.log('✅ DASH BUTTON SAVE SUCCESSFUL: Delete changes and modifications saved to database');
           
         } catch (error) {
           console.error('❌ Dash button save failed:', error);
@@ -3035,7 +2990,6 @@ export default function PR2ConfigClean() {
         {/* P007 Pattern - TP1 Template Component */}
         {(() => {
           const templateType = getTemplateType(categoryId || '');
-          console.log(`🔍 Template Detection: categoryId="${categoryId}", templateType="${templateType}"`);
           return templateType === 'P006a' || templateType === 'P006';
         })() && (
           <>
