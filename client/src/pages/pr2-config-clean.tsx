@@ -3055,7 +3055,10 @@ export default function PR2ConfigClean() {
                           formData.categoryColor === color.value ? 'border-gray-800 ring-2 ring-gray-300' : 'border-gray-300'
                         }`}
                         style={{ backgroundColor: color.value }}
-                        onClick={() => handleMM1ColorChange(color.value)}
+                        onClick={() => {
+                          console.log('🚫 MM1 COLOR PICKER DISABLED FOR MMP1 - Use MM2 ID selection instead');
+                          // handleMM1ColorChange(color.value) - DISABLED FOR MMP1
+                        }}
                         title={color.name}
                       >
                         {formData.categoryColor === color.value && (
@@ -3097,7 +3100,10 @@ export default function PR2ConfigClean() {
                                   <input
                                     type="color"
                                     value={formData.categoryColor}
-                                    onChange={(e) => handleMM1ColorChange(e.target.value)}
+                                    onChange={(e) => {
+                                      console.log('🚫 MM1 VISUAL COLOR PICKER DISABLED FOR MMP1');
+                                      // handleMM1ColorChange(e.target.value) - DISABLED FOR MMP1  
+                                    }}
                                     className="w-12 h-8 rounded border border-gray-300 cursor-pointer bg-transparent"
                                     title="Choose custom color"
                                   />
@@ -3117,7 +3123,10 @@ export default function PR2ConfigClean() {
                                 <input
                                   type="text"
                                   value={formData.categoryColor}
-                                  onChange={(e) => handleColorChange(e.target.value)}
+                                  onChange={(e) => {
+                                    console.log('🚫 MM1 HEX INPUT DISABLED FOR MMP1');
+                                    // handleColorChange(e.target.value) - DISABLED FOR MMP1
+                                  }}
                                   className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
                                   placeholder="#000000"
                                   pattern="^#[0-9A-Fa-f]{6}$"
