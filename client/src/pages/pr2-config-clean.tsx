@@ -3009,16 +3009,11 @@ export default function PR2ConfigClean() {
                       {/* Green - No Per Shift (1 column) */}
                       <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
                         <h4 className="font-medium text-green-800 mb-2">No Per Shift</h4>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="text"
-                            placeholder="Enter quantity"
-                            className="border-green-300 flex-1"
-                          />
-                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-8 w-8 p-0 flex-shrink-0">
-                            +
-                          </Button>
-                        </div>
+                        <Input
+                          type="text"
+                          placeholder="Enter quantity"
+                          className="border-green-300"
+                        />
                       </div>
 
                       {/* Purple - Range Configuration (2 columns - wider for two inputs) */}
