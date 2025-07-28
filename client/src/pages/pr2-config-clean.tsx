@@ -1094,13 +1094,17 @@ export default function PR2ConfigClean() {
 
   // MM2 ID selection auto-save - also updates border color based on selected ID
   const handleMM2IdChange = (id: string, isSelected: boolean) => {
+    console.log('🎨 MM2 ID CHANGE:', { id, isSelected, currentColor: formData.categoryColor });
+    
     // CRITICAL: Mark that user has made changes to prevent database override
     setHasUserChanges(true);
+    console.log('🔒 hasUserChanges set to TRUE');
     
     setSelectedIds(prev => {
       const updated = isSelected 
         ? [...prev, id]
         : prev.filter(selectedId => selectedId !== id);
+      console.log('📝 Updated selectedIds:', updated);
       return updated;
     });
     
@@ -1108,6 +1112,8 @@ export default function PR2ConfigClean() {
     if (isSelected) {
       const selectedIdOption = MMP1_IDS.find(idOption => idOption.id === id);
       if (selectedIdOption) {
+        console.log('🎯 Found selected ID option:', selectedIdOption);
+        
         // Extract color from the text class (e.g., 'text-blue-600' -> '#2563eb')
         const colorMap: { [key: string]: string } = {
           'text-blue-600': '#2563eb',
@@ -1118,15 +1124,22 @@ export default function PR2ConfigClean() {
           'text-teal-600': '#0d9488'
         };
         const newColor = colorMap[selectedIdOption.color] || '#2563eb';
+        console.log('🌈 NEW COLOR SELECTED:', { 
+          from: selectedIdOption.color, 
+          to: newColor,
+          currentFormDataColor: formData.categoryColor 
+        });
         
         // Update formData and trigger immediate save with new color
         setFormData(prev => {
           const updatedFormData = { ...prev, categoryColor: newColor };
+          console.log('💾 Setting formData with new color:', newColor);
           
           // Immediate save with the new color
           if (editId) {
             setTimeout(async () => {
               try {
+                console.log('🚀 SAVING TO DATABASE with color:', newColor);
                 await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
                   ...updatedFormData,
                   mmData: {
@@ -1142,10 +1155,11 @@ export default function PR2ConfigClean() {
                     timestamp: Date.now()
                   }
                 });
+                console.log('✅ MM2 SAVE SUCCESSFUL');
                 // Don't invalidate queries to prevent reload that overwrites color
                 // queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
               } catch (error) {
-                console.error('MM2 auto-save failed:', error);
+                console.error('❌ MM2 auto-save failed:', error);
               }
             }, 100);
           }
@@ -1603,6 +1617,13 @@ export default function PR2ConfigClean() {
 
     
     // FIXED: Force reload when editId changes, but NEVER if user has made changes
+    console.log('🔍 CONFIG LOADING CHECK:', { 
+      isEditing, 
+      hasConfig: !!configToUse, 
+      hasUserChanges, 
+      willLoad: isEditing && configToUse && configToUse.id && !hasUserChanges 
+    });
+    
     if (isEditing && configToUse && configToUse.id && !hasUserChanges) {
       const configId = parseInt(editId || '0');
 
@@ -1653,6 +1674,12 @@ export default function PR2ConfigClean() {
           }
           return config.categoryName || 'CCTV Price Configuration';
         })();
+        
+        console.log('🔄 LOADING CONFIG DATA - OVERRIDING COLORS:', {
+          fromDatabase: config.categoryColor,
+          currentFormData: formData.categoryColor,
+          hasUserChanges
+        });
         
         const newFormData = {
           categoryName: correctCategoryName,
