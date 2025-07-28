@@ -109,31 +109,59 @@ export default function PR2Pricing() {
   const categoriesLoading = false;
 
   // Fetch PR2 configurations for current sector
-  const { data: pr2ConfigurationsRaw = [], isLoading: pr2Loading } = useQuery({
+  const { data: pr2ConfigurationsRaw = [], isLoading: pr2Loading, error: pr2Error } = useQuery({
     queryKey: ['pr2-configs', sector], // Changed to avoid cache conflicts
     queryFn: async () => {
-      console.log('🔍 Making API request for sector:', sector);
-      const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector });
-      const data = await response.json();
-      console.log('📥 Raw API response:', data);
-      console.log('📊 Response length:', data.length);
-      console.log('📊 Response items:', data.map(item => `ID: ${item.id}, Sector: ${item.sector}`));
-      return data;
+      try {
+        console.log('🔍 Making API request for sector:', sector);
+        const response = await apiRequest('GET', '/api/pr2-clean', undefined, { sector });
+        
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('📥 Raw API response:', data);
+        console.log('📊 Response length:', data.length);
+        console.log('📊 Response items:', data.map(item => `ID: ${item.id}, Sector: ${item.sector}`));
+        return data;
+      } catch (error) {
+        console.error('❌ API request failed:', error);
+        throw error;
+      }
     },
     enabled: !!sector,
     staleTime: 0, // Always fetch fresh data
     gcTime: 0, // Don't cache results (renamed from cacheTime in TanStack Query v5)
     refetchOnMount: true,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
+    retry: (failureCount, error) => {
+      console.log(`🔄 Retry attempt ${failureCount} for API request:`, error);
+      return failureCount < 2; // Retry up to 2 times
+    }
   });
 
   // Fetch standard categories from database
-  const { data: standardCategoriesFromDB = [], isLoading: standardCategoriesLoading } = useQuery({
+  const { data: standardCategoriesFromDB = [], isLoading: standardCategoriesLoading, error: categoriesError } = useQuery({
     queryKey: ['/api/standard-categories'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/standard-categories');
-      return await response.json();
+      try {
+        const response = await apiRequest('GET', '/api/standard-categories');
+        
+        if (!response.ok) {
+          throw new Error(`Categories API request failed: ${response.status} ${response.statusText}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('❌ Categories API request failed:', error);
+        throw error;
+      }
     },
+    retry: (failureCount, error) => {
+      console.log(`🔄 Categories retry attempt ${failureCount}:`, error);
+      return failureCount < 2;
+    }
   });
 
   // Ensure pr2Configurations is always an array
