@@ -957,7 +957,7 @@ export default function PR2ConfigClean() {
   const handlePipeSizeSelect = (pipeSize: string) => {
     console.log(`🔄 Switching pipe size from ${selectedPipeSizeForMM4}mm to ${pipeSize}mm`);
     console.log('📊 Current MM4 data before switch:', mm4DataByPipeSize);
-    console.log('📊 Current MM5 data before switch:', mm5DataByPipeSize);
+    console.log('📊 Current MM5 data before switch (independent):', mm5Data);
     
     // Always select the clicked pipe size (no deselection)
     setSelectedPipeSizeForMM4(pipeSize);
