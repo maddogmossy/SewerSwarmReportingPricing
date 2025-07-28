@@ -949,11 +949,15 @@ export default function PR2ConfigClean() {
         purpleLength: '' 
       }
     ]);
+    // Trigger auto-save when adding rows
+    setTimeout(() => triggerAutoSave(), 100);
   };
 
   const deleteMM4Row = (rowId: number) => {
     if (mm4Rows.length > 1) { // Keep at least one row
       setMm4Rows(prev => prev.filter(row => row.id !== rowId));
+      // Trigger auto-save when deleting rows
+      setTimeout(() => triggerAutoSave(), 100);
     }
   };
 
@@ -978,11 +982,15 @@ export default function PR2ConfigClean() {
         costPerMile: '' 
       }
     ]);
+    // Trigger auto-save when adding rows
+    setTimeout(() => triggerAutoSave(), 100);
   };
 
   const deleteMM5Row = (rowId: number) => {
     if (mm5Rows.length > 1) { // Keep at least one row
       setMm5Rows(prev => prev.filter(row => row.id !== rowId));
+      // Trigger auto-save when deleting rows
+      setTimeout(() => triggerAutoSave(), 100);
     }
   };
 
