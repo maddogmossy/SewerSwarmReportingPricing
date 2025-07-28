@@ -2964,25 +2964,7 @@ export default function PR2ConfigClean() {
                     })}
                   </div>
                   
-                  {/* Display selected IDs */}
-                  {selectedIds.length > 0 && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">Selected Configuration IDs:</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedIds.map((idKey) => {
-                          const idOption = MMP1_IDS.find(id => id.id === idKey);
-                          return (
-                            <span 
-                              key={idKey}
-                              className={`px-2 py-1 text-xs rounded-full ${idOption?.bgColor} ${idOption?.color} border`}
-                            >
-                              {idOption?.name}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
+
                 </CardContent>
               </Card>
             </div>
