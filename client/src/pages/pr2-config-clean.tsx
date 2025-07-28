@@ -2935,7 +2935,7 @@ export default function PR2ConfigClean() {
                             setNewPipeSize('');
                           }
                         }}
-                        className="px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                        className="px-2 py-1 text-sm bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
                         disabled={!newPipeSize || customPipeSizes.includes(newPipeSize)}
                       >
                         <Plus className="w-3 h-3" />
@@ -2944,42 +2944,46 @@ export default function PR2ConfigClean() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  {/* All Pipe Sizes - Combined Standard and Custom */}
-                  <div className="mb-6">
-                    <h4 className="text-sm font-medium text-gray-900 mb-3">UK Drainage Pipe Sizes (mm)</h4>
-                    <div className="grid grid-cols-6 gap-2">
-                      {/* Combine and sort all pipe sizes */}
-                      {[
-                        ...['100', '150', '225', '300', '375', '450', '525', '600', '675', '750', '900', '1050', '1200', '1350', '1500', '1800', '2100', '2400'],
-                        ...customPipeSizes
-                      ]
-                        .sort((a, b) => parseInt(a) - parseInt(b))
-                        .map((size) => {
-                          const isCustom = customPipeSizes.includes(size);
-                          return (
-                            <div
-                              key={size}
-                              className="relative group px-3 py-2 text-sm bg-blue-50 border border-blue-200 rounded text-center font-mono"
-                              title={`${size}mm - ${isCustom ? 'Custom' : 'Standard UK'} drainage pipe size`}
-                            >
-                              {size}mm
-                              {isCustom && (
-                                <button
-                                  type="button"
-                                  onClick={() => setCustomPipeSizes(prev => prev.filter(s => s !== size))}
-                                  className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-700"
-                                  title={`Remove ${size}mm custom size`}
-                                >
-                                  <Trash2 className="w-2 h-2" />
-                                </button>
-                              )}
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
-
-
+                  {/* Orange UI Card for Pipe Sizes */}
+                  <Card className="bg-orange-50 border-2 border-orange-200">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg font-semibold text-gray-900">
+                        UK Drainage Pipe Sizes (mm)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-6 gap-2">
+                        {/* Combine and sort all pipe sizes */}
+                        {[
+                          ...['100', '150', '225', '300', '375', '450', '525', '600', '675', '750', '900', '1050', '1200', '1350', '1500', '1800', '2100', '2400'],
+                          ...customPipeSizes
+                        ]
+                          .sort((a, b) => parseInt(a) - parseInt(b))
+                          .map((size) => {
+                            const isCustom = customPipeSizes.includes(size);
+                            return (
+                              <div
+                                key={size}
+                                className="relative group px-3 py-2 text-sm bg-blue-50 border border-blue-200 rounded text-center font-mono"
+                                title={`${size}mm - ${isCustom ? 'Custom' : 'Standard UK'} drainage pipe size`}
+                              >
+                                {size}mm
+                                {isCustom && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setCustomPipeSizes(prev => prev.filter(s => s !== size))}
+                                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-700"
+                                    title={`Remove ${size}mm custom size`}
+                                  >
+                                    <Trash2 className="w-2 h-2" />
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </CardContent>
               </Card>
             </div>
