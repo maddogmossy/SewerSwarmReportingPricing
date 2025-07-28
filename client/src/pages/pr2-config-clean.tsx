@@ -927,6 +927,8 @@ export default function PR2ConfigClean() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [idsWithConfig, setIdsWithConfig] = useState<string[]>([]);
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
+  const [customPipeSizes, setCustomPipeSizes] = useState<string[]>([]);
+  const [newPipeSize, setNewPipeSize] = useState('');
   const [appliedSectors, setAppliedSectors] = useState<string[]>([]);
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
@@ -2901,29 +2903,108 @@ export default function PR2ConfigClean() {
               </Card>
             </div>
 
-            {/* MM3 - Pipe Size Configuration */}
+            {/* MM3 - UK Drainage Pipe Sizes (MSCC5) */}
             <div className="relative">
               <DevLabel id="MM3" position="top-right" />
               <Card className="bg-white border-2 border-gray-200">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-gray-900">
-                    3. Pipe Size Configuration
+                    3. UK Drainage Pipe Sizes (MSCC5)
                   </CardTitle>
                   <p className="text-sm text-gray-600">
-                    Each pipe size creates a new unique ID
+                    Standard UK drainage pipe sizes with custom size management
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-6 gap-2">
-                    {[100, 125, 150, 175, 200, 225, 250, 275, 300, 350, 375, 400, 450, 500, 525, 600, 675, 750, 825, 900, 975, 1050, 1200, 1350, 1500].map((size) => (
-                      <Button
-                        key={size}
-                        variant="outline"
-                        className="h-8 text-xs border-gray-300 hover:border-gray-400"
-                      >
-                        {size}mm
-                      </Button>
-                    ))}
+                  {/* Standard UK Pipe Sizes */}
+                  <div className="mb-6">
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">Standard UK Drainage Pipe Sizes (mm)</h4>
+                    <div className="grid grid-cols-6 gap-2">
+                      {[
+                        '100', '150', '225', '300', '375', '450',
+                        '525', '600', '675', '750', '900', '1050',
+                        '1200', '1350', '1500', '1800', '2100', '2400'
+                      ].map((size) => (
+                        <div
+                          key={size}
+                          className="px-3 py-2 text-sm bg-blue-50 border border-blue-200 rounded text-center font-mono"
+                          title={`${size}mm - Standard UK drainage pipe size`}
+                        >
+                          {size}mm
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Custom Pipe Sizes */}
+                  <div className="border-t pt-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-gray-900">Custom Pipe Sizes</h4>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          value={newPipeSize}
+                          onChange={(e) => setNewPipeSize(e.target.value)}
+                          placeholder="Enter size in mm"
+                          className="px-2 py-1 text-sm border border-gray-300 rounded w-32 font-mono"
+                          min="50"
+                          max="3000"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (newPipeSize && !customPipeSizes.includes(newPipeSize)) {
+                              setCustomPipeSizes(prev => [...prev, newPipeSize].sort((a, b) => parseInt(a) - parseInt(b)));
+                              setNewPipeSize('');
+                            }
+                          }}
+                          className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                          disabled={!newPipeSize || customPipeSizes.includes(newPipeSize)}
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Display Custom Sizes */}
+                    {customPipeSizes.length > 0 ? (
+                      <div className="grid grid-cols-6 gap-2">
+                        {customPipeSizes.map((size) => (
+                          <div
+                            key={size}
+                            className="flex items-center justify-between px-2 py-1 text-sm bg-amber-50 border border-amber-200 rounded"
+                          >
+                            <span className="font-mono text-xs">{size}mm</span>
+                            <button
+                              type="button"
+                              onClick={() => setCustomPipeSizes(prev => prev.filter(s => s !== size))}
+                              className="text-red-600 hover:text-red-800 ml-1"
+                              title={`Remove ${size}mm custom size`}
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 text-gray-400">
+                        <p className="text-sm">No custom pipe sizes added</p>
+                        <p className="text-xs">Enter a size above to add custom drainage pipe sizes</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* MSCC5 Information */}
+                  <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <Shield className="w-4 h-4 text-blue-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-blue-900">MSCC5 Compliance</p>
+                        <p className="text-xs text-blue-700 mt-1">
+                          Pipe sizes follow UK Manual of Sewer Condition Classification (MSCC5) standards for drainage infrastructure assessment and reporting.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

@@ -966,9 +966,14 @@ This prevents data contamination and ensures authentic extraction integrity.
   - Added custom color input (both picker widget and hex text field) for unlimited color options
 - **User Benefits**: 
   - Complete ID-based price management system following established P002 pattern
-  - Professional color selection with 20 presets plus unlimited custom colors
+  - Professional color selection with 20 Outlook diary-style colors plus unlimited custom colors
   - Real-time visual feedback and configuration persistence
   - Streamlined workflow for sector-specific pricing configuration
+- **MM3 UK Drainage Pipe Sizes**: Enhanced MM3 section with MSCC5-compliant UK drainage pipe sizes
+  - Standard UK pipe sizes (100-2400mm) displayed in organized grid layout
+  - Custom pipe size management with add/remove functionality
+  - MSCC5 compliance information and standards reference
+  - Professional pipe size management for UK drainage infrastructure
 
 ### CRITICAL: System Cleanup Complete - Debug Logs Removed & Codebase Organized 
 - **Date**: January 28, 2025
