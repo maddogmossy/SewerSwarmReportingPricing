@@ -88,6 +88,16 @@ const SECTORS = [
   { id: 'domestic', name: 'Domestic', label: 'Domestic', description: 'Residential and domestic drainage work', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
+// MMP1 ID definitions (ID1-ID6 following P002 pattern)
+const MMP1_IDS = [
+  { id: 'id1', name: 'ID1', label: 'ID1', description: 'Configuration template 1', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'id2', name: 'ID2', label: 'ID2', description: 'Configuration template 2', icon: Building2, color: 'text-green-600', bgColor: 'bg-green-50' },
+  { id: 'id3', name: 'ID3', label: 'ID3', description: 'Configuration template 3', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'id4', name: 'ID4', label: 'ID4', description: 'Configuration template 4', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'id5', name: 'ID5', label: 'ID5', description: 'Configuration template 5', icon: HardHat, color: 'text-purple-600', bgColor: 'bg-purple-50' },
+  { id: 'id6', name: 'ID6', label: 'ID6', description: 'Configuration template 6', icon: Users, color: 'text-teal-600', bgColor: 'bg-teal-50' }
+];
+
 // P26 Upper Level Data Structure
 // REMOVED - Now using database queries directly
 
@@ -912,6 +922,10 @@ export default function PR2ConfigClean() {
   
   // Sector selection state
   const [selectedSectors, setSelectedSectors] = useState<string[]>([sector]);
+  
+  // State for MMP1 ID selections (ID1-ID6 following P002 pattern)
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [idsWithConfig, setIdsWithConfig] = useState<string[]>([]);
   const [appliedSectors, setAppliedSectors] = useState<string[]>([]);
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
@@ -1117,6 +1131,59 @@ export default function PR2ConfigClean() {
     }
   }
 
+  // Handle MMP1 ID selection changes (following P002 pattern)
+  const handleMMP1IdChange = async (idKey: string, checked: boolean) => {
+    if (checked) {
+      // Add ID to selected list
+      setSelectedIds(prev => [...new Set([...prev, idKey])]);
+      
+      // Create configuration copy for this ID
+      if (isEditing && editId) {
+        await createIdCopy(idKey);
+        setIdsWithConfig(prev => [...new Set([...prev, idKey])]);
+      }
+    } else {
+      // Remove configuration for this ID
+      const hasExistingConfig = idsWithConfig.includes(idKey);
+      
+      if (hasExistingConfig && isEditing) {
+        // Find and delete the configuration for this ID
+        try {
+          const response = await fetch(`/api/pr2-clean`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (response.ok) {
+            const allConfigs = await response.json();
+            const configToDelete = allConfigs.find((config: any) => 
+              config.sector === idKey && config.categoryId === categoryId
+            );
+            
+            if (configToDelete && configToDelete.id) {
+              await fetch(`/api/pr2-clean/${configToDelete.id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+              });
+              
+              // Update local state
+              setSelectedIds(prev => prev.filter(s => s !== idKey));
+              setIdsWithConfig(prev => prev.filter(s => s !== idKey));
+              
+              // Refresh data
+              queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+            }
+          }
+        } catch (error) {
+          console.error(`❌ Failed to remove configuration from ${idKey}:`, error);
+        }
+      } else {
+        // Remove ID from selected list
+        setSelectedIds(prev => prev.filter(s => s !== idKey));
+      }
+    }
+  }
+
   // Create an independent copy of the current configuration for a new sector
   const createSectorCopy = async (targetSectorId: string) => {
     try {
@@ -1158,6 +1225,44 @@ export default function PR2ConfigClean() {
       }
     } catch (error) {
       console.error(`❌ Error creating sector copy:`, error);
+    }
+  };
+
+  // Create an independent copy of the current configuration for a new MMP1 ID
+  const createIdCopy = async (targetIdKey: string) => {
+    try {
+      const payload = {
+        categoryName: formData.categoryName,
+        description: `${formData.description} - ${targetIdKey.toUpperCase()}`,
+        categoryColor: formData.categoryColor,
+        sector: targetIdKey, // Use ID as sector for storage
+        categoryId: categoryId,
+        pricingOptions: formData.pricingOptions,
+        quantityOptions: formData.quantityOptions,
+        minQuantityOptions: formData.minQuantityOptions,
+        rangeOptions: formData.rangeOptions,
+        mathOperators: formData.mathOperators,
+        pricingStackOrder: formData.pricingStackOrder,
+        quantityStackOrder: formData.quantityStackOrder,
+        minQuantityStackOrder: formData.minQuantityStackOrder,
+        rangeStackOrder: formData.rangeStackOrder
+      };
+
+      const response = await fetch('/api/pr2-clean', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const newConfig = await response.json();
+        setIdsWithConfig(prev => [...new Set([...prev, targetIdKey])]);
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+      } else {
+        console.error(`❌ Failed to create copy for ${targetIdKey}`);
+      }
+    } catch (error) {
+      console.error(`❌ Error copying configuration to ${targetIdKey}:`, error);
     }
   };
 
@@ -2573,39 +2678,80 @@ export default function PR2ConfigClean() {
         {/* MMP1 Template - 5 Placeholder UI Cards */}
         {getTemplateType(categoryId || '') === 'MMP1' && (
           <div className="space-y-6">
-            {/* MM1 - Apply Configuration to Sectors */}
+            {/* MM1 - ID1-ID6 Selection (P002 Pattern) */}
             <div className="relative">
               <DevLabel id="MM1" position="top-right" />
               <Card className="bg-white border-2 border-gray-200">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-gray-900">
-                    1. Apply Configuration to Sectors
+                    1. Select Configuration IDs (P002 Pattern)
                   </CardTitle>
                   <p className="text-sm text-gray-600">
-                    Select sectors where this configuration should be applied
+                    Select ID1-ID6 templates that will save prices to sectors when selected
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-3 gap-3">
-                    {SECTORS.map((sector) => (
-                      <Card 
-                        key={sector.id}
-                        className="cursor-pointer transition-all duration-200 hover:shadow-md border-2 border-gray-300"
-                      >
-                        <CardContent className="p-4 text-center relative">
-                          <div className="mx-auto w-8 h-8 mb-3 flex items-center justify-center rounded-lg bg-gray-100">
-                            <sector.icon className="w-5 h-5 text-gray-600" />
-                          </div>
-                          <h3 className="font-semibold text-sm mb-1 text-gray-900">
-                            {sector.name}
-                          </h3>
-                          <p className="text-xs text-gray-600">
-                            {sector.description}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    ))}
+                    {MMP1_IDS.map((idOption) => {
+                      const isSelected = selectedIds.includes(idOption.id);
+                      const hasConfiguration = idsWithConfig.includes(idOption.id);
+                      
+                      return (
+                        <Card 
+                          key={idOption.id}
+                          className={`cursor-pointer transition-all duration-200 hover:shadow-md border-2 ${
+                            isSelected 
+                              ? `border-gray-800 ${idOption.bgColor} ring-2 ring-gray-300` 
+                              : 'border-gray-300 hover:border-gray-400'
+                          }`}
+                          onClick={() => handleMMP1IdChange(idOption.id, !isSelected)}
+                        >
+                          <CardContent className="p-4 text-center relative">
+                            <div className={`mx-auto w-8 h-8 mb-3 flex items-center justify-center rounded-lg ${
+                              isSelected ? 'bg-white' : 'bg-gray-100'
+                            }`}>
+                              <idOption.icon className={`w-5 h-5 ${
+                                isSelected ? idOption.color : 'text-gray-600'
+                              }`} />
+                            </div>
+                            <h3 className={`font-semibold text-sm mb-1 ${
+                              isSelected ? 'text-gray-900' : 'text-gray-900'
+                            }`}>
+                              {idOption.name}
+                            </h3>
+                            <p className="text-xs text-gray-600">
+                              {idOption.description}
+                            </p>
+                            {isSelected && (
+                              <div className="absolute top-2 right-2">
+                                <Settings className="w-4 h-4 text-gray-600" />
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
+                  
+                  {/* Display selected IDs */}
+                  {selectedIds.length > 0 && (
+                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Selected Configuration IDs:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedIds.map((idKey) => {
+                          const idOption = MMP1_IDS.find(id => id.id === idKey);
+                          return (
+                            <span 
+                              key={idKey}
+                              className={`px-2 py-1 text-xs rounded-full ${idOption?.bgColor} ${idOption?.color} border`}
+                            >
+                              {idOption?.name}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
