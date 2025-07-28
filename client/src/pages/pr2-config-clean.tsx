@@ -145,13 +145,6 @@ export default function PR2ConfigClean() {
   const searchParams = window.location.search;
   const urlParams = new URLSearchParams(searchParams);
   
-  // Debug the URLSearchParams parsing
-  console.log('🔍 URLSearchParams debug:', {
-    searchParams,
-    urlParamsSize: urlParams.size,
-    allParams: Object.fromEntries(urlParams.entries())
-  });
-  
   const sector = urlParams.get('sector') || 'utilities';
   const categoryId = urlParams.get('categoryId');
   const editId = urlParams.get('edit') || urlParams.get('editId') || urlParams.get('id'); // Support auto-detection ID
@@ -160,19 +153,6 @@ export default function PR2ConfigClean() {
   const sourceItemNo = urlParams.get('itemNo');
   const selectedOptionId = urlParams.get('selectedOption'); // Track which option is selected for editing
   const isEditing = !!editId;
-  
-  // Debug URL parameters
-  console.log('🔍 PR2ConfigClean URL params:', {
-    location,
-    fullURL: window.location.href,
-    search: window.location.search,
-    sector,
-    categoryId,
-    editId,
-    pipeSize,
-    configName,
-    isEditing
-  });
   
   // Determine template type based on category
   const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' => {
@@ -226,15 +206,12 @@ export default function PR2ConfigClean() {
     queryKey: ['/api/pr2-clean', editId],
     queryFn: async () => {
       try {
-        console.log(`🔍 API REQUEST: Fetching configuration ${editId}`);
         const response = await apiRequest('GET', `/api/pr2-clean/${editId}`);
         const data = await response.json();
-        console.log(`✅ API RESPONSE: Configuration ${editId} loaded:`, data);
         return data;
       } catch (error: any) {
         // If configuration not found (404), redirect to create mode
         if (error.message && error.message.includes('404')) {
-          console.log(`⚠️ Configuration ${editId} not found, redirecting to create mode`);
           const newUrl = `/pr2-config-clean?categoryId=${categoryId}&sector=${sector}`;
           setLocation(newUrl);
           return null;
@@ -438,8 +415,6 @@ export default function PR2ConfigClean() {
   // Auto-create pipe-size-specific configuration if needed
   const createPipeSizeConfiguration = async (categoryId: string, sector: string, pipeSize: string, configName: string): Promise<number | null> => {
     try {
-      console.log(`🔧 Creating pipe-size-specific configuration: ${configName}`);
-      
       const templateType = getTemplateType(categoryId);
       const isP26 = templateType === 'P26';
       
@@ -481,7 +456,6 @@ export default function PR2ConfigClean() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log(`✅ Created pipe-size-specific configuration with ID: ${result.id}`);
         return result.id;
       } else {
         console.error('❌ Failed to create pipe-size-specific configuration:', response.statusText);
@@ -525,8 +499,6 @@ export default function PR2ConfigClean() {
   // Color sync for patching configurations
   const syncPatchingColors = async () => {
     if (categoryId === 'patching') {
-      console.log('🎨 Syncing patching configuration colors...');
-      
       try {
         // Get all three patching configurations
         const [config153, config156, config157] = await Promise.all([
@@ -537,20 +509,17 @@ export default function PR2ConfigClean() {
         
         // Use the color from config 153 as the master color
         const masterColor = config153.categoryColor || '#f5ec00';
-        console.log(`🎨 Master color from config 153: ${masterColor}`);
         
         // Update configs 156 and 157 if they have different colors
         const updatePromises = [];
         
         if (config156.categoryColor !== masterColor) {
-          console.log(`🎨 Updating config 156 color from ${config156.categoryColor} to ${masterColor}`);
           updatePromises.push(
             apiRequest('PUT', '/api/pr2-clean/156', { ...config156, categoryColor: masterColor })
           );
         }
         
         if (config157.categoryColor !== masterColor) {
-          console.log(`🎨 Updating config 157 color from ${config157.categoryColor} to ${masterColor}`);
           updatePromises.push(
             apiRequest('PUT', '/api/pr2-clean/157', { ...config157, categoryColor: masterColor })
           );
@@ -558,9 +527,6 @@ export default function PR2ConfigClean() {
         
         if (updatePromises.length > 0) {
           await Promise.all(updatePromises);
-          console.log('✅ Patching configuration colors synced successfully');
-        } else {
-          console.log('✅ All patching configuration colors already in sync');
         }
         
       } catch (error) {
@@ -579,8 +545,6 @@ export default function PR2ConfigClean() {
   // Immediate save function for critical fields like Day Rate (db11)
   const immediateSave = async (optionType: string, optionId: string, value: string) => {
     if (!isEditing || !editId) return;
-    
-    console.log(`🚨 IMMEDIATE SAVE for ${optionId}: ${value}`);
     
     try {
       // Get current formData and update the specific field
@@ -619,7 +583,7 @@ export default function PR2ConfigClean() {
       });
       
       if (response.ok) {
-        console.log(`✅ DB11 IMMEDIATE SAVE SUCCESS: ${value}`);
+        // Success - no action needed
       } else {
         console.error(`❌ DB11 IMMEDIATE SAVE FAILED: ${response.status}`);
       }
@@ -630,17 +594,15 @@ export default function PR2ConfigClean() {
 
   // Handle value changes for input fields
   const handleValueChange = (optionType: string, optionId: string, value: string) => {
-    console.log(`🔧 handleValueChange called: ${optionType}, ${optionId}, ${value}`);
+
     // Determine correct dev code based on current category
     const currentDevCode = (() => {
       if (window.location.href.includes('categoryId=patching')) return 'db6';
       if (window.location.href.includes('categoryId=robotic-cutting')) return 'db2';
       return 'db11'; // TP1 CCTV configurations
     })();
-    console.log(`🔧 CRITICAL - FIELD ${currentDevCode} VALUE CHANGE: "${value}" for option ${optionId} in configuration id${editId}`);
     
     // Mark that user has made changes to prevent automatic form overwrite
-    console.log(`🔧 USER CHANGED VALUE: ${optionType}, ${optionId}, ${value} - setting hasUserChanges = true`);
     setHasUserChanges(true);
     
     setFormData(prev => {
@@ -666,7 +628,6 @@ export default function PR2ConfigClean() {
           break;
       }
       
-      console.log(`🔧 Updated ${optionType} with ${optionId} = ${value}`);
       return newFormData;
     });
     
@@ -676,7 +637,6 @@ export default function PR2ConfigClean() {
     
     if ((optionType === 'pricingOptions' && criticalPricingFields.includes(optionId)) ||
         (optionType === 'minQuantityOptions' && criticalMinQuantityFields.includes(optionId))) {
-      console.log(`🚨 CRITICAL FIELD TRIGGERING IMMEDIATE SAVE: ${optionType}.${optionId} = ${value}`);
       immediateSave(optionType, optionId, value);
     } else {
       // Trigger debounced save for other fields
@@ -698,7 +658,7 @@ export default function PR2ConfigClean() {
         return opt;
       })
     }));
-    console.log(`🧹 Cleared values from second purple row`);
+
   }
 
   // Clean up extra green entries while preserving base entries (DB14 orange window removed)
@@ -712,7 +672,7 @@ export default function PR2ConfigClean() {
       minQuantityOptions: [], // DB14 orange window removed from TP1
       minQuantityStackOrder: []
     }));
-    console.log(`🧹 Removed extra green entries, DB14 orange window removed from TP1`);
+
   }
 
   // DISABLED: Auto cleanup was interfering with manual add operations
@@ -720,12 +680,7 @@ export default function PR2ConfigClean() {
 
   // Handle range value changes for purple window
   const handleRangeValueChange = (optionId: string, field: 'rangeStart' | 'rangeEnd', value: string) => {
-    console.log(`🔧 CRITICAL - handleRangeValueChange called:`);
-    console.log(`🔧 optionId: ${optionId}`);
-    console.log(`🔧 field: ${field}`);
-    console.log(`🔧 value: "${value}"`);
-    console.log(`🔧 value length: ${value.length}`);
-    console.log(`🔧 character codes:`, value.split('').map(c => c.charCodeAt(0)));
+
     
     // Mark that user has made changes to prevent automatic form overwrite
     setHasUserChanges(true);
@@ -2639,12 +2594,7 @@ export default function PR2ConfigClean() {
                 className="text-2xl font-bold text-gray-900"
                 data-component="page-title"
               >
-                Edit {(() => {
-                  const templateType = getTemplateType(categoryId || '');
-                  console.log(`🔍 PAGE TITLE DEBUG: categoryId="${categoryId}", templateType="${templateType}", formData.categoryName="${formData.categoryName}"`);
-                  
-                  return formData.categoryName || 'TP1 - Configuration';
-                })()}
+                Edit {formData.categoryName || 'TP1 - Configuration'}
               </h1>
               
               {/* Template Information Display */}

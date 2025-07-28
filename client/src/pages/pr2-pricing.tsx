@@ -83,10 +83,7 @@ export default function PR2Pricing() {
     const initialConfigName = urlParams.get('configName');
     const initialItemNo = urlParams.get('itemNo');
     
-    console.log('Initial page load - setting sector to:', initialSector);
-    console.log('Pipe size from URL:', initialPipeSize);
-    console.log('Config name from URL:', initialConfigName);
-    console.log('Source item number:', initialItemNo);
+
     
     setSector(initialSector);
     setPipeSize(initialPipeSize);
@@ -98,8 +95,7 @@ export default function PR2Pricing() {
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];
   
   // Debug: Log current sector info
-  console.log('Current sector object:', currentSector);
-  console.log('Current sector bgColor:', currentSector.bgColor);
+
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -165,20 +161,20 @@ export default function PR2Pricing() {
   const checkConfigurationSectors = async (categoryId: string): Promise<string[]> => {
     const sectorsWithConfig = [];
     
-    console.log('🔍 Checking configuration across all sectors for categoryId:', categoryId);
+
     
     for (const sect of SECTORS) {
       try {
         const response = await apiRequest('GET', `/api/pr2-clean?sector=${sect.id}`);
         const configs = await response.json();
         
-        console.log(`📋 Sector ${sect.name} configs:`, configs);
+
         
         const hasConfig = Array.isArray(configs) ? 
           configs.some(c => c.categoryId === categoryId) : 
           (configs?.categoryId === categoryId);
         
-        console.log(`✅ Sector ${sect.name} has config:`, hasConfig);
+
         
         if (hasConfig) {
           sectorsWithConfig.push(sect.name); // Use sector name for display
@@ -188,7 +184,7 @@ export default function PR2Pricing() {
       }
     }
     
-    console.log('🎯 Final affected sectors:', sectorsWithConfig);
+
     return sectorsWithConfig;
   };
 

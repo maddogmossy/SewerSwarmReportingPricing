@@ -26,7 +26,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .select()
         .from(standardCategories);
       
-      console.log(`✅ Loading ${categories.length} standard categories from database`);
+
       res.json(categories);
     } catch (error) {
       console.error('Error fetching standard categories:', error);
@@ -105,8 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
         .returning();
 
-      console.log(`✅ Created new standard category: ${categoryName} (ID: ${categoryId})`);
-      console.log(`📝 Auto-generated description: ${finalDescription}`);
+
       res.json(newCategory[0]);
     } catch (error) {
       console.error('Error creating standard category:', error);
@@ -160,7 +159,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           ));
       } else if (sector) {
         // Filter by both userId and sector using single sector field
-        console.log('🔍 DEBUGGING: Loading configs for sector:', sector);
+
         configurations = await db
           .select()
           .from(pr2Configurations)
@@ -168,7 +167,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
             eq(pr2Configurations.userId, "test-user"),
             eq(pr2Configurations.sector, sector)
           ));
-        console.log('🔍 DEBUGGING: Found configs:', configurations.map(c => ({ id: c.id, categoryId: c.categoryId, categoryName: c.categoryName })));
+
       } else {
         // If no sector specified, return all configurations for user
         // Filtering logging removed
@@ -232,11 +231,11 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
     try {
       const { categoryId, pipeSize, sector = 'utilities' } = req.body;
       
-      console.log(`🔍 Auto-detecting pipe size ${pipeSize}mm for category ${categoryId} in sector ${sector}`);
+
       
       // Validate pipe size is MSCC5 standard
       if (!MSCC5_PIPE_SIZES.includes(pipeSize)) {
-        console.log(`❌ Invalid pipe size ${pipeSize}mm - not in MSCC5 standards`);
+
         return res.status(400).json({ error: `Pipe size ${pipeSize}mm is not a valid MSCC5 standard size` });
       }
       
@@ -252,7 +251,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         ));
       
       if (existingConfig) {
-        console.log(`✅ Configuration already exists for ${pipeSize}mm ${categoryId} in ${sector}: ID ${existingConfig.id}`);
+
         return res.json(existingConfig);
       }
       
@@ -300,7 +299,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         })
         .returning();
       
-      console.log(`🎯 Auto-created ${pipeSize}mm configuration for ${categoryId}: ID ${newConfig.id}`);
+
       res.json(newConfig);
     } catch (error) {
       console.error('Error auto-detecting pipe size configuration:', error);
@@ -380,7 +379,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         })
         .returning();
 
-      console.log('✅ Created clean PR2 configuration:', newConfig);
+
       res.json(newConfig);
     } catch (error) {
       console.error('Error creating clean PR2 configuration:', error);
