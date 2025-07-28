@@ -2999,21 +2999,27 @@ export default function PR2ConfigClean() {
                       {/* Blue - Day Rate (1 column) */}
                       <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
                         <h4 className="font-medium text-blue-800 mb-2">Day Rate</h4>
-                        <Input
-                          type="text"
-                          placeholder="Enter day rate"
-                          className="border-blue-300"
-                        />
+                        <div>
+                          <label className="text-xs text-blue-700">Day Rate</label>
+                          <Input
+                            type="text"
+                            placeholder="Enter day rate"
+                            className="border-blue-300"
+                          />
+                        </div>
                       </div>
 
                       {/* Green - No Per Shift (1 column) */}
                       <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
                         <h4 className="font-medium text-green-800 mb-2">No Per Shift</h4>
-                        <Input
-                          type="text"
-                          placeholder="Enter quantity"
-                          className="border-green-300"
-                        />
+                        <div>
+                          <label className="text-xs text-green-700">Qty Per Shift</label>
+                          <Input
+                            type="text"
+                            placeholder="Enter quantity"
+                            className="border-green-300"
+                          />
+                        </div>
                       </div>
 
                       {/* Purple - Range Configuration (2 columns - wider for two inputs) */}
