@@ -955,9 +955,15 @@ export default function PR2ConfigClean() {
 
   // Handle pipe size selection - single selection only (no toggle off)
   const handlePipeSizeSelect = (pipeSize: string) => {
+    console.log(`🔄 Switching pipe size from ${selectedPipeSizeForMM4}mm to ${pipeSize}mm`);
+    console.log('📊 Current MM4 data before switch:', mm4DataByPipeSize);
+    console.log('📊 Current MM5 data before switch:', mm5DataByPipeSize);
+    
     // Always select the clicked pipe size (no deselection)
     setSelectedPipeSizeForMM4(pipeSize);
     setSelectedPipeSizeId(generatePipeSizeId(pipeSize));
+    
+    console.log(`✅ Switched to ${pipeSize}mm with new ID: ${generatePipeSizeId(pipeSize)}`);
   };
 
   // MM4/MM5 Data Storage - Scoped by pipe size/ID combination (moved here after pipe size variables)
@@ -967,12 +973,18 @@ export default function PR2ConfigClean() {
   // Get current MM4/MM5 data for selected pipe size
   const getCurrentMM4Data = () => {
     const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-    return mm4DataByPipeSize[key] || [{ id: 1, greenValue: '', purpleDebris: '', purpleLength: '' }];
+    const data = mm4DataByPipeSize[key] || [{ id: 1, greenValue: '', purpleDebris: '', purpleLength: '' }];
+    console.log(`🔍 MM4 Data for key "${key}":`, data);
+    console.log('📊 All MM4 data by pipe size:', mm4DataByPipeSize);
+    return data;
   };
 
   const getCurrentMM5Data = () => {
     const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-    return mm5DataByPipeSize[key] || [{ id: 1, vehicleWeight: '', costPerMile: '' }];
+    const data = mm5DataByPipeSize[key] || [{ id: 1, vehicleWeight: '', costPerMile: '' }];
+    console.log(`🔍 MM5 Data for key "${key}":`, data);
+    console.log('📊 All MM5 data by pipe size:', mm5DataByPipeSize);
+    return data;
   };
 
   // Get current data as computed values
@@ -3331,7 +3343,12 @@ export default function PR2ConfigClean() {
                       <div className="grid grid-cols-4 gap-4">
                         {/* Blue - Day Rate (1 column) */}
                         <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                          <h4 className="font-medium text-blue-800 mb-2">Day Rate</h4>
+                          <h4 className="font-medium text-blue-800 mb-2">
+                            Day Rate
+                            <span className="ml-2 text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded font-mono">
+                              {selectedPipeSizeForMM4}mm
+                            </span>
+                          </h4>
                           <div>
                             <label className="text-xs text-blue-700">Day Rate</label>
                             <Input
@@ -3344,7 +3361,12 @@ export default function PR2ConfigClean() {
 
                         {/* Green - No Per Shift (1 column) - Dynamic Rows */}
                         <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                          <h4 className="font-medium text-green-800 mb-2">No Per Shift</h4>
+                          <h4 className="font-medium text-green-800 mb-2">
+                            No Per Shift
+                            <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-mono">
+                              {selectedPipeSizeForMM4}mm
+                            </span>
+                          </h4>
                           <div className="space-y-2">
                             {mm4Rows.map((row, index) => (
                               <div key={row.id}>
@@ -3363,7 +3385,12 @@ export default function PR2ConfigClean() {
 
                         {/* Purple - Range Configuration (2 columns - wider for two inputs) - Dynamic Rows */}
                         <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
-                          <h4 className="font-medium text-purple-800 mb-2">Range Configuration</h4>
+                          <h4 className="font-medium text-purple-800 mb-2">
+                            Range Configuration
+                            <span className="ml-2 text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded font-mono">
+                              {selectedPipeSizeForMM4}mm
+                            </span>
+                          </h4>
                           <div className="space-y-2">
                             {mm4Rows.map((row, index) => (
                               <div key={row.id} className="grid grid-cols-2 gap-2">
@@ -3434,7 +3461,12 @@ export default function PR2ConfigClean() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4">
-                      <h4 className="font-medium text-teal-800 mb-2">Vehicle Travel</h4>
+                      <h4 className="font-medium text-teal-800 mb-2">
+                        Vehicle Travel
+                        <span className="ml-2 text-xs bg-teal-200 text-teal-800 px-2 py-1 rounded font-mono">
+                          {selectedPipeSizeForMM4}mm
+                        </span>
+                      </h4>
                       <div className="space-y-2">
                         {mm5Rows.map((row, index) => (
                           <div key={row.id} className="grid grid-cols-2 gap-2">
