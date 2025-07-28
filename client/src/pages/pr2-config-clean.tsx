@@ -2876,127 +2876,106 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* P006a Template Main Configuration Windows */}
+        {/* P007 Pattern - Horizontal TP1 Template Layout (Blue-Green-Purple ONLY) */}
         {getTemplateType(categoryId || '') === 'P006a' && (
           <div className="space-y-6">
-            {/* Blue Window - Pricing Options */}
-            <Card className="relative">
-              <DevLabel id="BLUE" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-blue-700 text-lg flex items-center gap-2">
-                  <DollarSign className="w-5 h-5" />
-                  Day Rate Configuration
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+            <div className="flex gap-4 mb-6">
+              {/* Blue Window - Day Rate (w-32) */}
+              <Card className="relative w-32">
+                <DevLabel id="BLUE" position="top-right" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-blue-700 text-sm flex items-center gap-1">
+                    <DollarSign className="w-4 h-4" />
+                    Day Rate
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
                   {formData.pricingOptions.map((option, index) => (
-                    <div key={option.id} className="flex items-center gap-4 p-3 border rounded-lg">
-                      <Label className="min-w-[100px] font-medium">{option.label}</Label>
+                    <div key={option.id} className="space-y-1">
+                      <Label className="text-xs">{option.label}</Label>
                       <Input
                         type="text"
                         value={option.value}
                         onChange={(e) => updatePricingOption(index, 'value', e.target.value)}
-                        placeholder="Enter amount"
-                        className="flex-1"
+                        placeholder="Amount"
+                        className="h-8 text-sm"
                       />
-                      <span className="text-sm text-gray-500">£</span>
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Green Window - Quantity Options */}
-            <Card className="relative">
-              <DevLabel id="GREEN" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-green-700 text-lg flex items-center gap-2">
-                  <Hash className="w-5 h-5" />
-                  No Per Shift Configuration
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              {/* Green Window - No Per Shift (w-40) */}
+              <Card className="relative w-40">
+                <DevLabel id="GREEN" position="top-right" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-green-700 text-sm flex items-center gap-1">
+                    <Hash className="w-4 h-4" />
+                    No Per Shift
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
                   {formData.quantityOptions.map((option, index) => (
-                    <div key={option.id} className="flex items-center gap-4 p-3 border rounded-lg">
-                      <Label className="min-w-[100px] font-medium">{option.label}</Label>
+                    <div key={option.id} className="space-y-1">
+                      <Label className="text-xs">{option.label}</Label>
                       <Input
                         type="text"
                         value={option.value}
                         onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
-                        placeholder="Enter quantity"
-                        className="flex-1"
+                        placeholder="Quantity"
+                        className="h-8 text-sm"
                       />
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Orange Window - Min Quantity Options */}
-            <Card className="relative">
-              <DevLabel id="ORANGE" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-orange-700 text-lg flex items-center gap-2">
-                  <Hash className="w-5 h-5" />
-                  Min Runs per Shift Configuration
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {formData.minQuantityOptions.map((option, index) => (
-                    <div key={option.id} className="flex items-center gap-4 p-3 border rounded-lg">
-                      <Label className="min-w-[100px] font-medium">{option.label}</Label>
-                      <Input
-                        type="text"
-                        value={option.value}
-                        onChange={(e) => updateMinQuantityOption(option.id, 'value', e.target.value)}
-                        placeholder="Enter minimum quantity"
-                        className="flex-1"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Purple Window - Range Options */}
-            <Card className="relative">
-              <DevLabel id="PURPLE" position="top-right" />
-              <CardHeader className="pb-3">
-                <CardTitle className="text-purple-700 text-lg flex items-center gap-2">
-                  <Ruler className="w-5 h-5" />
-                  Range Configuration
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              {/* Purple Window - Range Configuration (w-64) */}
+              <Card className="relative w-64">
+                <DevLabel id="PURPLE" position="top-right" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-purple-700 text-sm flex items-center gap-1">
+                    <Ruler className="w-4 h-4" />
+                    Range Configuration
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
                   {formData.rangeOptions.map((option, index) => (
-                    <div key={option.id} className="p-3 border rounded-lg">
-                      <Label className="font-medium block mb-2">{option.label}</Label>
-                      <div className="flex items-center gap-2">
+                    <div key={option.id} className="space-y-1">
+                      <Label className="text-xs">{option.label}</Label>
+                      <div className="flex items-center gap-1">
                         <Input
                           type="text"
                           value={option.rangeStart}
                           onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
-                          placeholder="Start %"
-                          className="flex-1"
+                          placeholder="Debris %"
+                          className="flex-1 h-8 text-sm"
                         />
-                        <span className="text-gray-500">to</span>
+                        <span className="text-xs text-gray-500">to</span>
                         <Input
                           type="text"
                           value={option.rangeEnd}
                           onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
-                          placeholder="End M"
-                          className="flex-1"
+                          placeholder="Length"
+                          className="flex-1 h-8 text-sm"
                         />
                       </div>
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              {/* External Green + Button (w-14) */}
+              <div className="w-14 flex items-center justify-center">
+                <Button
+                  type="button"
+                  className="w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-full flex items-center justify-center"
+                  title="Add Range Option"
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
 
             {/* W003 Component - Vehicle Travel Rates */}
             <Card className="relative">
