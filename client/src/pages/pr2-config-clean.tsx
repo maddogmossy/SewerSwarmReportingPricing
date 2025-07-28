@@ -2994,56 +2994,58 @@ export default function PR2ConfigClean() {
                       4. Section Calculator
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Day Rate (Blue) */}
-                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                      <h4 className="font-medium text-blue-800 mb-2">Day Rate</h4>
-                      <Input
-                        type="text"
-                        placeholder="Enter day rate"
-                        className="border-blue-300"
-                      />
-                    </div>
-
-                    {/* No Per Shift (Green) - Row 1 with Add Button */}
-                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                      <h4 className="font-medium text-green-800 mb-2">No Per Shift</h4>
-                      <div className="flex items-center gap-2">
+                  <CardContent>
+                    <div className="grid grid-cols-4 gap-4">
+                      {/* Blue - Day Rate (1 column) */}
+                      <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                        <h4 className="font-medium text-blue-800 mb-2">Day Rate</h4>
                         <Input
                           type="text"
-                          placeholder="Enter quantity"
-                          className="border-green-300 flex-1"
+                          placeholder="Enter day rate"
+                          className="border-blue-300"
                         />
-                        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-8 w-8 p-0 flex-shrink-0">
-                          +
-                        </Button>
                       </div>
-                    </div>
 
-                    {/* Range Configuration (Purple) - Row 1 with Add Button */}
-                    <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-purple-800">Range Configuration</h4>
-                        <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white h-6 w-6 p-0">
-                          +
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-xs text-purple-700">Debris %</label>
+                      {/* Green - No Per Shift (1 column) */}
+                      <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                        <h4 className="font-medium text-green-800 mb-2">No Per Shift</h4>
+                        <div className="flex items-center gap-2">
                           <Input
                             type="text"
-                            placeholder="0-15"
-                            className="border-purple-300"
+                            placeholder="Enter quantity"
+                            className="border-green-300 flex-1"
                           />
+                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-8 w-8 p-0 flex-shrink-0">
+                            +
+                          </Button>
                         </div>
-                        <div>
-                          <label className="text-xs text-purple-700">Length</label>
-                          <Input
-                            type="text"
-                            placeholder="0-35"
-                            className="border-purple-300"
-                          />
+                      </div>
+
+                      {/* Purple - Range Configuration (2 columns - wider for two inputs) */}
+                      <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-medium text-purple-800">Range Configuration</h4>
+                          <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white h-6 w-6 p-0">
+                            +
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs text-purple-700">Debris %</label>
+                            <Input
+                              type="text"
+                              placeholder="0-15"
+                              className="border-purple-300"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-purple-700">Length</label>
+                            <Input
+                              type="text"
+                              placeholder="0-35"
+                              className="border-purple-300"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
