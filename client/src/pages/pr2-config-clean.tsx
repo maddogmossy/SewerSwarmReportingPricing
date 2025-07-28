@@ -3044,27 +3044,15 @@ export default function PR2ConfigClean() {
                         <h4 className="font-medium text-green-800 mb-2">No Per Shift</h4>
                         <div className="space-y-2">
                           {mm4Rows.map((row, index) => (
-                            <div key={row.id} className="flex items-center gap-2">
-                              <div className="flex-1">
-                                <label className="text-xs text-green-700">Qty Per Shift</label>
-                                <Input
-                                  type="text"
-                                  placeholder="Enter quantity"
-                                  className="border-green-300"
-                                  value={row.greenValue}
-                                  onChange={(e) => updateMM4Row(row.id, 'greenValue', e.target.value)}
-                                />
-                              </div>
-                              {index > 0 && (
-                                <Button 
-                                  size="sm" 
-                                  variant="destructive"
-                                  className="h-8 w-8 p-0 flex-shrink-0"
-                                  onClick={() => deleteMM4Row(row.id)}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              )}
+                            <div key={row.id}>
+                              <label className="text-xs text-green-700">Qty Per Shift</label>
+                              <Input
+                                type="text"
+                                placeholder="Enter quantity"
+                                className="border-green-300"
+                                value={row.greenValue}
+                                onChange={(e) => updateMM4Row(row.id, 'greenValue', e.target.value)}
+                              />
                             </div>
                           ))}
                         </div>
@@ -3096,7 +3084,7 @@ export default function PR2ConfigClean() {
                                     value={row.purpleLength}
                                     onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
                                   />
-                                  {index === mm4Rows.length - 1 && (
+                                  {index === 0 && (
                                     <Button 
                                       size="sm" 
                                       className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
