@@ -926,6 +926,7 @@ export default function PR2ConfigClean() {
   // State for MMP1 ID selections (ID1-ID6 following P002 pattern)
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [idsWithConfig, setIdsWithConfig] = useState<string[]>([]);
+  const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
   const [appliedSectors, setAppliedSectors] = useState<string[]>([]);
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
@@ -2811,26 +2812,77 @@ export default function PR2ConfigClean() {
                     ))}
                   </div>
 
-                  {/* Custom Color Picker */}
+                  {/* Custom Color Picker Dropdown */}
                   <div className="border-t pt-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <label className="text-sm font-medium text-gray-900">Custom Color:</label>
-                      <input
-                        type="color"
-                        value={formData.categoryColor}
-                        onChange={(e) => handleColorChange(e.target.value)}
-                        className="w-12 h-8 rounded border border-gray-300 cursor-pointer bg-transparent"
-                        title="Choose custom color"
-                      />
-                      <input
-                        type="text"
-                        value={formData.categoryColor}
-                        onChange={(e) => handleColorChange(e.target.value)}
-                        className="px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="#000000"
-                        pattern="^#[0-9A-Fa-f]{6}$"
-                        title="Enter hex color code"
-                      />
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowCustomColorPicker(!showCustomColorPicker)}
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      >
+                        <div 
+                          className="w-5 h-5 rounded border border-gray-300"
+                          style={{ backgroundColor: formData.categoryColor }}
+                        ></div>
+                        Custom Color Picker
+                        <ChevronDown className={`w-4 h-4 transition-transform ${showCustomColorPicker ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {/* Dropdown Window */}
+                      {showCustomColorPicker && (
+                        <div className="absolute top-full left-0 right-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-900 mb-2">
+                                Visual Color Picker
+                              </label>
+                              <div className="flex items-center gap-3">
+                                <input
+                                  type="color"
+                                  value={formData.categoryColor}
+                                  onChange={(e) => handleColorChange(e.target.value)}
+                                  className="w-16 h-10 rounded border border-gray-300 cursor-pointer bg-transparent"
+                                  title="Choose custom color"
+                                />
+                                <div className="flex-1">
+                                  <div 
+                                    className="w-full h-10 rounded border border-gray-300"
+                                    style={{ backgroundColor: formData.categoryColor }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-900 mb-2">
+                                Hex Color Code
+                              </label>
+                              <input
+                                type="text"
+                                value={formData.categoryColor}
+                                onChange={(e) => handleColorChange(e.target.value)}
+                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
+                                placeholder="#000000"
+                                pattern="^#[0-9A-Fa-f]{6}$"
+                                title="Enter hex color code (e.g., #FF5733)"
+                              />
+                            </div>
+
+                            <div className="flex justify-between items-center pt-2 border-t">
+                              <div className="text-xs text-gray-500">
+                                Preview: {formData.categoryColor}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setShowCustomColorPicker(false)}
+                                className="px-3 py-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                              >
+                                Done
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
