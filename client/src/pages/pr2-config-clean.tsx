@@ -940,17 +940,41 @@ export default function PR2ConfigClean() {
 
   // MM3 Pipe Size Selection State - Single selection only (default to 100mm)
   const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>('100');
-  const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(() => {
-    // Generate default ID for 100mm
-    const timestamp = Date.now();
-    return parseInt(`100${timestamp.toString().slice(-4)}`);
-  });
   
-  // Generate unique ID for pipe size configuration
-  const generatePipeSizeId = (pipeSize: string) => {
-    const timestamp = Date.now();
-    const pipeSizeNum = parseInt(pipeSize);
-    return parseInt(`${pipeSizeNum}${timestamp.toString().slice(-4)}`);
+  // Fixed pipe size IDs - consistent across sessions to prevent data loss
+  const PIPE_SIZE_IDS: Record<string, number> = {
+    '100': 1001,
+    '125': 1251,
+    '150': 1501,
+    '175': 1751,
+    '200': 2001,
+    '225': 2251,
+    '250': 2501,
+    '275': 2751,
+    '300': 3001,
+    '350': 3501,
+    '375': 3751,
+    '400': 4001,
+    '450': 4501,
+    '500': 5001,
+    '525': 5251,
+    '600': 6001,
+    '675': 6751,
+    '750': 7501,
+    '825': 8251,
+    '900': 9001,
+    '975': 9751,
+    '1050': 10501,
+    '1200': 12001,
+    '1350': 13501,
+    '1500': 15001
+  };
+  
+  const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(PIPE_SIZE_IDS['100']);
+  
+  // Get consistent ID for pipe size configuration
+  const getPipeSizeId = (pipeSize: string) => {
+    return PIPE_SIZE_IDS[pipeSize] || parseInt(pipeSize) * 10 + 1;
   };
 
   // Handle pipe size selection - single selection only (no toggle off)
@@ -960,10 +984,12 @@ export default function PR2ConfigClean() {
     console.log('📊 Current MM5 data before switch (independent):', mm5Data);
     
     // Always select the clicked pipe size (no deselection)
+    const consistentId = getPipeSizeId(pipeSize);
     setSelectedPipeSizeForMM4(pipeSize);
-    setSelectedPipeSizeId(generatePipeSizeId(pipeSize));
+    setSelectedPipeSizeId(consistentId);
     
-    console.log(`✅ Switched to ${pipeSize}mm with new ID: ${generatePipeSizeId(pipeSize)}`);
+    console.log(`✅ Switched to ${pipeSize}mm with CONSISTENT ID: ${consistentId}`);
+    console.log(`🔍 Will now load data for key: ${pipeSize}-${consistentId}`);
   };
 
   // MM4/MM5 Data Storage - MM4 scoped by pipe size, MM5 independent
