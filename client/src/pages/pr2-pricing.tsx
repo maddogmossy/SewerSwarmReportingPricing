@@ -100,6 +100,14 @@ export default function PR2Pricing() {
   console.log('Current sector object:', currentSector);
   console.log('Current sector bgColor:', currentSector.bgColor);
   
+  // Add error handling for queries
+  if (pr2Error) {
+    console.error('PR2 configurations error:', pr2Error);
+  }
+  if (categoriesError) {
+    console.error('Categories error:', categoriesError);
+  }
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -112,13 +120,15 @@ export default function PR2Pricing() {
   const { data: pr2ConfigurationsRaw = [], isLoading: pr2Loading, error: pr2Error } = useQuery({
     queryKey: ['/api/pr2-clean', sector],
     enabled: !!sector,
-    retry: false
+    retry: false,
+    throwOnError: false
   });
 
   // Fetch standard categories from database
   const { data: standardCategoriesFromDB = [], isLoading: standardCategoriesLoading, error: categoriesError } = useQuery({
     queryKey: ['/api/standard-categories'],
-    retry: 1 // Simple retry once
+    retry: false,
+    throwOnError: false
   });
 
   // Ensure pr2Configurations is always an array
