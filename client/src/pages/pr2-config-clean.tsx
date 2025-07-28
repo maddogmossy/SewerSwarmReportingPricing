@@ -1132,6 +1132,10 @@ export default function PR2ConfigClean() {
             
             console.log('✅ STEP 6: MM2 color save successful with color:', color);
             
+            // CRITICAL: Invalidate ALL queries to update category card display
+            console.log('🔄 STEP 7: Invalidating all queries to update category card...');
+            queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+            
           } catch (error) {
             console.error('❌ MM2 immediate save failed:', error);
           }
@@ -1283,6 +1287,9 @@ export default function PR2ConfigClean() {
             });
             
             console.log('✅ MM2 custom color save successful with color:', color);
+            
+            // CRITICAL: Invalidate ALL queries to update category card display
+            queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
             
           } catch (error) {
             console.error('❌ MM2 custom save failed:', error);
