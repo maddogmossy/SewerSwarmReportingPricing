@@ -578,46 +578,22 @@ export default function PR2Pricing() {
                   const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
                   
                   // Check for existing configuration (show ID for any saved config, even blank templates)
-                  // Start with P006a templates (highest priority)
-                  let existingConfiguration = null;
-
-                  // Check for P006a templates (highest priority)
-                  existingConfiguration = pr2Configurations.find(config => {
-                    if (category.id === 'cctv' && config.categoryId === 'cctv-p006a') {
-                      console.log(`🎯 P006a PRIORITY MATCH: Found F${config.id} for CCTV card (cctv-p006a)`);
+                  let existingConfiguration = pr2Configurations.find(config => {
+                    // Direct category ID match
+                    if (config.categoryId === category.id) {
                       return true;
                     }
-                    if (category.id === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
-                    if (category.id === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
-                    if (category.id === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
-                    if (category.id === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
-                    if (category.id === 'patching-p006a' && config.categoryId === 'patching-p006a') return true;
+                    
+                    // Legacy exact match for cctv-jet-vac
+                    if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
+                    
+                    // Legacy matching by name
+                    if (config.categoryName?.toLowerCase() === category.id.toLowerCase()) return true;
+                    if (category.id === 'cctv' && config.categoryName === 'CCTV') return true;
+                    if (category.id === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration') return true;
+                    
                     return false;
                   });
-                  
-                  // If no P006a template found, check for direct matches
-                  if (!existingConfiguration) {
-                    existingConfiguration = pr2Configurations.find(config => {
-                      if (config.categoryId === category.id) {
-                        if (category.id === 'cctv') {
-                          console.log(`⚠️ FALLBACK MATCH: Found F${config.id} for CCTV card (direct match)`);
-                        }
-                        return true;
-                      }
-                      
-                      // Legacy exact match for cctv-jet-vac
-                      if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
-                      
-                      // Skip CTF P006 template pattern matching (removed)
-                      
-                      // Legacy matching
-                      if (config.categoryName?.toLowerCase() === category.id.toLowerCase()) return true;
-                      if (category.id === 'cctv' && config.categoryName === 'CCTV') return true;
-                      if (category.id === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration') return true;
-                      
-                      return false;
-                    });
-                  }
 
                   
                   // Check if configuration has actual values (for status icon logic)
