@@ -1092,12 +1092,30 @@ export default function PR2ConfigClean() {
     triggerAutoSave();
   };
 
-  // MM2 ID selection auto-save
+  // MM2 ID selection auto-save - also updates border color based on selected ID
   const handleMM2IdChange = (id: string, isSelected: boolean) => {
     setSelectedIds(prev => {
       const updated = isSelected 
         ? [...prev, id]
         : prev.filter(selectedId => selectedId !== id);
+      
+      // Update border color based on the selected ID
+      if (isSelected) {
+        const selectedIdOption = MMP1_IDS.find(idOption => idOption.id === id);
+        if (selectedIdOption) {
+          // Extract color from the text class (e.g., 'text-blue-600' -> '#2563eb')
+          const colorMap: { [key: string]: string } = {
+            'text-blue-600': '#2563eb',
+            'text-green-600': '#16a34a', 
+            'text-orange-600': '#ea580c',
+            'text-red-600': '#dc2626',
+            'text-purple-600': '#9333ea',
+            'text-teal-600': '#0d9488'
+          };
+          const newColor = colorMap[selectedIdOption.color] || '#2563eb';
+          setFormData(prev => ({ ...prev, categoryColor: newColor }));
+        }
+      }
       
       // Trigger auto-save after state update
       setTimeout(() => triggerAutoSave(), 0);
