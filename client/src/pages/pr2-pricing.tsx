@@ -100,14 +100,6 @@ export default function PR2Pricing() {
   console.log('Current sector object:', currentSector);
   console.log('Current sector bgColor:', currentSector.bgColor);
   
-  // Add error handling for queries
-  if (pr2Error) {
-    console.error('PR2 configurations error:', pr2Error);
-  }
-  if (categoriesError) {
-    console.error('Categories error:', categoriesError);
-  }
-  
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -130,6 +122,14 @@ export default function PR2Pricing() {
     retry: false,
     throwOnError: false
   });
+  
+  // Add error handling for queries
+  if (pr2Error) {
+    console.error('PR2 configurations error:', pr2Error);
+  }
+  if (categoriesError) {
+    console.error('Categories error:', categoriesError);
+  }
 
   // Ensure pr2Configurations is always an array
   const pr2Configurations = Array.isArray(pr2ConfigurationsRaw) ? pr2ConfigurationsRaw : [];
