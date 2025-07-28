@@ -992,9 +992,13 @@ export default function PR2ConfigClean() {
     ));
   };
 
-  // MM3 Pipe Size Selection State - Single selection only  
-  const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>('');
-  const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(0);
+  // MM3 Pipe Size Selection State - Single selection only (default to 100mm)
+  const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>('100');
+  const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(() => {
+    // Generate default ID for 100mm
+    const timestamp = Date.now();
+    return parseInt(`100${timestamp.toString().slice(-4)}`);
+  });
   
   // Generate unique ID for pipe size configuration
   const generatePipeSizeId = (pipeSize: string) => {
@@ -3086,15 +3090,7 @@ export default function PR2ConfigClean() {
                     </CardContent>
                   </Card>
 
-                  {/* Display selected pipe size without ID in display */}
-                  {selectedPipeSizeForMM4 && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">Selected Pipe Size:</h4>
-                      <span className="px-3 py-1 text-sm rounded-full bg-green-100 text-green-800 border border-green-300 font-mono">
-                        {selectedPipeSizeForMM4}mm
-                      </span>
-                    </div>
-                  )}
+
                 </CardContent>
               </Card>
             </div>
