@@ -936,7 +936,8 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Removed Configurations**: 
   - **162 P006 Configurations**: All pipe size configurations (100-1500mm) across all categories
   - **6 Category Templates**: CCTV, Van Pack, Jet Vac, CCTV Van Pack, Directional Water Cutter, Tankering
-- **Remaining System**: Only essential configurations remain (31 total):
+  - **F570 Template Removed**: January 28, 2025 - Deleted F570 CCTV P006 Template per user request
+- **Remaining System**: Only essential configurations remain (30 total):
   - **f175**: CCTV Jet Vac Configuration (working example)
   - **TP2 Configurations**: 150mm, 225mm, 300mm patching
   - **TP3 Configuration**: Robotic cutting  
