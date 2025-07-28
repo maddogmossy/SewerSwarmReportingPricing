@@ -992,6 +992,9 @@ export default function PR2ConfigClean() {
     ));
   };
 
+  // Auto-save functionality state
+  const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+
   // MM3 Pipe Size Selection State - Single selection only (default to 100mm)
   const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>('100');
   const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(() => {
@@ -1040,6 +1043,90 @@ export default function PR2ConfigClean() {
     },
     enabled: !!sector && !!categoryId
   });
+
+  // Auto-save functionality for MM sections (declared after all state variables)
+  const triggerAutoSave = useCallback(() => {
+    if (autoSaveTimeout) {
+      clearTimeout(autoSaveTimeout);
+    }
+    
+    const timeoutId = setTimeout(async () => {
+      try {
+        // Gather all MM section data
+        const mmData = {
+          selectedPipeSize: selectedPipeSizeForMM4,
+          selectedPipeSizeId: selectedPipeSizeId,
+          mm1Colors: formData.categoryColor,
+          mm2IdData: selectedIds,
+          mm3CustomPipeSizes: customPipeSizes,
+          mm4Rows: mm4Rows,
+          mm5Rows: mm5Rows,
+          categoryId: categoryId,
+          sector: sector,
+          timestamp: Date.now()
+        };
+
+        // Auto-save to backend
+        if (editId) {
+          await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
+            ...formData,
+            mmData: mmData
+          });
+        } else if (categoryId) {
+          // Create new configuration with MM data
+          const response = await apiRequest('POST', '/api/pr2-clean', {
+            ...formData,
+            categoryId: categoryId,
+            sector: sector,
+            mmData: mmData
+          });
+        }
+        
+        // Invalidate queries to refresh data
+        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+        
+      } catch (error) {
+        console.error('Auto-save failed:', error);
+      }
+    }, 1000); // 1 second delay
+    
+    setAutoSaveTimeout(timeoutId);
+  }, [selectedPipeSizeForMM4, selectedPipeSizeId, formData, selectedIds, customPipeSizes, mm4Rows, mm5Rows, editId, categoryId, sector, autoSaveTimeout]);
+
+  // MM1 Color picker auto-save
+  const handleMM1ColorChange = (color: string) => {
+    setFormData(prev => ({ ...prev, categoryColor: color }));
+    triggerAutoSave();
+  };
+
+  // MM2 ID selection auto-save
+  const handleMM2IdChange = (id: string, isSelected: boolean) => {
+    setSelectedIds(prev => {
+      const updated = isSelected 
+        ? [...prev, id]
+        : prev.filter(selectedId => selectedId !== id);
+      
+      // Trigger auto-save after state update
+      setTimeout(() => triggerAutoSave(), 0);
+      return updated;
+    });
+  };
+
+  // MM4/MM5 Auto-save wrappers
+  const updateMM4RowWithAutoSave = (rowId: number, field: 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
+    updateMM4Row(rowId, field, value);
+    triggerAutoSave();
+  };
+
+  const updateMM5RowWithAutoSave = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {
+    updateMM5Row(rowId, field, value);
+    triggerAutoSave();
+  };
+
+  const handlePipeSizeSelectWithAutoSave = (pipeSize: string) => {
+    handlePipeSizeSelect(pipeSize);
+    triggerAutoSave();
+  };
 
   const toggleAdminControl = useMutation({
     mutationFn: async ({ isLocked, lockReason }: { isLocked: boolean; lockReason?: string }) => {
@@ -2788,7 +2875,7 @@ export default function PR2ConfigClean() {
                               ? `border-gray-800 ${idOption.bgColor} ring-2 ring-gray-300` 
                               : 'border-gray-300 hover:border-gray-400'
                           }`}
-                          onClick={() => handleMMP1IdChange(idOption.id, !isSelected)}
+                          onClick={() => handleMM2IdChange(idOption.id, !isSelected)}
                         >
                           <CardContent className="p-4 text-center relative">
                             <div className={`mx-auto w-8 h-8 mb-3 flex items-center justify-center rounded-lg ${
@@ -2883,7 +2970,7 @@ export default function PR2ConfigClean() {
                           formData.categoryColor === color.value ? 'border-gray-800 ring-2 ring-gray-300' : 'border-gray-300'
                         }`}
                         style={{ backgroundColor: color.value }}
-                        onClick={() => handleColorChange(color.value)}
+                        onClick={() => handleMM1ColorChange(color.value)}
                         title={color.name}
                       >
                         {formData.categoryColor === color.value && (
@@ -2925,7 +3012,7 @@ export default function PR2ConfigClean() {
                                   <input
                                     type="color"
                                     value={formData.categoryColor}
-                                    onChange={(e) => handleColorChange(e.target.value)}
+                                    onChange={(e) => handleMM1ColorChange(e.target.value)}
                                     className="w-12 h-8 rounded border border-gray-300 cursor-pointer bg-transparent"
                                     title="Choose custom color"
                                   />
@@ -3014,6 +3101,7 @@ export default function PR2ConfigClean() {
                           if (newPipeSize && !customPipeSizes.includes(newPipeSize)) {
                             setCustomPipeSizes(prev => [...prev, newPipeSize].sort((a, b) => parseInt(a) - parseInt(b)));
                             setNewPipeSize('');
+                            triggerAutoSave();
                           }
                         }}
                         className="px-2 py-1 text-sm bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
@@ -3047,7 +3135,7 @@ export default function PR2ConfigClean() {
                                     ? 'border-green-400 bg-green-100 shadow-md' 
                                     : 'border-gray-300 bg-white hover:border-orange-300 hover:bg-orange-50'
                                 }`}
-                                onClick={() => handlePipeSizeSelect(size)}
+                                onClick={() => handlePipeSizeSelectWithAutoSave(size)}
                               >
                                 <CardContent className="p-3 text-center">
                                   <div className="text-sm font-mono font-semibold text-gray-900">
@@ -3070,6 +3158,7 @@ export default function PR2ConfigClean() {
                                         setSelectedPipeSizeForMM4('100');
                                         setSelectedPipeSizeId(generatePipeSizeId('100'));
                                       }
+                                      triggerAutoSave();
                                     }}
                                     className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-700 z-10"
                                     title={`Remove ${size}mm custom size`}
@@ -3139,7 +3228,7 @@ export default function PR2ConfigClean() {
                                   placeholder="Enter quantity"
                                   className="border-green-300"
                                   value={row.greenValue}
-                                  onChange={(e) => updateMM4Row(row.id, 'greenValue', e.target.value)}
+                                  onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
                                 />
                               </div>
                             ))}
@@ -3159,7 +3248,7 @@ export default function PR2ConfigClean() {
                                     placeholder="0-15"
                                     className="border-purple-300"
                                     value={row.purpleDebris}
-                                    onChange={(e) => updateMM4Row(row.id, 'purpleDebris', e.target.value)}
+                                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
                                   />
                                 </div>
                                 <div>
@@ -3170,7 +3259,7 @@ export default function PR2ConfigClean() {
                                       placeholder="0-35"
                                       className="border-purple-300 flex-1"
                                       value={row.purpleLength}
-                                      onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
+                                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
                                     />
                                     {index === 0 && (
                                       <Button 
@@ -3230,7 +3319,7 @@ export default function PR2ConfigClean() {
                                 placeholder="3.5t"
                                 className="border-teal-300"
                                 value={row.vehicleWeight}
-                                onChange={(e) => updateMM5Row(row.id, 'vehicleWeight', e.target.value)}
+                                onChange={(e) => updateMM5RowWithAutoSave(row.id, 'vehicleWeight', e.target.value)}
                               />
                             </div>
                             <div>
@@ -3241,7 +3330,7 @@ export default function PR2ConfigClean() {
                                   placeholder="£45"
                                   className="border-teal-300 flex-1"
                                   value={row.costPerMile}
-                                  onChange={(e) => updateMM5Row(row.id, 'costPerMile', e.target.value)}
+                                  onChange={(e) => updateMM5RowWithAutoSave(row.id, 'costPerMile', e.target.value)}
                                 />
                                 {index === 0 && (
                                   <Button 
