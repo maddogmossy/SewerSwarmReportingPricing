@@ -578,30 +578,22 @@ export default function PR2Pricing() {
                   const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
                   
                   // Check for existing configuration (show ID for any saved config, even blank templates)
-                  // First check for P006 templates (highest priority)
-                  let existingConfiguration = pr2Configurations.find(config => {
-                    if (category.id === 'cctv' && config.categoryId?.startsWith('P006-CCTV-')) {
-                      console.log(`🎯 P006 PRIORITY MATCH: Found F${config.id} for CCTV card (${config.categoryId})`);
+                  // Start with P006a templates (highest priority)
+                  let existingConfiguration = null;
+
+                  // Check for P006a templates (highest priority)
+                  existingConfiguration = pr2Configurations.find(config => {
+                    if (category.id === 'cctv' && config.categoryId === 'cctv-p006a') {
+                      console.log(`🎯 P006a PRIORITY MATCH: Found F${config.id} for CCTV card (cctv-p006a)`);
                       return true;
                     }
+                    if (category.id === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
+                    if (category.id === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
+                    if (category.id === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
+                    if (category.id === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
+                    if (category.id === 'patching-p006a' && config.categoryId === 'patching-p006a') return true;
                     return false;
                   });
-
-                  // Then check for P006a templates (second priority)
-                  if (!existingConfiguration) {
-                    existingConfiguration = pr2Configurations.find(config => {
-                      if (category.id === 'cctv' && config.categoryId === 'cctv-p006a') {
-                        console.log(`🎯 P006a PRIORITY MATCH: Found F${config.id} for CCTV card (cctv-p006a)`);
-                        return true;
-                      }
-                      if (category.id === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
-                      if (category.id === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
-                      if (category.id === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
-                      if (category.id === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
-                      if (category.id === 'patching-p006a' && config.categoryId === 'patching-p006a') return true;
-                      return false;
-                    });
-                  }
                   
                   // If no P006a template found, check for direct matches
                   if (!existingConfiguration) {
@@ -616,22 +608,7 @@ export default function PR2Pricing() {
                       // Legacy exact match for cctv-jet-vac
                       if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
                       
-                      // CTF P006 template pattern matching
-                      if (config.categoryId?.startsWith('P006-')) {
-                        const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+$/, '');
-                        
-                        // Map CTF categories to standard category IDs
-                        const ctfMapping: Record<string, string> = {
-                          'CCTV': 'cctv',
-                          'VAN-PACK': 'van-pack', 
-                          'JET-VAC': 'jet-vac',
-                          'CCTV-VAN-PACK': 'cctv-van-pack',
-                          'CCTV-JET-VAC': 'cctv-jet-vac',
-                          'CCTV-CLEANSING-ROOT-CUTTING': 'cctv-cleansing-root-cutting'
-                        };
-                        
-                        return ctfMapping[configType] === category.id;
-                      }
+                      // Skip CTF P006 template pattern matching (removed)
                       
                       // Legacy matching
                       if (config.categoryName?.toLowerCase() === category.id.toLowerCase()) return true;
