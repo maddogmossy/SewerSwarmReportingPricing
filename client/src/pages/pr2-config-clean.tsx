@@ -175,11 +175,13 @@ export default function PR2ConfigClean() {
   });
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'TP3' | 'P26' | 'P006a' => {
+  const getTemplateType = (categoryId: string): 'TP1' | 'TP3' | 'P26' | 'P006' | 'P006a' => {
     if (categoryId === 'robotic-cutting') {
       return 'TP3'; // Robotic cutting uses TP3 template
     } else if (categoryId === 'day-rate-db11') {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
+    } else if (categoryId?.startsWith('P006-')) {
+      return 'P006'; // Original P006 CTF templates with 4-window structure
     } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
                categoryId === 'van-pack' || 
@@ -2794,8 +2796,8 @@ export default function PR2ConfigClean() {
         </div>
         )}
 
-        {/* Color Picker Section - For P006a templates */}
-        {getTemplateType(categoryId || '') === 'P006a' && (
+        {/* Color Picker Section - For P006a and P006 templates */}
+        {(getTemplateType(categoryId || '') === 'P006a' || getTemplateType(categoryId || '') === 'P006') && (
         <Card className="mb-6 relative">
           <DevLabel id="W007" position="top-right" />
           <CardHeader>
@@ -2845,8 +2847,8 @@ export default function PR2ConfigClean() {
         </Card>
         )}
 
-        {/* Upper Level Pipe Size Configuration - For P006a templates */}
-        {getTemplateType(categoryId || '') === 'P006a' && (
+        {/* Upper Level Pipe Size Configuration - For P006a and P006 templates */}
+        {(getTemplateType(categoryId || '') === 'P006a' || getTemplateType(categoryId || '') === 'P006') && (
           <Card className="mb-6 relative">
             <DevLabel id="W020" position="top-right" />
             <CardHeader className="pb-3">
@@ -2878,7 +2880,7 @@ export default function PR2ConfigClean() {
         {(() => {
           const templateType = getTemplateType(categoryId || '');
           console.log(`🔍 Template Detection: categoryId="${categoryId}", templateType="${templateType}"`);
-          return templateType === 'P006a';
+          return templateType === 'P006a' || templateType === 'P006';
         })() && (
           <>
             <TP1Template 

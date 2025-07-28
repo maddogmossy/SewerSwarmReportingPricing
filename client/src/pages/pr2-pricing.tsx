@@ -582,19 +582,30 @@ export default function PR2Pricing() {
                   const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
                   
                   // Check for existing configuration (show ID for any saved config, even blank templates)
-                  // First check for P006a templates (priority)
+                  // First check for P006 templates (highest priority)
                   let existingConfiguration = pr2Configurations.find(config => {
-                    if (category.id === 'cctv' && config.categoryId === 'cctv-p006a') {
-                      console.log(`🎯 PRIORITY MATCH: Found F${config.id} for CCTV card (cctv-p006a)`);
+                    if (category.id === 'cctv' && config.categoryId?.startsWith('P006-CCTV-')) {
+                      console.log(`🎯 P006 PRIORITY MATCH: Found F${config.id} for CCTV card (${config.categoryId})`);
                       return true;
                     }
-                    if (category.id === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
-                    if (category.id === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
-                    if (category.id === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
-                    if (category.id === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
-                    if (category.id === 'patching-p006a' && config.categoryId === 'patching-p006a') return true;
                     return false;
                   });
+
+                  // Then check for P006a templates (second priority)
+                  if (!existingConfiguration) {
+                    existingConfiguration = pr2Configurations.find(config => {
+                      if (category.id === 'cctv' && config.categoryId === 'cctv-p006a') {
+                        console.log(`🎯 P006a PRIORITY MATCH: Found F${config.id} for CCTV card (cctv-p006a)`);
+                        return true;
+                      }
+                      if (category.id === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
+                      if (category.id === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
+                      if (category.id === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
+                      if (category.id === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
+                      if (category.id === 'patching-p006a' && config.categoryId === 'patching-p006a') return true;
+                      return false;
+                    });
+                  }
                   
                   // If no P006a template found, check for direct matches
                   if (!existingConfiguration) {
