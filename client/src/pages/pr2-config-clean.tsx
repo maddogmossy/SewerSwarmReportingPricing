@@ -175,7 +175,7 @@ export default function PR2ConfigClean() {
   });
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MM001' => {
+  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' => {
     if (categoryId === 'cart-card') {
       return 'TP1'; // Cart card uses standard TP1 template with full interface
     } else if (categoryId === 'day-rate-db11') {
@@ -183,7 +183,7 @@ export default function PR2ConfigClean() {
     } else if (categoryId?.startsWith('P006-')) {
       return 'P006'; // Original P006 CTF templates with 4-window structure
     } else if (categoryId === 'test-card') {
-      return 'MM001'; // Test Card uses new MM001 template with 5 placeholder UI cards
+      return 'MMP1'; // Test Card uses new MMP1 template with 5 placeholder UI cards
     } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
                categoryId === 'van-pack' || 
@@ -2623,11 +2623,11 @@ export default function PR2ConfigClean() {
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              {/* MM001 Large Identifier for Test Card */}
-              {categoryId === 'test-card' && getTemplateType(categoryId || '') === 'MM001' && (
+              {/* MMP1 Large Identifier for Test Card */}
+              {categoryId === 'test-card' && getTemplateType(categoryId || '') === 'MMP1' && (
                 <div className="mb-4">
                   <h1 className="text-6xl font-bold text-green-600 mb-2" style={{ fontSize: '4rem', lineHeight: '1' }}>
-                    MM001
+                    MMP1
                   </h1>
                   <p className="text-xl text-gray-700 font-semibold">
                     New Template with 5 Placeholder UI Cards
@@ -2660,8 +2660,8 @@ export default function PR2ConfigClean() {
                         return `P006a Template (F${editId || 'Unknown'})`;
                       } else if (templateType === 'P26') {
                         return `P26 Template (F${editId || 'Unknown'})`;
-                      } else if (templateType === 'MM001') {
-                        return `MM001 Template (F${editId || 'Unknown'})`;
+                      } else if (templateType === 'MMP1') {
+                        return `MMP1 Template (F${editId || 'Unknown'})`;
                       } else {
                         return `TP1 Template (F${editId || 'Unknown'})`;
                       }
@@ -2714,8 +2714,8 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
-        {/* MM001 Template - 5 Placeholder UI Cards */}
-        {getTemplateType(categoryId || '') === 'MM001' && (
+        {/* MMP1 Template - 5 Placeholder UI Cards */}
+        {getTemplateType(categoryId || '') === 'MMP1' && (
           <div className="space-y-6">
             {/* MM1 - Apply Configuration to Sectors */}
             <div className="relative">
@@ -2978,7 +2978,7 @@ export default function PR2ConfigClean() {
             {/* Save Button */}
             <div className="flex justify-start">
               <Button className="bg-green-600 hover:bg-green-700 text-white">
-                Save MM001 Configuration
+                Save MMP1 Configuration
               </Button>
             </div>
           </div>
