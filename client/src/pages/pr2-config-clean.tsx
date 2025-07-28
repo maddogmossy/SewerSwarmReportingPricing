@@ -2979,18 +2979,7 @@ export default function PR2ConfigClean() {
                     </div>
                   </div>
 
-                  {/* MSCC5 Information */}
-                  <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                    <div className="flex items-start gap-2">
-                      <Shield className="w-4 h-4 text-blue-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-blue-900">MSCC5 Compliance</p>
-                        <p className="text-xs text-blue-700 mt-1">
-                          Pipe sizes follow UK Manual of Sewer Condition Classification (MSCC5) standards for drainage infrastructure assessment and reporting.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+
                 </CardContent>
               </Card>
             </div>
