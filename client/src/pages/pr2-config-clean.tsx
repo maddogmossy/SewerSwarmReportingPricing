@@ -2756,7 +2756,7 @@ export default function PR2ConfigClean() {
               </Card>
             </div>
 
-            {/* Color Picker Section - Restored old picker for all templates */}
+            {/* Color Picker Section - Enhanced with 20 colors and custom picker */}
             <div className="relative">
               <DevLabel id="MM2" position="top-right" />
               <Card className="bg-white border-2 border-gray-200">
@@ -2765,22 +2765,37 @@ export default function PR2ConfigClean() {
                     2. Color Picker Section
                   </CardTitle>
                   <p className="text-sm text-gray-600">
-                    Choose category color scheme
+                    Choose from 20 preset colors or use custom color picker
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-6 gap-3">
+                  {/* 20 Preset Colors */}
+                  <div className="grid grid-cols-10 gap-2 mb-4">
                     {[
-                      { name: 'Blue', value: '#3B82F6' },
-                      { name: 'Green', value: '#10B981' },
-                      { name: 'Purple', value: '#9333EA' },
                       { name: 'Red', value: '#EF4444' },
-                      { name: 'Orange', value: '#F59E0B' },
-                      { name: 'Teal', value: '#14B8A6' }
+                      { name: 'Rose', value: '#F43F5E' },
+                      { name: 'Pink', value: '#EC4899' },
+                      { name: 'Fuchsia', value: '#D946EF' },
+                      { name: 'Purple', value: '#9333EA' },
+                      { name: 'Violet', value: '#8B5CF6' },
+                      { name: 'Indigo', value: '#6366F1' },
+                      { name: 'Blue', value: '#3B82F6' },
+                      { name: 'Sky', value: '#0EA5E9' },
+                      { name: 'Cyan', value: '#06B6D4' },
+                      { name: 'Teal', value: '#14B8A6' },
+                      { name: 'Emerald', value: '#10B981' },
+                      { name: 'Green', value: '#22C55E' },
+                      { name: 'Lime', value: '#84CC16' },
+                      { name: 'Yellow', value: '#EAB308' },
+                      { name: 'Amber', value: '#F59E0B' },
+                      { name: 'Orange', value: '#F97316' },
+                      { name: 'Stone', value: '#78716C' },
+                      { name: 'Gray', value: '#6B7280' },
+                      { name: 'Slate', value: '#64748B' }
                     ].map((color) => (
                       <button
                         key={color.name}
-                        className={`w-12 h-12 rounded-lg border-2 cursor-pointer hover:scale-105 transition-transform ${
+                        className={`w-8 h-8 rounded-lg border-2 cursor-pointer hover:scale-110 transition-transform ${
                           formData.categoryColor === color.value ? 'border-gray-800 ring-2 ring-gray-300' : 'border-gray-300'
                         }`}
                         style={{ backgroundColor: color.value }}
@@ -2789,22 +2804,45 @@ export default function PR2ConfigClean() {
                       >
                         {formData.categoryColor === color.value && (
                           <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-white text-xl">✓</span>
+                            <span className="text-white text-sm font-bold">✓</span>
                           </div>
                         )}
                       </button>
                     ))}
                   </div>
+
+                  {/* Custom Color Picker */}
+                  <div className="border-t pt-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <label className="text-sm font-medium text-gray-900">Custom Color:</label>
+                      <input
+                        type="color"
+                        value={formData.categoryColor}
+                        onChange={(e) => handleColorChange(e.target.value)}
+                        className="w-12 h-8 rounded border border-gray-300 cursor-pointer bg-transparent"
+                        title="Choose custom color"
+                      />
+                      <input
+                        type="text"
+                        value={formData.categoryColor}
+                        onChange={(e) => handleColorChange(e.target.value)}
+                        className="px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="#000000"
+                        pattern="^#[0-9A-Fa-f]{6}$"
+                        title="Enter hex color code"
+                      />
+                    </div>
+                  </div>
                   
                   {/* Current color display */}
                   <div className="mt-4 p-3 bg-gray-50 rounded-lg flex items-center gap-3">
                     <div 
-                      className="w-8 h-8 rounded border border-gray-300"
+                      className="w-8 h-8 rounded border border-gray-300 shadow-sm"
                       style={{ backgroundColor: formData.categoryColor }}
                     ></div>
                     <div>
                       <p className="text-sm font-medium text-gray-900">Selected Color</p>
-                      <p className="text-xs text-gray-600">{formData.categoryColor}</p>
+                      <p className="text-xs text-gray-600 font-mono">{formData.categoryColor}</p>
                     </div>
                   </div>
                 </CardContent>
