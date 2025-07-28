@@ -3237,6 +3237,148 @@ export default function PR2ConfigClean() {
           </>
         )}
 
+        {/* TP3 Template - Robotic Cutting Configuration */}
+        {getTemplateType(categoryId || '') === 'TP3' && (
+          <div className="space-y-6">
+            {/* Blue Window - Pricing Options */}
+            <Card className="relative">
+              <DevLabel id="TP3-Blue" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-blue-800 text-lg flex items-center gap-2">
+                  <DollarSign className="w-5 h-5" />
+                  Pricing Options
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="space-y-4">
+                  {formData.pricingOptions.map((option, index) => (
+                    <div key={option.id} className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={option.enabled}
+                          onChange={(e) => updatePricingOption(index, 'enabled', e.target.checked)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="font-medium text-gray-900">{option.label}</span>
+                      </div>
+                      {option.enabled && (
+                        <Input
+                          type="text"
+                          value={option.value}
+                          onChange={(e) => updatePricingOption(index, 'value', e.target.value)}
+                          placeholder={`Enter ${option.label.toLowerCase()}`}
+                          className="border-blue-300"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Green Window - Quantity Options */}
+            <Card className="relative">
+              <DevLabel id="TP3-Green" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-green-800 text-lg flex items-center gap-2">
+                  <Package className="w-5 h-5" />
+                  Quantity Configuration
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="bg-green-50 border border-green-200 rounded-lg">
+                <div className="space-y-4">
+                  {formData.quantityOptions.map((option, index) => (
+                    <div key={option.id} className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={option.enabled}
+                          onChange={(e) => updateQuantityOption(index, 'enabled', e.target.checked)}
+                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        />
+                        <span className="font-medium text-gray-900">{option.label}</span>
+                      </div>
+                      {option.enabled && (
+                        <Input
+                          type="text"
+                          value={option.value}
+                          onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
+                          placeholder={`Enter ${option.label.toLowerCase()}`}
+                          className="border-green-300"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Teal Window - Vehicle Travel Rates (DB15) */}
+            <Card className="relative">
+              <DevLabel id="TP3-Teal" position="top-right" />
+              <CardHeader className="pb-3">
+                <CardTitle className="text-teal-800 text-lg flex items-center gap-2">
+                  <Truck className="w-5 h-5" />
+                  Vehicle Travel Rates (DB15)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="bg-teal-50 border border-teal-200 rounded-lg">
+                <div className="space-y-4">
+                  {formData.vehicleTravelRates.map((vehicle, index) => (
+                    <div key={vehicle.id} className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={vehicle.enabled}
+                          onChange={(e) => updateVehicleOption(index, 'enabled', e.target.checked)}
+                          className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                        />
+                        <span className="font-medium text-gray-900">{vehicle.vehicleType} Vehicle</span>
+                      </div>
+                      {vehicle.enabled && (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <span className="block text-sm font-medium text-gray-700 mb-1">Hourly Rate (£)</span>
+                            <Input
+                              type="text"
+                              value={vehicle.hourlyRate}
+                              onChange={(e) => updateVehicleOption(index, 'hourlyRate', e.target.value)}
+                              placeholder="Rate"
+                              className="border-teal-300"
+                            />
+                          </div>
+                          <div>
+                            <span className="block text-sm font-medium text-gray-700 mb-1">Number of Hours</span>
+                            <Input
+                              type="text"
+                              value={vehicle.numberOfHours}
+                              onChange={(e) => updateVehicleOption(index, 'numberOfHours', e.target.value)}
+                              placeholder="2"
+                              className="border-teal-300"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Save Configuration Button */}
+            <div className="flex justify-start">
+              <Button 
+                onClick={handleSaveConfiguration}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? 'Saving...' : 'Save TP3 Configuration'}
+              </Button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
