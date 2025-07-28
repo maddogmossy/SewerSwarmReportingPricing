@@ -2908,12 +2908,40 @@ export default function PR2ConfigClean() {
               <DevLabel id="MM3" position="top-right" />
               <Card className="bg-white border-2 border-gray-200">
                 <CardHeader>
-                  <CardTitle className="text-lg font-semibold text-gray-900">
-                    3. UK Drainage Pipe Sizes (MSCC5)
-                  </CardTitle>
-                  <p className="text-sm text-gray-600">
-                    Standard UK drainage pipe sizes with custom size management
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-gray-900">
+                        3. UK Drainage Pipe Sizes (MSCC5)
+                      </CardTitle>
+                      <p className="text-sm text-gray-600">
+                        Standard UK drainage pipe sizes with custom size management
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        value={newPipeSize}
+                        onChange={(e) => setNewPipeSize(e.target.value)}
+                        placeholder="Add size (mm)"
+                        className="px-2 py-1 text-sm border border-gray-300 rounded w-28 font-mono"
+                        min="50"
+                        max="3000"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (newPipeSize && !customPipeSizes.includes(newPipeSize)) {
+                            setCustomPipeSizes(prev => [...prev, newPipeSize].sort((a, b) => parseInt(a) - parseInt(b)));
+                            setNewPipeSize('');
+                          }
+                        }}
+                        className="px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                        disabled={!newPipeSize || customPipeSizes.includes(newPipeSize)}
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {/* Standard UK Pipe Sizes */}
@@ -2936,38 +2964,10 @@ export default function PR2ConfigClean() {
                     </div>
                   </div>
 
-                  {/* Custom Pipe Sizes */}
-                  <div className="border-t pt-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-medium text-gray-900">Custom Pipe Sizes</h4>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          value={newPipeSize}
-                          onChange={(e) => setNewPipeSize(e.target.value)}
-                          placeholder="Enter size in mm"
-                          className="px-2 py-1 text-sm border border-gray-300 rounded w-32 font-mono"
-                          min="50"
-                          max="3000"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (newPipeSize && !customPipeSizes.includes(newPipeSize)) {
-                              setCustomPipeSizes(prev => [...prev, newPipeSize].sort((a, b) => parseInt(a) - parseInt(b)));
-                              setNewPipeSize('');
-                            }
-                          }}
-                          className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-                          disabled={!newPipeSize || customPipeSizes.includes(newPipeSize)}
-                        >
-                          <Plus className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Display Custom Sizes */}
-                    {customPipeSizes.length > 0 ? (
+                  {/* Custom Pipe Sizes Display */}
+                  {customPipeSizes.length > 0 && (
+                    <div className="border-t pt-4">
+                      <h4 className="text-sm font-medium text-gray-900 mb-3">Custom Pipe Sizes</h4>
                       <div className="grid grid-cols-6 gap-2">
                         {customPipeSizes.map((size) => (
                           <div
@@ -2986,13 +2986,8 @@ export default function PR2ConfigClean() {
                           </div>
                         ))}
                       </div>
-                    ) : (
-                      <div className="text-center py-4 text-gray-400">
-                        <p className="text-sm">No custom pipe sizes added</p>
-                        <p className="text-xs">Enter a size above to add custom drainage pipe sizes</p>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* MSCC5 Information */}
                   <div className="mt-4 p-3 bg-blue-50 rounded-lg">
