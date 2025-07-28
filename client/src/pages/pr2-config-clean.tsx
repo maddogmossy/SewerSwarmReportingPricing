@@ -175,13 +175,9 @@ export default function PR2ConfigClean() {
   
   // Determine template type based on category
   const getTemplateType = (categoryId: string): 'TP1' | 'TP3' | 'P26' | 'P006a' => {
-    console.log(`🔍 TEMPLATE TYPE DEBUG: categoryId="${categoryId}"`);
-    
     if (categoryId === 'robotic-cutting') {
-      console.log(`✅ TEMPLATE: ${categoryId} → TP3`);
       return 'TP3'; // Robotic cutting uses TP3 template
     } else if (categoryId === 'day-rate-db11') {
-      console.log(`✅ TEMPLATE: ${categoryId} → P26`);
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
@@ -191,10 +187,8 @@ export default function PR2ConfigClean() {
                categoryId === 'cctv-jet-vac' || // F175 - CCTV Jet Vac Configuration
                categoryId === 'test-card' || // Test Card - CTF P006a demonstration
                categoryId === 'cctv-cleansing-root-cutting') {
-      console.log(`✅ TEMPLATE: ${categoryId} → P006a (CTF Framework)`);
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else {
-      console.log(`✅ TEMPLATE: ${categoryId} → TP1 (default)`);
       return 'TP1'; // All other categories use standard TP1 template
     }
   };
@@ -2803,18 +2797,13 @@ export default function PR2ConfigClean() {
         )}
 
         {/* Color Picker Section - For P006a templates */}
-        {(() => {
-          const templateType = getTemplateType(categoryId || '');
-          const isP006a = templateType === 'P006a';
-          console.log(`🔍 W007 RENDER CHECK: categoryId="${categoryId}", templateType="${templateType}", isP006a=${isP006a}`);
-          return isP006a;
-        })() && (
+        {getTemplateType(categoryId || '') === 'P006a' && (
         <Card className="mb-6 relative">
           <DevLabel id="W007" position="top-right" />
           <CardHeader>
             <CardTitle className="text-gray-900 flex items-center gap-2">
               <Palette className="w-5 h-5" />
-              🎨 W007 - Color Picker Section (CTF P006a)
+              Color Picker Section
             </CardTitle>
             <p className="text-sm text-gray-600">
               Select a color theme for this configuration category
@@ -2859,18 +2848,13 @@ export default function PR2ConfigClean() {
         )}
 
         {/* Upper Level Pipe Size Configuration - For P006a templates */}
-        {(() => {
-          const templateType = getTemplateType(categoryId || '');
-          const isP006a = templateType === 'P006a';
-          console.log(`🔍 W020 RENDER CHECK: categoryId="${categoryId}", templateType="${templateType}", isP006a=${isP006a}`);
-          return isP006a;
-        })() && (
+        {getTemplateType(categoryId || '') === 'P006a' && (
           <Card className="mb-6 relative">
             <DevLabel id="W020" position="top-right" />
             <CardHeader className="pb-3">
               <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
                 <Wrench className="w-5 h-5" />
-                🔧 W020 - Pipe Size Configuration (CTF P006a)
+                Pipe Size Configuration
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -2893,12 +2877,7 @@ export default function PR2ConfigClean() {
         )}
 
         {/* P006a Template Main Configuration Windows */}
-        {(() => {
-          const templateType = getTemplateType(categoryId || '');
-          const isP006a = templateType === 'P006a';
-          console.log(`🔍 P007 RENDER CHECK: categoryId="${categoryId}", templateType="${templateType}", isP006a=${isP006a}`);
-          return isP006a;
-        })() && (
+        {getTemplateType(categoryId || '') === 'P006a' && (
           <div className="space-y-6">
             {/* Blue Window - Pricing Options */}
             <Card className="relative">
@@ -2906,7 +2885,7 @@ export default function PR2ConfigClean() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-blue-700 text-lg flex items-center gap-2">
                   <DollarSign className="w-5 h-5" />
-                  💙 BLUE - Day Rate Configuration (P007)
+                  Day Rate Configuration
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -3025,7 +3004,7 @@ export default function PR2ConfigClean() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-teal-700 text-lg flex items-center gap-2">
                   <Truck className="w-5 h-5" />
-                  🚛 W003 - Vehicle Travel Rates (CTF P006a)
+                  W003 - Vehicle Travel Rates
                 </CardTitle>
               </CardHeader>
               <CardContent>
