@@ -1066,21 +1066,14 @@ export default function PR2ConfigClean() {
           timestamp: Date.now()
         };
 
-        // Auto-save to backend
+        // Auto-save to backend - only update existing configurations, don't create new ones
         if (editId) {
           await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
             ...formData,
             mmData: mmData
           });
-        } else if (categoryId) {
-          // Create new configuration with MM data
-          const response = await apiRequest('POST', '/api/pr2-clean', {
-            ...formData,
-            categoryId: categoryId,
-            sector: sector,
-            mmData: mmData
-          });
         }
+        // Don't create new configurations during auto-save - only update existing ones
         
         // Invalidate queries to refresh data
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
