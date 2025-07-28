@@ -582,40 +582,59 @@ export default function PR2Pricing() {
                   const isUserCreated = !STANDARD_CATEGORIES.some(std => std.id === category.id);
                   
                   // Check for existing configuration (show ID for any saved config, even blank templates)
-                  const existingConfiguration = pr2Configurations.find(config => {
-                    // P006a template matches - PRIORITY (check these first)
-                    if (category.id === 'cctv' && config.categoryId === 'cctv-p006a') return true;
+                  // First check for P006a templates (priority)
+                  let existingConfiguration = pr2Configurations.find(config => {
+                    if (category.id === 'cctv' && config.categoryId === 'cctv-p006a') {
+                      console.log(`🎯 PRIORITY MATCH: Found F${config.id} for CCTV card (cctv-p006a)`);
+                      return true;
+                    }
                     if (category.id === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
                     if (category.id === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
                     if (category.id === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
                     if (category.id === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
                     if (category.id === 'patching-p006a' && config.categoryId === 'patching-p006a') return true;
-                    
-                    // Direct category ID match (fallback only if no P006a template exists)
-                    if (config.categoryId === category.id) return true;
-                    
-                    // Legacy exact match for cctv-jet-vac
-                    if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
-                    
-                    // CTF P006 template pattern matching
-                    if (config.categoryId?.startsWith('P006-')) {
-                      const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+$/, '');
-                      
-                      // Map CTF categories to standard category IDs
-                      const ctfMapping: Record<string, string> = {
-                        'CCTV': 'cctv',
-                        'VAN-PACK': 'van-pack', 
-                        'JET-VAC': 'jet-vac',
-                        'CCTV-VAN-PACK': 'cctv-van-pack',
-                        'CCTV-JET-VAC': 'cctv-jet-vac',
-                        'CCTV-CLEANSING-ROOT-CUTTING': 'cctv-cleansing-root-cutting'
-                      };
-                      
-                      return ctfMapping[configType] === category.id;
-                    }
-                    
                     return false;
                   });
+                  
+                  // If no P006a template found, check for direct matches
+                  if (!existingConfiguration) {
+                    existingConfiguration = pr2Configurations.find(config => {
+                      if (config.categoryId === category.id) {
+                        if (category.id === 'cctv') {
+                          console.log(`⚠️ FALLBACK MATCH: Found F${config.id} for CCTV card (direct match)`);
+                        }
+                        return true;
+                      }
+                      
+                      // Legacy exact match for cctv-jet-vac
+                      if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
+                      
+                      // CTF P006 template pattern matching
+                      if (config.categoryId?.startsWith('P006-')) {
+                        const configType = config.categoryId.replace(/^P006-/, '').replace(/-\d+$/, '');
+                        
+                        // Map CTF categories to standard category IDs
+                        const ctfMapping: Record<string, string> = {
+                          'CCTV': 'cctv',
+                          'VAN-PACK': 'van-pack', 
+                          'JET-VAC': 'jet-vac',
+                          'CCTV-VAN-PACK': 'cctv-van-pack',
+                          'CCTV-JET-VAC': 'cctv-jet-vac',
+                          'CCTV-CLEANSING-ROOT-CUTTING': 'cctv-cleansing-root-cutting'
+                        };
+                        
+                        return ctfMapping[configType] === category.id;
+                      }
+                      
+                      // Legacy matching
+                      if (config.categoryName?.toLowerCase() === category.id.toLowerCase()) return true;
+                      if (category.id === 'cctv' && config.categoryName === 'CCTV') return true;
+                      if (category.id === 'cctv-jet-vac' && config.categoryName === 'CCTV Jet Vac Configuration') return true;
+                      
+                      return false;
+                    });
+                  }
+
                   
                   // Check if configuration has actual values (for status icon logic)
                   const hasActualValues = existingConfiguration && (
