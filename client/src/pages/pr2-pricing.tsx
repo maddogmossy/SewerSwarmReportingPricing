@@ -280,16 +280,16 @@ export default function PR2Pricing() {
     
     // Check if there's an existing configuration for this category using CTF P006 pattern matching
     const existingConfig = pr2Configurations.find(config => {
-      // Direct category ID match
-      if (config.categoryId === categoryId) return true;
-      
-      // P006a template matching (priority matching)
+      // P006a template matching (PRIORITY - check these first)
       if (categoryId === 'cctv' && config.categoryId === 'cctv-p006a') return true;
       if (categoryId === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
       if (categoryId === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
       if (categoryId === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
       if (categoryId === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
       if (categoryId === 'patching-p006a' && config.categoryId === 'patching-p006a') return true;
+      
+      // Direct category ID match (fallback only if no P006a template exists)
+      if (config.categoryId === categoryId) return true;
       
       // Legacy matches
       if (config.categoryName?.toLowerCase() === categoryId.toLowerCase()) return true;
@@ -583,16 +583,16 @@ export default function PR2Pricing() {
                   
                   // Check for existing configuration (show ID for any saved config, even blank templates)
                   const existingConfiguration = pr2Configurations.find(config => {
-                    // Direct category ID match
-                    if (config.categoryId === category.id) return true;
-                    
-                    // P006a template matches - map category IDs to P006a configurations
+                    // P006a template matches - PRIORITY (check these first)
                     if (category.id === 'cctv' && config.categoryId === 'cctv-p006a') return true;
                     if (category.id === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
                     if (category.id === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
                     if (category.id === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
                     if (category.id === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
                     if (category.id === 'patching-p006a' && config.categoryId === 'patching-p006a') return true;
+                    
+                    // Direct category ID match (fallback only if no P006a template exists)
+                    if (config.categoryId === category.id) return true;
                     
                     // Legacy exact match for cctv-jet-vac
                     if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
