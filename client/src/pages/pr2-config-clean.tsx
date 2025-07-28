@@ -963,6 +963,35 @@ export default function PR2ConfigClean() {
     ));
   };
 
+  // MM5 Row Management State
+  const [mm5Rows, setMm5Rows] = useState([
+    { id: 1, vehicleWeight: '', costPerMile: '' }
+  ]);
+
+  // MM5 Row Management Functions
+  const addMM5Row = () => {
+    setMm5Rows(prev => [
+      ...prev,
+      { 
+        id: prev.length + 1, 
+        vehicleWeight: '', 
+        costPerMile: '' 
+      }
+    ]);
+  };
+
+  const deleteMM5Row = (rowId: number) => {
+    if (mm5Rows.length > 1) { // Keep at least one row
+      setMm5Rows(prev => prev.filter(row => row.id !== rowId));
+    }
+  };
+
+  const updateMM5Row = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {
+    setMm5Rows(prev => prev.map(row => 
+      row.id === rowId ? { ...row, [field]: value } : row
+    ));
+  };
+
   // Configuration loading moved above getCategoryName function
 
   // Pipe Size Selection State - Upper Level Configuration
@@ -3124,35 +3153,56 @@ export default function PR2ConfigClean() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {/* Row 1 with Add Button */}
                     <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4">
                       <h4 className="font-medium text-teal-800 mb-2">Vehicle Travel</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-xs text-teal-700">Vehicle Weight</label>
-                          <Input
-                            type="text"
-                            placeholder="3.5t"
-                            className="border-teal-300"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-teal-700">Cost per Mile</label>
-                          <div className="flex items-center gap-2">
-                            <Input
-                              type="text"
-                              placeholder="£45"
-                              className="border-teal-300 flex-1"
-                            />
-                            <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white h-8 w-8 p-0 flex-shrink-0">
-                              +
-                            </Button>
+                      <div className="space-y-2">
+                        {mm5Rows.map((row, index) => (
+                          <div key={row.id} className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="text-xs text-teal-700">Vehicle Weight</label>
+                              <Input
+                                type="text"
+                                placeholder="3.5t"
+                                className="border-teal-300"
+                                value={row.vehicleWeight}
+                                onChange={(e) => updateMM5Row(row.id, 'vehicleWeight', e.target.value)}
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs text-teal-700">Cost per Mile</label>
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  type="text"
+                                  placeholder="£45"
+                                  className="border-teal-300 flex-1"
+                                  value={row.costPerMile}
+                                  onChange={(e) => updateMM5Row(row.id, 'costPerMile', e.target.value)}
+                                />
+                                {index === 0 && (
+                                  <Button 
+                                    size="sm" 
+                                    className="bg-teal-600 hover:bg-teal-700 text-white h-8 w-8 p-0 flex-shrink-0"
+                                    onClick={addMM5Row}
+                                  >
+                                    +
+                                  </Button>
+                                )}
+                                {index > 0 && (
+                                  <Button 
+                                    size="sm" 
+                                    variant="destructive"
+                                    className="h-8 w-8 p-0 flex-shrink-0"
+                                    onClick={() => deleteMM5Row(row.id)}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        ))}
                       </div>
                     </div>
-
-
                   </CardContent>
                 </Card>
               </div>
