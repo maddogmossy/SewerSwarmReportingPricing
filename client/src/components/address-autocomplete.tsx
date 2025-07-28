@@ -67,6 +67,7 @@ export function AddressAutocomplete({
 
   // Show suggestions when data is available
   useEffect(() => {
+    console.log('Address autocomplete debug:', {
       suggestions: suggestions.length, 
       value: value.length, 
       showSuggestions,

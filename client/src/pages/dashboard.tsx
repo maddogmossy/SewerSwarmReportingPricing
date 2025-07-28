@@ -1810,6 +1810,7 @@ export default function Dashboard() {
 
   // Validation effect - runs after sections are loaded
   useEffect(() => {
+    console.log('Dashboard validation data:', {
       hasAuthenticData,
       rawSectionDataLength: rawSectionData?.length || 0,
       pr2ConfigurationsLength: pr2Configurations?.length || 0,
@@ -1843,6 +1844,7 @@ export default function Dashboard() {
         
         setValidationResult(result);
         
+        console.log('Validation completed:', {
           sectionsLength: rawSectionData.length,
           configsLength: pr2Configurations.length,
           sampleSection: rawSectionData[0]?.itemNo,
@@ -1909,12 +1911,14 @@ export default function Dashboard() {
     // Debug all sections first
     const allStructuralSections = sections.filter(s => s.defectType === 'structural');
     
+    console.log('Structural sections debug:', allStructuralSections.map(s => ({
       itemNo: s.itemNo,
       defectType: s.defectType,
       recommendations: s.recommendations?.substring(0, 50) + '...',
       costCalc: calculateAutoCost(s)
     })));
     
+    console.log('TP2 trigger analysis:', {
       totalSections: sections.length,
       structuralSections: allStructuralSections.length,
       serviceSections: sections.filter(s => s.defectType === 'service').length,
@@ -1936,6 +1940,7 @@ export default function Dashboard() {
       return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured'].includes(costCalc.status);
     });
     
+    console.log('TP2 final trigger decision:', {
       allSectionsConfigured: allSectionsHaveCompletePricing,
       costsAreRed: costsAreRed,
       shouldTrigger: allSectionsHaveCompletePricing && costsAreRed,
@@ -2021,6 +2026,7 @@ export default function Dashboard() {
 
     // Debug TP1 sections
     const serviceSections = sections.filter(s => s.defectType === 'service');
+    console.log('TP1 configuration analysis:', {
       allSectionsConfigured: allSectionsHaveCompletePricing,
       costsAreRed: costsAreRed,
       shouldTrigger: allSectionsHaveCompletePricing && costsAreRed,
