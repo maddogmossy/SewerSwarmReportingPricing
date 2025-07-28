@@ -3063,12 +3063,7 @@ export default function PR2ConfigClean() {
                   <CardContent className="space-y-4">
                     {/* Row 1 with Add Button */}
                     <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-teal-800">Vehicle Travel</h4>
-                        <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white h-6 w-6 p-0">
-                          +
-                        </Button>
-                      </div>
+                      <h4 className="font-medium text-teal-800 mb-2">Vehicle Travel</h4>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <label className="text-xs text-teal-700">Vehicle Weight</label>
@@ -3080,11 +3075,16 @@ export default function PR2ConfigClean() {
                         </div>
                         <div>
                           <label className="text-xs text-teal-700">Cost per Mile</label>
-                          <Input
-                            type="text"
-                            placeholder="£45"
-                            className="border-teal-300"
-                          />
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="text"
+                              placeholder="£45"
+                              className="border-teal-300 flex-1"
+                            />
+                            <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white h-8 w-8 p-0 flex-shrink-0">
+                              +
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
