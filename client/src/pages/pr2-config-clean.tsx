@@ -2984,9 +2984,9 @@ export default function PR2ConfigClean() {
             </div>
 
             {/* MM4 and MM5 - Same Row Layout */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-3 gap-6">
               {/* MM4 - Section Calculator (Left) */}
-              <div className="relative">
+              <div className="relative col-span-2">
                 <DevLabel id="MM4" position="top-right" />
                 <Card className="bg-white border-2 border-gray-200">
                   <CardHeader>
