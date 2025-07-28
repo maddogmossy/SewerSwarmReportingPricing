@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench, Palette } from 'lucide-react';
+import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { TP1Template } from '@/components/TP1Template';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -2754,7 +2754,7 @@ export default function PR2ConfigClean() {
               </Card>
             </div>
 
-            {/* MM2 - Color Picker Section */}
+            {/* Color Picker Section - Restored old picker for all templates */}
             <div className="relative">
               <DevLabel id="MM2" position="top-right" />
               <Card className="bg-white border-2 border-gray-200">
@@ -2776,13 +2776,34 @@ export default function PR2ConfigClean() {
                       { name: 'Orange', value: '#F59E0B' },
                       { name: 'Teal', value: '#14B8A6' }
                     ].map((color) => (
-                      <div
+                      <button
                         key={color.name}
-                        className="w-12 h-12 rounded-lg border-2 border-gray-300 cursor-pointer hover:scale-105 transition-transform"
+                        className={`w-12 h-12 rounded-lg border-2 cursor-pointer hover:scale-105 transition-transform ${
+                          formData.categoryColor === color.value ? 'border-gray-800 ring-2 ring-gray-300' : 'border-gray-300'
+                        }`}
                         style={{ backgroundColor: color.value }}
+                        onClick={() => handleColorChange(color.value)}
                         title={color.name}
-                      />
+                      >
+                        {formData.categoryColor === color.value && (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-white text-xl">✓</span>
+                          </div>
+                        )}
+                      </button>
                     ))}
+                  </div>
+                  
+                  {/* Current color display */}
+                  <div className="mt-4 p-3 bg-gray-50 rounded-lg flex items-center gap-3">
+                    <div 
+                      className="w-8 h-8 rounded border border-gray-300"
+                      style={{ backgroundColor: formData.categoryColor }}
+                    ></div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Selected Color</p>
+                      <p className="text-xs text-gray-600">{formData.categoryColor}</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -3030,56 +3051,7 @@ export default function PR2ConfigClean() {
         </div>
         )}
 
-        {/* Color Picker Section - For P006a and P006 templates */}
-        {(getTemplateType(categoryId || '') === 'P006a' || getTemplateType(categoryId || '') === 'P006') && (
-        <Card className="mb-6 relative">
-          <DevLabel id="W007" position="top-right" />
-          <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center gap-2">
-              <Palette className="w-5 h-5" />
-              Color Picker Section
-            </CardTitle>
-            <p className="text-sm text-gray-600">
-              Select a color theme for this configuration category
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-6 gap-3">
-              {COLOR_OPTIONS.map((color) => (
-                <button
-                  key={color.hex}
-                  className={`w-16 h-16 rounded-lg border-2 transition-all duration-200 hover:scale-105 ${
-                    formData.categoryColor === color.hex 
-                      ? 'border-gray-800 ring-2 ring-gray-300' 
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  style={{ backgroundColor: color.hex }}
-                  onClick={() => handleColorChange(color.hex)}
-                  title={color.name}
-                >
-                  {formData.categoryColor === color.hex && (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-white text-xl">✓</span>
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-            
-            {/* Current color display */}
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg flex items-center gap-3">
-              <div 
-                className="w-8 h-8 rounded border border-gray-300"
-                style={{ backgroundColor: formData.categoryColor }}
-              ></div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">Selected Color</p>
-                <p className="text-xs text-gray-600">{formData.categoryColor}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        )}
+
 
         {/* Upper Level Pipe Size Configuration - For P006a and P006 templates */}
         {(getTemplateType(categoryId || '') === 'P006a' || getTemplateType(categoryId || '') === 'P006') && (
