@@ -1741,6 +1741,40 @@ export default function PR2ConfigClean() {
         // Set the form data directly without reset (fixes display issue)
         setFormData(newFormData);
         
+        // Load MM4/MM5 data from backend if it exists
+        if (config.mmData) {
+          console.log('🔄 Loading MM4/MM5 data from backend:', config.mmData);
+          
+          // Load MM4/MM5 data from pipe-size-specific storage or legacy format
+          if (config.mmData.mm4DataByPipeSize) {
+            setMm4DataByPipeSize(config.mmData.mm4DataByPipeSize);
+            console.log('✅ Loaded MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
+          } else if (config.mmData.mm4Rows) {
+            // Legacy format - store under current pipe size key
+            const currentKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+            setMm4DataByPipeSize({ [currentKey]: config.mmData.mm4Rows });
+            console.log('✅ Loaded MM4 legacy data for key:', currentKey, config.mmData.mm4Rows);
+          }
+          
+          if (config.mmData.mm5DataByPipeSize) {
+            setMm5DataByPipeSize(config.mmData.mm5DataByPipeSize);
+            console.log('✅ Loaded MM5 pipe-size data:', config.mmData.mm5DataByPipeSize);
+          } else if (config.mmData.mm5Rows) {
+            // Legacy format - store under current pipe size key
+            const currentKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+            setMm5DataByPipeSize({ [currentKey]: config.mmData.mm5Rows });
+            console.log('✅ Loaded MM5 legacy data for key:', currentKey, config.mmData.mm5Rows);
+          }
+          
+          // Load other MM data
+          if (config.mmData.mm3CustomPipeSizes) {
+            setCustomPipeSizes(config.mmData.mm3CustomPipeSizes);
+          }
+          if (config.mmData.mm2IdData) {
+            setSelectedIds(config.mmData.mm2IdData);
+          }
+        }
+        
         // Set single sector information
         const configSector = config.sector || sector;
         
