@@ -933,6 +933,36 @@ export default function PR2ConfigClean() {
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
 
+  // MM4 Row Management State
+  const [mm4Rows, setMm4Rows] = useState([
+    { id: 1, greenValue: '', purpleDebris: '', purpleLength: '' }
+  ]);
+
+  // MM4 Row Management Functions
+  const addMM4Row = () => {
+    setMm4Rows(prev => [
+      ...prev,
+      { 
+        id: prev.length + 1, 
+        greenValue: '', 
+        purpleDebris: '', 
+        purpleLength: '' 
+      }
+    ]);
+  };
+
+  const deleteMM4Row = (rowId: number) => {
+    if (mm4Rows.length > 1) { // Keep at least one row
+      setMm4Rows(prev => prev.filter(row => row.id !== rowId));
+    }
+  };
+
+  const updateMM4Row = (rowId: number, field: 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
+    setMm4Rows(prev => prev.map(row => 
+      row.id === rowId ? { ...row, [field]: value } : row
+    ));
+  };
+
   // Configuration loading moved above getCategoryName function
 
   // Pipe Size Selection State - Upper Level Configuration
@@ -3009,44 +3039,86 @@ export default function PR2ConfigClean() {
                         </div>
                       </div>
 
-                      {/* Green - No Per Shift (1 column) */}
+                      {/* Green - No Per Shift (1 column) - Dynamic Rows */}
                       <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
                         <h4 className="font-medium text-green-800 mb-2">No Per Shift</h4>
-                        <div>
-                          <label className="text-xs text-green-700">Qty Per Shift</label>
-                          <Input
-                            type="text"
-                            placeholder="Enter quantity"
-                            className="border-green-300"
-                          />
+                        <div className="space-y-2">
+                          {mm4Rows.map((row, index) => (
+                            <div key={row.id} className="flex items-center gap-2">
+                              <div className="flex-1">
+                                <label className="text-xs text-green-700">Qty Per Shift</label>
+                                <Input
+                                  type="text"
+                                  placeholder="Enter quantity"
+                                  className="border-green-300"
+                                  value={row.greenValue}
+                                  onChange={(e) => updateMM4Row(row.id, 'greenValue', e.target.value)}
+                                />
+                              </div>
+                              {index > 0 && (
+                                <Button 
+                                  size="sm" 
+                                  variant="destructive"
+                                  className="h-8 w-8 p-0 flex-shrink-0"
+                                  onClick={() => deleteMM4Row(row.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       </div>
 
-                      {/* Purple - Range Configuration (2 columns - wider for two inputs) */}
+                      {/* Purple - Range Configuration (2 columns - wider for two inputs) - Dynamic Rows */}
                       <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
                         <h4 className="font-medium text-purple-800 mb-2">Range Configuration</h4>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <label className="text-xs text-purple-700">Debris %</label>
-                            <Input
-                              type="text"
-                              placeholder="0-15"
-                              className="border-purple-300"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs text-purple-700">Length</label>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                type="text"
-                                placeholder="0-35"
-                                className="border-purple-300 flex-1"
-                              />
-                              <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0">
-                                +
-                              </Button>
+                        <div className="space-y-2">
+                          {mm4Rows.map((row, index) => (
+                            <div key={row.id} className="grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="text-xs text-purple-700">Debris %</label>
+                                <Input
+                                  type="text"
+                                  placeholder="0-15"
+                                  className="border-purple-300"
+                                  value={row.purpleDebris}
+                                  onChange={(e) => updateMM4Row(row.id, 'purpleDebris', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-xs text-purple-700">Length</label>
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    type="text"
+                                    placeholder="0-35"
+                                    className="border-purple-300 flex-1"
+                                    value={row.purpleLength}
+                                    onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
+                                  />
+                                  {index === mm4Rows.length - 1 && (
+                                    <Button 
+                                      size="sm" 
+                                      className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
+                                      onClick={addMM4Row}
+                                    >
+                                      +
+                                    </Button>
+                                  )}
+                                  {index > 0 && (
+                                    <Button 
+                                      size="sm" 
+                                      variant="destructive"
+                                      className="h-8 w-8 p-0 flex-shrink-0"
+                                      onClick={() => deleteMM4Row(row.id)}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
+                          ))}
                         </div>
                       </div>
                     </div>
