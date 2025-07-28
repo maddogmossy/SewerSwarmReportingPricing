@@ -1109,7 +1109,15 @@ export default function PR2ConfigClean() {
     // CRITICAL: Mark that user has made changes to prevent database override
     setHasUserChanges(true);
     setMm2ColorLocked(true); // Lock color to prevent MM1 and config loading from overriding
-    console.log('🔒 hasUserChanges set to TRUE, MM2 color locked');
+    
+    // Persist MM2 lock state across page reloads
+    try {
+      localStorage.setItem('mm2ColorLocked', 'true');
+    } catch (e) {
+      console.error('Failed to save MM2 lock state:', e);
+    }
+    
+    console.log('🔒 hasUserChanges set to TRUE, MM2 color locked and persisted');
     
     setSelectedIds(prev => {
       const updated = isSelected 
@@ -1599,7 +1607,14 @@ export default function PR2ConfigClean() {
   
   // Track if user has made changes to prevent automatic form overwrite
   const [hasUserChanges, setHasUserChanges] = useState(false);
-  const [mm2ColorLocked, setMm2ColorLocked] = useState(false); // Prevent MM1 from overriding MM2 colors
+  // Initialize MM2 color lock from localStorage to persist across reloads
+  const [mm2ColorLocked, setMm2ColorLocked] = useState(() => {
+    try {
+      return localStorage.getItem('mm2ColorLocked') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
   
   // Removed hasInitialLoad - simplified logic to never overwrite user changes
   
@@ -1609,6 +1624,11 @@ export default function PR2ConfigClean() {
     // Reset flags when switching to different config
     setHasUserChanges(false);
     setMm2ColorLocked(false); // Reset MM2 color lock when switching configurations
+    try {
+      localStorage.removeItem('mm2ColorLocked');
+    } catch (e) {
+      console.error('Failed to clear MM2 lock state:', e);
+    }
     
     // CLEAR PR1 CACHE CONTAMINATION for robotic-cutting configurations
     if (categoryId === 'robotic-cutting') {
@@ -2969,7 +2989,10 @@ export default function PR2ConfigClean() {
                               ? `border-gray-800 ${idOption.bgColor} ring-2 ring-gray-300` 
                               : 'border-gray-300 hover:border-gray-400'
                           }`}
-                          onClick={() => handleMM2IdChange(idOption.id, !isSelected)}
+                          onClick={() => {
+                            console.log('🎯 MM1 ID CARD CLICKED:', { id: idOption.id, willSelect: !isSelected });
+                            handleMM2IdChange(idOption.id, !isSelected);
+                          }}
                         >
                           <CardContent className="p-4 text-center relative">
                             <div className={`mx-auto w-8 h-8 mb-3 flex items-center justify-center rounded-lg ${
