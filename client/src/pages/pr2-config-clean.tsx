@@ -1007,17 +1007,11 @@ export default function PR2ConfigClean() {
     return parseInt(`${pipeSizeNum}${timestamp.toString().slice(-4)}`);
   };
 
-  // Handle pipe size selection - single selection only
+  // Handle pipe size selection - single selection only (no toggle off)
   const handlePipeSizeSelect = (pipeSize: string) => {
-    if (selectedPipeSizeForMM4 === pipeSize) {
-      // Deselect if clicking the same pipe size
-      setSelectedPipeSizeForMM4('');
-      setSelectedPipeSizeId(0);
-    } else {
-      // Select new pipe size and generate ID
-      setSelectedPipeSizeForMM4(pipeSize);
-      setSelectedPipeSizeId(generatePipeSizeId(pipeSize));
-    }
+    // Always select the clicked pipe size (no deselection)
+    setSelectedPipeSizeForMM4(pipeSize);
+    setSelectedPipeSizeId(generatePipeSizeId(pipeSize));
   };
 
   // Configuration loading moved above getCategoryName function
@@ -3071,10 +3065,10 @@ export default function PR2ConfigClean() {
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setCustomPipeSizes(prev => prev.filter(s => s !== size));
-                                      // Also clear selection if this was the selected size
+                                      // If removing the currently selected size, default back to 100mm
                                       if (selectedPipeSizeForMM4 === size) {
-                                        setSelectedPipeSizeForMM4('');
-                                        setSelectedPipeSizeId(0);
+                                        setSelectedPipeSizeForMM4('100');
+                                        setSelectedPipeSizeId(generatePipeSizeId('100'));
                                       }
                                     }}
                                     className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-700 z-10"
