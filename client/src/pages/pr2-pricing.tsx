@@ -261,8 +261,6 @@ export default function PR2Pricing() {
 
   // Handle navigation to category-specific pages
   const handleCategoryNavigation = (categoryId: string) => {
-    console.log('🔍 Navigation triggered for categoryId:', categoryId);
-    console.log('📍 Current sector:', sector);
     
     // Wait for configurations to load before navigation
     if (pr2Loading) {
