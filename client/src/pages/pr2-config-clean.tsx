@@ -2852,7 +2852,7 @@ export default function PR2ConfigClean() {
           <Card className="mb-6 relative">
             <DevLabel id="W020" position="top-right" />
             <CardHeader className="pb-3">
-              <CardTitle className="text-gray-900 text-lg flex items-center gap-2">
+              <CardTitle className="text-black text-lg flex items-center gap-2">
                 <Wrench className="w-5 h-5" />
                 Pipe Size Configuration
               </CardTitle>
@@ -3002,26 +3002,28 @@ export default function PR2ConfigClean() {
             <Card className="relative">
               <DevLabel id="W003" position="top-right" />
               <CardHeader className="pb-3">
-                <CardTitle className="text-teal-700 text-lg flex items-center gap-2">
+                <CardTitle className="text-black text-lg flex items-center gap-2">
                   <Truck className="w-5 h-5" />
-                  W003 - Vehicle Travel Rates
+                  Vehicle Travel Rates
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="bg-teal-100 border border-teal-300 rounded-lg">
                 <div className="space-y-4">
                   {formData.vehicleTravelRates.map((vehicle, index) => (
-                    <div key={vehicle.id} className="p-3 border rounded-lg">
-                      <div className="flex items-center gap-4 mb-2">
-                        <Label className="font-medium">{vehicle.vehicleType} Vehicle</Label>
-                        <Checkbox
+                    <div key={vehicle.id} className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
                           checked={vehicle.enabled}
-                          onCheckedChange={(checked) => updateVehicleOption(index, 'enabled', checked)}
+                          onChange={(e) => updateVehicleOption(index, 'enabled', e.target.checked)}
+                          className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                         />
+                        <span className="font-medium text-gray-900">{vehicle.vehicleType} Vehicle</span>
                       </div>
                       {vehicle.enabled && (
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <Label className="text-sm">Hourly Rate (£)</Label>
+                            <span className="block text-sm font-medium text-gray-700 mb-1">Hourly Rate (£)</span>
                             <Input
                               type="text"
                               value={vehicle.hourlyRate}
@@ -3030,12 +3032,12 @@ export default function PR2ConfigClean() {
                             />
                           </div>
                           <div>
-                            <Label className="text-sm">Number of Hours</Label>
+                            <span className="block text-sm font-medium text-gray-700 mb-1">Number of Hours</span>
                             <Input
                               type="text"
                               value={vehicle.numberOfHours}
                               onChange={(e) => updateVehicleOption(index, 'numberOfHours', e.target.value)}
-                              placeholder="Hours"
+                              placeholder="2"
                             />
                           </div>
                         </div>
