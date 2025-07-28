@@ -264,14 +264,12 @@ export default function PR2Pricing() {
     
     // Wait for configurations to load before navigation
     if (pr2Loading) {
-      console.log('⏳ PR2 configurations still loading, waiting...');
       return;
     }
     
     // Check for P006 templates first (HIGHEST PRIORITY)
     let existingConfig = pr2Configurations.find(config => {
       if (categoryId === 'cctv' && config.categoryId?.startsWith('P006-CCTV-')) {
-        console.log(`🎯 NAVIGATION P006 PRIORITY: Found F${config.id} for CCTV (${config.categoryId})`);
         return true;
       }
       // Add other P006 template checks here if needed
@@ -406,12 +404,10 @@ export default function PR2Pricing() {
             variant="outline"
             size="sm"
             onClick={() => {
-              console.log(`Navigating to sector: ${s.id}`);
               // Update sector state and URL simultaneously
               setSector(s.id);
               const newUrl = `/pr2-pricing?sector=${s.id}`;
               window.history.pushState({}, '', newUrl);
-              console.log(`URL updated to: ${newUrl}`);
             }}
             className={`flex items-center gap-2 ${s.color} hover:bg-gray-100`}
           >
@@ -642,7 +638,6 @@ export default function PR2Pricing() {
                                   className="h-6 w-6 p-0 hover:bg-blue-100 hover:text-blue-600"
                                   onClick={(e) => {
                                     e.stopPropagation(); // Prevent card click navigation
-                                    console.log(`🔧 Edit button clicked for Config ${existingConfiguration.id}`);
                                     handleCategoryNavigation(category.id);
                                   }}
                                 >

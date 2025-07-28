@@ -1095,17 +1095,7 @@ export default function Dashboard() {
           const needsStructuralRepair = requiresStructuralRepair(section.defects || '');
 
           // Debug routing logic for split sections
-          if ([21, 22, 23].includes(section.itemNo) || section.itemNo.toString().includes('a')) {
-            console.log(`🔍 Item ${section.itemNo} Split Section Debug:`, {
-              defectType: section.defectType,
-              isServiceDefect,
-              isStructuralDefect,
-              needsCleaning,
-              needsStructuralRepair,
-              willRouteToTP1: isServiceDefect,
-              willRouteToTP2: isStructuralDefect
-            });
-          }
+          // Routing logic for sections 21-23 and subsections
 
           // MSCC5 RULE: Route based on INDIVIDUAL section defectType, not cross-section checking
           // Service defects route to TP1, structural defects route to TP2
@@ -1206,7 +1196,6 @@ export default function Dashboard() {
             
             if (requiresRoboticCutting) {
               // Route to P4 robotic cutting page instead of TP2 patching
-              console.log(`🤖 Item ${section.itemNo}: ROBOTIC CUTTING DETECTED - should route to P4`);
               
               return (
                 <div 
@@ -1453,7 +1442,6 @@ export default function Dashboard() {
             }
           } else {
             // Show warning triangle when no pricing is configured
-            console.log(`❌ Item ${section.itemNo}: No cost calculation returned - costCalculation:`, costCalculation);
             if (needsCleaning && !needsStructuralRepair) {
               return (
                 <div 
@@ -1822,7 +1810,6 @@ export default function Dashboard() {
 
   // Validation effect - runs after sections are loaded
   useEffect(() => {
-    console.log('🔧 VALIDATION EFFECT RUNNING:', {
       hasAuthenticData,
       rawSectionDataLength: rawSectionData?.length || 0,
       pr2ConfigurationsLength: pr2Configurations?.length || 0,
@@ -1856,7 +1843,6 @@ export default function Dashboard() {
         
         setValidationResult(result);
         
-        console.log('🔧 CALLING TP2 CONFIG CHECK at:', new Date().toLocaleTimeString(), 'with data:', {
           sectionsLength: rawSectionData.length,
           configsLength: pr2Configurations.length,
           sampleSection: rawSectionData[0]?.itemNo,
@@ -1865,14 +1851,12 @@ export default function Dashboard() {
         
         try {
           checkTP2ConfigurationIssues(rawSectionData, pr2Configurations);
-          console.log('🔧 TP2 CONFIG CHECK COMPLETED');
         } catch (error) {
           console.error('🔧 TP2 CONFIG CHECK ERROR:', error);
         }
 
         try {
           checkTP1ConfigurationIssues(rawSectionData, pr2Configurations);
-          console.log('🔧 TP1 CONFIG CHECK COMPLETED');
         } catch (error) {
           console.error('🔧 TP1 CONFIG CHECK ERROR:', error);
         }
@@ -1884,14 +1868,11 @@ export default function Dashboard() {
 
   // Function to detect TP2 configuration issues and trigger validation warnings
   const checkTP2ConfigurationIssues = (sections: any[], configurations: any[]) => {
-    console.log('🔧 TP2 CONFIG CHECK STARTED - sections:', sections.length, 'configs:', configurations.length);
 
     // Find ALL TP2 patching configurations (should be IDs 153, 156, 157)
     const tp2Configs = configurations.filter(config => config.categoryId === 'patching');
-    console.log('🔧 TP2 CONFIGS FOUND:', tp2Configs.length);
 
     if (tp2Configs.length === 0) {
-      console.log('🔧 NO TP2 CONFIGS - RETURNING');
       return; // No TP2 configurations found
     }
 
@@ -1928,14 +1909,12 @@ export default function Dashboard() {
     // Debug all sections first
     const allStructuralSections = sections.filter(s => s.defectType === 'structural');
     
-    console.log('🔧 ALL STRUCTURAL SECTIONS:', allStructuralSections.map(s => ({
       itemNo: s.itemNo,
       defectType: s.defectType,
       recommendations: s.recommendations?.substring(0, 50) + '...',
       costCalc: calculateAutoCost(s)
     })));
     
-    console.log('🔧 TP2 WARNING CHECK:', {
       totalSections: sections.length,
       structuralSections: allStructuralSections.length,
       serviceSections: sections.filter(s => s.defectType === 'service').length,
@@ -1957,7 +1936,6 @@ export default function Dashboard() {
       return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured'].includes(costCalc.status);
     });
     
-    console.log('🔧 TP2 MQW CHECK:', {
       allSectionsConfigured: allSectionsHaveCompletePricing,
       costsAreRed: costsAreRed,
       shouldTrigger: allSectionsHaveCompletePricing && costsAreRed,
@@ -1979,7 +1957,6 @@ export default function Dashboard() {
         const primaryTP2Config = tp2Configs[0]; // Use first available TP2 config
         
         if (primaryTP2Config && !hasDB15TravelRates(primaryTP2Config)) {
-          console.log('🔧 TP2 CONFIG MISSING DB15 TRAVEL RATES');
           setShowTravelConfigDialog({
             show: true,
             configType: 'TP2',
@@ -2004,8 +1981,6 @@ export default function Dashboard() {
           const minQuantity = minQuantityOption?.value ? parseInt(minQuantityOption.value) : 0;
           const travelCost = calculateTravelCost(primaryTP2Config);
           
-          console.log('🔧 TP2 WARNING TRIGGERED: All pricing complete AND costs are red');
-          console.log('🔧 TP2 TRAVEL COST INTEGRATED:', travelCost);
           
           // Show TP2 minimum quantity warning popup with travel costs
           setShowTP2DistributionDialog({
@@ -2024,16 +1999,13 @@ export default function Dashboard() {
 
   // Function to detect TP1 configuration issues and trigger validation warnings  
   const checkTP1ConfigurationIssues = (sections: any[], configurations: any[]) => {
-    console.log('🔧 TP1 CONFIG CHECK STARTED - sections:', sections.length, 'configs:', configurations.length);
 
     // Find TP1 cleaning configurations for current sector
     const tp1Configs = configurations.filter(config => 
       config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
     );
-    console.log('🔧 TP1 CONFIGS FOUND:', tp1Configs.length);
 
     if (tp1Configs.length === 0) {
-      console.log('🔧 NO TP1 CONFIGS - RETURNING');
       return; // No TP1 configurations found
     }
 
@@ -2049,7 +2021,6 @@ export default function Dashboard() {
 
     // Debug TP1 sections
     const serviceSections = sections.filter(s => s.defectType === 'service');
-    console.log('🔧 TP1 MQW CHECK:', {
       allSectionsConfigured: allSectionsHaveCompletePricing,
       costsAreRed: costsAreRed,
       shouldTrigger: allSectionsHaveCompletePricing && costsAreRed,
@@ -2067,7 +2038,6 @@ export default function Dashboard() {
       if (tp1Config) {
         // Check for DB15 travel configuration
         if (!hasDB15TravelRates(tp1Config)) {
-          console.log('🔧 TP1 CONFIG MISSING DB15 TRAVEL RATES');
           setShowTravelConfigDialog({
             show: true,
             configType: 'TP1',
@@ -2083,8 +2053,6 @@ export default function Dashboard() {
         const minQuantity = minQuantityOption?.value ? parseInt(minQuantityOption.value) : 0;
         const travelCost = calculateTravelCost(tp1Config);
         
-        console.log('🔧 TP1 WARNING TRIGGERED: All pricing complete AND costs are red');
-        console.log('🔧 TP1 TRAVEL COST INTEGRATED:', travelCost);
         
         // Show TP1 minimum quantity warning popup with travel costs
         setShowTP1DistributionDialog({
@@ -2318,10 +2286,8 @@ export default function Dashboard() {
       config.sector === currentSector.id
     );
     
-    console.log(`🔍 Item ${section.itemNo}: TP1 Config found:`, tp1Config ? `ID ${tp1Config.id}` : 'None');
     
     if (!tp1Config) {
-      console.log(`❌ Item ${section.itemNo}: No TP1 configuration found for sector ${currentSector.id}`);
       return {
         cost: 0,
         currency: '£',
@@ -2334,11 +2300,8 @@ export default function Dashboard() {
       };
     }
     
-    console.log(`🔍 Item ${section.itemNo}: TP1 Config validation: pricingOptions length=${tp1Config.pricingOptions?.length}, quantityOptions length=${tp1Config.quantityOptions?.length}`);
     
     // Skip isConfigurationProperlyConfigured check for now - let's debug the actual values
-    console.log(`🔍 Item ${section.itemNo}: TP1 pricingOptions:`, tp1Config.pricingOptions);
-    console.log(`🔍 Item ${section.itemNo}: TP1 quantityOptions:`, tp1Config.quantityOptions);
     
     // Extract day rate from TP1 configuration
     const dayRateOption = tp1Config.pricingOptions?.find((option: any) => 
@@ -2393,20 +2356,15 @@ export default function Dashboard() {
         (option.label?.toLowerCase().includes('runs 2') || option.label?.toLowerCase().includes('no 2')) && 
         option.value && option.value.trim() !== ''
       );
-      console.log(`🔧 Item ${section.itemNo}: Using "Runs 2" value (${runsOption?.value}) due to length ${section.totalLength}m > Range 1 limit`);
     } else {
       // Use standard "Runs per Shift" value
       runsOption = tp1Config.quantityOptions?.find((option: any) => 
         option.label?.toLowerCase().includes('runs per shift') && option.value && option.value.trim() !== ''
       );
-      console.log(`🔧 Item ${section.itemNo}: Using standard "Runs per Shift" value (${runsOption?.value}) for length ${section.totalLength}m`);
     }
     
-    console.log(`🔍 Item ${section.itemNo}: TP1 dayRateOption:`, dayRateOption);
-    console.log(`🔍 Item ${section.itemNo}: TP1 runsOption (${no2RuleResult.useNo2 ? 'Runs 2' : 'Standard'}):`, runsOption);
     
     if (!dayRateOption || !runsOption) {
-      console.log(`❌ Item ${section.itemNo}: TP1 missing essential values - dayRate:${!!dayRateOption}, runs:${!!runsOption}`);
       return {
         cost: 0,
         currency: '£',
@@ -2423,10 +2381,8 @@ export default function Dashboard() {
     const dayRate = parseFloat(dayRateOption.value) || 0;
     const runsPerShift = parseFloat(runsOption.value) || 0;
     
-    console.log(`💰 Item ${section.itemNo}: TP1 calculation: £${dayRate} ÷ ${runsPerShift} runs`);
     
     if (dayRate === 0 || runsPerShift === 0) {
-      console.log(`❌ Item ${section.itemNo}: TP1 invalid values - dayRate:${dayRate}, runsPerShift:${runsPerShift}`);
       return {
         cost: 0,
         currency: '£',
@@ -2445,10 +2401,6 @@ export default function Dashboard() {
       // Debug logging to understand why range validation fails
       const debugLength = parseFloat(section.totalLength || '0');
       const debugPipeSize = parseInt(section.pipeSize?.replace(/[^\d]/g, '') || '0');
-      console.log(`❌ Item ${section.itemNo}: Section fails PR2 range validation:`);
-      console.log(`   - Raw length: "${section.totalLength}" → Parsed: ${debugLength}`);
-      console.log(`   - Raw pipe size: "${section.pipeSize}" → Parsed: ${debugPipeSize}`);
-      console.log(`   - Config ranges:`, tp1Config?.rangeOptions?.map(r => `${r.label}: ${r.rangeStart}-${r.rangeEnd} (enabled: ${r.enabled})`));
       
       return {
         cost: 0,
@@ -2472,7 +2424,6 @@ export default function Dashboard() {
       ? `TP1 cleaning: £${baseCostPerSection.toFixed(2)} + £${travelAdjustment.toFixed(2)} travel = £${finalCostPerSection.toFixed(2)}`
       : `TP1 cleaning: £${dayRate} ÷ ${runsPerShift} runs = £${baseCostPerSection.toFixed(2)}`;
     
-    console.log(`✅ Item ${section.itemNo}: TP1 cost calculated: £${finalCostPerSection.toFixed(2)} (${travelAdjustment > 0 ? 'with travel adjustment' : 'passes range validation'})`);
     
     return {
       cost: finalCostPerSection,
@@ -2651,16 +2602,11 @@ export default function Dashboard() {
     
     // CRITICAL FIX: Check for robotic cutting (ID4) requirements FIRST before any other routing
     const recommendations = section.recommendations || '';
-    console.log(`🤖 Item ${section.itemNo}: RECOMMENDATIONS DEBUG: "${recommendations}"`);
-    console.log(`🤖 Item ${section.itemNo}: ROBOTIC CUTTING CHECK: ${recommendations.toLowerCase().includes('robotic cutting')}`);
-    console.log(`🤖 Item ${section.itemNo}: ID4 CHECK: ${recommendations.toLowerCase().includes('id4')}`);
     
     if (recommendations.toLowerCase().includes('robotic cutting') || recommendations.toLowerCase().includes('id4')) {
-      console.log(`🤖 Item ${section.itemNo}: ROBOTIC CUTTING DETECTED - routing to TP3 ID4 (ID 163)`);
       
       // Safety check: Ensure pr2Configurations exists before accessing
       if (!pr2Configurations || !Array.isArray(pr2Configurations)) {
-        console.log(`❌ Item ${section.itemNo}: pr2Configurations not available for ID4 check`);
         return {
           cost: 0,
           currency: '£',
@@ -2679,7 +2625,6 @@ export default function Dashboard() {
       
       if (!id4Config) {
         // ID4 configuration doesn't exist - return £0.00
-        console.log(`💰 Item ${section.itemNo}: Requires ID4 robotic cutting but no ID4 configuration found - showing £0.00`);
         return {
           cost: 0,
           currency: '£',
@@ -2693,7 +2638,6 @@ export default function Dashboard() {
       }
       
       // ID4 config exists - check if it has configured pricing options
-      console.log(`💰 Item ${section.itemNo}: Using ID4 robotic cutting configuration (ID ${id4Config.id})`);
       
       const firstCutOption = id4Config.pricingOptions?.find((option: any) => 
         option.label?.toLowerCase().includes('first cut') && option.value && option.value.trim() !== ''
@@ -2704,7 +2648,6 @@ export default function Dashboard() {
       
       if (!firstCutOption && !perCutOption) {
         // ID4 config exists but has no pricing values - show £0.00
-        console.log(`💰 Item ${section.itemNo}: ID4 configuration exists but has no pricing values - showing £0.00`);
         return {
           cost: 0,
           currency: '£',
@@ -2724,7 +2667,6 @@ export default function Dashboard() {
       // Simple calculation: first cut + per cut (assuming 1 additional cut)
       const totalCost = firstCutCost + perCutCost;
       
-      console.log(`💰 Item ${section.itemNo}: ID4 robotic cutting cost: £${firstCutCost} (first) + £${perCutCost} (per cut) = £${totalCost}`);
       
       return {
         cost: totalCost,
@@ -3696,7 +3638,6 @@ export default function Dashboard() {
     // DB8 GREEN WINDOW LOGIC: Check if section count meets or exceeds DB8 quantity threshold
     const meetsMinimum = sectionCount >= minQuantity;
     
-    console.log(`🔍 DB8 Logic Check: ${sectionCount} sections >= ${minQuantity} minimum = ${meetsMinimum}`);
     
     return meetsMinimum;
   };

@@ -23,8 +23,6 @@ export class HighwaysValidation {
     };
   } {
     
-    console.log("🛣️ Highways / HADDMS Validation");
-    console.log("=" .repeat(50));
     
     // 1. Check highways-specific standards files
     const requiredFiles = [
@@ -44,7 +42,6 @@ export class HighwaysValidation {
         console.warn(`❌ ${file} is missing`);
         missingFiles.push(file);
       } else {
-        console.log(`✅ ${file} loaded`);
       }
     });
     
@@ -77,9 +74,6 @@ export class HighwaysValidation {
     
     const status = issues.length === 0 ? 'PASS' : 'FAIL';
     
-    console.log(`\n📊 Highways Validation Status: ${status}`);
-    console.log(`Issues: ${issues.length}`);
-    console.log(`Recommendations: ${recommendations.length}`);
     
     return {
       filesLoaded,

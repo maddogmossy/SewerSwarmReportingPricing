@@ -57,7 +57,6 @@ function enhanceObservationWithRemark(observation: string): string {
 
 // Format observation text with defect codes prefixed for MSCC5 classification
 async function formatObservationText(observations: string[], sector: string = 'utilities'): Promise<string> {
-  console.log(`🔧 Formatting ${observations.length} observations with defect codes for MSCC5 classification`);
   
   // STEP 1: Check for belly conditions requiring excavation using MSCC5 classifier
   const { MSCC5Classifier } = await import('./mscc5-classifier');
@@ -72,17 +71,14 @@ async function formatObservationText(observations: string[], sector: string = 'u
                         obs.includes('Finish node') || obs.includes('Start node');
     
     if (isFinishNode) {
-      console.log(`🔧 Removing finish node observation: ${obs} (not relevant to pipe defects)`);
       return false;
     }
     
     if (isWaterLevel) {
       // Only keep water level observations if they are part of a belly condition requiring excavation
       if (bellyAnalysis.hasBelly && bellyAnalysis.adoptionFail) {
-        console.log(`🔧 Keeping water level observation: ${obs} (belly condition requires excavation)`);
         return true;
       } else {
-        console.log(`🔧 Removing water level observation: ${obs} (no excavation required)`);
         return false;
       }
     }
@@ -90,10 +86,8 @@ async function formatObservationText(observations: string[], sector: string = 'u
     return true; // Keep all other observations
   });
   
-  console.log(`🔧 After belly-based WL filtering: ${preFiltered.length} observations remain`);
   
   if (preFiltered.length === 0) {
-    console.log(`🔧 No meaningful observations after filtering`);
     return '';
   }
 
@@ -111,7 +105,6 @@ async function formatObservationText(observations: string[], sector: string = 'u
       } else {
         processedObservations.push(obs);
       }
-      console.log(`🔧 Added defect code prefix: ${code} to observation`);
     } else {
       // Try to identify defect type from content and prefix appropriate code
       const obsLower = obs.toLowerCase();
@@ -137,7 +130,6 @@ async function formatObservationText(observations: string[], sector: string = 'u
       
       if (prefixCode) {
         processedObservations.push(`${prefixCode} ${obs}`);
-        console.log(`🔧 Inferred and added defect code: ${prefixCode} to observation`);
       } else {
         processedObservations.push(obs);
       }
@@ -145,7 +137,6 @@ async function formatObservationText(observations: string[], sector: string = 'u
   }
   
   const result = processedObservations.join('. ');
-  console.log(`🔧 Final formatted observation text with defect codes: ${result.substring(0, 100)}...`);
   return result;
 }
 
@@ -170,7 +161,6 @@ function extractAuthenticValue(record: any, fieldNames: string[]): string | null
 
 // Process authentic Wincan database for sector-specific infrastructure analysis
 export async function processWincanDatabase(db3FilePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
-  console.log(`🔒 AUTHENTIC DATABASE EXTRACTION: Reading ${db3FilePath} for ${sector} sector`);
   
   const sqlite3 = (await import('sqlite3')).default;
   const db = new sqlite3.Database(db3FilePath);
@@ -194,7 +184,6 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
         return;
       }
       
-      console.log(`📊 Found ${sectionRecords.length} section records in database`);
       
       // Get observations for each section (exclude finish node codes)
       const observationQuery = `
@@ -213,17 +202,14 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
           return;
         }
         
-        console.log(`📊 Found ${observationRecords.length} observation records`);
         
         // Get authentic severity grades from SECSTAT table
         const secstatQuery = `SELECT * FROM SECSTAT`;
         
         db.all(secstatQuery, [], async (secErr: any, secstatRecords: any[]) => {
           if (secErr) {
-            console.log('⚠️ No SECSTAT table found, using MSCC5 classification fallback');
             secstatRecords = [];
           } else {
-            console.log(`📊 Found ${secstatRecords.length} SECSTAT severity grade records`);
           }
           
           db.close();
@@ -280,7 +266,6 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             const inspectionDate = extractAuthenticValue(record, ['OBJ_TimeStamp', 'TimeStamp', 'Date']) || '2024-01-01';
             const inspectionTime = '09:00:00';
             
-            console.log(`📝 Processing Section ${itemCounter}: ${startMH} → ${finishMH} (${pipeSize}mm, ${totalLength}m)`);
             
             // Format observations with defect codes
             const defectText = observations.length > 0 ? await formatObservationText(observations, sector) : 'No service or structural defect found';
@@ -292,7 +277,6 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             let defectType = 'service';
             
             if (authenticGrades) {
-              console.log(`✅ Using authentic SECSTAT grades: Structural=${authenticGrades.structural}, Service=${authenticGrades.service}`);
               
               // Use higher grade as primary severity
               severityGrade = Math.max(authenticGrades.structural, authenticGrades.service);
@@ -308,7 +292,6 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
                 }
               }
             } else if (defectText && defectText !== 'No service or structural defect found') {
-              console.log(`⚠️ No SECSTAT grades found, using MSCC5 classification`);
               const { MSCC5Classifier } = await import('./mscc5-classifier');
               const classification = await MSCC5Classifier.classifyObservation(defectText, sector);
               
@@ -342,25 +325,20 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
               // Apply multi-defect splitting logic if defects exist
               if (defectText && defectText !== 'No service or structural defect found') {
-                console.log(`🔍 Checking Section ${authenticItemNo} for multi-defect splitting`);
                 const { MSCC5Classifier } = await import('./mscc5-classifier');
                 const splitSections = MSCC5Classifier.splitMultiDefectSection(defectText, authenticItemNo, sectionData);
                 
                 for (const splitSection of splitSections) {
                   authenticSections.push(splitSection);
                   const displayNo = splitSection.letterSuffix ? `${splitSection.itemNo}${splitSection.letterSuffix}` : splitSection.itemNo;
-                  console.log(`✅ Added authentic section: ${displayNo} (${splitSection.defectType})`);
                 }
               } else {
                 authenticSections.push(sectionData);
-                console.log("✅ Added authentic section:", sectionData.itemNo);
               }
             } else {
-              console.log("⚠️ Skipping section with missing manhole data");
             }
           }
           
-          console.log(`🔒 LOCKDOWN COMPLETE: Extracted ${authenticSections.length} authentic sections`);
           resolve(authenticSections);
         });
       });
@@ -370,16 +348,13 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
 
 // Store authentic sections in database with comprehensive duplicate prevention
 export async function storeWincanSections(sections: WincanSectionData[], uploadId: number): Promise<void> {
-  console.log(`🔒 STORING ${sections.length} AUTHENTIC SECTIONS IN DATABASE`);
   
   // First, clear any existing sections for this upload to prevent accumulation
   try {
     const deletedSections = await db.delete(sectionInspections)
       .where(eq(sectionInspections.fileUploadId, uploadId))
       .returning();
-    console.log(`🗑️ Cleared ${deletedSections.length} existing sections for upload ${uploadId}`);
   } catch (error) {
-    console.log(`⚠️ No existing sections to clear: ${error}`);
   }
   
   // Track processed sections to prevent duplicates within this batch
@@ -391,7 +366,6 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
     
     // Skip if we've already processed this unique combination
     if (processedSections.has(uniqueKey)) {
-      console.log(`⚠️ Skipping duplicate section ${uniqueKey} within batch`);
       continue;
     }
     
@@ -423,11 +397,9 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         .values(insertData);
       
       processedSections.add(uniqueKey);
-      console.log(`✅ Stored/updated authentic section ${uniqueKey}`);
     } catch (error) {
       console.error(`❌ Error storing section ${section.itemNo}:`, error);
     }
   }
   
-  console.log(`🔒 LOCKDOWN COMPLETE: ${processedSections.size} unique authentic sections stored`);
 }

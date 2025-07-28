@@ -23,8 +23,6 @@ export class InsuranceValidation {
     };
   } {
     
-    console.log("🛡️ Insurance / Loss Adjusting Validation");
-    console.log("=" .repeat(50));
     
     // 1. Check insurance-specific standards files
     const requiredFiles = [
@@ -45,7 +43,6 @@ export class InsuranceValidation {
         console.warn(`❌ ${file} is missing`);
         missingFiles.push(file);
       } else {
-        console.log(`✅ ${file} loaded`);
       }
     });
     
@@ -78,9 +75,6 @@ export class InsuranceValidation {
     
     const status = issues.length === 0 ? 'PASS' : 'FAIL';
     
-    console.log(`\n📊 Insurance Validation Status: ${status}`);
-    console.log(`Issues: ${issues.length}`);
-    console.log(`Recommendations: ${recommendations.length}`);
     
     return {
       filesLoaded,

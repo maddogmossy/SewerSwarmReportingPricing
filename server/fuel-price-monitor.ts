@@ -50,7 +50,6 @@ export class FuelPriceMonitor {
       }, 7 * 24 * 60 * 60 * 1000);
     }, timeUntilUpdate);
 
-    console.log(`🛣️ Fuel price monitoring scheduled. Next update: ${nextTuesday.toLocaleString()}`);
   }
 
   // Fetch current UK fuel prices from multiple sources
@@ -59,7 +58,6 @@ export class FuelPriceMonitor {
       // Primary source: Try simulated government data (in production, use GOV.UK API)
       const currentPrices = await this.getSimulatedGovUKPrices();
       
-      console.log('📊 Fetched UK fuel prices:', currentPrices);
       return currentPrices;
     } catch (error) {
       console.error('❌ Error fetching UK fuel prices:', error);
@@ -86,11 +84,9 @@ export class FuelPriceMonitor {
   // Update fuel prices in database and propagate to vehicle travel rates
   public async updateFuelPrices(): Promise<void> {
     try {
-      console.log('🔄 Starting weekly fuel price update...');
       
       const priceData = await this.fetchUKFuelPrices();
       if (!priceData) {
-        console.log('⚠️ No price data available, skipping update');
         return;
       }
 
@@ -118,7 +114,6 @@ export class FuelPriceMonitor {
       await this.updateVehicleTravelRates(priceData.diesel / 100); // Convert to pounds
 
       this.lastUpdate = new Date();
-      console.log(`✅ Fuel prices updated successfully. Diesel: ${priceData.diesel}p/L, Petrol: ${priceData.petrol}p/L`);
       
     } catch (error) {
       console.error('❌ Error updating fuel prices:', error);
@@ -150,7 +145,6 @@ export class FuelPriceMonitor {
         }
       }
 
-      console.log(`📊 Updated ${vehicleRates.length} vehicle travel rate entries with new fuel prices`);
     } catch (error) {
       console.error('❌ Error updating vehicle travel rates:', error);
     }
@@ -214,6 +208,5 @@ export class FuelPriceMonitor {
 // Initialize fuel price monitoring on server start
 export function initializeFuelPriceMonitoring() {
   const monitor = FuelPriceMonitor.getInstance();
-  console.log('🛣️ Fuel price monitoring system initialized');
   return monitor;
 }

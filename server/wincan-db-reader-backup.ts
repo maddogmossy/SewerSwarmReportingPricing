@@ -68,7 +68,6 @@ function enhanceObservationWithRemark(observation: string): string {
 // Format observation text with defect codes prefixed for MSCC5 classification
 // JN codes only display if structural defect within one meter of junction
 async function formatObservationText(observations: string[], sector: string = 'utilities'): Promise<string> {
-  console.log(`🔧 Formatting ${observations.length} observations with defect codes for MSCC5 classification`);
   
   // STEP 1: Check for belly conditions requiring excavation using MSCC5 classifier
   const { MSCC5Classifier } = await import('./mscc5-classifier');
@@ -82,10 +81,8 @@ async function formatObservationText(observations: string[], sector: string = 'u
     if (isWaterLevel) {
       // Only keep water level observations if they are part of a belly condition requiring excavation
       if (bellyAnalysis.hasBelly && bellyAnalysis.adoptionFail) {
-        console.log(`🔧 Keeping water level observation: ${obs} (belly condition requires excavation)`);
         return true;
       } else {
-        console.log(`🔧 Removing water level observation: ${obs} (no excavation required)`);
         return false;
       }
     }
@@ -93,10 +90,8 @@ async function formatObservationText(observations: string[], sector: string = 'u
     return true; // Keep all non-water level observations
   });
   
-  console.log(`🔧 After belly-based WL filtering: ${preFiltered.length} observations remain`);
   
   if (preFiltered.length === 0) {
-    console.log(`🔧 No meaningful observations after filtering`);
     return '';
   }
 
@@ -114,7 +109,6 @@ async function formatObservationText(observations: string[], sector: string = 'u
       } else {
         processedObservations.push(obs);
       }
-      console.log(`🔧 Added defect code prefix: ${code} to observation`);
     } else {
       // Try to identify defect type from content and prefix appropriate code
       const obsLower = obs.toLowerCase();
@@ -140,7 +134,6 @@ async function formatObservationText(observations: string[], sector: string = 'u
       
       if (prefixCode) {
         processedObservations.push(`${prefixCode} ${obs}`);
-        console.log(`🔧 Inferred and added defect code: ${prefixCode} to observation`);
       } else {
         processedObservations.push(obs);
       }
@@ -148,7 +141,6 @@ async function formatObservationText(observations: string[], sector: string = 'u
   }
   
   const result = processedObservations.join('. ');
-  console.log(`🔧 Final formatted observation text with defect codes: ${result.substring(0, 100)}...`);
   return result;
 }
 
@@ -173,7 +165,6 @@ function extractAuthenticValue(record: any, fieldNames: string[]): string | null
 
 // Process authentic Wincan database for sector-specific infrastructure analysis
 export async function processWincanDatabase(db3FilePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
-  console.log(`🔒 AUTHENTIC DATABASE EXTRACTION: Reading ${db3FilePath} for ${sector} sector`);
   
   const sqlite3 = (await import('sqlite3')).default;
   const db = new sqlite3.Database(db3FilePath);
@@ -197,7 +188,6 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
         return;
       }
       
-      console.log(`📊 Found ${sectionRecords.length} section records in database`);
       
       // Get observations for each section
       const observationQuery = `
@@ -214,17 +204,14 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
           return;
         }
         
-        console.log(`📊 Found ${observationRecords.length} observation records`);
         
         // Get authentic severity grades from SECSTAT table
         const secstatQuery = `SELECT * FROM SECSTAT`;
         
         db.all(secstatQuery, [], async (secErr: any, secstatRecords: any[]) => {
           if (secErr) {
-            console.log('⚠️ No SECSTAT table found, using MSCC5 classification fallback');
             secstatRecords = [];
           } else {
-            console.log(`📊 Found ${secstatRecords.length} SECSTAT severity grade records`);
           }
           
           db.close();
@@ -280,7 +267,6 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             const inspectionDate = extractAuthenticValue(record, ['OBJ_TimeStamp', 'TimeStamp', 'Date']) || '2024-01-01';
             const inspectionTime = '09:00:00';
             
-            console.log(`📝 Processing Section ${itemCounter}: ${startMH} → ${finishMH} (${pipeSize}mm, ${totalLength}m)`);
             
             // Format observations with defect codes
             const defectText = observations.length > 0 ? await formatObservationText(observations, sector) : 'No service or structural defect found';
@@ -292,7 +278,6 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             let defectType = 'service';
             
             if (authenticGrades) {
-              console.log(`✅ Using authentic SECSTAT grades: Structural=${authenticGrades.structural}, Service=${authenticGrades.service}`);
               
               // Use higher grade as primary severity
               severityGrade = Math.max(authenticGrades.structural, authenticGrades.service);
@@ -308,7 +293,6 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
                 }
               }
             } else if (defectText && defectText !== 'No service or structural defect found') {
-              console.log(`⚠️ No SECSTAT grades found, using MSCC5 classification`);
               const { MSCC5Classifier } = await import('./mscc5-classifier');
               const classification = await MSCC5Classifier.classifyObservation(defectText, sector);
               
@@ -341,13 +325,10 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
             // Only add if we have meaningful data
             if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
               authenticSections.push(sectionData);
-              console.log("✅ Added authentic section:", sectionData.itemNo);
             } else {
-              console.log("⚠️ Skipping section with missing manhole data");
             }
           }
           
-          console.log(`🔒 LOCKDOWN COMPLETE: Extracted ${authenticSections.length} authentic sections`);
           resolve(authenticSections);
         });
       });
@@ -357,16 +338,13 @@ export async function processWincanDatabase(db3FilePath: string, sector: string 
 
 // Store authentic sections in database with comprehensive duplicate prevention
 export async function storeWincanSections(sections: WincanSectionData[], uploadId: number): Promise<void> {
-  console.log(`🔒 STORING ${sections.length} AUTHENTIC SECTIONS IN DATABASE`);
   
   // First, clear any existing sections for this upload to prevent accumulation
   try {
     const deletedSections = await db.delete(sectionInspections)
       .where(eq(sectionInspections.fileUploadId, uploadId))
       .returning();
-    console.log(`🗑️ Cleared ${deletedSections.length} existing sections for upload ${uploadId}`);
   } catch (error) {
-    console.log(`⚠️ No existing sections to clear: ${error}`);
   }
   
   // Track processed sections to prevent duplicates within this batch
@@ -378,7 +356,6 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
     
     // Skip if we've already processed this unique combination
     if (processedSections.has(uniqueKey)) {
-      console.log(`⚠️ Skipping duplicate section ${uniqueKey} within batch`);
       continue;
     }
     
@@ -410,13 +387,11 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         .values(insertData);
       
       processedSections.add(uniqueKey);
-      console.log(`✅ Stored/updated authentic section ${uniqueKey}`);
     } catch (error) {
       console.error(`❌ Error storing section ${section.itemNo}:`, error);
     }
   }
   
-  console.log(`🔒 LOCKDOWN COMPLETE: ${processedSections.size} unique authentic sections stored`);
 } 
     'WL': 'Water level',
     'D': 'Deformation',
@@ -456,7 +431,6 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
     }
   }
   
-  console.log(`🔧 Found ${junctionPositions.length} junctions and ${structuralDefectPositions.length} structural defects`);
   
   // STEP 3: Process observations with enhanced detailed descriptions
   for (const obs of preFiltered) {
@@ -504,7 +478,6 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         
         // Skip SC codes that are just informational (like pipe size changes)
         if (isPipeSizeChange && !isStructuralFailure && !isLiningPatchingContext) {
-          console.log(`🔧 Skipping SC ${meterage}m - informational pipe size change, no structural failure or lining/patching`);
           continue;
         }
       }
@@ -586,13 +559,11 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         if (uniqueDescriptions[0] && uniqueDescriptions[0].length > 5) {
           const groupedText = `${uniqueDescriptions[0]} at ${meterages}`;
           allObservationsWithMeterage.push({text: groupedText, meterage: parseFloat(sortedEntries[0].meterage)});
-          console.log(`🔧 Grouped ${code} with detailed description: ${groupedText}`);
         } else {
           // Basic format with defect description
           const basicDescription = defectDescriptions[code] || code;
           const groupedText = `${basicDescription} at ${meterages}`;
           allObservationsWithMeterage.push({text: groupedText, meterage: parseFloat(sortedEntries[0].meterage)});
-          console.log(`🔧 Grouped ${code} with basic description: ${groupedText}`);
         }
       } else {
         // Different descriptions - list separately with full descriptions, sorted by meterage
@@ -607,7 +578,6 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
             allObservationsWithMeterage.push({text: individualText, meterage: parseFloat(entry.meterage)});
           }
         }
-        console.log(`🔧 Listed ${code} with different descriptions separately`);
       }
     } else if (entries.length === 1) {
       // Single occurrence with enhanced format
@@ -638,7 +608,6 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
   allObservationsWithMeterage.sort((a, b) => a.meterage - b.meterage);
   
   const result = allObservationsWithMeterage.map(obs => obs.text).join('. ').trim();
-  console.log(`🔧 Final formatted result with detailed descriptions: "${result.substring(0, 100)}..."`);
   
   return result;
 }
@@ -748,7 +717,6 @@ function classifyWincanObservations(observationText: string, sector: string) {
           requiresRoboticCutting = true;
           const deformationPositions = deformationPos2 ? `${deformationPos1}m, ${deformationPos2}m` : `${deformationPos1}m`;
           junctionMessage = `Junction within 1m of deformation requires robotic cutting (ID4) to reopen connection at ${junctionPos}m and install 150mm patches at ${deformationPositions}`;
-          console.log(`🤖 1-METER RULE TRIGGERED: Junction at ${junctionPos}m, Deformation at ${deformationPositions} - Distance: ${minDistance.toFixed(2)}m`);
         }
       }
     }
@@ -841,8 +809,6 @@ export interface WincanSectionData {
 }
 
 export async function readWincanDatabase(filePath: string, sector: string = 'utilities'): Promise<WincanSectionData[]> {
-  console.log("🔒 ZERO TOLERANCE POLICY: AUTHENTIC DATA ONLY");
-  console.log("📁 File path:", filePath);
   
   try {
     // Check if file exists
@@ -864,25 +830,20 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     
     // Open the database only if verified as valid SQLite
     const database = new Database(filePath, { readonly: true });
-    console.log("✅ Valid SQLite database opened");
     
     // Get all table names
     const tables = database.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
-    console.log("📋 Available tables:", tables.map(t => t.name));
     
     // Build manhole name mapping from NODE table
     const manholeMap = new Map<string, string>();
     try {
       const nodeData = database.prepare("SELECT OBJ_PK, OBJ_Key FROM NODE WHERE OBJ_Key IS NOT NULL").all();
-      console.log(`📍 Found ${nodeData.length} manhole records`);
       for (const node of nodeData) {
         if (node.OBJ_PK && node.OBJ_Key) {
           manholeMap.set(node.OBJ_PK, node.OBJ_Key);
         }
       }
-      console.log(`📍 Mapped ${manholeMap.size} manholes: ${Array.from(manholeMap.values()).slice(0, 10).join(', ')}...`);
     } catch (error) {
-      console.log("⚠️ Could not load manhole names, using GUIDs");
     }
 
     // Build observation data mapping from SECOBS table via SECINSP
@@ -896,7 +857,6 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         AND obs.OBS_OpCode NOT IN ('MH', 'MHF')
         ORDER BY si.INS_Section_FK, obs.OBS_Distance
       `).all();
-      console.log(`🔍 Found ${obsData.length} observation records`);
       for (const obs of obsData) {
         if (obs.INS_Section_FK && obs.OBS_OpCode) {
           if (!observationMap.has(obs.INS_Section_FK)) {
@@ -907,18 +867,14 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
           observationMap.get(obs.INS_Section_FK)!.push(`${obs.OBS_OpCode}${position}${description}`);
         }
       }
-      console.log(`🔍 Mapped observations for ${observationMap.size} sections`);
     } catch (error) {
-      console.log("⚠️ Could not load observation data:", error);
     }
 
     // Extract authentic severity grades from SECSTAT table
     let severityGrades: Record<number, { structural: number | null, service: number | null }> = {};
     try {
       severityGrades = await getSeverityGradesBySection(database);
-      console.log(`📊 Extracted authentic severity grades for ${Object.keys(severityGrades).length} sections from SECSTAT table`);
     } catch (error) {
-      console.log("⚠️ Could not load SECSTAT severity grades:", error);
     }
 
     // Look for SECTION table (main inspection data)
@@ -926,26 +882,19 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     const sectionTable = tables.find(t => t.name.toUpperCase() === 'SECTION');
     
     if (sectionTable) {
-      console.log(`🎯 Found SECTION table with inspection data`);
       // Get only sections that are actually current (not deleted)
       const sectionRecords = database.prepare(`SELECT * FROM SECTION WHERE OBJ_Deleted IS NULL OR OBJ_Deleted = ''`).all();
-      console.log(`📊 SECTION contains ${sectionRecords.length} active records`);
       
       if (sectionRecords.length > 0) {
-        console.log(`📄 Sample SECTION data:`, sectionRecords[0]);
-        console.log(`🔍 SECTION table fields:`, Object.keys(sectionRecords[0]));
         sectionData = await processSectionTable(sectionRecords, manholeMap, observationMap, sector, severityGrades);
       }
     }
     
     // If no inspection data found, check if this is a Meta.db3 file
     if (sectionData.length === 0) {
-      console.log("⚠️ No inspection data found in database tables");
-      console.log("🔍 This appears to be a Wincan Meta.db3 configuration file");
       
       // Check for project information only
       const participantData = database.prepare("SELECT * FROM PARTICIPANT").all();
-      console.log("👥 Participant data:", participantData.length, "entries");
       
       if (participantData.length > 0) {
         const rgStructuresEntry = participantData.find(p => 
@@ -954,10 +903,6 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
         );
         
         if (rgStructuresEntry) {
-          console.log("✅ Found RG Structures Ltd client information");
-          console.log("📍 Address: 40 Hollow Road, Bury St Edmunds IP32 7AY");
-          console.log("❌ ZERO TOLERANCE POLICY: No inspection data found - cannot generate synthetic sections");
-          console.log("⚠️ Meta.db3 files contain configuration only, not inspection data");
         }
       }
       
@@ -966,9 +911,7 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
     }
     
     database.close();
-    console.log("🔒 Database closed");
     
-    console.log(`✅ Extracted ${sectionData.length} authentic sections from Wincan database`);
     return sectionData;
     
   } catch (error) {
@@ -979,7 +922,6 @@ export async function readWincanDatabase(filePath: string, sector: string = 'uti
 
 // Process authentic SECTION data with manhole name mapping - ZERO SYNTHETIC DATA
 async function processSectionTable(sectionRecords: any[], manholeMap: Map<string, string>, observationMap: Map<string, string[]>, sector: string = 'utilities', severityGrades: Record<number, { structural: number | null, service: number | null }> = {}): Promise<WincanSectionData[]> {
-  console.log(`🔒 LOCKDOWN: Processing authentic SECTION data only`);
   
   if (!sectionRecords || sectionRecords.length === 0) {
     console.error("❌ No authentic section data found");
@@ -991,7 +933,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
   // Process ONLY authentic database records
   for (let i = 0; i < sectionRecords.length; i++) {
     const record = sectionRecords[i];
-    console.log(`📋 Processing section ${i + 1}/${sectionRecords.length}: ${record?.OBJ_Key || 'Unknown'}`);
     
     if (record && typeof record === 'object') {
       // Map GUIDs to readable manhole names
@@ -1010,9 +951,7 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       if (flowDirection !== null && flowDirection !== undefined) {
         // Wincan standard: 1 = downstream, 0 = upstream
         inspectionDirection = flowDirection === 1 ? 'downstream' : 'upstream';
-        console.log(`🔍 Authentic Flow Direction from DB: OBJ_FlowDir=${flowDirection} → ${inspectionDirection}`);
       } else {
-        console.log(`⚠️ No flow direction in database for section ${record.OBJ_Key}, using default downstream`);
       }
       
       // UPSTREAM/DOWNSTREAM RULE APPLICATION:
@@ -1022,12 +961,10 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         // Upstream inspection: downstream MH becomes Start MH, upstream MH becomes Finish MH
         startMH = toMH;   // Show higher number first (SW02)
         finishMH = fromMH; // Show lower number second (SW01)
-        console.log(`🔄 UPSTREAM inspection applied: ${fromMH} → ${toMH} = Display: ${startMH} → ${finishMH}`);
       } else {
         // Downstream inspection: upstream MH becomes Start MH, downstream MH becomes Finish MH
         startMH = fromMH;  // Show lower number first (SW01)
         finishMH = toMH;   // Show higher number second (SW02)
-        console.log(`➡️ DOWNSTREAM inspection applied: ${fromMH} → ${toMH} = Display: ${startMH} → ${finishMH}`);
       }
       
       // Extract authentic pipe specifications
@@ -1037,27 +974,22 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       
       // Extract authentic observations for this section
       const observations = observationMap.get(record.OBJ_PK) || [];
-      console.log(`🔍 Section ${record.OBJ_Key || 'Unknown'} (PK: ${record.OBJ_PK}): Found ${observations.length} observations`);
       
       // ZERO TOLERANCE POLICY: Check if timestamp is authentic or synthetic
       let inspectionDate = 'No data';
       let inspectionTime = 'No data';
       
       if (record.OBJ_TimeStamp) {
-        console.log(`🔍 Database timestamp found: ${record.OBJ_TimeStamp}`);
         
         // ZERO TOLERANCE: Reject ALL synthetic timestamps from test databases
         if (record.OBJ_TimeStamp.includes('2025-05-27') || record.OBJ_TimeStamp.includes('2025-07-') || record.OBJ_TimeStamp.includes('2025-06-')) {
-          console.log(`❌ SYNTHETIC TIMESTAMP DETECTED: ${record.OBJ_TimeStamp} - APPLYING ZERO TOLERANCE POLICY`);
           inspectionDate = 'No data';
           inspectionTime = 'No data';
         } else {
-          console.log(`✅ Authentic timestamp found: ${record.OBJ_TimeStamp}`);
           inspectionDate = record.OBJ_TimeStamp.split(' ')[0];
           inspectionTime = record.OBJ_TimeStamp.split(' ')[1] || 'No data';
         }
       } else {
-        console.log(`⚠️ No timestamp in database - using 'No data'`);
       }
       
       // Extract authentic item number from Wincan database FIRST (needed for multi-defect logic)
@@ -1088,11 +1020,9 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
           19,   // SortOrder 15 → Item 19
         ];
         authenticItemNo = gr7188aMapping[sortOrder] || sortOrder;
-        console.log(`🎯 GR7188a Database: Converted SortOrder ${sortOrder} → Non-consecutive Item Number: ${authenticItemNo}`);
       } else {
         // GR7188 full database - apply consecutive mapping (skip SortOrder 0, start from 1)
         authenticItemNo = sortOrder === 0 ? 1 : sortOrder;
-        console.log(`🎯 GR7188 Full Database: Converted SortOrder ${sortOrder} → Consecutive Item Number: ${authenticItemNo}`);
       }
       
       // Multi-defect section splitting: Check if both service and structural defects exist
@@ -1104,7 +1034,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       const hasStructuralDefects = defectText.includes('Deformation') || defectText.includes('Fracture') || defectText.includes('Crack') || defectText.includes('Joint');
       
       if (hasServiceDefects && hasStructuralDefects) {
-        console.log(`🔄 Multi-defect section detected: Item ${authenticItemNo} has both service and structural defects`);
         
         // Split observations into service and structural categories based on observation codes
         const serviceObservations = observations.filter(obs => {
@@ -1123,7 +1052,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
                  upperObs.startsWith('DEF') || upperObs.startsWith('JDM');
         });
         
-        console.log(`🔍 Split observations - Service: ${serviceObservations.length}, Structural: ${structuralObservations.length}`);
         
         // Create service defect section (original item number) - Use authentic SECSTAT grades
         const serviceDefectText = serviceObservations.length > 0 ? await formatObservationText(serviceObservations, sector) : 'No service defects found';
@@ -1132,7 +1060,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         const authenticServiceGrades = severityGrades[authenticItemNo];
         let serviceClassification;
         if (authenticServiceGrades && authenticServiceGrades.service !== null) {
-          console.log(`✅ Using authentic SECSTAT service grade for Item ${authenticItemNo}: ${authenticServiceGrades.service}`);
           serviceClassification = {
             severityGrade: authenticServiceGrades.service,
             defectType: 'service' as const,
@@ -1143,7 +1070,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
             srmGrading: getSRMGrading(authenticServiceGrades.service, 'service')
           };
         } else {
-          console.log(`⚠️ No authentic SECSTAT service grade found for Item ${authenticItemNo}, using MSCC5 classification`);
           serviceClassification = classifyWincanObservations(serviceDefectText, sector);
         }
         
@@ -1171,7 +1097,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         // Check for authentic structural grade from SECSTAT
         let structuralClassification;
         if (authenticServiceGrades && authenticServiceGrades.structural !== null) {
-          console.log(`✅ Using authentic SECSTAT structural grade for Item ${authenticItemNo}a: ${authenticServiceGrades.structural}`);
           structuralClassification = {
             severityGrade: authenticServiceGrades.structural,
             defectType: 'structural' as const,
@@ -1182,7 +1107,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
             srmGrading: getSRMGrading(authenticServiceGrades.structural, 'structural')
           };
         } else {
-          console.log(`⚠️ No authentic SECSTAT structural grade found for Item ${authenticItemNo}a, using MSCC5 classification`);
           structuralClassification = classifyWincanObservations(structuralDefectText, sector);
         }
         
@@ -1208,7 +1132,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         authenticSections.push(serviceSection);
         authenticSections.push(structuralSection);
         
-        console.log(`✅ Created multi-defect sections: ${authenticItemNo} (service) and ${authenticItemNo}a (structural)`);
         continue; // Skip the single-section logic below
       }
       
@@ -1217,8 +1140,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         defectText = 'No service or structural defect found';
       }
       
-      console.log(`📝 Formatted defect text: "${defectText.substring(0, 80)}..."`);
-      console.log(`📊 About to add section with itemNo: ${authenticSections.length + 1}`);
       
       // Apply AUTHENTIC severity grades from SECSTAT table first, fallback to MSCC5 classification
       let severityGrade = 0;
@@ -1230,7 +1151,6 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       // Check for authentic severity grades from SECSTAT table
       const authenticGrades = severityGrades[authenticItemNo];
       if (authenticGrades) {
-        console.log(`🎯 Found authentic SECSTAT grades for Item ${authenticItemNo}:`, authenticGrades);
         
         // Use classification-based defect type, not SECSTAT-based  
         const mscc5Classification = classifyWincanObservations(defectText, sector);
@@ -1240,13 +1160,10 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         adoptable = mscc5Classification.adoptable;
         srmGrading = mscc5Classification.srmGrading;
         
-        console.log(`✅ Using MSCC5 classification instead of SECSTAT: ${severityGrade} (${defectType})`);
       }
       
       // Fallback to MSCC5 classification if no authentic grades found
       if (severityGrade === 0 && observations.length > 0) {
-        console.log(`⚠️ No authentic SECSTAT grades found for Item ${authenticItemNo}, falling back to MSCC5 classification`);
-        console.log(`🎯 Applying MSCC5 classification to: "${defectText.substring(0, 100)}..."`);
         const classification = classifyWincanObservations(defectText, 'utilities');
         severityGrade = classification.severityGrade;
         recommendations = classification.recommendations;
@@ -1254,11 +1171,8 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
         srmGrading = classification.srmGrading;
         defectType = classification.defectType;
         
-        console.log(`📊 MSCC5 Fallback Classification Result: Grade ${severityGrade}, ${adoptable}, SRM: ${srmGrading.description}`);
       } else if (authenticGrades) {
-        console.log(`📊 AUTHENTIC SECSTAT Result: Grade ${severityGrade}, ${adoptable}, Type: ${defectType}`);
       } else {
-        console.log(`📊 No observations or grades found, using default Grade 0`);
       }
       
       // Item number already calculated above for multi-defect logic
@@ -1285,14 +1199,11 @@ async function processSectionTable(sectionRecords: any[], manholeMap: Map<string
       // Only add if we have meaningful data
       if (startMH !== 'UNKNOWN' && finishMH !== 'UNKNOWN') {
         authenticSections.push(sectionData);
-        console.log("✅ Added authentic section:", sectionData.itemNo);
       } else {
-        console.log("⚠️ Skipping section with missing manhole data");
       }
     }
   }
   
-  console.log(`🔒 LOCKDOWN COMPLETE: Extracted ${authenticSections.length} authentic sections`);
   return authenticSections;
 }
 
@@ -1317,16 +1228,13 @@ function extractAuthenticValue(record: any, fieldNames: string[]): string | null
 
 // Store authentic sections in database with comprehensive duplicate prevention
 export async function storeWincanSections(sections: WincanSectionData[], uploadId: number): Promise<void> {
-  console.log(`🔒 STORING ${sections.length} AUTHENTIC SECTIONS IN DATABASE`);
   
   // First, clear any existing sections for this upload to prevent accumulation
   try {
     const deletedSections = await db.delete(sectionInspections)
       .where(eq(sectionInspections.fileUploadId, uploadId))
       .returning();
-    console.log(`🗑️ Cleared ${deletedSections.length} existing sections for upload ${uploadId}`);
   } catch (error) {
-    console.log(`⚠️ No existing sections to clear: ${error}`);
   }
   
   // Track processed sections to prevent duplicates within this batch
@@ -1338,7 +1246,6 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
     
     // Skip if we've already processed this unique combination
     if (processedSections.has(uniqueKey)) {
-      console.log(`⚠️ Skipping duplicate section ${uniqueKey} within batch`);
       continue;
     }
     
@@ -1370,11 +1277,9 @@ export async function storeWincanSections(sections: WincanSectionData[], uploadI
         .values(insertData);
       
       processedSections.add(uniqueKey);
-      console.log(`✅ Stored/updated authentic section ${uniqueKey}`);
     } catch (error) {
       console.error(`❌ Error storing section ${section.itemNo}:`, error);
     }
   }
   
-  console.log(`🔒 LOCKDOWN COMPLETE: ${processedSections.size} unique authentic sections stored`);
 }

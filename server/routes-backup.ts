@@ -108,7 +108,6 @@ async function fetchLogoFromWebsite(websiteUrl: string): Promise<string | null> 
           await fs.promises.mkdir('uploads/logos', { recursive: true });
           await fs.promises.writeFile(filepath, buffer);
           
-          console.log(`Successfully fetched logo from ${logoUrl}`);
           return filepath;
         }
       } catch (error) {
@@ -176,7 +175,6 @@ async function fetchLogoFromWebsite(websiteUrl: string): Promise<string | null> 
                 await fs.promises.mkdir('uploads/logos', { recursive: true });
                 await fs.promises.writeFile(filepath, buffer);
                 
-                console.log(`Successfully fetched logo from meta tag: ${logoUrl}`);
                 return filepath;
               }
             } catch (error) {
@@ -186,19 +184,16 @@ async function fetchLogoFromWebsite(websiteUrl: string): Promise<string | null> 
         }
       }
     } catch (error) {
-      console.log(`Failed to fetch HTML from ${url}:`, error);
     }
 
     return null;
   } catch (error) {
-    console.log(`Failed to fetch logo from website ${websiteUrl}:`, error);
     return null;
   }
 }
 
 // Extract specific section data from PDF
 async function extractSpecificSectionFromPDF(pdfText: string, fileUploadId: number, sectionNumber: number) {
-  console.log(`Extracting authentic Section ${sectionNumber} data from PDF`);
   
   const lines = pdfText.split('\n').map(line => line.trim()).filter(line => line);
   
@@ -238,13 +233,11 @@ async function extractSpecificSectionFromPDF(pdfText: string, fileUploadId: numb
           adoptable: "Yes"
         };
         
-        console.log(`Extracted Section ${sectionNumber}: ${correction.upstream}→${correction.downstream}, ${pipeSize} ${material.trim()}`);
         return sectionData;
       }
     }
   }
   
-  console.log(`Could not find authentic data for Section ${sectionNumber}`);
   return null;
 }
 
@@ -276,7 +269,6 @@ function extractSectionHeaderFromInspectionData(sectionText: string, itemNo: num
   inspectionTime: string;
   defects: string;
 } | null {
-  console.log(`🔍 Extracting header data for Section ${itemNo} from inspection content`);
   
   const lines = sectionText.split('\n');
   let pipeSize = "no data recorded";
@@ -296,7 +288,6 @@ function extractSectionHeaderFromInspectionData(sectionText: string, itemNo: num
       const pipeSizeMatch = line.match(/Dia\/Height:\s*(\d+)\s*mm/);
       if (pipeSizeMatch) {
         pipeSize = pipeSizeMatch[1] + "mm";
-        console.log(`    📏 Pipe Size: ${pipeSize}`);
       }
     }
     
@@ -305,7 +296,6 @@ function extractSectionHeaderFromInspectionData(sectionText: string, itemNo: num
       const materialMatch = line.match(/Material:\s*([^L\n]+?)(?:Lining Material|$)/);
       if (materialMatch) {
         pipeMaterial = materialMatch[1].trim();
-        console.log(`    🧱 Material: ${pipeMaterial}`);
       }
     }
     
@@ -315,7 +305,6 @@ function extractSectionHeaderFromInspectionData(sectionText: string, itemNo: num
       if (lengthMatch) {
         totalLength = lengthMatch[1] + "m";
         lengthSurveyed = lengthMatch[1] + "m";
-        console.log(`    📐 Length: ${totalLength}`);
       }
     }
     
@@ -325,7 +314,6 @@ function extractSectionHeaderFromInspectionData(sectionText: string, itemNo: num
       if (dateTimeMatch) {
         inspectionDate = dateTimeMatch[1];
         inspectionTime = dateTimeMatch[2];
-        console.log(`    🕐 Date/Time: ${inspectionDate} ${inspectionTime}`);
       }
     }
     
@@ -336,7 +324,6 @@ function extractSectionHeaderFromInspectionData(sectionText: string, itemNo: num
           !obsMatch[1].toLowerCase().includes('none') && 
           !obsMatch[1].toLowerCase().includes('no defects')) {
         defects = obsMatch[1].trim();
-        console.log(`    ⚠️ Defects: ${defects}`);
       }
     }
   }
@@ -353,11 +340,9 @@ function extractSectionHeaderFromInspectionData(sectionText: string, itemNo: num
 }
 
 function extractAuthenticAdoptionSpecs(pdfText: string, itemNo: number): { pipeSize: string, pipeMaterial: string, totalLength: string, lengthSurveyed: string } | null {
-  console.log(`🔍 Extracting authentic specs for Section ${itemNo} from actual PDF header`);
   
   // For Section 1, use the user-verified authentic data from inspection report header
   if (itemNo === 1) {
-    console.log(`📋 Section 1: Using user-verified authentic header data`);
     return {
       pipeSize: "150mm", // User-verified authentic from inspection image
       pipeMaterial: "Vitrified clay", // User-verified authentic from inspection image  
@@ -375,7 +360,6 @@ function extractAuthenticAdoptionSpecs(pdfText: string, itemNo: number): { pipeS
     
     if (line.includes(`Section Item ${itemNo}`) || 
         line.includes(`Section Inspection`) && line.includes(`Item ${itemNo}`)) {
-      console.log(`📖 Found header for Section ${itemNo} at line ${i}`);
       
       // Extract from next 20 lines
       let pipeSize = "no data recorded";
@@ -423,7 +407,6 @@ function extractAuthenticAdoptionSpecs(pdfText: string, itemNo: number): { pipeS
     }
   }
   
-  console.log(`⚠️ No header found for Section ${itemNo}, returning null`);
   return null;
 }
 
@@ -456,7 +439,6 @@ function applyAdoptionFlowDirectionCorrection(upstreamNode: string, downstreamNo
     
     // Only correct if same group but backwards sequence
     if (upstreamGroup === downstreamGroup && upstreamSequence > downstreamSequence) {
-      console.log(`🔧 S-pattern correction: ${upstreamNode} → ${downstreamNode} (${upstreamSequence} > ${downstreamSequence})`);
       return { upstream: downstreamNode, downstream: upstreamNode, corrected: true };
     }
   }
@@ -506,9 +488,6 @@ function validateInspectionDirectionModification(userConfirmation: boolean = fal
     `);
   }
   
-  console.log(`WARNING: Inspection direction logic modification authorized by user`);
-  console.log(`Reason: ${reason}`);
-  console.log(`Timestamp: ${new Date().toISOString()}`);
   
   return true;
 }
@@ -529,7 +508,6 @@ function extractInspectionDirection(pdfText: string): { [itemNo: number]: string
     const node = match[3];
     
     directions[itemNo] = direction;
-    console.log(`✓ Section ${itemNo}: ${direction} inspection (node: ${node})`);
   }
   
   // If no specific section directions found, check for general inspection direction
@@ -540,7 +518,6 @@ function extractInspectionDirection(pdfText: string): { [itemNo: number]: string
     
     if (generalMatch) {
       const generalDirection = generalMatch[1];
-      console.log(`✓ General inspection direction: ${generalDirection} - applying to all sections`);
       
       // Apply general direction to all sections (we'll determine section count later)
       // Return empty object here and apply general direction in main extraction function
@@ -560,19 +537,16 @@ function extractInspectionNumberForSection(pdfText: string, itemNo: number): str
   
   if (match) {
     const inspectionNo = match[1] || match[2];
-    console.log(`✓ Found inspection number ${inspectionNo} for Section ${itemNo}`);
     return inspectionNo;
   }
   
   // Default to '1' if no specific inspection number found
-  console.log(`✓ Using default inspection number '1' for Section ${itemNo}`);
   return '1';
 }
 
 // Function to extract ALL sections from PDF text - USING YOUR HIGHLIGHTED STRUCTURE
 // Function to extract authentic inspection data for each section
 function extractSectionInspectionData(pdfText: string, sectionNum: number) {
-  console.log(`🔍 Extracting authentic inspection data for Section ${sectionNum}`);
   
   // AUTHENTIC DATA EXTRACTION: Look for actual inspection pages, not table of contents
   // Based on debug findings: Section 1 data is on lines 288, 296, 297, 307
@@ -582,7 +556,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
   // Pattern: "0.00 WLWater level, 5% of the vertical dimension" (line 307)
   
   if (sectionNum === 1) {
-    console.log(`🎯 EXTRACTING AUTHENTIC SECTION 1 HEADER FROM PDF`);
     
     const lines = pdfText.split('\n');
     
@@ -604,35 +577,30 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
       if (dateTimeMatch && !extractedDate) {
         extractedDate = dateTimeMatch[1];
         extractedTime = dateTimeMatch[2];
-        console.log(`📅 EXTRACTED DATE/TIME: ${extractedDate} ${extractedTime}`);
       }
       
       // Extract Total Length pattern: "Total Length: X.XX m"
       const totalLengthMatch = line.match(/Total\s*Length:\s*(\d+\.\d+)\s*m/i);
       if (totalLengthMatch) {
         extractedTotalLength = `${totalLengthMatch[1]}m`;
-        console.log(`📏 EXTRACTED TOTAL LENGTH: ${extractedTotalLength}`);
       }
       
       // Extract Inspected Length pattern: "Inspected Length: X.XX m"
       const inspectedLengthMatch = line.match(/Inspected\s*Length:\s*(\d+\.\d+)\s*m/i);
       if (inspectedLengthMatch) {
         extractedInspectedLength = `${inspectedLengthMatch[1]}m`;
-        console.log(`📐 EXTRACTED INSPECTED LENGTH: ${extractedInspectedLength}`);
       }
       
       // Extract pipe diameter: "Dia/Height: XXX mm"
       const pipeSizeMatch = line.match(/Dia\/Height:\s*(\d+)\s*mm/i);
       if (pipeSizeMatch) {
         extractedPipeSize = pipeSizeMatch[1];
-        console.log(`🔧 EXTRACTED PIPE SIZE: ${extractedPipeSize}mm`);
       }
       
       // Extract material: "Material: [material name]"
       const materialMatch = line.match(/Material:\s*([^,\n]+)/i);
       if (materialMatch) {
         extractedMaterial = materialMatch[1].trim();
-        console.log(`🧱 EXTRACTED MATERIAL: ${extractedMaterial}`);
       }
     }
     
@@ -641,19 +609,10 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
       const line = lines[i];
       if (line.includes('WL') && line.includes('Water level')) {
         extractedObservations = 'WL 0.00m (Water level, 5% of the vertical dimension)';
-        console.log(`👁️ EXTRACTED OBSERVATIONS: ${extractedObservations}`);
         break;
       }
     }
     
-    console.log(`✅ SECTION 1 AUTHENTIC HEADER DATA EXTRACTED:`);
-    console.log(`   📅 Date: ${extractedDate || 'not found'}`);
-    console.log(`   ⏰ Time: ${extractedTime || 'not found'}`);
-    console.log(`   🔧 Pipe Size: ${extractedPipeSize || 'not found'}mm`);
-    console.log(`   🧱 Material: ${extractedMaterial || 'not found'}`);
-    console.log(`   📏 Total Length: ${extractedTotalLength || 'not found'}`);
-    console.log(`   📐 Inspected Length: ${extractedInspectedLength || 'not found'}`);
-    console.log(`   👁️ Observations: ${extractedObservations || 'not found'}`);
     
     return {
       date: extractedDate || "no data recorded",
@@ -673,7 +632,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
   }
   
   if (sectionNum === 2) {
-    console.log(`🎯 EXTRACTING AUTHENTIC SECTION 2 HEADER FROM PDF`);
     
     const lines = pdfText.split('\n');
     
@@ -697,48 +655,41 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
       if (dateTimeMatch && line.includes('2') && !extractedDate) {
         extractedDate = dateTimeMatch[1];
         extractedTime = dateTimeMatch[2];
-        console.log(`📅 EXTRACTED SECTION 2 DATE/TIME: ${extractedDate} ${extractedTime}`);
       }
       
       // Extract Total Length pattern
       const totalLengthMatch = line.match(/Total\s*Length:\s*(\d+\.\d+)\s*m/i);
       if (totalLengthMatch && !extractedTotalLength) {
         extractedTotalLength = `${totalLengthMatch[1]}m`;
-        console.log(`📏 EXTRACTED SECTION 2 TOTAL LENGTH: ${extractedTotalLength}`);
       }
       
       // Extract Inspected Length pattern
       const inspectedLengthMatch = line.match(/Inspected\s*Length:\s*(\d+\.\d+)\s*m/i);
       if (inspectedLengthMatch && !extractedInspectedLength) {
         extractedInspectedLength = `${inspectedLengthMatch[1]}m`;
-        console.log(`📐 EXTRACTED SECTION 2 INSPECTED LENGTH: ${extractedInspectedLength}`);
       }
       
       // Extract pipe diameter
       const pipeSizeMatch = line.match(/Dia\/Height:\s*(\d+)\s*mm/i);
       if (pipeSizeMatch && !extractedPipeSize) {
         extractedPipeSize = pipeSizeMatch[1];
-        console.log(`🔧 EXTRACTED SECTION 2 PIPE SIZE: ${extractedPipeSize}mm`);
       }
       
       // Extract material
       const materialMatch = line.match(/Material:\s*([^,\n]+)/i);
       if (materialMatch && !extractedMaterial) {
         extractedMaterial = materialMatch[1].trim();
-        console.log(`🧱 EXTRACTED SECTION 2 MATERIAL: ${extractedMaterial}`);
       }
       
       // Extract service/structural grades if present
       const serviceGradeMatch = line.match(/service.*grade.*(\d+)/i);
       if (serviceGradeMatch) {
         serviceGrade = serviceGradeMatch[1];
-        console.log(`📊 EXTRACTED SERVICE GRADE: ${serviceGrade}`);
       }
       
       const structuralGradeMatch = line.match(/structural.*grade.*(\d+)/i);
       if (structuralGradeMatch) {
         structuralGrade = structuralGradeMatch[1];
-        console.log(`🏗️ EXTRACTED STRUCTURAL GRADE: ${structuralGrade}`);
       }
     }
     
@@ -747,21 +698,10 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
       const line = lines[i];
       if (line.includes('DEG') && line.includes('grease')) {
         extractedObservations = 'DEG at 7.08 and a CL, CLJ at 11.04';
-        console.log(`👁️ EXTRACTED SECTION 2 OBSERVATIONS: ${extractedObservations}`);
         break;
       }
     }
     
-    console.log(`✅ SECTION 2 AUTHENTIC HEADER DATA EXTRACTED:`);
-    console.log(`   📅 Date: ${extractedDate || 'not found'}`);
-    console.log(`   ⏰ Time: ${extractedTime || 'not found'}`);
-    console.log(`   🔧 Pipe Size: ${extractedPipeSize || 'not found'}mm`);
-    console.log(`   🧱 Material: ${extractedMaterial || 'not found'}`);
-    console.log(`   📏 Total Length: ${extractedTotalLength || 'not found'}`);
-    console.log(`   📐 Inspected Length: ${extractedInspectedLength || 'not found'}`);
-    console.log(`   📊 Service Grade: ${serviceGrade || 'not found'}`);
-    console.log(`   🏗️ Structural Grade: ${structuralGrade || 'not found'}`);
-    console.log(`   👁️ Observations: ${extractedObservations || 'not found'}`);
     
     return {
       date: extractedDate || "no data recorded",
@@ -785,7 +725,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
   const sectionMatch = pdfText.match(sectionPattern);
   
   if (!sectionMatch) {
-    console.log(`❌ No section content found for Section ${sectionNum} - trying global extraction`);
     
     // FALLBACK: Extract any available data from global PDF content for this section
     // Look for authentic dates in PDF - common formats
@@ -808,7 +747,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
     const globalMaterials = pdfText.match(globalMaterialPattern) || [];
     const extractedMaterial = globalMaterials[0] || null;
     
-    console.log(`🔍 Global extraction for Section ${sectionNum}:`, {
       date: extractedDate, time: extractedTime, pipeSize: extractedPipeSize, material: extractedMaterial
     });
     
@@ -830,7 +768,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
   }
   
   const sectionContent = sectionMatch[0];
-  console.log(`📄 Found section content (${sectionContent.length} chars) for Section ${sectionNum}`);
   
   // Extract date - look for patterns like "14/02/25" or "Date: 14/02/25"
   const datePattern = /(?:Date[:\s]*)?(\d{2}\/\d{2}\/\d{2,4})/i;
@@ -868,7 +805,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
   const observations = sectionContent.match(observationPattern) || [];
   const defects = observations.length > 0 ? observations.join(', ') : null;
   
-  console.log(`✓ Extracted data for Section ${sectionNum}:`, {
     date, time, pipeSize, pipeMaterial, totalLength, startMHDepth, finishMHDepth, defects
   });
   
@@ -894,19 +830,15 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
   const projectMatch = pdfText.match(projectNamePattern);
   if (projectMatch) {
     projectName = projectMatch[1].trim();
-    console.log(`✓ Extracted project name: "${projectName}"`);
   }
   
   // MANDATORY INSPECTION DIRECTION LOGIC - Extract from full PDF text for direction info
   const inspectionDirections = extractInspectionDirection(pdfText);
-  console.log(`✓ Extracted inspection directions for ${Object.keys(inspectionDirections).length} sections`);
   
   // NOW WORK ONLY WITH SECTION INSPECTION DATA (after the marker)
-  console.log('🔍 Extracting sections from inspection data portion only...');
   
   // EXTRACT AUTHENTIC SECTION REFERENCES FROM TABLE OF CONTENTS
   // Use authentic PDF data: "Section Item 1: F01-10A > F01-10 (F01-10AX)"
-  console.log('🔍 Extracting authentic sections from Table of Contents...');
   
   const tocPattern = /Section Item (\d+):\s+([A-Z0-9\-\/]+)\s+>\s+([A-Z0-9\-\/]+)\s+\([^)]+\)/g;
   
@@ -924,15 +856,12 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
       matchIndex: match.index
     });
     
-    console.log(`✅ Found authentic Section ${itemNo}: ${startMH} → ${finishMH}`);
   }
   
-  console.log(`📋 Found ${sectionMatches.length} sections in inspection data`);
   
   // Add missing Section 8 if not found
   const hasSection8 = sectionMatches.some(s => s.itemNo === 8);
   if (!hasSection8) {
-    console.log('⚠️ Section 8 missing - adding authentic data');
     sectionMatches.push({
       itemNo: 8,
       startMH: 'F02-7A',
@@ -945,7 +874,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
   
   const sections = [];
   
-  console.log(`📋 Processing ${sectionMatches.length} sections from inspection data...`);
   
   // Process each section match to extract header data with SEQUENTIAL NUMBERING
   for (let i = 0; i < sectionMatches.length; i++) {
@@ -955,7 +883,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
     // USE SEQUENTIAL NUMBERING (1, 2, 3...) instead of PDF section numbers
     const sequentialItemNo = i + 1;
     
-    console.log(`🔍 Processing Sequential Section ${sequentialItemNo} (originally PDF section ${sectionMatch.itemNo}): ${startMH} → ${finishMH}`);
     
     // Extract header data from section inspection content
     let sectionHeaderData = null;
@@ -967,7 +894,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
     }
     
     // EXTRACT AUTHENTIC OBSERVATIONS BASED ON USER PROVIDED DATA
-    console.log(`🔍 Looking for authentic observations for Section ${sequentialItemNo}...`);
     let observationData = "no data recorded";
     
     // Apply authentic observation data based on user's inspection report
@@ -1014,7 +940,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
       }
     }
     
-    console.log(`📋 Section ${sequentialItemNo} final defects: ${observationData}`);
     
     // Apply inspection direction correction
     let correctedStartMH = startMH;
@@ -1024,7 +949,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
     if (directionCorrection.corrected) {
       correctedStartMH = directionCorrection.upstream;
       correctedFinishMH = directionCorrection.downstream;
-      console.log(`🔄 Section ${sequentialItemNo}: Flow direction corrected ${startMH}→${finishMH} to ${correctedStartMH}→${correctedFinishMH}`);
     }
     
     // Create section data with extracted header information and SEQUENTIAL NUMBERING
@@ -1047,7 +971,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
     
     // Apply user-verified authentic data for sections 1 and 2
     if (sequentialItemNo === 1) {
-      console.log(`🎯 Section 1: Applying user-verified authentic data`);
       sectionData.pipeSize = "150mm";
       sectionData.pipeMaterial = "Vitrified clay";
       sectionData.totalLength = "14.27m";
@@ -1055,7 +978,6 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
       sectionData.startMH = "F01-10A";
       sectionData.finishMH = "F01-10";
     } else if (sequentialItemNo === 2) {
-      console.log(`🎯 Section 2: Applying user-verified authentic data`);
       sectionData.pipeSize = "300mm";
       sectionData.pipeMaterial = "Vitrified clay";
       sectionData.totalLength = "11.04m";
@@ -1065,12 +987,8 @@ function extractSectionInspectionData(pdfText: string, sectionNum: number) {
     }
     
     sections.push(sectionData);
-    console.log(`✅ Section ${sequentialItemNo}: Processed with ${sectionHeaderData ? 'extracted' : 'default'} data`);
   }
   
-  console.log(`✅ SECTION INSPECTION DATA EXTRACTION COMPLETE`);
-  console.log(`📊 Total sections processed: ${sections.length}`);
-  console.log(`📊 Expected sections: 94 (1-95 minus missing section 8)`);
   
   return sections;
 }
@@ -1099,7 +1017,6 @@ function getAdoptionTotalLength(itemNo: number): string {
 // AUTHENTIC DATA EXTRACTION FUNCTIONS
 // Extract project information from PDF header or filename as fallback
 function extractProjectInformation(pdfText: string, filename?: string): { projectNumber: string | null } {
-  console.log("🔍 Extracting project information from PDF...");
   
   // Extract project number from various PDF patterns
   const patterns = [
@@ -1114,16 +1031,13 @@ function extractProjectInformation(pdfText: string, filename?: string): { projec
     if (match) {
       // Clean up project number by removing line breaks and extra whitespace
       const projectNumber = match[1].replace(/[\r\n]+/g, ' ').trim();
-      console.log(`✅ Found project number in PDF: "${projectNumber}"`);
       return { projectNumber };
     }
   }
   
-  console.log("⚠️ No project number found in PDF content");
   
   // FALLBACK: Extract project number from filename when PDF field is empty
   if (filename) {
-    console.log(`🔍 Attempting fallback extraction from filename: "${filename}"`);
     
     // Remove file extensions and clean filename
     const cleanFilename = filename.replace(/\.pdf$/gi, '').trim();
@@ -1142,19 +1056,16 @@ function extractProjectInformation(pdfText: string, filename?: string): { projec
       const match = cleanFilename.match(pattern);
       if (match) {
         const projectNumber = match[1].trim();
-        console.log(`✅ Extracted project number from filename: "${projectNumber}"`);
         return { projectNumber };
       }
     }
     
     // Last resort: use cleaned filename if it looks like a project identifier
     if (cleanFilename.length >= 3 && cleanFilename.length <= 50) {
-      console.log(`✅ Using cleaned filename as project number: "${cleanFilename}"`);
       return { projectNumber: cleanFilename };
     }
   }
   
-  console.log("❌ No project number found in PDF or filename");
   return { projectNumber: null };
 }
 
@@ -1162,7 +1073,6 @@ function extractProjectInformation(pdfText: string, filename?: string): { projec
 
 // Parse consolidated defect summary from PDF structure
 function parseConsolidatedDefectSummary(pdfText: string): { [sectionNumber: number]: string } {
-  console.log("🔍 Parsing consolidated defect summary from PDF...");
   
   const defectMap: { [sectionNumber: number]: string } = {};
   
@@ -1171,12 +1081,10 @@ function parseConsolidatedDefectSummary(pdfText: string): { [sectionNumber: numb
   const section95Match = pdfText.match(section95Pattern);
   
   if (!section95Match) {
-    console.log("❌ Could not find Section 95 with consolidated defect data");
     return defectMap;
   }
   
   const section95Content = section95Match[1];
-  console.log(`📄 Found Section 95 content with ${section95Content.length} characters`);
   
   // Parse defect entries from the consolidated summary
   // Pattern: SectionNumber + Reference + Grade + Description
@@ -1195,7 +1103,6 @@ function parseConsolidatedDefectSummary(pdfText: string): { [sectionNumber: numb
     const fullDefect = `Grade ${grade}: ${description}`;
     defectMap[sectionNum] = fullDefect;
     
-    console.log(`✓ Section ${sectionNum}: ${fullDefect}`);
   }
   
   // Also look for any continuation lines that might be part of defect descriptions
@@ -1211,18 +1118,15 @@ function parseConsolidatedDefectSummary(pdfText: string): { [sectionNumber: numb
         const lastSection = Math.max(...sectionNumbers);
         if (defectMap[lastSection]) {
           defectMap[lastSection] += ` ${line}`;
-          console.log(`✓ Appended to Section ${lastSection}: ${line}`);
         }
       }
     }
   }
   
-  console.log(`📋 Parsed ${Object.keys(defectMap).length} sections with authentic defect data`);
   return defectMap;
 }
 
 function extractDefectsFromAdoptionSection(pdfText: string, itemNo: number): string {
-  console.log(`🔍 Extracting authentic defects for Section ${itemNo} from PDF`);
   
   // Look for the actual section content in the PDF - format has detailed section pages
   const lines = pdfText.split('\n').map(line => line.trim()).filter(line => line);
@@ -1234,13 +1138,11 @@ function extractDefectsFromAdoptionSection(pdfText: string, itemNo: number): str
   for (let i = 0; i < lines.length; i++) {
     if (sectionHeaderPattern.test(lines[i])) {
       sectionStartIndex = i;
-      console.log(`✓ Found Section ${itemNo} header at line ${i}: "${lines[i]}"`);
       break;
     }
   }
   
   if (sectionStartIndex === -1) {
-    console.log(`❌ No section header found for Section ${itemNo} - using clean section default`);
     return '';
   }
   
@@ -1265,8 +1167,6 @@ function extractDefectsFromAdoptionSection(pdfText: string, itemNo: number): str
   }
   
   const fullSectionText = sectionContent.join(' ');
-  console.log(`📄 Section ${itemNo} content length: ${fullSectionText.length} characters`);
-  console.log(`📄 Section ${itemNo} first 200 chars: "${fullSectionText.substring(0, 200)}"`);
   
   // Look for authentic defect descriptions in plain English format
   const defectMatches = [];
@@ -1304,7 +1204,6 @@ function extractDefectsFromAdoptionSection(pdfText: string, itemNo: number): str
   
   // If we found defects, return them; otherwise return empty string for clean sections
   const extractedDefects = defectMatches.length > 0 ? defectMatches.join(', ').substring(0, 500) : '';
-  console.log(`✅ Section ${itemNo} extracted defects: "${extractedDefects}"`);
   
   return extractedDefects;
 }
@@ -1333,7 +1232,6 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
       const totalLength = sectionMatch[6];
       const inspectedLength = sectionMatch[7];
       
-      console.log(`DEBUG: Processing Section ${sectionNum}: ${upstreamNode}→${downstreamNode} (before any corrections)`);
       
       // Manual fixes for known problematic sections based on PDF analysis
       if (sectionNum === 66 && upstreamNode === 'P7GC' && downstreamNode === 'P05') {
@@ -1357,13 +1255,8 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
       const headerInfo = headerReferences.get(sectionNum);
       let flowDirectionNote = '';
       
-      console.log(`DEBUG Section ${sectionNum}: HeaderInfo exists: ${!!headerInfo}, Direction: ${headerInfo?.inspectionDirection || 'not found'}`);
       
       if (sectionNum === 23) {
-        console.log(`*** SECTION 23 DEBUG ***`);
-        console.log(`HeaderInfo: ${JSON.stringify(headerInfo)}`);
-        console.log(`Current upstream: ${upstreamNode}, downstream: ${downstreamNode}`);
-        console.log(`*** END SECTION 23 DEBUG ***`);
       }
       
       // =====================================================================
@@ -1396,7 +1289,6 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
       // =====================================================================
       if (headerInfo && headerInfo.inspectionDirection) {
         // GENERIC INSPECTION DIRECTION LOGIC - WORKS WITH ANY REPORT
-        console.log(`INFO: Applying inspection direction logic for Section ${sectionNum}: "${headerInfo.inspectionDirection}"`);
         
         // UNIVERSAL INSPECTION DIRECTION RULES:
         // - Downstream inspection → use extracted upstream→downstream flow  
@@ -1404,14 +1296,12 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
         if (headerInfo.inspectionDirection.toLowerCase().includes('downstream')) {
           // Downstream inspection: keep extracted flow direction as-is
           flowDirectionNote = ' (downstream inspection: normal flow)';
-          console.log(`DEBUG Section ${sectionNum}: Downstream inspection - keeping ${upstreamNode}→${downstreamNode}`);
         } else if (headerInfo.inspectionDirection.toLowerCase().includes('upstream')) {
           // Upstream inspection: reverse the extracted flow direction
           const temp = upstreamNode;
           upstreamNode = downstreamNode;
           downstreamNode = temp;
           flowDirectionNote = ' (upstream inspection: reversed flow)';
-          console.log(`DEBUG Section ${sectionNum}: Upstream inspection - reversed to ${upstreamNode}→${downstreamNode}`);
         
         // ADDITIONAL GENERIC CORRECTIONS (apply to all sections):
         
@@ -1422,7 +1312,6 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
           upstreamNode = downstreamNode;
           downstreamNode = temp;
           flowDirectionNote += ' + corrected longer→shorter';
-          console.log(`DEBUG Section ${sectionNum}: Corrected longer→shorter reference ${upstreamNode}→${downstreamNode}`);
         }
         
         // 2. Apply generic adoption sector flow direction correction
@@ -1431,12 +1320,10 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
           upstreamNode = correction.upstream;
           downstreamNode = correction.downstream;
           flowDirectionNote += ' + flow direction corrected';
-          console.log(`DEBUG Section ${sectionNum}: Flow direction corrected ${upstreamNode}→${downstreamNode}`);
         }
         
       } else {
         // NO HEADER INFO: Apply generic corrections only
-        console.log(`INFO: No inspection direction header for Section ${sectionNum} - applying generic corrections`);
         
         // 1. Longer reference containing shorter reference = backwards flow
         if (upstreamNode.length > downstreamNode.length && 
@@ -1445,7 +1332,6 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
           upstreamNode = downstreamNode;
           downstreamNode = temp;
           flowDirectionNote = ' (corrected longer→shorter reference)';
-          console.log(`DEBUG Section ${sectionNum}: Corrected longer→shorter reference ${upstreamNode}→${downstreamNode}`);
         }
         
         // 2. Apply generic flow direction correction
@@ -1454,12 +1340,9 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
           upstreamNode = correction.upstream;
           downstreamNode = correction.downstream;
           flowDirectionNote = ' (flow direction auto-corrected)';
-          console.log(`DEBUG Section ${sectionNum}: Flow direction corrected ${upstreamNode}→${downstreamNode}`);
         }
       }
       
-      console.log(`✓ Found authentic Section ${sectionNum}: ${upstreamNode}→${downstreamNode}, ${totalLength}m/${inspectedLength}m, ${material}${flowDirectionNote}`);
-      console.log(`DEBUG: Raw match groups: [${sectionMatch.slice(1).join('], [')}]`);
 
       // Check if section already exists (prevent duplicates on reprocessing)
       const existingSection = await db.query.sectionInspections.findFirst({
@@ -1470,12 +1353,10 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
       });
       
       if (existingSection && sectionNum !== 1) {
-        console.log(`DEBUG: Section ${sectionNum} already exists - SKIPPING to prevent duplicates`);
         continue;
       }
       
       if (existingSection && sectionNum === 1) {
-        console.log(`🔄 SECTION 1 RE-EXTRACTION: Allowing re-extraction for testing authentic data`);
       }
 
       // Extract authentic data from PDF section content
@@ -1505,7 +1386,6 @@ async function classifyAdoptionDefects(itemNo: number, pipeSize: string): Promis
     }
   }
   
-  console.log(`✓ Extracted ${sections.length} authentic sections from PDF`);
   return sections;
 }
 }
@@ -1553,7 +1433,6 @@ export async function registerRoutes(app: Express) {
       // If file exists with sector, reprocess it with existing sector instead of requiring selection
       if (existingUpload.length > 0 && existingUpload[0].sector && !req.body.sector) {
         req.body.sector = existingUpload[0].sector;
-        console.log(`Using existing sector "${existingUpload[0].sector}" for re-uploaded file: ${req.file.originalname}`);
       }
       
       // Handle folder assignment and visit number
@@ -1604,14 +1483,12 @@ export async function registerRoutes(app: Express) {
         }).returning();
       }
 
-      console.log("Processing database file:", req.file.originalname);
 
       // Check file type - only process database files
       if (req.file.originalname.endsWith('.db') || req.file.originalname.endsWith('.db3') || req.file.originalname.endsWith('meta.db3')) {
         try {
           const filePath = req.file.path;
           
-          console.log("Processing Wincan database file with authentic data extraction...");
           
           // Clear any existing sections for this file upload to prevent duplicates
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
@@ -1622,12 +1499,10 @@ export async function registerRoutes(app: Express) {
           // Extract authentic data from database
           const sections = await readWincanDatabase(filePath, req.body.sector || 'utilities');
           
-          console.log(`Extracted ${sections.length} authentic sections from database`);
           
           // Store sections in database
           if (sections.length > 0) {
             await storeWincanSections(sections, fileUpload.id);
-            console.log(`✅ Stored ${sections.length} sections in database`);
           }
           
           // Update file upload status to completed
@@ -1757,7 +1632,6 @@ export async function registerRoutes(app: Express) {
     try {
       const uploadId = parseInt(req.params.uploadId);
       
-      console.log(`🗑️ Starting comprehensive deletion for upload ID ${uploadId}`);
       
       // COMPREHENSIVE CASCADE DELETION - Delete all associated data
       
@@ -1765,13 +1639,11 @@ export async function registerRoutes(app: Express) {
       const deletedSections = await db.delete(sectionInspections)
         .where(eq(sectionInspections.fileUploadId, uploadId))
         .returning();
-      console.log(`🗑️ Deleted ${deletedSections.length} section inspections`);
       
       // 2. Delete individual defects
       const deletedDefects = await db.delete(sectionDefects)
         .where(eq(sectionDefects.fileUploadId, uploadId))
         .returning();
-      console.log(`🗑️ Deleted ${deletedDefects.length} individual defects`);
       
       // 3. Check for and delete any pricing/repair data that might reference this upload
       // Note: Most pricing tables are user-based, not upload-based, so they persist
@@ -1790,7 +1662,6 @@ export async function registerRoutes(app: Express) {
       if (uploadRecord.filePath && existsSync(uploadRecord.filePath)) {
         try {
           fs.unlinkSync(uploadRecord.filePath);
-          console.log(`🗑️ Deleted physical file: ${uploadRecord.filePath}`);
         } catch (fileError) {
           console.warn(`⚠️ Could not delete physical file: ${fileError.message}`);
         }
@@ -1805,8 +1676,6 @@ export async function registerRoutes(app: Express) {
         return res.status(404).json({ error: "File upload record not found" });
       }
       
-      console.log(`✅ COMPLETE DELETION: Upload ID ${uploadId} and ALL associated data removed`);
-      console.log(`📊 Deletion Summary: ${deletedSections.length} sections, ${deletedDefects.length} defects, 1 upload record, physical file cleaned`);
       
       res.json({ 
         message: "Upload deleted successfully",
@@ -1871,7 +1740,6 @@ export async function registerRoutes(app: Express) {
             
             // DISABLED: Multi-defect processing (causes duplication issues)
             // Keep sections as single units without splitting
-            console.log(`✅ Processing Section ${section.itemNo} as single section (no splitting)`);
             const result = { individualDefects: [] }; // Disabled multi-defect processing
             
             // Validate each individual defect before storing
@@ -1883,7 +1751,6 @@ export async function registerRoutes(app: Express) {
               }
             }
             
-            console.log(`✓ Processed ${result.individualDefects?.length || 0} defects for Section ${section.itemNo}`);
             totalProcessed += result.individualDefects?.length || 0;
           } catch (error) {
             console.error(`Error processing defects for Section ${section.itemNo}:`, error);
@@ -1939,7 +1806,6 @@ export async function registerRoutes(app: Express) {
             .where(eq(sectionInspections.id, section.id));
           
           correctedCount++;
-          console.log(`Corrected Section ${section.itemNo}: ${section.startMH}→${section.finishMH} to ${correction.upstream}→${correction.downstream}`);
         }
       }
       
@@ -1995,15 +1861,12 @@ export async function registerRoutes(app: Express) {
       
       if (sectionData) {
         // DISABLED: Multi-defect section splitting (causes duplication issues)
-        console.log(`✅ Processing Section ${sectionNumber} as single section (no splitting)`);
         
         const finalSections = [sectionData]; // Keep as single section, no splitting
         
-        console.log(`✓ Section ${sectionNumber} splitting complete: 1 original → ${finalSections.length} final sections`);
         
         // REMOVED: Third duplicate database insertion point
         // Sections should only be inserted once after MSCC5 classification
-        console.log(`✅ Section ${sectionNumber} ready for MSCC5 processing: ${finalSections.length} subsections`)
       }
       
       res.json({ 
@@ -2043,11 +1906,9 @@ export async function registerRoutes(app: Express) {
       
       if (extractedSections && extractedSections.length > 0) {
         // DISABLED: Multi-defect section splitting (causes duplication issues)
-        console.log('✅ Processing refreshed sections as single sections (no splitting)');
         
         const finalSections = extractedSections; // Keep as single sections, no splitting
         
-        console.log(`✓ Flow refresh splitting complete: ${extractedSections.length} original → ${finalSections.length} final sections`);
         await db.insert(sectionInspections).values(finalSections);
       }
       
@@ -2186,7 +2047,6 @@ export async function registerRoutes(app: Express) {
         addressValidated
       } = req.body;
       
-      console.log("📁 Creating folder with enhanced validation:", {
         folderName,
         projectAddress,
         projectPostcode,
@@ -2206,7 +2066,6 @@ export async function registerRoutes(app: Express) {
         addressValidated: addressValidated || false,
       }).returning();
       
-      console.log("✅ Folder created with travel distance:", newFolder);
       res.json(newFolder);
     } catch (error) {
       console.error("Error creating folder:", error);
@@ -2259,9 +2118,6 @@ export async function registerRoutes(app: Express) {
       const uploadId = parseInt(req.body.uploadId || "34");
       const showSections = parseInt(req.body.showFirstSections || "10");
       
-      console.log(`\n🔄 === COMPLETE PDF WORKFLOW DEMONSTRATION ===`);
-      console.log(`📁 Upload ID: ${uploadId}`);
-      console.log(`📊 Showing first ${showSections} sections\n`);
       
       // Step 1: Get PDF file
       const [fileUpload] = await db.select().from(fileUploads).where(eq(fileUploads.id, uploadId));
@@ -2269,26 +2125,18 @@ export async function registerRoutes(app: Express) {
         return res.status(404).json({ error: "File upload not found" });
       }
       
-      console.log(`📄 STEP 1: PDF File Located`);
-      console.log(`   File: ${fileUpload.fileName}`);
-      console.log(`   Path: uploads/${fileUpload.fileName}`);
       
       // Step 2: Read PDF content
       const pdfBuffer = fs.readFileSync(`uploads/${fileUpload.fileName}`);
       const pdfData = await pdfParse(pdfBuffer);
       const pdfText = pdfData.text;
       
-      console.log(`\n📖 STEP 2: PDF Content Extracted`);
-      console.log(`   Total Characters: ${pdfText.length}`);
-      console.log(`   Total Pages: ${pdfData.numpages}`);
       
       // Step 3: Parse sections from PDF
       const extractedSections = [];
       
-      console.log(`\n🔍 STEP 3: Section Extraction Process`);
       
       for (let itemNo = 1; itemNo <= showSections; itemNo++) {
-        console.log(`\n   Processing Section ${itemNo}:`);
         
         // Extract manhole references
         const { upstream, downstream } = applyAdoptionFlowDirectionCorrection("F01-10A", "F01-10");
@@ -2318,23 +2166,9 @@ export async function registerRoutes(app: Express) {
         
         extractedSections.push(section);
         
-        console.log(`     ✓ Manholes: ${section.startMH} → ${section.finishMH}`);
-        console.log(`     ✓ Pipe: ${section.pipeSize} ${section.pipeMaterial}`);
-        console.log(`     ✓ Length: ${section.totalLength}`);
-        console.log(`     ✓ Defects: ${section.defects}`);
-        console.log(`     ✓ Grade: ${section.severityGrade}`);
-        console.log(`     ✓ Adoptable: ${section.adoptable}`);
       }
       
-      console.log(`\n💾 STEP 4: Database Storage Process`);
-      console.log(`   Would insert ${extractedSections.length} sections into database`);
-      console.log(`   Table: section_inspections`);
-      console.log(`   Each section gets unique ID and timestamps`);
       
-      console.log(`\n📊 STEP 5: Dashboard Display Process`);
-      console.log(`   API endpoint: /api/uploads/${uploadId}/sections`);
-      console.log(`   Frontend queries database for sections`);
-      console.log(`   Applies MSCC5 color coding and repair options`);
       
       res.json({
         success: true,
@@ -2389,7 +2223,6 @@ export async function registerRoutes(app: Express) {
     try {
       const uploadId = parseInt(req.params.uploadId);
       
-      console.log(`🔄 CONTINUING WORKFLOW for Upload ${uploadId} after PDF Reader review`);
       
       // Get file upload record
       const [fileUpload] = await db.select().from(fileUploads).where(eq(fileUploads.id, uploadId));
@@ -2420,15 +2253,12 @@ export async function registerRoutes(app: Express) {
         sections = await extractAdoptionSectionsFromPDF(pdfData.text, fileUpload.id);
       }
       
-      console.log(`🔄 Re-extracted ${sections.length} sections for complete processing`);
       
       // PREVENT DUPLICATES: Delete existing sections before inserting new ones
       await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
-      console.log(`🗑️ Cleared existing sections for upload ID ${fileUpload.id}`);
       
       // Continue with MSCC5 classification and database storage
       if (sections.length > 0) {
-        console.log('🔍 Applying MSCC5 classification to all sections...');
         
         const finalSections = sections;
         
@@ -2446,7 +2276,6 @@ export async function registerRoutes(app: Express) {
             
             // APPLY MSCC5 CLASSIFICATION AND STORE SECTION
             try {
-              console.log(`🔍 Classifying Section ${section.itemNo} defects: "${section.defects || 'no data recorded'}"`);
               
               // Simple MSCC5 classification for adoption sector
               if (section.defects && section.defects !== "no data recorded" && section.defects !== "No action required pipe observed in acceptable structural and service condition") {
@@ -2459,11 +2288,9 @@ export async function registerRoutes(app: Express) {
                 section.adoptable = "Yes";
               }
               
-              console.log(`✅ MSCC5 Section ${section.itemNo}: Grade ${section.severityGrade}, ${section.adoptable}, "${section.recommendations}"`);
               
               // Store section in database with MSCC5 results
               await db.insert(sectionInspections).values(section as any);
-              console.log(`💾 Stored Section ${section.itemNo}: ${section.startMH} → ${section.finishMH} with classification`);
               
             } catch (classificationError) {
               console.error(`❌ MSCC5 classification failed for Section ${section.itemNo}:`, classificationError);
@@ -2474,7 +2301,6 @@ export async function registerRoutes(app: Express) {
               await db.insert(sectionInspections).values(section as any);
             }
           }
-          console.log(`✓ Successfully processed ${finalSections.length} sections after PDF Reader review`);
         } catch (error: any) {
           console.error("❌ DATA INTEGRITY VIOLATION:", error.message);
           throw new Error(`Synthetic data detected. Please ensure PDF contains authentic inspection data.`);
@@ -2494,7 +2320,6 @@ export async function registerRoutes(app: Express) {
         .from(sectionInspections)
         .where(eq(sectionInspections.fileUploadId, fileUpload.id));
       
-      console.log(`✓ Verified ${insertedSections.length} sections in database for upload ${fileUpload.id}`);
       
       res.json({
         message: "Workflow continued successfully after PDF Reader review",

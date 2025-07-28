@@ -234,13 +234,11 @@ export class DatabaseStorage implements IStorage {
       await db.delete(fileUploads).where(eq(fileUploads.id, upload.id));
       totalUploadsDeleted++;
       
-      console.log(`Deleted upload ${upload.id} from folder ${id}, removed ${deletedSections.length} sections`);
     }
     
     // Finally delete the folder itself
     await db.delete(projectFolders).where(eq(projectFolders.id, id));
     
-    console.log(`Folder ${id} completely deleted: ${totalUploadsDeleted} uploads, ${totalSectionsDeleted} sections`);
     
     return {
       folderName: folder.folderName || folder.projectAddress || 'Unnamed Folder',
@@ -304,13 +302,11 @@ export class DatabaseStorage implements IStorage {
       updateData.reportUrl = reportUrl;
     }
 
-    console.log(`Updating file upload ${id} with:`, updateData);
     const [fileUpload] = await db
       .update(fileUploads)
       .set(updateData)
       .where(eq(fileUploads.id, id))
       .returning();
-    console.log(`Database returned:`, fileUpload);
     return fileUpload;
   }
 
@@ -321,7 +317,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(sectionInspections.fileUploadId, id))
       .returning();
     
-    console.log(`Deleted upload ${id}, removed ${deletedSections.length} items`);
     
     // Then delete the file upload record
     await db.delete(fileUploads).where(eq(fileUploads.id, id));
@@ -673,7 +668,6 @@ export class DatabaseStorage implements IStorage {
 
   async acceptTeamInvitation(token: string, userId: string): Promise<void> {
     // Update team invitation acceptance - simplified for now
-    console.log(`Accepting invitation for token: ${token}, user: ${userId}`);
   }
 
   async createTeamBillingRecord(record: InsertTeamBillingRecord): Promise<TeamBillingRecord> {

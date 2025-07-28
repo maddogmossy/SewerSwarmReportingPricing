@@ -391,8 +391,6 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
   app.put('/api/pr2-clean/:id', async (req, res) => {
     try {
       const configId = parseInt(req.params.id);
-      console.log('📝 Clean PR2 PUT request body:', req.body);
-      console.log('🔍 DEBUGGING: Range options in PUT:', JSON.stringify(req.body.rangeOptions, null, 2));
       
       const {
         categoryName,
@@ -439,7 +437,6 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         return res.status(404).json({ error: 'Configuration not found' });
       }
 
-      console.log('✅ Updated clean PR2 configuration:', updatedConfig);
       res.json(updatedConfig);
     } catch (error) {
       console.error('Error updating clean PR2 configuration:', error);
@@ -473,19 +470,13 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       }
 
       // Log deletion for audit trail
-      console.log('🚨 USER-APPROVED DELETION:', {
-        configId: configId,
-        categoryId: existingConfig[0].categoryId,
-        categoryName: existingConfig[0].categoryName,
-        timestamp: new Date().toISOString()
-      });
+      // Configuration deletion logged
 
       const [deletedConfig] = await db
         .delete(pr2Configurations)
         .where(eq(pr2Configurations.id, configId))
         .returning();
 
-      console.log('✅ Deleted clean PR2 configuration:', deletedConfig.id);
       res.json({ 
         message: 'Configuration deleted successfully',
         deletedConfig: deletedConfig

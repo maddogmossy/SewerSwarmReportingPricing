@@ -40,7 +40,6 @@ export function AddressAutocomplete({
       if (!searchQuery || searchQuery.length < 1) return [];
       
       try {
-        console.log("Fetching suggestions for:", searchQuery);
         const response = await fetch(`/api/search-addresses?q=${encodeURIComponent(searchQuery)}&limit=8`, {
           credentials: 'include',
           headers: {
@@ -54,9 +53,6 @@ export function AddressAutocomplete({
         }
         
         const result = await response.json();
-        console.log("Raw API response:", result);
-        console.log("Parsed suggestions:", result);
-        console.log("Is array?", Array.isArray(result));
         
         return Array.isArray(result) ? result : [];
       } catch (error) {
@@ -68,11 +64,9 @@ export function AddressAutocomplete({
   });
 
   const suggestions = Array.isArray(rawSuggestions) ? rawSuggestions : [];
-  console.log("Final suggestions array:", suggestions);
 
   // Show suggestions when data is available
   useEffect(() => {
-    console.log("Address autocomplete state:", { 
       suggestions: suggestions.length, 
       value: value.length, 
       showSuggestions,
@@ -145,7 +139,6 @@ export function AddressAutocomplete({
                   key={index}
                   onMouseDown={(e) => {
                     e.preventDefault();
-                    console.log("Clicking suggestion:", address);
                     handleSelect(address);
                   }}
                   className="flex items-start gap-2 p-3 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-b-0 bg-green-50"

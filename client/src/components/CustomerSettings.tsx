@@ -547,7 +547,6 @@ function CustomerSettingsContent() {
 
   // Vehicle Travel Rate helper functions
   const fetchVehicleDefaults = async (vehicleType: string) => {
-    console.log('Fetching vehicle defaults for:', vehicleType);
     
     // UK Commercial Vehicle Industry Standard Defaults
     const vehicleDefaults = {
@@ -650,12 +649,10 @@ function CustomerSettingsContent() {
     };
 
     const defaults = vehicleDefaults[vehicleType as keyof typeof vehicleDefaults];
-    console.log('Vehicle defaults response:', defaults);
     return defaults || null;
   };
 
   const handleVehicleTypeChange = (vehicleType: string) => {
-    console.log('Vehicle type selected:', vehicleType);
     vehicleForm.setValue('vehicleType', vehicleType);
   };
 
@@ -1188,7 +1185,6 @@ function CustomerSettingsContent() {
                                   alt="Company Logo"
                                   className="h-16 w-16 object-contain bg-white border rounded"
                                   onLoad={() => {
-                                    console.log("✅ Logo loaded successfully via API endpoint");
                                   }}
                                   onError={(e) => {
                                     console.error("❌ Logo API endpoint failed, URL:", e.currentTarget.src);

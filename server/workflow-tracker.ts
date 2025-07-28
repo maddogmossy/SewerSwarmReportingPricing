@@ -36,7 +36,6 @@ export class WorkflowTracker {
       details
     });
     
-    console.log(`📊 WORKFLOW STEP: ${step} ${count ? `(${count})` : ''} ${details || ''}`);
   }
   
   addPatternMatch(matchCount: number, pattern: string, itemNo?: number) {
@@ -103,37 +102,15 @@ export class WorkflowTracker {
   printDetailedReport() {
     const analysis = this.generateAnalysis();
     
-    console.log(`\n🔍 COMPREHENSIVE WORKFLOW ANALYSIS FOR UPLOAD ${this.uploadId}`);
-    console.log(`=====================================`);
-    console.log(`📋 EXTRACTION SUMMARY:`);
-    console.log(`   📊 PDF Pattern Matches: ${analysis.patternMatches}`);
-    console.log(`   ✅ Sections Created: ${analysis.sectionsCreated}`);
-    console.log(`   💾 Sections Stored: ${analysis.sectionsStored}`);
-    console.log(`   📈 Item Range: ${analysis.itemRange.min} to ${analysis.itemRange.max}`);
-    console.log(`   📝 Expected Count: ${analysis.expectedCount}`);
-    console.log(`   ✅ Actual Count: ${analysis.actualCount}`);
-    console.log(`   ⚠️  Discrepancy: ${analysis.discrepancy}`);
     
-    console.log(`\n❌ MISSING ITEMS (${analysis.missingItems.length}):`);
-    console.log(`   ${analysis.missingItems.length > 0 ? analysis.missingItems.join(', ') : 'None'}`);
     
-    console.log(`\n🔄 DUPLICATE ITEMS (${analysis.duplicateItems.length}):`);
-    console.log(`   ${analysis.duplicateItems.length > 0 ? analysis.duplicateItems.join(', ') : 'None'}`);
     
-    console.log(`\n📊 SECTION BREAKDOWN:`);
     this.sectionData.forEach((section, index) => {
-      console.log(`   ${index + 1}. Item ${section.itemNo}: ${section.startMH} → ${section.finishMH}`);
     });
     
-    console.log(`\n⚠️  WORKFLOW RECOMMENDATIONS:`);
     if (analysis.discrepancy > 0) {
-      console.log(`   • PDF contains ${analysis.patternMatches} pattern matches but only ${analysis.actualCount} valid sections`);
-      console.log(`   • Missing ${analysis.missingItems.length} items: ${analysis.missingItems.join(', ')}`);
-      console.log(`   • Show dashboard warning: "Report shows ${analysis.actualCount} sections (${analysis.missingItems.length} missing items)"`);
     } else {
-      console.log(`   • All sections extracted successfully - no discrepancies found`);
     }
     
-    console.log(`=====================================\n`);
   }
 }

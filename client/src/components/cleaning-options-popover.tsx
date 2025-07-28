@@ -22,7 +22,6 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     const pipeSize = sectionData.pipeSize || '150mm';
     const pipeSizeNumber = pipeSize.replace('mm', '');
     
-    console.log(`🔍 Cleaning click detected: ${pipeSizeNumber}mm pipe in ${sectionData.sector} sector`);
     
     try {
       // Auto-detect or create TP1 configuration for this pipe size
@@ -38,7 +37,6 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       
       if (response.ok) {
         const config = await response.json();
-        console.log(`✅ Auto-detected/created TP1 configuration: ID ${config.id} for ${pipeSizeNumber}mm`);
         
         // Route to specific configuration with auto-assigned ID
         window.location.href = `/pr2-config-clean?id=${config.id}&categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;

@@ -23,8 +23,6 @@ export class ConstructionValidation {
     };
   } {
     
-    console.log("🏗️ Construction (Pre/Post Build Validation)");
-    console.log("=" .repeat(50));
     
     // 1. Check construction-specific standards files
     const requiredFiles = [
@@ -45,7 +43,6 @@ export class ConstructionValidation {
         console.warn(`❌ ${file} is missing`);
         missingFiles.push(file);
       } else {
-        console.log(`✅ ${file} loaded`);
       }
     });
     
@@ -78,9 +75,6 @@ export class ConstructionValidation {
     
     const status = issues.length === 0 ? 'PASS' : 'FAIL';
     
-    console.log(`\n📊 Construction Validation Status: ${status}`);
-    console.log(`Issues: ${issues.length}`);
-    console.log(`Recommendations: ${recommendations.length}`);
     
     return {
       filesLoaded,

@@ -32,7 +32,6 @@ export default function PR2Category() {
   const categoryId = urlParams.get('categoryId') || '';
   
   // Add debugging
-  console.log('PR2Category loaded - sector:', sector, 'categoryId:', categoryId);
   
   // Get current sector info
   const currentSector = SECTORS.find(s => s.id === sector) || SECTORS[0];

@@ -24,8 +24,6 @@ export function TP1Template({ configId, tp1Data, setTp1Data, selectedPipeSize }:
     
     saveTimeoutRef.current = setTimeout(() => {
       setTp1Data((currentData: any) => {
-        console.log(`🔄 P007 AUTO-SAVE TRIGGERED for pipe size ${selectedPipeSize}`);
-        console.log('🔄 CURRENT TP1 DATA (FRESH):', currentData);
         saveTP1ConfigWithData(currentData);
         return currentData;
       });
@@ -35,13 +33,10 @@ export function TP1Template({ configId, tp1Data, setTp1Data, selectedPipeSize }:
   // Save function that accepts current data to avoid closure issues
   const saveTP1ConfigWithData = async (currentData: any) => {
     try {
-      console.log(`💾 ISOLATED SAVE for Config ID: ${configId} (Pipe Size: ${selectedPipeSize})`);
-      console.log('💾 PAYLOAD BEING SENT (FRESH):', JSON.stringify(currentData, null, 2));
 
       const response = await apiRequest('PUT', `/api/pr2-clean/${configId}`, currentData);
       
       if (response.ok) {
-        console.log(`✅ P007 Auto-save successful for config ${configId}`);
       } else {
         console.error('❌ P007 Auto-save failed:', response.statusText);
       }
@@ -59,7 +54,6 @@ export function TP1Template({ configId, tp1Data, setTp1Data, selectedPipeSize }:
           i === index ? { ...opt, [field]: value } : opt
         )
       };
-      console.log(`🔵 BLUE WINDOW - ${field} updated:`, value);
       return updated;
     });
     debouncedAutoSave();
@@ -73,7 +67,6 @@ export function TP1Template({ configId, tp1Data, setTp1Data, selectedPipeSize }:
           i === index ? { ...opt, [field]: value } : opt
         )
       };
-      console.log(`🟢 GREEN WINDOW - ${field} updated:`, value);
       return updated;
     });
     debouncedAutoSave();
@@ -87,7 +80,6 @@ export function TP1Template({ configId, tp1Data, setTp1Data, selectedPipeSize }:
           i === index ? { ...opt, [field]: value } : opt
         )
       };
-      console.log(`🟣 PURPLE WINDOW - ${field} updated:`, value);
       return updated;
     });
     debouncedAutoSave();
@@ -107,7 +99,6 @@ export function TP1Template({ configId, tp1Data, setTp1Data, selectedPipeSize }:
       rangeOptions: [...prev.rangeOptions, newOption]
     }));
     
-    console.log('🟣 PURPLE WINDOW - Range option added');
     debouncedAutoSave();
   };
 
@@ -117,7 +108,6 @@ export function TP1Template({ configId, tp1Data, setTp1Data, selectedPipeSize }:
       rangeOptions: prev.rangeOptions.filter((_: any, i: number) => i !== index)
     }));
     
-    console.log('🟣 PURPLE WINDOW - Range option deleted');
     debouncedAutoSave();
   };
 

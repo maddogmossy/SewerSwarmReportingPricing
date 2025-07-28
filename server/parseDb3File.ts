@@ -27,9 +27,7 @@ export function parseDb3File(filePath: string): ParsedSection[] {
     let secstatRows: any[] = [];
     try {
       secstatRows = database.prepare("SELECT * FROM SECSTAT").all();
-      console.log(`📊 Found ${secstatRows.length} SECSTAT records for severity grades`);
     } catch (err) {
-      console.log("⚠️ Could not load SECSTAT table:", err);
     }
     
     // Get main section data
@@ -100,7 +98,6 @@ export function parseDb3File(filePath: string): ParsedSection[] {
       parsedSections.push(parsedSection);
     });
     
-    console.log(`✅ Parsed ${parsedSections.length} sections with authentic SECSTAT severity grades`);
     return parsedSections;
     
   } finally {

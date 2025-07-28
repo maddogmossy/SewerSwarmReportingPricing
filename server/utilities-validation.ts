@@ -29,8 +29,6 @@ export class UtilitiesValidation {
     };
   } {
     
-    console.log("🔍 Utilities Sector Logic Profile Validation");
-    console.log("=" .repeat(50));
     
     // 1. Confirm all JSON files are loaded (using logic profile configuration)
     const requiredFiles = UTILITIES_LOGIC_PROFILE.standards_used || [
@@ -53,7 +51,6 @@ export class UtilitiesValidation {
         console.warn(`❌ ${file} is missing`);
         missingFiles.push(file);
       } else {
-        console.log(`✅ ${file} loaded`);
       }
     });
     
@@ -104,19 +101,13 @@ export class UtilitiesValidation {
     const status = allFilesLoaded && allLogicImplemented && allTriggersActive ? 'PASS' : 'FAIL';
     
     // Console output
-    console.log("\n📊 Validation Results:");
     console.table(validationChecklist);
     
-    console.log("\n🎯 Action Triggers Status:");
     Object.entries(actionTriggers).forEach(([trigger, status]) => {
-      console.log(`${status ? '✅' : '❌'} ${trigger}`);
     });
     
     if (status === 'PASS') {
-      console.log("\n🎉 Utilities Sector Logic Profile ✅");
     } else {
-      console.log("\n⚠️ Utilities Sector Logic Profile - Issues Found");
-      issues.forEach(issue => console.log(`   • ${issue}`));
     }
     
     return {

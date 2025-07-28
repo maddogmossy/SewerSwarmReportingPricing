@@ -10,11 +10,7 @@ import { eq, sql } from "drizzle-orm";
 import { registerAdminControlRoutes } from "./routes-admin-controls";
 
 // Debug: Test import at module level
-console.log('Testing sector standards import...');
-console.log('getSectorStandards function:', typeof getSectorStandards);
 const testStandards = getSectorStandards('utilities');
-console.log('Test utilities standards:', testStandards ? 'SUCCESS' : 'FAILED');
-console.log('Standards count:', testStandards?.standards?.length || 0);
 
 // Helper function to determine defect type from defects text
 function determineDefectType(defectsText: string): 'structural' | 'service' {
@@ -161,7 +157,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         if (upload.filePath && fs.existsSync(upload.filePath)) {
           fs.unlinkSync(upload.filePath);
-          console.log(`🗑️ Deleted physical file: ${upload.filePath}`);
         }
       } catch (fileError) {
         console.warn(`Could not delete file ${upload.filePath}:`, fileError.message);
@@ -173,7 +168,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Use database storage to delete the upload (this also deletes associated sections)
       await storage.deleteFileUpload(uploadId);
       
-      console.log(`✅ Upload ${uploadId} completely deleted: database records, sections, and physical file`);
       
       res.json({ success: true, message: 'Upload and all associated data deleted successfully' });
     } catch (error) {
@@ -209,7 +203,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const created = await storage.createProjectFolder(newFolder);
       
-      console.log('Created new folder:', created);
       
       res.json(created);
     } catch (error) {
@@ -231,7 +224,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           if (upload.filePath && fs.existsSync(upload.filePath)) {
             fs.unlinkSync(upload.filePath);
-            console.log(`🗑️ Deleted physical file: ${upload.filePath}`);
           }
         } catch (fileError) {
           console.warn(`Could not delete file ${upload.filePath}:`, fileError.message);
@@ -246,7 +238,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         !uploadsInFolder.some(folderUpload => folderUpload.id === upload.id)
       );
       
-      console.log(`✅ Folder ${folderId} completely deleted: ${result.deletedCounts.uploads} uploads, ${result.deletedCounts.sections} sections`);
       
       res.json({ 
         success: true, 
@@ -392,7 +383,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filePath = req.file.path;
       const fileSize = req.file.size;
       
-      console.log(`📁 File uploaded: ${fileName} (${fileSize} bytes)`);
       
       // Create upload record
       const uploadData = {
@@ -414,7 +404,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (sections && sections.length > 0) {
           await storeWincanSections(sections, upload.id);
           await storage.updateFileUpload(upload.id, { status: 'completed' });
-          console.log(`✅ Processed ${sections.length} sections from Wincan database`);
         }
       }
 
@@ -436,7 +425,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Upload not found' });
       }
       
-      console.log(`🔄 Reprocessing upload ${uploadId}: ${upload.fileName}`);
       
       // Update status to processing
       await storage.updateFileUploadStatus(uploadId, 'processing');
@@ -466,7 +454,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (sections && sections.length > 0) {
           await storeWincanSections(sections, uploadId);
           await storage.updateFileUploadStatus(uploadId, 'completed');
-          console.log(`✅ Reprocessed ${sections.length} sections from Wincan database with updated filtering`);
           
           res.json({ 
             success: true, 

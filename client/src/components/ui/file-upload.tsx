@@ -156,7 +156,6 @@ export default function FileUpload({
     const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext)) || fileName.endsWith('meta.db3');
     
     // Log for debugging file browser issues
-    console.log('File validation:', { fileName, type: file.type, hasValidExtension });
 
     if (!hasValidExtension) {
       alert('Please select a valid file (.db, .db3, meta.db3, .pdf)');

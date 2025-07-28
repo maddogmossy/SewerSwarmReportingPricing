@@ -76,7 +76,6 @@ export default function PR2PricingForm() {
   // Populate form with existing configuration data when editing
   useEffect(() => {
     if (isEditing && existingConfig) {
-      console.log('📝 Loading existing config for editing:', existingConfig);
       
       // Helper function to convert option arrays back to form structure
       const convertOptionsToForm = (options: any[] = []) => {
@@ -139,7 +138,6 @@ export default function PR2PricingForm() {
       }
     },
     onSuccess: (data) => {
-      console.log('✅ PR2 configuration saved successfully:', data);
       toast({
         title: "Success",
         description: `PR2 configuration ${isEditing ? 'updated' : 'created'} successfully`,
@@ -183,7 +181,6 @@ export default function PR2PricingForm() {
   };
 
   const handleSave = async () => {
-    console.log('💾 Save button clicked - current form data:', formData);
     
     // Simple validation - just check if category name is provided
     if (!formData.categoryName || formData.categoryName.trim() === '') {

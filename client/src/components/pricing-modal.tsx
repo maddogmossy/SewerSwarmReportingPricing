@@ -24,7 +24,6 @@ const reportSizes = [
 export default function PricingModal({ open, onOpenChange }: PricingModalProps) {
   const handleSelectSize = (range: string, price: number) => {
     // TODO: Navigate to checkout with selected size
-    console.log(`Selected: ${range} for £${price}`);
     onOpenChange(false);
   };
 

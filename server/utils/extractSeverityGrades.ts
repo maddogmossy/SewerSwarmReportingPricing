@@ -177,7 +177,6 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
       WHERE s.OBJ_SortOrder IS NOT NULL AND ss.STA_HighestGrade IS NOT NULL
     `).all();
     
-    console.log(`📊 Found ${secstatRows.length} SECSTAT records with authentic severity grades`);
     
     // Process authentic SECSTAT grades first
     for (const row of secstatRows) {
@@ -196,7 +195,6 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
           gradeMap[itemNo].service = grades.service;
         }
         
-        console.log(`✅ AUTHENTIC SECSTAT Grade - Item ${itemNo}: ${row.STA_Type}=${grades.structural || grades.service}, Method=${row.STA_ValuationMethod}`);
       }
     }
     
@@ -232,15 +230,12 @@ export async function getSeverityGradesBySection(database: any): Promise<Record<
         }
         
         enhancedClassifications++;
-        console.log(`🔍 ENHANCED MSCC5 Classification - Item ${itemNo}: STR=${enhancedGrades.structural}, SER=${enhancedGrades.service}`);
       }
     }
     
-    console.log(`📈 Applied enhanced MSCC5 classification to ${enhancedClassifications} sections without SECSTAT records`);
     
     return gradeMap;
   } catch (error) {
-    console.log("⚠️ Error extracting severity grades:", error);
     return {};
   }
 }

@@ -185,6 +185,5 @@ export function validateBeforeInsert(data: any, source: 'pdf' | 'manual' | 'api'
     throw new Error(`Data integrity violation: ${validation.errors.join('; ')}`);
   }
   
-  console.log("✅ DATA INTEGRITY VALIDATED: Authentic data approved for insertion");
   return true;
 }

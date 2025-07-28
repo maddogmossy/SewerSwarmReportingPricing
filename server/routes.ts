@@ -96,7 +96,6 @@ async function fetchLogoFromWebsite(websiteUrl: string): Promise<string | null> 
           await fs.promises.mkdir('uploads/logos', { recursive: true });
           await fs.promises.writeFile(filepath, buffer);
           
-          console.log(`Successfully fetched logo from ${logoUrl}`);
           return filepath;
         }
       } catch (error) {
@@ -142,7 +141,6 @@ async function fetchLogoFromWebsite(websiteUrl: string): Promise<string | null> 
                 await fs.promises.mkdir('uploads/logos', { recursive: true });
                 await fs.promises.writeFile(filepath, buffer);
                 
-                console.log(`Successfully fetched logo from meta tag: ${logoUrl}`);
                 return filepath;
               }
             } catch (error) {
@@ -152,12 +150,10 @@ async function fetchLogoFromWebsite(websiteUrl: string): Promise<string | null> 
         }
       }
     } catch (error) {
-      console.log(`Failed to fetch HTML from ${url}:`, error);
     }
 
     return null;
   } catch (error) {
-    console.log(`Failed to fetch logo from website ${websiteUrl}:`, error);
     return null;
   }
 }
@@ -232,13 +228,11 @@ export async function registerRoutes(app: Express) {
       // Handle logo upload if present
       if (req.file) {
         updates.companyLogo = req.file.path;
-        console.log("Logo uploaded to:", req.file.path);
         
         // Delete old logo file if it exists and we're replacing it
         if (currentLogoPath && fs.existsSync(currentLogoPath)) {
           try {
             fs.unlinkSync(currentLogoPath);
-            console.log("✅ Deleted old logo file:", currentLogoPath);
           } catch (error) {
             console.warn("⚠️ Could not delete old logo file:", error);
           }
@@ -251,7 +245,6 @@ export async function registerRoutes(app: Express) {
         if (fs.existsSync(currentLogoPath)) {
           try {
             fs.unlinkSync(currentLogoPath);
-            console.log("✅ Deleted logo file on removal:", currentLogoPath);
           } catch (error) {
             console.warn("⚠️ Could not delete logo file:", error);
           }
@@ -432,7 +425,6 @@ export async function registerRoutes(app: Express) {
       // If file exists with sector, reprocess it with existing sector instead of requiring selection
       if (existingUpload.length > 0 && existingUpload[0].sector && !req.body.sector) {
         req.body.sector = existingUpload[0].sector;
-        console.log(`Using existing sector "${existingUpload[0].sector}" for re-uploaded file: ${req.file.originalname}`);
       }
       
       // Handle folder assignment and visit number
@@ -483,7 +475,6 @@ export async function registerRoutes(app: Express) {
         }).returning();
       }
 
-      console.log("Processing database file:", req.file.originalname);
 
       // Check file type and process accordingly
       if (req.file.originalname.endsWith('.db') || req.file.originalname.endsWith('.db3') || req.file.originalname.endsWith('meta.db3')) {
@@ -492,7 +483,6 @@ export async function registerRoutes(app: Express) {
           const filePath = req.file.path;
           const uploadDirectory = path.dirname(filePath);
           
-          console.log("Processing Wincan database file with authentic data extraction...");
           
           // Import validation function
           const { validateGenericDb3Files } = await import('./db3-validator');
@@ -519,7 +509,6 @@ export async function registerRoutes(app: Express) {
             });
           }
           
-          console.log(validation.message);
           
           // Log warning if meta file is missing
           if (validation.warning) {
@@ -538,12 +527,10 @@ export async function registerRoutes(app: Express) {
           // Extract authentic data from database
           const sections = await readWincanDatabase(mainDbPath, req.body.sector || 'utilities');
           
-          console.log(`Extracted ${sections.length} authentic sections from database`);
           
           // Store sections in database
           if (sections.length > 0) {
             await storeWincanSections(sections, fileUpload.id);
-            console.log(`✅ Stored ${sections.length} sections in database`);
           }
           
           // Update file upload status to completed
@@ -580,7 +567,6 @@ export async function registerRoutes(app: Express) {
       } else if (req.file.originalname.toLowerCase().endsWith('.pdf')) {
         // Process PDF files
         try {
-          console.log("Processing PDF file...");
           
           // Clear any existing sections for this file upload to prevent duplicates
           await db.delete(sectionInspections).where(eq(sectionInspections.fileUploadId, fileUpload.id));
@@ -591,7 +577,6 @@ export async function registerRoutes(app: Express) {
           // Process PDF and extract sections
           const sections = await processPDF(req.file.path, fileUpload.id, req.body.sector || 'utilities');
           
-          console.log(`Extracted ${sections.length} sections from PDF`);
           
           // Update file upload status to completed
           await db.update(fileUploads)
@@ -862,12 +847,9 @@ export async function registerRoutes(app: Express) {
 
   // Serve logo files through API endpoint - MOVED TO TOP OF registerRoutes function
   app.get('/api/logo/:filename', (req, res) => {
-    console.log('Logo API endpoint hit:', req.params.filename);
     const filename = req.params.filename;
     const logoPath = path.join(process.cwd(), 'uploads', 'logos', filename);
     
-    console.log('Logo path:', logoPath);
-    console.log('File exists:', fs.existsSync(logoPath));
     
     if (fs.existsSync(logoPath)) {
       // Set proper content type for PNG images
@@ -876,18 +858,15 @@ export async function registerRoutes(app: Express) {
       
       // Use absolute path and proper method
       const absolutePath = path.resolve(logoPath);
-      console.log('Sending file:', absolutePath);
       
       res.sendFile(absolutePath, (err) => {
         if (err) {
           console.error('Error sending file:', err);
           res.status(500).json({ error: 'Failed to send logo file' });
         } else {
-          console.log('✅ Logo file sent successfully');
         }
       });
     } else {
-      console.log('❌ Logo file not found');
       res.status(404).json({ error: 'Logo not found' });
     }
   });
@@ -941,21 +920,17 @@ export async function registerRoutes(app: Express) {
 
       const { paymentMethodId, type, enabled } = req.body;
 
-      console.log(`Adding payment method: ${type}`, { paymentMethodId, enabled });
 
       // Handle different payment method types
       switch (type) {
         case 'card':
           // This would attach Stripe payment method to customer
-          console.log('Adding Stripe card:', paymentMethodId);
           break;
         case 'apple_pay':
           // This would enable Apple Pay for the customer
-          console.log('Enabling Apple Pay for customer');
           break;
         case 'paypal':
           // This would connect PayPal account
-          console.log('Connecting PayPal account');
           break;
         default:
           return res.status(400).json({ error: 'Invalid payment method type' });
@@ -982,7 +957,6 @@ export async function registerRoutes(app: Express) {
 
       const { paymentMethodId } = req.body;
 
-      console.log(`Setting default payment method: ${paymentMethodId}`);
 
       // This would update default payment method across all payment providers
       // Stripe, Apple Pay, or PayPal depending on the method type
@@ -1001,7 +975,6 @@ export async function registerRoutes(app: Express) {
 
       const { paymentMethodId } = req.params;
 
-      console.log(`Removing payment method: ${paymentMethodId}`);
 
       // This would handle removal based on method type:
       // - Stripe: detach payment method
@@ -1051,7 +1024,6 @@ export async function registerRoutes(app: Express) {
   app.get("/api/work-categories", async (req: Request, res: Response) => {
     try {
       const categories = await storage.getWorkCategories();
-      console.log(`✅ Loading ${categories.length} work categories from database`);
       res.json(categories);
     } catch (error) {
       console.error("Error fetching work categories:", error);

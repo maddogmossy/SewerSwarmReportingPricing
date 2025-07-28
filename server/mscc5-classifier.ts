@@ -586,7 +586,6 @@ export class MSCC5Classifier {
     
     // Immediate return for Construction Features and Miscellaneous Features
     if (lowerText.includes('construction features') || lowerText.includes('miscellaneous features')) {
-      console.log('LOCKED: Construction/Miscellaneous Features detected - returning observation-only');
       return true;
     }
     
@@ -895,7 +894,6 @@ export class MSCC5Classifier {
         });
       }
       
-      console.log(`✓ Stored ${defects.length} individual defects for Section ${itemNo}`);
     } catch (error) {
       console.error('Error storing individual defects:', error);
     }
@@ -915,13 +913,11 @@ export class MSCC5Classifier {
    * PERMANENT FEATURE - applies to ALL future inspection reports
    */
   static splitMultiDefectSection(defectText: string, itemNo: number, sectionData: any): any[] {
-    console.log(`🔍 Analyzing Section ${itemNo} for multi-defect splitting...`);
     
     // Parse all defects from the text
     const allDefects = this.parseAllDefectsFromText(defectText);
     
     if (allDefects.length <= 1) {
-      console.log(`✓ Section ${itemNo}: Single defect type - no splitting needed`);
       return [sectionData]; // Return original section if only one defect type
     }
     
@@ -932,13 +928,9 @@ export class MSCC5Classifier {
     const hasMultipleTypes = serviceDefects.length > 0 && structuralDefects.length > 0;
     
     if (!hasMultipleTypes) {
-      console.log(`✓ Section ${itemNo}: Same defect type - no splitting needed`);
       return [sectionData]; // Return original if all same type
     }
     
-    console.log(`🚨 Section ${itemNo}: MIXED DEFECTS DETECTED - Creating subsections:`);
-    console.log(`   Service defects: ${serviceDefects.map(d => d.code).join(', ')}`);
-    console.log(`   Structural defects: ${structuralDefects.map(d => d.code).join(', ')}`);
     
     const subsections = [];
     let suffixCounter = 0;
@@ -949,7 +941,6 @@ export class MSCC5Classifier {
       serviceSection.itemNo = suffixCounter === 0 ? itemNo : `${itemNo}${String.fromCharCode(97 + suffixCounter - 1)}`;
       serviceSection.defects = serviceDefects.map(d => d.description).join(', ');
       serviceSection.defectType = 'service';
-      console.log(`   ✓ Created service subsection: ${serviceSection.itemNo}`);
       subsections.push(serviceSection);
       suffixCounter++;
     }
@@ -960,11 +951,9 @@ export class MSCC5Classifier {
       structuralSection.itemNo = suffixCounter === 0 ? itemNo : `${itemNo}${String.fromCharCode(97 + suffixCounter - 1)}`;
       structuralSection.defects = structuralDefects.map(d => d.description).join(', ');
       structuralSection.defectType = 'structural';
-      console.log(`   ✓ Created structural subsection: ${structuralSection.itemNo}`);
       subsections.push(structuralSection);
     }
     
-    console.log(`✅ Section ${itemNo} split into ${subsections.length} subsections with letter suffixes`);
     return subsections;
   }
 
@@ -1013,7 +1002,6 @@ export class MSCC5Classifier {
     // =====================================================================
     // CRITICAL: Must always return observation-only response - DO NOT MODIFY
     if (normalizedText.includes('construction features') || normalizedText.includes('miscellaneous features')) {
-      console.log('LOCKED: Construction/Miscellaneous Features - forcing observation-only response');
       const srmGrading = SRM_SCORING.structural["0"] || {
         description: "No action required",
         criteria: "Pipe observed in acceptable structural and service condition",

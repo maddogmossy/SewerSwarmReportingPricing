@@ -23,8 +23,6 @@ export class DomesticValidation {
     };
   } {
     
-    console.log("🏠 Domestic Validation");
-    console.log("=" .repeat(50));
     
     // 1. Check domestic-specific standards files
     const requiredFiles = [
@@ -45,7 +43,6 @@ export class DomesticValidation {
         console.warn(`❌ ${file} is missing`);
         missingFiles.push(file);
       } else {
-        console.log(`✅ ${file} loaded`);
       }
     });
     
@@ -78,9 +75,6 @@ export class DomesticValidation {
     
     const status = issues.length === 0 ? 'PASS' : 'FAIL';
     
-    console.log(`\n📊 Domestic Validation Status: ${status}`);
-    console.log(`Issues: ${issues.length}`);
-    console.log(`Recommendations: ${recommendations.length}`);
     
     return {
       filesLoaded,

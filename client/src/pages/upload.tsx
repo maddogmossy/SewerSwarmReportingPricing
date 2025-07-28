@@ -198,17 +198,12 @@ export default function Upload() {
       
       // Handle different redirect logic based on workflow status
       setTimeout(() => {
-        console.log("Upload response data:", data);
         
         if (data.status === "extracted_pending_review") {
-          console.log(`Redirecting to PDF Reader for review: Upload ${data.uploadId}`);
           window.location.href = `/pdf-reader?uploadId=${data.uploadId}`;
         } else if (data.uploadId) {
-          console.log(`Redirecting to dashboard with reportId: ${data.uploadId}`);
           window.location.href = `/dashboard?reportId=${data.uploadId}`;
         } else {
-          console.log("Redirecting to dashboard without specific report - uploadId not found in response");
-          console.log("Available keys in response:", Object.keys(data || {}));
           window.location.href = "/dashboard";
         }
       }, 3000); // Give more time for processing to complete
@@ -271,7 +266,6 @@ export default function Upload() {
       return apiRequest("DELETE", `/api/folders/${folderId}`);
     },
     onSuccess: (data) => {
-      console.log("Delete folder success:", data);
       toast({
         title: "Project Folder Deleted",
         description: `Successfully deleted "${data.folderName}" and ${data.deletedCounts.uploads} reports.`,
@@ -286,7 +280,6 @@ export default function Upload() {
       setSelectedSector("");
       setSelectedFile(null);
       
-      console.log("✅ Returned to main upload page after folder deletion");
     },
     onError: (error) => {
       toast({
