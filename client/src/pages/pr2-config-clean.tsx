@@ -992,8 +992,9 @@ export default function PR2ConfigClean() {
     ));
   };
 
-  // MM3 Pipe Size Selection State
-  const [selectedPipeSizes, setSelectedPipeSizes] = useState<{[key: string]: number}>({});
+  // MM3 Pipe Size Selection State - Single selection only  
+  const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>('');
+  const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(0);
   
   // Generate unique ID for pipe size configuration
   const generatePipeSizeId = (pipeSize: string) => {
@@ -1002,19 +1003,17 @@ export default function PR2ConfigClean() {
     return parseInt(`${pipeSizeNum}${timestamp.toString().slice(-4)}`);
   };
 
-  // Handle pipe size selection/deselection
-  const handlePipeSizeToggle = (pipeSize: string) => {
-    setSelectedPipeSizes(prev => {
-      const current = { ...prev };
-      if (current[pipeSize]) {
-        // Deselect - remove the pipe size
-        delete current[pipeSize];
-      } else {
-        // Select - assign new ID
-        current[pipeSize] = generatePipeSizeId(pipeSize);
-      }
-      return current;
-    });
+  // Handle pipe size selection - single selection only
+  const handlePipeSizeSelect = (pipeSize: string) => {
+    if (selectedPipeSizeForMM4 === pipeSize) {
+      // Deselect if clicking the same pipe size
+      setSelectedPipeSizeForMM4('');
+      setSelectedPipeSizeId(0);
+    } else {
+      // Select new pipe size and generate ID
+      setSelectedPipeSizeForMM4(pipeSize);
+      setSelectedPipeSizeId(generatePipeSizeId(pipeSize));
+    }
   };
 
   // Configuration loading moved above getCategoryName function
@@ -3040,31 +3039,25 @@ export default function PR2ConfigClean() {
                           .sort((a, b) => parseInt(a) - parseInt(b))
                           .map((size) => {
                             const isCustom = customPipeSizes.includes(size);
-                            const isSelected = selectedPipeSizes[size];
-                            const assignedId = selectedPipeSizes[size];
+                            const isSelected = selectedPipeSizeForMM4 === size;
                             
                             return (
                               <Card
                                 key={size}
                                 className={`relative group cursor-pointer transition-all border-2 ${
                                   isSelected 
-                                    ? 'border-orange-400 bg-orange-100 shadow-md' 
+                                    ? 'border-green-400 bg-green-100 shadow-md' 
                                     : 'border-gray-300 bg-white hover:border-orange-300 hover:bg-orange-50'
                                 }`}
-                                onClick={() => handlePipeSizeToggle(size)}
+                                onClick={() => handlePipeSizeSelect(size)}
                               >
                                 <CardContent className="p-3 text-center">
                                   <div className="text-sm font-mono font-semibold text-gray-900">
                                     {size}mm
                                   </div>
                                   {isSelected && (
-                                    <div className="text-xs text-orange-600 mt-1">
-                                      ID: {assignedId}
-                                    </div>
-                                  )}
-                                  {isSelected && (
                                     <div className="absolute top-1 right-1">
-                                      <Settings className="w-3 h-3 text-orange-600" />
+                                      <Settings className="w-3 h-3 text-green-600" />
                                     </div>
                                   )}
                                 </CardContent>
@@ -3074,12 +3067,11 @@ export default function PR2ConfigClean() {
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setCustomPipeSizes(prev => prev.filter(s => s !== size));
-                                      // Also remove from selected if it was selected
-                                      setSelectedPipeSizes(prev => {
-                                        const updated = { ...prev };
-                                        delete updated[size];
-                                        return updated;
-                                      });
+                                      // Also clear selection if this was the selected size
+                                      if (selectedPipeSizeForMM4 === size) {
+                                        setSelectedPipeSizeForMM4('');
+                                        setSelectedPipeSizeId(0);
+                                      }
                                     }}
                                     className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-700 z-10"
                                     title={`Remove ${size}mm custom size`}
@@ -3094,22 +3086,13 @@ export default function PR2ConfigClean() {
                     </CardContent>
                   </Card>
 
-                  {/* Display selected pipe sizes with their IDs */}
-                  {Object.keys(selectedPipeSizes).length > 0 && (
+                  {/* Display selected pipe size without ID in display */}
+                  {selectedPipeSizeForMM4 && (
                     <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">Selected Pipe Sizes with IDs:</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {Object.entries(selectedPipeSizes)
-                          .sort(([a], [b]) => parseInt(a) - parseInt(b))
-                          .map(([pipeSize, id]) => (
-                            <span 
-                              key={pipeSize}
-                              className="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-800 border border-orange-300 font-mono"
-                            >
-                              {pipeSize}mm (ID: {id})
-                            </span>
-                          ))}
-                      </div>
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Selected Pipe Size:</h4>
+                      <span className="px-3 py-1 text-sm rounded-full bg-green-100 text-green-800 border border-green-300 font-mono">
+                        {selectedPipeSizeForMM4}mm
+                      </span>
                     </div>
                   )}
                 </CardContent>
@@ -3120,25 +3103,25 @@ export default function PR2ConfigClean() {
             <div className="grid grid-cols-3 gap-6">
               {/* MM4 - Section Calculator (Left - spans 2 columns) */}
               <div className="col-span-2 relative">
-                {Object.keys(selectedPipeSizes).length > 0 ? (
+                {selectedPipeSizeForMM4 ? (
                   // Show selected pipe size in DevLabel
-                  <DevLabel id={`MM4-${Object.keys(selectedPipeSizes).sort((a, b) => parseInt(a) - parseInt(b))[0]}`} position="top-right" />
+                  <DevLabel id={`MM4-${selectedPipeSizeForMM4}`} position="top-right" />
                 ) : (
                   <DevLabel id="MM4" position="top-right" />
                 )}
                 <Card className="bg-white border-2 border-gray-200">
                   <CardHeader>
                     <CardTitle className="text-lg font-semibold text-gray-900">
-                      {Object.keys(selectedPipeSizes).length > 0 ? (
-                        // Show first selected pipe size in title
-                        `4. Section Calculator - ${Object.keys(selectedPipeSizes).sort((a, b) => parseInt(a) - parseInt(b))[0]}mm (ID: ${selectedPipeSizes[Object.keys(selectedPipeSizes).sort((a, b) => parseInt(a) - parseInt(b))[0]]})`
+                      {selectedPipeSizeForMM4 ? (
+                        // Show selected pipe size and ID in title
+                        `4. Section Calculator - ${selectedPipeSizeForMM4}mm (ID: ${selectedPipeSizeId})`
                       ) : (
                         "4. Section Calculator"
                       )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {Object.keys(selectedPipeSizes).length > 0 ? (
+                    {selectedPipeSizeForMM4 ? (
                       // Show MM4 interface when pipe size is selected
                       <div className="grid grid-cols-4 gap-4">
                         {/* Blue - Day Rate (1 column) */}
