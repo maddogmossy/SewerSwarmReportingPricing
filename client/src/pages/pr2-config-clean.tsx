@@ -1068,13 +1068,19 @@ export default function PR2ConfigClean() {
 
         // Auto-save to backend - only update existing configurations, don't create new ones
         if (editId) {
+          console.log('🚀 STEP 5: Saving to database with color:', formData.categoryColor);
+          console.log('📦 STEP 6: Full payload:', { ...formData, mmData: mmData });
+          
           await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
             ...formData,
             mmData: mmData
           });
+          
+          console.log('✅ STEP 7: Database save successful');
         }
         // Don't create new configurations during auto-save - only update existing ones
         
+        console.log('🔄 STEP 8: Invalidating queries (this causes config reload)');
         // Invalidate queries to refresh data
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
         
@@ -1089,7 +1095,17 @@ export default function PR2ConfigClean() {
   // MM2 Color picker auto-save (independent from MM1 ID selection)
   const handleMM1ColorChange = (color: string) => {
     console.log('🎨 MM2 COLOR CHANGE:', color);
-    setFormData(prev => ({ ...prev, categoryColor: color }));
+    console.log('🔄 STEP 1: User selected color:', color);
+    
+    setHasUserChanges(true); // Mark that user has made changes to prevent auto-reload
+    console.log('🔒 STEP 2: hasUserChanges set to TRUE to prevent config reload');
+    
+    setFormData(prev => {
+      console.log('📝 STEP 3: Updating formData from', prev.categoryColor, 'to', color);
+      return { ...prev, categoryColor: color };
+    });
+    
+    console.log('💾 STEP 4: Triggering auto-save...');
     triggerAutoSave();
   };
 
@@ -1206,6 +1222,7 @@ export default function PR2ConfigClean() {
   // Handle color change for MM2 custom color picker
   const handleColorChange = (color: string) => {
     console.log('🎨 MM2 CUSTOM COLOR CHANGE:', color);
+    setHasUserChanges(true); // Prevent config reload
     setFormData(prev => ({
       ...prev,
       categoryColor: color
