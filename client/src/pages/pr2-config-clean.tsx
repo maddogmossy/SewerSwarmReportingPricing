@@ -2944,36 +2944,41 @@ export default function PR2ConfigClean() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-6 gap-2">
-                    {/* Combine and sort all pipe sizes */}
-                    {[
-                      ...['100', '150', '225', '300', '375', '450', '525', '600', '675', '750', '900', '1050', '1200', '1350', '1500', '1800', '2100', '2400'],
-                      ...customPipeSizes
-                    ]
-                      .sort((a, b) => parseInt(a) - parseInt(b))
-                      .map((size) => {
-                        const isCustom = customPipeSizes.includes(size);
-                        return (
-                          <div
-                            key={size}
-                            className="relative group px-3 py-2 text-sm bg-orange-50 border border-orange-200 rounded text-center font-mono"
-                            title={`${size}mm - ${isCustom ? 'Custom' : 'Standard UK'} drainage pipe size`}
-                          >
-                            {size}mm
-                            {isCustom && (
-                              <button
-                                type="button"
-                                onClick={() => setCustomPipeSizes(prev => prev.filter(s => s !== size))}
-                                className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-700"
-                                title={`Remove ${size}mm custom size`}
+                  {/* Orange UI Card containing all pipe size buttons */}
+                  <Card className="bg-orange-50 border-2 border-orange-200">
+                    <CardContent className="p-4">
+                      <div className="grid grid-cols-6 gap-2">
+                        {/* Combine and sort all pipe sizes */}
+                        {[
+                          ...['100', '150', '225', '300', '375', '450', '525', '600', '675', '750', '900', '1050', '1200', '1350', '1500', '1800', '2100', '2400'],
+                          ...customPipeSizes
+                        ]
+                          .sort((a, b) => parseInt(a) - parseInt(b))
+                          .map((size) => {
+                            const isCustom = customPipeSizes.includes(size);
+                            return (
+                              <div
+                                key={size}
+                                className="relative group px-3 py-2 text-sm bg-white border border-gray-300 rounded text-center font-mono"
+                                title={`${size}mm - ${isCustom ? 'Custom' : 'Standard UK'} drainage pipe size`}
                               >
-                                <Trash2 className="w-2 h-2" />
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
-                  </div>
+                                {size}mm
+                                {isCustom && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setCustomPipeSizes(prev => prev.filter(s => s !== size))}
+                                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-700"
+                                    title={`Remove ${size}mm custom size`}
+                                  >
+                                    <Trash2 className="w-2 h-2" />
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </CardContent>
               </Card>
             </div>
