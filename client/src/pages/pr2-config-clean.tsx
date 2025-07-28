@@ -177,7 +177,9 @@ export default function PR2ConfigClean() {
   // Determine template type based on category
   const getTemplateType = (categoryId: string): 'TP1' | 'TP3' | 'P26' | 'P006' | 'P006a' | 'MM001' => {
     if (categoryId === 'robotic-cutting') {
-      return 'TP3'; // Robotic cutting uses TP3 template
+      return 'TP3'; // Robotic cutting uses TP3 template (specialized, no display interface)
+    } else if (categoryId === 'cart-card') {
+      return 'TP1'; // Cart card uses standard TP1 template with full interface
     } else if (categoryId === 'day-rate-db11') {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else if (categoryId?.startsWith('P006-')) {
