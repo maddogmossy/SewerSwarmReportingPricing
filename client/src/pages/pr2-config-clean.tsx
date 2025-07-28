@@ -2875,7 +2875,11 @@ export default function PR2ConfigClean() {
         )}
 
         {/* P007 Pattern - TP1 Template Component */}
-        {getTemplateType(categoryId || '') === 'P006a' && (
+        {(() => {
+          const templateType = getTemplateType(categoryId || '');
+          console.log(`🔍 Template Detection: categoryId="${categoryId}", templateType="${templateType}"`);
+          return templateType === 'P006a';
+        })() && (
           <>
             <TP1Template 
               configId={editId ? parseInt(editId) : 0}
