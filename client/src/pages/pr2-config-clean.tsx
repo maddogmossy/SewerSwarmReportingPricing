@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench, Palette } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
+import { TP1Template } from '@/components/TP1Template';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -2873,114 +2874,15 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* P007 Pattern - Horizontal TP1 Template Layout (Blue-Green-Purple ONLY) */}
+        {/* P007 Pattern - TP1 Template Component */}
         {getTemplateType(categoryId || '') === 'P006a' && (
-          <div className="space-y-6">
-            <div className="flex gap-4 mb-6">
-              {/* Blue Window - Day Rate (w-32) */}
-              <Card className="relative w-32 bg-blue-50 border-blue-300">
-                <CardHeader className="pb-2 bg-blue-100 border-b border-blue-300">
-                  <CardTitle className="text-blue-700 text-sm flex items-center gap-1">
-                    <DollarSign className="w-4 h-4" />
-                    Day Rate
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  {formData.pricingOptions.map((option, index) => (
-                    <div key={option.id} className="space-y-1">
-                      <Label className="text-xs text-blue-600">{option.label}</Label>
-                      <Input
-                        type="text"
-                        value={option.value}
-                        onChange={(e) => updatePricingOption(index, 'value', e.target.value)}
-                        placeholder="Amount"
-                        className="h-8 text-sm border-blue-300 focus:border-blue-500"
-                      />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Green Window - No Per Shift (w-40) */}
-              <Card className="relative w-40 bg-green-50 border-green-300">
-                <CardHeader className="pb-2 bg-green-100 border-b border-green-300">
-                  <CardTitle className="text-green-700 text-sm flex items-center gap-1">
-                    <Hash className="w-4 h-4" />
-                    No Per Shift
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  {formData.quantityOptions.map((option, index) => (
-                    <div key={option.id} className="space-y-1">
-                      <Label className="text-xs text-green-600">{option.label}</Label>
-                      <Input
-                        type="text"
-                        value={option.value}
-                        onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
-                        placeholder="Quantity"
-                        className="h-8 text-sm border-green-300 focus:border-green-500"
-                      />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Purple Window - Range Configuration (w-96) with Add/Delete functionality */}
-              <Card className="relative w-96 bg-purple-50 border-purple-300">
-                <CardHeader className="pb-2 bg-purple-100 border-b border-purple-300">
-                  <CardTitle className="text-purple-700 text-sm flex items-center gap-1">
-                    <Ruler className="w-4 h-4" />
-                    Range Configuration
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  {formData.rangeOptions.map((option, index) => (
-                    <div key={option.id} className="space-y-2 mb-3 p-2 bg-white rounded border border-purple-200">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs text-purple-600">{option.label}</Label>
-                        {index > 0 && (
-                          <Button
-                            type="button"
-                            onClick={() => deleteRangeOption(index)}
-                            className="w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xs"
-                            title="Delete Range Option"
-                          >
-                            <X className="w-3 h-3" />
-                          </Button>
-                        )}
-                        {index === 0 && (
-                          <Button
-                            type="button"
-                            onClick={addRangeOption}
-                            className="w-6 h-6 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center text-xs"
-                            title="Add Range Option"
-                          >
-                            <Plus className="w-3 h-3" />
-                          </Button>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="text"
-                          value={option.rangeStart}
-                          onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
-                          placeholder="Debris %"
-                          className="flex-1 h-8 text-sm border-purple-300 focus:border-purple-500"
-                        />
-                        <span className="text-xs text-purple-500">to</span>
-                        <Input
-                          type="text"
-                          value={option.rangeEnd}
-                          onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
-                          placeholder="Length M"
-                          className="flex-1 h-8 text-sm border-purple-300 focus:border-purple-500"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
+          <>
+            <TP1Template 
+              configId={editId ? parseInt(editId) : 0}
+              tp1Data={formData}
+              setTp1Data={setFormData}
+              selectedPipeSize={formData.pipeSize || '150'}
+            />
 
             {/* W003 Component - Vehicle Travel Rates */}
             <Card className="relative">
@@ -3042,7 +2944,7 @@ export default function PR2ConfigClean() {
                 {mutation.isPending ? 'Saving...' : 'Save Configuration'}
               </Button>
             </div>
-          </div>
+          </>
         )}
 
       </div>
