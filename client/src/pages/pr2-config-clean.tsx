@@ -175,20 +175,21 @@ export default function PR2ConfigClean() {
   });
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'TP3' | 'P26' | 'P006' | 'P006a' => {
+  const getTemplateType = (categoryId: string): 'TP1' | 'TP3' | 'P26' | 'P006' | 'P006a' | 'MM001' => {
     if (categoryId === 'robotic-cutting') {
       return 'TP3'; // Robotic cutting uses TP3 template
     } else if (categoryId === 'day-rate-db11') {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else if (categoryId?.startsWith('P006-')) {
       return 'P006'; // Original P006 CTF templates with 4-window structure
+    } else if (categoryId === 'test-card') {
+      return 'MM001'; // Test Card uses new MM001 template with 5 placeholder UI cards
     } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
                categoryId === 'van-pack' || 
                categoryId === 'jet-vac' || 
                categoryId === 'cctv-van-pack' || 
                categoryId === 'cctv-jet-vac' || // F175 - CCTV Jet Vac Configuration
-               categoryId === 'test-card' || // Test Card - CTF P006a demonstration
                categoryId === 'cctv-cleansing-root-cutting') {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else {
@@ -2663,14 +2664,14 @@ export default function PR2ConfigClean() {
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              {/* CTF P006a Large Identifier for Test Card */}
-              {categoryId === 'test-card' && getTemplateType(categoryId || '') === 'P006a' && (
+              {/* MM001 Large Identifier for Test Card */}
+              {categoryId === 'test-card' && getTemplateType(categoryId || '') === 'MM001' && (
                 <div className="mb-4">
-                  <h1 className="text-6xl font-bold text-blue-600 mb-2" style={{ fontSize: '4rem', lineHeight: '1' }}>
-                    CTF P006a
+                  <h1 className="text-6xl font-bold text-green-600 mb-2" style={{ fontSize: '4rem', lineHeight: '1' }}>
+                    MM001
                   </h1>
                   <p className="text-xl text-gray-700 font-semibold">
-                    Configuration Template Framework - P006a Template System
+                    New Template with 5 Placeholder UI Cards
                   </p>
                 </div>
               )}
@@ -2707,6 +2708,8 @@ export default function PR2ConfigClean() {
                         return `TP3 Template (F${editId || 'Unknown'})`;
                       } else if (templateType === 'P26') {
                         return `P26 Template (F${editId || 'Unknown'})`;
+                      } else if (templateType === 'MM001') {
+                        return `MM001 Template (F${editId || 'Unknown'})`;
                       } else {
                         return `TP1 Template (F${editId || 'Unknown'})`;
                       }
@@ -2758,6 +2761,255 @@ export default function PR2ConfigClean() {
               </p>
             </div>
           )}
+
+        {/* MM001 Template - 5 Placeholder UI Cards */}
+        {getTemplateType(categoryId || '') === 'MM001' && (
+          <div className="space-y-6">
+            {/* MM1 - Apply Configuration to Sectors */}
+            <div className="relative">
+              <DevLabel id="MM1" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    1. Apply Configuration to Sectors
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Select sectors where this configuration should be applied
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-3">
+                    {SECTORS.map((sector) => (
+                      <Card 
+                        key={sector.id}
+                        className="cursor-pointer transition-all duration-200 hover:shadow-md border-2 border-gray-300"
+                      >
+                        <CardContent className="p-4 text-center relative">
+                          <div className="mx-auto w-8 h-8 mb-3 flex items-center justify-center rounded-lg bg-gray-100">
+                            <sector.icon className="w-5 h-5 text-gray-600" />
+                          </div>
+                          <h3 className="font-semibold text-sm mb-1 text-gray-900">
+                            {sector.name}
+                          </h3>
+                          <p className="text-xs text-gray-600">
+                            {sector.description}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* MM2 - Color Picker Section */}
+            <div className="relative">
+              <DevLabel id="MM2" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    2. Color Picker Section
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Choose category color scheme
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-6 gap-3">
+                    {[
+                      { name: 'Blue', value: '#3B82F6' },
+                      { name: 'Green', value: '#10B981' },
+                      { name: 'Purple', value: '#9333EA' },
+                      { name: 'Red', value: '#EF4444' },
+                      { name: 'Orange', value: '#F59E0B' },
+                      { name: 'Teal', value: '#14B8A6' }
+                    ].map((color) => (
+                      <div
+                        key={color.name}
+                        className="w-12 h-12 rounded-lg border-2 border-gray-300 cursor-pointer hover:scale-105 transition-transform"
+                        style={{ backgroundColor: color.value }}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* MM3 - Pipe Size Configuration */}
+            <div className="relative">
+              <DevLabel id="MM3" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    3. Pipe Size Configuration
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Each pipe size creates a new unique ID
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-6 gap-2">
+                    {[100, 125, 150, 175, 200, 225, 250, 275, 300, 350, 375, 400, 450, 500, 525, 600, 675, 750, 825, 900, 975, 1050, 1200, 1350, 1500].map((size) => (
+                      <Button
+                        key={size}
+                        variant="outline"
+                        className="h-8 text-xs border-gray-300 hover:border-gray-400"
+                      >
+                        {size}mm
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* MM4 and MM5 - Same Row Layout */}
+            <div className="grid grid-cols-2 gap-6">
+              {/* MM4 - Section Calculator (Left) */}
+              <div className="relative">
+                <DevLabel id="MM4" position="top-right" />
+                <Card className="bg-white border-2 border-gray-200">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      4. Section Calculator
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Day Rate (Blue) */}
+                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                      <h4 className="font-medium text-blue-800 mb-2">Day Rate</h4>
+                      <Input
+                        type="text"
+                        placeholder="Enter day rate"
+                        className="border-blue-300"
+                      />
+                    </div>
+
+                    {/* No Per Shift (Green) - Row 1 with Add Button */}
+                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-green-800">No Per Shift</h4>
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white h-6 w-6 p-0">
+                          +
+                        </Button>
+                      </div>
+                      <Input
+                        type="text"
+                        placeholder="Enter quantity"
+                        className="border-green-300"
+                      />
+                    </div>
+
+                    {/* Range Configuration (Purple) - Row 1 with Add Button */}
+                    <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-purple-800">Range Configuration</h4>
+                        <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white h-6 w-6 p-0">
+                          +
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs text-purple-700">Debris %</label>
+                          <Input
+                            type="text"
+                            placeholder="0-15"
+                            className="border-purple-300"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-purple-700">Length</label>
+                          <Input
+                            type="text"
+                            placeholder="0-35"
+                            className="border-purple-300"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* MM5 - Vehicle Travel Rates (Right) */}
+              <div className="relative">
+                <DevLabel id="MM5" position="top-right" />
+                <Card className="bg-white border-2 border-gray-200">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      5. Vehicle Travel Rates
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Row 1 with Add Button */}
+                    <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-teal-800">Vehicle Travel</h4>
+                        <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white h-6 w-6 p-0">
+                          +
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs text-teal-700">Vehicle Weight</label>
+                          <Input
+                            type="text"
+                            placeholder="3.5t"
+                            className="border-teal-300"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-teal-700">Cost per Mile</label>
+                          <Input
+                            type="text"
+                            placeholder="£45"
+                            className="border-teal-300"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Row 2 with Delete Button (Placeholder) */}
+                    <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4 opacity-60">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-teal-800">Vehicle Travel</h4>
+                        <Button size="sm" variant="destructive" className="h-6 w-6 p-0">
+                          ×
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs text-teal-700">Vehicle Weight</label>
+                          <Input
+                            type="text"
+                            placeholder="7.5t"
+                            className="border-teal-300"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-teal-700">Cost per Mile</label>
+                          <Input
+                            type="text"
+                            placeholder="£65"
+                            className="border-teal-300"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div className="flex justify-start">
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                Save MM001 Configuration
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Apply to Sectors Section - P002 Style Cards - For P006a templates */}
         {getTemplateType(categoryId || '') === 'P006a' && (
