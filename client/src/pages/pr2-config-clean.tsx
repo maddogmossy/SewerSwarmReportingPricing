@@ -2959,11 +2959,7 @@ export default function PR2ConfigClean() {
                           return (
                             <div
                               key={size}
-                              className={`relative group px-3 py-2 text-sm rounded text-center font-mono ${
-                                isCustom 
-                                  ? 'bg-amber-50 border border-amber-200' 
-                                  : 'bg-blue-50 border border-blue-200'
-                              }`}
+                              className="relative group px-3 py-2 text-sm bg-blue-50 border border-blue-200 rounded text-center font-mono"
                               title={`${size}mm - ${isCustom ? 'Custom' : 'Standard UK'} drainage pipe size`}
                             >
                               {size}mm
