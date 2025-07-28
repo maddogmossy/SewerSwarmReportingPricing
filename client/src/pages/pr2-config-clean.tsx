@@ -1075,8 +1075,13 @@ export default function PR2ConfigClean() {
         }
         // Don't create new configurations during auto-save - only update existing ones
         
-        // Invalidate queries to refresh data
-        queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+        // DON'T invalidate queries when MM2 color is locked - prevents config reload override
+        if (!mm2ColorLocked) {
+          queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+          console.log('📊 Query invalidated - MM2 not locked');
+        } else {
+          console.log('🔒 Query invalidation skipped - MM2 color locked');
+        }
         
       } catch (error) {
         console.error('Auto-save failed:', error);
@@ -1617,8 +1622,12 @@ export default function PR2ConfigClean() {
     }
     
     // Force invalidate the specific configuration query to trigger fresh fetch
-    if (editId) {
+    // But DON'T do this if we're just switching IDs within same config (MM2 color locked)
+    if (editId && !mm2ColorLocked) {
       queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean', editId] });
+      console.log('📊 Specific config query invalidated');
+    } else if (mm2ColorLocked) {
+      console.log('🔒 Specific config query invalidation skipped - MM2 color locked');
     }
   }, [editId, categoryId]);
   
