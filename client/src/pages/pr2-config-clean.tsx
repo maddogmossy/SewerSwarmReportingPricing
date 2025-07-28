@@ -1953,12 +1953,10 @@ export default function PR2ConfigClean() {
 
   // Range option management
   const addRangeOption = () => {
-    if (!newRangeLabel.trim()) return;
-    
     const newOption: RangeOption = {
       id: `range_${Date.now()}`,
-      label: newRangeLabel.trim(),
-      enabled: false,
+      label: `Range ${formData.rangeOptions.length + 1}`,
+      enabled: true,
       rangeStart: '',
       rangeEnd: ''
     };
@@ -1969,17 +1967,16 @@ export default function PR2ConfigClean() {
       rangeStackOrder: [...prev.rangeStackOrder, newOption.id]
     }));
     
-    setNewRangeLabel('');
-    setAddRangeDialogOpen(false);
+    // Auto-save the new range option
+    debouncedSave();
   };
 
-  const deleteRangeOption = (optionId: string) => {
+  const deleteRangeOption = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      rangeOptions: prev.rangeOptions.filter(opt => opt.id !== optionId),
-      rangeStackOrder: prev.rangeStackOrder.filter(id => id !== optionId)
+      rangeOptions: prev.rangeOptions.filter((_, i) => i !== index)
     }));
-    // CRITICAL FIX: Trigger database save after deletion
+    // Auto-save after deletion
     debouncedSave();
   };
 
@@ -2881,24 +2878,23 @@ export default function PR2ConfigClean() {
           <div className="space-y-6">
             <div className="flex gap-4 mb-6">
               {/* Blue Window - Day Rate (w-32) */}
-              <Card className="relative w-32">
-                <DevLabel id="BLUE" position="top-right" />
-                <CardHeader className="pb-2">
+              <Card className="relative w-32 bg-blue-50 border-blue-300">
+                <CardHeader className="pb-2 bg-blue-100 border-b border-blue-300">
                   <CardTitle className="text-blue-700 text-sm flex items-center gap-1">
                     <DollarSign className="w-4 h-4" />
                     Day Rate
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="pt-2">
                   {formData.pricingOptions.map((option, index) => (
                     <div key={option.id} className="space-y-1">
-                      <Label className="text-xs">{option.label}</Label>
+                      <Label className="text-xs text-blue-600">{option.label}</Label>
                       <Input
                         type="text"
                         value={option.value}
                         onChange={(e) => updatePricingOption(index, 'value', e.target.value)}
                         placeholder="Amount"
-                        className="h-8 text-sm"
+                        className="h-8 text-sm border-blue-300 focus:border-blue-500"
                       />
                     </div>
                   ))}
@@ -2906,75 +2902,84 @@ export default function PR2ConfigClean() {
               </Card>
 
               {/* Green Window - No Per Shift (w-40) */}
-              <Card className="relative w-40">
-                <DevLabel id="GREEN" position="top-right" />
-                <CardHeader className="pb-2">
+              <Card className="relative w-40 bg-green-50 border-green-300">
+                <CardHeader className="pb-2 bg-green-100 border-b border-green-300">
                   <CardTitle className="text-green-700 text-sm flex items-center gap-1">
                     <Hash className="w-4 h-4" />
                     No Per Shift
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="pt-2">
                   {formData.quantityOptions.map((option, index) => (
                     <div key={option.id} className="space-y-1">
-                      <Label className="text-xs">{option.label}</Label>
+                      <Label className="text-xs text-green-600">{option.label}</Label>
                       <Input
                         type="text"
                         value={option.value}
                         onChange={(e) => updateQuantityOption(index, 'value', e.target.value)}
                         placeholder="Quantity"
-                        className="h-8 text-sm"
+                        className="h-8 text-sm border-green-300 focus:border-green-500"
                       />
                     </div>
                   ))}
                 </CardContent>
               </Card>
 
-              {/* Purple Window - Range Configuration (w-64) */}
-              <Card className="relative w-64">
-                <DevLabel id="PURPLE" position="top-right" />
-                <CardHeader className="pb-2">
+              {/* Purple Window - Range Configuration (w-96) with Add/Delete functionality */}
+              <Card className="relative w-96 bg-purple-50 border-purple-300">
+                <CardHeader className="pb-2 bg-purple-100 border-b border-purple-300">
                   <CardTitle className="text-purple-700 text-sm flex items-center gap-1">
                     <Ruler className="w-4 h-4" />
                     Range Configuration
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="pt-2">
                   {formData.rangeOptions.map((option, index) => (
-                    <div key={option.id} className="space-y-1">
-                      <Label className="text-xs">{option.label}</Label>
-                      <div className="flex items-center gap-1">
+                    <div key={option.id} className="space-y-2 mb-3 p-2 bg-white rounded border border-purple-200">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs text-purple-600">{option.label}</Label>
+                        {index > 0 && (
+                          <Button
+                            type="button"
+                            onClick={() => deleteRangeOption(index)}
+                            className="w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xs"
+                            title="Delete Range Option"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        )}
+                        {index === 0 && (
+                          <Button
+                            type="button"
+                            onClick={addRangeOption}
+                            className="w-6 h-6 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center text-xs"
+                            title="Add Range Option"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
                         <Input
                           type="text"
                           value={option.rangeStart}
                           onChange={(e) => updateRangeOption(index, 'rangeStart', e.target.value)}
                           placeholder="Debris %"
-                          className="flex-1 h-8 text-sm"
+                          className="flex-1 h-8 text-sm border-purple-300 focus:border-purple-500"
                         />
-                        <span className="text-xs text-gray-500">to</span>
+                        <span className="text-xs text-purple-500">to</span>
                         <Input
                           type="text"
                           value={option.rangeEnd}
                           onChange={(e) => updateRangeOption(index, 'rangeEnd', e.target.value)}
-                          placeholder="Length"
-                          className="flex-1 h-8 text-sm"
+                          placeholder="Length M"
+                          className="flex-1 h-8 text-sm border-purple-300 focus:border-purple-500"
                         />
                       </div>
                     </div>
                   ))}
                 </CardContent>
               </Card>
-
-              {/* External Green + Button (w-14) */}
-              <div className="w-14 flex items-center justify-center">
-                <Button
-                  type="button"
-                  className="w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-full flex items-center justify-center"
-                  title="Add Range Option"
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
             </div>
 
             {/* W003 Component - Vehicle Travel Rates */}
