@@ -3084,33 +3084,7 @@ export default function PR2ConfigClean() {
                       </div>
                     </div>
 
-                    {/* Row 2 with Delete Button (Placeholder) */}
-                    <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4 opacity-60">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-teal-800">Vehicle Travel</h4>
-                        <Button size="sm" variant="destructive" className="h-6 w-6 p-0">
-                          ×
-                        </Button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-xs text-teal-700">Vehicle Weight</label>
-                          <Input
-                            type="text"
-                            placeholder="7.5t"
-                            className="border-teal-300"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-teal-700">Cost per Mile</label>
-                          <Input
-                            type="text"
-                            placeholder="£65"
-                            className="border-teal-300"
-                          />
-                        </div>
-                      </div>
-                    </div>
+
                   </CardContent>
                 </Card>
               </div>
