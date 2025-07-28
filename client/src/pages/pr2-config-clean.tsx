@@ -1098,29 +1098,58 @@ export default function PR2ConfigClean() {
       const updated = isSelected 
         ? [...prev, id]
         : prev.filter(selectedId => selectedId !== id);
-      
-      // Update border color based on the selected ID
-      if (isSelected) {
-        const selectedIdOption = MMP1_IDS.find(idOption => idOption.id === id);
-        if (selectedIdOption) {
-          // Extract color from the text class (e.g., 'text-blue-600' -> '#2563eb')
-          const colorMap: { [key: string]: string } = {
-            'text-blue-600': '#2563eb',
-            'text-green-600': '#16a34a', 
-            'text-orange-600': '#ea580c',
-            'text-red-600': '#dc2626',
-            'text-purple-600': '#9333ea',
-            'text-teal-600': '#0d9488'
-          };
-          const newColor = colorMap[selectedIdOption.color] || '#2563eb';
-          setFormData(prev => ({ ...prev, categoryColor: newColor }));
-        }
-      }
-      
-      // Trigger auto-save after state update
-      setTimeout(() => triggerAutoSave(), 0);
       return updated;
     });
+    
+    // Update border color based on the selected ID
+    if (isSelected) {
+      const selectedIdOption = MMP1_IDS.find(idOption => idOption.id === id);
+      if (selectedIdOption) {
+        // Extract color from the text class (e.g., 'text-blue-600' -> '#2563eb')
+        const colorMap: { [key: string]: string } = {
+          'text-blue-600': '#2563eb',
+          'text-green-600': '#16a34a', 
+          'text-orange-600': '#ea580c',
+          'text-red-600': '#dc2626',
+          'text-purple-600': '#9333ea',
+          'text-teal-600': '#0d9488'
+        };
+        const newColor = colorMap[selectedIdOption.color] || '#2563eb';
+        
+        // Update formData and trigger immediate save with new color
+        setFormData(prev => {
+          const updatedFormData = { ...prev, categoryColor: newColor };
+          
+          // Immediate save with the new color
+          if (editId) {
+            setTimeout(async () => {
+              try {
+                await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
+                  ...updatedFormData,
+                  mmData: {
+                    selectedPipeSize: selectedPipeSizeForMM4,
+                    selectedPipeSizeId: selectedPipeSizeId,
+                    mm1Colors: newColor, // Use the new color directly
+                    mm2IdData: isSelected ? [...selectedIds, id] : selectedIds.filter(selectedId => selectedId !== id),
+                    mm3CustomPipeSizes: customPipeSizes,
+                    mm4Rows: mm4Rows,
+                    mm5Rows: mm5Rows,
+                    categoryId: categoryId,
+                    sector: sector,
+                    timestamp: Date.now()
+                  }
+                });
+                queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+              } catch (error) {
+                console.error('MM2 auto-save failed:', error);
+              }
+            }, 100);
+          }
+          
+          return updatedFormData;
+        });
+      }
+    }
   };
 
   // MM4/MM5 Auto-save wrappers
