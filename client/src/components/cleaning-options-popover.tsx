@@ -35,11 +35,11 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           );
           
           if (cctvJetVacConfig) {
-            // Route to F606 cctv-jet-vac configuration
-            window.location.href = `/pr2-config-clean?id=${cctvJetVacConfig.id}&categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}`;
+            // Route to F606 cctv-jet-vac configuration with Utilities card selected
+            window.location.href = `/pr2-config-clean?id=${cctvJetVacConfig.id}&categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
           } else {
-            // Create new cctv-jet-vac configuration for utilities
-            window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}`;
+            // Create new cctv-jet-vac configuration for utilities with Utilities card selected
+            window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
           }
         } else {
           // Fallback to cctv-jet-vac creation
@@ -68,7 +68,7 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       console.error('Error in MMP1 connection:', error);
       // Fallback routing based on sector
       if (sectionData.sector === 'utilities') {
-        window.location.href = `/pr2-config-clean?categoryId=test-card&sector=utilities&selectedId=id1`;
+        window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&selectedId=id1&pipeSize=${pipeSizeNumber}`;
       } else {
         window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
       }
