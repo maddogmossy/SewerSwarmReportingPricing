@@ -23,28 +23,27 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     const pipeSizeNumber = pipeSize.replace('mm', '');
     
     try {
-      // For utilities sector, connect to MMP1 template system
+      // For utilities sector, connect to F606 (cctv-jet-vac) configuration
       if (sectionData.sector === 'utilities') {
-        // Find existing MMP1 configuration for utilities sector
+        // Find existing F606 cctv-jet-vac configuration for utilities sector
         const response = await fetch(`/api/pr2-clean?sector=utilities`);
         
         if (response.ok) {
           const configs = await response.json();
-          const mmp1Config = configs.find((config: any) => 
-            config.categoryId === 'test-card' && 
-            config.categoryName?.includes('MMP1')
+          const cctvJetVacConfig = configs.find((config: any) => 
+            config.categoryId === 'cctv-jet-vac'
           );
           
-          if (mmp1Config) {
-            // Route to MMP1 configuration with ID1 context
-            window.location.href = `/pr2-config-clean?id=${mmp1Config.id}&categoryId=test-card&sector=utilities&selectedId=id1`;
+          if (cctvJetVacConfig) {
+            // Route to F606 cctv-jet-vac configuration
+            window.location.href = `/pr2-config-clean?id=${cctvJetVacConfig.id}&categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}`;
           } else {
-            // Create new MMP1 configuration for utilities
-            window.location.href = `/pr2-config-clean?categoryId=test-card&sector=utilities&selectedId=id1`;
+            // Create new cctv-jet-vac configuration for utilities
+            window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}`;
           }
         } else {
-          // Fallback to MMP1 template creation
-          window.location.href = `/pr2-config-clean?categoryId=test-card&sector=utilities&selectedId=id1`;
+          // Fallback to cctv-jet-vac creation
+          window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}`;
         }
       } else {
         // For other sectors, use original cctv-jet-vac logic
