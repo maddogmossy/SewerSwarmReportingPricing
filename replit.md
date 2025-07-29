@@ -975,6 +975,25 @@ This prevents data contamination and ensures authentic extraction integrity.
   - MSCC5 compliance information and standards reference
   - Professional pipe size management for UK drainage infrastructure
 
+### CRITICAL: MM1 ID Selection Updated to Sector Names (January 29, 2025) ✅
+- **Date**: January 29, 2025
+- **Status**: Successfully updated MM1 ID selection cards to display sector names instead of generic ID labels
+- **Change Implemented**:
+  - **MM1 Cards Updated**: ID1-ID6 now display sector names (Utilities, Adoption, Highways, Insurance, Construction, Domestic)
+  - **Both Template Locations**: Updated MMP1_IDS array in both MMP1Template.tsx component and pr2-config-clean.tsx main page
+  - **Matching Descriptions**: Added sector-specific descriptions matching the six-sector system
+  - **Color Coordination**: Maintained sector-specific color schemes (blue=Utilities, teal=Adoption, orange=Highways, etc.)
+- **Technical Implementation**:
+  - Updated MMP1_IDS array name/label fields from "ID1, ID2, ID3..." to "Utilities, Adoption, Highways, Insurance, Construction, Domestic"
+  - Added descriptive text for each sector explaining their infrastructure focus
+  - Preserved existing functionality while improving user interface clarity
+  - Fixed template rendering for F606 (cctv-jet-vac) which uses MMP1 template system
+- **User Benefits**:
+  - Clear sector identification instead of confusing generic ID numbers
+  - Professional interface matching the six-sector organizational structure
+  - Improved workflow understanding for sector-specific pricing management
+  - Consistent terminology throughout the system
+
 ### CRITICAL: MM2 Color Picker System Complete - Independent Color Selection Working ✅
 - **Date**: January 28, 2025  
 - **Status**: Successfully resolved MM2 color picker system with complete independence from MM1 ID selection

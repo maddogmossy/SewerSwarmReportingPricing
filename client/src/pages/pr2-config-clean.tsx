@@ -92,14 +92,14 @@ const SECTORS = [
 
 // 🔒🔒🔒 MMP1 TEMPLATE PROTECTED ZONE - DO NOT MODIFY WITHOUT USER PERMISSION 🔒🔒🔒
 // ⚠️ WARNING: USER-CONTROLLED TEMPLATE - AI MODIFICATIONS PROHIBITED ⚠️
-// MMP1 ID definitions (ID1-ID6 following P002 pattern)
+// MMP1 ID definitions (ID1-ID6 following P002 pattern - matching six sectors)
 const MMP1_IDS = [
-  { id: 'id1', name: 'ID1', label: 'ID1', description: 'Configuration template 1', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'id2', name: 'ID2', label: 'ID2', description: 'Configuration template 2', icon: Building2, color: 'text-green-600', bgColor: 'bg-green-50' },
-  { id: 'id3', name: 'ID3', label: 'ID3', description: 'Configuration template 3', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'id4', name: 'ID4', label: 'ID4', description: 'Configuration template 4', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'id5', name: 'ID5', label: 'ID5', description: 'Configuration template 5', icon: HardHat, color: 'text-purple-600', bgColor: 'bg-purple-50' },
-  { id: 'id6', name: 'ID6', label: 'ID6', description: 'Configuration template 6', icon: Users, color: 'text-teal-600', bgColor: 'bg-teal-50' }
+  { id: 'id1', name: 'Utilities', label: 'Utilities', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'id2', name: 'Adoption', label: 'Adoption', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'id3', name: 'Highways', label: 'Highways', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'id4', name: 'Insurance', label: 'Insurance', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'id5', name: 'Construction', label: 'Construction', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'id6', name: 'Domestic', label: 'Domestic', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
 // P26 Upper Level Data Structure
