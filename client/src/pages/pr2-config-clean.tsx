@@ -17,7 +17,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
-import { MMP2Template } from '@/templates/MMP2Template';
+import { MMP2Template } from "./mmp2.tsx";
 import { PlaceholderCard } from '@/components/ui/PlaceholderCard';
 
 interface PricingOption {
@@ -1244,7 +1244,7 @@ export default function PR2ConfigClean() {
 
 
   // MM4/MM5 Auto-save wrappers
-  const updateMM4RowWithAutoSave = (rowId: number, field: 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
+  const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     updateMM4Row(rowId, field, value);
     triggerAutoSave();
   };
@@ -3365,7 +3365,7 @@ export default function PR2ConfigClean() {
                                       // If removing the currently selected size, default back to 100mm
                                       if (selectedPipeSizeForMM4 === size) {
                                         setSelectedPipeSizeForMM4('100');
-                                        setSelectedPipeSizeId(generatePipeSizeId('100'));
+                                        setSelectedPipeSizeId(getPipeSizeId('100'));
                                       }
                                       triggerAutoSave();
                                     }}
