@@ -108,7 +108,7 @@ export default function PR2Pricing() {
 
   // Fetch PR2 configurations for current sector
   const { data: pr2ConfigurationsRaw = [], isLoading: pr2Loading, error: pr2Error } = useQuery({
-    queryKey: ['/api/pr2-clean', sector],
+    queryKey: [`/api/pr2-clean?sector=${sector}`, sector],
     enabled: !!sector,
     retry: false,
     throwOnError: false
