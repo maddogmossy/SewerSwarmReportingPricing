@@ -3043,14 +3043,24 @@ export default function PR2ConfigClean() {
               </p>
             </div>
           
-          {/* Right side - Dashboard button */}
-          <Button 
-            onClick={handleGoBack}
-            className="bg-white hover:bg-gray-50 text-black font-bold py-2 px-4 rounded-lg border border-gray-300 transition-colors"
-          >
-            <BarChart3 className="w-4 h-4 mr-2 text-green-600" />
-            Dashboard
-          </Button>
+          {/* Right side - Navigation buttons */}
+          <div className="flex items-center gap-3">
+            <Button 
+              onClick={handleGoBack}
+              className="bg-white hover:bg-gray-50 text-black font-bold py-2 px-4 rounded-lg border border-gray-300 transition-colors"
+            >
+              <BarChart3 className="w-4 h-4 mr-2 text-green-600" />
+              Dashboard
+            </Button>
+            
+            <Button 
+              onClick={() => window.location.href = `/pr2-pricing?sector=${sector}`}
+              className="bg-white hover:bg-gray-50 text-black font-bold py-2 px-4 rounded-lg border border-gray-300 transition-colors"
+            >
+              <Banknote className="w-4 h-4 mr-2 text-orange-600" />
+              Pricing
+            </Button>
+          </div>
         </div>
 
           {/* Validation Warning */}
