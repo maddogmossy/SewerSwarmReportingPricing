@@ -17,7 +17,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
-import { MMP2Template } from "./mmp2.tsx";
+import { MMP2Template } from "@/templates/mmp2";
 import { PlaceholderCard } from '@/components/ui/PlaceholderCard';
 
 interface PricingOption {
