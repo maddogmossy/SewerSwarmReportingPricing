@@ -318,7 +318,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
                       <div className="flex flex-col items-center space-y-2">
                         <IconComponent className={`h-8 w-8 ${isSelected ? id.color : 'text-gray-400'}`} />
                         <h3 className={`font-medium ${isSelected ? 'text-gray-900' : 'text-gray-600'}`}>
-                          {id.label}
+                          {id.name}
                         </h3>
                         <p className={`text-xs ${isSelected ? 'text-gray-700' : 'text-gray-500'}`}>
                           {id.description}
