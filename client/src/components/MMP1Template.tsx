@@ -21,14 +21,14 @@ interface MMP1TemplateProps {
   onSave?: () => void;
 }
 
-// MMP1 ID definitions (ID1-ID6 following P002 pattern)
+// MMP1 ID definitions (ID1-ID6 following P002 pattern - matching six sectors)
 const MMP1_IDS = [
-  { id: 'id1', name: 'CCTV', label: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { id: 'id2', name: 'Van Pack', label: 'Van Pack', description: 'High-pressure water jetting and debris removal', icon: Building2, color: 'text-green-600', bgColor: 'bg-green-50' },
-  { id: 'id3', name: 'Jet Vac', label: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { id: 'id4', name: 'CCTV/Van Pack', label: 'CCTV/Van Pack', description: 'Combined CCTV inspection and cleansing operations', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
-  { id: 'id5', name: 'CCTV/Jet Vac', label: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: HardHat, color: 'text-purple-600', bgColor: 'bg-purple-50' },
-  { id: 'id6', name: 'CCTV/Cleansing/Root Cutting', label: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Users, color: 'text-cyan-600', bgColor: 'bg-cyan-50' }
+  { id: 'id1', name: 'Utilities', label: 'Utilities', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { id: 'id2', name: 'Adoption', label: 'Adoption', description: 'New development infrastructure adoption processes', icon: Building2, color: 'text-teal-600', bgColor: 'bg-teal-50' },
+  { id: 'id3', name: 'Highways', label: 'Highways', description: 'Road infrastructure and highway drainage systems', icon: Car, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { id: 'id4', name: 'Insurance', label: 'Insurance', description: 'Insurance claim assessment and documentation', icon: ShieldCheck, color: 'text-red-600', bgColor: 'bg-red-50' },
+  { id: 'id5', name: 'Construction', label: 'Construction', description: 'Construction project infrastructure services', icon: HardHat, color: 'text-cyan-600', bgColor: 'bg-cyan-50' },
+  { id: 'id6', name: 'Domestic', label: 'Domestic', description: 'Residential and domestic property services', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
 // Outlook Diary Style Colors (20 colors in 10x2 grid)
