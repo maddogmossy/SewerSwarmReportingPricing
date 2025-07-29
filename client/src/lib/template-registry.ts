@@ -1,5 +1,5 @@
 // Template Registry - Centralized template exports
-import { MMP2Template } from '../templates/mmp2';
+import MMP2Template from '../components/templates/MMP2Template';
 
 export const templates = [
   MMP2Template, // Add MMP2Template to the array

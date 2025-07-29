@@ -83,11 +83,11 @@ This is a full-stack TypeScript application built with React frontend and Expres
   - **Template ID Display**: Added "(id: MMP2)" to UI title for clear user identification of template type
 - **Technical Implementation**:
   - Created MMP2Template with F603 designation: title "MMP2 Template (F603)", templateId "MMP2Template"
-  - Updated Template interface to support templateId and title fields for enhanced metadata
-  - Established template registry system in client/src/lib/template-registry.ts for centralized template exports
+  - Restructured as default export from client/src/components/templates/MMP2Template.ts
+  - Created TemplateMap in client/src/lib/template-map.ts for centralized template mapping
+  - Updated all import statements to use default import syntax: `import MMP2Template from "@/components/templates/MMP2Template"`
+  - Enhanced Template interface to support templateId and title fields for extended metadata
   - Created P003Config structure for CCTV Jet Vac component integration with MMP2Template
-  - Organized file structure: templates in client/src/templates/, configs in client/src/configs/
-  - Fixed import paths and resolved all LSP diagnostics for clean compilation
 - **User Benefits**:
   - **Expanded Template Options**: Users now have both MMP1 and MMP2 template systems available
   - **5 Placeholder Cards**: MMP2 provides 5 configurable placeholder cards for diverse configuration needs

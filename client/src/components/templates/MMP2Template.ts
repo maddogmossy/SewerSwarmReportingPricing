@@ -1,7 +1,7 @@
 import { createTemplate } from "@/lib/templates";
 import { PlaceholderCard } from "@/components/ui/PlaceholderCard";
 
-export const MMP2Template = createTemplate({
+const MMP2Template = createTemplate({
   id: "mmp2-template",
   templateId: "MMP2Template",
   title: "MMP2 Template (F603)",
@@ -36,3 +36,5 @@ export const MMP2Template = createTemplate({
     },
   ],
 });
+
+export default MMP2Template;

@@ -1,4 +1,4 @@
-import { MMP2Template } from "@/templates/mmp2";
+import MMP2Template from "@/components/templates/MMP2Template";
 
 const P003Config = {
   id: "P003",
