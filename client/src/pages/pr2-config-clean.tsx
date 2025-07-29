@@ -1161,6 +1161,173 @@ export default function PR2ConfigClean() {
     updateMM5Data(newData);
   };
 
+  // MM4/MM5 Matching Functions for Dashboard Integration
+  
+  // MM4: Calculate rate per length (blue ÷ green)
+  const calculateMM4RatePerLength = (mm4Row: any) => {
+    const blueValue = parseFloat(mm4Row.blueValue || '0');
+    const greenValue = parseFloat(mm4Row.greenValue || '0');
+    
+    if (greenValue === 0) return 0;
+    
+    const rate = blueValue / greenValue;
+    console.log(`📊 MM4 Rate Calculation: £${blueValue} ÷ ${greenValue} = £${rate.toFixed(2)} per length`);
+    return rate;
+  };
+
+  // MM4: Check if dashboard section matches purple window criteria (debris % and length)
+  const checkMM4DashboardMatch = (mm4Row: any, dashboardSection: any) => {
+    const configDebrisPercent = parseFloat(mm4Row.purpleDebris || '0');
+    const configMaxLength = parseFloat(mm4Row.purpleLength || '0');
+    
+    // Extract section data (assuming standard section structure)
+    const sectionLength = dashboardSection.length || 0;
+    const sectionDebrisPercent = dashboardSection.debrisPercent || 0;
+    
+    const debrisMatch = sectionDebrisPercent <= configDebrisPercent;
+    const lengthMatch = sectionLength <= configMaxLength;
+    
+    console.log(`🔍 MM4 Dashboard Match Check for Section ${dashboardSection.itemNo}:`);
+    console.log(`  - Section debris: ${sectionDebrisPercent}% vs Config max: ${configDebrisPercent}% = ${debrisMatch ? 'PASS' : 'FAIL'}`);
+    console.log(`  - Section length: ${sectionLength}m vs Config max: ${configMaxLength}m = ${lengthMatch ? 'PASS' : 'FAIL'}`);
+    
+    return {
+      matches: debrisMatch && lengthMatch,
+      debrisMatch,
+      lengthMatch,
+      ratePerLength: calculateMM4RatePerLength(mm4Row)
+    };
+  };
+
+  // MM5: Check travel distance against 2-hour limit
+  const checkMM5TravelLimit = (mm5Row: any, travelDistance: number) => {
+    const costPerMile = parseFloat(mm5Row.costPerMile || '0');
+    const vehicleWeight = mm5Row.vehicleWeight || '';
+    
+    // Assume average speed based on vehicle type (could be configurable)
+    const averageSpeed = vehicleWeight.includes('3.5') ? 30 : 25; // mph
+    const maxTravelDistance = 2 * averageSpeed; // 2 hours * speed
+    
+    const withinLimit = travelDistance <= maxTravelDistance;
+    const travelTime = travelDistance / averageSpeed;
+    const travelCost = travelDistance * costPerMile;
+    
+    console.log(`🚚 MM5 Travel Check for ${vehicleWeight} vehicle:`);
+    console.log(`  - Travel distance: ${travelDistance} miles`);
+    console.log(`  - Travel time: ${travelTime.toFixed(1)} hours (limit: 2 hours)`);
+    console.log(`  - Within limit: ${withinLimit ? 'YES' : 'NO'}`);
+    console.log(`  - Travel cost: £${travelCost.toFixed(2)}`);
+    
+    return {
+      withinLimit,
+      travelTime,
+      travelCost,
+      maxDistance: maxTravelDistance
+    };
+  };
+
+  // Combined MM4/MM5 Dashboard Analysis
+  const analyzeDashboardWithMM = (dashboardSections: any[], travelDistance: number = 50) => {
+    const currentMM4 = getCurrentMM4Data();
+    const currentMM5 = getCurrentMM5Data();
+    
+    console.log('🔍 Starting MM4/MM5 Dashboard Analysis');
+    
+    const results = {
+      mm4Analysis: [] as any[],
+      mm5Analysis: [] as any[],
+      totalCost: 0,
+      sectionsMatched: 0,
+      travelApproved: false
+    };
+    
+    // Analyze each MM4 configuration against dashboard sections
+    currentMM4.forEach((mm4Row, mm4Index) => {
+      const mm4Result = {
+        configIndex: mm4Index,
+        ratePerLength: calculateMM4RatePerLength(mm4Row),
+        matchingSections: [] as any[],
+        totalSectionCost: 0
+      };
+      
+      dashboardSections.forEach(section => {
+        const match = checkMM4DashboardMatch(mm4Row, section);
+        if (match.matches) {
+          const sectionCost = match.ratePerLength * (section.length || 0);
+          mm4Result.matchingSections.push({
+            ...section,
+            matchDetails: match,
+            cost: sectionCost
+          });
+          mm4Result.totalSectionCost += sectionCost;
+        }
+      });
+      
+      results.mm4Analysis.push(mm4Result);
+      results.totalCost += mm4Result.totalSectionCost;
+      results.sectionsMatched += mm4Result.matchingSections.length;
+    });
+    
+    // Analyze MM5 travel configurations
+    currentMM5.forEach((mm5Row, mm5Index) => {
+      const travelCheck = checkMM5TravelLimit(mm5Row, travelDistance);
+      if (travelCheck.withinLimit) {
+        results.travelApproved = true;
+        results.totalCost += travelCheck.travelCost;
+      }
+      
+      results.mm5Analysis.push({
+        configIndex: mm5Index,
+        vehicleWeight: mm5Row.vehicleWeight,
+        ...travelCheck
+      });
+    });
+    
+    console.log('✅ MM4/MM5 Analysis Complete:', results);
+    return results;
+  };
+
+  // Test function to demonstrate MM4/MM5 matching with sample dashboard data
+  const testMM4MM5Matching = () => {
+    console.log('🧪 Testing MM4/MM5 Dashboard Matching');
+    
+    // Sample dashboard sections (replace with actual dashboard data)
+    const sampleDashboardSections = [
+      {
+        itemNo: 1,
+        length: 25,
+        debrisPercent: 20,
+        pipeSize: '100mm',
+        observations: 'DEG Debris deposits, grease'
+      },
+      {
+        itemNo: 2,
+        length: 35,
+        debrisPercent: 40,
+        pipeSize: '100mm',
+        observations: 'DER Debris deposits, roots'
+      },
+      {
+        itemNo: 3,
+        length: 15,
+        debrisPercent: 10,
+        pipeSize: '100mm',
+        observations: 'No defects found'
+      }
+    ];
+    
+    // Test with 50-mile travel distance
+    const analysisResults = analyzeDashboardWithMM(sampleDashboardSections, 50);
+    
+    console.log('📋 MM4/MM5 Test Results:');
+    console.log(`  - Sections analyzed: ${sampleDashboardSections.length}`);
+    console.log(`  - Sections matched: ${analysisResults.sectionsMatched}`);
+    console.log(`  - Total cost: £${analysisResults.totalCost.toFixed(2)}`);
+    console.log(`  - Travel approved: ${analysisResults.travelApproved}`);
+    
+    return analysisResults;
+  };
+
   // Configuration loading moved above getCategoryName function
 
   // Pipe Size Selection State - Upper Level Configuration
@@ -3671,6 +3838,19 @@ export default function PR2ConfigClean() {
                           </div>
                         ))}
                       </div>
+                    </div>
+                    
+                    {/* Test MM4/MM5 Matching Button */}
+                    <div className="mt-4 pt-4 border-t border-teal-200">
+                      <Button 
+                        onClick={testMM4MM5Matching}
+                        className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+                      >
+                        🧪 Test MM4/MM5 Dashboard Matching
+                      </Button>
+                      <p className="text-xs text-teal-600 mt-1 text-center">
+                        Check browser console for detailed matching results
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
