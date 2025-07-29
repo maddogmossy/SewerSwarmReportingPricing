@@ -33,7 +33,6 @@ import {
   Banknote
 } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
-import { hasTemplate, getTemplateByCategoryId } from '@/lib/template-registry';
 
 // Sector definitions matching upload window colors from image
 const SECTORS = [
@@ -51,10 +50,9 @@ const STANDARD_CATEGORIES = [
   { id: 'van-pack', name: 'Van Pack', description: 'High-pressure water jetting and debris removal', icon: Truck },
   { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
   { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection and cleansing operations', icon: Monitor },
-  { id: 'f-cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
+  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
   { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
   { id: 'test-card', name: 'Test Card', description: 'Test configuration card for CTF P006a template demonstration', icon: Zap },
-  { id: 'mmp2-card', name: 'MMP2 Card', description: 'MMP2 template with 5 placeholder cards for enhanced configuration management', icon: Settings },
 
   { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves },
   { id: 'patching-p006a', name: 'Patching', description: 'Modern 4-layer patching configuration with CTF framework', icon: Edit },
@@ -109,7 +107,7 @@ export default function PR2Pricing() {
 
   // Fetch PR2 configurations for current sector
   const { data: pr2ConfigurationsRaw = [], isLoading: pr2Loading, error: pr2Error } = useQuery({
-    queryKey: [`/api/pr2-clean?sector=${sector}`, sector],
+    queryKey: ['/api/pr2-clean', sector],
     enabled: !!sector,
     retry: false,
     throwOnError: false
@@ -332,14 +330,7 @@ export default function PR2Pricing() {
       return;
     }
     
-    // Check if category has a static template (like MMP2)
-    if (hasTemplate(categoryId)) {
-      // Navigate to template-based configuration
-      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&template=true`);
-      return;
-    }
-
-    // If no existing configuration or template, show message instead of auto-creating
+    // If no existing configuration, show message instead of auto-creating
     toast({
       title: "No Configuration Found",
       description: "This category needs to be configured from the dashboard when processing a report.",
@@ -594,10 +585,6 @@ export default function PR2Pricing() {
                     return false;
                   });
 
-                  // Check if category has a static template (for MMP2, etc.)
-                  const categoryHasTemplate = hasTemplate(category.id);
-                  const templateInfo = categoryHasTemplate ? getTemplateByCategoryId(category.id) : null;
-
                   
                   // Check if configuration has actual values (for status icon logic)
                   const hasActualValues = existingConfiguration && (
@@ -636,12 +623,6 @@ export default function PR2Pricing() {
                         }`} />
                         <h3 className="font-medium text-sm mb-1 text-gray-800">
                           {category.name}
-                          {existingConfiguration && (
-                            <span className="text-xs text-blue-600 ml-1">(ID: {existingConfiguration.id})</span>
-                          )}
-                          {!existingConfiguration && templateInfo && (
-                            <span className="text-xs text-green-600 ml-1">(id: {templateInfo.templateId})</span>
-                          )}
                         </h3>
                         <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                         
@@ -664,9 +645,6 @@ export default function PR2Pricing() {
                                 </Button>
                               </div>
                             );
-                          } else if (categoryHasTemplate) {
-                            // Category has static template (like MMP2)
-                            return <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />;
                           } else if (isUserCreated) {
                             return <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />;
                           } else {
