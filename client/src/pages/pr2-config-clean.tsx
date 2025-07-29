@@ -3404,168 +3404,97 @@ export default function PR2ConfigClean() {
               </Card>
             </div>
 
-            {/* MM4 - Data Management with Blue/Green Field Isolation */}
+            {/* MM4 - Blue/Green Field Isolation for MMP1 ONLY */}
             <div className="relative">
               <DevLabel id="MM4" position="top-right" />
               <Card className="bg-white border-2 border-gray-200">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-gray-900">
-                    4. Data Management - Pipe Size: {selectedPipeSizeForMM4}mm (ID: {selectedPipeSizeId})
+                    4. Blue/Green Field Isolation
                   </CardTitle>
                   <p className="text-sm text-gray-600">
-                    Blue/Green field isolation system for pipe-size-specific data management
+                    Separate data fields with Purple ranges - MMP1 Template Only
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {/* Data Rows with Blue/Green/Purple Fields */}
-                    <div className="space-y-3">
-                      {mm4Rows.map((row, index) => (
-                        <div key={row.id} className="grid grid-cols-12 gap-2 items-center p-3 bg-gray-50 rounded">
-                          <div className="col-span-1 text-sm font-medium text-gray-600">
-                            {index + 1}
-                          </div>
-                          
-                          <div className="col-span-3">
-                            <input
-                              type="text"
-                              value={row.blueValue}
-                              onChange={(e) => updateMM4Row(row.id, 'blueValue', e.target.value)}
-                              placeholder="Blue"
-                              className="w-full px-2 py-1 text-sm border border-blue-300 rounded bg-blue-50 focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-                          
-                          <div className="col-span-3">
-                            <input
-                              type="text"
-                              value={row.greenValue}
-                              onChange={(e) => updateMM4Row(row.id, 'greenValue', e.target.value)}
-                              placeholder="Green"
-                              className="w-full px-2 py-1 text-sm border border-green-300 rounded bg-green-50 focus:ring-2 focus:ring-green-500"
-                            />
-                          </div>
-                          
-                          <div className="col-span-2">
-                            <input
-                              type="text"
-                              value={row.purpleDebris}
-                              onChange={(e) => updateMM4Row(row.id, 'purpleDebris', e.target.value)}
-                              placeholder="Debris"
-                              className="w-full px-2 py-1 text-sm border border-purple-300 rounded bg-purple-50 focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-                          
-                          <div className="col-span-2">
-                            <input
-                              type="text"
-                              value={row.purpleLength}
-                              onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
-                              placeholder="Length"
-                              className="w-full px-2 py-1 text-sm border border-purple-300 rounded bg-purple-50 focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-                          
-                          <div className="col-span-1 flex gap-1">
-                            {mm4Rows.length > 1 && (
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="destructive"
-                                className="h-8 w-8 p-0 flex-shrink-0"
-                                onClick={() => deleteMM4Row(row.id)}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-3 gap-4">
+                      {/* Blue Field */}
+                      <div>
+                        <label className="block text-sm font-medium text-blue-700 mb-2">Blue Field</label>
+                        <input
+                          type="text"
+                          placeholder="Blue data"
+                          className="w-full px-3 py-2 border border-blue-300 rounded bg-blue-50 focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
                       
-                      {/* Add Row Button */}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={addMM4Row}
-                        className="w-full"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Row
-                      </Button>
+                      {/* Green Field */}
+                      <div>
+                        <label className="block text-sm font-medium text-green-700 mb-2">Green Field</label>
+                        <input
+                          type="text"
+                          placeholder="Green data"
+                          className="w-full px-3 py-2 border border-green-300 rounded bg-green-50 focus:ring-2 focus:ring-green-500"
+                        />
+                      </div>
+                      
+                      {/* Purple Range */}
+                      <div>
+                        <label className="block text-sm font-medium text-purple-700 mb-2">Purple Range</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            className="flex-1 px-2 py-2 border border-purple-300 rounded bg-purple-50 focus:ring-2 focus:ring-purple-500 text-sm"
+                          />
+                          <span className="self-center text-purple-600">-</span>
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            className="flex-1 px-2 py-2 border border-purple-300 rounded bg-purple-50 focus:ring-2 focus:ring-purple-500 text-sm"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* MM5 - Vehicle Travel */}
+            {/* MM5 - Vehicle Travel for MMP1 ONLY */}
             <div className="relative">
               <DevLabel id="MM5" position="top-right" />
               <Card className="bg-white border-2 border-gray-200">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-gray-900">
-                    5. Vehicle Travel
+                    5. Vehicle Travel - MMP1 Template
                   </CardTitle>
                   <p className="text-sm text-gray-600">
-                    Vehicle travel configuration (independent of pipe size)
+                    Vehicle travel configuration for MMP1 template only
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {mm5Rows.map((row) => (
-                      <div key={row.id} className="grid grid-cols-12 gap-2 items-center p-3 bg-gray-50 rounded">
-                        <div className="col-span-1 text-sm font-medium text-gray-600">
-                          #{row.id}
-                        </div>
-                        
-                        <div className="col-span-4">
-                          <input
-                            type="text"
-                            value={row.vehicleWeight}
-                            onChange={(e) => updateMM5Row(row.id, 'vehicleWeight', e.target.value)}
-                            placeholder="Vehicle Weight"
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        
-                        <div className="col-span-4">
-                          <input
-                            type="text"
-                            value={row.costPerMile}
-                            onChange={(e) => updateMM5Row(row.id, 'costPerMile', e.target.value)}
-                            placeholder="Cost Per Mile"
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        
-                        <div className="col-span-3 flex gap-1">
-                          {mm5Rows.length > 1 && (
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="destructive"
-                              className="h-8 w-8 p-0 flex-shrink-0"
-                              onClick={() => deleteMM5Row(row.id)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          )}
-                        </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Type</label>
+                        <input
+                          type="text"
+                          placeholder="Vehicle details"
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                        />
                       </div>
-                    ))}
-                    
-                    {/* Add Row Button */}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addMM5Row}
-                      className="w-full"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Row
-                    </Button>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Travel Cost</label>
+                        <input
+                          type="text"
+                          placeholder="Cost per mile"
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
