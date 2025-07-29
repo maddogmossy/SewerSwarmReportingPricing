@@ -388,16 +388,6 @@ export default function PR2Pricing() {
             Dashboard
           </Button>
           
-          {/* Pricing Navigation */}
-          <Button
-            onClick={() => setLocation(`/pr2-pricing?sector=${sector}`)}
-            variant="outline"
-            className="bg-white hover:bg-gray-50 border-gray-200 text-black font-bold px-4 py-2 rounded-lg flex items-center gap-2"
-          >
-            <Banknote className="h-5 w-5 text-orange-600" />
-            Pricing
-          </Button>
-          
           {/* Sector Selection */}
           <div className="flex items-center gap-2">
             <currentSector.icon className={`h-5 w-5 ${currentSector.color}`} />
