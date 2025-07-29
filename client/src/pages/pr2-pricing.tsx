@@ -51,7 +51,7 @@ const STANDARD_CATEGORIES = [
   { id: 'van-pack', name: 'Van Pack', description: 'High-pressure water jetting and debris removal', icon: Truck },
   { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
   { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection and cleansing operations', icon: Monitor },
-  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
+  { id: 'f-cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
   { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
   { id: 'test-card', name: 'Test Card', description: 'Test configuration card for CTF P006a template demonstration', icon: Zap },
   { id: 'mmp2-card', name: 'MMP2 Card', description: 'MMP2 template with 5 placeholder cards for enhanced configuration management', icon: Settings },
