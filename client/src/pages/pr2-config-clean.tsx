@@ -3404,217 +3404,185 @@ export default function PR2ConfigClean() {
               </Card>
             </div>
 
-            {/* MM4 and MM5 - Same Row Layout */}
-            <div className="grid grid-cols-3 gap-6">
-              {/* MM4 - Section Calculator (Left - spans 2 columns) */}
-              <div className="col-span-2 relative">
-                {selectedPipeSizeForMM4 ? (
-                  // Show selected pipe size in DevLabel
-                  <DevLabel id={`MM4-${selectedPipeSizeForMM4}`} position="top-right" />
-                ) : (
-                  <DevLabel id="MM4" position="top-right" />
-                )}
-                <Card className="bg-white border-2 border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-semibold text-gray-900">
-                      {selectedPipeSizeForMM4 ? (
-                        // Show selected pipe size and ID in title
-                        `4. Section Calculator - ${selectedPipeSizeForMM4}mm (ID: ${selectedPipeSizeId})`
-                      ) : (
-                        "4. Section Calculator"
-                      )}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {selectedPipeSizeForMM4 ? (
-                      // Show MM4 interface when pipe size is selected
-                      <div className="grid grid-cols-4 gap-4">
-                        {/* Blue - Day Rate (1 column) */}
-                        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                          <h4 className="font-medium text-blue-800 mb-2">
-                            Day Rate
-                            <span className="ml-2 text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded font-mono">
-                              {selectedPipeSizeForMM4}mm
-                            </span>
-                          </h4>
-                          <div>
-                            <label className="text-xs text-blue-700">Day Rate</label>
-                            <Input
+            {/* MM4 - Data Management with Blue/Green Field Isolation */}
+            <div className="relative">
+              <DevLabel id="MM4" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    4. Data Management - Pipe Size: {selectedPipeSizeForMM4}mm (ID: {selectedPipeSizeId})
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Blue/Green field isolation system for pipe-size-specific data management
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Data Rows with Blue/Green/Purple Fields */}
+                    <div className="space-y-3">
+                      {mm4Rows.map((row, index) => (
+                        <div key={row.id} className="grid grid-cols-12 gap-2 items-center p-3 bg-gray-50 rounded">
+                          <div className="col-span-1 text-sm font-medium text-gray-600">
+                            {index + 1}
+                          </div>
+                          
+                          <div className="col-span-3">
+                            <input
                               type="text"
-                              placeholder="Enter day rate"
-                              className="border-blue-300"
-                              value={mm4Rows[0]?.blueValue || ''}
-                              onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
+                              value={row.blueValue}
+                              onChange={(e) => updateMM4Row(row.id, 'blueValue', e.target.value)}
+                              placeholder="Blue"
+                              className="w-full px-2 py-1 text-sm border border-blue-300 rounded bg-blue-50 focus:ring-2 focus:ring-blue-500"
                             />
                           </div>
-                        </div>
-
-                        {/* Green - No Per Shift (1 column) - Dynamic Rows */}
-                        <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                          <h4 className="font-medium text-green-800 mb-2">
-                            No Per Shift
-                            <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-mono">
-                              {selectedPipeSizeForMM4}mm
-                            </span>
-                          </h4>
-                          <div className="space-y-2">
-                            {mm4Rows.map((row, index) => (
-                              <div key={row.id}>
-                                <label className="text-xs text-green-700">Qty Per Shift</label>
-                                <Input
-                                  type="text"
-                                  placeholder="Enter quantity"
-                                  className="border-green-300"
-                                  value={row.greenValue}
-                                  onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
-                                />
-                              </div>
-                            ))}
+                          
+                          <div className="col-span-3">
+                            <input
+                              type="text"
+                              value={row.greenValue}
+                              onChange={(e) => updateMM4Row(row.id, 'greenValue', e.target.value)}
+                              placeholder="Green"
+                              className="w-full px-2 py-1 text-sm border border-green-300 rounded bg-green-50 focus:ring-2 focus:ring-green-500"
+                            />
+                          </div>
+                          
+                          <div className="col-span-2">
+                            <input
+                              type="text"
+                              value={row.purpleDebris}
+                              onChange={(e) => updateMM4Row(row.id, 'purpleDebris', e.target.value)}
+                              placeholder="Debris"
+                              className="w-full px-2 py-1 text-sm border border-purple-300 rounded bg-purple-50 focus:ring-2 focus:ring-purple-500"
+                            />
+                          </div>
+                          
+                          <div className="col-span-2">
+                            <input
+                              type="text"
+                              value={row.purpleLength}
+                              onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
+                              placeholder="Length"
+                              className="w-full px-2 py-1 text-sm border border-purple-300 rounded bg-purple-50 focus:ring-2 focus:ring-purple-500"
+                            />
+                          </div>
+                          
+                          <div className="col-span-1 flex gap-1">
+                            {mm4Rows.length > 1 && (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="destructive"
+                                className="h-8 w-8 p-0 flex-shrink-0"
+                                onClick={() => deleteMM4Row(row.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
                           </div>
                         </div>
-
-                        {/* Purple - Range Configuration (2 columns - wider for two inputs) - Dynamic Rows */}
-                        <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
-                          <h4 className="font-medium text-purple-800 mb-2">
-                            Range Configuration
-                            <span className="ml-2 text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded font-mono">
-                              {selectedPipeSizeForMM4}mm
-                            </span>
-                          </h4>
-                          <div className="space-y-2">
-                            {mm4Rows.map((row, index) => (
-                              <div key={row.id} className="grid grid-cols-2 gap-2">
-                                <div>
-                                  <label className="text-xs text-purple-700">Debris %</label>
-                                  <Input
-                                    type="text"
-                                    placeholder="0-15"
-                                    className="border-purple-300"
-                                    value={row.purpleDebris}
-                                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="text-xs text-purple-700">Length</label>
-                                  <div className="flex items-center gap-2">
-                                    <Input
-                                      type="text"
-                                      placeholder="0-35"
-                                      className="border-purple-300 flex-1"
-                                      value={row.purpleLength}
-                                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
-                                    />
-                                    {index === 0 && (
-                                      <Button 
-                                        size="sm" 
-                                        className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
-                                        onClick={addMM4Row}
-                                      >
-                                        +
-                                      </Button>
-                                    )}
-                                    {index > 0 && (
-                                      <Button 
-                                        size="sm" 
-                                        variant="destructive"
-                                        className="h-8 w-8 p-0 flex-shrink-0"
-                                        onClick={() => deleteMM4Row(row.id)}
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      // Show placeholder when no pipe size selected
-                      <div className="text-center py-8 text-gray-500">
-                        <p>Select a pipe size from MM3 to configure Section Calculator</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* MM5 - Vehicle Travel Rates (Right) */}
-              <div className="relative">
-                <DevLabel id="MM5" position="top-right" />
-                <Card className="bg-white border-2 border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-semibold text-gray-900">
-                      5. Vehicle Travel Rates
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="bg-teal-50 border-2 border-teal-200 rounded-lg p-4">
-                      <h4 className="font-medium text-teal-800 mb-2">Vehicle Travel</h4>
-                      <div className="space-y-2">
-                        {mm5Rows.map((row, index) => (
-                          <div key={row.id} className="grid grid-cols-2 gap-2">
-                            <div>
-                              <label className="text-xs text-teal-700">Vehicle Weight</label>
-                              <Input
-                                type="text"
-                                placeholder="3.5t"
-                                className="border-teal-300"
-                                value={row.vehicleWeight}
-                                onChange={(e) => updateMM5RowWithAutoSave(row.id, 'vehicleWeight', e.target.value)}
-                              />
-                            </div>
-                            <div>
-                              <label className="text-xs text-teal-700">Cost per Mile</label>
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  type="text"
-                                  placeholder="£45"
-                                  className="border-teal-300 flex-1"
-                                  value={row.costPerMile}
-                                  onChange={(e) => updateMM5RowWithAutoSave(row.id, 'costPerMile', e.target.value)}
-                                />
-                                {index === 0 && (
-                                  <Button 
-                                    size="sm" 
-                                    className="bg-teal-600 hover:bg-teal-700 text-white h-8 w-8 p-0 flex-shrink-0"
-                                    onClick={addMM5Row}
-                                  >
-                                    +
-                                  </Button>
-                                )}
-                                {index > 0 && (
-                                  <Button 
-                                    size="sm" 
-                                    variant="destructive"
-                                    className="h-8 w-8 p-0 flex-shrink-0"
-                                    onClick={() => deleteMM5Row(row.id)}
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      ))}
+                      
+                      {/* Add Row Button */}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addMM4Row}
+                        className="w-full"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Row
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* MM5 - Vehicle Travel */}
+            <div className="relative">
+              <DevLabel id="MM5" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    5. Vehicle Travel
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Vehicle travel configuration (independent of pipe size)
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {mm5Rows.map((row) => (
+                      <div key={row.id} className="grid grid-cols-12 gap-2 items-center p-3 bg-gray-50 rounded">
+                        <div className="col-span-1 text-sm font-medium text-gray-600">
+                          #{row.id}
+                        </div>
+                        
+                        <div className="col-span-4">
+                          <input
+                            type="text"
+                            value={row.vehicleWeight}
+                            onChange={(e) => updateMM5Row(row.id, 'vehicleWeight', e.target.value)}
+                            placeholder="Vehicle Weight"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        
+                        <div className="col-span-4">
+                          <input
+                            type="text"
+                            value={row.costPerMile}
+                            onChange={(e) => updateMM5Row(row.id, 'costPerMile', e.target.value)}
+                            placeholder="Cost Per Mile"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        
+                        <div className="col-span-3 flex gap-1">
+                          {mm5Rows.length > 1 && (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="destructive"
+                              className="h-8 w-8 p-0 flex-shrink-0"
+                              onClick={() => deleteMM5Row(row.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Add Row Button */}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addMM5Row}
+                      className="w-full"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Row
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Save Button */}
             <div className="flex justify-start">
               <Button className="bg-green-600 hover:bg-green-700 text-white">
-                Save MMP1 Configuration
+                Save CCTV/Jet Vac Configuration
               </Button>
             </div>
           </div>
         )}
 
-        {/* CCTV/Jet Vac Template - 5 MM Cards (Completely Separate from MMP1) */}
+
+
+        {/* CCTV/Jet Vac Template - EXACT COPY of MMP1 Template */}
         {getTemplateType(categoryId || '') === 'CCTV_JET_VAC' && (
           <div className="space-y-6">
             {/* MM1 - ID1-ID6 Selection (P002 Pattern) */}
@@ -3640,31 +3608,34 @@ export default function PR2ConfigClean() {
                           key={idOption.id}
                           className={`cursor-pointer transition-all duration-200 hover:shadow-md border-2 ${
                             isSelected 
-                              ? `border-gray-800 ${idOption.bgColor} text-white` 
-                              : hasConfiguration 
-                                ? 'border-green-400 bg-green-50' 
-                                : 'border-gray-300 hover:border-gray-400'
+                              ? `border-gray-800 ${idOption.bgColor} ring-2 ring-gray-300` 
+                              : 'border-gray-300 hover:border-gray-400'
                           }`}
-                          onClick={() => handleMMP1IdChange(idOption.id)}
+                          onClick={() => {
+                            console.log('🎯 MM1 ID CARD CLICKED:', { id: idOption.id, willSelect: !isSelected });
+                            handleMMP1IdChange(idOption.id, !isSelected);
+                          }}
                         >
                           <CardContent className="p-4 text-center relative">
-                            <idOption.icon className={`h-8 w-8 mx-auto mb-2 ${
-                              isSelected ? 'text-white' : hasConfiguration ? 'text-green-700' : 'text-gray-700'
-                            }`} />
-                            <h3 className={`font-medium text-sm mb-1 ${
-                              isSelected ? 'text-white' : hasConfiguration ? 'text-green-900' : 'text-gray-800'
+                            <div className={`mx-auto w-8 h-8 mb-3 flex items-center justify-center rounded-lg ${
+                              isSelected ? 'bg-white' : 'bg-gray-100'
+                            }`}>
+                              <idOption.icon className={`w-5 h-5 ${
+                                isSelected ? idOption.color : 'text-gray-600'
+                              }`} />
+                            </div>
+                            <h3 className={`font-semibold text-sm mb-1 ${
+                              isSelected ? 'text-gray-900' : 'text-gray-900'
                             }`}>
                               {idOption.name}
                             </h3>
-                            <p className={`text-xs ${
-                              isSelected ? 'text-white opacity-80' : hasConfiguration ? 'text-green-600' : 'text-gray-600'
-                            }`}>
+                            <p className="text-xs text-gray-600">
                               {idOption.description}
                             </p>
-                            
-                            {/* Status Icons */}
-                            {hasConfiguration && (
-                              <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                            {isSelected && (
+                              <div className="absolute top-2 right-2">
+                                <Settings className="w-4 h-4 text-gray-600" />
+                              </div>
                             )}
                           </CardContent>
                         </Card>
@@ -3672,143 +3643,211 @@ export default function PR2ConfigClean() {
                     })}
                   </div>
                   
-                  {/* Summary Display */}
-                  {selectedIds.length > 0 && (
-                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                      <p className="text-sm font-medium text-gray-700">
-                        Selected IDs: {selectedIds.join(', ')} ({selectedIds.length} selected)
-                      </p>
-                    </div>
-                  )}
+
                 </CardContent>
               </Card>
             </div>
 
-            {/* MM2 - Color Picker */}
+            {/* Color Picker Section - Enhanced with 20 colors and custom picker */}
             <div className="relative">
               <DevLabel id="MM2" position="top-right" />
               <Card className="bg-white border-2 border-gray-200">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-gray-900">
-                    2. Color Picker
+                    2. Color Picker Section
                   </CardTitle>
                   <p className="text-sm text-gray-600">
-                    Select colors for configuration and visual display
+                    Choose from 20 Outlook diary-style colors or use custom color picker
                   </p>
                 </CardHeader>
                 <CardContent>
-                  {/* 20 Outlook Diary-Style Colors in 10x2 Grid */}
+                  {/* 20 Outlook Diary Style Colors */}
                   <div className="grid grid-cols-10 gap-2 mb-4">
-                    {OUTLOOK_COLORS.map((color) => (
+                    {[
+                      { name: 'Light Blue', value: '#8DC3E8' },
+                      { name: 'Light Green', value: '#A4D4B4' },
+                      { name: 'Light Yellow', value: '#F5E6A3' },
+                      { name: 'Light Orange', value: '#F5C99B' },
+                      { name: 'Light Red', value: '#F5A3A3' },
+                      { name: 'Light Purple', value: '#D4A4D4' },
+                      { name: 'Light Pink', value: '#F5C2E7' },
+                      { name: 'Light Teal', value: '#A3D5D5' },
+                      { name: 'Light Gray', value: '#D4D4D4' },
+                      { name: 'Light Brown', value: '#D4B899' },
+                      { name: 'Medium Blue', value: '#5B9BD5' },
+                      { name: 'Medium Green', value: '#70AD47' },
+                      { name: 'Medium Yellow', value: '#FFC000' },
+                      { name: 'Medium Orange', value: '#ED7D31' },
+                      { name: 'Medium Red', value: '#C55A5A' },
+                      { name: 'Medium Purple', value: '#9F4F96' },
+                      { name: 'Medium Pink', value: '#E083C2' },
+                      { name: 'Medium Teal', value: '#4BACC6' },
+                      { name: 'Medium Gray', value: '#A5A5A5' },
+                      { name: 'Medium Brown', value: '#B7956D' }
+                    ].map((color) => (
                       <button
-                        key={color}
-                        type="button"
-                        className={`w-8 h-8 rounded border-2 hover:scale-110 transition-transform ${
-                          mm1Colors === color ? 'border-gray-800 ring-2 ring-gray-300' : 'border-gray-300'
+                        key={color.name}
+                        className={`w-8 h-8 rounded-lg border-2 cursor-pointer hover:scale-110 transition-transform ${
+                          formData.categoryColor === color.value ? 'border-gray-800 ring-2 ring-gray-300' : 'border-gray-300'
                         }`}
-                        style={{ backgroundColor: color }}
-                        onClick={() => handleMMP1ColorChange(color)}
-                        title={color}
-                      />
+                        style={{ backgroundColor: color.value }}
+                        onClick={() => handleMM1ColorChange(color.value)}
+                        title={color.name}
+                      >
+                        {formData.categoryColor === color.value && (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-white text-sm font-bold">✓</span>
+                          </div>
+                        )}
+                      </button>
                     ))}
                   </div>
-                  
-                  {/* Custom Color Input */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <label className="text-sm font-medium text-gray-700">Custom Color:</label>
-                      <input
-                        type="color"
-                        value={mm1Colors}
-                        onChange={(e) => handleMMP1ColorChange(e.target.value)}
-                        className="w-12 h-8 border border-gray-300 rounded cursor-pointer"
-                      />
-                      <input
-                        type="text"
-                        value={mm1Colors}
-                        onChange={(e) => handleMMP1ColorChange(e.target.value)}
-                        placeholder="#ffffff"
-                        className="px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
+
+                  {/* Custom Color Picker and Selected Color Display */}
+                  <div className="border-t pt-4">
+                    <div className="flex items-center gap-4 mb-2">
+                      {/* Custom Color Picker Button */}
+                      <div className="relative flex-1">
+                        <button
+                          type="button"
+                          onClick={() => setShowCustomColorPicker(!showCustomColorPicker)}
+                          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        >
+                          <div 
+                            className="w-4 h-4 rounded border border-gray-300"
+                            style={{ backgroundColor: formData.categoryColor }}
+                          ></div>
+                          Custom Color Picker
+                        </button>
+                      </div>
                     </div>
-                    
-                    {/* Color Preview */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">Preview:</span>
-                      <div 
-                        className="w-16 h-8 rounded border border-gray-300"
-                        style={{ backgroundColor: mm1Colors }}
-                      />
-                      <span className="text-sm font-mono text-gray-500">{mm1Colors}</span>
-                    </div>
+
+                    {/* Expandable Custom Color Input */}
+                    {showCustomColorPicker && (
+                      <div className="bg-gray-50 p-3 rounded-lg border">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="color"
+                            value={formData.categoryColor || '#ffffff'}
+                            onChange={(e) => handleMM1ColorChange(e.target.value)}
+                            className="w-12 h-8 border border-gray-300 rounded cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={formData.categoryColor || ''}
+                            onChange={(e) => handleMM1ColorChange(e.target.value)}
+                            placeholder="#ffffff"
+                            className="flex-1 px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* MM3 - UK Drainage Pipe Sizes */}
+            {/* MM3 - UK Drainage Pipe Sizes (MSCC5) */}
             <div className="relative">
               <DevLabel id="MM3" position="top-right" />
               <Card className="bg-white border-2 border-gray-200">
                 <CardHeader>
-                  <CardTitle className="text-lg font-semibold text-gray-900">
-                    3. UK Drainage Pipe Sizes
-                  </CardTitle>
-                  <p className="text-sm text-gray-600">
-                    MSCC5-compliant UK drainage pipe sizes for infrastructure projects
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  {/* Standard UK Pipe Sizes */}
-                  <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 mb-4">
-                    {UK_PIPE_SIZES.map((size) => (
-                      <div
-                        key={size}
-                        className="text-center p-2 bg-gray-50 rounded border border-gray-200 text-sm font-medium text-gray-700"
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-gray-900">
+                        3. UK Drainage Pipe Sizes (MSCC5)
+                      </CardTitle>
+                      <p className="text-sm text-gray-600">
+                        Standard UK drainage pipe sizes with custom size management
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        value={newPipeSize}
+                        onChange={(e) => setNewPipeSize(e.target.value)}
+                        placeholder="Add size (mm)"
+                        className="px-2 py-1 text-sm border border-gray-300 rounded w-28 font-mono"
+                        min="50"
+                        max="3000"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (newPipeSize && !customPipeSizes.includes(newPipeSize)) {
+                            setCustomPipeSizes(prev => [...prev, newPipeSize].sort((a, b) => parseInt(a) - parseInt(b)));
+                            setNewPipeSize('');
+                            triggerAutoSave();
+                          }
+                        }}
+                        className="px-2 py-1 text-sm bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                        disabled={!newPipeSize || customPipeSizes.includes(newPipeSize)}
                       >
-                        {size}mm
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Custom Pipe Sizes */}
-                  <div className="space-y-3">
-                    <h4 className="text-sm font-medium text-gray-700">Custom Pipe Sizes:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {mm3CustomPipeSizes.map((size, index) => (
-                        <div key={index} className="flex items-center gap-1 bg-blue-50 border border-blue-200 rounded px-2 py-1">
-                          <span className="text-sm text-blue-700">{size}mm</span>
-                          <button
-                            type="button"
-                            onClick={() => removeMM3CustomSize(size)}
-                            className="text-blue-500 hover:text-red-500 ml-1"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                      
-                      {/* Add Custom Size Input */}
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          value={newMM3PipeSize}
-                          onChange={(e) => setNewMM3PipeSize(e.target.value)}
-                          placeholder="Size (mm)"
-                          className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <Button
-                          type="button"
-                          size="sm"
-                          onClick={addMM3CustomSize}
-                          className="h-7 px-2 text-xs"
-                        >
-                          <Plus className="w-3 h-3 mr-1" />
-                          Add
-                        </Button>
-                      </div>
+                        <Plus className="w-3 h-3" />
+                      </button>
                     </div>
                   </div>
+                </CardHeader>
+                <CardContent>
+                  {/* Orange UI Card containing all pipe size buttons */}
+                  <Card className="bg-orange-50 border-2 border-orange-200">
+                    <CardContent className="p-4">
+                      <div className="grid grid-cols-6 gap-2">
+                        {/* Combine and sort all pipe sizes */}
+                        {[
+                          ...['100', '150', '225', '300', '375', '450', '525', '600', '675', '750', '900', '1050', '1200', '1350', '1500', '1800', '2100', '2400'],
+                          ...customPipeSizes
+                        ]
+                          .sort((a, b) => parseInt(a) - parseInt(b))
+                          .map((size) => {
+                            const isCustom = customPipeSizes.includes(size);
+                            const isSelected = selectedPipeSizeForMM4 === size;
+                            
+                            return (
+                              <Card
+                                key={size}
+                                className={`relative group cursor-pointer transition-all border-2 ${
+                                  isSelected 
+                                    ? 'border-green-400 bg-green-100 shadow-md' 
+                                    : 'border-gray-300 bg-white hover:border-orange-300 hover:bg-orange-50'
+                                }`}
+                                onClick={() => handlePipeSizeSelectWithAutoSave(size)}
+                              >
+                                <CardContent className="p-3 text-center">
+                                  <div className="text-sm font-mono font-semibold text-gray-900">
+                                    {size}mm
+                                  </div>
+                                  {isSelected && (
+                                    <div className="absolute top-1 right-1">
+                                      <Settings className="w-3 h-3 text-green-600" />
+                                    </div>
+                                  )}
+                                </CardContent>
+                                
+                                {/* Custom size removal */}
+                                {isCustom && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setCustomPipeSizes(prev => prev.filter(s => s !== size));
+                                      if (selectedPipeSizeForMM4 === size) {
+                                        setSelectedPipeSizeForMM4('100');
+                                        setSelectedPipeSizeId(1001);
+                                      }
+                                      triggerAutoSave();
+                                    }}
+                                    className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                    title="Remove custom size"
+                                  >
+                                    ×
+                                  </button>
+                                )}
+                              </Card>
+                            );
+                          })}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </CardContent>
               </Card>
             </div>
