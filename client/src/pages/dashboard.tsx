@@ -2667,6 +2667,16 @@ export default function Dashboard() {
     // Check if this section requires cleaning and has MM4/MM5 configuration data
     const needsCleaning = requiresCleaning(section.defects || '');
     
+    // Debug cleaning detection
+    if (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23 || section.itemNo === 24) {
+      console.log(`🔍 Cleaning Check for Item ${section.itemNo}:`, {
+        needsCleaning,
+        defects: section.defects,
+        defectType: section.defectType,
+        pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0
+      });
+    }
+    
     if (needsCleaning && pr2Configurations) {
       // Find cctv-jet-vac configuration for current sector
       const cctvJetVacConfig = pr2Configurations.find((config: any) => 
