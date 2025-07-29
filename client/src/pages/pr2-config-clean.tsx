@@ -3057,7 +3057,7 @@ export default function PR2ConfigClean() {
               onClick={() => window.location.href = `/pr2-pricing?sector=${sector}`}
               className="bg-white hover:bg-gray-50 text-black font-bold py-2 px-4 rounded-lg border border-gray-300 transition-colors"
             >
-              <Banknote className="w-4 h-4 mr-2 text-orange-600" />
+              <Settings className="w-4 h-4 mr-2 text-orange-600" />
               Pricing
             </Button>
           </div>
