@@ -2678,7 +2678,14 @@ export default function Dashboard() {
         needsCleaning,
         configFound: !!cctvJetVacConfig,
         currentSector: currentSector.id,
-        allConfigs: pr2Configurations.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector }))
+        allConfigs: pr2Configurations.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector })),
+        configDetails: cctvJetVacConfig ? {
+          id: cctvJetVacConfig.id,
+          categoryId: cctvJetVacConfig.categoryId,
+          sector: cctvJetVacConfig.sector,
+          hasMMData: !!cctvJetVacConfig.mmData,
+          mmDataKeys: cctvJetVacConfig.mmData ? Object.keys(cctvJetVacConfig.mmData) : []
+        } : null
       });
       
       if (cctvJetVacConfig && cctvJetVacConfig.mmData) {
