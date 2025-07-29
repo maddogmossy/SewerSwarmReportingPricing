@@ -1044,6 +1044,15 @@ export default function PR2ConfigClean() {
   const mm4Rows = getCurrentMM4Data();
   const mm5Rows = getCurrentMM5Data();
 
+  // Auto-select pipe size from URL parameter on component load
+  useEffect(() => {
+    if (pipeSize && getTemplateType(categoryId || '') === 'MMP1') {
+      const pipeSizeNumber = pipeSize.replace('mm', '');
+      console.log(`🎯 Auto-selecting pipe size ${pipeSizeNumber}mm from URL parameter`);
+      handlePipeSizeSelect(pipeSizeNumber);
+    }
+  }, [pipeSize, categoryId]);
+
   // Save MM4/MM5 data to localStorage whenever it changes
   useEffect(() => {
     try {
