@@ -13,6 +13,11 @@ export const getTemplateByCategoryId = (categoryId: string) => {
   return templates.find(template => template.categoryId === categoryId);
 };
 
+// Check if a category has a template (for UI display logic)
+export const hasTemplate = (categoryId: string) => {
+  return getTemplateByCategoryId(categoryId) !== undefined;
+};
+
 export const getAllTemplates = () => {
   return templates;
 };

@@ -33,6 +33,7 @@ import {
   Banknote
 } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
+import { hasTemplate, getTemplateByCategoryId } from '@/lib/template-registry';
 
 // Sector definitions matching upload window colors from image
 const SECTORS = [
@@ -331,7 +332,14 @@ export default function PR2Pricing() {
       return;
     }
     
-    // If no existing configuration, show message instead of auto-creating
+    // Check if category has a static template (like MMP2)
+    if (hasTemplate(categoryId)) {
+      // Navigate to template-based configuration
+      setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&template=true`);
+      return;
+    }
+
+    // If no existing configuration or template, show message instead of auto-creating
     toast({
       title: "No Configuration Found",
       description: "This category needs to be configured from the dashboard when processing a report.",
@@ -586,6 +594,10 @@ export default function PR2Pricing() {
                     return false;
                   });
 
+                  // Check if category has a static template (for MMP2, etc.)
+                  const categoryHasTemplate = hasTemplate(category.id);
+                  const templateInfo = categoryHasTemplate ? getTemplateByCategoryId(category.id) : null;
+
                   
                   // Check if configuration has actual values (for status icon logic)
                   const hasActualValues = existingConfiguration && (
@@ -624,6 +636,12 @@ export default function PR2Pricing() {
                         }`} />
                         <h3 className="font-medium text-sm mb-1 text-gray-800">
                           {category.name}
+                          {existingConfiguration && (
+                            <span className="text-xs text-blue-600 ml-1">(ID: {existingConfiguration.id})</span>
+                          )}
+                          {!existingConfiguration && templateInfo && (
+                            <span className="text-xs text-green-600 ml-1">(id: {templateInfo.templateId})</span>
+                          )}
                         </h3>
                         <p className="text-xs text-gray-600 line-clamp-2">{category.description}</p>
                         
@@ -646,6 +664,9 @@ export default function PR2Pricing() {
                                 </Button>
                               </div>
                             );
+                          } else if (categoryHasTemplate) {
+                            // Category has static template (like MMP2)
+                            return <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />;
                           } else if (isUserCreated) {
                             return <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />;
                           } else {

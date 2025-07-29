@@ -6,8 +6,8 @@ const MMP2Template = createTemplate({
   templateId: "MMP2Template",
   title: "MMP2 Template (F603)",
   name: "MMP2 Template",
-  categoryId: "f-cctv-jet-vac", 
-  description: "Standalone test template under CCTV Jet Vac",
+  categoryId: "mmp2-card", 
+  description: "MMP2 template with 5 placeholder cards for enhanced configuration management",
   cards: [
     {
       id: "card-1",
