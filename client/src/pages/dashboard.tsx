@@ -2638,7 +2638,13 @@ export default function Dashboard() {
 
   // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {
-    // Removed excessive logging for performance
+    console.log('🔍 MM4 Cost Calculation Called for Section:', {
+      itemNo: section.itemNo,
+      defects: section.defects,
+      totalLength: section.totalLength,
+      pipeSize: section.pipeSize,
+      defectType: section.defectType
+    });
     
     // NEW: Check for MM4/MM5 data integration for cctv-jet-vac configurations FIRST
     const sectionLength = parseFloat(section.totalLength) || 0;
