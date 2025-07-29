@@ -1,6 +1,6 @@
-import MMP2Template from "@/components/templates/MMP2Template";
+import MMP1Template from "@/components/templates/MMP1Template";
 
 export const TemplateMap = {
-  MMP2Template,
+  MMP1Template,
   // Add other templates here as needed
 };

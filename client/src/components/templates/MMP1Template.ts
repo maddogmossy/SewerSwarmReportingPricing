@@ -6,8 +6,8 @@ export const MMP1Template = createTemplate({
   templateId: "MMP1Template", 
   title: "MMP1 Template",
   name: "MMP1 Template",
-  categoryId: "f-cctv-jet-vac",
-  description: "MMP1 Template with ID1-ID6 selection system and enhanced configuration management",
+  categoryId: "test-card",
+  description: "MMP1 Template for test card configuration - ID1 - ID1.",
   cards: [
     {
       id: "mm1-card",
