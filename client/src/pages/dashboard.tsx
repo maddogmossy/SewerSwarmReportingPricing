@@ -2284,6 +2284,40 @@ export default function Dashboard() {
     return defectCount;
   };
 
+  // Function to extract debris percentage from section observations for MM4 matching
+  const extractDebrisPercentage = (defectsText: string): number => {
+    if (!defectsText) return 0;
+    
+    // Look for percentage patterns in the defects text
+    // Common patterns: "20%", "30% debris", "debris 15%"
+    const percentageMatch = defectsText.match(/(\d+\.?\d*)%/);
+    
+    if (percentageMatch) {
+      return parseFloat(percentageMatch[1]) || 0;
+    }
+    
+    // If no explicit percentage, estimate based on debris descriptions
+    const lowercaseText = defectsText.toLowerCase();
+    
+    // Heavy debris indicators
+    if (lowercaseText.includes('heavy debris') || lowercaseText.includes('severe deposits')) {
+      return 40; // Estimate high percentage
+    }
+    
+    // Moderate debris indicators  
+    if (lowercaseText.includes('debris') || lowercaseText.includes('deposit') || lowercaseText.includes('grease')) {
+      return 20; // Estimate moderate percentage
+    }
+    
+    // Light debris indicators
+    if (lowercaseText.includes('light debris') || lowercaseText.includes('minor deposits')) {
+      return 10; // Estimate low percentage
+    }
+    
+    // No debris indicators found
+    return 0;
+  };
+
   // Function to calculate TP1 cleaning cost for service defects
   const calculateTP1CleaningCost = (section: any) => {
     // Find TP1 CCTV configuration for this sector
@@ -2605,6 +2639,110 @@ export default function Dashboard() {
   // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {
     // Removed excessive logging for performance
+    
+    // NEW: Check for MM4/MM5 data integration for cctv-jet-vac configurations FIRST
+    const sectionLength = parseFloat(section.totalLength) || 0;
+    const sectionDebrisPercent = extractDebrisPercentage(section.defects || '');
+    const sectionPipeSize = section.pipeSize;
+    
+    // Check if this section requires cleaning and has MM4/MM5 configuration data
+    const needsCleaning = requiresCleaning(section.defects || '');
+    
+    if (needsCleaning && pr2Configurations) {
+      // Find cctv-jet-vac configuration for current sector
+      const cctvJetVacConfig = pr2Configurations.find((config: any) => 
+        config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
+      );
+      
+      if (cctvJetVacConfig && cctvJetVacConfig.mmData) {
+        console.log('🔍 MM4/MM5 Dashboard Cost Integration:', {
+          sectionId: section.itemNo,
+          sectionLength,
+          sectionDebrisPercent,
+          sectionPipeSize,
+          hasMMData: !!cctvJetVacConfig.mmData
+        });
+        
+        // Get MM4 data for the matching pipe size
+        const mmData = cctvJetVacConfig.mmData;
+        const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
+        
+        // Find matching pipe size configuration
+        let matchingMM4Data = null;
+        let matchingPipeSizeKey = null;
+        
+        // Try to find exact pipe size match (e.g., "150-1501")
+        for (const [pipeSizeKey, mm4Data] of Object.entries(mm4DataByPipeSize)) {
+          const [keyPipeSize] = pipeSizeKey.split('-');
+          
+          if (keyPipeSize === sectionPipeSize?.replace('mm', '')) {
+            matchingMM4Data = mm4Data;
+            matchingPipeSizeKey = pipeSizeKey;
+            break;
+          }
+        }
+        
+        if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
+          // Check each MM4 row to see if section matches criteria
+          for (const mm4Row of matchingMM4Data) {
+            const blueValue = parseFloat(mm4Row.blueValue || '0');
+            const greenValue = parseFloat(mm4Row.greenValue || '0');
+            const purpleDebris = parseFloat(mm4Row.purpleDebris || '0');
+            const purpleLength = parseFloat(mm4Row.purpleLength || '0');
+            
+            // Check if section matches this MM4 configuration criteria
+            const debrisMatch = sectionDebrisPercent <= purpleDebris;
+            const lengthMatch = sectionLength <= purpleLength;
+            const hasValidRate = blueValue > 0 && greenValue > 0;
+            
+            if (debrisMatch && lengthMatch && hasValidRate) {
+              // Calculate MM4 rate: blue ÷ green = rate per length
+              const ratePerLength = blueValue / greenValue;
+              const totalCost = ratePerLength * sectionLength;
+              
+              console.log('✅ MM4 Cost Calculation:', {
+                pipeSizeKey: matchingPipeSizeKey,
+                mm4Row: mm4Row.id,
+                blueValue,
+                greenValue,
+                ratePerLength,
+                sectionLength,
+                totalCost,
+                debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
+                lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`
+              });
+              
+              return {
+                cost: totalCost,
+                currency: '£',
+                method: 'MM4 Rate Calculation',
+                status: 'mm4_calculated',
+                ratePerLength: ratePerLength,
+                sectionLength: sectionLength,
+                dayRate: blueValue,
+                runsPerShift: greenValue,
+                recommendation: `MM4 cleansing rate: £${blueValue} ÷ ${greenValue} = £${ratePerLength.toFixed(2)} per length × ${sectionLength}m = £${totalCost.toFixed(2)}`
+              };
+            }
+          }
+          
+          // Section doesn't match MM4 criteria - show warning
+          console.log('⚠️ Section outside MM4 ranges:', {
+            sectionDebrisPercent,
+            sectionLength,
+            mm4Configurations: matchingMM4Data.length
+          });
+          
+          return {
+            cost: 0,
+            currency: '£',
+            method: 'MM4 Outside Ranges',
+            status: 'mm4_outside_ranges',
+            recommendation: 'Section exceeds MM4 configuration ranges (debris % or length)'
+          };
+        }
+      }
+    }
     
     // CRITICAL FIX: Check for robotic cutting (ID4) requirements FIRST before any other routing
     const recommendations = section.recommendations || '';
