@@ -16,39 +16,63 @@ interface CleaningOptionsPopoverProps {
 }
 
 export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
-  // PIPE SIZE AUTO-DETECTION: Extract pipe size and auto-detect configurations
+  // DIRECT MMP1 CONNECTION: Connect cleanse/survey to MMP1 template with ID1 for utilities sector
   const handleDirectClick = async () => {
     // Extract pipe size from section data
     const pipeSize = sectionData.pipeSize || '150mm';
     const pipeSizeNumber = pipeSize.replace('mm', '');
     
-    
     try {
-      // Auto-detect or create TP1 configuration for this pipe size
-      const response = await fetch('/api/pr2-clean/auto-detect-pipe-size', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          categoryId: 'cctv-jet-vac',
-          pipeSize: pipeSizeNumber,
-          sector: sectionData.sector
-        })
-      });
-      
-      if (response.ok) {
-        const config = await response.json();
+      // For utilities sector, connect to MMP1 template system
+      if (sectionData.sector === 'utilities') {
+        // Find existing MMP1 configuration for utilities sector
+        const response = await fetch(`/api/pr2-clean?sector=utilities`);
         
-        // Route to specific configuration with auto-assigned ID
-        window.location.href = `/pr2-config-clean?id=${config.id}&categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+        if (response.ok) {
+          const configs = await response.json();
+          const mmp1Config = configs.find((config: any) => 
+            config.categoryId === 'test-card' && 
+            config.categoryName?.includes('MMP1')
+          );
+          
+          if (mmp1Config) {
+            // Route to MMP1 configuration with ID1 context
+            window.location.href = `/pr2-config-clean?id=${mmp1Config.id}&categoryId=test-card&sector=utilities&selectedId=id1`;
+          } else {
+            // Create new MMP1 configuration for utilities
+            window.location.href = `/pr2-config-clean?categoryId=test-card&sector=utilities&selectedId=id1`;
+          }
+        } else {
+          // Fallback to MMP1 template creation
+          window.location.href = `/pr2-config-clean?categoryId=test-card&sector=utilities&selectedId=id1`;
+        }
       } else {
-        console.warn('Failed to auto-detect configuration, using fallback routing');
-        // Fallback to original routing
-        window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+        // For other sectors, use original cctv-jet-vac logic
+        const response = await fetch('/api/pr2-clean/auto-detect-pipe-size', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            categoryId: 'cctv-jet-vac',
+            pipeSize: pipeSizeNumber,
+            sector: sectionData.sector
+          })
+        });
+        
+        if (response.ok) {
+          const config = await response.json();
+          window.location.href = `/pr2-config-clean?id=${config.id}&categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+        } else {
+          window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+        }
       }
     } catch (error) {
-      console.error('Error in auto-detection:', error);
-      // Fallback to original routing on error
-      window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+      console.error('Error in MMP1 connection:', error);
+      // Fallback routing based on sector
+      if (sectionData.sector === 'utilities') {
+        window.location.href = `/pr2-config-clean?categoryId=test-card&sector=utilities&selectedId=id1`;
+      } else {
+        window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+      }
     }
   };
 

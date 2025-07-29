@@ -166,6 +166,7 @@ export default function PR2ConfigClean() {
   const configName = urlParams.get('configName');
   const sourceItemNo = urlParams.get('itemNo');
   const selectedOptionId = urlParams.get('selectedOption'); // Track which option is selected for editing
+  const selectedId = urlParams.get('selectedId'); // Track MMP1 ID selection from dashboard (id1, id2, etc.)
   const isEditing = !!editId;
   
   // Determine template type based on category
@@ -930,6 +931,13 @@ export default function PR2ConfigClean() {
   // State for MMP1 ID selections (ID1-ID6 following P002 pattern)
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [idsWithConfig, setIdsWithConfig] = useState<string[]>([]);
+
+  // Initialize selectedIds from URL parameter when component loads
+  useEffect(() => {
+    if (selectedId && getTemplateType(categoryId || '') === 'MMP1') {
+      setSelectedIds([selectedId]);
+    }
+  }, [selectedId, categoryId]);
   const [showCustomColorPicker, setShowCustomColorPicker] = useState(false);
   const [customPipeSizes, setCustomPipeSizes] = useState<string[]>([]);
   const [newPipeSize, setNewPipeSize] = useState('');
