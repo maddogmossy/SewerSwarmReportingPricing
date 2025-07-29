@@ -951,6 +951,49 @@ export default function PR2ConfigClean() {
   const [showRemoveWarning, setShowRemoveWarning] = useState(false);
   const [sectorToRemove, setSectorToRemove] = useState<string>('');
 
+  // Color state for MM2 color picker (shared between MMP1 and CCTV templates)
+  const [mm1Colors, setMm1Colors] = useState<string>('#ffffff');
+  
+  // MM3 custom pipe sizes state 
+  const [mm3CustomPipeSizes, setMm3CustomPipeSizes] = useState<string[]>([]);
+  const [newMM3PipeSize, setNewMM3PipeSize] = useState<string>('');
+  
+  // MM4 state for data management
+  const [mm4Rows, setMm4Rows] = useState([
+    { id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }
+  ]);
+  
+  // MM5 state for vehicle travel
+  const [mm5Rows, setMm5Rows] = useState([
+    { id: 1, vehicleWeight: '', costPerMile: '' }
+  ]);
+
+  // Handler functions for template components
+  const handleMMP1ColorChange = (color: string) => {
+    setMm1Colors(color);
+    // Auto-save color change
+    setFormData(prev => ({
+      ...prev,
+      categoryColor: color
+    }));
+    debouncedSave();
+  };
+
+  const handlePipeSizeChange = (size: string) => {
+    setSelectedPipeSizeForMM4(size);
+  };
+
+  const addMM3CustomSize = () => {
+    if (newMM3PipeSize.trim() && !mm3CustomPipeSizes.includes(newMM3PipeSize.trim())) {
+      setMm3CustomPipeSizes(prev => [...prev, newMM3PipeSize.trim()]);
+      setNewMM3PipeSize('');
+    }
+  };
+
+  const removeMM3CustomSize = (size: string) => {
+    setMm3CustomPipeSizes(prev => prev.filter(s => s !== size));
+  };
+
 
 
   // Auto-save functionality state
@@ -1029,8 +1072,8 @@ export default function PR2ConfigClean() {
   };
 
   // Get current data as computed values
-  const mm4Rows = getCurrentMM4Data();
-  const mm5Rows = getCurrentMM5Data();
+  const currentMM4Data = getCurrentMM4Data();
+  const currentMM5Data = getCurrentMM5Data();
 
   // Update MM4/MM5 data for specific pipe size
   const updateMM4DataForPipeSize = (newData: any[]) => {
@@ -1365,47 +1408,7 @@ export default function PR2ConfigClean() {
     });
   };
 
-  // Handle color change for MM2 custom color picker
-  const handleColorChange = (color: string) => {
-    setHasUserChanges(true); // Prevent config reload
-    
-    setFormData(prev => {
-      const updatedFormData = { ...prev, categoryColor: color };
-      
-      // Immediate save with correct color value
-      if (editId) {
-        setTimeout(async () => {
-          try {
-            const mmData = {
-              selectedPipeSize: selectedPipeSizeForMM4,
-              selectedPipeSizeId: selectedPipeSizeId,
-              mm1Colors: color, // Use the NEW color directly
-              mm2IdData: selectedIds,
-              mm3CustomPipeSizes: customPipeSizes,
-              mm4Rows: mm4Rows,
-              mm5Rows: mm5Rows,
-              categoryId: categoryId,
-              sector: sector,
-              timestamp: Date.now()
-            };
-            
-            await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
-              ...updatedFormData,
-              mmData: mmData
-            });
-            
-            // Invalidate queries to update category card display
-            queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-            
-          } catch (error) {
-            console.error('MM2 custom save failed:', error);
-          }
-        }, 100);
-      }
-      
-      return updatedFormData;
-    });
-  };
+  // Color change handler already defined above, removing duplicate
 
   // Mutation for saving sectors
   const mutation = useMutation({
@@ -3704,7 +3707,7 @@ export default function PR2ConfigClean() {
                           mm1Colors === color ? 'border-gray-800 ring-2 ring-gray-300' : 'border-gray-300'
                         }`}
                         style={{ backgroundColor: color }}
-                        onClick={() => handleColorChange(color)}
+                        onClick={() => handleMMP1ColorChange(color)}
                         title={color}
                       />
                     ))}
@@ -3717,13 +3720,13 @@ export default function PR2ConfigClean() {
                       <input
                         type="color"
                         value={mm1Colors}
-                        onChange={(e) => handleColorChange(e.target.value)}
+                        onChange={(e) => handleMMP1ColorChange(e.target.value)}
                         className="w-12 h-8 border border-gray-300 rounded cursor-pointer"
                       />
                       <input
                         type="text"
                         value={mm1Colors}
-                        onChange={(e) => handleColorChange(e.target.value)}
+                        onChange={(e) => handleMMP1ColorChange(e.target.value)}
                         placeholder="#ffffff"
                         className="px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
@@ -3777,7 +3780,7 @@ export default function PR2ConfigClean() {
                           <span className="text-sm text-blue-700">{size}mm</span>
                           <button
                             type="button"
-                            onClick={() => removeMM3CustomSize(index)}
+                            onClick={() => removeMM3CustomSize(size)}
                             className="text-blue-500 hover:text-red-500 ml-1"
                           >
                             <X className="w-3 h-3" />
@@ -3816,7 +3819,7 @@ export default function PR2ConfigClean() {
               <Card className="bg-white border-2 border-gray-200">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-gray-900">
-                    4. Data Management - Pipe Size: {selectedPipeSize}mm (ID: {selectedPipeSizeId})
+                    4. Data Management - Pipe Size: {selectedPipeSizeForMM4}mm (ID: {selectedPipeSizeId})
                   </CardTitle>
                   <p className="text-sm text-gray-600">
                     Blue/Green field isolation with purple ranges
