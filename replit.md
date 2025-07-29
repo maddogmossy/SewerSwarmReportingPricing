@@ -82,7 +82,7 @@ This is a full-stack TypeScript application built with React frontend and Expres
   - **Import Path Standardization**: Templates moved to client/src/templates/ directory with @/templates/mmp2 import structure
   - **Template ID Display**: Added "(id: MMP2)" to UI title for clear user identification of template type
 - **Technical Implementation**:
-  - Created MMP2Template with F603 designation: title "MMP2 Template (F603)", templateId "MMP2Template"
+  - Created MMP2Template with F603 designation: title "MMP2 Template (F603)", templateId "MMP2Template", categoryId "f-cctv-jet-vac"
   - Restructured as default export from client/src/components/templates/MMP2Template.ts
   - Created TemplateMap in client/src/lib/template-map.ts for centralized template mapping
   - Updated all import statements to use default import syntax: `import MMP2Template from "@/components/templates/MMP2Template"`
