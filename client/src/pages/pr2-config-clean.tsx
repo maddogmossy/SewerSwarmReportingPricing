@@ -938,25 +938,7 @@ export default function PR2ConfigClean() {
   // Auto-save functionality state
   const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
   
-  // MMP1 LOCK SYSTEM - Prevents accidental changes unless explicitly unlocked
-  const [mmp1Locked, setMmp1Locked] = useState<boolean>(true);
-  const [showUnlockDialog, setShowUnlockDialog] = useState<boolean>(false);
-  
-  // Lock wrapper functions to prevent accidental MMP1 changes
-  const checkMMP1Lock = (action: () => void) => {
-    if (getTemplateType(categoryId || '') === 'MMP1' && mmp1Locked) {
-      setShowUnlockDialog(true);
-      return;
-    }
-    action();
-  };
-  
-  const unlockMMP1 = () => {
-    setMmp1Locked(false);
-    setShowUnlockDialog(false);
-    // Auto-lock after 10 minutes of inactivity
-    setTimeout(() => setMmp1Locked(true), 10 * 60 * 1000);
-  };
+
 
   // MM3 Pipe Size Selection State - Single selection only (default to 100mm)
   const [selectedPipeSizeForMM4, setSelectedPipeSizeForMM4] = useState<string>('100');
@@ -1046,11 +1028,6 @@ export default function PR2ConfigClean() {
 
   // MM4 Row Management Functions - Now scoped to pipe size
   const addMM4Row = () => {
-    // Check MMP1 lock before allowing changes
-    if (getTemplateType(categoryId || '') === 'MMP1' && mmp1Locked) {
-      setShowUnlockDialog(true);
-      return;
-    }
     const currentData = getCurrentMM4Data();
     const newData = [
       ...currentData,
@@ -1068,11 +1045,6 @@ export default function PR2ConfigClean() {
   };
 
   const deleteMM4Row = (rowId: number) => {
-    // Check MMP1 lock before allowing changes
-    if (getTemplateType(categoryId || '') === 'MMP1' && mmp1Locked) {
-      setShowUnlockDialog(true);
-      return;
-    }
     const currentData = getCurrentMM4Data();
     if (currentData.length > 1) { // Keep at least one row
       const newData = currentData.filter(row => row.id !== rowId);
@@ -1108,11 +1080,6 @@ export default function PR2ConfigClean() {
 
   // MM5 Row Management Functions - Independent storage
   const addMM5Row = () => {
-    // Check MMP1 lock before allowing changes
-    if (getTemplateType(categoryId || '') === 'MMP1' && mmp1Locked) {
-      setShowUnlockDialog(true);
-      return;
-    }
     const currentData = getCurrentMM5Data();
     const newData = [
       ...currentData,
@@ -1128,11 +1095,6 @@ export default function PR2ConfigClean() {
   };
 
   const deleteMM5Row = (rowId: number) => {
-    // Check MMP1 lock before allowing changes
-    if (getTemplateType(categoryId || '') === 'MMP1' && mmp1Locked) {
-      setShowUnlockDialog(true);
-      return;
-    }
     const currentData = getCurrentMM5Data();
     if (currentData.length > 1) { // Keep at least one row
       const newData = currentData.filter(row => row.id !== rowId);
@@ -1235,13 +1197,8 @@ export default function PR2ConfigClean() {
     setAutoSaveTimeout(timeoutId);
   }, [selectedPipeSizeForMM4, selectedPipeSizeId, formData, selectedIds, customPipeSizes, mm4DataByPipeSize, mm5Data, editId, categoryId, sector, autoSaveTimeout]);
 
-  // MM2 Color picker auto-save (independent from MM1 ID selection) - LOCKED
+  // MM2 Color picker auto-save (independent from MM1 ID selection)
   const handleMM1ColorChange = (color: string) => {
-    // Check MMP1 lock before allowing changes
-    if (getTemplateType(categoryId || '') === 'MMP1' && mmp1Locked) {
-      setShowUnlockDialog(true);
-      return;
-    }
     setHasUserChanges(true); // Mark that user has made changes to prevent auto-reload
     
     setFormData(prev => {
@@ -1286,21 +1243,11 @@ export default function PR2ConfigClean() {
 
   // MM4/MM5 Auto-save wrappers
   const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
-    // Check MMP1 lock before allowing changes
-    if (getTemplateType(categoryId || '') === 'MMP1' && mmp1Locked) {
-      setShowUnlockDialog(true);
-      return;
-    }
     updateMM4Row(rowId, field, value);
     triggerAutoSave();
   };
 
   const updateMM5RowWithAutoSave = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {
-    // Check MMP1 lock before allowing changes
-    if (getTemplateType(categoryId || '') === 'MMP1' && mmp1Locked) {
-      setShowUnlockDialog(true);
-      return;
-    }
     updateMM5Row(rowId, field, value);
     triggerAutoSave();
   };
@@ -1402,13 +1349,8 @@ export default function PR2ConfigClean() {
     });
   };
 
-  // Handle color change for MM2 custom color picker - LOCKED
+  // Handle color change for MM2 custom color picker
   const handleColorChange = (color: string) => {
-    // Check MMP1 lock before allowing changes
-    if (getTemplateType(categoryId || '') === 'MMP1' && mmp1Locked) {
-      setShowUnlockDialog(true);
-      return;
-    }
     setHasUserChanges(true); // Prevent config reload
     
     setFormData(prev => {
@@ -1522,13 +1464,8 @@ export default function PR2ConfigClean() {
     }
   }
 
-  // Handle MMP1 ID selection changes (following P002 pattern) - LOCKED
+  // Handle MMP1 ID selection changes (following P002 pattern)
   const handleMMP1IdChange = async (idKey: string, checked: boolean) => {
-    // Check MMP1 lock before allowing changes
-    if (getTemplateType(categoryId || '') === 'MMP1' && mmp1Locked) {
-      setShowUnlockDialog(true);
-      return;
-    }
     if (checked) {
       // Add ID to selected list
       setSelectedIds(prev => [...new Set([...prev, idKey])]);
@@ -3830,45 +3767,7 @@ export default function PR2ConfigClean() {
           </>
         )}
 
-        {/* MMP1 Lock Status Indicator - Only show when MMP1 template */}
-        {getTemplateType(categoryId || '') === 'MMP1' && (
-          <div className="fixed top-4 right-4 z-50">
-            <div className={`px-3 py-2 rounded-lg text-sm font-medium ${mmp1Locked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-              {mmp1Locked ? '🔒 MMP1 Locked' : '🔓 MMP1 Unlocked'}
-            </div>
-          </div>
-        )}
 
-        {/* MMP1 Unlock Dialog */}
-        <Dialog open={showUnlockDialog} onOpenChange={setShowUnlockDialog}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="text-amber-800">🔒 MMP1 Configuration Locked</DialogTitle>
-              <DialogDescription className="text-amber-700">
-                This MMP1 template is locked to prevent accidental changes. 
-                Do you want to unlock it for editing?
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex gap-3 mt-4">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowUnlockDialog(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={unlockMMP1}
-                className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
-              >
-                Unlock for Editing
-              </Button>
-            </div>
-            <div className="text-xs text-gray-500 mt-2">
-              Note: Template will automatically lock again after 10 minutes of inactivity.
-            </div>
-          </DialogContent>
-        </Dialog>
 
       </div>
     </div>
