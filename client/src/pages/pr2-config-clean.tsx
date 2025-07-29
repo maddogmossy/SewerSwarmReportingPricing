@@ -1820,7 +1820,7 @@ export default function PR2ConfigClean() {
         // Set the form data directly without reset (fixes display issue)
         setFormData(newFormData);
         
-        // Load MM4/MM5 data from backend if it exists
+        // Load MM4/MM5 data from backend if it exists AND if we don't already have local data
         if (config.mmData) {
           console.log('🔄 Loading MM4/MM5 data from backend:', config.mmData);
           console.log('🔍 MM4 Backend Data Analysis:');
@@ -1829,38 +1829,56 @@ export default function PR2ConfigClean() {
           console.log('  - selectedPipeSizeForMM4:', selectedPipeSizeForMM4);
           console.log('  - selectedPipeSizeId:', selectedPipeSizeId);
           
-          // Load MM4/MM5 data from pipe-size-specific storage or legacy format
-          if (config.mmData.mm4DataByPipeSize) {
-            console.log('📥 Setting MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
-            setMm4DataByPipeSize(config.mmData.mm4DataByPipeSize);
-            console.log('✅ MM4 data should now be loaded in storage');
-          } else if (config.mmData.mm4Rows) {
-            // Legacy format - store under current pipe size key
-            const currentKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-            console.log('📥 Converting MM4 legacy data to pipe-size format');
-            console.log('  - Legacy data:', config.mmData.mm4Rows);
-            console.log('  - Will store under key:', currentKey);
-            setMm4DataByPipeSize({ [currentKey]: config.mmData.mm4Rows });
-            console.log('✅ MM4 legacy data converted and stored');
+          // Check if we already have local MM4/MM5 data to preserve
+          const hasLocalMM4Data = Object.keys(mm4DataByPipeSize).length > 0;
+          const hasLocalMM5Data = mm5Data.some(row => row.vehicleWeight || row.costPerMile);
+          
+          console.log('🔍 Local data check:');
+          console.log('  - hasLocalMM4Data:', hasLocalMM4Data);
+          console.log('  - hasLocalMM5Data:', hasLocalMM5Data);
+          
+          // Only load MM4 data if we don't have local changes
+          if (!hasLocalMM4Data) {
+            // Load MM4/MM5 data from pipe-size-specific storage or legacy format
+            if (config.mmData.mm4DataByPipeSize) {
+              console.log('📥 Setting MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
+              setMm4DataByPipeSize(config.mmData.mm4DataByPipeSize);
+              console.log('✅ MM4 data should now be loaded in storage');
+            } else if (config.mmData.mm4Rows) {
+              // Legacy format - store under current pipe size key
+              const currentKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+              console.log('📥 Converting MM4 legacy data to pipe-size format');
+              console.log('  - Legacy data:', config.mmData.mm4Rows);
+              console.log('  - Will store under key:', currentKey);
+              setMm4DataByPipeSize({ [currentKey]: config.mmData.mm4Rows });
+              console.log('✅ MM4 legacy data converted and stored');
+            } else {
+              console.log('❌ No MM4 data found in backend config');
+            }
           } else {
-            console.log('❌ No MM4 data found in backend config');
+            console.log('🔒 Preserving local MM4 data, skipping backend load');
           }
           
-          // MM5 is now independent of pipe size
-          if (config.mmData.mm5Data) {
-            setMm5Data(config.mmData.mm5Data);
-            console.log('✅ Loaded MM5 independent data:', config.mmData.mm5Data);
-          } else if (config.mmData.mm5Rows) {
-            // Legacy format - use as independent data
-            setMm5Data(config.mmData.mm5Rows);
-            console.log('✅ Loaded MM5 legacy data as independent:', config.mmData.mm5Rows);
-          } else if (config.mmData.mm5DataByPipeSize) {
-            // Old pipe-size-specific format - extract first available data as independent
-            const firstKey = Object.keys(config.mmData.mm5DataByPipeSize)[0];
-            if (firstKey) {
-              setMm5Data(config.mmData.mm5DataByPipeSize[firstKey]);
-              console.log('✅ Migrated MM5 pipe-size data to independent:', config.mmData.mm5DataByPipeSize[firstKey]);
+          // Only load MM5 data if we don't have local changes  
+          if (!hasLocalMM5Data) {
+            // MM5 is now independent of pipe size
+            if (config.mmData.mm5Data) {
+              setMm5Data(config.mmData.mm5Data);
+              console.log('✅ Loaded MM5 independent data:', config.mmData.mm5Data);
+            } else if (config.mmData.mm5Rows) {
+              // Legacy format - use as independent data
+              setMm5Data(config.mmData.mm5Rows);
+              console.log('✅ Loaded MM5 legacy data as independent:', config.mmData.mm5Rows);
+            } else if (config.mmData.mm5DataByPipeSize) {
+              // Old pipe-size-specific format - extract first available data as independent
+              const firstKey = Object.keys(config.mmData.mm5DataByPipeSize)[0];
+              if (firstKey) {
+                setMm5Data(config.mmData.mm5DataByPipeSize[firstKey]);
+                console.log('✅ Migrated MM5 pipe-size data to independent:', config.mmData.mm5DataByPipeSize[firstKey]);
+              }
             }
+          } else {
+            console.log('🔒 Preserving local MM5 data, skipping backend load');
           }
           
           // Load other MM data
