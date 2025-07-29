@@ -1007,8 +1007,24 @@ export default function PR2ConfigClean() {
   };
 
   // MM4/MM5 Data Storage - MM4 scoped by pipe size, MM5 independent
-  const [mm4DataByPipeSize, setMm4DataByPipeSize] = useState<Record<string, any[]>>({});
-  const [mm5Data, setMm5Data] = useState<any[]>([{ id: 1, vehicleWeight: '', costPerMile: '' }]);
+  // Initialize from localStorage if available
+  const [mm4DataByPipeSize, setMm4DataByPipeSize] = useState<Record<string, any[]>>(() => {
+    try {
+      const saved = localStorage.getItem(`mm4-data-${editId || 'new'}`);
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+  
+  const [mm5Data, setMm5Data] = useState<any[]>(() => {
+    try {
+      const saved = localStorage.getItem(`mm5-data-${editId || 'new'}`);
+      return saved ? JSON.parse(saved) : [{ id: 1, vehicleWeight: '', costPerMile: '' }];
+    } catch {
+      return [{ id: 1, vehicleWeight: '', costPerMile: '' }];
+    }
+  });
 
   // Get current MM4/MM5 data for selected pipe size
   const getCurrentMM4Data = () => {
@@ -1027,6 +1043,25 @@ export default function PR2ConfigClean() {
   // Get current data as computed values
   const mm4Rows = getCurrentMM4Data();
   const mm5Rows = getCurrentMM5Data();
+
+  // Save MM4/MM5 data to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(`mm4-data-${editId || 'new'}`, JSON.stringify(mm4DataByPipeSize));
+      console.log('💾 Saved MM4 data to localStorage:', mm4DataByPipeSize);
+    } catch (error) {
+      console.error('Failed to save MM4 data to localStorage:', error);
+    }
+  }, [mm4DataByPipeSize, editId]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(`mm5-data-${editId || 'new'}`, JSON.stringify(mm5Data));
+      console.log('💾 Saved MM5 data to localStorage:', mm5Data);
+    } catch (error) {
+      console.error('Failed to save MM5 data to localStorage:', error);
+    }
+  }, [mm5Data, editId]);
 
   // Update MM4/MM5 data for specific pipe size
   const updateMM4DataForPipeSize = (newData: any[]) => {
