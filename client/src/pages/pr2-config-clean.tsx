@@ -3839,19 +3839,6 @@ export default function PR2ConfigClean() {
                         ))}
                       </div>
                     </div>
-                    
-                    {/* Test MM4/MM5 Matching Button */}
-                    <div className="mt-4 pt-4 border-t border-teal-200">
-                      <Button 
-                        onClick={testMM4MM5Matching}
-                        className="w-full bg-teal-600 hover:bg-teal-700 text-white"
-                      >
-                        🧪 Test MM4/MM5 Dashboard Matching
-                      </Button>
-                      <p className="text-xs text-teal-600 mt-1 text-center">
-                        Check browser console for detailed matching results
-                      </p>
-                    </div>
                   </CardContent>
                 </Card>
               </div>
