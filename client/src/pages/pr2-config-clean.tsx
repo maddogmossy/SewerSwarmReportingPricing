@@ -1562,7 +1562,8 @@ export default function PR2ConfigClean() {
 
   // Navigate back to dashboard
   const handleGoBack = () => {
-    setLocation('/');
+    // Route to actual dashboard instead of home page
+    setLocation('/dashboard');
   };
 
   // Handle sector toggle for P006a templates

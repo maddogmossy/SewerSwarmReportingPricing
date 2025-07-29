@@ -354,7 +354,8 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         vehicleTravelRatesStackOrder,
         sector,
         sectors,
-        categoryColor
+        categoryColor,
+        mmData
       } = req.body;
 
       const [newConfig] = await db
@@ -375,6 +376,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           mathOperators: mathOperators || ['N/A'],
           vehicleTravelRates: vehicleTravelRates || [],
           vehicleTravelRatesStackOrder: vehicleTravelRatesStackOrder || [],
+          mmData: mmData || {},
           isActive: true
         } as any)
         .returning();
@@ -409,7 +411,8 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
         vehicleTravelRatesStackOrder,
         sector,
         sectors,
-        categoryColor
+        categoryColor,
+        mmData
       } = req.body;
 
       const [updatedConfig] = await db
@@ -428,6 +431,7 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
           mathOperators: mathOperators || ['N/A'],
           vehicleTravelRates: vehicleTravelRates || [],
           vehicleTravelRatesStackOrder: vehicleTravelRatesStackOrder || [],
+          mmData: mmData || {},
           updatedAt: new Date()
         } as any)
         .where(eq(pr2Configurations.id, configId))

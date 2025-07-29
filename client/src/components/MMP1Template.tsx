@@ -83,6 +83,15 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
       }]);
 
       try {
+        // Prepare MM4/MM5 data in the new mmData format
+        const mmData = {
+          mm1Colors: selectedColor,
+          mm2IdData: selectedIds,
+          mm3CustomPipeSizes: customPipeSizes,
+          mm4DataByPipeSize: mm4DataByPipeSize,
+          mm5Data: mm5Data
+        };
+
         if (editId) {
           const response = await fetch(`/api/pr2-clean/${editId}`, {
             method: 'PUT',
@@ -92,11 +101,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
               description: 'Master template configuration',
               categoryColor: selectedColor,
               pipeSize: selectedPipeSizeForMM4,
-              mm1Colors: selectedColor,
-              mm2IdData: selectedIds,
-              mm3CustomPipeSizes: customPipeSizes,
-              mm4DataByPipeSize: mm4DataByPipeSize,
-              mm5Data: mm5Data,
+              mmData: mmData,
               sector: sector
             })
           });
@@ -110,11 +115,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
               description: 'Master template configuration',
               categoryColor: selectedColor,
               pipeSize: selectedPipeSizeForMM4,
-              mm1Colors: selectedColor,
-              mm2IdData: selectedIds,
-              mm3CustomPipeSizes: customPipeSizes,
-              mm4DataByPipeSize: mm4DataByPipeSize,
-              mm5Data: mm5Data,
+              mmData: mmData,
               categoryId: categoryId,
               sector: sector
             })
