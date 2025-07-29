@@ -13,6 +13,7 @@ import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown
 import { DevLabel } from '@/utils/DevLabel';
 import { TP1Template } from '@/components/TP1Template';
 import { MMP1Template } from '@/components/MMP1Template';
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -3082,13 +3083,12 @@ export default function PR2ConfigClean() {
             sector={sector} 
             editId={editId ? parseInt(editId) : undefined}
             onSave={() => {
-              // Invalidate queries to refresh data
               queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
             }}
           />
         )}
 
-        {/* MMP1 Template - 5 Placeholder UI Cards - REPLACED WITH PROTECTED COMPONENT */}
+        {/* MMP1 Template - Original Implementation (Kept for Rollback) */}
         {false && getTemplateType(categoryId || '') === 'MMP1' && (
           <div className="space-y-6">
             {/* MM1 - ID1-ID6 Selection (P002 Pattern) */}

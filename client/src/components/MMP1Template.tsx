@@ -34,7 +34,7 @@ const MMP1_IDS = [
 // Outlook Diary Style Colors (20 colors in 10x2 grid)
 const OUTLOOK_COLORS = [
   '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
-  '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D2B4DE', '#A9DFBF', '#F9E79F', '#AED6F1', '#D7BDE2', '#A3E4D7'
+  '#F8C471', '#82E0AA', '#F1948A', '#FFB347', '#D2B4DE', '#A9DFBF', '#F9E79F', '#AED6F1', '#D7BDE2', '#A3E4D7'
 ];
 
 // UK Drainage Pipe Sizes (MSCC5 compliant)
@@ -84,8 +84,9 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
 
       try {
         if (editId) {
-          await apiRequest(`/api/pr2-clean/${editId}`, {
+          const response = await fetch(`/api/pr2-clean/${editId}`, {
             method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               categoryName: 'MMP1 Template',
               description: 'Master template configuration',
@@ -99,9 +100,11 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
               sector: sector
             })
           });
+          if (!response.ok) throw new Error('Save failed');
         } else {
-          await apiRequest('/api/pr2-clean', {
+          const response = await fetch('/api/pr2-clean', {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               categoryName: 'MMP1 Template',
               description: 'Master template configuration',
@@ -116,6 +119,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
               sector: sector
             })
           });
+          if (!response.ok) throw new Error('Save failed');
         }
         
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
