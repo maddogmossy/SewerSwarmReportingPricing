@@ -88,6 +88,8 @@ const SECTORS = [
   { id: 'domestic', name: 'Domestic', label: 'Domestic', description: 'Residential and domestic drainage work', icon: Users, color: 'text-amber-600', bgColor: 'bg-amber-50' }
 ];
 
+// 🔒🔒🔒 MMP1 TEMPLATE PROTECTED ZONE - DO NOT MODIFY WITHOUT USER PERMISSION 🔒🔒🔒
+// ⚠️ WARNING: USER-CONTROLLED TEMPLATE - AI MODIFICATIONS PROHIBITED ⚠️
 // MMP1 ID definitions (ID1-ID6 following P002 pattern)
 const MMP1_IDS = [
   { id: 'id1', name: 'ID1', label: 'ID1', description: 'Configuration template 1', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
@@ -1026,6 +1028,7 @@ export default function PR2ConfigClean() {
     setMm5Data(newData);
   };
 
+  // 🔒 MMP1 PROTECTED FUNCTIONS - USER ONLY 🔒  
   // MM4 Row Management Functions - Now scoped to pipe size
   const addMM4Row = () => {
     const currentData = getCurrentMM4Data();
@@ -1078,6 +1081,7 @@ export default function PR2ConfigClean() {
     }, 100);
   };
 
+  // 🔒 MMP1 PROTECTED FUNCTIONS - USER ONLY 🔒
   // MM5 Row Management Functions - Independent storage
   const addMM5Row = () => {
     const currentData = getCurrentMM5Data();
@@ -1197,6 +1201,7 @@ export default function PR2ConfigClean() {
     setAutoSaveTimeout(timeoutId);
   }, [selectedPipeSizeForMM4, selectedPipeSizeId, formData, selectedIds, customPipeSizes, mm4DataByPipeSize, mm5Data, editId, categoryId, sector, autoSaveTimeout]);
 
+  // 🔒 MMP1 PROTECTED FUNCTION - USER ONLY 🔒
   // MM2 Color picker auto-save (independent from MM1 ID selection)
   const handleMM1ColorChange = (color: string) => {
     setHasUserChanges(true); // Mark that user has made changes to prevent auto-reload
@@ -1241,6 +1246,7 @@ export default function PR2ConfigClean() {
 
 
 
+  // 🔒 MMP1 PROTECTED FUNCTIONS - USER ONLY 🔒
   // MM4/MM5 Auto-save wrappers
   const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     updateMM4Row(rowId, field, value);
@@ -1349,6 +1355,7 @@ export default function PR2ConfigClean() {
     });
   };
 
+  // 🔒 MMP1 PROTECTED FUNCTION - USER ONLY 🔒
   // Handle color change for MM2 custom color picker
   const handleColorChange = (color: string) => {
     setHasUserChanges(true); // Prevent config reload
@@ -1464,6 +1471,7 @@ export default function PR2ConfigClean() {
     }
   }
 
+  // 🔒 MMP1 PROTECTED FUNCTION - USER ONLY 🔒
   // Handle MMP1 ID selection changes (following P002 pattern)
   const handleMMP1IdChange = async (idKey: string, checked: boolean) => {
     if (checked) {
