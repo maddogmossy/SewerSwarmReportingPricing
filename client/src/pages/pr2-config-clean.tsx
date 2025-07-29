@@ -3076,8 +3076,8 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
-        {/* MMP1 Template - Protected Component (Temporarily Disabled) */}
-        {false && getTemplateType(categoryId || '') === 'MMP1' && (
+        {/* MMP1 Template - Protected Component */}
+        {getTemplateType(categoryId || '') === 'MMP1' && (
           <MMP1Template 
             categoryId={categoryId || ''} 
             sector={sector} 
@@ -3088,8 +3088,8 @@ export default function PR2ConfigClean() {
           />
         )}
 
-        {/* MMP1 Template - Original Implementation (Temporarily Re-enabled for Testing) */}
-        {getTemplateType(categoryId || '') === 'MMP1' && (
+        {/* MMP1 Template - Original Implementation (Kept as backup) */}
+        {false && getTemplateType(categoryId || '') === 'MMP1' && (
           <div className="space-y-6">
             {/* MM1 - ID1-ID6 Selection (P002 Pattern) */}
             <div className="relative">
@@ -3383,7 +3383,7 @@ export default function PR2ConfigClean() {
                                       // If removing the currently selected size, default back to 100mm
                                       if (selectedPipeSizeForMM4 === size) {
                                         setSelectedPipeSizeForMM4('100');
-                                        setSelectedPipeSizeId(generatePipeSizeId('100'));
+                                        setSelectedPipeSizeId(getPipeSizeId('100'));
                                       }
                                       triggerAutoSave();
                                     }}

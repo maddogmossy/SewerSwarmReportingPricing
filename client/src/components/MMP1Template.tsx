@@ -257,6 +257,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const handleMM1ColorChange = (color: string) => {
     setHasUserChanges(true);
     setSelectedColor(color);
+    setCustomColor(color);
     queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
     triggerAutoSave();
   };
