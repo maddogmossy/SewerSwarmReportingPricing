@@ -996,6 +996,22 @@ This prevents data contamination and ensures authentic extraction integrity.
   - No interference between MM1 ID selection and MM2 color selection systems
 - **Result**: Complete MM2 system operational with proper database persistence and category card display updates
 
+### 🔒 MMP1 TEMPLATE - AI MODIFICATION PROTECTION POLICY 🔒
+- **Date**: January 29, 2025
+- **PROTECTED TEMPLATE**: MMP1 (ID 596) - Complete protection from AI modifications
+- **AI RESTRICTION RULE**: AI MUST NOT modify, alter, edit, or change ANY aspect of MMP1 template without EXPLICIT user permission
+- **Protected Components**:
+  - MM1 ID selection cards (ID1-ID6)
+  - MM2 color picker (20 Outlook colors + custom)
+  - MM3 UK drainage pipe sizes
+  - MM4 blue/green/purple fields and row management
+  - MM5 vehicle weight/cost fields and row management
+  - All auto-save functionality and data structures
+- **AI Behavior**: Before making ANY change to MMP1-related code, AI must ask user for specific permission
+- **User Access**: User has complete unrestricted access to modify their MMP1 template
+- **Violation Prevention**: AI will refuse to proceed with MMP1 changes unless user provides clear explicit authorization
+- **Emergency Override**: Only if MMP1 system is completely broken and user requests emergency fix
+
 ### CRITICAL: MMP1 Lock System Misunderstanding Resolved ✅
 - **Date**: January 29, 2025
 - **Status**: Successfully removed misunderstood MMP1 lock system that was blocking user access instead of preventing AI changes
