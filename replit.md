@@ -71,8 +71,22 @@ This is a full-stack TypeScript application built with React frontend and Expres
 
 ## Recent Changes
 
-### CRITICAL: MMP2 Template System Complete - F603 Production Implementation ✅
+### CRITICAL: MMP1 & MMP2 Template System Complete - P003Config Structure Implemented ✅
 - **Date**: January 29, 2025
+- **Status**: Successfully implemented complete MMP1 and MMP2 template systems with unified P003Config structure
+- **Issues Fixed**:
+  - **CategoryId Mismatch Bug**: Fixed MMP2Template categoryId from "f-cctv-jet-vac" to "mmp2-card" to match UI categories
+  - **Template Detection**: Enhanced UI to detect static templates and show green icons for template-based categories  
+  - **Template Navigation**: Added template-based navigation logic for MMP2 Card routing
+  - **P003Config Structure**: Unified structure with both MMP1Template and MMP2Template entries
+- **Template System Architecture**:
+  - **MMP1Template**: Created with categoryId "f-cctv-jet-vac", 5 MM cards (ID selection, color picker, pipe sizes, data management, vehicle travel)
+  - **MMP2Template**: Updated with categoryId "mmp2-card", 5 placeholder cards for enhanced configuration flexibility
+  - **Template Registry**: Both templates registered in template-registry.ts for centralized management
+  - **P003Config**: Object structure with templates array containing both MMP1 and MMP2 template references
+
+### CRITICAL: MMP2 Template System Complete - F603 Production Implementation ✅
+- **Date**: January 29, 2025 (Updated)
 - **Status**: Successfully implemented complete MMP2 template system with F603 designation and MMP2Template templateId for production identification
 - **Features Implemented**:
   - **F603 Template Designation**: MMP2Template now includes F603 designation with templateId "MMP2Template" for production identification

@@ -1,13 +1,21 @@
+import MMP1Template from "@/components/templates/MMP1Template";
 import MMP2Template from "@/components/templates/MMP2Template";
 
-export const P003Config = [
-  {
-    id: "mmp2-card",
-    name: "MMP2 Card Config",
-    templates: [
-      MMP2Template,
-      // ... other templates can be added here
-    ],
-  },
-  // ... other configurations can be added here
-];
+const P003Config = {
+  id: "P003",
+  name: "CCTV Jet Vac",
+  templates: [
+    {
+      id: "f-cctv-jet-vac",
+      name: "CCTV Jet Vac Config (MM1)",
+      template: MMP1Template,
+    },
+    {
+      id: "mmp2-template", 
+      name: "MMP2 Template (F603)",
+      template: MMP2Template,
+    },
+  ],
+};
+
+export default P003Config;
