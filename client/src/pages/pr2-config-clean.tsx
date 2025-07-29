@@ -3066,8 +3066,8 @@ export default function PR2ConfigClean() {
             ) : null;
           })()}
 
-          {/* Success message for saved configurations */}
-          {processedConfigId && (
+          {/* Success message for saved configurations (excluding MMP1 templates) */}
+          {processedConfigId && getTemplateType(categoryId || '') !== 'MMP1' && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
               <h3 className="text-green-800 font-semibold mb-2">✅ Configuration Saved</h3>
               <p className="text-green-700 text-sm">
@@ -3606,12 +3606,7 @@ export default function PR2ConfigClean() {
               </div>
             </div>
 
-            {/* Save Button */}
-            <div className="flex justify-start">
-              <Button className="bg-green-600 hover:bg-green-700 text-white">
-                Save MMP1 Configuration
-              </Button>
-            </div>
+
           </div>
         )}
 
