@@ -133,6 +133,20 @@ const SECTOR_CONFIG = {
 // Define SECTOR_OPTIONS based on SECTORS array
 const SECTOR_OPTIONS = SECTORS;
 
+// 20 Outlook Diary-Style Colors for MM2 Color Picker
+const OUTLOOK_COLORS = [
+  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
+  '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+  '#F8BBD9', '#FADBD8', '#D5DBDB', '#AED6F1', '#A9DFBF',
+  '#F9E79F', '#D7BDE2', '#A3E4D7', '#FAD7A0', '#EDBB99'
+];
+
+// UK Drainage Pipe Sizes (MSCC5 Compliant)
+const UK_PIPE_SIZES = [
+  100, 125, 150, 175, 200, 225, 250, 275, 300, 350, 375, 400, 
+  450, 500, 525, 600, 675, 750, 825, 900, 975, 1050, 1200, 1350, 1500, 1800, 2100, 2400
+];
+
 // Color options for P006a templates
 const COLOR_OPTIONS = [
   { name: 'Blue', hex: '#3b82f6' },
