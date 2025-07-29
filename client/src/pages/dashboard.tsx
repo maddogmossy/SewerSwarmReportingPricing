@@ -2654,13 +2654,22 @@ export default function Dashboard() {
         config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
       );
       
+      console.log('🔍 MM4 Debug: Checking for cctv-jet-vac config:', {
+        sectionId: section.itemNo,
+        needsCleaning,
+        configFound: !!cctvJetVacConfig,
+        currentSector: currentSector.id,
+        allConfigs: pr2Configurations.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector }))
+      });
+      
       if (cctvJetVacConfig && cctvJetVacConfig.mmData) {
         console.log('🔍 MM4/MM5 Dashboard Cost Integration:', {
           sectionId: section.itemNo,
           sectionLength,
           sectionDebrisPercent,
           sectionPipeSize,
-          hasMMData: !!cctvJetVacConfig.mmData
+          hasMMData: !!cctvJetVacConfig.mmData,
+          mmData: cctvJetVacConfig.mmData
         });
         
         // Get MM4 data for the matching pipe size
