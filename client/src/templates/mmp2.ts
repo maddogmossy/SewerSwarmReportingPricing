@@ -3,9 +3,11 @@ import { PlaceholderCard } from "@/components/ui/PlaceholderCard";
 
 export const MMP2Template = createTemplate({
   id: "mmp2-template",
+  templateId: "MMP2Template",
+  title: "MMP2 Template (F603)",
   name: "MMP2 Template",
-  categoryId: "mmp2-card", 
-  description: "MMP2 Template for enhanced configuration management with 5 placeholder cards.",
+  categoryId: "test-card", 
+  description: "MMP2 Template for test card configuration - ID1 - ID1.",
   cards: [
     {
       id: "card-1",

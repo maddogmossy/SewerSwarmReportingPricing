@@ -3606,7 +3606,7 @@ export default function PR2ConfigClean() {
               <Card className="bg-white border-2 border-gray-200">
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-gray-900">
-                    MMP2 Template - 5 Placeholder Cards
+                    MMP2 Template (F603) - 5 Placeholder Cards
                     <span className="text-xs text-gray-400 ml-2">(id: MMP2)</span>
                   </CardTitle>
                   <p className="text-sm text-gray-600">

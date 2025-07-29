@@ -8,6 +8,8 @@ export interface TemplateCard {
 
 export interface Template {
   id: string;
+  templateId?: string;
+  title?: string;
   name: string;
   categoryId: string;
   description: string;
