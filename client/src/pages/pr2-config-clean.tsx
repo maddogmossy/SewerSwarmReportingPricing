@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench, Shield } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { TP1Template } from '@/components/TP1Template';
+import { MMP1Template } from '@/components/MMP1Template';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
@@ -3074,8 +3075,21 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
-        {/* MMP1 Template - 5 Placeholder UI Cards */}
+        {/* MMP1 Template - Protected Component */}
         {getTemplateType(categoryId || '') === 'MMP1' && (
+          <MMP1Template 
+            categoryId={categoryId || ''} 
+            sector={sector} 
+            editId={editId ? parseInt(editId) : undefined}
+            onSave={() => {
+              // Invalidate queries to refresh data
+              queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+            }}
+          />
+        )}
+
+        {/* MMP1 Template - 5 Placeholder UI Cards - REPLACED WITH PROTECTED COMPONENT */}
+        {false && getTemplateType(categoryId || '') === 'MMP1' && (
           <div className="space-y-6">
             {/* MM1 - ID1-ID6 Selection (P002 Pattern) */}
             <div className="relative">
