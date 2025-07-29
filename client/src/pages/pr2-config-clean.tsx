@@ -167,7 +167,7 @@ export default function PR2ConfigClean() {
   const isEditing = !!editId;
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' => {
+  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' | 'CCTV_JET_VAC' => {
     if (categoryId === 'cart-card') {
       return 'TP1'; // Cart card uses standard TP1 template with full interface
     } else if (categoryId === 'day-rate-db11') {
@@ -176,6 +176,8 @@ export default function PR2ConfigClean() {
       return 'P006'; // Original P006 CTF templates with 4-window structure
     } else if (categoryId === 'test-card') {
       return 'MMP1'; // Test Card uses new MMP1 template with 5 placeholder UI cards
+    } else if (categoryId === 'f-cctv-jet-vac') {
+      return 'CCTV_JET_VAC'; // CCTV/Jet Vac uses separate template with same functionality as MMP1
     } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
                categoryId === 'van-pack' || 
@@ -3595,7 +3597,395 @@ export default function PR2ConfigClean() {
           </div>
         )}
 
+        {/* CCTV/Jet Vac Template - 5 MM Cards (Completely Separate from MMP1) */}
+        {getTemplateType(categoryId || '') === 'CCTV_JET_VAC' && (
+          <div className="space-y-6">
+            {/* MM1 - ID1-ID6 Selection (P002 Pattern) */}
+            <div className="relative">
+              <DevLabel id="MM1" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    1. Select Configuration IDs (P002 Pattern)
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Select ID1-ID6 templates that will save prices to sectors when selected
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-3">
+                    {MMP1_IDS.map((idOption) => {
+                      const isSelected = selectedIds.includes(idOption.id);
+                      const hasConfiguration = idsWithConfig.includes(idOption.id);
+                      
+                      return (
+                        <Card 
+                          key={idOption.id}
+                          className={`cursor-pointer transition-all duration-200 hover:shadow-md border-2 ${
+                            isSelected 
+                              ? `border-gray-800 ${idOption.bgColor} text-white` 
+                              : hasConfiguration 
+                                ? 'border-green-400 bg-green-50' 
+                                : 'border-gray-300 hover:border-gray-400'
+                          }`}
+                          onClick={() => handleMMP1IdChange(idOption.id)}
+                        >
+                          <CardContent className="p-4 text-center relative">
+                            <idOption.icon className={`h-8 w-8 mx-auto mb-2 ${
+                              isSelected ? 'text-white' : hasConfiguration ? 'text-green-700' : 'text-gray-700'
+                            }`} />
+                            <h3 className={`font-medium text-sm mb-1 ${
+                              isSelected ? 'text-white' : hasConfiguration ? 'text-green-900' : 'text-gray-800'
+                            }`}>
+                              {idOption.name}
+                            </h3>
+                            <p className={`text-xs ${
+                              isSelected ? 'text-white opacity-80' : hasConfiguration ? 'text-green-600' : 'text-gray-600'
+                            }`}>
+                              {idOption.description}
+                            </p>
+                            
+                            {/* Status Icons */}
+                            {hasConfiguration && (
+                              <Settings className="h-4 w-4 absolute top-2 right-2 text-green-500" />
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Summary Display */}
+                  {selectedIds.length > 0 && (
+                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                      <p className="text-sm font-medium text-gray-700">
+                        Selected IDs: {selectedIds.join(', ')} ({selectedIds.length} selected)
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
 
+            {/* MM2 - Color Picker */}
+            <div className="relative">
+              <DevLabel id="MM2" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    2. Color Picker
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Select colors for configuration and visual display
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {/* 20 Outlook Diary-Style Colors in 10x2 Grid */}
+                  <div className="grid grid-cols-10 gap-2 mb-4">
+                    {OUTLOOK_COLORS.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        className={`w-8 h-8 rounded border-2 hover:scale-110 transition-transform ${
+                          mm1Colors === color ? 'border-gray-800 ring-2 ring-gray-300' : 'border-gray-300'
+                        }`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => handleColorChange(color)}
+                        title={color}
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Custom Color Input */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <label className="text-sm font-medium text-gray-700">Custom Color:</label>
+                      <input
+                        type="color"
+                        value={mm1Colors}
+                        onChange={(e) => handleColorChange(e.target.value)}
+                        className="w-12 h-8 border border-gray-300 rounded cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={mm1Colors}
+                        onChange={(e) => handleColorChange(e.target.value)}
+                        placeholder="#ffffff"
+                        className="px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                    
+                    {/* Color Preview */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">Preview:</span>
+                      <div 
+                        className="w-16 h-8 rounded border border-gray-300"
+                        style={{ backgroundColor: mm1Colors }}
+                      />
+                      <span className="text-sm font-mono text-gray-500">{mm1Colors}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* MM3 - UK Drainage Pipe Sizes */}
+            <div className="relative">
+              <DevLabel id="MM3" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    3. UK Drainage Pipe Sizes
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    MSCC5-compliant UK drainage pipe sizes for infrastructure projects
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {/* Standard UK Pipe Sizes */}
+                  <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 mb-4">
+                    {UK_PIPE_SIZES.map((size) => (
+                      <div
+                        key={size}
+                        className="text-center p-2 bg-gray-50 rounded border border-gray-200 text-sm font-medium text-gray-700"
+                      >
+                        {size}mm
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Custom Pipe Sizes */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium text-gray-700">Custom Pipe Sizes:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {mm3CustomPipeSizes.map((size, index) => (
+                        <div key={index} className="flex items-center gap-1 bg-blue-50 border border-blue-200 rounded px-2 py-1">
+                          <span className="text-sm text-blue-700">{size}mm</span>
+                          <button
+                            type="button"
+                            onClick={() => removeMM3CustomSize(index)}
+                            className="text-blue-500 hover:text-red-500 ml-1"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                      
+                      {/* Add Custom Size Input */}
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          value={newMM3PipeSize}
+                          onChange={(e) => setNewMM3PipeSize(e.target.value)}
+                          placeholder="Size (mm)"
+                          className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={addMM3CustomSize}
+                          className="h-7 px-2 text-xs"
+                        >
+                          <Plus className="w-3 h-3 mr-1" />
+                          Add
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* MM4 - Data Management */}
+            <div className="relative">
+              <DevLabel id="MM4" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    4. Data Management - Pipe Size: {selectedPipeSize}mm (ID: {selectedPipeSizeId})
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Blue/Green field isolation with purple ranges
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Pipe Size Selector */}
+                    <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+                      {PIPE_SIZES.map((size) => (
+                        <Button
+                          key={size}
+                          variant={selectedPipeSize === size ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handlePipeSizeChange(size)}
+                          className="text-xs"
+                        >
+                          {size}mm
+                        </Button>
+                      ))}
+                    </div>
+                    
+                    {/* MM4 Data Rows */}
+                    <div className="space-y-3">
+                      {mm4Rows.map((row) => (
+                        <div key={row.id} className="grid grid-cols-12 gap-2 items-center p-3 bg-gray-50 rounded">
+                          <div className="col-span-1 text-sm font-medium text-gray-600">
+                            #{row.id}
+                          </div>
+                          
+                          <div className="col-span-2">
+                            <input
+                              type="text"
+                              value={row.blueValue}
+                              onChange={(e) => updateMM4Row(row.id, 'blueValue', e.target.value)}
+                              placeholder="Blue"
+                              className="w-full px-2 py-1 text-sm border border-blue-300 rounded bg-blue-50 focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          
+                          <div className="col-span-2">
+                            <input
+                              type="text"
+                              value={row.greenValue}
+                              onChange={(e) => updateMM4Row(row.id, 'greenValue', e.target.value)}
+                              placeholder="Green"
+                              className="w-full px-2 py-1 text-sm border border-green-300 rounded bg-green-50 focus:ring-2 focus:ring-green-500"
+                            />
+                          </div>
+                          
+                          <div className="col-span-2">
+                            <input
+                              type="text"
+                              value={row.purpleDebris}
+                              onChange={(e) => updateMM4Row(row.id, 'purpleDebris', e.target.value)}
+                              placeholder="Debris"
+                              className="w-full px-2 py-1 text-sm border border-purple-300 rounded bg-purple-50 focus:ring-2 focus:ring-purple-500"
+                            />
+                          </div>
+                          
+                          <div className="col-span-2">
+                            <input
+                              type="text"
+                              value={row.purpleLength}
+                              onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
+                              placeholder="Length"
+                              className="w-full px-2 py-1 text-sm border border-purple-300 rounded bg-purple-50 focus:ring-2 focus:ring-purple-500"
+                            />
+                          </div>
+                          
+                          <div className="col-span-1 flex gap-1">
+                            {mm4Rows.length > 1 && (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="destructive"
+                                className="h-8 w-8 p-0 flex-shrink-0"
+                                onClick={() => deleteMM4Row(row.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Add Row Button */}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addMM4Row}
+                        className="w-full"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Row
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* MM5 - Vehicle Travel */}
+            <div className="relative">
+              <DevLabel id="MM5" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    5. Vehicle Travel
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Vehicle travel configuration (independent of pipe size)
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {mm5Rows.map((row) => (
+                      <div key={row.id} className="grid grid-cols-12 gap-2 items-center p-3 bg-gray-50 rounded">
+                        <div className="col-span-1 text-sm font-medium text-gray-600">
+                          #{row.id}
+                        </div>
+                        
+                        <div className="col-span-4">
+                          <input
+                            type="text"
+                            value={row.vehicleWeight}
+                            onChange={(e) => updateMM5Row(row.id, 'vehicleWeight', e.target.value)}
+                            placeholder="Vehicle Weight"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        
+                        <div className="col-span-4">
+                          <input
+                            type="text"
+                            value={row.costPerMile}
+                            onChange={(e) => updateMM5Row(row.id, 'costPerMile', e.target.value)}
+                            placeholder="Cost Per Mile"
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        
+                        <div className="col-span-3 flex gap-1">
+                          {mm5Rows.length > 1 && (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="destructive"
+                              className="h-8 w-8 p-0 flex-shrink-0"
+                              onClick={() => deleteMM5Row(row.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Add Row Button */}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addMM5Row}
+                      className="w-full"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Row
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Save Button */}
+            <div className="flex justify-start">
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                Save CCTV/Jet Vac Configuration
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Apply to Sectors Section - P002 Style Cards - For P006a templates */}
         {getTemplateType(categoryId || '') === 'P006a' && (

@@ -71,22 +71,24 @@ This is a full-stack TypeScript application built with React frontend and Expres
 
 ## Recent Changes
 
-### CRITICAL: TP3 Template System Completely Removed ✅
-- **Date**: January 28, 2025
-- **Status**: Successfully eliminated all TP3 system references and configurations per user request
-- **Database Cleanup**: Deleted TP3 configuration (ID 163) with robotic-cutting categoryId
-- **Frontend Cleanup**: Systematically removed all TP3 references from template logic, rendering code, and conditional statements
-- **System Stability**: Application now runs cleanly without any TP3 dependencies or errors
-- **Template System**: Focused on TP1, P26, P006, P006a, and MM001 types only
-- **Code Quality**: Fixed all template detection logic and removed orphaned TP3 code fragments
-- **User Preference**: Complete removal rather than blank state, with clean and stable system
+### CRITICAL: CCTV/Jet Vac Template System Created - Separate from MMP1 ✅
+- **Date**: January 29, 2025
+- **Status**: Successfully created separate CCTV/Jet Vac template that's completely independent from MMP1 test card
+- **User Request**: Add copy of MMP1 into f-cctv-jet-vac with same function, style and layout but completely separate
+- **Template Independence**: MMP1 remains unchanged in "test-card" categoryId, CCTV/Jet Vac uses "f-cctv-jet-vac" categoryId
+- **Complete Separation**: Two independent template systems with identical functionality but separate data isolation
 - **Technical Implementation**:
-  - Removed TP3 from getTemplateType return type and logic
-  - Eliminated TP3-specific form data initialization
-  - Cleaned up TP3 template rendering interface (Blue, Green, Teal windows)
-  - Updated title detection to remove robotic-cutting special handling
-  - Fixed all conditional statements and removed TP3 display logic
-- **Result**: Clean, stable system with 13 configurations remaining (down from 14)
+  - Created CCTVJetVacTemplate.ts with categoryId "f-cctv-jet-vac"
+  - Added CCTV_JET_VAC template type to getTemplateType function
+  - Updated template registry to include both MMP1Template and CCTVJetVacTemplate
+  - Enhanced P003Config to support both "Test Cat Card" and "CCTV/Jet Vac" configurations
+  - Duplicated entire MM1-MM5 card system for CCTV/Jet Vac with separate state management
+- **Features Implemented**:
+  - **5 MM Cards**: ID selection (P002 pattern), color picker, UK pipe sizes, data management, vehicle travel
+  - **Complete UI Duplication**: Same layout, styling, and functionality as MMP1 but completely separate
+  - **Independent Data**: CCTV/Jet Vac template maintains its own configuration data separate from test card
+  - **Page Title**: CCTV/Jet Vac template displays as "CCTV/Jet Vac" in UI
+- **Result**: Two independent template systems operational - MMP1 for test card and CCTV/Jet Vac for f-cctv-jet-vac category
 
 ### CRITICAL: MMP2 Template System Complete - F603 Production Implementation ✅
 - **Date**: January 29, 2025 (Updated)

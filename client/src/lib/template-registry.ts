@@ -1,8 +1,10 @@
 // Template Registry - Centralized template exports
 import MMP1Template from '../components/templates/MMP1Template';
+import CCTVJetVacTemplate from '../components/templates/CCTVJetVacTemplate';
 
 export const templates = [
   MMP1Template, // Add MMP1Template to the array
+  CCTVJetVacTemplate, // Add CCTVJetVacTemplate to the array
 ];
 
 export const getTemplateById = (id: string) => {
