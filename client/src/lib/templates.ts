@@ -18,7 +18,6 @@ export function createTemplate(template: Template): Template {
   return template;
 }
 
-// Export template utilities
 export const TemplateUtils = {
   getCardById: (template: Template, cardId: string) => {
     return template.cards.find(card => card.id === cardId);
