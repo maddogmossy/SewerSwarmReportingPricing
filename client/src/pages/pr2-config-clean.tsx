@@ -3852,7 +3852,7 @@ export default function PR2ConfigClean() {
               </Card>
             </div>
 
-            {/* MM4 - Data Management */}
+            {/* MM4 - Data Management with Blue/Green Field Isolation */}
             <div className="relative">
               <DevLabel id="MM4" position="top-right" />
               <Card className="bg-white border-2 border-gray-200">
@@ -3861,29 +3861,14 @@ export default function PR2ConfigClean() {
                     4. Data Management - Pipe Size: {selectedPipeSizeForMM4}mm (ID: {selectedPipeSizeId})
                   </CardTitle>
                   <p className="text-sm text-gray-600">
-                    Blue/Green field isolation with purple ranges
+                    Blue/Green field isolation system for pipe-size-specific data management
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {/* Pipe Size Selector */}
-                    <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
-                      {PIPE_SIZES.map((size) => (
-                        <Button
-                          key={size}
-                          variant={selectedPipeSize === size ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handlePipeSizeChange(size)}
-                          className="text-xs"
-                        >
-                          {size}mm
-                        </Button>
-                      ))}
-                    </div>
-                    
-                    {/* MM4 Data Rows */}
+                    {/* Data Rows with Blue/Green/Purple Fields */}
                     <div className="space-y-3">
-                      {mm4Rows.map((row) => (
+                      {mm4Rows.map((row, index) => (
                         <div key={row.id} className="grid grid-cols-12 gap-2 items-center p-3 bg-gray-50 rounded">
                           <div className="col-span-1 text-sm font-medium text-gray-600">
                             #{row.id}
@@ -3929,7 +3914,7 @@ export default function PR2ConfigClean() {
                             />
                           </div>
                           
-                          <div className="col-span-1 flex gap-1">
+                          <div className="col-span-3 flex gap-1">
                             {mm4Rows.length > 1 && (
                               <Button
                                 type="button"
