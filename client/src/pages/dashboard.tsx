@@ -2646,6 +2646,19 @@ export default function Dashboard() {
       defectType: section.defectType
     });
     
+    // Special debugging for Item 3
+    if (section.itemNo === 3) {
+      console.log('🎯 ITEM 3 DETAILED DEBUG:', {
+        itemNo: section.itemNo,
+        defects: section.defects,
+        defectType: section.defectType,
+        totalLength: section.totalLength,
+        pipeSize: section.pipeSize,
+        needsCleaning: requiresCleaning(section.defects || ''),
+        pr2ConfigsLength: pr2Configurations?.length || 0
+      });
+    }
+    
     // NEW: Check for MM4/MM5 data integration for cctv-jet-vac configurations FIRST
     const sectionLength = parseFloat(section.totalLength) || 0;
     const sectionDebrisPercent = extractDebrisPercentage(section.defects || '');
