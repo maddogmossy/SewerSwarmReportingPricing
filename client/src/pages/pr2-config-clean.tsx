@@ -17,6 +17,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
+import { MMP2Template } from '@/templates/MMP2Template';
+import { PlaceholderCard } from '@/components/ui/PlaceholderCard';
 
 interface PricingOption {
   id: string;
@@ -165,7 +167,7 @@ export default function PR2ConfigClean() {
   const isEditing = !!editId;
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' => {
+  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' | 'MMP2' => {
     if (categoryId === 'cart-card') {
       return 'TP1'; // Cart card uses standard TP1 template with full interface
     } else if (categoryId === 'day-rate-db11') {
@@ -174,6 +176,8 @@ export default function PR2ConfigClean() {
       return 'P006'; // Original P006 CTF templates with 4-window structure
     } else if (categoryId === 'test-card') {
       return 'MMP1'; // Test Card uses new MMP1 template with 5 placeholder UI cards
+    } else if (categoryId === 'mmp2-card') {
+      return 'MMP2'; // MMP2 Card uses MMP2 template with 5 placeholder cards
     } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
                categoryId === 'van-pack' || 
@@ -3012,6 +3016,8 @@ export default function PR2ConfigClean() {
                         return `P26 Template (F${editId || 'Unknown'})`;
                       } else if (templateType === 'MMP1') {
                         return `MMP1 Template (F${editId || 'Unknown'})`;
+                      } else if (templateType === 'MMP2') {
+                        return `MMP2 Template (F${editId || 'Unknown'})`;
                       } else {
                         return `TP1 Template (F${editId || 'Unknown'})`;
                       }
@@ -3586,6 +3592,47 @@ export default function PR2ConfigClean() {
             <div className="flex justify-start">
               <Button className="bg-green-600 hover:bg-green-700 text-white">
                 Save MMP1 Configuration
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* MMP2 Template - 5 Placeholder Cards */}
+        {getTemplateType(categoryId || '') === 'MMP2' && (
+          <div className="space-y-6">
+            {/* MMP2 Template Implementation */}
+            <div className="relative">
+              <DevLabel id="MMP2" position="top-right" />
+              <Card className="bg-white border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    MMP2 Template - 5 Placeholder Cards
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Configure MMP2 template with 5 placeholder cards for enhanced configuration management
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    {MMP2Template.cards.map((card) => (
+                      <div key={card.id} className="space-y-2">
+                        <PlaceholderCard 
+                          id={card.id}
+                          name={card.name}
+                          className="h-32"
+                        />
+                        <p className="text-xs text-center text-gray-600">{card.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Save Button */}
+            <div className="flex justify-start">
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                Save MMP2 Configuration
               </Button>
             </div>
           </div>
