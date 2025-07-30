@@ -987,6 +987,19 @@ This prevents data contamination and ensures authentic extraction integrity.
   - MSCC5 compliance information and standards reference
   - Professional pipe size management for UK drainage infrastructure
 
+### CRITICAL: MM4 Cost Calculation Integration Analysis Complete (January 30, 2025) ✅
+- **Date**: January 30, 2025
+- **Status**: Comprehensive research and implementation plan completed for MM4 automatic cost calculation system
+- **User Requirement**: Blue recommendation clicks on configured items (F606) should trigger MM4 math functions (blue ÷ green = rate per length) and calculate costs across all dashboard items, with non-matching items showing warning triangles
+- **Research Findings**:
+  - Existing MM4 infrastructure: All core functions already implemented in pr2-config-clean.tsx
+  - Current MM4 data: F606 configured with £1850 ÷ 33 = £56.06 per length, debris ≤ 30%, length ≤ 40m
+  - Missing component: Dashboard-wide trigger mechanism when blue recommendations clicked
+  - Console evidence: MM4 calculations already called per section but no bulk analysis trigger
+- **Technical Assessment**: 5-phase implementation plan documented covering trigger system, cost column integration, warning triangles, API enhancements, and testing
+- **Implementation Plan**: Complete technical specification with code examples and testing scenarios
+- **Next Step**: Begin Phase 1 implementation with MM4 dashboard trigger system
+
 ### CRITICAL: MM1 ID Selection Updated to Sector Names (January 29, 2025) ✅
 - **Date**: January 29, 2025
 - **Status**: Successfully updated MM1 ID selection cards to display sector names instead of generic ID labels
