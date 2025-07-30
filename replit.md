@@ -1002,23 +1002,28 @@ This prevents data contamination and ensures authentic extraction integrity.
   - MSCC5 compliance information and standards reference
   - Professional pipe size management for UK drainage infrastructure
 
-### CRITICAL: MM4 Cost Calculation Integration - Phase 1 Complete ✅
+### CRITICAL: F606/F607 Dashboard Cost Integration Analysis Complete ✅
 - **Date**: January 30, 2025
-- **Status**: Successfully implemented MM4 dashboard trigger system and cost column integration
-- **User Requirement**: Blue recommendation clicks on configured items (F606) should trigger MM4 math functions (blue ÷ green = rate per length) and calculate costs across all dashboard items, with non-matching items showing warning triangles
-- **Phase 1 Implementation Complete**:
-  - **MM4 State Management**: Added mm4CostResults state to dashboard for storing analysis results
-  - **Helper Functions**: Implemented getMM4Cost() to retrieve MM4 costs for specific sections
-  - **Dashboard Trigger**: Created triggerMM4DashboardAnalysis() function to analyze all sections against F606 configuration
-  - **Cost Priority System**: Modified calculateAutoCost() to check MM4 costs FIRST before PR2 calculations
-  - **Blue Click Integration**: Enhanced CleaningOptionsPopover to trigger MM4 analysis when configured items clicked
-- **Technical Implementation**:
-  - MM4 cost analysis fetches F606 configuration data and applies calculations across all service defect sections
-  - Cost calculation prioritizes MM4 results over PR2 configurations when available
-  - Blue recommendation clicks now trigger dashboard-wide MM4 analysis for all matching sections
-  - System maintains existing PR2 fallback for sections without MM4 matches
-- **Current State**: Phase 1 complete, ready for testing F606 configured items triggering MM4 calculations
-- **Next Step**: Test MM4 trigger system with F606 1501 blue recommendation clicks
+- **Status**: Comprehensive codebase research completed - Root cause identified and detailed fix plan created
+- **User Requirements Clarified**: 
+  - Both F606 and F607 should use MMP1 templates (not MMP2)
+  - F606 should calculate dashboard costs from MM4 data (blue ÷ green = rate per length)
+  - Master MMP1 template already saved in system
+  - Previous implementation duplicated F607 instead of fixing F606 integration
+- **Root Cause Analysis**:
+  - **Template Registry Error**: `f-cctv-jet-vac` maps to MMP2 (should be MMP1)
+  - **Cost System Working**: MM4 integration exists but fails due to template loading errors
+  - **Database State**: F606 (ID 606) has valid MM4 data (blue: 1850, green: 33) but wrong template mapping
+  - **Navigation Issues**: Template routing failures prevent proper configuration access
+- **Comprehensive Fix Plan Created**: `Instructions.md` contains 5-phase implementation plan
+  - **Phase 1**: Fix template registry mapping (f-cctv-jet-vac → MMP1)
+  - **Phase 2**: Update F606 database categoryId for consistency  
+  - **Phase 3**: Make MM4 trigger dynamic instead of hardcoded ID lookup
+  - **Phase 4**: Clean navigation routing for F606/F607
+  - **Phase 5**: Remove duplicate test configurations
+- **Key Discovery**: MM4 cost calculation system already implemented and functional - only needs template registry fix
+- **Files Analyzed**: 15+ files including template registry, MMP1Template component, dashboard cost calculations, database configurations
+- **Next Step**: Implement Phase 1 template registry fix to restore F606 → MMP1 template loading
 
 ### CRITICAL: MM1 ID Selection Updated to Sector Names (January 29, 2025) ✅
 - **Date**: January 29, 2025
