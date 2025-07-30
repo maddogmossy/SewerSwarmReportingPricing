@@ -1387,8 +1387,8 @@ export default function PR2ConfigClean() {
           mm1Colors: formData.categoryColor,
           mm2IdData: selectedIds,
           mm3CustomPipeSizes: customPipeSizes,
-          // Store MM4 data with pipe-size keys for isolation, MM5 independent
-          mm4DataByPipeSize: { [pipeSizeKey]: currentMM4Data },
+          // Store ALL MM4 data by pipe size, not just current selection
+          mm4DataByPipeSize: mm4DataByPipeSize,
           mm5Data: getCurrentMM5Data(), // MM5 independent of pipe size
           // Keep legacy format for backward compatibility
           mm4Rows: currentMM4Data,

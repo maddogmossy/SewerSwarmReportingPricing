@@ -85,6 +85,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
       try {
         // Prepare MM4/MM5 data in the new mmData format
         const mmData = {
+          selectedPipeSize: selectedPipeSizeForMM4,
+          selectedPipeSizeId: selectedPipeSizeId,
           mm1Colors: selectedColor,
           mm2IdData: selectedIds,
           mm3CustomPipeSizes: customPipeSizes,
