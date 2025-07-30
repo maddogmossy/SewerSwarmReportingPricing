@@ -61,11 +61,12 @@ import { DevLabel } from '@/utils/DevLabel';
 const requiresCleaning = (defects: string): boolean => {
   if (!defects) return false;
   
-  const cleaningCodes = ['DEG', 'DES', 'DEC', 'DER', 'debris', 'deposits', 'blockage'];
+  // Established cleaning codes from sewer-cleaning.ts
+  const cleaningCodes = ['DES', 'DER', 'DEC', 'GRE', 'RO', 'BLO'];
   const defectsUpper = defects.toUpperCase();
   
-  // Check for basic cleaning codes
-  const hasCleaningCodes = cleaningCodes.some(code => defectsUpper.includes(code.toUpperCase()));
+  // Check for cleaning defect codes
+  const hasCleaningCodes = cleaningCodes.some(code => defectsUpper.includes(code));
   
   // Check for SA codes with bung conditions requiring cleanse and resurvey
   const hasSABungCondition = defectsUpper.includes('SA ') && (
@@ -73,32 +74,16 @@ const requiresCleaning = (defects: string): boolean => {
     defectsUpper.includes('NOT CONNECTED') || defectsUpper.includes('BLOCKAGE')
   );
   
-  // Check for water level observations that may indicate cleaning needs
-  // Water levels above 5% could indicate blockages requiring cleaning
-  const hasWaterLevel = defectsUpper.includes('WATER LEVEL') && (
-    defectsUpper.includes('%') || defectsUpper.includes('WL ')
-  );
+  const result = hasCleaningCodes || hasSABungCondition;
   
-  const result = hasCleaningCodes || hasSABungCondition || hasWaterLevel;
-  
-  // Debug for DES/DER sections with FIXED logic
-  if (defects.includes('DES') || defects.includes('DER')) {
-    console.log(`🧹 Cleaning Check Detail:`, {
+  // Debug for cleaning sections
+  if (hasCleaningCodes) {
+    console.log(`🧹 Cleaning Required:`, {
       defects,
       result,
       hasCleaningCodes,
-      matchedCodes: cleaningCodes.filter(code => defectsUpper.includes(code.toUpperCase())),
-      shouldBeTrue: 'DES/DER codes require cleaning'
-    });
-  }
-  
-  // Debug for water level sections
-  if (hasWaterLevel) {
-    console.log(`💧 Water Level Cleaning Check:`, {
-      defects,
-      result,
-      hasWaterLevel,
-      shouldTriggerCleaning: 'Water levels may indicate cleaning requirements'
+      matchedCodes: cleaningCodes.filter(code => defectsUpper.includes(code)),
+      shouldBeTrue: 'Contains cleaning defect codes'
     });
   }
   
