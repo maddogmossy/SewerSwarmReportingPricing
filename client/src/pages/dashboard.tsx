@@ -76,20 +76,23 @@ const requiresCleaning = (defects: string): boolean => {
   
   const result = hasCleaningCodes || hasSABungCondition;
   
-  // DETAILED DEBUG for DER/DES sections
-  if (defects.includes('DER') || defects.includes('DES')) {
-    console.log(`🧹 requiresCleaning() CALLED for:`, defects.substring(0, 50));
-    console.log(`🧹 defectsUpper:`, defectsUpper.substring(0, 50));
-    console.log(`🧹 cleaningCodes:`, cleaningCodes);
-    
-    // Test each cleaning code individually
-    cleaningCodes.forEach(code => {
-      const found = defectsUpper.includes(code);
-      console.log(`🧹   Testing "${code}": ${found} (looking in: "${defectsUpper.substring(0, 60)}")`);
+  // FORCE DEBUG: Always show detailed output for DER/DES sections
+  const shouldDebug = defects.includes('DER') || defects.includes('DES');
+  
+  if (shouldDebug) {
+    console.log(`🧹 requiresCleaning() FORCE DEBUG - INSIDE FUNCTION:`, {
+      originalText: defects.substring(0, 80),
+      defectsUpper: defectsUpper.substring(0, 80),
+      cleaningCodes: cleaningCodes,
+      hasCleaningCodes: hasCleaningCodes,
+      hasSABungCondition: hasSABungCondition,
+      finalResult: result,
+      testEachCode: cleaningCodes.map(code => ({
+        code: code,
+        found: defectsUpper.includes(code),
+        index: defectsUpper.indexOf(code)
+      }))
     });
-    
-    console.log(`🧹 hasCleaningCodes:`, hasCleaningCodes);
-    console.log(`🧹 FINAL RESULT:`, result);
   }
   
   return result;
