@@ -76,18 +76,14 @@ const requiresCleaning = (defects: string): boolean => {
   
   const result = hasCleaningCodes || hasSABungCondition;
   
-  // DEBUG FOR EVERY SECTION TO UNDERSTAND THE ISSUE
-  console.log(`🧹 ALL SECTIONS Debug:`, {
-    originalDefects: defects,
-    defectsUpper,
-    result,
-    hasCleaningCodes,
-    cleaningCodes,
-    matchedCodes: cleaningCodes.filter(code => defectsUpper.includes(code)),
-    containsDER: defectsUpper.includes('DER'),
-    containsDES: defectsUpper.includes('DES'),
-    shouldBeTrue: hasCleaningCodes ? 'Should be true' : 'No cleaning codes detected'
-  });
+  // TEST SPECIFIC DER/DES SECTIONS
+  if (defects.includes('DER') || defects.includes('DES')) {
+    console.log(`🧹 DER/DES FOUND - Testing:`, defects.substring(0, 50));
+    console.log(`🧹 Contains DER:`, defectsUpper.includes('DER'));
+    console.log(`🧹 Contains DES:`, defectsUpper.includes('DES'));
+    console.log(`🧹 hasCleaningCodes:`, hasCleaningCodes);
+    console.log(`🧹 Result should be true but is:`, result);
+  }
   
   return result;
 };
