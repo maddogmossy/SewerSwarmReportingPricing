@@ -490,7 +490,9 @@ export default function PR2Pricing() {
                           <h3 className="font-medium text-sm mb-1">
                             CCTV/Jet Vac - {pipeSize}mm
                             {existingConfig ? (
-                              <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
+                              <span className="text-xs text-blue-600 ml-1">
+                                (ID: {existingConfig.categoryId === 'cctv-jet-vac' ? 'f606' : existingConfig.id})
+                              </span>
                             ) : null}
                           </h3>
                           <p className="text-xs text-gray-600">High-pressure cleaning configuration for {pipeSize}mm pipes</p>
@@ -547,7 +549,9 @@ export default function PR2Pricing() {
                           <h3 className="font-medium text-sm mb-1">
                             CCTV/Van Pack - {pipeSize}mm
                             {existingConfig ? (
-                              <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
+                              <span className="text-xs text-blue-600 ml-1">
+                                (ID: {existingConfig.categoryId === 'f-cctv-van-pack' ? 'f607' : existingConfig.id})
+                              </span>
                             ) : null}
                           </h3>
                           <p className="text-xs text-gray-600">Traditional cleaning configuration for {pipeSize}mm pipes</p>
@@ -581,6 +585,9 @@ export default function PR2Pricing() {
                     if (config.categoryId === category.id) {
                       return true;
                     }
+                    
+                    // F607 CCTV/Van Pack compatibility mapping
+                    if (category.id === 'cctv-van-pack' && config.categoryId === 'f-cctv-van-pack') return true;
                     
                     // Legacy exact match for cctv-jet-vac
                     if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
@@ -624,7 +631,11 @@ export default function PR2Pricing() {
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
-                      <DevLabel id={existingConfiguration ? `F${existingConfiguration.id}` : `F-${category.id}`} />
+                      <DevLabel id={existingConfiguration ? 
+                        (existingConfiguration.categoryId === 'f-cctv-van-pack' ? 'f607' : 
+                         existingConfiguration.categoryId === 'cctv-jet-vac' ? 'f606' : 
+                         `F${existingConfiguration.id}`) : 
+                        `F-${category.id}`} />
                       <CardContent className="p-4 text-center relative">
                         <category.icon className={`h-8 w-8 mx-auto mb-2 ${
                           isUserCreated ? 'text-green-700' : 'text-gray-700'
