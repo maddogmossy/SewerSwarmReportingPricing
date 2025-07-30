@@ -51,8 +51,8 @@ const STANDARD_CATEGORIES = [
   { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
   { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection and cleansing operations', icon: Monitor },
   { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
-  { id: 'f-cctv-van-pack', name: 'F607 CCTV/Van Pack', description: 'F607 CCTV/Van Pack configuration with MMP1 template', icon: Monitor },
-  { id: 'f-cctv-jet-vac', name: 'F606 CCTV/Jet Vac', description: 'F606 CCTV/Jet Vac configuration with MMP2 template', icon: Video },
+  { id: 'f-cctv-van-pack', name: 'F607 CCTV/Van Pack', description: 'F607 CCTV/Van Pack configuration with MMP1 template', icon: Monitor, sector: 'utilities' },
+  { id: 'f-cctv-jet-vac', name: 'F606 CCTV/Jet Vac', description: 'F606 CCTV/Jet Vac configuration with MMP2 template', icon: Video, sector: 'utilities' },
   { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
   { id: 'test-card', name: 'Test Card', description: 'Test configuration card for CTF P006a template demonstration', icon: Zap },
 
