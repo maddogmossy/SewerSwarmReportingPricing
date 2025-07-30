@@ -36,34 +36,17 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
     }
   };
 
-  const handleConfigurationSelect = async (configId: string, categoryId: string) => {
-    // Handle navigation to selected configuration with existing config detection
+  const handleConfigurationSelect = (configId: string, categoryId: string) => {
+    // Direct routing to specific configurations - no auto-creation
     const pipeSize = sectionData.pipeSize || '150mm';
     const pipeSizeNumber = pipeSize.replace('mm', '');
     
-    try {
-      // Check for existing configuration of the selected type
-      const response = await fetch(`/api/pr2-clean?sector=${sectionData.sector}`);
-      
-      if (response.ok) {
-        const configs = await response.json();
-        const existingConfig = configs.find((config: any) => config.category_id === categoryId);
-        
-        if (existingConfig) {
-          // Route to existing configuration
-          window.location.href = `/pr2-config-clean?id=${existingConfig.id}&categoryId=${categoryId}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-        } else {
-          // Create new configuration
-          window.location.href = `/pr2-config-clean?categoryId=${categoryId}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-        }
-      } else {
-        // Fallback: create new configuration
-        window.location.href = `/pr2-config-clean?categoryId=${categoryId}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-      }
-    } catch (error) {
-      console.error('Error detecting existing configuration:', error);
-      // Fallback: route to configuration page
-      window.location.href = `/pr2-config-clean?categoryId=${categoryId}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
+    if (categoryId === 'cctv-jet-vac') {
+      // Always route to F606 for CCTV/Jet Vac
+      window.location.href = `/pr2-config-clean?id=606&categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
+    } else if (categoryId === 'f-cctv-van-pack') {
+      // Route to F607 for CCTV/Van Pack
+      window.location.href = `/pr2-config-clean?id=607&categoryId=f-cctv-van-pack&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
     }
     
     setShowSelectionDialog(false);

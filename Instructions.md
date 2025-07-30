@@ -1,381 +1,247 @@
-# F606/F607 Configuration Selection System Implementation Plan
+# F606/F608 Duplication Issue - Deep Investigation Report
 
 ## Executive Summary
 
-This document provides a comprehensive analysis and implementation plan for enhancing the blue recommendation card click functionality to present users with two configuration options: F606 (CCTV/Jet Vac) as the default highlighted option and F607 (CCTV/Van Pack) as the secondary option. The system will provide visual feedback showing which configuration is selected for cost calculations on the dashboard.
-
-## Current System Analysis
-
-### 1. Blue Recommendation Card Architecture
-
-**Current Flow:**
-- Dashboard blue cleaning recommendations → CleaningOptionsPopover click → Direct routing to F606 or F607
-- Location: `client/src/pages/dashboard.tsx` lines 1164-1199
-- Handler: CleaningOptionsPopover component wraps blue recommendations with `onClick={handleDirectClick}`
-
-**Current CleaningOptionsPopover Logic (`client/src/components/cleaning-options-popover.tsx`):**
-```typescript
-// Priority routing: F607 CCTV/Van Pack if available, fallback to F606 CCTV/Jet Vac
-if (cctvVanPackConfig) {
-  // Route to F607 f-cctv-van-pack configuration
-  window.location.href = `/pr2-config-clean?id=${cctvVanPackConfig.id}&categoryId=f-cctv-van-pack&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-} else if (cctvJetVacConfig) {
-  // Fallback to F606 cctv-jet-vac configuration
-  window.location.href = `/pr2-config-clean?id=${cctvJetVacConfig.id}&categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-}
-```
-
-### 2. Current Configuration Status
-
-**F606 (CCTV/Jet Vac):**
-- Category ID: `cctv-jet-vac`
-- Template Type: MMP1
-- Database ID: 606 (confirmed operational)
-- Status: Fully configured with MMP1 template
-
-**F607 (CCTV/Van Pack):**
-- Category ID: `f-cctv-van-pack`
-- Template Type: MMP1 
-- Database ID: 607 (confirmed operational)
-- Status: Fully configured with MMP1 template
-
-### 3. Visual Display System
-
-**Current ID Display Logic:**
-- Main category grid shows "f606" and "f607" labels instead of numeric IDs
-- Implemented in `pr2-pricing.tsx` lines 637-641:
-```typescript
-<DevLabel id={existingConfiguration ? 
-  (existingConfiguration.categoryId === 'f-cctv-van-pack' ? 'f607' : 
-   existingConfiguration.categoryId === 'cctv-jet-vac' ? 'f606' : 
-   `F${existingConfiguration.id}`) : 
-  `F-${category.id}`} />
-```
+This report analyzes the critical F606/F608 duplication issue where P003 contains F606 (main CCTV/jetting UI) but the dashboard incorrectly links to F608, creating system confusion and routing failures.
 
 ## Problem Analysis
 
-### Current Issues:
-1. **No User Choice**: Users are automatically routed to F607 if available, F606 as fallback
-2. **No Visual Feedback**: No indication of which configuration is being used for cost calculations
-3. **No Selection Interface**: Missing intermediate selection step for user preference
-4. **No Green Highlighting**: No visual indicator showing preferred/selected option
+### 1. Root Cause: Duplicate Configuration Creation
 
-### User Requirements:
-1. **Two-Option Selection**: Present F606 (default, green highlight) and F607 (secondary option) 
-2. **Visual Feedback**: Show which configuration is selected for cost calculations
-3. **Green Highlighting**: Default F606 highlighted green, F607 highlighted when selected
-4. **No Test Buttons**: Clean interface without test functions (explicitly requested)
+**Issue Identified:**
+- **F606 (ID 606)**: Main CCTV/Jet Vac configuration (`cctv-jet-vac`)
+- **F608 (ID 608)**: Duplicate "150mm Cctv Jet Vac Configuration" (`cctv-jet-vac`)
+- **System Confusion**: Both configurations share the same `category_id` but serve different purposes
 
-## Technical Architecture Analysis
-
-### 1. Current Routing Pattern
-```
-Dashboard Click → CleaningOptionsPopover → Direct Navigation to F606/F607
+**Database Evidence:**
+```sql
+id | category_id  | category_name
+606| cctv-jet-vac | CCTV/Jet Vac
+608| cctv-jet-vac | 150mm Cctv Jet Vac Configuration
 ```
 
-### 2. Required New Pattern
+### 2. Why F608 Keeps Getting Created
+
+**Auto-Creation Logic Found in:**
+- `client/src/components/repair-options-popover.tsx` (lines 34-54)
+- Auto-detect API endpoint: `/api/pr2-clean/auto-detect-pipe-size`
+- System creates pipe-size-specific configurations when none exist
+
+**Current CleaningOptionsPopover Logic Issues:**
+- Uses complex async API detection instead of direct F606 routing
+- Falls back to creating new configurations when API fails
+- No explicit F606 targeting in utilities sector
+
+### 3. Dashboard Routing Problems
+
+**Current Flow Analysis:**
 ```
-Dashboard Click → Selection Dialog → User Choice → Navigation to Selected Config
+Dashboard Click → CleaningOptionsPopover → handleDirectClick() → 
+  ├─ Utilities: Selection Dialog (NEW)
+  └─ Other Sectors: Auto-detect API → F608 Creation
 ```
 
-### 3. Selection Dialog Requirements
-- **Modal/Popover Interface**: Present F606 and F607 options
-- **Green Highlighting**: F606 default green, F607 green when selected
-- **Configuration Details**: Show pipe size and sector context
-- **Navigation Buttons**: Route to selected configuration with proper parameters
+**Problems Identified:**
+1. **Selection Dialog Only for Utilities**: Other sectors bypass F606 entirely
+2. **API Dependency**: Relies on `/api/pr2-clean/auto-detect-pipe-size` endpoint
+3. **Fallback Creates Duplicates**: When API fails, creates new configurations
+4. **No Direct F606 Routing**: Missing hardcoded F606 links
 
-### 4. State Management Requirements
-- **Selected Configuration Tracking**: Remember user's choice
-- **Cost Calculation Integration**: Use selected config for dashboard calculations
-- **Visual Feedback**: Update dashboard to show which config is active
+## Current System Analysis
 
-## Implementation Plan
+### 1. CleaningOptionsPopover Implementation
 
-### Phase 1: Selection Dialog Component Creation (30-45 minutes)
+**File:** `client/src/components/cleaning-options-popover.tsx`
 
-**1.1 Create ConfigurationSelectionDialog Component**
+**Current Logic Issues:**
+- **Line 27**: Only utilities sector gets selection dialog
+- **Line 35-60**: Complex auto-detection for other sectors
+- **Line 47**: Routes to detected config, not F606
+- **Line 84**: Async configuration detection in selection handler
 
-Location: `client/src/components/configuration-selection-dialog.tsx`
+**Missing Logic:**
+- No direct F606 routing for non-utilities sectors
+- No fallback to F606 when auto-detection fails
+- No prevention of duplicate configuration creation
 
+### 2. Dashboard Integration Points
+
+**File:** `client/src/pages/dashboard.tsx`
+
+**Integration Points:**
+- **Lines 1164-1199**: CleaningOptionsPopover wrapper
+- **Line 1175**: `onPricingNeeded` handler (unused)
+- **Line 1195**: Blue recommendation display logic
+
+**Issues:**
+- Depends entirely on CleaningOptionsPopover routing
+- No backup F606 routing mechanism
+- No configuration preference tracking
+
+### 3. Configuration Detection Logic
+
+**Current System Behavior:**
+1. Searches for existing `cctv-jet-vac` configurations
+2. Uses highest ID configuration (currently F608)
+3. Falls back to creating new pipe-size-specific configs
+4. F606 gets overlooked due to ID sorting
+
+## Solution Architecture
+
+### Phase 1: Immediate F608 Removal and F606 Enforcement
+
+**1.1 Force Delete F608**
+```sql
+DELETE FROM pr2_configurations WHERE id = 608;
+```
+
+**1.2 Update CleaningOptionsPopover Direct Routing**
+- Remove auto-detection API calls
+- Hardcode F606 routing for all sectors
+- Eliminate duplicate creation pathways
+
+**1.3 Enhance Selection Dialog**
+- Ensure F606 detection works properly
+- Add fallback F606 routing if no configurations found
+- Remove complex async detection logic
+
+### Phase 2: Fix Configuration Detection Logic
+
+**2.1 Update API Endpoints**
+- Modify `/api/pr2-clean` to prioritize F606 over F608
+- Add explicit F606 detection logic
+- Prevent auto-creation of duplicate `cctv-jet-vac` configs
+
+**2.2 Configuration Priority System**
+- Lowest ID wins for same category_id (F606 over F608)
+- Explicit F606 targeting in utilities sector
+- Fallback to F606 for all other sectors
+
+### Phase 3: Dashboard Integration Fixes
+
+**3.1 Remove Auto-Creation Dependencies**
+- Eliminate `/api/pr2-clean/auto-detect-pipe-size` calls
+- Direct routing to F606 in all scenarios
+- Backup routing if F606 doesn't exist
+
+**3.2 Cost Calculation Integration**
+- Ensure dashboard uses F606 for calculations
+- Remove F608 references from cost logic
+- Update visual feedback to show F606 selection
+
+## Technical Implementation Plan
+
+### Step 1: Database Cleanup (Immediate)
+```sql
+-- Remove F608 permanently
+DELETE FROM pr2_configurations WHERE id = 608;
+
+-- Verify only F606 remains
+SELECT id, category_id, category_name FROM pr2_configurations 
+WHERE category_id = 'cctv-jet-vac';
+```
+
+### Step 2: CleaningOptionsPopover Simplification
 ```typescript
-interface ConfigurationSelectionDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  sectionData: {
-    pipeSize: string;
-    sector: string;
-    itemNo?: number;
-  };
-  onConfigurationSelect: (configId: string, categoryId: string) => void;
-}
-
-interface ConfigOption {
-  id: string;
-  categoryId: string;
-  name: string;
-  description: string;
-  isDefault: boolean;
-  icon: React.ComponentType;
-}
-
-const CONFIG_OPTIONS: ConfigOption[] = [
-  {
-    id: 'f606',
-    categoryId: 'cctv-jet-vac',
-    name: 'F606 - CCTV/Jet Vac',
-    description: 'High-pressure jetting with CCTV inspection',
-    isDefault: true,
-    icon: Wrench
-  },
-  {
-    id: 'f607', 
-    categoryId: 'f-cctv-van-pack',
-    name: 'F607 - CCTV/Van Pack',
-    description: 'Comprehensive van-based cleaning equipment',
-    isDefault: false,
-    icon: Building
-  }
-];
-```
-
-**1.2 Dialog Interface Design**
-- **Header**: "Select Cleaning Configuration for {pipeSize} Pipe"
-- **Two Cards**: F606 and F607 options with green highlighting system
-- **Default Selection**: F606 highlighted green by default
-- **Selection Logic**: Click to toggle green highlighting
-- **Action Buttons**: "Configure Selected" and "Cancel"
-
-**1.3 Green Highlighting System**
-- **Selected State**: `bg-green-100 border-green-300 text-green-700`
-- **Unselected State**: `bg-white border-gray-200 text-gray-600`
-- **Hover Effects**: Enhanced border colors and shadows
-- **Selection Feedback**: Clear visual indication of active choice
-
-### Phase 2: CleaningOptionsPopover Enhancement (20-30 minutes)
-
-**2.1 Modify CleaningOptionsPopover Component**
-
-Location: `client/src/components/cleaning-options-popover.tsx`
-
-Changes Required:
-- Replace direct navigation with dialog trigger
-- Add state management for dialog visibility
-- Integrate ConfigurationSelectionDialog component
-- Handle configuration selection and routing
-
-```typescript
-export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
-  const [showSelectionDialog, setShowSelectionDialog] = useState(false);
-
-  const handleDirectClick = () => {
-    // Open selection dialog instead of direct navigation
+// Replace complex auto-detection with direct F606 routing
+const handleDirectClick = async () => {
+  if (sectionData.sector === 'utilities') {
     setShowSelectionDialog(true);
-  };
-
-  const handleConfigurationSelect = (configId: string, categoryId: string) => {
-    // Handle navigation to selected configuration
+  } else {
+    // Direct F606 routing for all other sectors
     const pipeSize = sectionData.pipeSize || '150mm';
     const pipeSizeNumber = pipeSize.replace('mm', '');
-    
-    // Route to selected configuration with proper parameters
-    window.location.href = `/pr2-config-clean?categoryId=${categoryId}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-    
-    setShowSelectionDialog(false);
-  };
-
-  return (
-    <>
-      <div onClick={handleDirectClick} style={{ cursor: 'pointer' }}>
-        {children}
-      </div>
-      
-      <ConfigurationSelectionDialog
-        isOpen={showSelectionDialog}
-        onClose={() => setShowSelectionDialog(false)}
-        sectionData={sectionData}
-        onConfigurationSelect={handleConfigurationSelect}
-      />
-    </>
-  );
-}
+    window.location.href = `/pr2-config-clean?id=606&categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
+  }
+};
 ```
 
-### Phase 3: Dashboard Integration Enhancement (25-35 minutes)
-
-**3.1 Cost Calculation Integration**
-
-Location: `client/src/pages/dashboard.tsx`
-
-Requirements:
-- Track which configuration is selected for each section
-- Use selected configuration for cost calculations
-- Display visual feedback showing active configuration
-
-**3.2 Selected Configuration State Management**
-
+### Step 3: Selection Dialog F606 Enforcement
 ```typescript
-// Add state for tracking selected configurations per section
-const [selectedConfigurations, setSelectedConfigurations] = useState<Record<number, string>>({});
-
-// Default configuration logic
-const getSelectedConfiguration = (itemNo: number) => {
-  return selectedConfigurations[itemNo] || 'f606'; // Default to F606
-};
-
-// Update cost calculation to use selected configuration
-const calculateCostWithSelectedConfig = (section: any) => {
-  const selectedConfig = getSelectedConfiguration(section.itemNo);
-  // Use selectedConfig for cost calculation logic
-  return calculateMM4AutoCost(section, selectedConfig);
+const handleConfigurationSelect = async (configId: string, categoryId: string) => {
+  // Direct routing to F606 when cctv-jet-vac is selected
+  if (categoryId === 'cctv-jet-vac') {
+    const pipeSize = sectionData.pipeSize || '150mm';
+    const pipeSizeNumber = pipeSize.replace('mm', '');
+    window.location.href = `/pr2-config-clean?id=606&categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
+  }
+  // Handle F607 routing normally
+  else {
+    // Existing F607 routing logic
+  }
 };
 ```
 
-**3.3 Visual Feedback Implementation**
-
-Enhance blue recommendation cards to show selected configuration:
-- Add configuration indicator (f606/f607) in recommendation text
-- Color-code based on selected configuration
-- Update statusMessage to reflect active configuration
-
-### Phase 4: Configuration Detection and Routing (15-25 minutes)
-
-**4.1 API Integration**
-
-Ensure proper detection of F606 and F607 configurations:
-- Verify `/api/pr2-clean?sector=utilities` returns both configurations
-- Confirm category ID mapping works correctly
-- Test configuration availability detection
-
-**4.2 URL Parameter Handling**
-
-Enhance configuration pages to handle selection parameters:
-- Parse `selectedConfig` URL parameter
-- Apply appropriate highlighting based on selection
-- Maintain selection state during configuration editing
-
-### Phase 5: Testing and Validation (20-30 minutes)
-
-**5.1 End-to-End Workflow Testing**
-1. Dashboard blue recommendation click
-2. Selection dialog opens with F606 highlighted green
-3. User can select F607 (highlighting switches)
-4. Configuration navigation works correctly
-5. Dashboard cost calculations use selected configuration
-
-**5.2 Visual Feedback Testing**
-- Verify green highlighting works correctly
-- Confirm selected configuration appears in dashboard
-- Test configuration switching and cost updates
-
-**5.3 Regression Testing**
-- Ensure existing F606/F607 functionality preserved
-- Verify MMP1 template integration still works
-- Confirm no breaking changes to other components
+### Step 4: API Endpoint Updates
+- Modify server routes to prevent `cctv-jet-vac` auto-creation
+- Add F606 priority logic in configuration queries
+- Remove auto-detect-pipe-size endpoint dependencies
 
 ## Risk Assessment
 
-### Low Risk
-- ConfigurationSelectionDialog component creation (new isolated component)
-- CleaningOptionsPopover enhancement (well-defined interface)
-- Visual feedback implementation (CSS and state changes)
+### High Risk Areas
+1. **Auto-Creation Logic**: Multiple files contain configuration creation logic
+2. **API Dependencies**: Various endpoints might still create F608
+3. **Cached References**: Existing code might reference F608
 
-### Medium Risk
-- Dashboard state management integration (affects multiple components)
-- Cost calculation modification (impacts financial calculations)
-- URL parameter handling enhancement (routing changes)
+### Low Risk Areas
+1. **F606 Configuration**: Properly configured and stable
+2. **Selection Dialog**: Already implemented and functional
+3. **Database Structure**: Schema supports the solution
 
-### High Risk
-- Breaking existing F606/F607 configuration access
-- MMP1 template integration disruption
-- Dashboard cost calculation accuracy
+## Root Cause Prevention
 
-## Success Criteria
+### 1. Configuration Creation Controls
+- Add database constraints preventing duplicate category_id entries
+- Implement server-side validation for `cctv-jet-vac` creation
+- Remove all auto-creation logic for core configurations
 
-### 1. Functional Requirements Met
-- ✅ Blue recommendation cards open selection dialog
-- ✅ F606 highlighted green by default
-- ✅ F607 selectable with green highlighting
-- ✅ Configuration navigation works correctly
-- ✅ Dashboard shows selected configuration for cost calculations
+### 2. Routing Standardization
+- Hardcode F606 routing in all cleaning recommendation flows
+- Remove API-dependent routing logic
+- Implement fallback routing to prevent broken links
 
-### 2. User Experience Goals
-- ✅ Clean interface without test buttons
-- ✅ Clear visual feedback for configuration selection
-- ✅ Intuitive two-option selection process
-- ✅ Professional appearance matching existing design
-
-### 3. Technical Standards
-- ✅ No breaking changes to existing functionality
-- ✅ Proper state management and data flow
-- ✅ TypeScript type safety maintained
-- ✅ Component reusability and maintainability
-
-## File Modification Summary
-
-### New Files:
-1. `client/src/components/configuration-selection-dialog.tsx` - Selection dialog component
-
-### Modified Files:
-1. `client/src/components/cleaning-options-popover.tsx` - Dialog integration
-2. `client/src/pages/dashboard.tsx` - State management and cost calculation
-3. `client/src/pages/pr2-config-clean.tsx` - URL parameter handling (if needed)
-
-### Key Dependencies:
-- shadcn/ui Dialog components
-- React useState for state management
-- Existing MMP1 template system
-- Current F606/F607 configuration structure
+### 3. Documentation Updates
+- Update replit.md to document F606 as primary CCTV/Jet Vac config
+- Document F608 removal and prevention measures
+- Add configuration priority guidelines
 
 ## Implementation Timeline
 
-### Phase 1 (Dialog Component): 30-45 minutes
-- Create ConfigurationSelectionDialog component
-- Implement green highlighting system
-- Add proper TypeScript interfaces
+### Immediate (0-15 minutes)
+- Delete F608 from database
+- Update CleaningOptionsPopover direct routing
+- Test basic F606 routing functionality
 
-### Phase 2 (Popover Enhancement): 20-30 minutes
-- Modify CleaningOptionsPopover to use dialog
-- Add state management for dialog visibility
-- Implement configuration selection handling
+### Short Term (15-45 minutes)
+- Fix selection dialog F606 enforcement
+- Remove auto-creation API calls
+- Update server endpoints to prevent duplicates
 
-### Phase 3 (Dashboard Integration): 25-35 minutes
-- Add selected configuration state management
-- Modify cost calculation to use selected config
-- Implement visual feedback in recommendations
+### Medium Term (45-90 minutes)
+- Comprehensive testing across all sectors
+- Dashboard integration verification
+- Cost calculation validation
 
-### Phase 4 (Routing and Detection): 15-25 minutes
-- Verify API integration works correctly
-- Test configuration detection and availability
-- Enhance URL parameter handling if needed
+## Success Criteria
 
-### Phase 5 (Testing): 20-30 minutes
-- End-to-end workflow testing
-- Visual feedback validation
-- Regression testing for existing functionality
+### 1. Database State
+- Only F606 exists for `cctv-jet-vac` category
+- No F608 or duplicate configurations
+- F606 properly configured with all values
 
-**Total Estimated Time: 110-165 minutes (approximately 2-3 hours)**
+### 2. Routing Behavior
+- All blue recommendation cards route to F606
+- Selection dialog correctly shows F606 as default
+- No auto-creation of duplicate configurations
 
-## Next Steps
+### 3. User Experience
+- Single, consistent CCTV/Jet Vac configuration
+- Proper F606/F607 selection system
+- Cost calculations use correct F606 data
 
-1. **Immediate Implementation**: Start with Phase 1 - ConfigurationSelectionDialog component creation
-2. **Iterative Testing**: Test each phase before proceeding to next
-3. **User Feedback Integration**: Validate user experience after Phase 3
-4. **Final Validation**: Complete end-to-end testing in Phase 5
+## Conclusion
 
-This implementation plan provides a systematic approach to creating the F606/F607 selection system while maintaining existing functionality and meeting all user requirements for visual feedback and configuration choice.
+The F606/F608 duplication issue stems from overly complex auto-creation logic that bypasses the main F606 configuration. The solution requires simplifying routing logic, enforcing F606 as the primary configuration, and removing all pathways that create duplicate `cctv-jet-vac` configurations.
 
-## Technical Notes
-
-### State Management Pattern
-The implementation uses React useState for local component state management, avoiding complex global state solutions for this focused feature enhancement.
-
-### Green Highlighting Pattern
-Following established shadcn/ui design patterns with `bg-green-100 border-green-300 text-green-700` for selected states and smooth transitions for user interaction feedback.
-
-### Configuration Routing Pattern
-Maintaining existing URL parameter structure (`categoryId`, `sector`, `pipeSize`, `selectedId`) while adding selection logic for F606/F607 choice persistence.
-
-### Cost Calculation Integration
-Leveraging existing MM4 cost calculation system while adding configuration selection awareness for accurate financial projections based on user choice.
-
-This plan ensures comprehensive implementation of the F606/F607 selection system while maintaining system stability and user experience consistency.
+The system should use F606 as the single source of truth for CCTV/Jet Vac operations, with F607 as the alternative option in the selection dialog for utilities sector only.
