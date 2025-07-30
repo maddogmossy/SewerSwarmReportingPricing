@@ -2083,7 +2083,7 @@ export default function Dashboard() {
         setShowTP1DistributionDialog({
           show: true,
           tp1Sections: serviceSections.filter(s => requiresCleaning(s.defects || '')),
-          totalDefects: serviceSections.filter(s => requiresCleaning(s.defects || '')).length,
+          totalSections: serviceSections.filter(s => requiresCleaning(s.defects || '')).length,
           minQuantity: minQuantity,
           configurationId: tp1Config.id,
           message: `${serviceSections.filter(s => requiresCleaning(s.defects || '')).length} sections require cleaning but minimum quantity (${minQuantity}) not met for cost-effective operation. Travel costs included: £${travelCost.toFixed(2)}`
@@ -2715,6 +2715,17 @@ export default function Dashboard() {
         console.log(`🧹 FORCE CALLING requiresCleaning for debugging:`);
         const forceResult = requiresCleaning(section.defects);
         console.log(`🧹 FORCE RESULT:`, forceResult);
+        
+        // DETAILED MANUAL TEST: Check exact strings
+        const defectsUpper = section.defects.toUpperCase();
+        const cleaningCodes = ['DES', 'DER', 'DEC', 'GRE', 'RO', 'BLO'];
+        console.log(`🧹 MANUAL STRING TEST:`, {
+          originalText: section.defects.substring(0, 80),
+          upperText: defectsUpper.substring(0, 80),
+          containsDER: defectsUpper.includes('DER'),
+          containsDES: defectsUpper.includes('DES'),
+          cleaningCodesFound: cleaningCodes.filter(code => defectsUpper.includes(code))
+        });
       }
     }
     
@@ -4788,7 +4799,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-blue-800">Service defects requiring cleaning:</span>
-                  <span className="text-blue-900 font-bold">{showTP1DistributionDialog.totalDefects}</span>
+                  <span className="text-blue-900 font-bold">{showTP1DistributionDialog.totalSections}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-blue-800">Minimum required:</span>
