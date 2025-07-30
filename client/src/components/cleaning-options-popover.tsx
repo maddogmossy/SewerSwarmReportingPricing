@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { ConfigurationSelectionDialog } from './configuration-selection-dialog';
+
 interface CleaningOptionsPopoverProps {
   children: React.ReactNode;
   sectionData: {
@@ -16,44 +19,19 @@ interface CleaningOptionsPopoverProps {
 }
 
 export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
-  // DIRECT MMP1 CONNECTION: Connect cleanse/survey to MMP1 template with ID1 for utilities sector
+  const [showSelectionDialog, setShowSelectionDialog] = useState(false);
+
+  // ENHANCED: Open selection dialog for F606/F607 choice
   const handleDirectClick = async () => {
-    // Extract pipe size from section data
-    const pipeSize = sectionData.pipeSize || '150mm';
-    const pipeSizeNumber = pipeSize.replace('mm', '');
-    
-    try {
-      // For utilities sector, connect to F606 (cctv-jet-vac) configuration
-      if (sectionData.sector === 'utilities') {
-        // Find existing F606 cctv-jet-vac configuration for utilities sector
-        const response = await fetch(`/api/pr2-clean?sector=utilities`);
-        
-        if (response.ok) {
-          const configs = await response.json();
-          const cctvJetVacConfig = configs.find((config: any) => 
-            config.categoryId === 'cctv-jet-vac'
-          );
-          const cctvVanPackConfig = configs.find((config: any) => 
-            config.categoryId === 'f-cctv-van-pack'
-          );
-          
-          // Priority routing: F607 CCTV/Van Pack if available, fallback to F606 CCTV/Jet Vac
-          if (cctvVanPackConfig) {
-            // Route to F607 f-cctv-van-pack configuration with Utilities card selected
-            window.location.href = `/pr2-config-clean?id=${cctvVanPackConfig.id}&categoryId=f-cctv-van-pack&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-          } else if (cctvJetVacConfig) {
-            // Fallback to F606 cctv-jet-vac configuration with Utilities card selected
-            window.location.href = `/pr2-config-clean?id=${cctvJetVacConfig.id}&categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-          } else {
-            // Create new f-cctv-van-pack configuration for utilities with Utilities card selected
-            window.location.href = `/pr2-config-clean?categoryId=f-cctv-van-pack&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-          }
-        } else {
-          // Fallback to cctv-jet-vac creation
-          window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}`;
-        }
-      } else {
-        // For other sectors, use original cctv-jet-vac logic
+    // For utilities sector, show selection dialog
+    if (sectionData.sector === 'utilities') {
+      setShowSelectionDialog(true);
+    } else {
+      // For other sectors, maintain original direct routing to F606
+      const pipeSize = sectionData.pipeSize || '150mm';
+      const pipeSizeNumber = pipeSize.replace('mm', '');
+      
+      try {
         const response = await fetch('/api/pr2-clean/auto-detect-pipe-size', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -70,22 +48,41 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
         } else {
           window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
         }
-      }
-    } catch (error) {
-      console.error('Error in MMP1 connection:', error);
-      // Fallback routing based on sector
-      if (sectionData.sector === 'utilities') {
-        window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&selectedId=id1&pipeSize=${pipeSizeNumber}`;
-      } else {
-        window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+      } catch (error) {
+        console.error('Error in configuration routing:', error);
+        // Fallback routing based on sector
+        if (sectionData.sector === 'utilities') {
+          window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&selectedId=id1&pipeSize=${pipeSizeNumber}`;
+        } else {
+          window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+        }
       }
     }
   };
 
-  // Return simple clickable element that triggers auto-detection
+  const handleConfigurationSelect = (configId: string, categoryId: string) => {
+    // Handle navigation to selected configuration
+    const pipeSize = sectionData.pipeSize || '150mm';
+    const pipeSizeNumber = pipeSize.replace('mm', '');
+    
+    // Route to selected configuration with proper parameters
+    window.location.href = `/pr2-config-clean?categoryId=${categoryId}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
+    
+    setShowSelectionDialog(false);
+  };
+
   return (
-    <div onClick={handleDirectClick} style={{ cursor: 'pointer' }}>
-      {children}
-    </div>
+    <>
+      <div onClick={handleDirectClick} style={{ cursor: 'pointer' }}>
+        {children}
+      </div>
+      
+      <ConfigurationSelectionDialog
+        isOpen={showSelectionDialog}
+        onClose={() => setShowSelectionDialog(false)}
+        sectionData={sectionData}
+        onConfigurationSelect={handleConfigurationSelect}
+      />
+    </>
   );
 }
