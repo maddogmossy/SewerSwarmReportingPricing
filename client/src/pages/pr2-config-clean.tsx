@@ -13,6 +13,7 @@ import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown
 import { DevLabel } from '@/utils/DevLabel';
 import { TP1Template } from '@/components/TP1Template';
 import { MMP1Template } from '@/components/MMP1Template';
+import { MMP2Template } from '@/components/MMP2Template';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -170,13 +171,15 @@ export default function PR2ConfigClean() {
   const isEditing = !!editId;
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' => {
+  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' | 'MMP2' => {
     if (categoryId === 'cart-card') {
       return 'TP1'; // Cart card uses standard TP1 template with full interface
     } else if (categoryId === 'day-rate-db11') {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else if (categoryId?.startsWith('P006-')) {
       return 'P006'; // Original P006 CTF templates with 4-window structure
+    } else if (categoryId === 'f-cctv-jet-vac') {
+      return 'MMP2'; // F606 CCTV/Jet Vac uses MMP2 template with advanced configuration
     } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'f-cctv-van-pack') {
       return 'MMP1'; // Test Card, CCTV/Jet Vac, and F607 CCTV/Van Pack use MMP1 template with 5 placeholder UI cards
     } else if (categoryId?.includes('-p006a') || 
@@ -184,7 +187,6 @@ export default function PR2ConfigClean() {
                categoryId === 'van-pack' || 
                categoryId === 'jet-vac' || 
                categoryId === 'cctv-van-pack' || 
-               categoryId === 'cctv-jet-vac' || // F175 - CCTV Jet Vac Configuration
                categoryId === 'cctv-cleansing-root-cutting') {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else {
@@ -4035,7 +4037,17 @@ export default function PR2ConfigClean() {
           </>
         )}
 
-
+        {/* MMP2 Template - F606 CCTV/Jet Vac Configuration */}
+        {getTemplateType(categoryId || '') === 'MMP2' && (
+          <MMP2Template 
+            categoryId={categoryId || ''} 
+            sector={sector} 
+            editId={editId ? parseInt(editId) : undefined}
+            onSave={() => {
+              queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+            }}
+          />
+        )}
 
       </div>
     </div>
