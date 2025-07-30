@@ -295,6 +295,9 @@ export default function PR2Pricing() {
         // Direct category ID match
         if (config.categoryId === categoryId) return true;
         
+        // F607 CCTV/Van Pack compatibility mapping
+        if (categoryId === 'cctv-van-pack' && config.categoryId === 'f-cctv-van-pack') return true;
+        
         // Legacy matches
         if (config.categoryName?.toLowerCase() === categoryId.toLowerCase()) return true;
         if (categoryId === 'cctv' && config.categoryName === 'CCTV') return true;
@@ -309,7 +312,7 @@ export default function PR2Pricing() {
       'cctv': 'cctv',
       'van-pack': 'van-pack', 
       'jet-vac': 'jet-vac',
-      'cctv-van-pack': 'cctv-van-pack',
+      'cctv-van-pack': 'f-cctv-van-pack', // Map to F607 database categoryId
       'cctv-jet-vac': 'cctv-jet-vac',
       'directional-water-cutter': 'directional-water-cutter',
       'ambient-lining': 'ambient-lining',
@@ -500,12 +503,14 @@ export default function PR2Pricing() {
                   {/* CCTV/Van Pack Option for this pipe size */}
                   {(() => {
                     const categoryId = 'cctv-van-pack';
+                    // Check both cctv-van-pack and f-cctv-van-pack for database compatibility
                     const existingConfig = pr2Configurations.find(config => 
-                      config.categoryId === categoryId && 
+                      (config.categoryId === categoryId || config.categoryId === 'f-cctv-van-pack') && 
                       config.categoryName?.includes(`${pipeSize}mm`)
                     );
                     const generalConfig = pr2Configurations.find(config => 
-                      config.categoryId === categoryId && !config.categoryName?.includes('mm')
+                      (config.categoryId === categoryId || config.categoryId === 'f-cctv-van-pack') && 
+                      !config.categoryName?.includes('mm')
                     );
                     const configToUse = existingConfig || generalConfig;
                     
@@ -527,9 +532,12 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => {
                           if (existingConfig) {
-                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
+                            // Use the actual database categoryId for proper routing
+                            const dbCategoryId = existingConfig.categoryId;
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${dbCategoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
                           } else {
-                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Van Pack Configuration`)}`);
+                            // Route to f-cctv-van-pack for new configurations to match F607
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=f-cctv-van-pack&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Van Pack Configuration`)}`);
                           }
                         }}
                       >
