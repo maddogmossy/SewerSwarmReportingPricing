@@ -3268,26 +3268,8 @@ export default function Dashboard() {
     return true;
   };
 
-  // Function to check if a section requires cleaning (for TP1)
-  const requiresCleaning = (section: any): boolean => {
-    if (!section) return false;
-    
-    // Service defects that require cleaning
-    if (section.defectType === 'service') return true;
-    
-    // Check defect text for cleaning requirements
-    const defects = section.defects || '';
-    const defectsUpper = defects.toUpperCase();
-    
-    // Service defect codes that require cleaning
-    const serviceDefectCodes = ['DES', 'DER', 'WL', 'DEC', 'DEF', 'RI', 'OB', 'S/A'];
-    const hasServiceDefects = serviceDefectCodes.some(code => defectsUpper.includes(code));
-    
-    // Water levels require cleaning
-    const hasWaterLevels = defectsUpper.includes('WATER LEVEL') || defectsUpper.includes('% OF THE VERTICAL DIMENSION');
-    
-    return hasServiceDefects || hasWaterLevels;
-  };
+  // REMOVED: Conflicting requiresCleaning function that takes section object
+  // Now using only the string-based requiresCleaning function defined at the top of the file
 
   // Component-level dynamic recommendation function with access to checkSectionMeetsPR2Requirements
   const generateDynamicRecommendationWithPR2 = (section: any, pr2Configurations: any[]): string => {
