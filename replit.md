@@ -893,9 +893,12 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 30, 2025)
 
-### CRITICAL: F607 CCTV/Van Pack Template Restored as Complete MMP1 Template ✅
+### CRITICAL: F608 CCTV/Van Pack Template Created + Equipment Selection Dialog ✅
 - **Date**: January 30, 2025
-- **Status**: Successfully restored F607 template (ID 608) for cctv-van-pack category with complete MMP1 functionality
+- **Status**: Successfully created F608 template (ID 608) for cctv-van-pack category with complete MMP1 functionality
+- **Equipment Selection Dialog**: Enhanced cleaning options popup to show two equipment choices:
+  - **Option 1 (Default)**: CCTV/Jet Vac (F606) - highlighted in green as default selection
+  - **Option 2**: CCTV/Van Pack (F608) - secondary option for alternative equipment
 - **Template Type**: Updated template detection logic to classify cctv-van-pack as MMP1 template type
 - **MM Data Structure**: Added complete MM1-MM5 data structure with proper JSON formatting:
   - MM1: Color picker with green default (#10B981)
@@ -903,10 +906,15 @@ This prevents data contamination and ensures authentic extraction integrity.
   - MM5: Vehicle travel rate configuration
 - **Technical Implementation**:
   - Updated `getTemplateType()` function to include 'cctv-van-pack' in MMP1 category
+  - Enhanced cleaning-options-popover.tsx with dialog-based equipment selection
+  - Added routing logic to direct users to appropriate F606/F608 configurations
   - Removed cctv-van-pack from P006a template group to avoid conflicts
-  - Added complete MM data structure with proper timestamp and pipe size management
-- **User Benefits**: F607 now appears as full MMP1 template with all 5 placeholder UI cards (MM1-MM5) ready for configuration
-- **Database Integration**: Template properly stores and loads MM data via backend API with sector-specific configuration
+- **User Benefits**: 
+  - Blue recommendation cards now show equipment selection dialog
+  - F606 is default highlighted option for immediate selection
+  - F608 provides alternative CCTV/Van Pack configuration access
+  - Both templates appear as full MMP1 templates with all 5 placeholder UI cards (MM1-MM5)
+- **Database Integration**: Both templates properly store and load MM data via backend API with sector-specific configuration
 
 ### CRITICAL: F570 P006a Template System Complete - Full F175-Style Interface Operational ✅
 - **Date**: January 27, 2025
