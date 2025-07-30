@@ -13,7 +13,7 @@ import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown
 import { DevLabel } from '@/utils/DevLabel';
 import { TP1Template } from '@/components/TP1Template';
 import { MMP1Template } from '@/components/MMP1Template';
-import { MMP2Template } from '@/components/MMP2Template';
+import { MMP2Template } from '@/components/templates/MMP2Template';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -2052,7 +2052,7 @@ export default function PR2ConfigClean() {
           console.log('  - hasLocalMM5Data:', hasLocalMM5Data);
           
           // CRITICAL FIX: Force backend load for F606 to get restored MM4 data
-          const isF606Configuration = editId === 606;
+          const isF606Configuration = editId === '606' || parseInt(editId || '0') === 606;
           
           // Only load MM4 data if we don't have local changes OR if this is F606 (force refresh)
           if (!hasLocalMM4Data || isF606Configuration) {
