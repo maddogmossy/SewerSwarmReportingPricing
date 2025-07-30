@@ -188,54 +188,6 @@ const calculateTravelCost = (config: any): number => {
   return totalTravelCost;
 };
 
-// MM4 Helper Functions for Dashboard Integration
-const extractDebrisPercentage = (defects: string): number => {
-  if (!defects) return 0;
-  
-  // Extract percentage from defect descriptions
-  const percentageMatches = defects.match(/(\d+)%/g);
-  if (percentageMatches && percentageMatches.length > 0) {
-    // Return the highest percentage found for comparison
-    const percentages = percentageMatches.map(p => parseInt(p.replace('%', '')));
-    return Math.max(...percentages);
-  }
-  return 0;
-};
-
-const calculateMM4RatePerLength = (mm4Row: any): number => {
-  const blueValue = parseFloat(mm4Row.blueValue || '0');
-  const greenValue = parseFloat(mm4Row.greenValue || '0');
-  
-  if (greenValue === 0) return 0;
-  
-  const rate = blueValue / greenValue;
-  return rate;
-};
-
-// MM4: Check if dashboard section matches purple window criteria (debris % and length)
-const checkMM4DashboardMatch = (mm4Row: any, dashboardSection: any) => {
-  const configDebrisPercent = parseFloat(mm4Row.purpleDebris || '0');
-  const configMaxLength = parseFloat(mm4Row.purpleLength || '0');
-  
-  // Extract section data from dashboard section
-  const sectionLength = parseFloat(dashboardSection.totalLength) || 0;
-  const sectionDebrisPercent = extractDebrisPercentage(dashboardSection.defects || '');
-  
-  const debrisMatch = sectionDebrisPercent <= configDebrisPercent;
-  const lengthMatch = sectionLength <= configMaxLength;
-  
-  const ratePerLength = calculateMM4RatePerLength(mm4Row);
-  
-  return {
-    matches: debrisMatch && lengthMatch,
-    sectionLength: sectionLength,
-    sectionDebrisPercent: sectionDebrisPercent,
-    configMaxLength: configMaxLength,
-    configDebrisPercent: configDebrisPercent,
-    ratePerLength: ratePerLength
-  };
-};
-
 // Generate dynamic recommendations based on section data and PR2 configurations
 const generateDynamicRecommendation = (section: any, pr2Configurations: any[], checkFunction?: any): string => {
   const { startMH, finishMH, pipeSize, totalLength, defects, recommendations } = section;
@@ -680,9 +632,6 @@ export default function Dashboard() {
     minQuantity: 4,
     message: ''
   });
-
-  // MM4 cost calculation state for dashboard-wide analysis
-  const [mm4CostResults, setMm4CostResults] = useState<any[]>([]);
 
   // TP1 minimum quantity warning dialog state
   const [showTP1DistributionDialog, setShowTP1DistributionDialog] = useState<{
@@ -1229,7 +1178,6 @@ export default function Dashboard() {
                 }}
                 hasLinkedPR2={hasLinkedPR2}
                 configColor={configColor}
-                onMM4Trigger={triggerMM4DashboardAnalysis}
                 data-component="cleaning-options-popover"
                 data-section-id={section.itemNo}
                 data-has-config={hasLinkedPR2}
@@ -2066,92 +2014,6 @@ export default function Dashboard() {
     }
   };
 
-  // Function to get MM4 cost for specific section
-  const getMM4Cost = (itemNo: number): any => {
-    const result = mm4CostResults.find(result => result.itemNo === itemNo);
-    console.log(`🔍 MM4 Cost Lookup for Item ${itemNo}:`, result);
-    return result;
-  };
-
-  // Function to trigger MM4 dashboard analysis
-  const triggerMM4DashboardAnalysis = async (): Promise<void> => {
-    console.log('🔄 Triggering MM4 Dashboard Analysis for all sections');
-    
-    try {
-      // Get F606 configuration data
-      const mm4Response = await fetch(`/api/pr2-clean/606`);
-      if (!mm4Response.ok) {
-        console.log('⚠️ F606 configuration not found for MM4 analysis');
-        return;
-      }
-      
-      const f606Config = await mm4Response.json();
-      console.log('✅ F606 Configuration Retrieved:', f606Config);
-      
-      // Extract MM4 data from mmData structure
-      const mmData = f606Config.mmData || {};
-      const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
-      
-      console.log('🔍 Available MM4 pipe size keys:', Object.keys(mm4DataByPipeSize));
-      
-      // Get current sections data
-      const currentSections = sections || [];
-      console.log('🔍 Analyzing sections:', currentSections.length);
-      
-      // Analyze each section against MM4 criteria
-      const analysisResults: any[] = [];
-      currentSections.forEach((section: any) => {
-        if (section.defectType === 'service') {
-          // Dynamic pipe size lookup instead of hardcoded "150-1501"
-          const sectionPipeSize = section.pipeSize || '150';
-          const pipeSizeKey = `${sectionPipeSize}-${sectionPipeSize}01`; // e.g., "150-1501", "225-2501"
-          const mm4Data = mm4DataByPipeSize[pipeSizeKey] || [];
-          
-          console.log(`🔍 Section ${section.itemNo} (${sectionPipeSize}mm) - checking key: ${pipeSizeKey}, found data:`, mm4Data.length > 0);
-          
-          if (mm4Data.length === 0) {
-            console.log(`⚠️ No MM4 data found for pipe size ${sectionPipeSize}mm (key: ${pipeSizeKey})`);
-            return;
-          }
-          
-          mm4Data.forEach((mm4Row: any) => {
-            const match = checkMM4DashboardMatch(mm4Row, section);
-            console.log(`🔍 MM4 Match Check for Section ${section.itemNo}:`, {
-              matches: match.matches,
-              sectionLength: match.sectionLength,
-              sectionDebris: match.sectionDebrisPercent,
-              configMaxLength: match.configMaxLength,
-              configMaxDebris: match.configDebrisPercent
-            });
-            
-            if (match.matches) {
-              const cost = match.ratePerLength * (parseFloat(section.totalLength) || 0);
-              analysisResults.push({
-                itemNo: section.itemNo,
-                cost,
-                method: 'MM4',
-                mm4Row: mm4Row.id,
-                ratePerLength: match.ratePerLength,
-                sectionLength: parseFloat(section.totalLength) || 0,
-                dayRate: parseFloat(mm4Row.blueValue || '0'),
-                runsPerShift: parseFloat(mm4Row.greenValue || '0'),
-                matchDetails: match
-              });
-            }
-          });
-        }
-      });
-      
-      // Update MM4 cost state
-      setMm4CostResults(analysisResults);
-      console.log('✅ MM4 Analysis Complete - Results:', analysisResults);
-      console.log('✅ MM4 State Updated - Dashboard should now show calculated costs');
-      
-    } catch (error) {
-      console.error('❌ Error in MM4 dashboard analysis:', error);
-    }
-  };
-
   // Function to detect TP1 configuration issues and trigger validation warnings  
   const checkTP1ConfigurationIssues = (sections: any[], configurations: any[]) => {
 
@@ -2788,19 +2650,6 @@ export default function Dashboard() {
 
   // Function to calculate auto-populated cost for defective sections using PR2 configurations  
   const calculateAutoCost = (section: any) => {
-    // FIRST PRIORITY: Check for MM4 calculated cost
-    const mm4Cost = getMM4Cost(section.itemNo);
-    if (mm4Cost) {
-      return {
-        cost: mm4Cost.cost,
-        method: 'MM4',
-        status: 'mm4_configured',
-        dayRate: mm4Cost.dayRate,
-        runsPerShift: mm4Cost.runsPerShift,
-        ratePerLength: mm4Cost.ratePerLength
-      };
-    }
-
     console.log('🔍 MM4 Cost Calculation Called for Section:', {
       itemNo: section.itemNo,
       defects: section.defects,

@@ -11,12 +11,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench, Shield } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
-import { getTemplateType } from '@/utils/template-registry';
-import { TemplateMap } from '@/utils/template-map';
-import P003Config from '@/configs/P003Config';
 import { TP1Template } from '@/components/TP1Template';
 import { MMP1Template } from '@/components/MMP1Template';
-import { MMP2Template } from '@/components/templates/MMP2Template';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -173,7 +169,28 @@ export default function PR2ConfigClean() {
   const selectedId = urlParams.get('selectedId'); // Track MMP1 ID selection from dashboard (id1, id2, etc.)
   const isEditing = !!editId;
   
-  // Template type determination now handled by centralized template-registry
+  // Determine template type based on category
+  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' => {
+    if (categoryId === 'cart-card') {
+      return 'TP1'; // Cart card uses standard TP1 template with full interface
+    } else if (categoryId === 'day-rate-db11') {
+      return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
+    } else if (categoryId?.startsWith('P006-')) {
+      return 'P006'; // Original P006 CTF templates with 4-window structure
+    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac') {
+      return 'MMP1'; // Test Card and CCTV/Jet Vac use new MMP1 template with 5 placeholder UI cards
+    } else if (categoryId?.includes('-p006a') || 
+               categoryId === 'cctv' || 
+               categoryId === 'van-pack' || 
+               categoryId === 'jet-vac' || 
+               categoryId === 'cctv-van-pack' || 
+               categoryId === 'cctv-jet-vac' || // F175 - CCTV Jet Vac Configuration
+               categoryId === 'cctv-cleansing-root-cutting') {
+      return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
+    } else {
+      return 'TP1'; // All other categories use standard TP1 template
+    }
+  };
 
   // Get all configurations for this category to detect existing pipe sizes (moved here for proper initialization order)
   const { data: allCategoryConfigs } = useQuery({
@@ -1112,9 +1129,6 @@ export default function PR2ConfigClean() {
     
     updateMM4DataForPipeSize(newData);
     
-    // CRITICAL FIX: Trigger auto-save after field update
-    setTimeout(() => triggerAutoSave(), 100);
-    
     // Verify storage after update
     setTimeout(() => {
       console.log('  - MM4 storage after update:', mm4DataByPipeSize);
@@ -1154,8 +1168,6 @@ export default function PR2ConfigClean() {
       row.id === rowId ? { ...row, [field]: value } : row
     );
     updateMM5Data(newData);
-    // CRITICAL FIX: Trigger auto-save after field update
-    setTimeout(() => triggerAutoSave(), 100);
   };
 
   // MM4/MM5 Matching Functions for Dashboard Integration
@@ -1358,42 +1370,30 @@ export default function PR2ConfigClean() {
       clearTimeout(autoSaveTimeout);
     }
     
-    // CRITICAL FIX: Capture current state values to avoid React closure issues
-    const currentPipeSize = selectedPipeSizeForMM4;
-    const currentPipeSizeId = selectedPipeSizeId;
-    const currentMM4DataState = mm4DataByPipeSize;
-    const currentMM5DataState = mm5Data;
-    const currentFormDataState = formData;
-    const currentSelectedIds = selectedIds;
-    const currentCustomPipeSizes = customPipeSizes;
-    
     const timeoutId = setTimeout(async () => {
       try {
-        // Create pipe-size-specific key using captured values (not stale state)
-        const pipeSizeKey = `${currentPipeSize}-${currentPipeSizeId}`;
+        // Create pipe-size-specific key for current selection
+        const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
         
-        // Get MM4 data using captured state values (not potentially stale getCurrentMM4Data)
-        const currentMM4Data = currentMM4DataState[pipeSizeKey] || [
-          { id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }
-        ];
-        
-        console.log('💾 Auto-save MM4 Data Analysis (Fixed Closure):');
+        // Gather MM section data with pipe-size isolation
+        const currentMM4Data = getCurrentMM4Data();
+        console.log('💾 Auto-save MM4 Data Analysis:');
         console.log('  - pipeSizeKey:', pipeSizeKey);
         console.log('  - current MM4 data:', currentMM4Data);
-        console.log('  - all MM4 storage:', currentMM4DataState);
+        console.log('  - all MM4 storage:', mm4DataByPipeSize);
         
         const mmData = {
-          selectedPipeSize: currentPipeSize,
-          selectedPipeSizeId: currentPipeSizeId,
-          mm1Colors: currentFormDataState.categoryColor,
-          mm2IdData: currentSelectedIds,
-          mm3CustomPipeSizes: currentCustomPipeSizes,
+          selectedPipeSize: selectedPipeSizeForMM4,
+          selectedPipeSizeId: selectedPipeSizeId,
+          mm1Colors: formData.categoryColor,
+          mm2IdData: selectedIds,
+          mm3CustomPipeSizes: customPipeSizes,
           // Store MM4 data with pipe-size keys for isolation, MM5 independent
           mm4DataByPipeSize: { [pipeSizeKey]: currentMM4Data },
-          mm5Data: currentMM5DataState, // MM5 independent of pipe size
+          mm5Data: getCurrentMM5Data(), // MM5 independent of pipe size
           // Keep legacy format for backward compatibility
           mm4Rows: currentMM4Data,
-          mm5Rows: currentMM5DataState,
+          mm5Rows: getCurrentMM5Data(),
           categoryId: categoryId,
           sector: sector,
           timestamp: Date.now(),
@@ -1405,7 +1405,7 @@ export default function PR2ConfigClean() {
         // Auto-save to backend - only update existing configurations, don't create new ones
         if (editId) {
           await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
-            ...currentFormDataState,
+            ...formData,
             mmData: mmData
           });
         }
@@ -2050,7 +2050,7 @@ export default function PR2ConfigClean() {
           console.log('  - hasLocalMM5Data:', hasLocalMM5Data);
           
           // CRITICAL FIX: Force backend load for F606 to get restored MM4 data
-          const isF606Configuration = editId === '606' || parseInt(editId || '0') === 606;
+          const isF606Configuration = editId === 606;
           
           // Only load MM4 data if we don't have local changes OR if this is F606 (force refresh)
           if (!hasLocalMM4Data || isF606Configuration) {
@@ -4035,17 +4035,7 @@ export default function PR2ConfigClean() {
           </>
         )}
 
-        {/* MMP2 Template - F606 CCTV/Jet Vac Configuration */}
-        {getTemplateType(categoryId || '') === 'MMP2' && (
-          <MMP2Template 
-            categoryId={categoryId || ''} 
-            sector={sector} 
-            editId={editId ? parseInt(editId) : undefined}
-            onSave={() => {
-              queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-            }}
-          />
-        )}
+
 
       </div>
     </div>

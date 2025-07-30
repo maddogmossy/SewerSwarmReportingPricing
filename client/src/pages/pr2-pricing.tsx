@@ -51,8 +51,6 @@ const STANDARD_CATEGORIES = [
   { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
   { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection and cleansing operations', icon: Monitor },
   { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
-  { id: 'f-cctv-van-pack', name: 'F607 CCTV/Van Pack', description: 'F607 CCTV/Van Pack configuration with MMP1 template', icon: Monitor, sector: 'utilities' },
-  { id: 'f-cctv-jet-vac', name: 'F606 CCTV/Jet Vac', description: 'F606 CCTV/Jet Vac configuration with MMP2 template', icon: Video, sector: 'utilities' },
   { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
   { id: 'test-card', name: 'Test Card', description: 'Test configuration card for CTF P006a template demonstration', icon: Zap },
 
@@ -297,9 +295,6 @@ export default function PR2Pricing() {
         // Direct category ID match
         if (config.categoryId === categoryId) return true;
         
-        // F607 CCTV/Van Pack compatibility mapping
-        if (categoryId === 'cctv-van-pack' && config.categoryId === 'f-cctv-van-pack') return true;
-        
         // Legacy matches
         if (config.categoryName?.toLowerCase() === categoryId.toLowerCase()) return true;
         if (categoryId === 'cctv' && config.categoryName === 'CCTV') return true;
@@ -314,7 +309,7 @@ export default function PR2Pricing() {
       'cctv': 'cctv',
       'van-pack': 'van-pack', 
       'jet-vac': 'jet-vac',
-      'cctv-van-pack': 'f-cctv-van-pack', // Map to F607 database categoryId
+      'cctv-van-pack': 'cctv-van-pack',
       'cctv-jet-vac': 'cctv-jet-vac',
       'directional-water-cutter': 'directional-water-cutter',
       'ambient-lining': 'ambient-lining',
@@ -492,9 +487,7 @@ export default function PR2Pricing() {
                           <h3 className="font-medium text-sm mb-1">
                             CCTV/Jet Vac - {pipeSize}mm
                             {existingConfig ? (
-                              <span className="text-xs text-blue-600 ml-1">
-                                (ID: {existingConfig.categoryId === 'cctv-jet-vac' ? 'f606' : existingConfig.id})
-                              </span>
+                              <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
                             ) : null}
                           </h3>
                           <p className="text-xs text-gray-600">High-pressure cleaning configuration for {pipeSize}mm pipes</p>
@@ -507,14 +500,12 @@ export default function PR2Pricing() {
                   {/* CCTV/Van Pack Option for this pipe size */}
                   {(() => {
                     const categoryId = 'cctv-van-pack';
-                    // Check both cctv-van-pack and f-cctv-van-pack for database compatibility
                     const existingConfig = pr2Configurations.find(config => 
-                      (config.categoryId === categoryId || config.categoryId === 'f-cctv-van-pack') && 
+                      config.categoryId === categoryId && 
                       config.categoryName?.includes(`${pipeSize}mm`)
                     );
                     const generalConfig = pr2Configurations.find(config => 
-                      (config.categoryId === categoryId || config.categoryId === 'f-cctv-van-pack') && 
-                      !config.categoryName?.includes('mm')
+                      config.categoryId === categoryId && !config.categoryName?.includes('mm')
                     );
                     const configToUse = existingConfig || generalConfig;
                     
@@ -536,12 +527,9 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => {
                           if (existingConfig) {
-                            // Use the actual database categoryId for proper routing
-                            const dbCategoryId = existingConfig.categoryId;
-                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${dbCategoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
                           } else {
-                            // Route to f-cctv-van-pack for new configurations to match F607
-                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=f-cctv-van-pack&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Van Pack Configuration`)}`);
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Van Pack Configuration`)}`);
                           }
                         }}
                       >
@@ -551,9 +539,7 @@ export default function PR2Pricing() {
                           <h3 className="font-medium text-sm mb-1">
                             CCTV/Van Pack - {pipeSize}mm
                             {existingConfig ? (
-                              <span className="text-xs text-blue-600 ml-1">
-                                (ID: {existingConfig.categoryId === 'f-cctv-van-pack' ? 'f607' : existingConfig.id})
-                              </span>
+                              <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
                             ) : null}
                           </h3>
                           <p className="text-xs text-gray-600">Traditional cleaning configuration for {pipeSize}mm pipes</p>
@@ -587,9 +573,6 @@ export default function PR2Pricing() {
                     if (config.categoryId === category.id) {
                       return true;
                     }
-                    
-                    // F607 CCTV/Van Pack compatibility mapping
-                    if (category.id === 'cctv-van-pack' && config.categoryId === 'f-cctv-van-pack') return true;
                     
                     // Legacy exact match for cctv-jet-vac
                     if (category.id === 'cctv-jet-vac' && config.categoryId === 'cctv-jet-vac') return true;
@@ -633,11 +616,7 @@ export default function PR2Pricing() {
                       }}
                       onClick={() => handleCategoryNavigation(category.id)}
                     >
-                      <DevLabel id={existingConfiguration ? 
-                        (existingConfiguration.categoryId === 'f-cctv-van-pack' ? 'f607' : 
-                         existingConfiguration.categoryId === 'cctv-jet-vac' ? 'f606' : 
-                         `F${existingConfiguration.id}`) : 
-                        `F-${category.id}`} />
+                      <DevLabel id={existingConfiguration ? `F${existingConfiguration.id}` : `F-${category.id}`} />
                       <CardContent className="p-4 text-center relative">
                         <category.icon className={`h-8 w-8 mx-auto mb-2 ${
                           isUserCreated ? 'text-green-700' : 'text-gray-700'
