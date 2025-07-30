@@ -2692,8 +2692,8 @@ export default function Dashboard() {
       // Manual tests removed - cleaning detection working correctly
     }
     
-    // APPLY SECTION RESTRICTIONS: Only process MM4 for restricted cleaning sections
-    if (needsCleaning && pr2Configurations && isRestrictedSection) {
+    // APPLY SECTION RESTRICTIONS: Only process MM4 for restricted cleaning sections AND service defects only
+    if (needsCleaning && pr2Configurations && isRestrictedSection && section.defectType === 'service') {
       // Find cctv-jet-vac configuration for current sector
       const cctvJetVacConfig = pr2Configurations.find((config: any) => 
         config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
