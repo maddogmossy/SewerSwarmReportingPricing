@@ -2713,7 +2713,8 @@ export default function Dashboard() {
         
         // FORCE TEST: Call requiresCleaning manually to see debug output
         console.log(`🧹 FORCE CALLING requiresCleaning for debugging:`);
-        requiresCleaning(section.defects);
+        const forceResult = requiresCleaning(section.defects);
+        console.log(`🧹 FORCE RESULT:`, forceResult);
       }
     }
     
