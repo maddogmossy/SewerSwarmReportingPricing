@@ -2046,7 +2046,7 @@ export default function Dashboard() {
       shouldTrigger: allSectionsHaveCompletePricing && costsAreRed,
       totalSections: sections.length,
       serviceSections: serviceSections.length,
-      sectionsNeedingCleaning: serviceSections.filter(s => requiresCleaning(s)).length
+      sectionsNeedingCleaning: serviceSections.filter(s => requiresCleaning(s.defects || '')).length
     });
     
     // Only trigger TP1 warning when ALL pricing is complete AND costs are red due to minimum quantity issues
@@ -2077,11 +2077,11 @@ export default function Dashboard() {
         // Show TP1 minimum quantity warning popup with travel costs
         setShowTP1DistributionDialog({
           show: true,
-          tp1Sections: serviceSections.filter(s => requiresCleaning(s)),
-          totalDefects: serviceSections.filter(s => requiresCleaning(s)).length,
+          tp1Sections: serviceSections.filter(s => requiresCleaning(s.defects || '')),
+          totalDefects: serviceSections.filter(s => requiresCleaning(s.defects || '')).length,
           minQuantity: minQuantity,
           configurationId: tp1Config.id,
-          message: `${serviceSections.filter(s => requiresCleaning(s)).length} sections require cleaning but minimum quantity (${minQuantity}) not met for cost-effective operation. Travel costs included: £${travelCost.toFixed(2)}`
+          message: `${serviceSections.filter(s => requiresCleaning(s.defects || '')).length} sections require cleaning but minimum quantity (${minQuantity}) not met for cost-effective operation. Travel costs included: £${travelCost.toFixed(2)}`
         });
       }
     }
@@ -2681,13 +2681,16 @@ export default function Dashboard() {
     // Check if this section requires cleaning and has MM4/MM5 configuration data
     const needsCleaning = requiresCleaning(section.defects || '');
     
-    // Debug cleaning detection
+    // Debug cleaning detection - ENHANCED DEBUG
     if (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23 || section.itemNo === 24) {
-      console.log(`🔍 Cleaning Check for Item ${section.itemNo}:`, {
+      console.log(`🔍 Cleaning Check for Item ${section.itemNo}${section.letterSuffix || ''}:`, {
         needsCleaning,
         defects: section.defects,
         defectType: section.defectType,
-        pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0
+        letterSuffix: section.letterSuffix,
+        requiresCleaningResult: requiresCleaning(section.defects || ''),
+        pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0,
+        shouldProcessMM4: needsCleaning && pr2Configurations
       });
     }
     
