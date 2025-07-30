@@ -56,26 +56,35 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const [hasUserChanges, setHasUserChanges] = useState<boolean>(false);
   const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // Auto-save functionality
+  // Auto-save functionality  
   const triggerAutoSave = useCallback(() => {
     if (autoSaveTimeout) {
       clearTimeout(autoSaveTimeout);
     }
     
+    // CRITICAL FIX: Capture current state values to avoid React closure issues
+    const currentPipeSize = selectedPipeSizeForMM4;
+    const currentPipeSizeId = selectedPipeSizeId;
+    const currentColor = selectedColor;
+    const currentSelectedIds = selectedIds;
+    const currentCustomPipeSizes = customPipeSizes;
+    const currentMM4DataState = mm4DataByPipeSize;
+    const currentMM5DataState = mm5Data;
+    
     const timeoutId = setTimeout(async () => {
-      const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-      const currentMM4Data = mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
+      const pipeSizeKey = `${currentPipeSize}-${currentPipeSizeId}`;
+      const currentMM4Data = currentMM4DataState[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
       
-      console.log('💾 MM Data being saved to backend:', [{
-        selectedPipeSize: selectedPipeSizeForMM4,
-        selectedPipeSizeId: selectedPipeSizeId,
-        mm1Colors: selectedColor,
-        mm2IdData: selectedIds,
-        mm3CustomPipeSizes: customPipeSizes,
-        mm4DataByPipeSize: mm4DataByPipeSize,
-        mm5Data: mm5Data,
+      console.log('💾 MM Data being saved to backend (Fixed Closure):', [{
+        selectedPipeSize: currentPipeSize,
+        selectedPipeSizeId: currentPipeSizeId,
+        mm1Colors: currentColor,
+        mm2IdData: currentSelectedIds,
+        mm3CustomPipeSizes: currentCustomPipeSizes,
+        mm4DataByPipeSize: currentMM4DataState,
+        mm5Data: currentMM5DataState,
         mm4Rows: currentMM4Data,
-        mm5Rows: mm5Data,
+        mm5Rows: currentMM5DataState,
         categoryId: categoryId,
         sector: sector,
         timestamp: Date.now(),
@@ -83,13 +92,13 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
       }]);
 
       try {
-        // Prepare MM4/MM5 data in the new mmData format
+        // Prepare MM4/MM5 data in the new mmData format using captured state
         const mmData = {
-          mm1Colors: selectedColor,
-          mm2IdData: selectedIds,
-          mm3CustomPipeSizes: customPipeSizes,
-          mm4DataByPipeSize: mm4DataByPipeSize,
-          mm5Data: mm5Data
+          mm1Colors: currentColor,
+          mm2IdData: currentSelectedIds,
+          mm3CustomPipeSizes: currentCustomPipeSizes,
+          mm4DataByPipeSize: currentMM4DataState,
+          mm5Data: currentMM5DataState
         };
 
         if (editId) {
@@ -99,8 +108,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
             body: JSON.stringify({
               categoryName: 'MMP1 Template',
               description: 'Master template configuration',
-              categoryColor: selectedColor,
-              pipeSize: selectedPipeSizeForMM4,
+              categoryColor: currentColor,
+              pipeSize: currentPipeSize,
               mmData: mmData,
               sector: sector
             })
@@ -113,8 +122,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
             body: JSON.stringify({
               categoryName: 'MMP1 Template',
               description: 'Master template configuration',
-              categoryColor: selectedColor,
-              pipeSize: selectedPipeSizeForMM4,
+              categoryColor: currentColor,
+              pipeSize: currentPipeSize,
               mmData: mmData,
               categoryId: categoryId,
               sector: sector

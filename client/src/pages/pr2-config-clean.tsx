@@ -1353,30 +1353,42 @@ export default function PR2ConfigClean() {
       clearTimeout(autoSaveTimeout);
     }
     
+    // CRITICAL FIX: Capture current state values to avoid React closure issues
+    const currentPipeSize = selectedPipeSizeForMM4;
+    const currentPipeSizeId = selectedPipeSizeId;
+    const currentMM4DataState = mm4DataByPipeSize;
+    const currentMM5DataState = mm5Data;
+    const currentFormDataState = formData;
+    const currentSelectedIds = selectedIds;
+    const currentCustomPipeSizes = customPipeSizes;
+    
     const timeoutId = setTimeout(async () => {
       try {
-        // Create pipe-size-specific key for current selection
-        const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+        // Create pipe-size-specific key using captured values (not stale state)
+        const pipeSizeKey = `${currentPipeSize}-${currentPipeSizeId}`;
         
-        // Gather MM section data with pipe-size isolation
-        const currentMM4Data = getCurrentMM4Data();
-        console.log('💾 Auto-save MM4 Data Analysis:');
+        // Get MM4 data using captured state values (not potentially stale getCurrentMM4Data)
+        const currentMM4Data = currentMM4DataState[pipeSizeKey] || [
+          { id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }
+        ];
+        
+        console.log('💾 Auto-save MM4 Data Analysis (Fixed Closure):');
         console.log('  - pipeSizeKey:', pipeSizeKey);
         console.log('  - current MM4 data:', currentMM4Data);
-        console.log('  - all MM4 storage:', mm4DataByPipeSize);
+        console.log('  - all MM4 storage:', currentMM4DataState);
         
         const mmData = {
-          selectedPipeSize: selectedPipeSizeForMM4,
-          selectedPipeSizeId: selectedPipeSizeId,
-          mm1Colors: formData.categoryColor,
-          mm2IdData: selectedIds,
-          mm3CustomPipeSizes: customPipeSizes,
+          selectedPipeSize: currentPipeSize,
+          selectedPipeSizeId: currentPipeSizeId,
+          mm1Colors: currentFormDataState.categoryColor,
+          mm2IdData: currentSelectedIds,
+          mm3CustomPipeSizes: currentCustomPipeSizes,
           // Store MM4 data with pipe-size keys for isolation, MM5 independent
           mm4DataByPipeSize: { [pipeSizeKey]: currentMM4Data },
-          mm5Data: getCurrentMM5Data(), // MM5 independent of pipe size
+          mm5Data: currentMM5DataState, // MM5 independent of pipe size
           // Keep legacy format for backward compatibility
           mm4Rows: currentMM4Data,
-          mm5Rows: getCurrentMM5Data(),
+          mm5Rows: currentMM5DataState,
           categoryId: categoryId,
           sector: sector,
           timestamp: Date.now(),
@@ -1388,7 +1400,7 @@ export default function PR2ConfigClean() {
         // Auto-save to backend - only update existing configurations, don't create new ones
         if (editId) {
           await apiRequest('PUT', `/api/pr2-clean/${editId}`, {
-            ...formData,
+            ...currentFormDataState,
             mmData: mmData
           });
         }
