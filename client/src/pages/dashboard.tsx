@@ -81,12 +81,14 @@ const requiresCleaning = (defects: string): boolean => {
     console.log(`🧹 requiresCleaning() CALLED for:`, defects.substring(0, 50));
     console.log(`🧹 defectsUpper:`, defectsUpper.substring(0, 50));
     console.log(`🧹 cleaningCodes:`, cleaningCodes);
-    console.log(`🧹 hasCleaningCodes:`, hasCleaningCodes);
-    console.log(`🧹 some() test result:`, cleaningCodes.some(code => {
+    
+    // Test each cleaning code individually
+    cleaningCodes.forEach(code => {
       const found = defectsUpper.includes(code);
-      console.log(`🧹   Testing "${code}": ${found}`);
-      return found;
-    }));
+      console.log(`🧹   Testing "${code}": ${found} (looking in: "${defectsUpper.substring(0, 60)}")`);
+    });
+    
+    console.log(`🧹 hasCleaningCodes:`, hasCleaningCodes);
     console.log(`🧹 FINAL RESULT:`, result);
   }
   
@@ -2708,6 +2710,10 @@ export default function Dashboard() {
           shouldBeCleaning: true,
           actualResult: needsCleaning
         });
+        
+        // FORCE TEST: Call requiresCleaning manually to see debug output
+        console.log(`🧹 FORCE CALLING requiresCleaning for debugging:`);
+        requiresCleaning(section.defects);
       }
     }
     
