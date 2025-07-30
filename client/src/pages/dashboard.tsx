@@ -2067,7 +2067,9 @@ export default function Dashboard() {
 
   // Function to get MM4 cost for specific section
   const getMM4Cost = (itemNo: number): any => {
-    return mm4CostResults.find(result => result.itemNo === itemNo);
+    const result = mm4CostResults.find(result => result.itemNo === itemNo);
+    console.log(`🔍 MM4 Cost Lookup for Item ${itemNo}:`, result);
+    return result;
   };
 
   // Function to trigger MM4 dashboard analysis
@@ -2083,15 +2085,23 @@ export default function Dashboard() {
       }
       
       const f606Config = await mm4Response.json();
-      const mm4Data = f606Config.mm4Data || [];
+      console.log('✅ F606 Configuration Retrieved:', f606Config);
+      
+      // Extract MM4 data from mmData structure
+      const mmData = f606Config.mmData || {};
+      const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
+      const mm4Data = mm4DataByPipeSize['150-1501'] || [];
+      
+      console.log('🔍 MM4 Data Extracted:', mm4Data);
       
       if (mm4Data.length === 0) {
-        console.log('⚠️ No MM4 data found in F606 configuration');
+        console.log('⚠️ No MM4 data found for 150-1501 in F606 configuration');
         return;
       }
       
       // Get current sections data
       const currentSections = sections || [];
+      console.log('🔍 Analyzing sections:', currentSections.length);
       
       // Analyze each section against MM4 criteria
       const analysisResults: any[] = [];
@@ -2099,6 +2109,14 @@ export default function Dashboard() {
         if (section.defectType === 'service') {
           mm4Data.forEach((mm4Row: any) => {
             const match = checkMM4DashboardMatch(mm4Row, section);
+            console.log(`🔍 MM4 Match Check for Section ${section.itemNo}:`, {
+              matches: match.matches,
+              sectionLength: match.sectionLength,
+              sectionDebris: match.sectionDebrisPercent,
+              configMaxLength: match.configMaxLength,
+              configMaxDebris: match.configDebrisPercent
+            });
+            
             if (match.matches) {
               const cost = match.ratePerLength * (parseFloat(section.totalLength) || 0);
               analysisResults.push({
@@ -2119,7 +2137,8 @@ export default function Dashboard() {
       
       // Update MM4 cost state
       setMm4CostResults(analysisResults);
-      console.log('✅ MM4 Analysis Complete:', analysisResults);
+      console.log('✅ MM4 Analysis Complete - Results:', analysisResults);
+      console.log('✅ MM4 State Updated - Dashboard should now show calculated costs');
       
     } catch (error) {
       console.error('❌ Error in MM4 dashboard analysis:', error);

@@ -24,8 +24,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
 
   // ENHANCED: Open selection dialog for F606/F607 choice with MM4 trigger
   const handleDirectClick = async () => {
-    // Trigger MM4 dashboard analysis if configured and available
-    if (onMM4Trigger && hasLinkedPR2) {
+    // Always trigger MM4 dashboard analysis when available
+    if (onMM4Trigger) {
       console.log('🔄 Triggering MM4 analysis from blue recommendation click');
       await onMM4Trigger();
     }
