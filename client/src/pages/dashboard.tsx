@@ -76,20 +76,18 @@ const requiresCleaning = (defects: string): boolean => {
   
   const result = hasCleaningCodes || hasSABungCondition;
   
-  // Debug for cleaning sections - ENHANCED DEBUG
-  if (hasCleaningCodes || defectsUpper.includes('DER') || defectsUpper.includes('DES')) {
-    console.log(`🧹 Cleaning Required Debug:`, {
-      defects,
-      defectsUpper,
-      result,
-      hasCleaningCodes,
-      cleaningCodes,
-      matchedCodes: cleaningCodes.filter(code => defectsUpper.includes(code)),
-      containsDER: defectsUpper.includes('DER'),
-      containsDES: defectsUpper.includes('DES'),
-      shouldBeTrue: 'Contains cleaning defect codes'
-    });
-  }
+  // DEBUG FOR EVERY SECTION TO UNDERSTAND THE ISSUE
+  console.log(`🧹 ALL SECTIONS Debug:`, {
+    originalDefects: defects,
+    defectsUpper,
+    result,
+    hasCleaningCodes,
+    cleaningCodes,
+    matchedCodes: cleaningCodes.filter(code => defectsUpper.includes(code)),
+    containsDER: defectsUpper.includes('DER'),
+    containsDES: defectsUpper.includes('DES'),
+    shouldBeTrue: hasCleaningCodes ? 'Should be true' : 'No cleaning codes detected'
+  });
   
   return result;
 };
