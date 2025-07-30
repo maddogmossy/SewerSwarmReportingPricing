@@ -1112,26 +1112,24 @@ export default function PR2ConfigClean() {
 
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
-    console.log('🔧 MM4 Row Update:');
-    console.log('  - rowId:', rowId);
-    console.log('  - field:', field);
-    console.log('  - value:', value);
-    console.log('  - current data before update:', currentData);
+    
+    // AUTO-ADD .99 LOGIC for purpleLength field
+    let processedValue = value;
+    if (field === 'purpleLength' && value.trim() !== '' && !value.includes('.')) {
+      // Auto-add .99 to length values that don't already contain a decimal
+      const numericValue = parseFloat(value);
+      if (!isNaN(numericValue) && numericValue > 0) {
+        processedValue = `${numericValue}.99`;
+        console.log(`🔧 AUTO-ADDED .99: ${value} → ${processedValue}`);
+      }
+    }
     
     const newData = currentData.map(row => 
-      row.id === rowId ? { ...row, [field]: value } : row
+      row.id === rowId ? { ...row, [field]: processedValue } : row
     );
     
-    console.log('  - new data after update:', newData);
     const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-    console.log('  - storing under key:', key);
-    
     updateMM4DataForPipeSize(newData);
-    
-    // Verify storage after update
-    setTimeout(() => {
-      console.log('  - MM4 storage after update:', mm4DataByPipeSize);
-    }, 100);
   };
 
   // 🔒 MMP1 PROTECTED FUNCTIONS - USER ONLY 🔒

@@ -76,13 +76,17 @@ const requiresCleaning = (defects: string): boolean => {
   
   const result = hasCleaningCodes || hasSABungCondition;
   
-  // Debug for cleaning sections
-  if (hasCleaningCodes) {
-    console.log(`🧹 Cleaning Required:`, {
+  // Debug for cleaning sections - ENHANCED DEBUG
+  if (hasCleaningCodes || defectsUpper.includes('DER') || defectsUpper.includes('DES')) {
+    console.log(`🧹 Cleaning Required Debug:`, {
       defects,
+      defectsUpper,
       result,
       hasCleaningCodes,
+      cleaningCodes,
       matchedCodes: cleaningCodes.filter(code => defectsUpper.includes(code)),
+      containsDER: defectsUpper.includes('DER'),
+      containsDES: defectsUpper.includes('DES'),
       shouldBeTrue: 'Contains cleaning defect codes'
     });
   }
