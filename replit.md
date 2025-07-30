@@ -1002,6 +1002,22 @@ This prevents data contamination and ensures authentic extraction integrity.
   - MSCC5 compliance information and standards reference
   - Professional pipe size management for UK drainage infrastructure
 
+### CRITICAL: MM4 Data Corruption Bug Completely Fixed ✅
+- **Date**: January 30, 2025
+- **Status**: Successfully resolved critical MM4 data corruption bug affecting purpleLength field auto-save
+- **Root Cause Identified**: 
+  1. React state closure issue in `triggerAutoSave` functions capturing stale state values
+  2. Missing auto-save triggers in `updateMM4Row` and `updateMM5Row` functions
+- **Complete Fix Applied**:
+  - **State Closure Fix**: Updated `triggerAutoSave` in both `pr2-config-clean.tsx` and `MMP1Template.tsx` to capture current state values before setTimeout
+  - **Missing Auto-Save Fix**: Added `setTimeout(() => triggerAutoSave(), 100)` to `updateMM4Row` and `updateMM5Row` functions in both components
+  - **Data Persistence**: Field updates now properly trigger backend saves with correct values
+- **Technical Implementation**:
+  - Captured state values: `currentPipeSize`, `currentColor`, `currentMM4DataState`, `currentMM5DataState` etc.
+  - Fixed both main configuration component and MMP1Template component
+  - Added auto-save triggers to field update functions that were missing them
+- **Result**: F606 configuration purpleLength field now properly saves "40" instead of corrupting to "4"
+
 ### CRITICAL: F606/F607 Dashboard Cost Integration Analysis Complete ✅
 - **Date**: January 30, 2025
 - **Status**: Comprehensive codebase research completed - Root cause identified and detailed fix plan created

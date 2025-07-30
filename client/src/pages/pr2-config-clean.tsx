@@ -1112,6 +1112,9 @@ export default function PR2ConfigClean() {
     
     updateMM4DataForPipeSize(newData);
     
+    // CRITICAL FIX: Trigger auto-save after field update
+    setTimeout(() => triggerAutoSave(), 100);
+    
     // Verify storage after update
     setTimeout(() => {
       console.log('  - MM4 storage after update:', mm4DataByPipeSize);
@@ -1151,6 +1154,8 @@ export default function PR2ConfigClean() {
       row.id === rowId ? { ...row, [field]: value } : row
     );
     updateMM5Data(newData);
+    // CRITICAL FIX: Trigger auto-save after field update
+    setTimeout(() => triggerAutoSave(), 100);
   };
 
   // MM4/MM5 Matching Functions for Dashboard Integration

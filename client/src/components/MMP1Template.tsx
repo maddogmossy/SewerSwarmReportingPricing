@@ -164,6 +164,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
       row.id === rowId ? { ...row, [field]: value } : row
     );
     updateMM4DataForPipeSize(newData);
+    // CRITICAL FIX: Trigger auto-save after field update
+    setTimeout(() => triggerAutoSave(), 100);
   };
 
   const addMM4Row = () => {
@@ -206,6 +208,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
       row.id === rowId ? { ...row, [field]: value } : row
     );
     updateMM5Data(newData);
+    // CRITICAL FIX: Trigger auto-save after field update
+    setTimeout(() => triggerAutoSave(), 100);
   };
 
   const addMM5Row = () => {
