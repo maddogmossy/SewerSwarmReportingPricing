@@ -76,13 +76,18 @@ const requiresCleaning = (defects: string): boolean => {
   
   const result = hasCleaningCodes || hasSABungCondition;
   
-  // TEST SPECIFIC DER/DES SECTIONS
+  // DETAILED DEBUG for DER/DES sections
   if (defects.includes('DER') || defects.includes('DES')) {
-    console.log(`🧹 DER/DES FOUND - Testing:`, defects.substring(0, 50));
-    console.log(`🧹 Contains DER:`, defectsUpper.includes('DER'));
-    console.log(`🧹 Contains DES:`, defectsUpper.includes('DES'));
+    console.log(`🧹 requiresCleaning() CALLED for:`, defects.substring(0, 50));
+    console.log(`🧹 defectsUpper:`, defectsUpper.substring(0, 50));
+    console.log(`🧹 cleaningCodes:`, cleaningCodes);
     console.log(`🧹 hasCleaningCodes:`, hasCleaningCodes);
-    console.log(`🧹 Result should be true but is:`, result);
+    console.log(`🧹 some() test result:`, cleaningCodes.some(code => {
+      const found = defectsUpper.includes(code);
+      console.log(`🧹   Testing "${code}": ${found}`);
+      return found;
+    }));
+    console.log(`🧹 FINAL RESULT:`, result);
   }
   
   return result;
@@ -2679,8 +2684,12 @@ export default function Dashboard() {
     // Check if this section requires cleaning and has MM4/MM5 configuration data
     const needsCleaning = requiresCleaning(section.defects || '');
     
-    // Debug cleaning detection - ENHANCED DEBUG
-    if (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23 || section.itemNo === 24) {
+    // RESTRICTED CLEANING SECTIONS: Only Items 3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23
+    const restrictedCleaningSections = [3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23];
+    const isRestrictedSection = restrictedCleaningSections.includes(section.itemNo);
+    
+    // Debug cleaning detection - ENHANCED DEBUG for restricted sections only
+    if (isRestrictedSection && (section.itemNo === 22 || section.itemNo === 21 || section.itemNo === 23 || section.itemNo === 3)) {
       console.log(`🔍 Cleaning Check for Item ${section.itemNo}${section.letterSuffix || ''}:`, {
         needsCleaning,
         defects: section.defects,
@@ -2688,11 +2697,22 @@ export default function Dashboard() {
         letterSuffix: section.letterSuffix,
         requiresCleaningResult: requiresCleaning(section.defects || ''),
         pr2ConfigsAvailable: !!pr2Configurations && pr2Configurations.length > 0,
-        shouldProcessMM4: needsCleaning && pr2Configurations
+        shouldProcessMM4: needsCleaning && pr2Configurations,
+        isRestrictedSection: isRestrictedSection
       });
+      
+      // MANUAL TEST of cleaning detection for these sections
+      if (section.defects && (section.defects.includes('DER') || section.defects.includes('DES'))) {
+        console.log(`🧹 MANUAL TEST - Item ${section.itemNo} has DER/DES:`, {
+          defects: section.defects.substring(0, 100),
+          shouldBeCleaning: true,
+          actualResult: needsCleaning
+        });
+      }
     }
     
-    if (needsCleaning && pr2Configurations) {
+    // APPLY SECTION RESTRICTIONS: Only process MM4 for restricted cleaning sections
+    if (needsCleaning && pr2Configurations && isRestrictedSection) {
       // Find cctv-jet-vac configuration for current sector
       const cctvJetVacConfig = pr2Configurations.find((config: any) => 
         config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
