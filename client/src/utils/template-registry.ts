@@ -6,7 +6,7 @@ export type TemplateType = 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' | 'MMP2';
 export function getTemplateType(categoryId: string): TemplateType {
   switch (categoryId) {
     case "f-cctv-jet-vac":
-      return "MMP2";
+      return "MMP1";
     case "f-cctv-van-pack":
       return "MMP1";
     case "test-card":
