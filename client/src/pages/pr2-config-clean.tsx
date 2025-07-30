@@ -167,6 +167,7 @@ export default function PR2ConfigClean() {
   const sourceItemNo = urlParams.get('itemNo');
   const selectedOptionId = urlParams.get('selectedOption'); // Track which option is selected for editing
   const selectedId = urlParams.get('selectedId'); // Track MMP1 ID selection from dashboard (id1, id2, etc.)
+  const autoSelectUtilities = urlParams.get('autoSelectUtilities') === 'true'; // Auto-select utilities tab in MM1
   const isEditing = !!editId;
   
   // Determine template type based on category
@@ -3357,7 +3358,9 @@ export default function PR2ConfigClean() {
                 <CardContent>
                   <div className="grid grid-cols-3 gap-3">
                     {MMP1_IDS.map((idOption) => {
-                      const isSelected = selectedIds.includes(idOption.id);
+                      // Auto-select utilities (id1) when coming from dashboard 150mm recommendations
+                      const shouldAutoSelect = autoSelectUtilities && idOption.id === 'id1' && !selectedIds.includes('id1');
+                      const isSelected = selectedIds.includes(idOption.id) || shouldAutoSelect;
                       const hasConfiguration = idsWithConfig.includes(idOption.id);
                       
                       return (
