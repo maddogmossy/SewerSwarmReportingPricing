@@ -212,26 +212,27 @@ const calculateMM4RatePerLength = (mm4Row: any): number => {
   return rate;
 };
 
-const checkMM4DashboardMatch = (mm4Row: any, dashboardSection: any): any => {
+// MM4: Check if dashboard section matches purple window criteria (debris % and length)
+const checkMM4DashboardMatch = (mm4Row: any, dashboardSection: any) => {
   const configDebrisPercent = parseFloat(mm4Row.purpleDebris || '0');
   const configMaxLength = parseFloat(mm4Row.purpleLength || '0');
   
-  // Extract section data
+  // Extract section data from dashboard section
   const sectionLength = parseFloat(dashboardSection.totalLength) || 0;
   const sectionDebrisPercent = extractDebrisPercentage(dashboardSection.defects || '');
   
   const debrisMatch = sectionDebrisPercent <= configDebrisPercent;
   const lengthMatch = sectionLength <= configMaxLength;
   
+  const ratePerLength = calculateMM4RatePerLength(mm4Row);
+  
   return {
     matches: debrisMatch && lengthMatch,
-    debrisMatch,
-    lengthMatch,
-    ratePerLength: calculateMM4RatePerLength(mm4Row),
-    sectionDebrisPercent,
-    sectionLength,
-    configDebrisPercent,
-    configMaxLength
+    sectionLength: sectionLength,
+    sectionDebrisPercent: sectionDebrisPercent,
+    configMaxLength: configMaxLength,
+    configDebrisPercent: configDebrisPercent,
+    ratePerLength: ratePerLength
   };
 };
 
@@ -2090,14 +2091,8 @@ export default function Dashboard() {
       // Extract MM4 data from mmData structure
       const mmData = f606Config.mmData || {};
       const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
-      const mm4Data = mm4DataByPipeSize['150-1501'] || [];
       
-      console.log('🔍 MM4 Data Extracted:', mm4Data);
-      
-      if (mm4Data.length === 0) {
-        console.log('⚠️ No MM4 data found for 150-1501 in F606 configuration');
-        return;
-      }
+      console.log('🔍 Available MM4 pipe size keys:', Object.keys(mm4DataByPipeSize));
       
       // Get current sections data
       const currentSections = sections || [];
@@ -2107,6 +2102,18 @@ export default function Dashboard() {
       const analysisResults: any[] = [];
       currentSections.forEach((section: any) => {
         if (section.defectType === 'service') {
+          // Dynamic pipe size lookup instead of hardcoded "150-1501"
+          const sectionPipeSize = section.pipeSize || '150';
+          const pipeSizeKey = `${sectionPipeSize}-${sectionPipeSize}01`; // e.g., "150-1501", "225-2501"
+          const mm4Data = mm4DataByPipeSize[pipeSizeKey] || [];
+          
+          console.log(`🔍 Section ${section.itemNo} (${sectionPipeSize}mm) - checking key: ${pipeSizeKey}, found data:`, mm4Data.length > 0);
+          
+          if (mm4Data.length === 0) {
+            console.log(`⚠️ No MM4 data found for pipe size ${sectionPipeSize}mm (key: ${pipeSizeKey})`);
+            return;
+          }
+          
           mm4Data.forEach((mm4Row: any) => {
             const match = checkMM4DashboardMatch(mm4Row, section);
             console.log(`🔍 MM4 Match Check for Section ${section.itemNo}:`, {
