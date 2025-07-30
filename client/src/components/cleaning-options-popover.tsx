@@ -33,13 +33,20 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
           const cctvJetVacConfig = configs.find((config: any) => 
             config.categoryId === 'cctv-jet-vac'
           );
+          const cctvVanPackConfig = configs.find((config: any) => 
+            config.categoryId === 'f-cctv-van-pack'
+          );
           
-          if (cctvJetVacConfig) {
-            // Route to F606 cctv-jet-vac configuration with Utilities card selected
+          // Priority routing: F607 CCTV/Van Pack if available, fallback to F606 CCTV/Jet Vac
+          if (cctvVanPackConfig) {
+            // Route to F607 f-cctv-van-pack configuration with Utilities card selected
+            window.location.href = `/pr2-config-clean?id=${cctvVanPackConfig.id}&categoryId=f-cctv-van-pack&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
+          } else if (cctvJetVacConfig) {
+            // Fallback to F606 cctv-jet-vac configuration with Utilities card selected
             window.location.href = `/pr2-config-clean?id=${cctvJetVacConfig.id}&categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
           } else {
-            // Create new cctv-jet-vac configuration for utilities with Utilities card selected
-            window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
+            // Create new f-cctv-van-pack configuration for utilities with Utilities card selected
+            window.location.href = `/pr2-config-clean?categoryId=f-cctv-van-pack&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
           }
         } else {
           // Fallback to cctv-jet-vac creation
