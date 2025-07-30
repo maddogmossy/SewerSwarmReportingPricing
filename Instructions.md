@@ -1,409 +1,381 @@
-# MMP1 Template Integration into p003 f-cctv-van-pack Configuration
+# F606/F607 Configuration Selection System Implementation Plan
 
 ## Executive Summary
 
-This document provides a comprehensive analysis and implementation plan for integrating the MMP1 template system into a new p003 f-cctv-van-pack configuration, while maintaining existing F605/F606 dashboard routing for cleanse/survey recommendations.
+This document provides a comprehensive analysis and implementation plan for enhancing the blue recommendation card click functionality to present users with two configuration options: F606 (CCTV/Jet Vac) as the default highlighted option and F607 (CCTV/Van Pack) as the secondary option. The system will provide visual feedback showing which configuration is selected for cost calculations on the dashboard.
 
 ## Current System Analysis
 
-### 1. Template System Architecture
+### 1. Blue Recommendation Card Architecture
 
-The system currently supports 5 template types:
-- **TP1**: Standard template with 4-window structure (Blue/Green/Orange/Purple)
-- **P26**: Central day rate configuration with multiple pipe sizes
-- **P006**: Original CTF templates (removed per user preference)
-- **P006a**: Full F175-style interface with W020/C029/W007 components
-- **MMP1**: 5-section template system (MM1-MM5) with advanced features
+**Current Flow:**
+- Dashboard blue cleaning recommendations → CleaningOptionsPopover click → Direct routing to F606 or F607
+- Location: `client/src/pages/dashboard.tsx` lines 1164-1199
+- Handler: CleaningOptionsPopover component wraps blue recommendations with `onClick={handleDirectClick}`
 
-### 2. Existing MMP1 Configurations
-
-Current MMP1 configurations in database:
-- **F605 (ID: 605)**: test-card category, id4 sector, MMP1 template
-- **F606 (ID: 606)**: cctv-jet-vac category, utilities sector, MMP1 template
-
-### 3. Template Detection Logic
-
-Location: `client/src/pages/pr2-config-clean.tsx` lines 320-340
-
+**Current CleaningOptionsPopover Logic (`client/src/components/cleaning-options-popover.tsx`):**
 ```typescript
-const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' => {
-  if (categoryId === 'cart-card') {
-    return 'TP1';
-  } else if (categoryId === 'day-rate-db11') {
-    return 'P26';
-  } else if (categoryId?.startsWith('P006-')) {
-    return 'P006';
-  } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac') {
-    return 'MMP1'; // Current MMP1 detection
-  } else if (categoryId?.includes('-p006a') || /* various P006a patterns */) {
-    return 'P006a';
-  } else {
-    return 'TP1';
-  }
+// Priority routing: F607 CCTV/Van Pack if available, fallback to F606 CCTV/Jet Vac
+if (cctvVanPackConfig) {
+  // Route to F607 f-cctv-van-pack configuration
+  window.location.href = `/pr2-config-clean?id=${cctvVanPackConfig.id}&categoryId=f-cctv-van-pack&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
+} else if (cctvJetVacConfig) {
+  // Fallback to F606 cctv-jet-vac configuration
+  window.location.href = `/pr2-config-clean?id=${cctvJetVacConfig.id}&categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
 }
 ```
 
-### 4. MMP1 Template Component Structure
+### 2. Current Configuration Status
 
-Location: `client/src/components/MMP1Template.tsx`
+**F606 (CCTV/Jet Vac):**
+- Category ID: `cctv-jet-vac`
+- Template Type: MMP1
+- Database ID: 606 (confirmed operational)
+- Status: Fully configured with MMP1 template
 
-**MM1 - ID Selection System**: P002-style cards for sector-based pricing (ID1-ID6 → Utilities/Adoption/Highways/Insurance/Construction/Domestic)
+**F607 (CCTV/Van Pack):**
+- Category ID: `f-cctv-van-pack`
+- Template Type: MMP1 
+- Database ID: 607 (confirmed operational)
+- Status: Fully configured with MMP1 template
 
-**MM2 - Color Picker System**: 20 Outlook diary-style colors + custom color picker with hex input
+### 3. Visual Display System
 
-**MM3 - UK Drainage Pipe Sizes**: MSCC5-compliant pipe sizes (100-2400mm) with custom size management
-
-**MM4 - Cost Configuration**: Pipe-size-specific data with Blue/Green/Purple/Length fields
-
-**MM5 - Vehicle Cost Configuration**: Independent vehicle weight and cost per mile management
-
-### 5. Dashboard Routing Analysis
-
-Location: `client/src/components/cleaning-options-popover.tsx`
-
-Current routing for cleanse/survey recommendations:
-- Detects utilities sector sections
-- Routes to F606 (cctv-jet-vac) configuration
-- Connects via `window.location.href = `/pr2-config-clean?id=${cctvJetVacConfig.id}&categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`
+**Current ID Display Logic:**
+- Main category grid shows "f606" and "f607" labels instead of numeric IDs
+- Implemented in `pr2-pricing.tsx` lines 637-641:
+```typescript
+<DevLabel id={existingConfiguration ? 
+  (existingConfiguration.categoryId === 'f-cctv-van-pack' ? 'f607' : 
+   existingConfiguration.categoryId === 'cctv-jet-vac' ? 'f606' : 
+   `F${existingConfiguration.id}`) : 
+  `F-${category.id}`} />
+```
 
 ## Problem Analysis
 
-### 1. Missing p003 f-cctv-van-pack Configuration
+### Current Issues:
+1. **No User Choice**: Users are automatically routed to F607 if available, F606 as fallback
+2. **No Visual Feedback**: No indication of which configuration is being used for cost calculations
+3. **No Selection Interface**: Missing intermediate selection step for user preference
+4. **No Green Highlighting**: No visual indicator showing preferred/selected option
 
-**Issue**: No database configuration exists for p003 f-cctv-van-pack category
-- No SQL records found matching p003, f-cctv-van-pack, or van-pack patterns
-- No categoryId mapping for cctv-van-pack in template detection logic
+### User Requirements:
+1. **Two-Option Selection**: Present F606 (default, green highlight) and F607 (secondary option) 
+2. **Visual Feedback**: Show which configuration is selected for cost calculations
+3. **Green Highlighting**: Default F606 highlighted green, F607 highlighted when selected
+4. **No Test Buttons**: Clean interface without test functions (explicitly requested)
 
-### 2. Template Detection Gap
+## Technical Architecture Analysis
 
-**Issue**: MMP1 template detection only covers 'test-card' and 'cctv-jet-vac'
-- No recognition for cctv-van-pack categoryId
-- Would default to TP1 template instead of MMP1
+### 1. Current Routing Pattern
+```
+Dashboard Click → CleaningOptionsPopover → Direct Navigation to F606/F607
+```
 
-### 3. Dashboard Routing Limitation
+### 2. Required New Pattern
+```
+Dashboard Click → Selection Dialog → User Choice → Navigation to Selected Config
+```
 
-**Issue**: Cleaning options popover only routes to F606 cctv-jet-vac
-- No alternative routing for CCTV/Van Pack equipment combinations
-- Missing connection between dashboard recommendations and p003 configuration
+### 3. Selection Dialog Requirements
+- **Modal/Popover Interface**: Present F606 and F607 options
+- **Green Highlighting**: F606 default green, F607 green when selected
+- **Configuration Details**: Show pipe size and sector context
+- **Navigation Buttons**: Route to selected configuration with proper parameters
 
-### 4. Naming Convention Inconsistency
-
-**Issue**: Mixed naming patterns across system
-- F605/F606 use direct categoryId (test-card, cctv-jet-vac)
-- P003 naming suggests different pattern
-- Need to establish consistent f-cctv-van-pack categoryId
+### 4. State Management Requirements
+- **Selected Configuration Tracking**: Remember user's choice
+- **Cost Calculation Integration**: Use selected config for dashboard calculations
+- **Visual Feedback**: Update dashboard to show which config is active
 
 ## Implementation Plan
 
-### Phase 1: Database Configuration Creation
+### Phase 1: Selection Dialog Component Creation (30-45 minutes)
 
-**1.1 Create F607 p003 Configuration**
-```sql
-INSERT INTO pr2_configurations (
-  id, category_id, category_name, sector, description,
-  user_id, is_active, created_at, updated_at
-) VALUES (
-  607,
-  'f-cctv-van-pack', -- or 'cctv-van-pack' based on preference
-  'F607 CCTV/Van Pack',
-  'utilities',
-  'MMP1 template configuration for CCTV inspection with van pack cleansing operations',
-  'test-user',
-  true,
-  NOW(),
-  NOW()
-);
-```
+**1.1 Create ConfigurationSelectionDialog Component**
 
-**1.2 Initialize MMP1 Data Structure**
-```sql
-UPDATE pr2_configurations SET 
-  pricing_options = '[{"id":"mm1_id1","label":"Utilities Pricing","enabled":true,"value":""}]',
-  quantity_options = '[{"id":"mm4_150_day_rate","label":"150mm Day Rate","enabled":true,"value":""}]',
-  mm_data = '{
-    "mm1Colors": "#10B981",
-    "mm2IdData": ["id1"],
-    "mm3CustomPipeSizes": [],
-    "mm4DataByPipeSize": {
-      "150-1501": [{"id":1,"blueValue":"","greenValue":"","purpleDebris":"","purpleLength":""}]
-    },
-    "mm5Data": [{"id":1,"vehicleWeight":"3.5t","costPerMile":""}]
-  }'
-WHERE id = 607;
-```
-
-### Phase 2: Template Detection Enhancement
-
-**2.1 Update getTemplateType Function**
-
-Location: `client/src/pages/pr2-config-clean.tsx` line ~330
+Location: `client/src/components/configuration-selection-dialog.tsx`
 
 ```typescript
-const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' => {
-  if (categoryId === 'cart-card') {
-    return 'TP1';
-  } else if (categoryId === 'day-rate-db11') {
-    return 'P26';
-  } else if (categoryId?.startsWith('P006-')) {
-    return 'P006';
-  } else if (categoryId === 'test-card' || 
-             categoryId === 'cctv-jet-vac' || 
-             categoryId === 'f-cctv-van-pack' || 
-             categoryId === 'cctv-van-pack') {
-    return 'MMP1'; // ENHANCED: Include f-cctv-van-pack
-  } else if (categoryId?.includes('-p006a') || /* existing P006a patterns */) {
-    return 'P006a';
-  } else {
-    return 'TP1';
-  }
+interface ConfigurationSelectionDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  sectionData: {
+    pipeSize: string;
+    sector: string;
+    itemNo?: number;
+  };
+  onConfigurationSelect: (configId: string, categoryId: string) => void;
 }
-```
 
-### Phase 3: Dashboard Routing Integration
+interface ConfigOption {
+  id: string;
+  categoryId: string;
+  name: string;
+  description: string;
+  isDefault: boolean;
+  icon: React.ComponentType;
+}
 
-**3.1 Enhanced Cleaning Options Popover**
-
-Location: `client/src/components/cleaning-options-popover.tsx`
-
-```typescript
-const handleDirectClick = async () => {
-  const pipeSize = sectionData.pipeSize || '150mm';
-  const pipeSizeNumber = pipeSize.replace('mm', '');
-  
-  try {
-    if (sectionData.sector === 'utilities') {
-      const response = await fetch(`/api/pr2-clean?sector=utilities`);
-      
-      if (response.ok) {
-        const configs = await response.json();
-        
-        // ENHANCED: Support multiple MMP1 configurations
-        const cctvJetVacConfig = configs.find((config: any) => 
-          config.categoryId === 'cctv-jet-vac'
-        );
-        const cctvVanPackConfig = configs.find((config: any) => 
-          config.categoryId === 'f-cctv-van-pack' || 
-          config.categoryId === 'cctv-van-pack'
-        );
-        
-        // Route based on equipment preference or show selection
-        if (cctvVanPackConfig) {
-          window.location.href = `/pr2-config-clean?id=${cctvVanPackConfig.id}&categoryId=${cctvVanPackConfig.categoryId}&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-        } else if (cctvJetVacConfig) {
-          // Fallback to existing F606
-          window.location.href = `/pr2-config-clean?id=${cctvJetVacConfig.id}&categoryId=cctv-jet-vac&sector=utilities&pipeSize=${pipeSizeNumber}&selectedId=id1`;
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Navigation error:', error);
+const CONFIG_OPTIONS: ConfigOption[] = [
+  {
+    id: 'f606',
+    categoryId: 'cctv-jet-vac',
+    name: 'F606 - CCTV/Jet Vac',
+    description: 'High-pressure jetting with CCTV inspection',
+    isDefault: true,
+    icon: Wrench
+  },
+  {
+    id: 'f607', 
+    categoryId: 'f-cctv-van-pack',
+    name: 'F607 - CCTV/Van Pack',
+    description: 'Comprehensive van-based cleaning equipment',
+    isDefault: false,
+    icon: Building
   }
-};
-```
-
-**3.2 Equipment Selection Enhancement**
-
-Add CCTV/Van Pack as equipment option in cleaning recommendations:
-
-```typescript
-// In dashboard rendering logic
-const equipmentOptions = [
-  { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', configId: 606 },
-  { id: 'f-cctv-van-pack', name: 'CCTV/Van Pack', configId: 607 }
 ];
 ```
 
-### Phase 4: MMP1 Component Integration
+**1.2 Dialog Interface Design**
+- **Header**: "Select Cleaning Configuration for {pipeSize} Pipe"
+- **Two Cards**: F606 and F607 options with green highlighting system
+- **Default Selection**: F606 highlighted green by default
+- **Selection Logic**: Click to toggle green highlighting
+- **Action Buttons**: "Configure Selected" and "Cancel"
 
-**4.1 Component Conditional Rendering**
+**1.3 Green Highlighting System**
+- **Selected State**: `bg-green-100 border-green-300 text-green-700`
+- **Unselected State**: `bg-white border-gray-200 text-gray-600`
+- **Hover Effects**: Enhanced border colors and shadows
+- **Selection Feedback**: Clear visual indication of active choice
 
-Location: `client/src/pages/pr2-config-clean.tsx` line ~2800
+### Phase 2: CleaningOptionsPopover Enhancement (20-30 minutes)
+
+**2.1 Modify CleaningOptionsPopover Component**
+
+Location: `client/src/components/cleaning-options-popover.tsx`
+
+Changes Required:
+- Replace direct navigation with dialog trigger
+- Add state management for dialog visibility
+- Integrate ConfigurationSelectionDialog component
+- Handle configuration selection and routing
 
 ```typescript
-{/* MMP1 Template - Enhanced for f-cctv-van-pack */}
-{getTemplateType(categoryId || '') === 'MMP1' && (
-  <MMP1Template 
-    categoryId={categoryId || ''} 
-    sector={sector}
-    editId={editId ? parseInt(editId) : undefined}
-    onSave={() => {
-      // Invalidate queries and refresh data
-      queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
-    }}
-  />
-)}
-```
+export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
+  const [showSelectionDialog, setShowSelectionDialog] = useState(false);
 
-**4.2 MMP1 Template Protection Maintenance**
-
-Ensure MMP1Template.tsx remains protected from modifications:
-- Maintain user-controlled template zone
-- Preserve existing MM1-MM5 functionality
-- No structural changes to protected component
-
-### Phase 5: Data Migration and Setup
-
-**5.1 Create Setup Script**
-
-File: `setup-f607-cctv-van-pack.js`
-
-```javascript
-#!/usr/bin/env node
-
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import { pr2Configurations } from './shared/schema.ts';
-
-const client = postgres(process.env.DATABASE_URL);
-const db = drizzle(client);
-
-async function setupF607Configuration() {
-  console.log('🚀 Setting up F607 CCTV/Van Pack MMP1 configuration...');
-  
-  const newConfig = {
-    id: 607,
-    categoryId: 'f-cctv-van-pack',
-    categoryName: 'F607 CCTV/Van Pack',
-    description: 'MMP1 template configuration for CCTV inspection with van pack cleansing operations',
-    categoryColor: '#8B5CF6', // Purple color for van pack
-    sector: 'utilities',
-    userId: 'test-user',
-    isActive: true,
-    
-    // MMP1 structure
-    pricingOptions: [
-      { id: 'mm1_id1', label: 'Utilities Pricing', enabled: true, value: '' }
-    ],
-    quantityOptions: [
-      { id: 'mm4_150_day_rate', label: '150mm Day Rate', enabled: true, value: '' }
-    ],
-    minQuantityOptions: [],
-    rangeOptions: [],
-    vehicleTravelRates: [],
-    mathOperators: ['N/A'],
-    
-    // MMP1 data
-    mmData: {
-      mm1Colors: '#8B5CF6',
-      mm2IdData: ['id1'], // Default to Utilities
-      mm3CustomPipeSizes: [],
-      mm4DataByPipeSize: {
-        '150-1501': [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }]
-      },
-      mm5Data: [{ id: 1, vehicleWeight: '3.5t', costPerMile: '' }],
-      selectedPipeSize: '150',
-      selectedPipeSizeId: 1501,
-      timestamp: Date.now()
-    }
+  const handleDirectClick = () => {
+    // Open selection dialog instead of direct navigation
+    setShowSelectionDialog(true);
   };
-  
-  await db.insert(pr2Configurations).values(newConfig);
-  console.log('✅ F607 CCTV/Van Pack configuration created successfully');
-  
-  await client.end();
-}
 
-setupF607Configuration().catch(console.error);
+  const handleConfigurationSelect = (configId: string, categoryId: string) => {
+    // Handle navigation to selected configuration
+    const pipeSize = sectionData.pipeSize || '150mm';
+    const pipeSizeNumber = pipeSize.replace('mm', '');
+    
+    // Route to selected configuration with proper parameters
+    window.location.href = `/pr2-config-clean?categoryId=${categoryId}&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
+    
+    setShowSelectionDialog(false);
+  };
+
+  return (
+    <>
+      <div onClick={handleDirectClick} style={{ cursor: 'pointer' }}>
+        {children}
+      </div>
+      
+      <ConfigurationSelectionDialog
+        isOpen={showSelectionDialog}
+        onClose={() => setShowSelectionDialog(false)}
+        sectionData={sectionData}
+        onConfigurationSelect={handleConfigurationSelect}
+      />
+    </>
+  );
+}
 ```
 
-### Phase 6: Testing and Validation
+### Phase 3: Dashboard Integration Enhancement (25-35 minutes)
 
-**6.1 Template Detection Testing**
-- Verify getTemplateType('f-cctv-van-pack') returns 'MMP1'
-- Confirm conditional rendering shows MMP1Template component
-- Test navigation from dashboard to F607 configuration
+**3.1 Cost Calculation Integration**
 
-**6.2 Dashboard Integration Testing**
-- Test cleanse/survey recommendations route to F607
-- Verify pipe size and sector parameters pass correctly
-- Confirm MM1 ID1 (Utilities) auto-selection works
+Location: `client/src/pages/dashboard.tsx`
 
-**6.3 MMP1 Functionality Testing**
-- Test MM1 sector selection (ID1-ID6)
-- Verify MM2 color picker functionality
-- Test MM4 pipe-size-specific data management
-- Validate MM5 vehicle cost configuration
-- Confirm auto-save functionality across all sections
+Requirements:
+- Track which configuration is selected for each section
+- Use selected configuration for cost calculations
+- Display visual feedback showing active configuration
+
+**3.2 Selected Configuration State Management**
+
+```typescript
+// Add state for tracking selected configurations per section
+const [selectedConfigurations, setSelectedConfigurations] = useState<Record<number, string>>({});
+
+// Default configuration logic
+const getSelectedConfiguration = (itemNo: number) => {
+  return selectedConfigurations[itemNo] || 'f606'; // Default to F606
+};
+
+// Update cost calculation to use selected configuration
+const calculateCostWithSelectedConfig = (section: any) => {
+  const selectedConfig = getSelectedConfiguration(section.itemNo);
+  // Use selectedConfig for cost calculation logic
+  return calculateMM4AutoCost(section, selectedConfig);
+};
+```
+
+**3.3 Visual Feedback Implementation**
+
+Enhance blue recommendation cards to show selected configuration:
+- Add configuration indicator (f606/f607) in recommendation text
+- Color-code based on selected configuration
+- Update statusMessage to reflect active configuration
+
+### Phase 4: Configuration Detection and Routing (15-25 minutes)
+
+**4.1 API Integration**
+
+Ensure proper detection of F606 and F607 configurations:
+- Verify `/api/pr2-clean?sector=utilities` returns both configurations
+- Confirm category ID mapping works correctly
+- Test configuration availability detection
+
+**4.2 URL Parameter Handling**
+
+Enhance configuration pages to handle selection parameters:
+- Parse `selectedConfig` URL parameter
+- Apply appropriate highlighting based on selection
+- Maintain selection state during configuration editing
+
+### Phase 5: Testing and Validation (20-30 minutes)
+
+**5.1 End-to-End Workflow Testing**
+1. Dashboard blue recommendation click
+2. Selection dialog opens with F606 highlighted green
+3. User can select F607 (highlighting switches)
+4. Configuration navigation works correctly
+5. Dashboard cost calculations use selected configuration
+
+**5.2 Visual Feedback Testing**
+- Verify green highlighting works correctly
+- Confirm selected configuration appears in dashboard
+- Test configuration switching and cost updates
+
+**5.3 Regression Testing**
+- Ensure existing F606/F607 functionality preserved
+- Verify MMP1 template integration still works
+- Confirm no breaking changes to other components
 
 ## Risk Assessment
 
 ### Low Risk
-- Template detection enhancement (simple categoryId addition)
-- Database configuration creation (follows existing patterns)
-- MMP1 component integration (existing component)
+- ConfigurationSelectionDialog component creation (new isolated component)
+- CleaningOptionsPopover enhancement (well-defined interface)
+- Visual feedback implementation (CSS and state changes)
 
-### Medium Risk  
-- Dashboard routing modification (affects user workflow)
-- Data migration script execution (database changes)
+### Medium Risk
+- Dashboard state management integration (affects multiple components)
+- Cost calculation modification (impacts financial calculations)
+- URL parameter handling enhancement (routing changes)
 
 ### High Risk
-- MMP1Template component modifications (protected zone)
-- Breaking existing F605/F606 functionality
-- Data loss during migration
+- Breaking existing F606/F607 configuration access
+- MMP1 template integration disruption
+- Dashboard cost calculation accuracy
 
 ## Success Criteria
 
-### Functional Requirements
-1. F607 configuration accessible via `/pr2-config-clean?categoryId=f-cctv-van-pack&sector=utilities`
-2. Dashboard cleanse/survey recommendations route to F607 for van pack operations
-3. MMP1 template renders correctly with all MM1-MM5 sections
-4. Auto-save functionality works across all MMP1 sections
-5. Existing F605/F606 routing remains intact
+### 1. Functional Requirements Met
+- ✅ Blue recommendation cards open selection dialog
+- ✅ F606 highlighted green by default
+- ✅ F607 selectable with green highlighting
+- ✅ Configuration navigation works correctly
+- ✅ Dashboard shows selected configuration for cost calculations
 
-### Technical Requirements
-1. Template detection correctly identifies f-cctv-van-pack as MMP1
-2. Database schema supports MMP1 data structure
-3. Component conditional rendering includes f-cctv-van-pack
-4. API endpoints handle f-cctv-van-pack categoryId
-5. No modifications to protected MMP1Template component
+### 2. User Experience Goals
+- ✅ Clean interface without test buttons
+- ✅ Clear visual feedback for configuration selection
+- ✅ Intuitive two-option selection process
+- ✅ Professional appearance matching existing design
 
-### User Experience Requirements
-1. Seamless navigation from dashboard to F607 configuration
-2. Intuitive pipe size and sector parameter passing
-3. Consistent MMP1 interface behavior across F605/F606/F607
-4. No disruption to existing cleanse/survey workflows
+### 3. Technical Standards
+- ✅ No breaking changes to existing functionality
+- ✅ Proper state management and data flow
+- ✅ TypeScript type safety maintained
+- ✅ Component reusability and maintainability
+
+## File Modification Summary
+
+### New Files:
+1. `client/src/components/configuration-selection-dialog.tsx` - Selection dialog component
+
+### Modified Files:
+1. `client/src/components/cleaning-options-popover.tsx` - Dialog integration
+2. `client/src/pages/dashboard.tsx` - State management and cost calculation
+3. `client/src/pages/pr2-config-clean.tsx` - URL parameter handling (if needed)
+
+### Key Dependencies:
+- shadcn/ui Dialog components
+- React useState for state management
+- Existing MMP1 template system
+- Current F606/F607 configuration structure
 
 ## Implementation Timeline
 
-### Phase 1 (Database Setup): 1-2 hours
-- Create F607 configuration
-- Initialize MMP1 data structure
-- Test database connectivity
+### Phase 1 (Dialog Component): 30-45 minutes
+- Create ConfigurationSelectionDialog component
+- Implement green highlighting system
+- Add proper TypeScript interfaces
 
-### Phase 2 (Template Detection): 30 minutes
-- Update getTemplateType function
-- Test template type detection
-- Verify conditional rendering
+### Phase 2 (Popover Enhancement): 20-30 minutes
+- Modify CleaningOptionsPopover to use dialog
+- Add state management for dialog visibility
+- Implement configuration selection handling
 
-### Phase 3 (Dashboard Integration): 1-2 hours
-- Enhance cleaning options popover
-- Add equipment selection logic
-- Test dashboard routing
+### Phase 3 (Dashboard Integration): 25-35 minutes
+- Add selected configuration state management
+- Modify cost calculation to use selected config
+- Implement visual feedback in recommendations
 
-### Phase 4 (Component Integration): 30 minutes  
-- Update MMP1 conditional rendering
-- Test component display
-- Verify auto-save functionality
+### Phase 4 (Routing and Detection): 15-25 minutes
+- Verify API integration works correctly
+- Test configuration detection and availability
+- Enhance URL parameter handling if needed
 
-### Phase 5 (Testing): 1-2 hours
+### Phase 5 (Testing): 20-30 minutes
 - End-to-end workflow testing
-- Regression testing on F605/F606
-- Performance validation
+- Visual feedback validation
+- Regression testing for existing functionality
 
-**Total Estimated Time: 4-6 hours**
-
-## Conclusion
-
-This plan provides a comprehensive approach to integrating MMP1 template functionality into a new p003 f-cctv-van-pack configuration while maintaining existing system stability. The implementation leverages existing MMP1 architecture patterns and follows established naming conventions to ensure seamless integration with minimal risk.
-
-The key success factor is maintaining the protected status of the MMP1Template component while extending template detection and routing logic to support the new configuration. This approach preserves user-controlled template functionality while expanding system capabilities for CCTV/Van Pack operations.
+**Total Estimated Time: 110-165 minutes (approximately 2-3 hours)**
 
 ## Next Steps
 
-1. Execute Phase 1 database setup script
-2. Implement Phase 2 template detection enhancement  
-3. Test basic F607 configuration accessibility
-4. Proceed with dashboard integration (Phase 3)
-5. Complete end-to-end testing and validation
+1. **Immediate Implementation**: Start with Phase 1 - ConfigurationSelectionDialog component creation
+2. **Iterative Testing**: Test each phase before proceeding to next
+3. **User Feedback Integration**: Validate user experience after Phase 3
+4. **Final Validation**: Complete end-to-end testing in Phase 5
 
-This implementation plan ensures a systematic approach to feature integration while maintaining system stability and user experience consistency.
+This implementation plan provides a systematic approach to creating the F606/F607 selection system while maintaining existing functionality and meeting all user requirements for visual feedback and configuration choice.
+
+## Technical Notes
+
+### State Management Pattern
+The implementation uses React useState for local component state management, avoiding complex global state solutions for this focused feature enhancement.
+
+### Green Highlighting Pattern
+Following established shadcn/ui design patterns with `bg-green-100 border-green-300 text-green-700` for selected states and smooth transitions for user interaction feedback.
+
+### Configuration Routing Pattern
+Maintaining existing URL parameter structure (`categoryId`, `sector`, `pipeSize`, `selectedId`) while adding selection logic for F606/F607 choice persistence.
+
+### Cost Calculation Integration
+Leveraging existing MM4 cost calculation system while adding configuration selection awareness for accurate financial projections based on user choice.
+
+This plan ensures comprehensive implementation of the F606/F607 selection system while maintaining system stability and user experience consistency.

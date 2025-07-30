@@ -4,6 +4,18 @@
 
 This is a full-stack TypeScript application built with React frontend and Express backend, featuring file upload capabilities, Stripe payment integration, and authentication through Replit's authentication system. The application appears to be designed for document analysis services with sector-specific compliance checking (Utilities, Adoption, Highways).
 
+## Current Development Status (January 30, 2025)
+
+### F606/F607 Selection System Research Complete ✅
+- **Status**: Comprehensive research and implementation plan completed for blue recommendation card enhancement
+- **User Requirement**: Blue recommendation card clicks must present F606 (default, green highlight) and F607 (secondary option) choices with visual feedback system
+- **Research Findings**:
+  - Current system: CleaningOptionsPopover provides direct navigation to F607 if available, F606 as fallback
+  - Required enhancement: Selection dialog with F606 default green highlighting and F607 secondary option
+  - Technical assessment: Both F606 (cctv-jet-vac) and F607 (f-cctv-van-pack) operational with MMP1 templates
+  - Implementation plan: 5-phase approach documented in Instructions.md (2-3 hours estimated)
+- **Next Step**: Begin Phase 1 implementation with ConfigurationSelectionDialog component creation
+
 ## System Architecture
 
 ### Frontend Architecture
