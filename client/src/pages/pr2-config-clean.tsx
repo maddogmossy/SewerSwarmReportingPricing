@@ -12,6 +12,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench, Shield } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { getTemplateType } from '@/utils/template-registry';
+import { TemplateMap } from '@/utils/template-map';
+import P003Config from '@/configs/P003Config';
 import { TP1Template } from '@/components/TP1Template';
 import { MMP1Template } from '@/components/MMP1Template';
 import { MMP2Template } from '@/components/templates/MMP2Template';
