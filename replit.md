@@ -17,7 +17,9 @@ This is a full-stack TypeScript application built with React frontend and Expres
   - Fixed TypeScript routing error with editId string/number comparison
   - Created P003Config.ts for template definitions and configuration options
 - **Result**: P003 category now appears in pricing interface and displays MMP2Template with complete functionality
-- **Files Modified**: pr2-config-clean.tsx, MMP2Template.tsx (moved to templates/), P003Config.ts (created)
+- **Files Modified**: pr2-config-clean.tsx, MMP2Template.tsx (moved to templates/), P003Config.ts (created), template-registry.ts (created)
+- **Template Registry**: Created centralized getTemplateType function with proper f-cctv-jet-vac → MMP2 mapping
+- **Config Structure**: P003Config.ts moved to client/src/configs/ with required templates array structure
 
 ### F606/F607 Selection System Research Complete ✅
 - **Status**: Comprehensive research and implementation plan completed for blue recommendation card enhancement

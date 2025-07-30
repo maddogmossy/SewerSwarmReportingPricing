@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench, Shield } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
+import { getTemplateType } from '@/utils/template-registry';
 import { TP1Template } from '@/components/TP1Template';
 import { MMP1Template } from '@/components/MMP1Template';
 import { MMP2Template } from '@/components/templates/MMP2Template';
@@ -170,29 +171,7 @@ export default function PR2ConfigClean() {
   const selectedId = urlParams.get('selectedId'); // Track MMP1 ID selection from dashboard (id1, id2, etc.)
   const isEditing = !!editId;
   
-  // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' | 'MMP2' => {
-    if (categoryId === 'cart-card') {
-      return 'TP1'; // Cart card uses standard TP1 template with full interface
-    } else if (categoryId === 'day-rate-db11') {
-      return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
-    } else if (categoryId?.startsWith('P006-')) {
-      return 'P006'; // Original P006 CTF templates with 4-window structure
-    } else if (categoryId === 'f-cctv-jet-vac') {
-      return 'MMP2'; // F606 CCTV/Jet Vac uses MMP2 template with advanced configuration
-    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'f-cctv-van-pack') {
-      return 'MMP1'; // Test Card, CCTV/Jet Vac, and F607 CCTV/Van Pack use MMP1 template with 5 placeholder UI cards
-    } else if (categoryId?.includes('-p006a') || 
-               categoryId === 'cctv' || 
-               categoryId === 'van-pack' || 
-               categoryId === 'jet-vac' || 
-               categoryId === 'cctv-van-pack' || 
-               categoryId === 'cctv-cleansing-root-cutting') {
-      return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
-    } else {
-      return 'TP1'; // All other categories use standard TP1 template
-    }
-  };
+  // Template type determination now handled by centralized template-registry
 
   // Get all configurations for this category to detect existing pipe sizes (moved here for proper initialization order)
   const { data: allCategoryConfigs } = useQuery({
