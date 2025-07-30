@@ -73,7 +73,13 @@ const requiresCleaning = (defects: string): boolean => {
     defectsUpper.includes('NOT CONNECTED') || defectsUpper.includes('BLOCKAGE')
   );
   
-  const result = hasCleaningCodes || hasSABungCondition;
+  // Check for water level observations that may indicate cleaning needs
+  // Water levels above 5% could indicate blockages requiring cleaning
+  const hasWaterLevel = defectsUpper.includes('WATER LEVEL') && (
+    defectsUpper.includes('%') || defectsUpper.includes('WL ')
+  );
+  
+  const result = hasCleaningCodes || hasSABungCondition || hasWaterLevel;
   
   // Debug for DES/DER sections with FIXED logic
   if (defects.includes('DES') || defects.includes('DER')) {
@@ -83,6 +89,16 @@ const requiresCleaning = (defects: string): boolean => {
       hasCleaningCodes,
       matchedCodes: cleaningCodes.filter(code => defectsUpper.includes(code.toUpperCase())),
       shouldBeTrue: 'DES/DER codes require cleaning'
+    });
+  }
+  
+  // Debug for water level sections
+  if (hasWaterLevel) {
+    console.log(`💧 Water Level Cleaning Check:`, {
+      defects,
+      result,
+      hasWaterLevel,
+      shouldTriggerCleaning: 'Water levels may indicate cleaning requirements'
     });
   }
   
