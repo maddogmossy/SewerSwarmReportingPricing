@@ -178,14 +178,12 @@ export default function PR2ConfigClean() {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else if (categoryId?.startsWith('P006-')) {
       return 'P006'; // Original P006 CTF templates with 4-window structure
-    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac') {
-      return 'MMP1'; // Test Card and CCTV/Jet Vac use new MMP1 template with 5 placeholder UI cards
+    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack') {
+      return 'MMP1'; // Test Card, CCTV/Jet Vac, and CCTV/Van Pack use new MMP1 template with 5 placeholder UI cards
     } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
                categoryId === 'van-pack' || 
                categoryId === 'jet-vac' || 
-               categoryId === 'cctv-van-pack' || 
-               categoryId === 'cctv-jet-vac' || // F175 - CCTV Jet Vac Configuration
                categoryId === 'cctv-cleansing-root-cutting') {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else {
