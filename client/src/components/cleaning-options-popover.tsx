@@ -16,13 +16,20 @@ interface CleaningOptionsPopoverProps {
   onPricingNeeded: (method: string, pipeSize: string, sector: string) => void;
   hasLinkedPR2?: boolean;
   configColor?: string;
+  onMM4Trigger?: () => Promise<void>;
 }
 
-export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor }: CleaningOptionsPopoverProps) {
+export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded, hasLinkedPR2, configColor, onMM4Trigger }: CleaningOptionsPopoverProps) {
   const [showSelectionDialog, setShowSelectionDialog] = useState(false);
 
-  // ENHANCED: Open selection dialog for F606/F607 choice
+  // ENHANCED: Open selection dialog for F606/F607 choice with MM4 trigger
   const handleDirectClick = async () => {
+    // Trigger MM4 dashboard analysis if configured and available
+    if (onMM4Trigger && hasLinkedPR2) {
+      console.log('🔄 Triggering MM4 analysis from blue recommendation click');
+      await onMM4Trigger();
+    }
+
     // For utilities sector, show selection dialog
     if (sectionData.sector === 'utilities') {
       setShowSelectionDialog(true);
