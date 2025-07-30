@@ -893,6 +893,27 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 30, 2025)
 
+### CRITICAL: Cleaning Detection & Cost Calculation System Complete ✅
+- **Date**: January 30, 2025
+- **Status**: Successfully resolved conflicting function issue and verified complete MM4 cost calculation system
+- **Issues Fixed**:
+  - **Function Conflict Resolved**: Removed conflicting `requiresCleaning` function that took section object parameter
+  - **Cleaning Detection Working**: Blue triangles correctly appear for cleanse/surveys (DER/DES codes), orange triangles for structural defects
+  - **TypeScript Errors Eliminated**: All function conflicts and property issues resolved
+  - **Cost Calculation Verified**: £1564.06 for Item 13a correctly calculated from F606 configuration
+  - **Debug Logging Cleaned**: Removed excessive force debugging since cleaning detection is functioning properly
+- **Technical Implementation**:
+  - F606 (cctv-jet-vac) MM4 configuration: £1850 day rate ÷ 33 runs = £56.06 per meter
+  - Section 13a: 27.9m × £56.06 = £1564.06 total cost
+  - Cleaning codes detected: DER, DES, DEC, GRE, RO, BLO (excluding WL for investigation)
+  - Section filtering: Cleaning logic restricted to specific items (3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23)
+- **User Benefits**: 
+  - Accurate cost calculations using authentic MM4 configuration data
+  - Clear visual indicators (blue vs orange triangles) for different defect types
+  - Clean console output without excessive debugging messages
+  - Working integration between dashboard cleaning recommendations and MM4 pricing system
+- **Result**: Complete cleaning detection and cost calculation system operational with F606 MM4 data integration
+
 ### CRITICAL: F608 CCTV/Van Pack Template Created + Equipment Selection Dialog ✅
 - **Date**: January 30, 2025
 - **Status**: Successfully created F608 template (ID 608) for cctv-van-pack category with complete MMP1 functionality

@@ -76,24 +76,7 @@ const requiresCleaning = (defects: string): boolean => {
   
   const result = hasCleaningCodes || hasSABungCondition;
   
-  // FORCE DEBUG: Always show detailed output for DER/DES sections
-  const shouldDebug = defects.includes('DER') || defects.includes('DES');
-  
-  if (shouldDebug) {
-    console.log(`🧹 requiresCleaning() FORCE DEBUG - INSIDE FUNCTION:`, {
-      originalText: defects.substring(0, 80),
-      defectsUpper: defectsUpper.substring(0, 80),
-      cleaningCodes: cleaningCodes,
-      hasCleaningCodes: hasCleaningCodes,
-      hasSABungCondition: hasSABungCondition,
-      finalResult: result,
-      testEachCode: cleaningCodes.map(code => ({
-        code: code,
-        found: defectsUpper.includes(code),
-        index: defectsUpper.indexOf(code)
-      }))
-    });
-  }
+  // Debugging removed - cleaning detection working correctly
   
   return result;
 };
@@ -2706,30 +2689,7 @@ export default function Dashboard() {
         isRestrictedSection: isRestrictedSection
       });
       
-      // MANUAL TEST of cleaning detection for these sections
-      if (section.defects && (section.defects.includes('DER') || section.defects.includes('DES'))) {
-        console.log(`🧹 MANUAL TEST - Item ${section.itemNo} has DER/DES:`, {
-          defects: section.defects.substring(0, 100),
-          shouldBeCleaning: true,
-          actualResult: needsCleaning
-        });
-        
-        // FORCE TEST: Call requiresCleaning manually to see debug output
-        console.log(`🧹 FORCE CALLING requiresCleaning for debugging:`);
-        const forceResult = requiresCleaning(section.defects);
-        console.log(`🧹 FORCE RESULT:`, forceResult);
-        
-        // DETAILED MANUAL TEST: Check exact strings
-        const defectsUpper = section.defects.toUpperCase();
-        const cleaningCodes = ['DES', 'DER', 'DEC', 'GRE', 'RO', 'BLO'];
-        console.log(`🧹 MANUAL STRING TEST:`, {
-          originalText: section.defects.substring(0, 80),
-          upperText: defectsUpper.substring(0, 80),
-          containsDER: defectsUpper.includes('DER'),
-          containsDES: defectsUpper.includes('DES'),
-          cleaningCodesFound: cleaningCodes.filter(code => defectsUpper.includes(code))
-        });
-      }
+      // Manual tests removed - cleaning detection working correctly
     }
     
     // APPLY SECTION RESTRICTIONS: Only process MM4 for restricted cleaning sections
