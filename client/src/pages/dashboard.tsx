@@ -73,7 +73,19 @@ const requiresCleaning = (defects: string): boolean => {
     defectsUpper.includes('NOT CONNECTED') || defectsUpper.includes('BLOCKAGE')
   );
   
-  return hasCleaningCodes || hasSABungCondition;
+  const result = hasCleaningCodes || hasSABungCondition;
+  
+  // Debug for DES/DER sections
+  if (defects.includes('DES') || defects.includes('DER')) {
+    console.log(`🧹 Cleaning Check Detail:`, {
+      defects,
+      result,
+      hasCleaningCodes,
+      matchedCodes: cleaningCodes.filter(code => defectsUpper.includes(code.toUpperCase()))
+    });
+  }
+  
+  return result;
 };
 
 // Helper function to convert hex to rgba with opacity

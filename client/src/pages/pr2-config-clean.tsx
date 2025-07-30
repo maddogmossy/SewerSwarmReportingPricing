@@ -2049,8 +2049,11 @@ export default function PR2ConfigClean() {
           console.log('  - hasLocalMM4Data:', hasLocalMM4Data);
           console.log('  - hasLocalMM5Data:', hasLocalMM5Data);
           
-          // Only load MM4 data if we don't have local changes
-          if (!hasLocalMM4Data) {
+          // CRITICAL FIX: Force backend load for F606 to get restored MM4 data
+          const isF606Configuration = editId === 606;
+          
+          // Only load MM4 data if we don't have local changes OR if this is F606 (force refresh)
+          if (!hasLocalMM4Data || isF606Configuration) {
             // Load MM4/MM5 data from pipe-size-specific storage or legacy format
             if (config.mmData.mm4DataByPipeSize) {
               console.log('📥 Setting MM4 pipe-size data:', config.mmData.mm4DataByPipeSize);
