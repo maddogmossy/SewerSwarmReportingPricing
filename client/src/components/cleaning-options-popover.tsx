@@ -31,32 +31,8 @@ export function CleaningOptionsPopover({ children, sectionData, onPricingNeeded,
       const pipeSize = sectionData.pipeSize || '150mm';
       const pipeSizeNumber = pipeSize.replace('mm', '');
       
-      try {
-        const response = await fetch('/api/pr2-clean/auto-detect-pipe-size', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            categoryId: 'cctv-jet-vac',
-            pipeSize: pipeSizeNumber,
-            sector: sectionData.sector
-          })
-        });
-        
-        if (response.ok) {
-          const config = await response.json();
-          window.location.href = `/pr2-config-clean?id=${config.id}&categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
-        } else {
-          window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
-        }
-      } catch (error) {
-        console.error('Error in configuration routing:', error);
-        // Fallback routing based on sector
-        if (sectionData.sector === 'utilities') {
-          window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=utilities&selectedId=id1&pipeSize=${pipeSizeNumber}`;
-        } else {
-          window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
-        }
-      }
+      // Direct routing to F606 (main CCTV/Jet Vac configuration)
+      window.location.href = `/pr2-config-clean?id=606&categoryId=cctv-jet-vac&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}&selectedId=id1`;
     }
   };
 
