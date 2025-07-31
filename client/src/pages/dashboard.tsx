@@ -2676,6 +2676,19 @@ export default function Dashboard() {
       defectType: section.defectType
     });
     
+    // DEBUG: Track Item 13a specifically to see why it's not reaching F615
+    if (section.itemNo === 13) {
+      console.log('🎯 ITEM 13a ENTRY DEBUG:', {
+        itemNo: section.itemNo,
+        letterSuffix: section.letterSuffix,
+        defectType: section.defectType,
+        defects: section.defects,
+        isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23].includes(section.itemNo),
+        willCheckStructural: section.defectType === 'structural',
+        pr2ConfigsLength: pr2Configurations?.length || 0
+      });
+    }
+    
     // SPECIAL DEBUG FOR ITEM 10 - trace complete workflow
     if (section.itemNo === 10) {
       console.log('🎯 ITEM 10 COMPLETE WORKFLOW DEBUG:', {
@@ -2826,27 +2839,24 @@ export default function Dashboard() {
             const hasValidRate = blueValue > 0 && greenValue > 0;
             
             if (debrisMatch && lengthMatch && hasValidRate) {
-              // F615 PATCHING LOGIC: Count defects needing patches and calculate cost per patch
-              // Blue value = cost per patch (e.g., £250 per patch)
-              // Green value = minimum required quantity for efficiency
-              const costPerPatch = blueValue; // Blue window is cost per patch
+              // F606 CCTV/SERVICE LOGIC: Blue ÷ Green = Rate per run  
+              // Blue value = day rate (e.g., £1850 per day)
+              // Green value = runs per shift (e.g., 22 runs)
+              const dayRate = blueValue; // Blue window is day rate
+              const runsPerShift = greenValue; // Green window is runs per shift
+              const ratePerRun = dayRate / runsPerShift; // Calculate rate per run
               
-              // Count defect meterages that need patches (using default option 2 - Double Layer)
-              // Each defect location gets one patch
-              const defectsText = section.defects || '';
-              const defectMeterages = extractDefectMeterages(defectsText);
-              const patchCount = defectMeterages.length; // One patch per defect location
+              // For service defects, calculate cost based on rate per run
+              const totalCost = ratePerRun; // Single run cost for this section
               
-              const totalPatchCost = costPerPatch * patchCount;
-              
-              console.log('✅ F615 Patching Cost Calculation:', {
+              console.log('✅ F606 Service Cost Calculation:', {
                 sectionId: section.itemNo,
                 pipeSizeKey: matchingPipeSizeKey,
                 mm4Row: mm4Row.id,
-                costPerPatch: blueValue, // Cost per individual patch
-                defectMeterages: defectMeterages,
-                patchCount: patchCount, // Number of patches needed
-                totalPatchCost: totalPatchCost, // Total cost for all patches
+                dayRate: blueValue, // Day rate from blue window
+                runsPerShift: greenValue, // Runs per shift from green window
+                ratePerRun: ratePerRun, // Calculated rate per run
+                totalCost: totalCost, // Total cost for this section
                 minimumQuantity: greenValue, // Required minimum from green window
                 debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
                 lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`
@@ -2858,20 +2868,21 @@ export default function Dashboard() {
                 restrictedCleaningSections.includes(s.itemNo)
               ).length || 0;
               
-              const meetsMinimumRuns = totalServiceItems >= greenValue;
+              const meetsMinimumRuns = totalServiceItems >= runsPerShift;
               
               return {
-                cost: totalPatchCost, // Display total patch cost
+                cost: totalCost, // Display calculated service cost
                 currency: '£',
-                method: 'F615 Patching Cost',
-                status: meetsMinimumRuns ? 'f615_calculated' : 'f615_insufficient_items',
-                costPerPatch: costPerPatch,
-                patchCount: patchCount,
-                totalPatchCost: totalPatchCost,
-                minimumQuantity: greenValue,
+                method: 'F606 Service Cost',
+                status: meetsMinimumRuns ? 'f606_calculated' : 'f606_insufficient_items',
+                dayRate: dayRate,
+                runsPerShift: runsPerShift,
+                ratePerRun: ratePerRun,
+                totalCost: totalCost,
+                minimumQuantity: runsPerShift,
                 totalServiceItems: totalServiceItems,
                 meetsMinimumRuns: meetsMinimumRuns,
-                recommendation: `F615 patching: ${patchCount} patches × £${costPerPatch} = £${totalPatchCost} (default option 2)`
+                recommendation: `F606 service: £${dayRate} ÷ ${runsPerShift} runs = £${ratePerRun.toFixed(2)} per run`
               };
             }
           }
