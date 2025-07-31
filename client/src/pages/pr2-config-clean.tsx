@@ -1121,33 +1121,31 @@ export default function PR2ConfigClean() {
     const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     updateMM4DataForPipeSize(newData);
     
-    // Add .99 after user stops typing (only for purple length)
-    if (field === 'purpleLength' && value && value.trim() !== '' && !value.endsWith('.99')) {
-      console.log(`🔧 Setting up .99 auto-addition timer (Main Page) for: "${value}"`);
-      setTimeout(() => {
-        const currentDataAfterDelay = getCurrentMM4Data();
-        const currentRow = currentDataAfterDelay.find(row => row.id === rowId);
-        
-        console.log(`🔍 Timer fired (Main Page) - checking value: currentRow=${!!currentRow}, currentValue="${currentRow?.[field]}", originalValue="${value}"`);
-        
-        // Only add .99 if the value hasn't changed and still doesn't end with .99
-        if (currentRow && currentRow[field] === value && !value.endsWith('.99')) {
-          const baseValue = value.split('.')[0];
-          const finalValue = baseValue + '.99';
-          console.log(`🔧 Auto-added .99 after typing delay (Main Page): "${value}" → "${finalValue}"`);
-          
-          const updatedData = currentDataAfterDelay.map(row => 
-            row.id === rowId ? { ...row, [field]: finalValue } : row
-          );
-          updateMM4DataForPipeSize(updatedData);
-          
-          // Force auto-save after adding .99
-          setTimeout(() => {
-            console.log(`💾 Triggering auto-save after .99 addition (Main Page)`);
-            triggerAutoSave();
-          }, 100);
-        }
-      }, 1500); // 1.5 second delay to allow typing
+    // For purple length, automatically add .99 to whole numbers and replace decimals
+    if (field === 'purpleLength' && value && value.trim() !== '') {
+      // If it's a whole number (digits only), add .99
+      if (/^\d+$/.test(value.trim())) {
+        const finalValue = value + '.99';
+        console.log(`🔧 AUTO-ADDED .99 to whole number (Main Page): "${value}" → "${finalValue}"`);
+        const updatedData = newData.map(row => 
+          row.id === rowId ? { ...row, [field]: finalValue } : row
+        );
+        updateMM4DataForPipeSize(updatedData);
+        triggerAutoSave();
+        return; // Exit early with .99 added
+      }
+      // If it has a decimal but not .99, replace with .99
+      else if (value.includes('.') && !value.endsWith('.99')) {
+        const baseValue = value.split('.')[0];
+        const finalValue = baseValue + '.99';
+        console.log(`🔧 REPLACED decimal with .99 (Main Page): "${value}" → "${finalValue}"`);
+        const updatedData = newData.map(row => 
+          row.id === rowId ? { ...row, [field]: finalValue } : row
+        );
+        updateMM4DataForPipeSize(updatedData);
+        triggerAutoSave();
+        return; // Exit early with .99 added
+      }
     }
   };
 

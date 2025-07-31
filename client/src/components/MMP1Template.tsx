@@ -154,41 +154,33 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // Save the raw value first, then add .99 after a delay for purple length
+    // For purple length, automatically add .99 to whole numbers and replace decimals
+    let finalValue = value;
+    if (field === 'purpleLength' && value && value.trim() !== '') {
+      // If it's a whole number (digits only), add .99
+      if (/^\d+$/.test(value.trim())) {
+        finalValue = value + '.99';
+        console.log(`🔧 AUTO-ADDED .99 to whole number: "${value}" → "${finalValue}"`);
+      }
+      // If it has a decimal but not .99, replace with .99
+      else if (value.includes('.') && !value.endsWith('.99')) {
+        const baseValue = value.split('.')[0];
+        finalValue = baseValue + '.99';
+        console.log(`🔧 REPLACED decimal with .99: "${value}" → "${finalValue}"`);
+      }
+      // If it already ends with .99, keep it as is
+      else if (value.endsWith('.99')) {
+        finalValue = value;
+        console.log(`✅ Already has .99: "${value}"`);
+      }
+    }
+    
     const newData = currentData.map(row => 
-      row.id === rowId ? { ...row, [field]: value } : row
+      row.id === rowId ? { ...row, [field]: finalValue } : row
     );
     
     updateMM4DataForPipeSize(newData);
-    
-    // Add .99 after user stops typing (only for purple length)
-    if (field === 'purpleLength' && value && value.trim() !== '' && !value.endsWith('.99')) {
-      console.log(`🔧 Setting up .99 auto-addition timer for: "${value}"`);
-      setTimeout(() => {
-        const currentDataAfterDelay = getCurrentMM4Data();
-        const currentRow = currentDataAfterDelay.find(row => row.id === rowId);
-        
-        console.log(`🔍 Timer fired - checking value: currentRow=${!!currentRow}, currentValue="${currentRow?.[field]}", originalValue="${value}"`);
-        
-        // Only add .99 if the value hasn't changed and still doesn't end with .99
-        if (currentRow && currentRow[field] === value && !value.endsWith('.99')) {
-          const baseValue = value.split('.')[0];
-          const finalValue = baseValue + '.99';
-          console.log(`🔧 Auto-added .99 after typing delay: "${value}" → "${finalValue}"`);
-          
-          const updatedData = currentDataAfterDelay.map(row => 
-            row.id === rowId ? { ...row, [field]: finalValue } : row
-          );
-          updateMM4DataForPipeSize(updatedData);
-          
-          // Force auto-save after adding .99
-          setTimeout(() => {
-            console.log(`💾 Triggering auto-save after .99 addition`);
-            triggerAutoSave();
-          }, 100);
-        }
-      }, 1500); // 1.5 second delay to allow typing
-    }
+    triggerAutoSave();
   };
 
   const addMM4Row = () => {
