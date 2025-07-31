@@ -3024,8 +3024,16 @@ export default function Dashboard() {
           
           // Section doesn't match MM4 criteria - show warning
           console.log('⚠️ Structural Section outside F615 ranges:', {
+            sectionId: section.itemNo,
             sectionDebrisPercent,
             sectionLength,
+            availableRanges: matchingMM4Data.map(row => ({
+              rowId: row.id,
+              maxDebris: row.purpleDebris,
+              maxLength: row.purpleLength,
+              debrisMatch: sectionDebrisPercent <= parseFloat(row.purpleDebris || '0'),
+              lengthMatch: sectionLength <= parseFloat(row.purpleLength || '0')
+            })),
             mm4Configurations: matchingMM4Data.length
           });
           
