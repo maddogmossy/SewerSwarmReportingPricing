@@ -1113,9 +1113,11 @@ export default function PR2ConfigClean() {
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // Automatically add .99 to whole numbers for continuous ranges
-    if (field === 'purpleLength' && value && !value.includes('.') && /^\d+$/.test(value)) {
-      value = value + '.99';
+    // Always add .99 to ALL purple length values for continuous ranges
+    if (field === 'purpleLength' && value && !value.endsWith('.99')) {
+      // Remove any existing decimal part and add .99
+      const baseValue = value.split('.')[0];
+      value = baseValue + '.99';
       console.log(`🔧 Auto-added .99 for continuous ranges (Main Page): "${value.replace('.99', '')}" → "${value}"`);
     }
     
