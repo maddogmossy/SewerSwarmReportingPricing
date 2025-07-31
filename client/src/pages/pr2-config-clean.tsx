@@ -3450,97 +3450,60 @@ export default function PR2ConfigClean() {
           />
         )}
 
-        {/* MMP1 Template - Original Implementation (Disabled in favor of component) */}
-        {false && getTemplateType(categoryId || '') === 'MMP1' && (
-          <div className="space-y-6">
-            {/* MM1 - ID1-ID6 Selection (P002 Pattern) */}
-            <div className="relative">
-              <DevLabel id="MM1" position="top-right" />
-              <Card className="bg-white border-2 border-gray-200">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold text-gray-900">
-                    1. Select Configuration IDs (P002 Pattern)
-                  </CardTitle>
-                  <p className="text-sm text-gray-600">
-                    Select ID1-ID6 templates that will save prices to sectors when selected
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 gap-3">
-                    {MMP1_IDS.map((idOption) => {
-                      // Auto-select utilities (id1) when coming from dashboard 150mm recommendations
-                      const shouldAutoSelect = autoSelectUtilities && idOption.id === 'id1' && !selectedIds.includes('id1');
-                      const isSelected = selectedIds.includes(idOption.id) || shouldAutoSelect;
-                      const hasConfiguration = idsWithConfig.includes(idOption.id);
-                      
-                      return (
-                        <Card 
-                          key={idOption.id}
-                          className={`cursor-pointer transition-all duration-200 hover:shadow-md border-2 ${
-                            isSelected 
-                              ? `border-gray-800 ${idOption.bgColor} ring-2 ring-gray-300` 
-                              : 'border-gray-300 hover:border-gray-400'
-                          }`}
-                          onClick={() => {
-                            console.log('🎯 MM1 ID CARD CLICKED:', { id: idOption.id, willSelect: !isSelected });
-                            handleMMP1IdChange(idOption.id, !isSelected);
-                          }}
-                        >
-                          <CardContent className="p-4 text-center relative">
-                            <div className={`mx-auto w-8 h-8 mb-3 flex items-center justify-center rounded-lg ${
-                              isSelected ? 'bg-white' : 'bg-gray-100'
-                            }`}>
-                              <idOption.icon className={`w-5 h-5 ${
-                                isSelected ? idOption.color : 'text-gray-600'
-                              }`} />
-                            </div>
-                            <h3 className={`font-semibold text-sm mb-1 ${
-                              isSelected ? 'text-gray-900' : 'text-gray-900'
-                            }`}>
-                              {idOption.name}
-                            </h3>
-                            <p className="text-xs text-gray-600">
-                              {idOption.description}
-                            </p>
-                            {isSelected && (
-                              <div className="absolute top-2 right-2">
-                                <Settings className="w-4 h-4 text-gray-600" />
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                  
+        {/* REMOVED DUPLICATE MMP1 IMPLEMENTATION - Using only MMP1Template component */}
 
-                </CardContent>
-              </Card>
-            </div>
+        {/* P006 Template - Original Pattern Template */}
+        {getTemplateType(categoryId || '') === 'P006' && (
+          <div>P006 Template Content Here</div>
+        )}
 
-            {/* Color Picker Section - Enhanced with 20 colors and custom picker */}
-            <div className="relative">
-              <DevLabel id="MM2" position="top-right" />
-              <Card className="bg-white border-2 border-gray-200">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold text-gray-900">
-                    2. Color Picker Section
-                  </CardTitle>
-                  <p className="text-sm text-gray-600">
-                    Choose from 20 Outlook diary-style colors or use custom color picker
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  {/* 20 Outlook Diary Style Colors */}
-                  <div className="grid grid-cols-10 gap-2 mb-4">
-                    {[
-                      { name: 'Light Blue', value: '#8DC3E8' },
-                      { name: 'Light Green', value: '#A4D4B4' },
-                      { name: 'Light Yellow', value: '#F5E6A3' },
-                      { name: 'Light Orange', value: '#F5C99B' },
-                      { name: 'Light Red', value: '#F5A3A3' },
-                      { name: 'Light Purple', value: '#D4A4D4' },
-                      { name: 'Light Pink', value: '#F5C2E7' },
+        {/* P007 Template - Extended Pattern Template */}
+        {getTemplateType(categoryId || '') === 'P007' && (
+          <div>P007 Template Content Here</div>
+        )}
+      </div>
+
+      {/* Range Warning Dialog */}
+      <Dialog open={showRangeWarning} onOpenChange={(open) => {
+        if (!open) {
+          setShowRangeWarning(false);
+          setPendingRangeValue('');
+          setPendingRowId(null);
+        }
+      }}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              Range Continuity Warning
+            </DialogTitle>
+            <DialogDescription>
+              You entered "{pendingRangeValue}" for the length range. For continuous ranges, length values should typically end with ".99".
+              <br /><br />
+              Example: "30.99" creates range 0-30.99m, then next range starts at 30.99m
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 pt-4">
+            <Button
+              onClick={() => handleRangeWarningResponse(true)}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            >
+              Add .99 → "{pendingRangeValue}.99"
+            </Button>
+            <Button
+              onClick={() => handleRangeWarningResponse(false)}
+              variant="outline"
+              className="flex-1"
+            >
+              Keep "{pendingRangeValue}"
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+    </div>
+  );
+}
                       { name: 'Light Teal', value: '#A3D5D5' },
                       { name: 'Light Gray', value: '#D4D4D4' },
                       { name: 'Light Brown', value: '#D4B899' },
