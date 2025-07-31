@@ -280,6 +280,7 @@ export default function PR2Pricing() {
     if (!existingConfig) {
       existingConfig = pr2Configurations.find(config => {
         if (categoryId === 'cctv' && config.categoryId === 'cctv-p006a') return true;
+        if (categoryId === 'van-pack' && config.categoryId === 'van-pack-p006a') return true;
         if (categoryId === 'jet-vac' && config.categoryId === 'jet-vac-p006a') return true;
         if (categoryId === 'cctv-van-pack' && config.categoryId === 'cctv-van-pack-p006a') return true;
         if (categoryId === 'cctv-cleansing-root-cutting' && config.categoryId === 'cctv-jet-vac-root-cutting-p006a') return true;
