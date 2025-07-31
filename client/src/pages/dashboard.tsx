@@ -1967,7 +1967,7 @@ export default function Dashboard() {
     // Don't trigger for unconfigured prices (triangles) - only for configured prices that are below minimum
     const allSectionsHaveCompletePricing = sectionData.every(section => {
       const costCalc = calculateAutoCost(section);
-      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured'].includes(costCalc.status);
+      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items'].includes(costCalc.status);
     });
     
     console.log('TP2 final trigger decision:', {
@@ -1977,7 +1977,7 @@ export default function Dashboard() {
       totalSections: sectionData.length,
       sectionsWithTriangles: sectionData.filter(s => {
         const calc = calculateAutoCost(s);
-        return !calc || calc.cost === 0 || ['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured'].includes(calc.status);
+        return !calc || calc.cost === 0 || ['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items'].includes(calc.status);
       }).length
     });
     
@@ -2051,7 +2051,7 @@ export default function Dashboard() {
     // Only trigger TP1 warning when ALL sections have complete pricing AND costs are red
     const allSectionsHaveCompletePricing = sections.every(section => {
       const costCalc = calculateAutoCost(section);
-      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured'].includes(costCalc.status);
+      return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured', 'f615_insufficient_items'].includes(costCalc.status);
     });
 
     // Debug TP1 sections
@@ -2704,6 +2704,33 @@ export default function Dashboard() {
       });
     }
     
+    // Function to extract defect meterages for patch counting
+    const extractDefectMeterages = (defectsText: string): string[] => {
+      // Extract meterage patterns like "14.27m", "5.2m", "at 10m", etc.
+      const meteragePattern = /(\d+(?:\.\d+)?)\s*m(?!\w)/gi;
+      const matches = defectsText.match(meteragePattern) || [];
+      
+      // Also look for patterns like "at 5.2m" or "from 10m to 15m"
+      const locationPattern = /(?:at|from|to)\s+(\d+(?:\.\d+)?)\s*m/gi;
+      const locationMatches = [...defectsText.matchAll(locationPattern)];
+      
+      // Combine both patterns and remove duplicates
+      const allMeterages = [
+        ...matches,
+        ...locationMatches.map(match => `${match[1]}m`)
+      ];
+      
+      // Remove duplicates and return unique meterage locations
+      const uniqueMeterages = [...new Set(allMeterages)];
+      
+      // If no specific meterages found but defects exist, assume at least 1 patch needed
+      if (uniqueMeterages.length === 0 && defectsText.trim().length > 0) {
+        return ['1 patch']; // Default to 1 patch if defects exist but no specific locations
+      }
+      
+      return uniqueMeterages;
+    };
+
     // NEW: Check for MM4/MM5 data integration for cctv-jet-vac configurations FIRST
     const sectionLength = parseFloat(section.totalLength) || 0;
     const sectionDebrisPercent = extractDebrisPercentage(section.defects || '');
@@ -2799,43 +2826,52 @@ export default function Dashboard() {
             const hasValidRate = blueValue > 0 && greenValue > 0;
             
             if (debrisMatch && lengthMatch && hasValidRate) {
-              // Calculate MM4 rate: blue ÷ green = rate per meter (NOT multiplied by length)
-              const ratePerMeter = blueValue / greenValue;
+              // F615 PATCHING LOGIC: Count defects needing patches and calculate cost per patch
+              // Blue value = cost per patch (e.g., £250 per patch)
+              // Green value = minimum required quantity for efficiency
+              const costPerPatch = blueValue; // Blue window is cost per patch
               
-              console.log('✅ MM4 Per-Meter Rate Calculation:', {
+              // Count defect meterages that need patches (using default option 2 - Double Layer)
+              // Each defect location gets one patch
+              const defectsText = section.defects || '';
+              const defectMeterages = extractDefectMeterages(defectsText);
+              const patchCount = defectMeterages.length; // One patch per defect location
+              
+              const totalPatchCost = costPerPatch * patchCount;
+              
+              console.log('✅ F615 Patching Cost Calculation:', {
                 sectionId: section.itemNo,
                 pipeSizeKey: matchingPipeSizeKey,
                 mm4Row: mm4Row.id,
-                blueValue,
-                greenValue,
-                ratePerMeter,
-                sectionLength,
-                displayCost: ratePerMeter, // Show per-meter rate, not total
+                costPerPatch: blueValue, // Cost per individual patch
+                defectMeterages: defectMeterages,
+                patchCount: patchCount, // Number of patches needed
+                totalPatchCost: totalPatchCost, // Total cost for all patches
+                minimumQuantity: greenValue, // Required minimum from green window
                 debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
                 lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`
               });
               
-              // Count total service defects that need cleaning to check if runs per shift is met
-              const totalServiceDefects = sectionData?.filter(s => 
+              // Count total service items across all sections (not just defects)
+              const totalServiceItems = sectionData?.filter(s => 
                 s.defectType === 'service' && 
-                requiresCleaning(s.defects || '') &&
                 restrictedCleaningSections.includes(s.itemNo)
               ).length || 0;
               
-              const meetsMinimumRuns = totalServiceDefects >= greenValue;
+              const meetsMinimumRuns = totalServiceItems >= greenValue;
               
               return {
-                cost: ratePerMeter, // Display per-length rate
+                cost: totalPatchCost, // Display total patch cost
                 currency: '£',
-                method: 'MM4 Per-Length Rate',
-                status: meetsMinimumRuns ? 'mm4_calculated' : 'mm4_insufficient_runs',
-                ratePerLength: ratePerMeter,
-                sectionLength: sectionLength,
-                dayRate: blueValue,
-                runsPerShift: greenValue,
-                totalServiceDefects: totalServiceDefects,
+                method: 'F615 Patching Cost',
+                status: meetsMinimumRuns ? 'f615_calculated' : 'f615_insufficient_items',
+                costPerPatch: costPerPatch,
+                patchCount: patchCount,
+                totalPatchCost: totalPatchCost,
+                minimumQuantity: greenValue,
+                totalServiceItems: totalServiceItems,
                 meetsMinimumRuns: meetsMinimumRuns,
-                recommendation: `MM4 cleansing rate: £${blueValue} ÷ ${greenValue} = £${ratePerMeter.toFixed(2)} per length`
+                recommendation: `F615 patching: ${patchCount} patches × £${costPerPatch} = £${totalPatchCost} (default option 2)`
               };
             }
           }
