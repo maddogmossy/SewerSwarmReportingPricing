@@ -23,8 +23,6 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
     
     // Route directly to F615 configuration (ID 615) - no auto-generation
     window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
-      window.location.href = `/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
-    }
   };
 
   // Return simple clickable element that triggers auto-detection

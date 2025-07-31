@@ -3933,13 +3933,13 @@ export default function Dashboard() {
         return (
           <span 
             className="text-red-600 font-medium cursor-pointer hover:text-red-700 transition-colors" 
-            title={`Minimum runs per shift not met\n${autoCost.totalServiceDefects || 0} service defects < ${autoCost.runsPerShift || 0} required runs\nPer-length rate: £${autoCost.ratePerLength?.toFixed(2) || '0.00'}\nClick to recalculate day rate`}
+            title={`Minimum runs per shift not met\n${(autoCost as any).totalServiceDefects || 0} service defects < ${(autoCost as any).runsPerShift || 0} required runs\nPer-length rate: £${(autoCost as any).ratePerLength?.toFixed(2) || '0.00'}\nClick to recalculate day rate`}
             onClick={() => {
               // Show warning popup with recalculation options
-              const currentDefects = autoCost.totalServiceDefects || 0;
-              const requiredRuns = autoCost.runsPerShift || 0;
-              const dayRate = autoCost.dayRate || 0;
-              const currentRate = autoCost.ratePerLength?.toFixed(2) || '0.00';
+              const currentDefects = (autoCost as any).totalServiceDefects || 0;
+              const requiredRuns = (autoCost as any).runsPerShift || 0;
+              const dayRate = (autoCost as any).dayRate || 0;
+              const currentRate = (autoCost as any).ratePerLength?.toFixed(2) || '0.00';
               const recalculatedRate = currentDefects > 0 ? (dayRate / currentDefects).toFixed(2) : '0.00';
               
               const userChoice = confirm(

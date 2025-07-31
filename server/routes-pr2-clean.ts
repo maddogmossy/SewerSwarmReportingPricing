@@ -97,11 +97,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .insert(standardCategories)
         .values({
           categoryId,
-          categoryName,
-          description: finalDescription,
-          iconName: 'Edit', // Default icon
-          isDefault: true,
-          isActive: true
+          categoryName
         })
         .returning();
 
@@ -235,9 +231,13 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
       
 
       
+      // This code is unreachable due to early return above, but keeping for reference
+      const pipeSize = "150"; // placeholder
+      const categoryId = "patching"; // placeholder  
+      const sector = "utilities"; // placeholder
+      
       // Validate pipe size is MSCC5 standard
       if (!MSCC5_PIPE_SIZES.includes(pipeSize)) {
-
         return res.status(400).json({ error: `Pipe size ${pipeSize}mm is not a valid MSCC5 standard size` });
       }
       
