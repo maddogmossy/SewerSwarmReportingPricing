@@ -178,11 +178,10 @@ export default function PR2ConfigClean() {
       return 'P006'; // Original P006 CTF templates with 4-window structure
     } else if (categoryId === 'structural-defects') {
       return 'MMP2'; // Structural Defects use completely separate MMP2 template system
-    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack' || categoryId === 'patching') {
-      return 'MMP1'; // Test Card, CCTV/Jet Vac, CCTV/Van Pack, and Patching use MMP1 template with 5 placeholder UI cards
+    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack' || categoryId === 'patching' || categoryId === 'van-pack') {
+      return 'MMP1'; // Test Card, CCTV/Jet Vac, CCTV/Van Pack, Van Pack, and Patching use MMP1 template with 5 placeholder UI cards
     } else if ((categoryId?.includes('-p006a') && categoryId !== 'patching-p006a') || 
                categoryId === 'cctv' || 
-               categoryId === 'van-pack' || 
                categoryId === 'jet-vac' || 
                categoryId === 'cctv-cleansing-root-cutting') {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
@@ -3419,8 +3418,8 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
-        {/* MMP1 Template - Protected Component (Temporarily Disabled for Layout Fix) */}
-        {false && getTemplateType(categoryId || '') === 'MMP1' && (
+        {/* MMP1 Template - Protected Component (Re-enabled) */}
+        {getTemplateType(categoryId || '') === 'MMP1' && (
           <MMP1Template 
             categoryId={categoryId || ''} 
             sector={sector} 
@@ -3443,8 +3442,8 @@ export default function PR2ConfigClean() {
           />
         )}
 
-        {/* MMP1 Template - Original Implementation (Re-enabled for correct layout) */}
-        {getTemplateType(categoryId || '') === 'MMP1' && (
+        {/* MMP1 Template - Original Implementation (Disabled in favor of component) */}
+        {false && getTemplateType(categoryId || '') === 'MMP1' && (
           <div className="space-y-6">
             {/* MM1 - ID1-ID6 Selection (P002 Pattern) */}
             <div className="relative">
