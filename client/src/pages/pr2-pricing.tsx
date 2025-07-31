@@ -55,7 +55,7 @@ const STANDARD_CATEGORIES = [
   { id: 'test-card', name: 'Test Card', description: 'Test configuration card for CTF P006a template demonstration', icon: Zap },
 
   { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves },
-  { id: 'patching-p006a', name: 'Patching', description: 'Modern 4-layer patching configuration with CTF framework', icon: Edit },
+  { id: 'patching', name: 'Patching', description: 'MMP1 template with 5-card configuration system (MM1-MM5)', icon: Edit },
   { id: 'ambient-lining', name: 'Ambient Lining', description: 'Ambient cure lining systems and installation', icon: PaintBucket },
   { id: 'hot-cure-lining', name: 'Hot Cure Lining', description: 'Hot cure lining systems and installation', icon: Flame },
   { id: 'uv-lining', name: 'UV Lining', description: 'UV cure lining systems and installation', icon: Sun },
