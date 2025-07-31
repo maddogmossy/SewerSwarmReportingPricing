@@ -226,10 +226,12 @@ export async function registerCleanPR2Routes(app: Express): Promise<void> {
     '1050', '1200', '1500'
   ];
 
-  // Auto-detect and create missing pipe size configurations
+  // DISABLED: Auto-generation removed - use F615 for all patching
   app.post('/api/pr2-clean/auto-detect-pipe-size', async (req, res) => {
     try {
-      const { categoryId, pipeSize, sector = 'utilities' } = req.body;
+      // Return F615 for all patching requests - no auto-generation
+      res.json({ id: 615, message: 'Using F615 for all patching configurations' });
+      return;
       
 
       

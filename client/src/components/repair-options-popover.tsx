@@ -15,38 +15,14 @@ interface RepairOptionsPopoverProps {
 }
 
 export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }: RepairOptionsPopoverProps) {
-  // PIPE SIZE AUTO-DETECTION: Auto-detect patching configuration for this pipe size
+  // DIRECT ROUTING TO F615: Route directly to F615 patching configuration
   const handleDirectClick = async () => {
     // Extract pipe size from section data
     const pipeSize = sectionData.pipeSize || '150mm';
     const pipeSizeNumber = pipeSize.replace('mm', '');
     
-    
-    try {
-      // Auto-detect or create TP2 patching configuration for this pipe size
-      const response = await fetch('/api/pr2-clean/auto-detect-pipe-size', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          categoryId: 'patching',
-          pipeSize: pipeSizeNumber,
-          sector: sectionData.sector
-        })
-      });
-      
-      if (response.ok) {
-        const config = await response.json();
-        
-        // Route to specific configuration with auto-assigned ID
-        window.location.href = `/pr2-config-clean?id=${config.id}&categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
-      } else {
-        console.warn('Failed to auto-detect patching configuration, using fallback routing');
-        // Fallback to original routing
-        window.location.href = `/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
-      }
-    } catch (error) {
-      console.error('Error in patching auto-detection:', error);
-      // Fallback to original routing on error
+    // Route directly to F615 configuration (ID 615) - no auto-generation
+    window.location.href = `/pr2-config-clean?id=615&categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
       window.location.href = `/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
     }
   };
