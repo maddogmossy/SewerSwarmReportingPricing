@@ -1113,35 +1113,19 @@ export default function PR2ConfigClean() {
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // DEBUG: Track purple length changes to identify auto-correction
-    if (field === 'purpleLength') {
-      console.log('🔍 Purple Length Input Debug (Main Page):', {
-        originalInput: value,
-        valueType: typeof value,
-        valueLength: value.length,
-        rowId: rowId,
-        pipeSize: selectedPipeSizeForMM4,
-        timestamp: new Date().toISOString()
-      });
+    // Auto-add .99 logic for purple length to prevent range gaps
+    let processedValue = value;
+    if (field === 'purpleLength' && value && !value.includes('.')) {
+      // Only add .99 if the value is a whole number (no decimal point)
+      if (/^\d+$/.test(value)) {
+        processedValue = value + '.99';
+        console.log(`🔧 Auto-added .99 (Main Page): "${value}" → "${processedValue}"`);
+      }
     }
-    
-    // FIXED: Remove auto-addition logic - user should control input values directly
-    const processedValue = value;
     
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: processedValue } : row
     );
-    
-    // DEBUG: Verify value preservation
-    if (field === 'purpleLength') {
-      const updatedRow = newData.find(row => row.id === rowId);
-      console.log('🔍 Purple Length After Processing (Main Page):', {
-        processedValue: processedValue,
-        savedValue: updatedRow?.[field],
-        matchesInput: updatedRow?.[field] === value,
-        pipeKey: `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`
-      });
-    }
     
     const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     updateMM4DataForPipeSize(newData);

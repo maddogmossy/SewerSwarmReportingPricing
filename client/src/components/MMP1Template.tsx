@@ -154,31 +154,19 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // DEBUG: Track purple length changes to identify auto-correction
-    if (field === 'purpleLength') {
-      console.log('🔍 Purple Length Input Debug:', {
-        originalInput: value,
-        valueType: typeof value,
-        valueLength: value.length,
-        rowId: rowId,
-        timestamp: new Date().toISOString()
-      });
+    // Auto-add .99 logic for purple length to prevent range gaps
+    let processedValue = value;
+    if (field === 'purpleLength' && value && !value.includes('.')) {
+      // Only add .99 if the value is a whole number (no decimal point)
+      if (/^\d+$/.test(value)) {
+        processedValue = value + '.99';
+        console.log(`🔧 Auto-added .99: "${value}" → "${processedValue}"`);
+      }
     }
     
-    // FIXED: Direct value assignment without auto-formatting to prevent input manipulation
     const newData = currentData.map(row => 
-      row.id === rowId ? { ...row, [field]: value } : row
+      row.id === rowId ? { ...row, [field]: processedValue } : row
     );
-    
-    // DEBUG: Verify value is preserved after state update
-    if (field === 'purpleLength') {
-      const updatedRow = newData.find(row => row.id === rowId);
-      console.log('🔍 Purple Length After State Update:', {
-        savedValue: updatedRow?.[field],
-        matchesInput: updatedRow?.[field] === value,
-        rowData: updatedRow
-      });
-    }
     
     updateMM4DataForPipeSize(newData);
   };

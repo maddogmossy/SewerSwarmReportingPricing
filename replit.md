@@ -915,20 +915,24 @@ This prevents data contamination and ensures authentic extraction integrity.
   - **Documentation**: Complete cost calculation workflow documented for future troubleshooting
 - **Result**: MM4 cost calculation system fully operational with correct £84.09 per-length rates and complete item display (21-23)
 
-### CRITICAL: Purple Field Input Bug Fixed - Auto-Addition Logic Removed ✅
+### CRITICAL: Purple Field Auto-Addition Logic Restored - Range Gap Prevention ✅
 - **Date**: January 31, 2025
-- **Status**: Successfully fixed MM4 purple field input formatting bug where entering "30" became "3.99" with undeletable suffix
-- **Issue Resolved**: Removed auto-addition logic that was automatically appending ".99" to `purpleLength` field values
+- **Status**: Successfully restored MM4 purple field auto-addition logic to prevent range calculation gaps
+- **User Requirement**: Auto-add ".99" to whole numbers for continuous range calculations (30 → 30.99, 60 → 60.99)
+- **Range Logic**: Prevents gaps between ranges (0-30.99m, 30.99-60.99m, 60.99-100.99m)
 - **Files Updated**:
-  - **client/src/pages/pr2-config-clean.tsx**: Removed AUTO-ADD .99 LOGIC from `updateMM4Row` function
-  - **client/src/components/MMP1Template.tsx**: Added direct value assignment without auto-formatting
+  - **client/src/pages/pr2-config-clean.tsx**: Restored smart .99 auto-addition in `updateMM4Row` function
+  - **client/src/components/MMP1Template.tsx**: Added intelligent .99 logic for whole numbers only
+- **Technical Implementation**:
+  - **Smart Detection**: Only adds .99 to whole numbers (regex `/^\d+$/`) 
+  - **Preserves Decimals**: Values with existing decimal points remain unchanged (22.5 stays 22.5)
+  - **Console Logging**: Shows conversion process for debugging ("30" → "30.99")
+  - **Database Sync**: Updated configuration 606 to use .99 format (22.99m for both 150mm and 225mm)
 - **User Benefits**:
-  - **Natural Input Control**: Users can now enter any value (30, 40, 15.5, etc.) without automatic formatting
-  - **Deletable Values**: No more undeletable ".99" suffixes that prevented value modification
-  - **Accurate Data Entry**: Input values saved exactly as typed by user
-  - **Consistent Behavior**: Both main configuration page and MMP1 template components fixed
-- **Technical Implementation**: Direct value assignment (`processedValue = value`) replaces conditional auto-formatting logic
-- **Result**: MM4 purple field inputs now work naturally without formatting interference
+  - **Continuous Ranges**: No gaps in length calculations for dashboard cost matching
+  - **Smart Logic**: Only whole numbers get .99 addition, decimals are preserved
+  - **Accurate Costing**: Dashboard can properly match sections against configured ranges
+- **Result**: MM4 purple length ranges now prevent calculation gaps while preserving user decimal inputs
 
 ## Recent Changes (Updated January 30, 2025)
 
