@@ -3432,13 +3432,15 @@ export default function PR2ConfigClean() {
         )}
 
         {/* MMP2 Template - Completely Separate System for Structural Defects */}
-        {getTemplateType(categoryId || '') === 'MMP2' && (
+        {getTemplateType(categoryId || '') === 'MMP2' && editId && (
           <MMP2Template 
-            configId={editId ? parseInt(editId) : 0}
-            mmp2Data={data?.mm_data || {}}
+            configId={parseInt(editId)}
+            mmp2Data={{}}
             setMmp2Data={(newData: any) => {
               // Update local state for immediate UI feedback
               console.log('🔧 MMP2 Data Updated:', newData);
+              // Invalidate cache to refetch updated data
+              queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
             }}
             selectedPipeSize={selectedPipeSize}
           />
