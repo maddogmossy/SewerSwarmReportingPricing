@@ -2757,32 +2757,42 @@ export default function Dashboard() {
             const hasValidRate = blueValue > 0 && greenValue > 0;
             
             if (debrisMatch && lengthMatch && hasValidRate) {
-              // Calculate MM4 rate: blue ÷ green = rate per length
-              const ratePerLength = blueValue / greenValue;
-              const totalCost = ratePerLength * sectionLength;
+              // Calculate MM4 rate: blue ÷ green = rate per meter (NOT multiplied by length)
+              const ratePerMeter = blueValue / greenValue;
               
-              console.log('✅ MM4 Cost Calculation:', {
+              console.log('✅ MM4 Per-Meter Rate Calculation:', {
                 pipeSizeKey: matchingPipeSizeKey,
                 mm4Row: mm4Row.id,
                 blueValue,
                 greenValue,
-                ratePerLength,
+                ratePerMeter,
                 sectionLength,
-                totalCost,
+                displayCost: ratePerMeter, // Show per-meter rate, not total
                 debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
                 lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`
               });
               
+              // Count total service defects that need cleaning to check if runs per shift is met
+              const totalServiceDefects = sections?.filter(s => 
+                s.defectType === 'service' && 
+                requiresCleaning(s.defects || '') &&
+                restrictedCleaningSections.includes(s.itemNo)
+              ).length || 0;
+              
+              const meetsMinimumRuns = totalServiceDefects >= greenValue;
+              
               return {
-                cost: totalCost,
+                cost: ratePerMeter, // Display per-meter rate
                 currency: '£',
-                method: 'MM4 Rate Calculation',
-                status: 'mm4_calculated',
-                ratePerLength: ratePerLength,
+                method: 'MM4 Per-Meter Rate',
+                status: meetsMinimumRuns ? 'mm4_calculated' : 'mm4_insufficient_runs',
+                ratePerMeter: ratePerMeter,
                 sectionLength: sectionLength,
                 dayRate: blueValue,
                 runsPerShift: greenValue,
-                recommendation: `MM4 cleansing rate: £${blueValue} ÷ ${greenValue} = £${ratePerLength.toFixed(2)} per length × ${sectionLength}m = £${totalCost.toFixed(2)}`
+                totalServiceDefects: totalServiceDefects,
+                meetsMinimumRuns: meetsMinimumRuns,
+                recommendation: `MM4 cleansing rate: £${blueValue} ÷ ${greenValue} = £${ratePerMeter.toFixed(2)} per meter`
               };
             }
           }
@@ -3875,6 +3885,22 @@ export default function Dashboard() {
     // Removed excessive logging
     
     if (autoCost && 'cost' in autoCost && autoCost.cost > 0) {
+      // Check for MM4 insufficient runs status - show RED triangle instead of cost
+      if (autoCost.status === 'mm4_insufficient_runs') {
+        return (
+          <div 
+            className="flex items-center justify-center p-1 rounded cursor-pointer hover:bg-red-50 transition-colors" 
+            title={`Minimum runs per shift not met\n${autoCost.totalServiceDefects || 0} service defects < ${autoCost.runsPerShift || 0} required runs\nPer-meter rate: £${autoCost.ratePerMeter?.toFixed(2) || '0.00'}\nDay rate will be recalculated when minimum is met\n\nClick to view warning details`}
+            onClick={() => {
+              // Show warning popup for insufficient runs
+              alert(`Minimum Runs Per Shift Not Met\n\nCurrent: ${autoCost.totalServiceDefects || 0} service defects\nRequired: ${autoCost.runsPerShift || 0} runs per shift\n\nPer-meter rate: £${autoCost.ratePerMeter?.toFixed(2) || '0.00'}\n\nWhen the total number of service defects meets the minimum runs requirement, the day rate will be divided by the actual number of sections to increase the rate accordingly.`);
+            }}
+          >
+            <TriangleAlert className="h-4 w-4 text-red-600" />
+          </div>
+        );
+      }
+      
       // Orange minimum check - logging removed
       // Check if orange minimum is met to determine cost color
       const orangeMinimumMet = checkOrangeMinimumMet();
@@ -3886,7 +3912,7 @@ export default function Dashboard() {
       return (
         <span 
           className={`${costColor} font-medium cursor-help`}
-          title={`Cost calculated using ${('method' in autoCost) ? autoCost.method || 'PR2 Configuration' : 'PR2 Configuration'}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}`}
+          title={`Cost calculated using ${('method' in autoCost) ? autoCost.method || 'PR2 Configuration' : 'PR2 Configuration'}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}\nPer-meter rate: £${autoCost.cost.toFixed(2)}`}
         >
           £{autoCost.cost.toFixed(2)}
         </span>
