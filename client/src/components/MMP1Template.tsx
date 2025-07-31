@@ -180,10 +180,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
       row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
     );
     
-    // Update MM4 data storage
-    updateMM4DataForPipeSize(newData);
-    
-    // Force update React state for immediate UI reflection
+    // CRITICAL: Update React state FIRST for immediate UI reflection
     const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     const updatedMM4DataByPipeSize = {
       ...mm4DataByPipeSize,
@@ -191,18 +188,27 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     };
     setMm4DataByPipeSize(updatedMM4DataByPipeSize);
     
+    // Update MM4 data storage (this calls the same setState but ensures consistency)
+    updateMM4DataForPipeSize(newData);
+    
     // Also save to localStorage for persistence
     localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
     
-    triggerAutoSave();
+    // Force a component re-render to update input field values
+    setTimeout(() => {
+      triggerAutoSave();
+      console.log(`✅ MMP1Template: Final state update completed for row ${pendingRowId}`);
+    }, 50);
     
     console.log(`✅ MMP1Template: Updated MM4 data:`, newData);
     console.log(`✅ MMP1Template: Updated storage for key ${currentPipeSizeKey}:`, updatedMM4DataByPipeSize);
     
-    // Reset dialog state
-    setShowRangeWarning(false);
-    setPendingRangeValue('');
-    setPendingRowId(null);
+    // Reset dialog state AFTER state update
+    setTimeout(() => {
+      setShowRangeWarning(false);
+      setPendingRangeValue('');
+      setPendingRowId(null);
+    }, 100);
   };
 
   const addMM4Row = () => {
