@@ -47,9 +47,9 @@ const SECTORS = [
 // Standard category options - Frontend DevLabels use database IDs with 'F' prefix for unified system
 const STANDARD_CATEGORIES = [
   { id: 'cctv', name: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video },
-  { id: 'van-pack', name: 'Van Pack', description: 'Test configuration card for CTF P006a template demonstration', icon: Truck },
+  { id: 'van-pack', name: 'Van Pack', description: 'High-pressure water jetting and debris removal', icon: Truck },
   { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
-  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'Combined CCTV inspection and cleansing operations', icon: Monitor },
+  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'MMP1 template with 5-card configuration system (MM1-MM5)', icon: Monitor },
   { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
   { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
   { id: 'test-card', name: 'Test Card', description: 'Test configuration card for CTF P006a template demonstration', icon: Zap },
