@@ -618,7 +618,7 @@ export default function PR2Pricing() {
                         }}
                         onClick={() => handleCategoryNavigation(category.id)}
                       >
-                        <DevLabel id="C609" />
+                        <DevLabel id="F609" />
                         <CardContent className="p-4 text-center relative">
                           <category.icon className="h-8 w-8 mx-auto mb-2 text-gray-700" />
                           <h3 className="font-medium text-sm mb-1 text-gray-800">
