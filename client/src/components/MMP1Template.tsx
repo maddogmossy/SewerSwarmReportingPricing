@@ -104,7 +104,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
           if (categoryId === 'patching') return 'MMP1 Template (F607)';
           if (categoryId === 'cctv-jet-vac') return 'MMP1 Template (F606)';
           if (categoryId === 'cctv-van-pack') return 'MMP1 Template (F608)';
-          if (categoryId === 'test-card-mmp1') return 'MMP1 Template (F609)';
+          if (categoryId === 'van-pack') return 'MMP1 Template (F609)';
           return 'MMP1 Template';
         };
 
@@ -113,7 +113,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
           if (categoryId === 'patching') return 'MMP1 Template for patching configuration - ID1 - ID6 - Master Template Copy';
           if (categoryId === 'cctv-jet-vac') return 'MMP1 Template for CCTV/Jet Vac configuration - ID1 - ID6';
           if (categoryId === 'cctv-van-pack') return 'MMP1 Template for CCTV/Van Pack configuration - ID1 - ID6';
-          if (categoryId === 'test-card-mmp1') return 'MMP1 Template for test card configuration - ID1 - ID1 - ID4';
+          if (categoryId === 'van-pack') return 'MMP1 Template for test card configuration - ID1 - ID1 - ID4';
           return 'Master template configuration';
         };
 
