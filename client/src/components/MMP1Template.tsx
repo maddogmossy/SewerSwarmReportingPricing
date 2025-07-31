@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, Plus, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 
@@ -55,6 +56,9 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const [selectedPipeSizeId, setSelectedPipeSizeId] = useState<number>(1001);
   const [hasUserChanges, setHasUserChanges] = useState<boolean>(false);
   const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [showRangeWarning, setShowRangeWarning] = useState<boolean>(false);
+  const [pendingRangeValue, setPendingRangeValue] = useState<string>('');
+  const [pendingRowId, setPendingRowId] = useState<number | null>(null);
 
   // Auto-save functionality
   const triggerAutoSave = useCallback(() => {
@@ -154,13 +158,42 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // Save exactly what user types - no automatic .99 addition
+    // Check for .99 warning on purple length fields
+    if (field === 'purpleLength' && value && value.trim() !== '' && !value.endsWith('.99')) {
+      // Show warning popup for missing .99
+      setPendingRangeValue(value);
+      setPendingRowId(rowId);
+      setShowRangeWarning(true);
+      return; // Don't save yet, wait for user decision
+    }
+    
+    // Save exactly what user types
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );
     
     updateMM4DataForPipeSize(newData);
     triggerAutoSave();
+  };
+
+  // Handle range warning dialog responses
+  const handleRangeWarningResponse = (addDotNineNine: boolean) => {
+    if (pendingRowId === null) return;
+    
+    const currentData = getCurrentMM4Data();
+    const finalValue = addDotNineNine ? `${pendingRangeValue}.99` : pendingRangeValue;
+    
+    const newData = currentData.map(row => 
+      row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
+    );
+    
+    updateMM4DataForPipeSize(newData);
+    triggerAutoSave();
+    
+    // Reset dialog state
+    setShowRangeWarning(false);
+    setPendingRangeValue('');
+    setPendingRowId(null);
   };
 
   const addMM4Row = () => {
@@ -526,7 +559,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
                   <Input
                     type="text"
                     value={row.purpleLength}
-                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
+                    onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
                     placeholder="30m"
                     className="flex-1 text-xs h-7"
                   />
@@ -587,6 +620,40 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
           </div>
         </CardContent>
       </Card>
+
+      {/* Range Continuity Warning Dialog */}
+      <Dialog open={showRangeWarning} onOpenChange={setShowRangeWarning}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-amber-800">⚠️ Range Continuity Warning</DialogTitle>
+            <DialogDescription className="text-amber-700">
+              You entered "{pendingRangeValue}" for the length range. For continuous range calculations, 
+              we recommend using ".99" endings (e.g., "{pendingRangeValue}.99").
+              <br /><br />
+              This creates seamless ranges like:
+              <ul className="mt-2 ml-4 text-sm">
+                <li>• Range 1: 0 - {pendingRangeValue}.99m</li>
+                <li>• Range 2: {pendingRangeValue}.99 - 60.99m</li>
+              </ul>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 sm:flex-row">
+            <Button 
+              variant="outline" 
+              onClick={() => handleRangeWarningResponse(false)}
+              className="text-gray-600"
+            >
+              Keep "{pendingRangeValue}"
+            </Button>
+            <Button 
+              onClick={() => handleRangeWarningResponse(true)}
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+            >
+              Use "{pendingRangeValue}.99"
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
