@@ -3415,8 +3415,8 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
-        {/* MMP1 Template - Protected Component (Temporarily Disabled for Layout Fix) */}
-        {false && getTemplateType(categoryId || '') === 'MMP1' && (
+        {/* MMP1 Template - Protected Component (Re-enabled with CCTV Purple Window Fix) */}
+        {getTemplateType(categoryId || '') === 'MMP1' && (
           <MMP1Template 
             categoryId={categoryId || ''} 
             sector={sector} 
@@ -3439,8 +3439,8 @@ export default function PR2ConfigClean() {
           />
         )}
 
-        {/* MMP1 Template - Original Implementation (Re-enabled for correct layout) */}
-        {getTemplateType(categoryId || '') === 'MMP1' && (
+        {/* MMP1 Template - Original Implementation (Disabled - Using MMP1Template Component) */}
+        {false && getTemplateType(categoryId || '') === 'MMP1' && (
           <div className="space-y-6">
             {/* MM1 - ID1-ID6 Selection (P002 Pattern) */}
             <div className="relative">
