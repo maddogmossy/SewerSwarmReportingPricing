@@ -1336,6 +1336,18 @@ export default function Dashboard() {
           });
         }
         
+        // FORCE CACHE REFRESH FOR DATABASE UPDATE - clear stale MM4 data
+        if (section.itemNo === 10 && pr2Configurations) {
+          const cacheKey = `mm4-data-606`;
+          if (localStorage.getItem(cacheKey)) {
+            console.log('🔄 CLEARING STALE MM4 CACHE for Item 10 database update');
+            localStorage.removeItem(cacheKey);
+            localStorage.removeItem('mm4DataByPipeSize');
+            // Force configuration re-fetch
+            queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
+          }
+        }
+        
         if (hasDefectsRequiringCost) {
           // DEBUG: Removed console logging to prevent infinite loops
           
