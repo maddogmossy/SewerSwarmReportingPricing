@@ -11,7 +11,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench, Shield } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
-import { TP1Template } from '@/components/TP1Template';
 import { MMP1Template } from '@/components/MMP1Template';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
@@ -171,15 +170,13 @@ export default function PR2ConfigClean() {
   const isEditing = !!editId;
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'TP1' | 'P26' | 'P006' | 'P006a' | 'MMP1' => {
-    if (categoryId === 'cart-card') {
-      return 'TP1'; // Cart card uses standard TP1 template with full interface
-    } else if (categoryId === 'day-rate-db11') {
+  const getTemplateType = (categoryId: string): 'P26' | 'P006' | 'P006a' | 'MMP1' => {
+    if (categoryId === 'day-rate-db11') {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else if (categoryId?.startsWith('P006-')) {
       return 'P006'; // Original P006 CTF templates with 4-window structure
-    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack') {
-      return 'MMP1'; // Test Card, CCTV/Jet Vac, and CCTV/Van Pack use new MMP1 template with 5 placeholder UI cards
+    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack' || categoryId === 'structural-defects') {
+      return 'MMP1'; // Test Card, CCTV/Jet Vac, CCTV/Van Pack, and Structural Defects use new MMP1 template with 5 placeholder UI cards
     } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
                categoryId === 'van-pack' || 
@@ -187,7 +184,8 @@ export default function PR2ConfigClean() {
                categoryId === 'cctv-cleansing-root-cutting') {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else {
-      return 'TP1'; // All other categories use standard TP1 template
+      // Default to MMP1 for any uncategorized templates
+      return 'MMP1';
     }
   };
 
@@ -807,11 +805,7 @@ export default function PR2ConfigClean() {
   const debouncedSave = () => {
     if (!isEditing || !editId) return;
     
-    // CRITICAL: Skip auto-save for main TP1 template form (P007 has its own auto-save)
-    const isTP1Template = ['cctv-jet-vac', 'jetting', 'cleansing'].includes(categoryId || '');
-    if (isTP1Template) {
-      return;
-    }
+    // All templates now use MMP1 system - removed TP1 check
     
     // Always save when user makes changes - including clearing fields
     
@@ -833,9 +827,7 @@ export default function PR2ConfigClean() {
           pricingOptions: formData.pricingOptions,
           quantityOptions: formData.quantityOptions,
           minQuantityOptions: formData.minQuantityOptions,
-          rangeOptions: categoryId === 'cctv-jet-vac' ? 
-            [{ id: 'range_length', label: 'Length', enabled: true, rangeStart: '', rangeEnd: '' }] : 
-            formData.rangeOptions,
+          rangeOptions: formData.rangeOptions,
           vehicleTravelRates: formData.vehicleTravelRates || [],
           vehicleTravelRatesStackOrder: formData.vehicleTravelRatesStackOrder || [],
           mathOperators: formData.mathOperators,
@@ -4056,18 +4048,12 @@ export default function PR2ConfigClean() {
           </Card>
         )}
 
-        {/* P007 Pattern - TP1 Template Component */}
+        {/* P007 Pattern - Removed TP1 Template (now uses MMP1 system) */}
         {(() => {
           const templateType = getTemplateType(categoryId || '');
           return templateType === 'P006a' || templateType === 'P006';
         })() && (
           <>
-            <TP1Template 
-              configId={editId ? parseInt(editId) : 0}
-              tp1Data={formData}
-              setTp1Data={setFormData}
-              selectedPipeSize={formData.pipeSize || '150'}
-            />
 
             {/* W003 Component - Vehicle Travel Rates */}
             <Card className="relative">

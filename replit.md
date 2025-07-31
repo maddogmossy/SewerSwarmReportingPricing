@@ -914,6 +914,30 @@ This prevents data contamination and ensures authentic extraction integrity.
 
 ## Recent Changes (Updated January 31, 2025)
 
+### CRITICAL: TP1 Template System Completely Removed ✅
+- **Date**: January 31, 2025
+- **Status**: Successfully removed all legacy TP1 template system components and migrated structural defects to modern MMP1 system
+- **Issues Fixed**:
+  - **Legacy System Removed**: Deleted F609 (old TP1 patching template) and TP1Template.tsx component
+  - **Structural Defects Migration**: Created F612 MMP1 template for structural-defects category with complete MM1-MM5 functionality
+  - **Template Type Detection**: Updated getTemplateType() to remove all TP1 references and include structural-defects as MMP1
+  - **RepairOptionsPopover Updated**: Modified routing from 'patching' to 'structural-defects' category
+  - **Protected Templates**: F606/F608/MMP1 templates remain completely untouched and operational
+- **Technical Implementation**:
+  - **Database Cleanup**: Deleted F609 (ID 609) patching configuration
+  - **New MMP1 Template**: Created F612 (ID 612) with structural-defects categoryId and orange theme (#F97316)
+  - **Component Removal**: Deleted TP1Template.tsx and removed all TP1Template imports from pr2-config-clean.tsx
+  - **Routing Migration**: Updated repair-options-popover.tsx to use structural-defects instead of patching
+  - **Template Detection**: Added structural-defects to MMP1 template type classification
+- **User Benefits**:
+  - **Unified System**: All templates now use modern MMP1 system with MM1-MM5 placeholder cards
+  - **Structural Defects**: Item 13a and similar structural defects now route to modern MMP1 configuration
+  - **No Legacy Dependencies**: Complete elimination of old TP1 system prevents confusion and maintenance issues
+  - **Enhanced Functionality**: Structural defects gain access to MM4/MM5 cost calculation and vehicle travel rates
+- **Result**: Complete TP1 removal with structural defects successfully migrated to MMP1 system while protecting F606/F608
+
+## Recent Changes (Updated January 31, 2025)
+
 ### CRITICAL: Item 10 MM4 Cost Calculation System Fixed - Complete Workflow Operational ✅
 - **Date**: January 31, 2025
 - **Status**: Successfully resolved Item 10 MM4 range validation issue and restored complete cost calculation workflow

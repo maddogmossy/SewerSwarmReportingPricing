@@ -28,7 +28,7 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          categoryId: 'patching',
+          categoryId: 'structural-defects',
           pipeSize: pipeSizeNumber,
           sector: sectionData.sector
         })
@@ -38,16 +38,16 @@ export function RepairOptionsPopover({ children, sectionData, onPricingNeeded }:
         const config = await response.json();
         
         // Route to specific configuration with auto-assigned ID
-        window.location.href = `/pr2-config-clean?id=${config.id}&categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+        window.location.href = `/pr2-config-clean?id=${config.id}&categoryId=structural-defects&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
       } else {
         console.warn('Failed to auto-detect patching configuration, using fallback routing');
         // Fallback to original routing
-        window.location.href = `/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+        window.location.href = `/pr2-config-clean?categoryId=structural-defects&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
       }
     } catch (error) {
       console.error('Error in patching auto-detection:', error);
       // Fallback to original routing on error
-      window.location.href = `/pr2-config-clean?categoryId=patching&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
+      window.location.href = `/pr2-config-clean?categoryId=structural-defects&sector=${sectionData.sector}&pipeSize=${pipeSizeNumber}`;
     }
   };
 
