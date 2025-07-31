@@ -891,6 +891,30 @@ This prevents data contamination and ensures authentic extraction integrity.
 - **Setup Script**: `setup-ctf-p006-templates.js` successfully executed creating comprehensive template structure
 - **Purple Window Enhanced**: Increased size to w-96 with "%" and "Length" text labels for improved UX
 
+## Recent Changes (Updated January 31, 2025)
+
+### CRITICAL: MM4 Cost Calculation System Fixed - Data Sync Issue Resolved ✅
+- **Date**: January 31, 2025
+- **Status**: Successfully resolved MM4 calculation data synchronization issue between frontend and backend
+- **Issues Fixed**:
+  - **Database Sync Problem**: Backend database had stale `greenValue: "2"` causing £925.00 calculation instead of expected £84.09
+  - **Force Database Update**: Updated configuration 606 with correct `greenValue: "22"` for proper calculation
+  - **Cache Invalidation**: Frontend cache automatically refreshed with new timestamp, eliminating stale data
+  - **Items 21-23 Display**: Confirmed all items exist in database with proper service/structural defect classifications
+  - **Complete Cost Workflow**: Documented full MM4 calculation process from MMP1 template to dashboard display
+- **Technical Implementation**:
+  - **Database Fix**: Updated `mmData.mm4DataByPipeSize["150-1501"][0].greenValue` from "2" to "22"
+  - **Calculation Formula**: £1850 ÷ 22 = £84.09 per-length rate (corrected from £925.00)
+  - **Console Verification**: Dashboard now shows correct `greenValue: "22"` in MM4 debug logs
+  - **Items 21-23 Processing**: All three items confirmed processing through restricted cleaning sections logic
+  - **Service/Structural Split**: Item 21a and 22a structural defects properly classified, Items 21, 22, 23 service defects ready for cleaning calculations
+- **User Benefits**:
+  - **Accurate Cost Display**: Item 3 and other sections now show correct £84.09 rate instead of £925.00 error
+  - **Complete Item Visibility**: Items 21, 22, 23 now display with proper MM4 calculations when meeting criteria
+  - **Data Integrity**: Database and frontend cache fully synchronized with authentic values
+  - **Documentation**: Complete cost calculation workflow documented for future troubleshooting
+- **Result**: MM4 cost calculation system fully operational with correct £84.09 per-length rates and complete item display (21-23)
+
 ## Recent Changes (Updated January 30, 2025)
 
 ### CRITICAL: Cleaning Detection & Cost Calculation System Complete ✅
