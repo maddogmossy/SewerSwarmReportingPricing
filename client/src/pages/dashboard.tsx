@@ -2959,19 +2959,15 @@ export default function Dashboard() {
         }
         
         if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
-          // Check each MM4 row to see if section matches criteria
+          // F615 STRUCTURAL PATCHING: No purple window range restrictions
           for (const mm4Row of matchingMM4Data) {
             const blueValue = parseFloat(mm4Row.blueValue || '0');
             const greenValue = parseFloat(mm4Row.greenValue || '0');
-            const purpleDebris = parseFloat(mm4Row.purpleDebris || '0');
-            const purpleLength = parseFloat(mm4Row.purpleLength || '0');
             
-            // Check if section matches this MM4 configuration criteria
-            const debrisMatch = sectionDebrisPercent <= purpleDebris;
-            const lengthMatch = sectionLength <= purpleLength;
+            // Only check if we have valid blue (cost per patch) and green (minimum quantity) values
             const hasValidRate = blueValue > 0 && greenValue > 0;
             
-            if (debrisMatch && lengthMatch && hasValidRate) {
+            if (hasValidRate) {
               // F615 PATCHING LOGIC: Count defects needing patches and calculate cost per patch
               // Blue value = cost per patch (e.g., £250 per patch)
               // Green value = minimum required quantity for efficiency
@@ -2994,8 +2990,7 @@ export default function Dashboard() {
                 patchCount: patchCount, // Number of patches needed
                 totalPatchCost: totalPatchCost, // Total cost for all patches
                 minimumQuantity: greenValue, // Required minimum from green window
-                debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
-                lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`
+                note: 'F615 structural patching - no purple window range restrictions'
               });
               
               // Count total structural items across all sections (not just defects)
@@ -3022,27 +3017,23 @@ export default function Dashboard() {
             }
           }
           
-          // Section doesn't match MM4 criteria - show warning
-          console.log('⚠️ Structural Section outside F615 ranges:', {
+          // No valid F615 MM4 data available
+          console.log('⚠️ F615 No Valid Pricing Data:', {
             sectionId: section.itemNo,
-            sectionDebrisPercent,
-            sectionLength,
-            availableRanges: matchingMM4Data.map(row => ({
+            mm4Configurations: matchingMM4Data.length,
+            availableRows: matchingMM4Data.map(row => ({
               rowId: row.id,
-              maxDebris: row.purpleDebris,
-              maxLength: row.purpleLength,
-              debrisMatch: sectionDebrisPercent <= parseFloat(row.purpleDebris || '0'),
-              lengthMatch: sectionLength <= parseFloat(row.purpleLength || '0')
-            })),
-            mm4Configurations: matchingMM4Data.length
+              hasBlueValue: !!row.blueValue && parseFloat(row.blueValue) > 0,
+              hasGreenValue: !!row.greenValue && parseFloat(row.greenValue) > 0
+            }))
           });
           
           return {
             cost: 0,
             currency: '£',
-            method: 'F615 Outside Ranges',
-            status: 'f615_outside_ranges',
-            recommendation: 'Structural section exceeds F615 configuration ranges (debris % or length)'
+            method: 'F615 No Pricing Data',
+            status: 'f615_no_pricing_data',
+            recommendation: 'F615 configuration missing valid blue/green pricing data'
           };
         }
       }
