@@ -162,10 +162,13 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     updateMM4DataForPipeSize(newData);
     
     // Add .99 after user stops typing (only for purple length)
-    if (field === 'purpleLength' && value && !value.endsWith('.99')) {
+    if (field === 'purpleLength' && value && value.trim() !== '' && !value.endsWith('.99')) {
+      console.log(`🔧 Setting up .99 auto-addition timer for: "${value}"`);
       setTimeout(() => {
         const currentDataAfterDelay = getCurrentMM4Data();
         const currentRow = currentDataAfterDelay.find(row => row.id === rowId);
+        
+        console.log(`🔍 Timer fired - checking value: currentRow=${!!currentRow}, currentValue="${currentRow?.[field]}", originalValue="${value}"`);
         
         // Only add .99 if the value hasn't changed and still doesn't end with .99
         if (currentRow && currentRow[field] === value && !value.endsWith('.99')) {
@@ -177,6 +180,12 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
             row.id === rowId ? { ...row, [field]: finalValue } : row
           );
           updateMM4DataForPipeSize(updatedData);
+          
+          // Force auto-save after adding .99
+          setTimeout(() => {
+            console.log(`💾 Triggering auto-save after .99 addition`);
+            triggerAutoSave();
+          }, 100);
         }
       }, 1500); // 1.5 second delay to allow typing
     }

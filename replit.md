@@ -915,24 +915,26 @@ This prevents data contamination and ensures authentic extraction integrity.
   - **Documentation**: Complete cost calculation workflow documented for future troubleshooting
 - **Result**: MM4 cost calculation system fully operational with correct £84.09 per-length rates and complete item display (21-23)
 
-### CRITICAL: Purple Field Auto-Addition Logic Restored - Range Gap Prevention ✅
+### CRITICAL: Purple Field Auto-Addition Logic - Delayed System with Enhanced Debugging ✅
 - **Date**: January 31, 2025
-- **Status**: Successfully restored MM4 purple field auto-addition logic to prevent range calculation gaps
-- **User Requirement**: Auto-add ".99" to whole numbers for continuous range calculations (30 → 30.99, 60 → 60.99)
-- **Range Logic**: Prevents gaps between ranges (0-30.99m, 30.99-60.99m, 60.99-100.99m)
+- **Status**: Successfully implemented delayed auto-addition system to prevent typing interference while ensuring range continuity
+- **User Issue Resolved**: Previous system added ".99" immediately on typing "3", preventing continuation to "30"
+- **New Approach**: 1.5-second delay allows complete typing before .99 addition
 - **Files Updated**:
-  - **client/src/pages/pr2-config-clean.tsx**: Restored smart .99 auto-addition in `updateMM4Row` function
-  - **client/src/components/MMP1Template.tsx**: Added intelligent .99 logic for whole numbers only
+  - **client/src/pages/pr2-config-clean.tsx**: Implemented delayed .99 auto-addition with enhanced logging
+  - **client/src/components/MMP1Template.tsx**: Added delayed .99 logic with comprehensive debug output
 - **Technical Implementation**:
-  - **Smart Detection**: Only adds .99 to whole numbers (regex `/^\d+$/`) 
-  - **Preserves Decimals**: Values with existing decimal points remain unchanged (22.5 stays 22.5)
-  - **Console Logging**: Shows conversion process for debugging ("30" → "30.99")
-  - **Database Sync**: Updated configuration 606 to use .99 format (22.99m for both 150mm and 225mm)
+  - **Delayed Addition**: 1.5-second setTimeout allows natural typing flow ("3" → "30" → wait → "30.99")
+  - **Smart Detection**: Only adds .99 if value unchanged during delay period
+  - **Enhanced Logging**: Comprehensive console output for debugging timer behavior
+  - **Database Sync**: Updated configuration 606 with correct .99 format (3.99m for 150mm, 33.99m for 225mm)
+  - **Force Auto-Save**: Triggers save after .99 addition to ensure persistence
 - **User Benefits**:
-  - **Continuous Ranges**: No gaps in length calculations for dashboard cost matching
-  - **Smart Logic**: Only whole numbers get .99 addition, decimals are preserved
-  - **Accurate Costing**: Dashboard can properly match sections against configured ranges
-- **Result**: MM4 purple length ranges now prevent calculation gaps while preserving user decimal inputs
+  - **Natural Typing**: Can type complete numbers without interruption
+  - **Range Continuity**: Still prevents gaps (0-30.99m, 30.99-60.99m, etc.)
+  - **Deletable Values**: .99 suffix can be removed if needed for corrections
+  - **Dashboard Integration**: Proper range matching for cost calculations
+- **Dashboard Cost Issue Identified**: 10 sections with cleaning requirements (DER defects) show NULL costs - requires separate investigation
 
 ## Recent Changes (Updated January 30, 2025)
 

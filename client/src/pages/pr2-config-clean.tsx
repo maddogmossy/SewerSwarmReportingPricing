@@ -1122,10 +1122,13 @@ export default function PR2ConfigClean() {
     updateMM4DataForPipeSize(newData);
     
     // Add .99 after user stops typing (only for purple length)
-    if (field === 'purpleLength' && value && !value.endsWith('.99')) {
+    if (field === 'purpleLength' && value && value.trim() !== '' && !value.endsWith('.99')) {
+      console.log(`🔧 Setting up .99 auto-addition timer (Main Page) for: "${value}"`);
       setTimeout(() => {
         const currentDataAfterDelay = getCurrentMM4Data();
         const currentRow = currentDataAfterDelay.find(row => row.id === rowId);
+        
+        console.log(`🔍 Timer fired (Main Page) - checking value: currentRow=${!!currentRow}, currentValue="${currentRow?.[field]}", originalValue="${value}"`);
         
         // Only add .99 if the value hasn't changed and still doesn't end with .99
         if (currentRow && currentRow[field] === value && !value.endsWith('.99')) {
@@ -1137,6 +1140,12 @@ export default function PR2ConfigClean() {
             row.id === rowId ? { ...row, [field]: finalValue } : row
           );
           updateMM4DataForPipeSize(updatedData);
+          
+          // Force auto-save after adding .99
+          setTimeout(() => {
+            console.log(`💾 Triggering auto-save after .99 addition (Main Page)`);
+            triggerAutoSave();
+          }, 100);
         }
       }, 1500); // 1.5 second delay to allow typing
     }
