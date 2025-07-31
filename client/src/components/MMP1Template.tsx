@@ -98,13 +98,30 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
           mm5Data: mm5Data
         };
 
+        // Dynamic naming based on category
+        const getCategoryDisplayName = () => {
+          if (categoryId === 'test-card') return 'MMP1 Template (F605)';
+          if (categoryId === 'patching') return 'MMP1 Template (F607)';
+          if (categoryId === 'cctv-jet-vac') return 'MMP1 Template (F606)';
+          if (categoryId === 'cctv-van-pack') return 'MMP1 Template (F608)';
+          return 'MMP1 Template';
+        };
+
+        const getCategoryDescription = () => {
+          if (categoryId === 'test-card') return 'MMP1 Template for test card configuration - ID1 - ID6 - Master Template';
+          if (categoryId === 'patching') return 'MMP1 Template for patching configuration - ID1 - ID6 - Master Template Copy';
+          if (categoryId === 'cctv-jet-vac') return 'MMP1 Template for CCTV/Jet Vac configuration - ID1 - ID6';
+          if (categoryId === 'cctv-van-pack') return 'MMP1 Template for CCTV/Van Pack configuration - ID1 - ID6';
+          return 'Master template configuration';
+        };
+
         if (editId) {
           const response = await fetch(`/api/pr2-clean/${editId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              categoryName: 'MMP1 Template',
-              description: 'Master template configuration',
+              categoryName: getCategoryDisplayName(),
+              description: getCategoryDescription(),
               categoryColor: selectedColor,
               pipeSize: selectedPipeSizeForMM4,
               mmData: mmData,
@@ -117,8 +134,8 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              categoryName: 'MMP1 Template',
-              description: 'Master template configuration',
+              categoryName: getCategoryDisplayName(),
+              description: getCategoryDescription(),
               categoryColor: selectedColor,
               pipeSize: selectedPipeSizeForMM4,
               mmData: mmData,
