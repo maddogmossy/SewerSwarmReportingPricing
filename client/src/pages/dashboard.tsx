@@ -2676,20 +2676,32 @@ export default function Dashboard() {
       defectType: section.defectType
     });
     
-    // DEBUG: Track ALL Item 13 variations (13, 13a, 13b) to find which one should be structural
+    // DEBUG: Track Item 13 (service) vs Item 13a (structural) separately
     if (section.itemNo === 13) {
-      console.log('🎯 ITEM 13 ALL VARIATIONS DEBUG:', {
-        itemNo: section.itemNo,
-        letterSuffix: section.letterSuffix,
-        fullId: section.letterSuffix ? `${section.itemNo}${section.letterSuffix}` : section.itemNo,
-        defectType: section.defectType,
-        defects: section.defects,
-        hasStructuralCodes: ['FC', 'FL', 'CR', 'JDL', 'JDM', 'OJM', 'OJL', 'DEF'].some(code => section.defects?.includes(code)),
-        hasServiceCodes: ['DER', 'DES', 'WL', 'RI', 'OB', 'SA'].some(code => section.defects?.includes(code)),
-        classification: section.defects?.includes('DER') ? 'DER=service' : 'No DER found',
-        shouldRouteToF615: section.defectType === 'structural',
-        shouldRouteToF606: section.defectType === 'service'
-      });
+      if (section.letterSuffix === 'a') {
+        console.log('🎯 ITEM 13a STRUCTURAL DEBUG:', {
+          itemNo: section.itemNo,
+          letterSuffix: section.letterSuffix,
+          fullId: `${section.itemNo}${section.letterSuffix}`,
+          defectType: section.defectType,
+          defects: section.defects,
+          isExpectedStructural: section.defectType === 'structural',
+          hasStructuralCodes: ['FC', 'FL', 'CR', 'JDL', 'JDM', 'OJM', 'OJL', 'DEF'].some(code => section.defects?.includes(code)),
+          shouldRouteToF615: section.defectType === 'structural',
+          willReachF615Path: section.defectType === 'structural' && [3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23].includes(section.itemNo)
+        });
+      } else if (!section.letterSuffix) {
+        console.log('🎯 ITEM 13 SERVICE DEBUG:', {
+          itemNo: section.itemNo,
+          letterSuffix: section.letterSuffix,
+          fullId: section.itemNo,
+          defectType: section.defectType,
+          defects: section.defects,
+          isExpectedService: section.defectType === 'service',
+          hasServiceCodes: ['DER', 'DES', 'WL', 'RI', 'OB', 'SA'].some(code => section.defects?.includes(code)),
+          shouldRouteToF606: section.defectType === 'service'
+        });
+      }
     }
     
     // SPECIAL DEBUG FOR ITEM 10 - trace complete workflow
