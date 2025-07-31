@@ -68,7 +68,17 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     
     const timeoutId = setTimeout(async () => {
       const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-      const currentMM4Data = mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
+      const currentMM4Data = mm4DataByPipeSize[pipeSizeKey] || [{ 
+        id: 1, 
+        blueValue: '', 
+        greenValue: '', 
+        purpleDebris: '', 
+        purpleLength: '',
+        singleLayer: '',
+        doubleLayer: '',
+        tripleLayer: '',
+        tripleLayerExtraCure: ''
+      }];
       
       console.log('💾 MM Data being saved to backend:', [{
         selectedPipeSize: selectedPipeSizeForMM4,
@@ -144,7 +154,17 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     console.log(`🔍 MM4 Data for key "${pipeSizeKey}":`, mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }]);
     console.log('📊 All MM4 data by pipe size:', mm4DataByPipeSize);
-    return mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
+    return mm4DataByPipeSize[pipeSizeKey] || [{ 
+      id: 1, 
+      blueValue: '', 
+      greenValue: '', 
+      purpleDebris: '', 
+      purpleLength: '',
+      singleLayer: '',
+      doubleLayer: '',
+      tripleLayer: '',
+      tripleLayerExtraCure: ''
+    }];
   };
 
   const updateMM4DataForPipeSize = (newData: any[]) => {
@@ -155,7 +175,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     }));
   };
 
-  const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
+  const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength' | 'singleLayer' | 'doubleLayer' | 'tripleLayer' | 'tripleLayerExtraCure', value: string) => {
     const currentData = getCurrentMM4Data();
     
     // Save exactly what user types - no validation during typing
@@ -277,7 +297,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   };
 
   // Auto-save wrappers
-  const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
+  const updateMM4RowWithAutoSave = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength' | 'singleLayer' | 'doubleLayer' | 'tripleLayer' | 'tripleLayerExtraCure', value: string) => {
     updateMM4Row(rowId, field, value);
     triggerAutoSave();
   };
@@ -497,101 +517,176 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
         </CardContent>
       </Card>
 
-      {/* MM4 - Blue/Green/Purple Cards */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* Blue Card */}
-        <Card className="bg-blue-50 border-blue-200">
+      {/* MM4 - Conditional Display: Patching vs Standard */}
+      {categoryId === 'f-patching-p006a' ? (
+        /* Orange Patching Configuration Window */
+        <Card className="bg-orange-50 border-orange-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-blue-800">Day Rate</CardTitle>
+            <CardTitle className="text-lg font-medium text-orange-800">
+              MM4 - Patching Configuration
+              <span className="ml-2 text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded font-mono">
+                {selectedPipeSizeForMM4}mm
+              </span>
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-4">
             {getCurrentMM4Data().map((row) => (
-              <div key={row.id} className="flex gap-2">
-                <Input
-                  type="text"
-                  value={row.blueValue}
-                  onChange={(e) => updateMM4RowWithAutoSave(row.id, 'blueValue', e.target.value)}
-                  placeholder="£1850"
-                  className="flex-1 text-sm h-8"
-                />
+              <div key={row.id} className="space-y-3 p-4 bg-white rounded-lg border border-orange-200">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-orange-700">1. Single Layer Patch</Label>
+                    <Input
+                      type="text"
+                      value={row.singleLayer || ''}
+                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'singleLayer', e.target.value)}
+                      placeholder="£150"
+                      className="border-orange-300"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-orange-700">2. Double Layer Patch</Label>
+                    <Input
+                      type="text"
+                      value={row.doubleLayer || ''}
+                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'doubleLayer', e.target.value)}
+                      placeholder="£275"
+                      className="border-orange-300"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-orange-700">3. Triple Layer Patch</Label>
+                    <Input
+                      type="text" 
+                      value={row.tripleLayer || ''}
+                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'tripleLayer', e.target.value)}
+                      placeholder="£425"
+                      className="border-orange-300"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-orange-700">4. Triple Layer + Extra Cure</Label>
+                    <Input
+                      type="text"
+                      value={row.tripleLayerExtraCure || ''}
+                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'tripleLayerExtraCure', e.target.value)}
+                      placeholder="£525"
+                      className="border-orange-300"
+                    />
+                  </div>
+                </div>
                 {getCurrentMM4Data().length > 1 && (
-                  <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="h-8 w-8 p-0">
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
+                  <div className="flex justify-end">
+                    <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="text-red-600 border-red-300">
+                      <Trash2 className="h-3 w-3 mr-1" /> Remove Configuration
+                    </Button>
+                  </div>
                 )}
               </div>
             ))}
-            <Button onClick={addMM4Row} size="sm" variant="outline" className="w-full h-8 text-xs">
-              <Plus className="h-3 w-3 mr-1" /> Add Row
+            <Button onClick={addMM4Row} size="sm" variant="outline" className="w-full border-orange-300 text-orange-700">
+              <Plus className="h-4 w-4 mr-2" /> Add Patching Configuration
             </Button>
           </CardContent>
         </Card>
-
-        {/* Green Card */}
-        <Card className="bg-green-50 border-green-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-green-800">No Per Shift</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {getCurrentMM4Data().map((row) => (
-              <div key={row.id} className="flex gap-2">
-                <Input
-                  type="text"
-                  value={row.greenValue}
-                  onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
-                  placeholder="25"
-                  className="flex-1 text-sm h-8"
-                />
-                {getCurrentMM4Data().length > 1 && (
-                  <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="h-8 w-8 p-0">
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
-            ))}
-            <Button onClick={addMM4Row} size="sm" variant="outline" className="w-full h-8 text-xs">
-              <Plus className="h-3 w-3 mr-1" /> Add Row
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Purple Card */}
-        <Card className="bg-purple-50 border-purple-200">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-purple-800">Debris % / Length M</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {getCurrentMM4Data().map((row) => (
-              <div key={row.id} className="space-y-1">
-                <div className="flex gap-1">
+      ) : (
+        /* Standard Blue/Green/Purple Cards */
+        <div className="grid grid-cols-3 gap-4">
+          {/* Blue Card */}
+          <Card className="bg-blue-50 border-blue-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-blue-800">Day Rate</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {getCurrentMM4Data().map((row) => (
+                <div key={row.id} className="flex gap-2">
                   <Input
                     type="text"
-                    value={row.purpleDebris}
-                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
-                    placeholder="5%"
-                    className="flex-1 text-xs h-7"
-                  />
-                  <Input
-                    type="text"
-                    value={row.purpleLength}
-                    onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
-                    placeholder="30m"
-                    className="flex-1 text-xs h-7"
+                    value={row.blueValue}
+                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'blueValue', e.target.value)}
+                    placeholder="£1850"
+                    className="flex-1 text-sm h-8"
                   />
                   {getCurrentMM4Data().length > 1 && (
-                    <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="h-7 w-7 p-0">
-                      <Trash2 className="h-2 w-2" />
+                    <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="h-8 w-8 p-0">
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   )}
                 </div>
-              </div>
-            ))}
-            <Button onClick={addMM4Row} size="sm" variant="outline" className="w-full h-7 text-xs">
-              <Plus className="h-2 w-2 mr-1" /> Add Row
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+              ))}
+              <Button onClick={addMM4Row} size="sm" variant="outline" className="w-full h-8 text-xs">
+                <Plus className="h-3 w-3 mr-1" /> Add Row
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Green Card */}
+          <Card className="bg-green-50 border-green-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-green-800">No Per Shift</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {getCurrentMM4Data().map((row) => (
+                <div key={row.id} className="flex gap-2">
+                  <Input
+                    type="text"
+                    value={row.greenValue}
+                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
+                    placeholder="25"
+                    className="flex-1 text-sm h-8"
+                  />
+                  {getCurrentMM4Data().length > 1 && (
+                    <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="h-8 w-8 p-0">
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button onClick={addMM4Row} size="sm" variant="outline" className="w-full h-8 text-xs">
+                <Plus className="h-3 w-3 mr-1" /> Add Row
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Purple Card */}
+          <Card className="bg-purple-50 border-purple-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-purple-800">Debris % / Length M</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {getCurrentMM4Data().map((row) => (
+                <div key={row.id} className="space-y-1">
+                  <div className="flex gap-1">
+                    <Input
+                      type="text"
+                      value={row.purpleDebris}
+                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
+                      placeholder="5%"
+                      className="flex-1 text-xs h-7"
+                    />
+                    <Input
+                      type="text"
+                      value={row.purpleLength}
+                      onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
+                      placeholder="30m"
+                      className="flex-1 text-xs h-7"
+                    />
+                    {getCurrentMM4Data().length > 1 && (
+                      <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="h-7 w-7 p-0">
+                        <Trash2 className="h-2 w-2" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <Button onClick={addMM4Row} size="sm" variant="outline" className="w-full h-7 text-xs">
+                <Plus className="h-2 w-2 mr-1" /> Add Row
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* MM5 - Vehicle Weight/Cost Per Mile */}
       <Card className="w-full bg-yellow-50 border-yellow-200">
