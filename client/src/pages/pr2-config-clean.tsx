@@ -3415,8 +3415,8 @@ export default function PR2ConfigClean() {
             </div>
           )}
 
-        {/* MMP1 Template - Protected Component (Re-enabled with CCTV Purple Window Fix) */}
-        {getTemplateType(categoryId || '') === 'MMP1' && (
+        {/* MMP1 Template - Protected Component (Disabled - Using Inline for CCTV Fix) */}
+        {false && getTemplateType(categoryId || '') === 'MMP1' && (
           <MMP1Template 
             categoryId={categoryId || ''} 
             sector={sector} 
@@ -3439,8 +3439,8 @@ export default function PR2ConfigClean() {
           />
         )}
 
-        {/* MMP1 Template - Original Implementation (Disabled - Using MMP1Template Component) */}
-        {false && getTemplateType(categoryId || '') === 'MMP1' && (
+        {/* MMP1 Template - Original Implementation (Re-enabled with CCTV Purple Window Fix) */}
+        {getTemplateType(categoryId || '') === 'MMP1' && (
           <div className="space-y-6">
             {/* MM1 - ID1-ID6 Selection (P002 Pattern) */}
             <div className="relative">
@@ -3827,62 +3827,64 @@ export default function PR2ConfigClean() {
                           </div>
                         </div>
 
-                        {/* Purple - Range Configuration (2 columns - wider for two inputs) - Dynamic Rows */}
-                        <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
-                          <h4 className="font-medium text-purple-800 mb-2">
-                            Range Configuration
-                            <span className="ml-2 text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded font-mono">
-                              {selectedPipeSizeForMM4}mm
-                            </span>
-                          </h4>
-                          <div className="space-y-2">
-                            {mm4Rows.map((row, index) => (
-                              <div key={row.id} className="grid grid-cols-2 gap-2">
-                                <div>
-                                  <label className="text-xs text-purple-700">Debris %</label>
-                                  <Input
-                                    type="text"
-                                    placeholder="0-15"
-                                    className="border-purple-300"
-                                    value={row.purpleDebris}
-                                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="text-xs text-purple-700">Length</label>
-                                  <div className="flex items-center gap-2">
+                        {/* Purple - Range Configuration (Hidden for CCTV category F612) */}
+                        {categoryId !== 'cctv' && (
+                          <div className="col-span-2 bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+                            <h4 className="font-medium text-purple-800 mb-2">
+                              Range Configuration
+                              <span className="ml-2 text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded font-mono">
+                                {selectedPipeSizeForMM4}mm
+                              </span>
+                            </h4>
+                            <div className="space-y-2">
+                              {mm4Rows.map((row, index) => (
+                                <div key={row.id} className="grid grid-cols-2 gap-2">
+                                  <div>
+                                    <label className="text-xs text-purple-700">Debris %</label>
                                     <Input
                                       type="text"
-                                      placeholder="0-35"
-                                      className="border-purple-300 flex-1"
-                                      value={row.purpleLength}
-                                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
+                                      placeholder="0-15"
+                                      className="border-purple-300"
+                                      value={row.purpleDebris}
+                                      onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
                                     />
-                                    {index === 0 && (
-                                      <Button 
-                                        size="sm" 
-                                        className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
-                                        onClick={addMM4Row}
-                                      >
-                                        +
-                                      </Button>
-                                    )}
-                                    {index > 0 && (
-                                      <Button 
-                                        size="sm" 
-                                        variant="destructive"
-                                        className="h-8 w-8 p-0 flex-shrink-0"
-                                        onClick={() => deleteMM4Row(row.id)}
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                      </Button>
-                                    )}
+                                  </div>
+                                  <div>
+                                    <label className="text-xs text-purple-700">Length</label>
+                                    <div className="flex items-center gap-2">
+                                      <Input
+                                        type="text"
+                                        placeholder="0-35"
+                                        className="border-purple-300 flex-1"
+                                        value={row.purpleLength}
+                                        onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
+                                      />
+                                      {index === 0 && (
+                                        <Button 
+                                          size="sm" 
+                                          className="bg-purple-600 hover:bg-purple-700 text-white h-8 w-8 p-0 flex-shrink-0"
+                                          onClick={addMM4Row}
+                                        >
+                                          +
+                                        </Button>
+                                      )}
+                                      {index > 0 && (
+                                        <Button 
+                                          size="sm" 
+                                          variant="destructive"
+                                          className="h-8 w-8 p-0 flex-shrink-0"
+                                          onClick={() => deleteMM4Row(row.id)}
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     ) : (
                       // Show placeholder when no pipe size selected
