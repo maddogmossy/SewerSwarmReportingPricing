@@ -178,11 +178,10 @@ export default function PR2ConfigClean() {
       return 'P006'; // Original P006 CTF templates with 4-window structure
     } else if (categoryId === 'structural-defects') {
       return 'MMP2'; // Structural Defects use completely separate MMP2 template system
-    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack' || categoryId === 'patching' || categoryId === 'van-pack' || categoryId === 'jet-vac') {
-      return 'MMP1'; // Test Card, CCTV/Jet Vac, CCTV/Van Pack, Patching, Van Pack, and Jet Vac use MMP1 template with 5 placeholder UI cards
+    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack' || categoryId === 'patching' || categoryId === 'van-pack' || categoryId === 'jet-vac' || categoryId === 'cctv-cleansing-root-cutting') {
+      return 'MMP1'; // Test Card, CCTV/Jet Vac, CCTV/Van Pack, Patching, Van Pack, Jet Vac, and CCTV/Cleansing/Root Cutting use MMP1 template with 5 placeholder UI cards
     } else if ((categoryId?.includes('-p006a') && categoryId !== 'patching-p006a') || 
-               categoryId === 'cctv' || 
-               categoryId === 'cctv-cleansing-root-cutting') {
+               categoryId === 'cctv') {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
     } else {
       // Default to MMP1 for any uncategorized templates
