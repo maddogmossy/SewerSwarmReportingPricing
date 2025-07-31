@@ -154,29 +154,9 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // For purple length, automatically add .99 to whole numbers and replace decimals
-    let finalValue = value;
-    if (field === 'purpleLength' && value && value.trim() !== '') {
-      // If it's a whole number (digits only), add .99
-      if (/^\d+$/.test(value.trim())) {
-        finalValue = value + '.99';
-        console.log(`🔧 AUTO-ADDED .99 to whole number: "${value}" → "${finalValue}"`);
-      }
-      // If it has a decimal but not .99, replace with .99
-      else if (value.includes('.') && !value.endsWith('.99')) {
-        const baseValue = value.split('.')[0];
-        finalValue = baseValue + '.99';
-        console.log(`🔧 REPLACED decimal with .99: "${value}" → "${finalValue}"`);
-      }
-      // If it already ends with .99, keep it as is
-      else if (value.endsWith('.99')) {
-        finalValue = value;
-        console.log(`✅ Already has .99: "${value}"`);
-      }
-    }
-    
+    // Save exactly what user types - no automatic .99 addition
     const newData = currentData.map(row => 
-      row.id === rowId ? { ...row, [field]: finalValue } : row
+      row.id === rowId ? { ...row, [field]: value } : row
     );
     
     updateMM4DataForPipeSize(newData);

@@ -1113,40 +1113,13 @@ export default function PR2ConfigClean() {
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // Save the raw value first, then add .99 after a delay for purple length
+    // Save exactly what user types - no automatic .99 addition
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );
     
-    const key = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
     updateMM4DataForPipeSize(newData);
-    
-    // For purple length, automatically add .99 to whole numbers and replace decimals
-    if (field === 'purpleLength' && value && value.trim() !== '') {
-      // If it's a whole number (digits only), add .99
-      if (/^\d+$/.test(value.trim())) {
-        const finalValue = value + '.99';
-        console.log(`🔧 AUTO-ADDED .99 to whole number (Main Page): "${value}" → "${finalValue}"`);
-        const updatedData = newData.map(row => 
-          row.id === rowId ? { ...row, [field]: finalValue } : row
-        );
-        updateMM4DataForPipeSize(updatedData);
-        triggerAutoSave();
-        return; // Exit early with .99 added
-      }
-      // If it has a decimal but not .99, replace with .99
-      else if (value.includes('.') && !value.endsWith('.99')) {
-        const baseValue = value.split('.')[0];
-        const finalValue = baseValue + '.99';
-        console.log(`🔧 REPLACED decimal with .99 (Main Page): "${value}" → "${finalValue}"`);
-        const updatedData = newData.map(row => 
-          row.id === rowId ? { ...row, [field]: finalValue } : row
-        );
-        updateMM4DataForPipeSize(updatedData);
-        triggerAutoSave();
-        return; // Exit early with .99 added
-      }
-    }
+    triggerAutoSave();
   };
 
   // 🔒 MMP1 PROTECTED FUNCTIONS - USER ONLY 🔒
