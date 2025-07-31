@@ -180,8 +180,7 @@ export default function PR2ConfigClean() {
       return 'MMP2'; // Structural Defects use completely separate MMP2 template system
     } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack' || categoryId === 'patching' || categoryId === 'van-pack') {
       return 'MMP1'; // Test Card, CCTV/Jet Vac, CCTV/Van Pack, Van Pack, and Patching use MMP1 template with 5 placeholder UI cards
-    } else if ((categoryId?.includes('-p006a') && categoryId !== 'patching-p006a') || 
-               categoryId === 'cctv' || 
+    } else if (categoryId === 'cctv' || 
                categoryId === 'jet-vac' || 
                categoryId === 'cctv-cleansing-root-cutting') {
       return 'P006a'; // P006a templates use full F175-style interface with W020/C029/W007
@@ -3353,7 +3352,16 @@ export default function PR2ConfigClean() {
                       } else if (templateType === 'P26') {
                         return `P26 Template (F${editId || 'Unknown'})`;
                       } else if (templateType === 'MMP1') {
-                        return `MMP1 Template (F${editId || 'Unknown'})`;
+                        // Map category IDs to F-codes for MMP1 templates
+                        const mmp1FCode = (() => {
+                          if (categoryId === 'test-card') return 'F605';
+                          if (categoryId === 'cctv-jet-vac') return 'F606';
+                          if (categoryId === 'patching') return 'F607'; 
+                          if (categoryId === 'cctv-van-pack') return 'F608';
+                          if (categoryId === 'van-pack') return 'F609';
+                          return `F${editId || 'Unknown'}`;
+                        })();
+                        return `MMP1 Template (${mmp1FCode})`;
                       } else if (templateType === 'MMP2') {
                         return `MMP2 Template (F${editId || 'Unknown'})`;
                       } else {
