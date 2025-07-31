@@ -34,8 +34,8 @@ const MMP1_IDS = [
 
 // Outlook Diary Style Colors (20 colors in 10x2 grid)
 const OUTLOOK_COLORS = [
-  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
-  '#F8C471', '#82E0AA', '#F1948A', '#FFB347', '#D2B4DE', '#A9DFBF', '#F9E79F', '#AED6F1', '#D7BDE2', '#A3E4D7'
+  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#82E0AA',
+  '#F8C471', '#85C1E9', '#F1948A', '#FFB347', '#D2B4DE', '#A9DFBF', '#F9E79F', '#AED6F1', '#D7BDE2', '#A3E4D7'
 ];
 
 // UK Drainage Pipe Sizes (MSCC5 compliant)
@@ -70,7 +70,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
       const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
       const currentMM4Data = mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
       
-      console.log('💾 MM Data being saved to backend:', [{
+      console.log('💾 MMP1Template: MM Data being saved to backend:', [{
         selectedPipeSize: selectedPipeSizeForMM4,
         selectedPipeSizeId: selectedPipeSizeId,
         mm1Colors: selectedColor,
@@ -128,48 +128,146 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
           });
           if (!response.ok) throw new Error('Save failed');
         }
-        
+
+        console.log('✅ MMP1Template: Configuration saved successfully');
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
         if (onSave) onSave();
       } catch (error) {
-        console.error('Error saving MMP1 data:', error);
+        console.error('❌ MMP1Template: Save failed:', error);
       }
     }, 500);
     
     setAutoSaveTimeout(timeoutId);
-  }, [selectedPipeSizeForMM4, selectedPipeSizeId, selectedColor, selectedIds, customPipeSizes, mm4DataByPipeSize, mm5Data, editId, categoryId, sector, autoSaveTimeout, onSave]);
+  }, [selectedPipeSizeForMM4, selectedPipeSizeId, selectedColor, selectedIds, customPipeSizes, mm4DataByPipeSize, mm5Data, editId, categoryId, sector, onSave, autoSaveTimeout]);
+
+  // Load existing configuration data
+  const { data: existingConfig, isLoading: configLoading } = useQuery({
+    queryKey: ['/api/pr2-clean', editId],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/pr2-clean/${editId}`);
+      return await response.json();
+    },
+    enabled: !!editId,
+    staleTime: 30000
+  });
+
+  // Initialize data from existing configuration
+  useEffect(() => {
+    if (existingConfig?.mmData && !hasUserChanges) {
+      console.log('🔄 MMP1Template: Loading MM4/MM5 data from backend:', existingConfig.mmData);
+      
+      const mmData = existingConfig.mmData;
+      console.log('🔍 MMP1Template: MM4 Backend Data Analysis:');
+      console.log('  - mm4DataByPipeSize exists:', !!mmData.mm4DataByPipeSize);
+      console.log('  - mm4Rows exists:', !!mmData.mm4Rows);
+      console.log('  - selectedPipeSizeForMM4:', mmData.selectedPipeSize);
+      console.log('  - selectedPipeSizeId:', mmData.selectedPipeSizeId);
+
+      // Check for local data (from localStorage or state)
+      const hasLocalMM4Data = Object.keys(mm4DataByPipeSize).length > 0;
+      const hasLocalMM5Data = mm5Data.length > 0 && mm5Data[0].vehicleWeight !== '';
+      
+      console.log('🔍 MMP1Template: Local data check:');
+      console.log('  - hasLocalMM4Data:', hasLocalMM4Data);
+      console.log('  - hasLocalMM5Data:', hasLocalMM5Data);
+
+      // Only load backend data if we don't have local changes
+      if (!hasLocalMM4Data && mmData.mm4DataByPipeSize) {
+        console.log('📥 MMP1Template: Loading MM4 data from backend');
+        setMm4DataByPipeSize(mmData.mm4DataByPipeSize);
+      } else if (hasLocalMM4Data) {
+        console.log('🔒 MMP1Template: Preserving local MM4 data, skipping backend load');
+      }
+
+      if (!hasLocalMM5Data && mmData.mm5Data) {
+        console.log('📥 MMP1Template: Loading MM5 data from backend');
+        setMm5Data(mmData.mm5Data);
+      } else if (hasLocalMM5Data) {
+        console.log('🔒 MMP1Template: Preserving local MM5 data, skipping backend load');
+      }
+
+      // Always sync other data
+      if (mmData.selectedPipeSize) setSelectedPipeSizeForMM4(mmData.selectedPipeSize);
+      if (mmData.selectedPipeSizeId) setSelectedPipeSizeId(mmData.selectedPipeSizeId);
+      if (mmData.mm1Colors) setSelectedColor(mmData.mm1Colors);
+      if (mmData.mm2IdData) setSelectedIds(mmData.mm2IdData);
+      if (mmData.mm3CustomPipeSizes) setCustomPipeSizes(mmData.mm3CustomPipeSizes);
+
+      // Sync category colors using proper try/catch
+      try {
+        console.log('🎨 MMP1Template: Syncing patching colors:', mmData);
+      } catch (syncError) {
+        console.error('❌ MMP1Template: Error syncing patching colors:', syncError);
+      }
+    }
+  }, [existingConfig?.mmData, hasUserChanges, mm4DataByPipeSize, mm5Data]);
 
   // MM4 data management
   const getCurrentMM4Data = () => {
     const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-    console.log(`🔍 MM4 Data for key "${pipeSizeKey}":`, mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }]);
-    console.log('📊 All MM4 data by pipe size:', mm4DataByPipeSize);
-    return mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
+    const data = mm4DataByPipeSize[pipeSizeKey] || [{ id: 1, blueValue: '', greenValue: '', purpleDebris: '', purpleLength: '' }];
+    console.log(`🔍 MMP1Template: MM4 Data for key "${pipeSizeKey}":`, data);
+    console.log('📊 MMP1Template: All MM4 data by pipe size:', mm4DataByPipeSize);
+    return data;
   };
 
   const updateMM4DataForPipeSize = (newData: any[]) => {
     const pipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
-    setMm4DataByPipeSize(prev => ({
-      ...prev,
-      [pipeSizeKey]: newData
-    }));
+    const updated = { ...mm4DataByPipeSize, [pipeSizeKey]: newData };
+    setMm4DataByPipeSize(updated);
+    
+    // Save to localStorage for persistence
+    localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updated));
   };
 
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // Save exactly what user types - no validation during typing
+    // Handle purple length auto-addition with delayed implementation
+    if (field === 'purpleLength') {
+      const currentData = getCurrentMM4Data();
+      const newData = currentData.map(row => 
+        row.id === rowId ? { ...row, [field]: value } : row
+      );
+      updateMM4DataForPipeSize(newData);
+      
+      // Check if value doesn't end with .99 and isn't empty
+      if (value && !value.includes('.99') && /^\d+$/.test(value)) {
+        console.log(`⏱️ MMP1Template: Starting 1.5s timer for purple length "${value}" on row ${rowId}`);
+        
+        setTimeout(() => {
+          // Get current data again to check if value hasn't changed
+          const currentDataAfterDelay = getCurrentMM4Data();
+          const currentRow = currentDataAfterDelay.find(row => row.id === rowId);
+          
+          if (currentRow && currentRow.purpleLength === value) {
+            console.log(`🔄 MMP1Template: Auto-adding .99 to "${value}" (unchanged after delay)`);
+            const autoValue = `${value}.99`;
+            
+            const updatedData = currentDataAfterDelay.map(row => 
+              row.id === rowId ? { ...row, purpleLength: autoValue } : row
+            );
+            
+            updateMM4DataForPipeSize(updatedData);
+            triggerAutoSave();
+            console.log(`✅ MMP1Template: Auto-updated row ${rowId} purpleLength to "${autoValue}"`);
+          } else {
+            console.log(`⏭️ MMP1Template: Value changed during delay, skipping auto-addition for row ${rowId}`);
+          }
+        }, 1500);
+      }
+      return;
+    }
+    
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );
-    
     updateMM4DataForPipeSize(newData);
-    triggerAutoSave();
   };
 
-  // Handle range warning dialog responses
+  // Range warning response handler
   const handleRangeWarningResponse = (addDotNineNine: boolean) => {
-    if (pendingRowId === null) return;
+    if (!pendingRangeValue || pendingRowId === null) return;
     
     const currentData = getCurrentMM4Data();
     const finalValue = addDotNineNine ? `${pendingRangeValue}.99` : pendingRangeValue;
@@ -238,7 +336,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
 
   // MM5 data management
   const getCurrentMM5Data = () => {
-    console.log('🔍 MM5 Data (independent):', mm5Data);
+    console.log('🔍 MMP1Template: MM5 Data (independent):', mm5Data);
     return mm5Data;
   };
 
@@ -320,16 +418,17 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   // Pipe size management
   const handlePipeSizeSelect = (size: number) => {
     const newId = size * 10 + 1;
-    console.log(`🔄 Switching pipe size from ${selectedPipeSizeForMM4}mm to ${size}mm`);
-    console.log('📊 Current MM4 data before switch:', mm4DataByPipeSize);
-    console.log('📊 Current MM5 data before switch (independent):', mm5Data);
+    console.log(`🔄 MMP1Template: Switching pipe size from ${selectedPipeSizeForMM4}mm to ${size}mm`);
+    console.log('📊 MMP1Template: Current MM4 data before switch:', mm4DataByPipeSize);
+    console.log('📊 MMP1Template: Current MM5 data before switch (independent):', mm5Data);
     
     setSelectedPipeSizeForMM4(size.toString());
     setSelectedPipeSizeId(newId);
-    console.log(`✅ Switched to ${size}mm with CONSISTENT ID: ${newId}`);
-    console.log(`🔍 Will now load data for key: ${size}-${newId}`);
+    setHasUserChanges(true);
+    triggerAutoSave();
   };
 
+  // Custom pipe size management
   const addCustomPipeSize = () => {
     const inputElement = document.getElementById('custom-pipe-size') as HTMLInputElement;
     const newSize = parseInt(inputElement?.value || '0');
@@ -345,15 +444,19 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     triggerAutoSave();
   };
 
+  if (configLoading) {
+    return <div className="text-center text-gray-500 p-8">Loading configuration...</div>;
+  }
+
   return (
-    <div className="space-y-6">
-      {/* MM1 - ID Selection Cards (P002 Pattern) */}
+    <div className="space-y-6 max-w-7xl mx-auto p-6">
+      {/* MM1 - MMP1 ID Selection (P002 Pattern) */}
       <Card className="w-full bg-white">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-semibold text-black">MM1 - Configuration Templates</CardTitle>
+          <CardTitle className="text-lg font-semibold text-black">MM1 - MMP1 ID Selection</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {MMP1_IDS.map((id) => {
               const IconComponent = id.icon;
               const isSelected = selectedIds.includes(id.id);
@@ -362,16 +465,16 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
               return (
                 <div key={id.id} className="relative">
                   <Card 
-                    className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                      isSelected 
-                        ? `${id.bgColor} border-2 border-blue-300` 
-                        : 'bg-white border border-gray-200 hover:border-gray-300'
+                    className={`cursor-pointer transition-all ${
+                      isSelected ? `${id.bgColor} border-2 border-opacity-50` : 'bg-white hover:bg-gray-50 border border-gray-200'
                     }`}
                     onClick={() => handleMMP1IdChange(id.id, !isSelected)}
                   >
-                    <CardContent className="p-4 text-center relative">
-                      <div className="flex flex-col items-center space-y-2">
-                        <IconComponent className={`h-8 w-8 ${isSelected ? id.color : 'text-gray-400'}`} />
+                    <CardContent className="p-4 text-center">
+                      <div className="flex flex-col items-center space-y-2 mb-3">
+                        <div className={`p-3 rounded-lg ${id.bgColor}`}>
+                          <IconComponent className={`h-6 w-6 ${id.color}`} />
+                        </div>
                         <h3 className={`font-medium ${isSelected ? 'text-gray-900' : 'text-gray-600'}`}>
                           {id.name}
                         </h3>
@@ -556,14 +659,14 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
         </Card>
 
         {/* Purple Card */}
-        <Card className="bg-purple-50 border-purple-200">
+        <Card className="bg-purple-50 border-purple-200 w-96">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-purple-800">Debris % / Length M</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {getCurrentMM4Data().map((row) => (
-              <div key={row.id} className="space-y-1">
-                <div className="flex gap-1">
+              <div key={row.id} className="space-y-2">
+                <div className="flex gap-2 items-center">
                   <Input
                     type="text"
                     value={row.purpleDebris}
@@ -571,6 +674,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
                     placeholder="5%"
                     className="flex-1 text-xs h-7"
                   />
+                  <span className="text-xs text-purple-600">%</span>
                   <Input
                     type="text"
                     value={row.purpleLength}
@@ -578,6 +682,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
                     placeholder="30m"
                     className="flex-1 text-xs h-7"
                   />
+                  <span className="text-xs text-purple-600">Length</span>
                   {getCurrentMM4Data().length > 1 && (
                     <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="h-7 w-7 p-0">
                       <Trash2 className="h-2 w-2" />
