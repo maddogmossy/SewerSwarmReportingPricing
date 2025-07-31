@@ -22,6 +22,11 @@ interface MMP1TemplateProps {
   onSave?: () => void;
 }
 
+// Create category-specific localStorage keys to prevent cross-contamination
+const getCategorySpecificKey = (categoryId: string, keyType: string, editId?: number) => {
+  return `${keyType}-${categoryId}-${editId || 'new'}`;
+};
+
 // MMP1 ID definitions (ID1-ID6 following P002 pattern - matching six sectors)
 const MMP1_IDS = [
   { id: 'id1', name: 'Utilities', label: 'Utilities', description: 'Water, gas, electricity and telecommunications infrastructure', icon: Building, color: 'text-blue-600', bgColor: 'bg-blue-50' },
@@ -211,8 +216,9 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     // Update MM4 data storage (this calls the same setState but ensures consistency)
     updateMM4DataForPipeSize(newData);
     
-    // Also save to localStorage for persistence
-    localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
+    // Also save to localStorage for persistence with category-specific key
+    const categoryKey = getCategorySpecificKey(categoryId, 'mm4DataByPipeSize', editId);
+    localStorage.setItem(categoryKey, JSON.stringify(updatedMM4DataByPipeSize));
     
     // Force a component re-render to update input field values
     setTimeout(() => {
