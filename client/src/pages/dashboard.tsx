@@ -1339,8 +1339,8 @@ export default function Dashboard() {
             // Route structural defects (21a, 22a) to TP2/TP3 calculation
             costCalculation = calculateAutoCost(section);
           } else if (isServiceDefectForCost || needsCleaning) {
-            // Route service defects (21, 22, 23) to TP1 cleaning calculation
-            costCalculation = calculateTP1CleaningCost(section);
+            // Route service defects to MM4 calculation (with fallback to TP1)
+            costCalculation = calculateAutoCost(section);
           } else {
             // Fallback to auto cost calculation
             costCalculation = calculateAutoCost(section);
@@ -1885,7 +1885,7 @@ export default function Dashboard() {
 
     // CRITICAL FIX: Only trigger TP2 warning when structural triangles are visible AND costs are red
     // Check if any structural sections are showing triangles in cost column
-    const structuralSectionsWithTriangles = sections.filter(section => {
+    const structuralSectionsWithTriangles = sectionData.filter(section => {
       const isStructural = section.defectType === 'structural';
       if (!isStructural) return false;
       
@@ -1914,7 +1914,7 @@ export default function Dashboard() {
     const costsAreRed = !orangeMinimumMet;
 
     // Debug all sections first
-    const allStructuralSections = sections.filter(s => s.defectType === 'structural');
+    const allStructuralSections = sectionData.filter(s => s.defectType === 'structural');
     
     console.log('Structural sections debug:', allStructuralSections.map(s => ({
       itemNo: s.itemNo,
@@ -1924,9 +1924,9 @@ export default function Dashboard() {
     })));
     
     console.log('TP2 trigger analysis:', {
-      totalSections: sections.length,
+      totalSections: sectionData.length,
       structuralSections: allStructuralSections.length,
-      serviceSections: sections.filter(s => s.defectType === 'service').length,
+      serviceSections: sectionData.filter(s => s.defectType === 'service').length,
       structuralTriangles: structuralSectionsWithTriangles.length,
       costsAreRed: costsAreRed,
       shouldTrigger: structuralSectionsWithTriangles.length > 0 && costsAreRed,
@@ -1940,7 +1940,7 @@ export default function Dashboard() {
 
     // CRITICAL FIX: Only trigger TP2 warning when ALL sections have complete pricing AND costs are red
     // Don't trigger for unconfigured prices (triangles) - only for configured prices that are below minimum
-    const allSectionsHaveCompletePricing = sections.every(section => {
+    const allSectionsHaveCompletePricing = sectionData.every(section => {
       const costCalc = calculateAutoCost(section);
       return costCalc && costCalc.cost > 0 && !['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured'].includes(costCalc.status);
     });
@@ -1949,8 +1949,8 @@ export default function Dashboard() {
       allSectionsConfigured: allSectionsHaveCompletePricing,
       costsAreRed: costsAreRed,
       shouldTrigger: allSectionsHaveCompletePricing && costsAreRed,
-      totalSections: sections.length,
-      sectionsWithTriangles: sections.filter(s => {
+      totalSections: sectionData.length,
+      sectionsWithTriangles: sectionData.filter(s => {
         const calc = calculateAutoCost(s);
         return !calc || calc.cost === 0 || ['tp1_unconfigured', 'tp1_invalid', 'tp2_unconfigured', 'id4_unconfigured'].includes(calc.status);
       }).length
@@ -1960,7 +1960,7 @@ export default function Dashboard() {
     if (allSectionsHaveCompletePricing && costsAreRed) {
       
       // Find all structural sections that need TP2 patching
-      const structuralSections = sections.filter(s => s.defectType === 'structural');
+      const structuralSections = sectionData.filter(s => s.defectType === 'structural');
       
       if (structuralSections.length > 0) {
         // Check primary TP2 configuration for travel rates
@@ -2773,7 +2773,7 @@ export default function Dashboard() {
               });
               
               // Count total service defects that need cleaning to check if runs per shift is met
-              const totalServiceDefects = sections?.filter(s => 
+              const totalServiceDefects = sectionData?.filter(s => 
                 s.defectType === 'service' && 
                 requiresCleaning(s.defects || '') &&
                 restrictedCleaningSections.includes(s.itemNo)
@@ -2782,17 +2782,17 @@ export default function Dashboard() {
               const meetsMinimumRuns = totalServiceDefects >= greenValue;
               
               return {
-                cost: ratePerMeter, // Display per-meter rate
+                cost: ratePerMeter, // Display per-length rate
                 currency: '£',
-                method: 'MM4 Per-Meter Rate',
+                method: 'MM4 Per-Length Rate',
                 status: meetsMinimumRuns ? 'mm4_calculated' : 'mm4_insufficient_runs',
-                ratePerMeter: ratePerMeter,
+                ratePerLength: ratePerMeter,
                 sectionLength: sectionLength,
                 dayRate: blueValue,
                 runsPerShift: greenValue,
                 totalServiceDefects: totalServiceDefects,
                 meetsMinimumRuns: meetsMinimumRuns,
-                recommendation: `MM4 cleansing rate: £${blueValue} ÷ ${greenValue} = £${ratePerMeter.toFixed(2)} per meter`
+                recommendation: `MM4 cleansing rate: £${blueValue} ÷ ${greenValue} = £${ratePerMeter.toFixed(2)} per length`
               };
             }
           }
@@ -3885,19 +3885,43 @@ export default function Dashboard() {
     // Removed excessive logging
     
     if (autoCost && 'cost' in autoCost && autoCost.cost > 0) {
-      // Check for MM4 insufficient runs status - show RED triangle instead of cost
+      // Check for MM4 insufficient runs status - show RED cost with warning popup
       if (autoCost.status === 'mm4_insufficient_runs') {
         return (
-          <div 
-            className="flex items-center justify-center p-1 rounded cursor-pointer hover:bg-red-50 transition-colors" 
-            title={`Minimum runs per shift not met\n${autoCost.totalServiceDefects || 0} service defects < ${autoCost.runsPerShift || 0} required runs\nPer-meter rate: £${autoCost.ratePerMeter?.toFixed(2) || '0.00'}\nDay rate will be recalculated when minimum is met\n\nClick to view warning details`}
+          <span 
+            className="text-red-600 font-medium cursor-pointer hover:text-red-700 transition-colors" 
+            title={`Minimum runs per shift not met\n${autoCost.totalServiceDefects || 0} service defects < ${autoCost.runsPerShift || 0} required runs\nPer-length rate: £${autoCost.ratePerLength?.toFixed(2) || '0.00'}\nClick to recalculate day rate`}
             onClick={() => {
-              // Show warning popup for insufficient runs
-              alert(`Minimum Runs Per Shift Not Met\n\nCurrent: ${autoCost.totalServiceDefects || 0} service defects\nRequired: ${autoCost.runsPerShift || 0} runs per shift\n\nPer-meter rate: £${autoCost.ratePerMeter?.toFixed(2) || '0.00'}\n\nWhen the total number of service defects meets the minimum runs requirement, the day rate will be divided by the actual number of sections to increase the rate accordingly.`);
+              // Show warning popup with recalculation options
+              const currentDefects = autoCost.totalServiceDefects || 0;
+              const requiredRuns = autoCost.runsPerShift || 0;
+              const dayRate = autoCost.dayRate || 0;
+              const currentRate = autoCost.ratePerLength?.toFixed(2) || '0.00';
+              const recalculatedRate = currentDefects > 0 ? (dayRate / currentDefects).toFixed(2) : '0.00';
+              
+              const userChoice = confirm(
+                `Minimum Runs Per Shift Not Met\n\n` +
+                `Current: ${currentDefects} service defects\n` +
+                `Required: ${requiredRuns} runs per shift\n\n` +
+                `Current rate: £${currentRate} per length\n` +
+                `Recalculated rate: £${recalculatedRate} per length\n\n` +
+                `Would you like to:\n` +
+                `• Click OK to apply recalculated rate (£${recalculatedRate})\n` +
+                `• Click Cancel to specify your own rate`
+              );
+              
+              if (userChoice) {
+                alert(`Day rate recalculated to £${recalculatedRate} per length based on ${currentDefects} actual service defects.`);
+              } else {
+                const newRate = prompt(`Enter new rate per length (current: £${currentRate}):`);
+                if (newRate && !isNaN(parseFloat(newRate))) {
+                  alert(`New rate set to £${parseFloat(newRate).toFixed(2)} per length.`);
+                }
+              }
             }}
           >
-            <TriangleAlert className="h-4 w-4 text-red-600" />
-          </div>
+            £{autoCost.cost.toFixed(2)}
+          </span>
         );
       }
       
@@ -3912,7 +3936,7 @@ export default function Dashboard() {
       return (
         <span 
           className={`${costColor} font-medium cursor-help`}
-          title={`Cost calculated using ${('method' in autoCost) ? autoCost.method || 'PR2 Configuration' : 'PR2 Configuration'}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}\nPer-meter rate: £${autoCost.cost.toFixed(2)}`}
+          title={`Cost calculated using ${('method' in autoCost) ? autoCost.method || 'PR2 Configuration' : 'PR2 Configuration'}\nStatus: ${orangeMinimumMet ? 'Orange minimum met' : 'Below orange minimum'}\nPer-length rate: £${autoCost.cost.toFixed(2)}`}
         >
           £{autoCost.cost.toFixed(2)}
         </span>
