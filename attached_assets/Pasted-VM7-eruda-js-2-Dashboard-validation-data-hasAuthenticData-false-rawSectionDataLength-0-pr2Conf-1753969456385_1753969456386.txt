@@ -1,0 +1,285 @@
+VM7 eruda.js:2 Dashboard validation data: {hasAuthenticData: false, rawSectionDataLength: 0, pr2ConfigurationsLength: 0, workCategoriesLength: 14, vehicleTravelRatesLength: 0}
+VM7 eruda.js:2 Dashboard validation data: {hasAuthenticData: false, rawSectionDataLength: 0, pr2ConfigurationsLength: 3, workCategoriesLength: 14, vehicleTravelRatesLength: 0}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 3, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 3, sectionLength: 30.24, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 3, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 6, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 6, sectionLength: 33.78, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 6, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 7, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 7, sectionLength: 5.64, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 7, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 8, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 8, sectionLength: 31.47, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 8, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🎯 ITEM 10 SEVERITY CHECK: {itemNo: 10, severityGrade: '3', severityGrades: {…}, hasDefectsRequiringCost: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 10, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 10, sectionLength: 34.31, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ⚠️ Section outside MM4 ranges: {sectionDebrisPercent: 5, sectionLength: 34.31, mm4Configurations: 2}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 13, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 13, sectionLength: 27.9, sectionDebrisPercent: 30, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 13, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 14, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 14, sectionLength: 21.68, sectionDebrisPercent: 10, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 14, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 15, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 15, sectionLength: 0, sectionDebrisPercent: 0, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 15, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 21, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 21, sectionLength: 22.14, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 21, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 22, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 22, sectionLength: 27.74, sectionDebrisPercent: 10, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 22, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 23, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 23, sectionLength: 23.97, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 23, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 Dashboard validation data: {hasAuthenticData: true, rawSectionDataLength: 27, pr2ConfigurationsLength: 3, workCategoriesLength: 14, vehicleTravelRatesLength: 0}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 1, defects: 'No service or structural defect found', totalLength: '15.56', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 2, defects: 'No service or structural defect found', totalLength: '19.02', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 3, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 3, sectionLength: 30.24, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 3, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 4, defects: 'No service or structural defect found', totalLength: '19.93', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 5, defects: 'No service or structural defect found', totalLength: '21.11', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 6, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 6, sectionLength: 33.78, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 6, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 7, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 7, sectionLength: 5.64, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 7, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 8, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 8, sectionLength: 31.47, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 8, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 9, defects: 'Line deviates left at 1.87m', totalLength: '2.59', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 10, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 10, sectionLength: 34.31, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ⚠️ Section outside MM4 ranges: {sectionDebrisPercent: 5, sectionLength: 34.31, mm4Configurations: 2}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 11, defects: 'No service or structural defect found', totalLength: '58', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 12, defects: 'Line deviates left at 4.79m. Line deviates right at 17.43m', totalLength: '18.78', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 13, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 13, sectionLength: 27.9, sectionDebrisPercent: 30, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 13, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 14, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 14, sectionLength: 21.68, sectionDebrisPercent: 10, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 14, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 15, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 15, sectionLength: 0, sectionDebrisPercent: 0, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 15, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 16, defects: 'No service or structural defect found', totalLength: '23.27', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 17, defects: 'No service or structural defect found', totalLength: '21.69', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 18, defects: 'No service or structural defect found', totalLength: '13.29', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 21, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 21, sectionLength: 22.14, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 21, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 22, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 22, sectionLength: 27.74, sectionDebrisPercent: 10, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 22, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 23, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 23, sectionLength: 23.97, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 23, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 24, defects: 'LU 2.33m (Line deviates up)', totalLength: '6.86', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 Validation completed: {sectionsLength: 27, configsLength: 3, sampleSection: 1, sampleConfig: 'cctv-van-pack'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+VM7 eruda.js:2 Structural sections debug: (5) [{…}, {…}, {…}, {…}, {…}]
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+VM7 eruda.js:2 TP2 trigger analysis: {totalSections: 27, structuralSections: 5, serviceSections: 22, structuralTriangles: 4, costsAreRed: true, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 1, defects: 'No service or structural defect found', totalLength: '15.56', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 1, defects: 'No service or structural defect found', totalLength: '15.56', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 2, defects: 'No service or structural defect found', totalLength: '19.02', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 3, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 3, sectionLength: 30.24, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 3, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 4, defects: 'No service or structural defect found', totalLength: '19.93', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 5, defects: 'No service or structural defect found', totalLength: '21.11', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 6, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 6, sectionLength: 33.78, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 6, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 7, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 7, sectionLength: 5.64, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 7, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 8, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 8, sectionLength: 31.47, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 8, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 9, defects: 'Line deviates left at 1.87m', totalLength: '2.59', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 10, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 10, sectionLength: 34.31, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ⚠️ Section outside MM4 ranges: {sectionDebrisPercent: 5, sectionLength: 34.31, mm4Configurations: 2}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 11, defects: 'No service or structural defect found', totalLength: '58', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 12, defects: 'Line deviates left at 4.79m. Line deviates right at 17.43m', totalLength: '18.78', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 13, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 13, sectionLength: 27.9, sectionDebrisPercent: 30, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 13, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 14, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 14, sectionLength: 21.68, sectionDebrisPercent: 10, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 14, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 15, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 15, sectionLength: 0, sectionDebrisPercent: 0, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 15, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 16, defects: 'No service or structural defect found', totalLength: '23.27', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 17, defects: 'No service or structural defect found', totalLength: '21.69', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 18, defects: 'No service or structural defect found', totalLength: '13.29', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 21, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 21, sectionLength: 22.14, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 21, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 22, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 22, sectionLength: 27.74, sectionDebrisPercent: 10, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 22, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 23, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 23, sectionLength: 23.97, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 23, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 24, defects: 'LU 2.33m (Line deviates up)', totalLength: '6.86', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 TP2 final trigger decision: {allSectionsConfigured: false, costsAreRed: true, shouldTrigger: false, totalSections: 27, sectionsWithTriangles: 17}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 1, defects: 'No service or structural defect found', totalLength: '15.56', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 TP1 configuration analysis: {allSectionsConfigured: false, costsAreRed: true, shouldTrigger: false, totalSections: 27, serviceSections: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 3, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 3, sectionLength: 30.24, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 3, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 6, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 6, sectionLength: 33.78, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 6, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 7, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 7, sectionLength: 5.64, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 7, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 8, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 8, sectionLength: 31.47, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 8, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🎯 ITEM 10 SEVERITY CHECK: {itemNo: 10, severityGrade: '3', severityGrades: {…}, hasDefectsRequiringCost: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 10, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 10, sectionLength: 34.31, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ⚠️ Section outside MM4 ranges: {sectionDebrisPercent: 5, sectionLength: 34.31, mm4Configurations: 2}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 13, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 13, sectionLength: 27.9, sectionDebrisPercent: 30, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 13, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 14, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 14, sectionLength: 21.68, sectionDebrisPercent: 10, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 14, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service'}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 15, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 15, sectionLength: 0, sectionDebrisPercent: 0, sectionPipeSize: '150', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 15, pipeSizeKey: '150-1501', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 21, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 21, sectionLength: 22.14, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 21, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 22, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 22, sectionLength: 27.74, sectionDebrisPercent: 10, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 22, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+VM7 eruda.js:2 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service'}
+VM7 eruda.js:2 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+VM7 eruda.js:2 🔍 MM4 Debug: Checking for cctv-jet-vac config: {sectionId: 23, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(3), …}
+VM7 eruda.js:2 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 23, sectionLength: 23.97, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+VM7 eruda.js:2 ✅ MM4 Per-Meter Rate Calculation: {sectionId: 23, pipeSizeKey: '225-2251', mm4Row: 1, blueValue: 1850, greenValue: 22, …}
