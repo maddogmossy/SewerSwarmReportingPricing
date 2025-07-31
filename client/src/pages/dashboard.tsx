@@ -2676,16 +2676,19 @@ export default function Dashboard() {
       defectType: section.defectType
     });
     
-    // DEBUG: Track Item 13a specifically to see why it's not reaching F615
+    // DEBUG: Track ALL Item 13 variations (13, 13a, 13b) to find which one should be structural
     if (section.itemNo === 13) {
-      console.log('🎯 ITEM 13a ENTRY DEBUG:', {
+      console.log('🎯 ITEM 13 ALL VARIATIONS DEBUG:', {
         itemNo: section.itemNo,
         letterSuffix: section.letterSuffix,
+        fullId: section.letterSuffix ? `${section.itemNo}${section.letterSuffix}` : section.itemNo,
         defectType: section.defectType,
         defects: section.defects,
-        isRestrictedSection: [3, 6, 7, 8, 10, 13, 14, 15, 21, 22, 23].includes(section.itemNo),
-        willCheckStructural: section.defectType === 'structural',
-        pr2ConfigsLength: pr2Configurations?.length || 0
+        hasStructuralCodes: ['FC', 'FL', 'CR', 'JDL', 'JDM', 'OJM', 'OJL', 'DEF'].some(code => section.defects?.includes(code)),
+        hasServiceCodes: ['DER', 'DES', 'WL', 'RI', 'OB', 'SA'].some(code => section.defects?.includes(code)),
+        classification: section.defects?.includes('DER') ? 'DER=service' : 'No DER found',
+        shouldRouteToF615: section.defectType === 'structural',
+        shouldRouteToF606: section.defectType === 'service'
       });
     }
     
