@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ChevronLeft, Calculator, Coins, Package, Gauge, Zap, Ruler, ArrowUpDown, Edit2, Trash2, ArrowUp, ArrowDown, BarChart3, Building, Building2, Car, ShieldCheck, HardHat, Users, Settings, ChevronDown, Save, Lock, Unlock, Target, Plus, DollarSign, Hash, TrendingUp, Truck, Banknote, Scissors, AlertTriangle, RotateCcw, X, Wrench, Shield } from 'lucide-react';
 import { DevLabel } from '@/utils/DevLabel';
 import { MMP1Template } from '@/components/MMP1Template';
+import { MMP2Template } from '@/components/MMP2Template';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -170,13 +171,15 @@ export default function PR2ConfigClean() {
   const isEditing = !!editId;
   
   // Determine template type based on category
-  const getTemplateType = (categoryId: string): 'P26' | 'P006' | 'P006a' | 'MMP1' => {
+  const getTemplateType = (categoryId: string): 'P26' | 'P006' | 'P006a' | 'MMP1' | 'MMP2' => {
     if (categoryId === 'day-rate-db11') {
       return 'P26'; // P26 - Day Rate central configuration with multiple pipe sizes
     } else if (categoryId?.startsWith('P006-')) {
       return 'P006'; // Original P006 CTF templates with 4-window structure
-    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack' || categoryId === 'structural-defects') {
-      return 'MMP1'; // Test Card, CCTV/Jet Vac, CCTV/Van Pack, and Structural Defects use new MMP1 template with 5 placeholder UI cards
+    } else if (categoryId === 'structural-defects') {
+      return 'MMP2'; // Structural Defects use completely separate MMP2 template system
+    } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack') {
+      return 'MMP1'; // Test Card, CCTV/Jet Vac, and CCTV/Van Pack use MMP1 template with 5 placeholder UI cards
     } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
                categoryId === 'van-pack' || 
@@ -3352,6 +3355,8 @@ export default function PR2ConfigClean() {
                         return `P26 Template (F${editId || 'Unknown'})`;
                       } else if (templateType === 'MMP1') {
                         return `MMP1 Template (F${editId || 'Unknown'})`;
+                      } else if (templateType === 'MMP2') {
+                        return `MMP2 Template (F${editId || 'Unknown'})`;
                       } else {
                         return `TP1 Template (F${editId || 'Unknown'})`;
                       }
@@ -3423,6 +3428,19 @@ export default function PR2ConfigClean() {
             onSave={() => {
               queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
             }}
+          />
+        )}
+
+        {/* MMP2 Template - Completely Separate System for Structural Defects */}
+        {getTemplateType(categoryId || '') === 'MMP2' && (
+          <MMP2Template 
+            configId={editId ? parseInt(editId) : 0}
+            mmp2Data={data?.mm_data || {}}
+            setMmp2Data={(newData: any) => {
+              // Update local state for immediate UI feedback
+              console.log('🔧 MMP2 Data Updated:', newData);
+            }}
+            selectedPipeSize={selectedPipeSize}
           />
         )}
 
