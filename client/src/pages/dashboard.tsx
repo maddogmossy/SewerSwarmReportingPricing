@@ -3673,6 +3673,18 @@ export default function Dashboard() {
   // USE ALL SECTIONS: Allow duplicate item numbers for letter suffix functionality
   const rawFilteredData = rawSectionData; // No deduplication - we want all sections for letter suffixes
   
+  // DEBUG: Track Item 13 variations in raw data processing
+  if (rawSectionData && rawSectionData.length > 0) {
+    const item13Variations = rawSectionData.filter(s => s.itemNo === 13);
+    console.log('🔍 RAW SECTION DATA - ITEM 13 VARIATIONS:', item13Variations.map(s => ({
+      itemNo: s.itemNo,
+      letterSuffix: s.letterSuffix,
+      defectType: s.defectType,
+      defects: s.defects,
+      databaseId: s.id
+    })));
+  }
+  
   // DEBUG: Check if TP2 sections exist in raw database data
   if (rawSectionData && rawSectionData.length > 0) {
     const tp2Sections = rawSectionData.filter(s => 
