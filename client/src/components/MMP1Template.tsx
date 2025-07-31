@@ -154,18 +154,22 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // Auto-add .99 logic for purple length to prevent range gaps
-    let processedValue = value;
-    if (field === 'purpleLength' && value && !value.includes('.')) {
-      // Only add .99 if the value is a whole number (no decimal point)
-      if (/^\d+$/.test(value)) {
-        processedValue = value + '.99';
-        console.log(`🔧 Auto-added .99: "${value}" → "${processedValue}"`);
+    // Check if purple length is a whole number and show warning popup
+    if (field === 'purpleLength' && value && !value.includes('.') && /^\d+$/.test(value)) {
+      const shouldAddDecimal = window.confirm(
+        `Range Gap Prevention:\n\nYou entered "${value}" which will create gaps in range calculations.\n\nWould you like to:\n• Click OK to save as "${value}.99" (prevents gaps)\n• Click Cancel to save as "${value}" (may create gaps)`
+      );
+      
+      if (shouldAddDecimal) {
+        value = value + '.99';
+        console.log(`🔧 User chose to add .99: "${value.replace('.99', '')}" → "${value}"`);
+      } else {
+        console.log(`⚠️ User chose to keep whole number: "${value}" (may create range gaps)`);
       }
     }
     
     const newData = currentData.map(row => 
-      row.id === rowId ? { ...row, [field]: processedValue } : row
+      row.id === rowId ? { ...row, [field]: value } : row
     );
     
     updateMM4DataForPipeSize(newData);
