@@ -158,16 +158,7 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // Check for .99 warning on purple length fields
-    if (field === 'purpleLength' && value && value.trim() !== '' && !value.endsWith('.99')) {
-      // Show warning popup for missing .99
-      setPendingRangeValue(value);
-      setPendingRowId(rowId);
-      setShowRangeWarning(true);
-      return; // Don't save yet, wait for user decision
-    }
-    
-    // Save exactly what user types
+    // Save exactly what user types - no validation during typing
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );

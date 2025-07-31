@@ -1116,16 +1116,7 @@ export default function PR2ConfigClean() {
   const updateMM4Row = (rowId: number, field: 'blueValue' | 'greenValue' | 'purpleDebris' | 'purpleLength', value: string) => {
     const currentData = getCurrentMM4Data();
     
-    // Check for .99 warning on purple length fields
-    if (field === 'purpleLength' && value && value.trim() !== '' && !value.endsWith('.99')) {
-      // Show warning popup for missing .99
-      setPendingRangeValue(value);
-      setPendingRowId(rowId);
-      setShowRangeWarning(true);
-      return; // Don't save yet, wait for user decision
-    }
-    
-    // Save exactly what user types
+    // Save exactly what user types - no validation during typing
     const newData = currentData.map(row => 
       row.id === rowId ? { ...row, [field]: value } : row
     );
@@ -1152,6 +1143,9 @@ export default function PR2ConfigClean() {
     setShowRangeWarning(false);
     setPendingRangeValue('');
     setPendingRowId(null);
+    
+    // Continue with dashboard navigation
+    setLocation('/dashboard');
   };
 
   // 🔒 MMP1 PROTECTED FUNCTIONS - USER ONLY 🔒
@@ -1581,7 +1575,22 @@ export default function PR2ConfigClean() {
 
   // Navigate back to dashboard
   const handleGoBack = () => {
-    // Route to actual dashboard instead of home page
+    // Check for purple length values missing .99 before navigating
+    if (getTemplateType(categoryId || '') === 'MMP1') {
+      const currentData = getCurrentMM4Data();
+      
+      for (const row of currentData) {
+        if (row.purpleLength && row.purpleLength.trim() !== '' && !row.purpleLength.endsWith('.99')) {
+          // Show warning popup for missing .99
+          setPendingRangeValue(row.purpleLength);
+          setPendingRowId(row.id);
+          setShowRangeWarning(true);
+          return; // Don't navigate yet, wait for user decision
+        }
+      }
+    }
+    
+    // No validation issues found, proceed with navigation
     setLocation('/dashboard');
   };
 
