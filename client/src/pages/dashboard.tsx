@@ -2894,6 +2894,128 @@ export default function Dashboard() {
       }
     }
     
+    // STRUCTURAL DEFECT ROUTING: Check for F615 patching configuration for structural defects
+    if (section.defectType === 'structural' && pr2Configurations && isRestrictedSection) {
+      // Find patching configuration for current sector
+      const patchingConfig = pr2Configurations.find((config: any) => 
+        config.categoryId === 'patching' && config.sector === currentSector.id
+      );
+      
+      console.log('🔍 F615 Structural Defect Debug:', {
+        sectionId: section.itemNo,
+        defectType: section.defectType,
+        configFound: !!patchingConfig,
+        currentSector: currentSector.id,
+        sectionPipeSize: sectionPipeSize,
+        configDetails: patchingConfig ? {
+          id: patchingConfig.id,
+          categoryId: patchingConfig.categoryId,
+          hasMMData: !!patchingConfig.mmData
+        } : null
+      });
+      
+      if (patchingConfig && patchingConfig.mmData) {
+        // Get MM4 data for the matching pipe size
+        const mmData = patchingConfig.mmData;
+        const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
+        
+        // Find matching pipe size configuration
+        let matchingMM4Data = null;
+        let matchingPipeSizeKey = null;
+        
+        // Try to find exact pipe size match (e.g., "150-1501")
+        for (const [pipeSizeKey, mm4Data] of Object.entries(mm4DataByPipeSize)) {
+          const [keyPipeSize] = pipeSizeKey.split('-');
+          
+          if (keyPipeSize === sectionPipeSize?.replace('mm', '')) {
+            matchingMM4Data = mm4Data;
+            matchingPipeSizeKey = pipeSizeKey;
+            break;
+          }
+        }
+        
+        if (matchingMM4Data && Array.isArray(matchingMM4Data) && matchingMM4Data.length > 0) {
+          // Check each MM4 row to see if section matches criteria
+          for (const mm4Row of matchingMM4Data) {
+            const blueValue = parseFloat(mm4Row.blueValue || '0');
+            const greenValue = parseFloat(mm4Row.greenValue || '0');
+            const purpleDebris = parseFloat(mm4Row.purpleDebris || '0');
+            const purpleLength = parseFloat(mm4Row.purpleLength || '0');
+            
+            // Check if section matches this MM4 configuration criteria
+            const debrisMatch = sectionDebrisPercent <= purpleDebris;
+            const lengthMatch = sectionLength <= purpleLength;
+            const hasValidRate = blueValue > 0 && greenValue > 0;
+            
+            if (debrisMatch && lengthMatch && hasValidRate) {
+              // F615 PATCHING LOGIC: Count defects needing patches and calculate cost per patch
+              // Blue value = cost per patch (e.g., £250 per patch)
+              // Green value = minimum required quantity for efficiency
+              const costPerPatch = blueValue; // Blue window is cost per patch
+              
+              // Count defect meterages that need patches (using default option 2 - Double Layer)
+              // Each defect location gets one patch
+              const defectsText = section.defects || '';
+              const defectMeterages = extractDefectMeterages(defectsText);
+              const patchCount = defectMeterages.length; // One patch per defect location
+              
+              const totalPatchCost = costPerPatch * patchCount;
+              
+              console.log('✅ F615 Structural Patching Cost Calculation:', {
+                sectionId: section.itemNo,
+                pipeSizeKey: matchingPipeSizeKey,
+                mm4Row: mm4Row.id,
+                costPerPatch: blueValue, // Cost per individual patch
+                defectMeterages: defectMeterages,
+                patchCount: patchCount, // Number of patches needed
+                totalPatchCost: totalPatchCost, // Total cost for all patches
+                minimumQuantity: greenValue, // Required minimum from green window
+                debrisMatch: `${sectionDebrisPercent}% ≤ ${purpleDebris}%`,
+                lengthMatch: `${sectionLength}m ≤ ${purpleLength}m`
+              });
+              
+              // Count total structural items across all sections (not just defects)
+              const totalStructuralItems = sectionData?.filter(s => 
+                s.defectType === 'structural' && 
+                restrictedCleaningSections.includes(s.itemNo)
+              ).length || 0;
+              
+              const meetsMinimumRuns = totalStructuralItems >= greenValue;
+              
+              return {
+                cost: totalPatchCost, // Display total patch cost
+                currency: '£',
+                method: 'F615 Structural Patching',
+                status: meetsMinimumRuns ? 'f615_calculated' : 'f615_insufficient_items',
+                costPerPatch: costPerPatch,
+                patchCount: patchCount,
+                totalPatchCost: totalPatchCost,
+                minimumQuantity: greenValue,
+                totalStructuralItems: totalStructuralItems,
+                meetsMinimumRuns: meetsMinimumRuns,
+                recommendation: `F615 structural patching: ${patchCount} patches × £${costPerPatch} = £${totalPatchCost}`
+              };
+            }
+          }
+          
+          // Section doesn't match MM4 criteria - show warning
+          console.log('⚠️ Structural Section outside F615 ranges:', {
+            sectionDebrisPercent,
+            sectionLength,
+            mm4Configurations: matchingMM4Data.length
+          });
+          
+          return {
+            cost: 0,
+            currency: '£',
+            method: 'F615 Outside Ranges',
+            status: 'f615_outside_ranges',
+            recommendation: 'Structural section exceeds F615 configuration ranges (debris % or length)'
+          };
+        }
+      }
+    }
+    
     // CRITICAL FIX: Check for robotic cutting (ID4) requirements FIRST before any other routing
     const recommendations = section.recommendations || '';
     
