@@ -49,10 +49,10 @@ const STANDARD_CATEGORIES = [
   { id: 'cctv', name: 'CCTV', description: 'CCTV inspection and condition assessment surveys', icon: Video },
   { id: 'van-pack', name: 'Van Pack', description: 'High-pressure water jetting and debris removal', icon: Truck },
   { id: 'jet-vac', name: 'Jet Vac', description: 'High-pressure water jetting and vacuum services', icon: Waves },
-  { id: 'cctv-van-pack', name: 'CCTV/Van Pack', description: 'MMP1 template with 5-card configuration system (MM1-MM5)', icon: Monitor },
   { id: 'cctv-jet-vac', name: 'CCTV/Jet Vac', description: 'Combined CCTV inspection with jet vac services', icon: Video },
   { id: 'cctv-cleansing-root-cutting', name: 'CCTV/Cleansing/Root Cutting', description: 'Combined CCTV inspection, cleansing and root cutting operations', icon: Settings },
   { id: 'test-card', name: 'Test Card', description: 'Test configuration card for CTF P006a template demonstration', icon: Zap },
+  { id: 'test-card-mmp1', name: 'MMP1 Test Card', description: 'MMP1 template for test card configuration - ID1 - ID1 - ID4', icon: Zap },
 
   { id: 'directional-water-cutter', name: 'Directional Water Cutter', description: 'Precise directional water cutting services', icon: Waves },
   { id: 'patching', name: 'Patching', description: 'MMP1 template with 5-card configuration system (MM1-MM5)', icon: Edit },
@@ -497,9 +497,9 @@ export default function PR2Pricing() {
                     );
                   })()}
 
-                  {/* CCTV/Van Pack Option for this pipe size */}
+                  {/* MMP1 Test Card Configuration - ID1 - ID1 - ID4 */}
                   {(() => {
-                    const categoryId = 'cctv-van-pack';
+                    const categoryId = 'test-card-mmp1';
                     const existingConfig = pr2Configurations.find(config => 
                       config.categoryId === categoryId && 
                       config.categoryName?.includes(`${pipeSize}mm`)
@@ -529,20 +529,20 @@ export default function PR2Pricing() {
                           if (existingConfig) {
                             setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&edit=${existingConfig.id}&pipeSize=${pipeSize}`);
                           } else {
-                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm CCTV/Van Pack Configuration`)}`);
+                            setLocation(`/pr2-config-clean?sector=${sector}&categoryId=${categoryId}&pipeSize=${pipeSize}&configName=${encodeURIComponent(`${pipeSize}mm MMP1 Test Card Configuration`)}`);
                           }
                         }}
                       >
-                        <DevLabel id="C010" />
+                        <DevLabel id="C609" />
                         <CardContent className="p-4 text-center relative">
-                          <Monitor className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                          <Zap className="h-8 w-8 mx-auto mb-2 text-blue-600" />
                           <h3 className="font-medium text-sm mb-1">
-                            CCTV/Van Pack - {pipeSize}mm
+                            MMP1 Test Card - {pipeSize}mm
                             {existingConfig ? (
                               <span className="text-xs text-blue-600 ml-1">(ID: {existingConfig.id})</span>
                             ) : null}
                           </h3>
-                          <p className="text-xs text-gray-600">Traditional cleaning configuration for {pipeSize}mm pipes</p>
+                          <p className="text-xs text-gray-600">MMP1 template configuration ID1 - ID1 - ID4 for {pipeSize}mm pipes</p>
                           <Settings className="h-4 w-4 absolute top-2 right-2 text-orange-500" />
                         </CardContent>
                       </Card>
