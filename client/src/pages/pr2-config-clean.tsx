@@ -180,7 +180,7 @@ export default function PR2ConfigClean() {
       return 'MMP2'; // Structural Defects use completely separate MMP2 template system
     } else if (categoryId === 'test-card' || categoryId === 'cctv-jet-vac' || categoryId === 'cctv-van-pack' || categoryId === 'patching') {
       return 'MMP1'; // Test Card, CCTV/Jet Vac, CCTV/Van Pack, and Patching use MMP1 template with 5 placeholder UI cards
-    } else if ((categoryId?.includes('-p006a') && categoryId !== 'patching-p006a') || 
+    } else if (categoryId?.includes('-p006a') || 
                categoryId === 'cctv' || 
                categoryId === 'van-pack' || 
                categoryId === 'jet-vac' || 
