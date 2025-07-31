@@ -2761,6 +2761,7 @@ export default function Dashboard() {
               const ratePerMeter = blueValue / greenValue;
               
               console.log('✅ MM4 Per-Meter Rate Calculation:', {
+                sectionId: section.itemNo,
                 pipeSizeKey: matchingPipeSizeKey,
                 mm4Row: mm4Row.id,
                 blueValue,
