@@ -2037,7 +2037,7 @@ export default function Dashboard() {
 
     // Find TP1 cleaning configurations for current sector
     const tp1Configs = configurations.filter(config => 
-      config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
+      config.categoryId === 'cctv' && config.sector === currentSector.id
     );
 
     if (tp1Configs.length === 0) {
@@ -2224,7 +2224,7 @@ export default function Dashboard() {
       if (needsCleaning) {
         // Navigate to cleaning configuration
         const pipeSize = firstSection.pipeSize?.match(/\d+/)?.[0] || '150';
-        window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}&pipeSize=${pipeSize}`;
+        window.location.href = `/pr2-config-clean?categoryId=cctv&sector=${currentSector.id}&pipeSize=${pipeSize}`;
       } else if (needsStructural) {
         // Navigate to patching configuration
         window.location.href = `/pr2-config-clean?categoryId=patching&sector=${currentSector.id}`;
@@ -2352,7 +2352,7 @@ export default function Dashboard() {
   const calculateTP1CleaningCost = (section: any) => {
     // Find TP1 CCTV configuration for this sector
     const tp1Config = pr2Configurations?.find(config => 
-      config.categoryId === 'cctv-jet-vac' && 
+      config.categoryId === 'cctv' && 
       config.sector === currentSector.id
     );
     
@@ -2736,38 +2736,38 @@ export default function Dashboard() {
     
     // APPLY SECTION RESTRICTIONS: Only process MM4 for restricted cleaning sections AND service defects only
     if (needsCleaning && pr2Configurations && isRestrictedSection && section.defectType === 'service') {
-      // Find cctv-jet-vac configuration for current sector
-      const cctvJetVacConfig = pr2Configurations.find((config: any) => 
-        config.categoryId === 'cctv-jet-vac' && config.sector === currentSector.id
+      // Find cctv configuration for current sector
+      const cctvConfig = pr2Configurations.find((config: any) => 
+        config.categoryId === 'cctv' && config.sector === currentSector.id
       );
       
-      console.log('🔍 MM4 Debug: Checking for cctv-jet-vac config:', {
+      console.log('🔍 MM4 Debug: Checking for cctv config:', {
         sectionId: section.itemNo,
         needsCleaning,
-        configFound: !!cctvJetVacConfig,
+        configFound: !!cctvConfig,
         currentSector: currentSector.id,
         allConfigs: pr2Configurations.map(c => ({ id: c.id, categoryId: c.categoryId, sector: c.sector })),
-        configDetails: cctvJetVacConfig ? {
-          id: cctvJetVacConfig.id,
-          categoryId: cctvJetVacConfig.categoryId,
-          sector: cctvJetVacConfig.sector,
-          hasMMData: !!cctvJetVacConfig.mmData,
-          mmDataKeys: cctvJetVacConfig.mmData ? Object.keys(cctvJetVacConfig.mmData) : []
+        configDetails: cctvConfig ? {
+          id: cctvConfig.id,
+          categoryId: cctvConfig.categoryId,
+          sector: cctvConfig.sector,
+          hasMMData: !!cctvConfig.mmData,
+          mmDataKeys: cctvConfig.mmData ? Object.keys(cctvConfig.mmData) : []
         } : null
       });
       
-      if (cctvJetVacConfig && cctvJetVacConfig.mmData) {
+      if (cctvConfig && cctvConfig.mmData) {
         console.log('🔍 MM4/MM5 Dashboard Cost Integration:', {
           sectionId: section.itemNo,
           sectionLength,
           sectionDebrisPercent,
           sectionPipeSize,
-          hasMMData: !!cctvJetVacConfig.mmData,
-          mmData: cctvJetVacConfig.mmData
+          hasMMData: !!cctvConfig.mmData,
+          mmData: cctvConfig.mmData
         });
         
         // Get MM4 data for the matching pipe size
-        const mmData = cctvJetVacConfig.mmData;
+        const mmData = cctvConfig.mmData;
         const mm4DataByPipeSize = mmData.mm4DataByPipeSize || {};
         
         // Find matching pipe size configuration
@@ -3861,7 +3861,7 @@ export default function Dashboard() {
     // MIGRATION FIX: Use DB8 green window quantityOptions instead of DB9 orange window minQuantityOptions
     let minQuantity = 25; // Default minimum from DB8 green window
     pr2Configurations.forEach(config => {
-      if (config.categoryId === 'cctv-jet-vac' && config.quantityOptions) {
+      if (config.categoryId === 'cctv' && config.quantityOptions) {
         const quantityOptions = config.quantityOptions || [];
         const quantityOption = quantityOptions.find((opt: any) => 
           opt.label?.toLowerCase().includes('runs per shift') && opt.enabled && opt.value
@@ -4886,7 +4886,7 @@ export default function Dashboard() {
             <Button
               onClick={() => {
                 // Navigate to TP1 configuration page
-                window.location.href = `/pr2-config-clean?categoryId=cctv-jet-vac&sector=${currentSector.id}`;
+                window.location.href = `/pr2-config-clean?categoryId=cctv&sector=${currentSector.id}`;
               }}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
@@ -5020,7 +5020,7 @@ export default function Dashboard() {
             <Button
               onClick={() => {
                 // Navigate to configuration page based on type
-                const categoryId = showTravelConfigDialog.configType === 'TP1' ? 'cctv-jet-vac' : 'patching';
+                const categoryId = showTravelConfigDialog.configType === 'TP1' ? 'cctv' : 'patching';
                 window.location.href = `/pr2-config-clean?categoryId=${categoryId}&sector=${currentSector.id}&edit=${showTravelConfigDialog.configurationId}`;
               }}
               className="bg-amber-600 hover:bg-amber-700 text-white"
