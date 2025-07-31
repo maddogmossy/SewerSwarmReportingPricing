@@ -174,12 +174,30 @@ export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1Templat
     const currentData = getCurrentMM4Data();
     const finalValue = addDotNineNine ? `${pendingRangeValue}.99` : pendingRangeValue;
     
+    console.log(`🔄 MMP1Template: Updating row ${pendingRowId} purpleLength from "${pendingRangeValue}" to "${finalValue}"`);
+    
     const newData = currentData.map(row => 
       row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
     );
     
+    // Update MM4 data storage
     updateMM4DataForPipeSize(newData);
+    
+    // Force update React state for immediate UI reflection
+    const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+    const updatedMM4DataByPipeSize = {
+      ...mm4DataByPipeSize,
+      [currentPipeSizeKey]: newData
+    };
+    setMm4DataByPipeSize(updatedMM4DataByPipeSize);
+    
+    // Also save to localStorage for persistence
+    localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
+    
     triggerAutoSave();
+    
+    console.log(`✅ MMP1Template: Updated MM4 data:`, newData);
+    console.log(`✅ MMP1Template: Updated storage for key ${currentPipeSizeKey}:`, updatedMM4DataByPipeSize);
     
     // Reset dialog state
     setShowRangeWarning(false);

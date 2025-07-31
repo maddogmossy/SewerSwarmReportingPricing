@@ -1132,12 +1132,30 @@ export default function PR2ConfigClean() {
     const currentData = getCurrentMM4Data();
     const finalValue = addDotNineNine ? `${pendingRangeValue}.99` : pendingRangeValue;
     
+    console.log(`🔄 Updating row ${pendingRowId} purpleLength from "${pendingRangeValue}" to "${finalValue}"`);
+    
     const newData = currentData.map(row => 
       row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
     );
     
+    // Update MM4 data storage
     updateMM4DataForPipeSize(newData);
+    
+    // Force update React state for immediate UI reflection
+    const currentPipeSizeKey = `${selectedPipeSizeForMM4}-${selectedPipeSizeId}`;
+    const updatedMM4DataByPipeSize = {
+      ...mm4DataByPipeSize,
+      [currentPipeSizeKey]: newData
+    };
+    setMm4DataByPipeSize(updatedMM4DataByPipeSize);
+    
+    // Also save to localStorage for persistence
+    localStorage.setItem('mm4DataByPipeSize', JSON.stringify(updatedMM4DataByPipeSize));
+    
     triggerAutoSave();
+    
+    console.log(`✅ Updated MM4 data:`, newData);
+    console.log(`✅ Updated storage for key ${currentPipeSizeKey}:`, updatedMM4DataByPipeSize);
     
     // Reset dialog state
     setShowRangeWarning(false);
@@ -2078,7 +2096,7 @@ export default function PR2ConfigClean() {
           console.log('  - hasLocalMM5Data:', hasLocalMM5Data);
           
           // CRITICAL FIX: Force backend load for F606 to get restored MM4 data
-          const isF606Configuration = editId === 606;
+          const isF606Configuration = editId === "606" || editId === 606;
           
           // Only load MM4 data if we don't have local changes OR if this is F606 (force refresh)
           if (!hasLocalMM4Data || isF606Configuration) {
