@@ -12,10 +12,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 
-// MMP2 Template - EXACT COPY of MMP1 Master Template
-// Ready for MM4 card customization only
+// 🔒🔒🔒 MMP1 TEMPLATE PROTECTED COMPONENT - DO NOT MODIFY WITHOUT USER PERMISSION 🔒🔒🔒
+// ⚠️ WARNING: USER-CONTROLLED TEMPLATE - AI MODIFICATIONS PROHIBITED ⚠️
 
-interface MMP2TemplateProps {
+interface MMP1TemplateProps {
   categoryId: string;
   sector: string;
   editId?: number;
@@ -43,7 +43,7 @@ const UK_PIPE_SIZES = [
   100, 125, 150, 175, 200, 225, 250, 275, 300, 350, 375, 400, 450, 500, 525, 600, 675, 750, 825, 900, 975, 1050, 1200, 1350, 1500, 1800, 2100, 2400
 ];
 
-export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2TemplateProps) {
+export function MMP1Template({ categoryId, sector, editId, onSave }: MMP1TemplateProps) {
   // State management
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [idsWithConfig, setIdsWithConfig] = useState<string[]>([]);
@@ -103,8 +103,8 @@ export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2Templat
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              categoryName: 'MMP2 Template',
-              description: 'Structural defects template configuration',
+              categoryName: 'MMP1 Template',
+              description: 'Master template configuration',
               categoryColor: selectedColor,
               pipeSize: selectedPipeSizeForMM4,
               mmData: mmData,
@@ -117,8 +117,8 @@ export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2Templat
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              categoryName: 'MMP2 Template',
-              description: 'Structural defects template configuration',
+              categoryName: 'MMP1 Template',
+              description: 'Master template configuration',
               categoryColor: selectedColor,
               pipeSize: selectedPipeSizeForMM4,
               mmData: mmData,
@@ -132,7 +132,7 @@ export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2Templat
         queryClient.invalidateQueries({ queryKey: ['/api/pr2-clean'] });
         if (onSave) onSave();
       } catch (error) {
-        console.error('Error saving MMP2 data:', error);
+        console.error('Error saving MMP1 data:', error);
       }
     }, 500);
     
@@ -174,7 +174,7 @@ export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2Templat
     const currentData = getCurrentMM4Data();
     const finalValue = addDotNineNine ? `${pendingRangeValue}.99` : pendingRangeValue;
     
-    console.log(`🔄 MMP2Template: Updating row ${pendingRowId} purpleLength from "${pendingRangeValue}" to "${finalValue}"`);
+    console.log(`🔄 MMP1Template: Updating row ${pendingRowId} purpleLength from "${pendingRangeValue}" to "${finalValue}"`);
     
     const newData = currentData.map(row => 
       row.id === pendingRowId ? { ...row, purpleLength: finalValue } : row
@@ -197,11 +197,11 @@ export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2Templat
     // Force a component re-render to update input field values
     setTimeout(() => {
       triggerAutoSave();
-      console.log(`✅ MMP2Template: Final state update completed for row ${pendingRowId}`);
+      console.log(`✅ MMP1Template: Final state update completed for row ${pendingRowId}`);
     }, 50);
     
-    console.log(`✅ MMP2Template: Updated MM4 data:`, newData);
-    console.log(`✅ MMP2Template: Updated storage for key ${currentPipeSizeKey}:`, updatedMM4DataByPipeSize);
+    console.log(`✅ MMP1Template: Updated MM4 data:`, newData);
+    console.log(`✅ MMP1Template: Updated storage for key ${currentPipeSizeKey}:`, updatedMM4DataByPipeSize);
     
     // Reset dialog state AFTER state update
     setTimeout(() => {
@@ -381,7 +381,14 @@ export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2Templat
                       </div>
                       {hasConfig && (
                         <div className="absolute top-2 right-2">
-                          <Settings className="h-4 w-4 text-green-600" />
+                          <Settings className="h-4 w-4 text-orange-500" />
+                        </div>
+                      )}
+                      {isSelected && (
+                        <div className="absolute top-2 left-2">
+                          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                            Selected
+                          </Badge>
                         </div>
                       )}
                     </CardContent>
@@ -393,257 +400,270 @@ export function MMP2Template({ categoryId, sector, editId, onSave }: MMP2Templat
         </CardContent>
       </Card>
 
-      {/* MM2 - Color Selection */}
+      {/* MM2 - Color Picker Section */}
       <Card className="w-full bg-white">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold text-black">MM2 - Color Selection</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-10 gap-2 mb-4">
-            {OUTLOOK_COLORS.map((color, index) => (
-              <div
-                key={index}
-                className={`w-8 h-8 rounded cursor-pointer border-2 ${
-                  selectedColor === color ? 'border-gray-800 ring-2 ring-gray-300' : 'border-gray-200'
-                }`}
-                style={{ backgroundColor: color }}
-                onClick={() => handleMM1ColorChange(color)}
-              />
-            ))}
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm">Selected:</span>
-              <div 
-                className="w-6 h-6 rounded border-2 border-gray-300"
-                style={{ backgroundColor: selectedColor }}
-              />
-              <span className="text-sm font-mono">{selectedColor}</span>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">Outlook Diary Colors</Label>
+              <div className="grid grid-cols-10 gap-2">
+                {OUTLOOK_COLORS.map((color) => (
+                  <button
+                    key={color}
+                    className={`w-8 h-8 rounded border-2 transition-all ${
+                      selectedColor === color ? 'border-gray-800 scale-110' : 'border-gray-300 hover:border-gray-500'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => handleMM1ColorChange(color)}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
+                <Label htmlFor="custom-color" className="text-sm font-medium text-gray-700">Custom Color</Label>
+                <Input
+                  id="custom-color"
+                  type="color"
+                  value={customColor}
+                  onChange={(e) => handleColorChange(e.target.value)}
+                  className="w-full h-10"
+                />
+              </div>
+              <div className="flex-1">
+                <Label htmlFor="hex-color" className="text-sm font-medium text-gray-700">Hex Code</Label>
+                <Input
+                  id="hex-color"
+                  type="text"
+                  value={customColor}
+                  onChange={(e) => handleColorChange(e.target.value)}
+                  placeholder="#D4D4D4"
+                  className="w-full"
+                />
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* MM3 - Pipe Sizes */}
+      {/* MM3 - UK Drainage Pipe Sizes */}
       <Card className="w-full bg-white">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-semibold text-black">MM3 - Pipe Sizes</CardTitle>
+          <CardTitle className="text-lg font-semibold text-black">MM3 - UK Drainage Pipe Sizes</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium mb-2">Standard UK Pipe Sizes</h4>
-              <div className="grid grid-cols-8 gap-2">
-                {UK_PIPE_SIZES.map(size => (
-                  <Button
-                    key={size}
-                    variant={selectedPipeSizeForMM4 === size.toString() ? "default" : "outline"}
-                    size="sm"
-                    className="text-xs"
-                    onClick={() => handlePipeSizeSelect(size)}
-                  >
-                    {size}mm
-                  </Button>
-                ))}
-              </div>
+            <div className="grid grid-cols-8 gap-2">
+              {UK_PIPE_SIZES.map((size) => (
+                <Button
+                  key={size}
+                  variant={selectedPipeSizeForMM4 === size.toString() ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handlePipeSizeSelect(size)}
+                  className="text-xs h-8"
+                >
+                  {size}mm
+                </Button>
+              ))}
             </div>
-            
             {customPipeSizes.length > 0 && (
               <div>
-                <h4 className="text-sm font-medium mb-2">Custom Pipe Sizes</h4>
-                <div className="grid grid-cols-8 gap-2">
-                  {customPipeSizes.map(size => (
-                    <div key={size} className="relative">
-                      <Button
-                        variant={selectedPipeSizeForMM4 === size.toString() ? "default" : "outline"}
-                        size="sm"
-                        className="text-xs w-full"
-                        onClick={() => handlePipeSizeSelect(size)}
-                      >
-                        {size}mm
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="absolute -top-1 -right-1 h-4 w-4 p-0 text-red-500"
-                        onClick={() => removeCustomPipeSize(size)}
-                      >
-                        ×
-                      </Button>
-                    </div>
+                <Label className="text-sm font-medium text-gray-700 mb-2 block">Custom Sizes</Label>
+                <div className="flex flex-wrap gap-2">
+                  {customPipeSizes.map((size) => (
+                    <Badge key={size} variant="secondary" className="text-xs">
+                      {size}mm
+                      <button onClick={() => removeCustomPipeSize(size)} className="ml-1 text-red-500">×</button>
+                    </Badge>
                   ))}
                 </div>
               </div>
             )}
-            
             <div className="flex gap-2">
               <Input
                 id="custom-pipe-size"
                 type="number"
-                placeholder="Custom size (mm)"
-                className="w-32"
+                placeholder="Enter custom size"
+                className="flex-1"
               />
               <Button onClick={addCustomPipeSize} size="sm">
-                Add
+                <Plus className="h-4 w-4" />
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* MM4 - Cost Configuration */}
-      <Card className="w-full bg-white">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-semibold text-black">
-            MM4 - Cost Configuration ({selectedPipeSizeForMM4}mm)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="w-96">
-          <div className="space-y-3">
+      {/* MM4 - Blue/Green/Purple Cards */}
+      <div className="grid grid-cols-3 gap-4">
+        {/* Blue Card */}
+        <Card className="bg-blue-50 border-blue-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-blue-800">Day Rate</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
             {getCurrentMM4Data().map((row) => (
-              <div key={row.id} className="grid grid-cols-5 gap-2 items-center p-2 bg-gray-50 rounded">
-                <div>
-                  <Label className="text-xs">Day Rate (£)</Label>
-                  <Input
-                    type="text"
-                    value={row.blueValue || ''}
-                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'blueValue', e.target.value)}
-                    placeholder="1850"
-                    className="text-sm h-8"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Runs per Shift</Label>
-                  <Input
-                    type="text"
-                    value={row.greenValue || ''}
-                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
-                    placeholder="25"
-                    className="text-sm h-8"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Debris %</Label>
-                  <Input
-                    type="text"
-                    value={row.purpleDebris || ''}
-                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
-                    placeholder="30"
-                    className="text-sm h-8"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Length M</Label>
-                  <Input
-                    type="text"
-                    value={row.purpleLength || ''}
-                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleLength', e.target.value)}
-                    placeholder="33.99"
-                    className="text-sm h-8"
-                  />
-                </div>
-                <div className="flex gap-1">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => deleteMM4Row(row.id)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Trash2 className="w-3 h-3" />
+              <div key={row.id} className="flex gap-2">
+                <Input
+                  type="text"
+                  value={row.blueValue}
+                  onChange={(e) => updateMM4RowWithAutoSave(row.id, 'blueValue', e.target.value)}
+                  placeholder="£1850"
+                  className="flex-1 text-sm h-8"
+                />
+                {getCurrentMM4Data().length > 1 && (
+                  <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="h-8 w-8 p-0">
+                    <Trash2 className="h-3 w-3" />
                   </Button>
+                )}
+              </div>
+            ))}
+            <Button onClick={addMM4Row} size="sm" variant="outline" className="w-full h-8 text-xs">
+              <Plus className="h-3 w-3 mr-1" /> Add Row
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Green Card */}
+        <Card className="bg-green-50 border-green-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-green-800">No Per Shift</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {getCurrentMM4Data().map((row) => (
+              <div key={row.id} className="flex gap-2">
+                <Input
+                  type="text"
+                  value={row.greenValue}
+                  onChange={(e) => updateMM4RowWithAutoSave(row.id, 'greenValue', e.target.value)}
+                  placeholder="25"
+                  className="flex-1 text-sm h-8"
+                />
+                {getCurrentMM4Data().length > 1 && (
+                  <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="h-8 w-8 p-0">
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+            ))}
+            <Button onClick={addMM4Row} size="sm" variant="outline" className="w-full h-8 text-xs">
+              <Plus className="h-3 w-3 mr-1" /> Add Row
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Purple Card */}
+        <Card className="bg-purple-50 border-purple-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-purple-800">Debris % / Length M</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {getCurrentMM4Data().map((row) => (
+              <div key={row.id} className="space-y-1">
+                <div className="flex gap-1">
+                  <Input
+                    type="text"
+                    value={row.purpleDebris}
+                    onChange={(e) => updateMM4RowWithAutoSave(row.id, 'purpleDebris', e.target.value)}
+                    placeholder="5%"
+                    className="flex-1 text-xs h-7"
+                  />
+                  <Input
+                    type="text"
+                    value={row.purpleLength}
+                    onChange={(e) => updateMM4Row(row.id, 'purpleLength', e.target.value)}
+                    placeholder="30m"
+                    className="flex-1 text-xs h-7"
+                  />
+                  {getCurrentMM4Data().length > 1 && (
+                    <Button onClick={() => deleteMM4Row(row.id)} size="sm" variant="outline" className="h-7 w-7 p-0">
+                      <Trash2 className="h-2 w-2" />
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
-            
-            <Button
-              onClick={addMM4Row}
-              variant="outline"
-              size="sm"
-              className="w-full mt-2"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Row
+            <Button onClick={addMM4Row} size="sm" variant="outline" className="w-full h-7 text-xs">
+              <Plus className="h-2 w-2 mr-1" /> Add Row
             </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* MM5 - Vehicle Travel Rates */}
-      <Card className="w-full bg-white">
+      {/* MM5 - Vehicle Weight/Cost Per Mile */}
+      <Card className="w-full bg-yellow-50 border-yellow-200">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-semibold text-black">MM5 - Vehicle Travel Rates</CardTitle>
+          <CardTitle className="text-lg font-semibold text-yellow-800">MM5 - Vehicle Cost Configuration</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {getCurrentMM5Data().map((row) => (
-              <div key={row.id} className="grid grid-cols-3 gap-3 items-center p-3 bg-gray-50 rounded">
-                <div>
-                  <Label className="text-xs">Vehicle Weight</Label>
+              <div key={row.id} className="flex gap-3 items-center">
+                <div className="flex-1">
+                  <Label className="text-xs text-yellow-700">Vehicle Weight</Label>
                   <Input
                     type="text"
-                    value={row.vehicleWeight || ''}
+                    value={row.vehicleWeight}
                     onChange={(e) => updateMM5RowWithAutoSave(row.id, 'vehicleWeight', e.target.value)}
-                    placeholder="7.5t"
-                    className="text-sm"
+                    placeholder="3.5t"
+                    className="text-sm h-8"
                   />
                 </div>
-                <div>
-                  <Label className="text-xs">Cost per Mile (£)</Label>
+                <div className="flex-1">
+                  <Label className="text-xs text-yellow-700">Cost Per Mile</Label>
                   <Input
                     type="text"
-                    value={row.costPerMile || ''}
+                    value={row.costPerMile}
                     onChange={(e) => updateMM5RowWithAutoSave(row.id, 'costPerMile', e.target.value)}
-                    placeholder="2.50"
-                    className="text-sm"
+                    placeholder="£2.50"
+                    className="text-sm h-8"
                   />
                 </div>
-                <div className="flex items-end">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => deleteMM5Row(row.id)}
-                    className="h-8 w-8 p-0"
-                    disabled={getCurrentMM5Data().length <= 1}
-                  >
-                    <Trash2 className="w-3 h-3" />
+                {getCurrentMM5Data().length > 1 && (
+                  <Button onClick={() => deleteMM5Row(row.id)} size="sm" variant="outline" className="h-8 w-8 p-0 mt-5">
+                    <Trash2 className="h-3 w-3" />
                   </Button>
-                </div>
+                )}
               </div>
             ))}
-            
-            <Button
-              onClick={addMM5Row}
-              variant="outline"
-              size="sm"
-              className="w-full"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Vehicle
+            <Button onClick={addMM5Row} size="sm" variant="outline" className="w-full h-8 text-xs">
+              <Plus className="h-3 w-3 mr-1" /> Add Vehicle Type
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Range Warning Dialog */}
+      {/* Range Continuity Warning Dialog */}
       <Dialog open={showRangeWarning} onOpenChange={setShowRangeWarning}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-amber-700">
-              Range Continuity Warning
-            </DialogTitle>
-            <DialogDescription>
-              You entered "{pendingRangeValue}" for the length range. For continuous ranges, we recommend using "{pendingRangeValue}.99" format.
+            <DialogTitle className="text-amber-800">⚠️ Range Continuity Warning</DialogTitle>
+            <DialogDescription className="text-amber-700">
+              You entered "{pendingRangeValue}" for the length range. For continuous range calculations, 
+              we recommend using ".99" endings (e.g., "{pendingRangeValue}.99").
               <br /><br />
-              Example: 0-30.99m, 30.99-60.99m ensures no gaps between ranges.
-              <br /><br />
-              Would you like to add ".99" to maintain range continuity?
+              This creates seamless ranges like:
+              <ul className="mt-2 ml-4 text-sm">
+                <li>• Range 1: 0 - {pendingRangeValue}.99m</li>
+                <li>• Range 2: {pendingRangeValue}.99 - 60.99m</li>
+              </ul>
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => handleRangeWarningResponse(false)}>
+          <DialogFooter className="flex gap-2 sm:flex-row">
+            <Button 
+              variant="outline" 
+              onClick={() => handleRangeWarningResponse(false)}
+              className="text-gray-600"
+            >
               Keep "{pendingRangeValue}"
             </Button>
-            <Button onClick={() => handleRangeWarningResponse(true)}>
+            <Button 
+              onClick={() => handleRangeWarningResponse(true)}
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+            >
               Use "{pendingRangeValue}.99"
             </Button>
           </DialogFooter>
