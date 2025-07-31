@@ -643,7 +643,21 @@ export async function registerRoutes(app: Express) {
       const sections = await db.select()
         .from(sectionInspections)
         .where(eq(sectionInspections.fileUploadId, uploadId))
-        .orderBy(asc(sectionInspections.itemNo));
+        .orderBy(asc(sectionInspections.itemNo), asc(sectionInspections.letterSuffix));
+      
+      // DEBUG: Check for Item 13 variations in API response
+      const item13Sections = sections.filter(s => s.itemNo === 13);
+      if (item13Sections.length > 0) {
+        console.log('🔍 API SECTIONS ENDPOINT - ITEM 13 VARIATIONS:', item13Sections.map(s => ({
+          id: s.id,
+          itemNo: s.itemNo,
+          letterSuffix: s.letterSuffix,
+          defectType: s.defectType,
+          defects: s.defects,
+          databaseSchema: 'item_no=' + s.itemNo + ', letter_suffix=' + s.letterSuffix
+        })));
+      }
+      
       res.json(sections);
     } catch (error) {
       console.error("Error fetching sections:", error);

@@ -1,0 +1,902 @@
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'ambient-light-sensor'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'battery'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'layout-animations'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'legacy-image-formats'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'navigation-override'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'oversized-images'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'publickey-credentials'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'speaker-selection'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'unoptimized-images'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'unsized-media'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Unrecognized feature: 'pointer-lock'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+3170-49c0ac81bb409855.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+n @ main-cc9ba4fc05fe8d47.js:1
+u @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ main-cc9ba4fc05fe8d47.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+navigateTo @ 3170-49c0ac81bb409855.js:1
+refresh @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ 3170-49c0ac81bb409855.js:1
+(anonymous) @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:23
+onClick @ _app-8467e2b3744985bc.js:28
+(anonymous) @ _app-8467e2b3744985bc.js:28
+eB @ framework-8d29e80bfe884e08.js:1
+eH @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+re @ framework-8d29e80bfe884e08.js:1
+rt @ framework-8d29e80bfe884e08.js:1
+(anonymous) @ framework-8d29e80bfe884e08.js:1
+uT @ framework-8d29e80bfe884e08.js:1
+eM @ framework-8d29e80bfe884e08.js:1
+ru @ framework-8d29e80bfe884e08.js:1
+tB @ framework-8d29e80bfe884e08.js:1
+tD @ framework-8d29e80bfe884e08.js:1
+n @ _app-8467e2b3744985bc.js:13Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'battery'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Unrecognized feature: 'unsized-media'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+0cba532d-8b2a-4a82-be26-92c624600d8f-00-2cfgh90bvkydm.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fdashboard&id=%3Ar1a3%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+Console.js:61 Dashboard validation data: {hasAuthenticData: false, rawSectionDataLength: 0, pr2ConfigurationsLength: 0, workCategoriesLength: 0, vehicleTravelRatesLength: 0}
+Console.js:61 Dashboard validation data: {hasAuthenticData: false, rawSectionDataLength: 0, pr2ConfigurationsLength: 11, workCategoriesLength: 14, vehicleTravelRatesLength: 0}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 3, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 3, sectionLength: 30.24, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 3, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 6, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 6, sectionLength: 33.78, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 6, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 7, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 7, sectionLength: 5.64, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 7, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 8, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 8, sectionLength: 31.47, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 8, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🎯 ITEM 10 SEVERITY CHECK: {itemNo: 10, severityGrade: '3', severityGrades: {…}, hasDefectsRequiringCost: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 10, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 10, sectionLength: 34.31, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 10, pipeSizeKey: '150-1501', mm4Row: 2, dayRate: 1850, runsPerShift: 20, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 13 SERVICE DEBUG: {itemNo: 13, letterSuffix: null, fullId: 13, defectType: 'service', defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 13, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 13, sectionLength: 27.9, sectionDebrisPercent: 30, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 13, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: {itemNo: 13, letterSuffix: 'a', fullId: '13a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', …}
+Console.js:61 🎯 ITEM 13a F615 ROUTING DEBUG: {itemNo: 13, letterSuffix: 'a', defectType: 'structural', isRestrictedSection: true, pr2ConfigsAvailable: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 13, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '150', …}
+Console.js:61 ⚠️ F615 No Valid Pricing Data: {sectionId: 13, mm4Configurations: 1, availableRows: Array(1)}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 14, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 14, sectionLength: 21.68, sectionDebrisPercent: 10, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 14, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 15, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 15, sectionLength: 0, sectionDebrisPercent: 0, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 15, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 21, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 21, sectionLength: 22.14, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 21, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 22, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 22, sectionLength: 27.74, sectionDebrisPercent: 10, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 22, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 23, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 23, sectionLength: 23.97, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 Dashboard validation data: {hasAuthenticData: true, rawSectionDataLength: 27, pr2ConfigurationsLength: 11, workCategoriesLength: 14, vehicleTravelRatesLength: 0}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 1, defects: 'No service or structural defect found', totalLength: '15.56', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 2, defects: 'No service or structural defect found', totalLength: '19.02', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 3, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 3, sectionLength: 30.24, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 3, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 4, defects: 'No service or structural defect found', totalLength: '19.93', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 5, defects: 'No service or structural defect found', totalLength: '21.11', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 6, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 6, sectionLength: 33.78, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 6, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 7, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 7, sectionLength: 5.64, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 7, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 8, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 8, sectionLength: 31.47, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 8, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 9, defects: 'Line deviates left at 1.87m', totalLength: '2.59', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 10, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 10, sectionLength: 34.31, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 10, pipeSizeKey: '150-1501', mm4Row: 2, dayRate: 1850, runsPerShift: 20, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 11, defects: 'No service or structural defect found', totalLength: '58', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 12, defects: 'Line deviates left at 4.79m. Line deviates right at 17.43m', totalLength: '18.78', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 13 SERVICE DEBUG: {itemNo: 13, letterSuffix: null, fullId: 13, defectType: 'service', defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 13, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 13, sectionLength: 27.9, sectionDebrisPercent: 30, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 13, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: {itemNo: 13, letterSuffix: 'a', fullId: '13a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', …}
+Console.js:61 🎯 ITEM 13a F615 ROUTING DEBUG: {itemNo: 13, letterSuffix: 'a', defectType: 'structural', isRestrictedSection: true, pr2ConfigsAvailable: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 13, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '150', …}
+Console.js:61 ⚠️ F615 No Valid Pricing Data: {sectionId: 13, mm4Configurations: 1, availableRows: Array(1)}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 14, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 14, sectionLength: 21.68, sectionDebrisPercent: 10, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 14, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 15, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 15, sectionLength: 0, sectionDebrisPercent: 0, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 15, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 16, defects: 'No service or structural defect found', totalLength: '23.27', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 17, defects: 'No service or structural defect found', totalLength: '21.69', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 18, defects: 'No service or structural defect found', totalLength: '13.29', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 21, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 21, sectionLength: 22.14, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 21, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 22, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 22, sectionLength: 27.74, sectionDebrisPercent: 10, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 22, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 23, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 23, sectionLength: 23.97, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 24, defects: 'LU 2.33m (Line deviates up)', totalLength: '6.86', pipeSize: '150', defectType: 'service'}
+Console.js:61 Validation completed: {sectionsLength: 27, configsLength: 11, sampleSection: 1, sampleConfig: 'test-card'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: {itemNo: 13, letterSuffix: 'a', fullId: '13a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', …}
+Console.js:61 🎯 ITEM 13a F615 ROUTING DEBUG: {itemNo: 13, letterSuffix: 'a', defectType: 'structural', isRestrictedSection: true, pr2ConfigsAvailable: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 13, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '150', …}
+Console.js:61 ⚠️ F615 No Valid Pricing Data: {sectionId: 13, mm4Configurations: 1, availableRows: Array(1)}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 21, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 22, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: {itemNo: 13, letterSuffix: 'a', fullId: '13a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', …}
+Console.js:61 🎯 ITEM 13a F615 ROUTING DEBUG: {itemNo: 13, letterSuffix: 'a', defectType: 'structural', isRestrictedSection: true, pr2ConfigsAvailable: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 13, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '150', …}
+Console.js:61 ⚠️ F615 No Valid Pricing Data: {sectionId: 13, mm4Configurations: 1, availableRows: Array(1)}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 21, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 22, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 Structural sections debug: (5) [{…}, {…}, {…}, {…}, {…}]
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 21, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 22, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 TP2 trigger analysis: {totalSections: 27, structuralSections: 5, serviceSections: 22, structuralTriangles: 3, costsAreRed: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 1, defects: 'No service or structural defect found', totalLength: '15.56', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 1, defects: 'No service or structural defect found', totalLength: '15.56', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 2, defects: 'No service or structural defect found', totalLength: '19.02', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 3, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 3, sectionLength: 30.24, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 3, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 4, defects: 'No service or structural defect found', totalLength: '19.93', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 5, defects: 'No service or structural defect found', totalLength: '21.11', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 6, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 6, sectionLength: 33.78, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 6, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 7, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 7, sectionLength: 5.64, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 7, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 8, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 8, sectionLength: 31.47, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 8, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 9, defects: 'Line deviates left at 1.87m', totalLength: '2.59', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 10, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 10, sectionLength: 34.31, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 10, pipeSizeKey: '150-1501', mm4Row: 2, dayRate: 1850, runsPerShift: 20, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 11, defects: 'No service or structural defect found', totalLength: '58', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 12, defects: 'Line deviates left at 4.79m. Line deviates right at 17.43m', totalLength: '18.78', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 13 SERVICE DEBUG: {itemNo: 13, letterSuffix: null, fullId: 13, defectType: 'service', defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 13, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 13, sectionLength: 27.9, sectionDebrisPercent: 30, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 13, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: {itemNo: 13, letterSuffix: 'a', fullId: '13a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', …}
+Console.js:61 🎯 ITEM 13a F615 ROUTING DEBUG: {itemNo: 13, letterSuffix: 'a', defectType: 'structural', isRestrictedSection: true, pr2ConfigsAvailable: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 13, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '150', …}
+Console.js:61 ⚠️ F615 No Valid Pricing Data: {sectionId: 13, mm4Configurations: 1, availableRows: Array(1)}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 14, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 14, sectionLength: 21.68, sectionDebrisPercent: 10, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 14, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 15, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 15, sectionLength: 0, sectionDebrisPercent: 0, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 15, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 16, defects: 'No service or structural defect found', totalLength: '23.27', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 17, defects: 'No service or structural defect found', totalLength: '21.69', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 18, defects: 'No service or structural defect found', totalLength: '13.29', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 21, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 21, sectionLength: 22.14, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 21, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 22, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 22, sectionLength: 27.74, sectionDebrisPercent: 10, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 22, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 23, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 23, sectionLength: 23.97, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 24, defects: 'LU 2.33m (Line deviates up)', totalLength: '6.86', pipeSize: '150', defectType: 'service'}
+Console.js:61 TP2 final trigger decision: {allSectionsConfigured: false, costsAreRed: true, shouldTrigger: false, totalSections: 27, sectionsWithTriangles: 19}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 1, defects: 'No service or structural defect found', totalLength: '15.56', pipeSize: '150', defectType: 'service'}
+Console.js:61 TP1 configuration analysis: {allSectionsConfigured: false, costsAreRed: true, shouldTrigger: false, totalSections: 27, serviceSections: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 3, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 3, sectionLength: 30.24, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 3, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 6, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 6, sectionLength: 33.78, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 6, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 7, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 7, sectionLength: 5.64, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 7, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 8, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 8, sectionLength: 31.47, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 8, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🎯 ITEM 10 SEVERITY CHECK: {itemNo: 10, severityGrade: '3', severityGrades: {…}, hasDefectsRequiringCost: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 10, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 10, sectionLength: 34.31, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 10, pipeSizeKey: '150-1501', mm4Row: 2, dayRate: 1850, runsPerShift: 20, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 13 SERVICE DEBUG: {itemNo: 13, letterSuffix: null, fullId: 13, defectType: 'service', defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 13, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 13, sectionLength: 27.9, sectionDebrisPercent: 30, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 13, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: {itemNo: 13, letterSuffix: 'a', fullId: '13a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', …}
+Console.js:61 🎯 ITEM 13a F615 ROUTING DEBUG: {itemNo: 13, letterSuffix: 'a', defectType: 'structural', isRestrictedSection: true, pr2ConfigsAvailable: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 13, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '150', …}
+Console.js:61 ⚠️ F615 No Valid Pricing Data: {sectionId: 13, mm4Configurations: 1, availableRows: Array(1)}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 14, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 14, sectionLength: 21.68, sectionDebrisPercent: 10, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 14, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 15, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 15, sectionLength: 0, sectionDebrisPercent: 0, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 15, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 21, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 21, sectionLength: 22.14, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 21, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 22, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 22, sectionLength: 27.74, sectionDebrisPercent: 10, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 22, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 23, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 23, sectionLength: 23.97, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', totalLength: '30.24', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 3 DETAILED DEBUG: {itemNo: 3, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', totalLength: '30.24', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 3: {needsCleaning: true, defects: 'DES Settled deposits, fine, 5% cross-sectional are… area loss at 21.6m. Line deviates left at 29.82m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 3, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 3, sectionLength: 30.24, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 3, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 6, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…8.1m, 9.26m, 27.13m. Line deviates left at 33.34m', totalLength: '33.78', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 6, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 6, sectionLength: 33.78, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 6, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 7, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…al area loss at 1.4m. Line deviates left at 4.84m', totalLength: '5.64', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 7, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 7, sectionLength: 5.64, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 7, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 8, defects: 'DER Settled deposits, coarse, 5% cross-sectional area loss at 11.35m', totalLength: '31.47', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 8, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 8, sectionLength: 31.47, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 8, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🎯 ITEM 10 SEVERITY CHECK: {itemNo: 10, severityGrade: '3', severityGrades: {…}, hasDefectsRequiringCost: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 10, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', totalLength: '34.31', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 10 COMPLETE WORKFLOW DEBUG: {itemNo: 10, totalLength: '34.31', defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', pipeSize: '150', …}
+Console.js:61 🔍 Cleaning Check for Item 10: {needsCleaning: true, defects: 'Line deviates left at 0.15m. DER Settled deposits, coarse, 5% cross-sectional area loss at 20.32m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 10, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 10, sectionLength: 34.31, sectionDebrisPercent: 5, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 10, pipeSizeKey: '150-1501', mm4Row: 2, dayRate: 1850, runsPerShift: 20, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', totalLength: '27.9', pipeSize: '150', defectType: 'service'}
+Console.js:61 🎯 ITEM 13 SERVICE DEBUG: {itemNo: 13, letterSuffix: null, fullId: 13, defectType: 'service', defects: 'DER Settled deposits, coarse, 30% cross-sectional …9m (Due to camera under water) (Survey abandoned)', …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 13, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 13, sectionLength: 27.9, sectionDebrisPercent: 30, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 13, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 13, defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', totalLength: '27.9', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🎯 ITEM 13a STRUCTURAL DEBUG: {itemNo: 13, letterSuffix: 'a', fullId: '13a', defectType: 'structural', defects: 'D Deformation, 5% cross-sectional area loss at 5.67m', …}
+Console.js:61 🎯 ITEM 13a F615 ROUTING DEBUG: {itemNo: 13, letterSuffix: 'a', defectType: 'structural', isRestrictedSection: true, pr2ConfigsAvailable: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 13, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '150', …}
+Console.js:61 ⚠️ F615 No Valid Pricing Data: {sectionId: 13, mm4Configurations: 1, availableRows: Array(1)}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 14, defects: 'DER Settled deposits, coarse, 10% cross-sectional …on, camera under water). LR (Line deviates right)', totalLength: '21.68', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 14, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 14, sectionLength: 21.68, sectionDebrisPercent: 10, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 14, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 15, defects: 'SA (Survey abandoned) - Bunged off/Cap within length', totalLength: '0.00', pipeSize: '150', defectType: 'service'}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 15, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 15, sectionLength: 0, sectionDebrisPercent: 0, sectionPipeSize: '150', hasMMData: true, …}
+Console.js:61 ✅ F606 Service Cost Calculation: {sectionId: 15, pipeSizeKey: '150-1501', mm4Row: 1, dayRate: 1850, runsPerShift: 22, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 19, defects: 'JN Junction at 26.38m. D Deformation, 5% cross-sectional area loss at 26.47m, 58.97m', totalLength: '59.49', pipeSize: '150', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 20, defects: 'D Deformation, 5% cross-sectional area loss at 14.56m', totalLength: '17.58', pipeSize: '300', defectType: 'structural'}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', totalLength: '22.14', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 21: {needsCleaning: true, defects: 'Line deviates right at 0.61m, 20.4m. Line deviates…s, coarse, 5% cross-sectional area loss at 20.46m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 21, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 21, sectionLength: 22.14, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 21, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', totalLength: '22.14', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 21a: {needsCleaning: true, defects: 'D Deformation, 5% cross-sectional area loss at 1.61m', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: true, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 21, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', totalLength: '27.74', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 22: {needsCleaning: true, defects: 'DES Settled deposits, fine, 10% cross-sectional ar…ts, fine, 20% cross-sectional area loss at 22.81m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 22, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 22, sectionLength: 27.74, sectionDebrisPercent: 10, sectionPipeSize: '225', hasMMData: true, …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 22, defects: 'OJM 24.37m (Open joint, medium)', totalLength: '27.74', pipeSize: '225', defectType: 'structural'}
+Console.js:61 🔍 Cleaning Check for Item 22a: {needsCleaning: false, defects: 'OJM 24.37m (Open joint, medium)', defectType: 'structural', letterSuffix: 'a', requiresCleaningResult: false, …}
+Console.js:61 🔍 F615 Structural Defect Debug: {sectionId: 22, defectType: 'structural', configFound: true, currentSector: 'utilities', sectionPipeSize: '225', …}
+Console.js:61 🔍 MM4 Cost Calculation Called for Section: {itemNo: 23, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', totalLength: '23.97', pipeSize: '225', defectType: 'service'}
+Console.js:61 🔍 Cleaning Check for Item 23: {needsCleaning: true, defects: 'DER Settled deposits, coarse, 5% cross-sectional a…oss at 1.8m, 20.47m. Line deviates left at 15.52m', defectType: 'service', letterSuffix: null, requiresCleaningResult: true, …}
+Console.js:61 🔍 MM4 Debug: Checking for cctv config: {sectionId: 23, needsCleaning: true, configFound: true, currentSector: 'utilities', allConfigs: Array(11), …}
+Console.js:61 🔍 MM4/MM5 Dashboard Cost Integration: {sectionId: 23, sectionLength: 23.97, sectionDebrisPercent: 5, sectionPipeSize: '225', hasMMData: true, …}
