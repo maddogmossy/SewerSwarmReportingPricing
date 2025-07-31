@@ -920,6 +920,14 @@ export default function PR2ConfigClean() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [idsWithConfig, setIdsWithConfig] = useState<string[]>([]);
 
+  // Patching Green Window Independent Data (separate from MM5)
+  const [patchingGreenData, setPatchingGreenData] = useState<any[]>([
+    { id: 1, quantity: '' },
+    { id: 2, quantity: '' },
+    { id: 3, quantity: '' },
+    { id: 4, quantity: '' }
+  ]);
+
   // Initialize selectedIds from URL parameter when component loads
   useEffect(() => {
     if (selectedId && getTemplateType(categoryId || '') === 'MMP1') {
@@ -1548,6 +1556,14 @@ export default function PR2ConfigClean() {
 
   const updateMM5RowWithAutoSave = (rowId: number, field: 'vehicleWeight' | 'costPerMile', value: string) => {
     updateMM5Row(rowId, field, value);
+    triggerAutoSave();
+  };
+
+  // Patching Green Window Data Management (Independent)
+  const updatePatchingGreenRow = (rowId: number, value: string) => {
+    setPatchingGreenData(prev => 
+      prev.map(row => row.id === rowId ? { ...row, quantity: value } : row)
+    );
     triggerAutoSave();
   };
 
@@ -3857,8 +3873,8 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={mm5Rows[0]?.costPerMile || ''}
-                                  onChange={(e) => updateMM5RowWithAutoSave(mm5Rows[0]?.id || 1, 'costPerMile', e.target.value)}
+                                  value={patchingGreenData[0]?.quantity || ''}
+                                  onChange={(e) => updatePatchingGreenRow(1, e.target.value)}
                                 />
                               </div>
                               <div>
@@ -3867,16 +3883,8 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={(mm5Rows[1] && mm5Rows.length > 1) ? mm5Rows[1].costPerMile || '' : ''}
-                                  onChange={(e) => {
-                                    // Ensure MM5 has enough rows
-                                    const currentMM5 = mm5Data;
-                                    if (currentMM5.length < 2) {
-                                      const newMM5 = [...currentMM5, { id: 2, costPerMile: '', vehicleWeight: '' }];
-                                      updateMM5Data(newMM5);
-                                    }
-                                    updateMM5RowWithAutoSave(2, 'costPerMile', e.target.value);
-                                  }}
+                                  value={patchingGreenData[1]?.quantity || ''}
+                                  onChange={(e) => updatePatchingGreenRow(2, e.target.value)}
                                 />
                               </div>
                               <div>
@@ -3885,19 +3893,8 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={(mm5Rows[2] && mm5Rows.length > 2) ? mm5Rows[2].costPerMile || '' : ''}
-                                  onChange={(e) => {
-                                    // Ensure MM5 has enough rows
-                                    const currentMM5 = mm5Data;
-                                    if (currentMM5.length < 3) {
-                                      const newMM5 = [...currentMM5];
-                                      while (newMM5.length < 3) {
-                                        newMM5.push({ id: newMM5.length + 1, costPerMile: '', vehicleWeight: '' });
-                                      }
-                                      updateMM5Data(newMM5);
-                                    }
-                                    updateMM5RowWithAutoSave(3, 'costPerMile', e.target.value);
-                                  }}
+                                  value={patchingGreenData[2]?.quantity || ''}
+                                  onChange={(e) => updatePatchingGreenRow(3, e.target.value)}
                                 />
                               </div>
                               <div>
@@ -3906,19 +3903,8 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={(mm5Rows[3] && mm5Rows.length > 3) ? mm5Rows[3].costPerMile || '' : ''}
-                                  onChange={(e) => {
-                                    // Ensure MM5 has enough rows
-                                    const currentMM5 = mm5Data;
-                                    if (currentMM5.length < 4) {
-                                      const newMM5 = [...currentMM5];
-                                      while (newMM5.length < 4) {
-                                        newMM5.push({ id: newMM5.length + 1, costPerMile: '', vehicleWeight: '' });
-                                      }
-                                      updateMM5Data(newMM5);
-                                    }
-                                    updateMM5RowWithAutoSave(4, 'costPerMile', e.target.value);
-                                  }}
+                                  value={patchingGreenData[3]?.quantity || ''}
+                                  onChange={(e) => updatePatchingGreenRow(4, e.target.value)}
                                 />
                               </div>
                             </div>
