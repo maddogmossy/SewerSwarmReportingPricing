@@ -2230,10 +2230,17 @@ export default function PR2ConfigClean() {
             setSelectedIds(config.mmData.mm2IdData);
           }
           
-          // Load patching green window data for F615
+          // Load patching green window data for F615 only if we don't have local data
           if (config.mmData.patchingGreenData && categoryId === 'patching') {
-            setPatchingGreenData(config.mmData.patchingGreenData);
-            console.log('✅ Loaded patching green window data:', config.mmData.patchingGreenData);
+            // Check if we already have local patching green data to preserve
+            const hasLocalPatchingData = patchingGreenData.some(row => row.quantity && row.quantity.trim() !== '');
+            
+            if (!hasLocalPatchingData) {
+              setPatchingGreenData(config.mmData.patchingGreenData);
+              console.log('✅ Loaded patching green window data:', config.mmData.patchingGreenData);
+            } else {
+              console.log('🔒 Preserving local patching green data, skipping backend load');
+            }
           }
         }
         
