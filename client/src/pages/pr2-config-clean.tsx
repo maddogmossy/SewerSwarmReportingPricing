@@ -3785,51 +3785,51 @@ export default function PR2ConfigClean() {
                       categoryId === 'patching' ? (
                         /* Orange Patching UI for F607 - 4 Layer Types + No Required Per Shift */
                         <div className="grid grid-cols-2 gap-6">
-                          {/* Orange Patching Layers (Left Column) */}
-                          <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-4">
-                            <h4 className="font-medium text-orange-800 mb-3">
+                          {/* Blue Patching Layers (Left Column) */}
+                          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                            <h4 className="font-medium text-blue-800 mb-3">
                               Patching Layer Configuration
-                              <span className="ml-2 text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded font-mono">
+                              <span className="ml-2 text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded font-mono">
                                 {selectedPipeSizeForMM4}mm
                               </span>
                             </h4>
                             <div className="space-y-3">
                               <div>
-                                <label className="text-sm font-medium text-orange-700">1. Single Layer</label>
+                                <label className="text-sm font-medium text-blue-700">1. Single Layer</label>
                                 <Input
                                   type="text"
                                   placeholder="£150"
-                                  className="border-orange-300 mt-1"
+                                  className="border-blue-300 mt-1"
                                   value={mm4Rows[0]?.blueValue || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
                                 />
                               </div>
                               <div>
-                                <label className="text-sm font-medium text-orange-700">2. Double Layer</label>
+                                <label className="text-sm font-medium text-blue-700">2. Double Layer</label>
                                 <Input
                                   type="text"
                                   placeholder="£275"
-                                  className="border-orange-300 mt-1"
+                                  className="border-blue-300 mt-1"
                                   value={mm4Rows[0]?.greenValue || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
                                 />
                               </div>
                               <div>
-                                <label className="text-sm font-medium text-orange-700">3. Triple Layer</label>
+                                <label className="text-sm font-medium text-blue-700">3. Triple Layer</label>
                                 <Input
                                   type="text"
                                   placeholder="£425"
-                                  className="border-orange-300 mt-1"
+                                  className="border-blue-300 mt-1"
                                   value={mm4Rows[0]?.purpleDebris || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleDebris', e.target.value)}
                                 />
                               </div>
                               <div>
-                                <label className="text-sm font-medium text-orange-700">4. Triple Layer + Extra Cure Time</label>
+                                <label className="text-sm font-medium text-blue-700">4. Triple Layer + Extra Cure Time</label>
                                 <Input
                                   type="text"
                                   placeholder="£625"
-                                  className="border-orange-300 mt-1"
+                                  className="border-blue-300 mt-1"
                                   value={mm4Rows[0]?.purpleLength || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleLength', e.target.value)}
                                 />
@@ -3846,18 +3846,46 @@ export default function PR2ConfigClean() {
                               </span>
                             </h4>
                             <div className="space-y-3">
-                              {mm5Rows.map((row, index) => (
-                                <div key={row.id}>
-                                  <label className="text-sm font-medium text-green-700">Quantity Required</label>
-                                  <Input
-                                    type="text"
-                                    placeholder="25"
-                                    className="border-green-300 mt-1"
-                                    value={row.costPerMile}
-                                    onChange={(e) => updateMM5RowWithAutoSave(row.id, 'costPerMile', e.target.value)}
-                                  />
-                                </div>
-                              ))}
+                              <div>
+                                <label className="text-sm font-medium text-green-700">Row 1 - Quantity Required</label>
+                                <Input
+                                  type="text"
+                                  placeholder="25"
+                                  className="border-green-300 mt-1"
+                                  value={mm5Rows[0]?.costPerMile || ''}
+                                  onChange={(e) => updateMM5RowWithAutoSave(mm5Rows[0]?.id || 1, 'costPerMile', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-green-700">Row 2 - Quantity Required</label>
+                                <Input
+                                  type="text"
+                                  placeholder="30"
+                                  className="border-green-300 mt-1"
+                                  value={mm5Rows[0]?.vehicleWeight || ''}
+                                  onChange={(e) => updateMM5RowWithAutoSave(mm5Rows[0]?.id || 1, 'vehicleWeight', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-green-700">Row 3 - Quantity Required</label>
+                                <Input
+                                  type="text"
+                                  placeholder="35"
+                                  className="border-green-300 mt-1"
+                                  value={mm4Rows[0]?.blueValue || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-green-700">Row 4 - Quantity Required</label>
+                                <Input
+                                  type="text"
+                                  placeholder="40"
+                                  className="border-green-300 mt-1"
+                                  value={mm4Rows[0]?.greenValue || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
