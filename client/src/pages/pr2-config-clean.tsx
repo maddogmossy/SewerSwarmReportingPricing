@@ -1092,6 +1092,24 @@ export default function PR2ConfigClean() {
     setTimeout(() => triggerAutoSave(), 100);
   };
 
+  // Ensure MM4 has at least 4 rows for patching green window
+  const ensureMM4Rows = (minRows: number = 4) => {
+    const currentData = getCurrentMM4Data();
+    if (currentData.length < minRows) {
+      const newData = [...currentData];
+      for (let i = currentData.length; i < minRows; i++) {
+        newData.push({
+          id: i + 1,
+          blueValue: '',
+          greenValue: '',
+          purpleDebris: '',
+          purpleLength: ''
+        });
+      }
+      updateMM4DataForPipeSize(newData);
+    }
+  };
+
   const deleteMM4Row = (rowId: number) => {
     const currentData = getCurrentMM4Data();
     if (currentData.length > 1) { // Keep at least one row
@@ -3769,7 +3787,8 @@ export default function PR2ConfigClean() {
                     {selectedPipeSizeForMM4 ? (
                       // Show MM4 interface when pipe size is selected - Conditional Layout
                       categoryId === 'patching' ? (
-                        /* Orange Patching UI for F607 - 4 Layer Types + No Required Per Shift */
+                        /* Blue Patching UI for F607 - 4 Layer Types + No Required Per Shift */
+
                         <div className="grid grid-cols-2 gap-6">
                           {/* Blue Patching Layers (Left Column) */}
                           <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
@@ -3784,7 +3803,7 @@ export default function PR2ConfigClean() {
                                 <label className="text-sm font-medium text-blue-700">1. Single Layer</label>
                                 <Input
                                   type="text"
-                                  placeholder="£150"
+                                  placeholder="0"
                                   className="border-blue-300 mt-1"
                                   value={mm4Rows[0]?.blueValue || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'blueValue', e.target.value)}
@@ -3794,7 +3813,7 @@ export default function PR2ConfigClean() {
                                 <label className="text-sm font-medium text-blue-700">2. Double Layer</label>
                                 <Input
                                   type="text"
-                                  placeholder="£275"
+                                  placeholder="0"
                                   className="border-blue-300 mt-1"
                                   value={mm4Rows[0]?.greenValue || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
@@ -3804,7 +3823,7 @@ export default function PR2ConfigClean() {
                                 <label className="text-sm font-medium text-blue-700">3. Triple Layer</label>
                                 <Input
                                   type="text"
-                                  placeholder="£425"
+                                  placeholder="0"
                                   className="border-blue-300 mt-1"
                                   value={mm4Rows[0]?.purpleDebris || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleDebris', e.target.value)}
@@ -3814,7 +3833,7 @@ export default function PR2ConfigClean() {
                                 <label className="text-sm font-medium text-blue-700">4. Triple Layer + Extra Cure Time</label>
                                 <Input
                                   type="text"
-                                  placeholder="£625"
+                                  placeholder="0"
                                   className="border-blue-300 mt-1"
                                   value={mm4Rows[0]?.purpleLength || ''}
                                   onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'purpleLength', e.target.value)}
@@ -3836,22 +3855,22 @@ export default function PR2ConfigClean() {
                                 <label className="text-sm font-medium text-green-700">Row 1 - Quantity Required</label>
                                 <Input
                                   type="text"
-                                  placeholder="25"
+                                  placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={mm5Rows[0]?.costPerMile || ''}
-                                  onChange={(e) => updateMM5RowWithAutoSave(mm5Rows[0]?.id || 1, 'costPerMile', e.target.value)}
+                                  value={mm4Rows[0]?.greenValue || ''}
+                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
                                 />
                               </div>
                               <div>
                                 <label className="text-sm font-medium text-green-700">Row 2 - Quantity Required</label>
                                 <Input
                                   type="text"
-                                  placeholder="30"
+                                  placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value=""
+                                  value={(mm4Rows[1] && mm4Rows.length > 1) ? mm4Rows[1].greenValue || '' : ''}
                                   onChange={(e) => {
-                                    // Handle Row 2 data separately to avoid MM5 vehicleWeight conflict
-                                    console.log('Row 2 value changed:', e.target.value);
+                                    ensureMM4Rows(4);
+                                    updateMM4RowWithAutoSave(2, 'greenValue', e.target.value);
                                   }}
                                 />
                               </div>
@@ -3859,12 +3878,12 @@ export default function PR2ConfigClean() {
                                 <label className="text-sm font-medium text-green-700">Row 3 - Quantity Required</label>
                                 <Input
                                   type="text"
-                                  placeholder="35"
+                                  placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value=""
+                                  value={(mm4Rows[2] && mm4Rows.length > 2) ? mm4Rows[2].greenValue || '' : ''}
                                   onChange={(e) => {
-                                    // Handle Row 3 data separately
-                                    console.log('Row 3 value changed:', e.target.value);
+                                    ensureMM4Rows(4);
+                                    updateMM4RowWithAutoSave(3, 'greenValue', e.target.value);
                                   }}
                                 />
                               </div>
@@ -3872,12 +3891,12 @@ export default function PR2ConfigClean() {
                                 <label className="text-sm font-medium text-green-700">Row 4 - Quantity Required</label>
                                 <Input
                                   type="text"
-                                  placeholder="40"
+                                  placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value=""
+                                  value={(mm4Rows[3] && mm4Rows.length > 3) ? mm4Rows[3].greenValue || '' : ''}
                                   onChange={(e) => {
-                                    // Handle Row 4 data separately
-                                    console.log('Row 4 value changed:', e.target.value);
+                                    ensureMM4Rows(4);
+                                    updateMM4RowWithAutoSave(4, 'greenValue', e.target.value);
                                   }}
                                 />
                               </div>
