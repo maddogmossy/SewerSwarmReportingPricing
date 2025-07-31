@@ -3857,8 +3857,8 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={mm4Rows[0]?.greenValue || ''}
-                                  onChange={(e) => updateMM4RowWithAutoSave(mm4Rows[0]?.id || 1, 'greenValue', e.target.value)}
+                                  value={mm5Rows[0]?.costPerMile || ''}
+                                  onChange={(e) => updateMM5RowWithAutoSave(mm5Rows[0]?.id || 1, 'costPerMile', e.target.value)}
                                 />
                               </div>
                               <div>
@@ -3867,10 +3867,15 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={(mm4Rows[1] && mm4Rows.length > 1) ? mm4Rows[1].greenValue || '' : ''}
+                                  value={(mm5Rows[1] && mm5Rows.length > 1) ? mm5Rows[1].costPerMile || '' : ''}
                                   onChange={(e) => {
-                                    ensureMM4Rows(4);
-                                    updateMM4RowWithAutoSave(2, 'greenValue', e.target.value);
+                                    // Ensure MM5 has enough rows
+                                    const currentMM5 = mm5Data;
+                                    if (currentMM5.length < 2) {
+                                      const newMM5 = [...currentMM5, { id: 2, costPerMile: '', vehicleWeight: '' }];
+                                      updateMM5Data(newMM5);
+                                    }
+                                    updateMM5RowWithAutoSave(2, 'costPerMile', e.target.value);
                                   }}
                                 />
                               </div>
@@ -3880,10 +3885,18 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={(mm4Rows[2] && mm4Rows.length > 2) ? mm4Rows[2].greenValue || '' : ''}
+                                  value={(mm5Rows[2] && mm5Rows.length > 2) ? mm5Rows[2].costPerMile || '' : ''}
                                   onChange={(e) => {
-                                    ensureMM4Rows(4);
-                                    updateMM4RowWithAutoSave(3, 'greenValue', e.target.value);
+                                    // Ensure MM5 has enough rows
+                                    const currentMM5 = mm5Data;
+                                    if (currentMM5.length < 3) {
+                                      const newMM5 = [...currentMM5];
+                                      while (newMM5.length < 3) {
+                                        newMM5.push({ id: newMM5.length + 1, costPerMile: '', vehicleWeight: '' });
+                                      }
+                                      updateMM5Data(newMM5);
+                                    }
+                                    updateMM5RowWithAutoSave(3, 'costPerMile', e.target.value);
                                   }}
                                 />
                               </div>
@@ -3893,10 +3906,18 @@ export default function PR2ConfigClean() {
                                   type="text"
                                   placeholder="0"
                                   className="border-green-300 mt-1"
-                                  value={(mm4Rows[3] && mm4Rows.length > 3) ? mm4Rows[3].greenValue || '' : ''}
+                                  value={(mm5Rows[3] && mm5Rows.length > 3) ? mm5Rows[3].costPerMile || '' : ''}
                                   onChange={(e) => {
-                                    ensureMM4Rows(4);
-                                    updateMM4RowWithAutoSave(4, 'greenValue', e.target.value);
+                                    // Ensure MM5 has enough rows
+                                    const currentMM5 = mm5Data;
+                                    if (currentMM5.length < 4) {
+                                      const newMM5 = [...currentMM5];
+                                      while (newMM5.length < 4) {
+                                        newMM5.push({ id: newMM5.length + 1, costPerMile: '', vehicleWeight: '' });
+                                      }
+                                      updateMM5Data(newMM5);
+                                    }
+                                    updateMM5RowWithAutoSave(4, 'costPerMile', e.target.value);
                                   }}
                                 />
                               </div>
